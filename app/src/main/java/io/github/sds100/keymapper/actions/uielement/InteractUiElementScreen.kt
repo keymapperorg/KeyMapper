@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.actions.uielement
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -11,9 +12,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -21,6 +24,8 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -28,11 +33,15 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,6 +53,8 @@ import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.util.ui.compose.icons.AdGroup
+import io.github.sds100.keymapper.util.ui.compose.icons.KeyMapperIcons
 
 @Composable
 fun InteractUiElementScreen(
@@ -90,14 +101,34 @@ private fun InteractUiElementScreen(
                     )
                 }
             }, floatingActionButton = {
-                if (selectedElementState != null) {
+                val isEnabled = selectedElementState != null
+                val containerColor = if (isEnabled) {
+                    FloatingActionButtonDefaults.containerColor
+                } else {
+                    FloatingActionButtonDefaults.containerColor.copy(alpha = 0.5f)
+                }
+
+                val contentColor = if (isEnabled) {
+                    MaterialTheme.colorScheme.contentColorFor(containerColor)
+                } else {
+                    MaterialTheme.colorScheme.contentColorFor(containerColor).copy(alpha = 0.5f)
+                }
+
+                CompositionLocalProvider(
+                    LocalContentColor provides contentColor,
+                ) {
                     ExtendedFloatingActionButton(
-                        onClick = onDoneClick,
+                        onClick = if (isEnabled) {
+                            onDoneClick
+                        } else {
+                            {}
+                        },
                         text = { Text(stringResource(R.string.button_done)) },
                         icon = {
                             Icon(Icons.Rounded.Check, stringResource(R.string.button_done))
                         },
                         elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
+                        containerColor = containerColor,
                     )
                 }
             })
@@ -167,6 +198,20 @@ private fun RecordingSection(
     Column(modifier = modifier) {
         when (state) {
             is State.Data<RecordUiElementState> -> {
+                val interactionCount: Int = when (state.data) {
+                    is RecordUiElementState.CountingDown -> state.data.interactionCount
+                    is RecordUiElementState.Recorded -> state.data.interactionCount
+                    RecordUiElementState.Empty -> 0
+                }
+
+                InteractionCountBox(
+                    modifier = Modifier.fillMaxWidth(),
+                    interactionCount = interactionCount,
+                    onClick = {},
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 RecordButton(
                     modifier = Modifier.fillMaxWidth(),
                     state = state.data,
@@ -174,7 +219,60 @@ private fun RecordingSection(
                 )
             }
 
-            State.Loading -> TODO()
+            State.Loading -> {
+                Spacer(modifier = Modifier.height(16.dp))
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun InteractionCountBox(
+    modifier: Modifier = Modifier,
+    interactionCount: Int,
+    onClick: () -> Unit,
+) {
+    val enabled = interactionCount > 0
+
+    val color = if (enabled) {
+        MaterialTheme.colorScheme.onSurface
+    } else {
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+    }
+
+    Surface(modifier = modifier, onClick = onClick, enabled = enabled) {
+        CompositionLocalProvider(
+            LocalContentColor provides color,
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Spacer(modifier = Modifier.width(16.dp))
+                Icon(imageVector = KeyMapperIcons.AdGroup, contentDescription = null)
+                Spacer(modifier = Modifier.width(16.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        pluralStringResource(
+                            R.plurals.action_interact_ui_element_interactions_detected,
+                            interactionCount,
+                            interactionCount,
+                        ),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+
+                    Text(
+                        stringResource(R.string.action_interact_ui_element_choose_interaction),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+                Icon(imageVector = Icons.Rounded.ChevronRight, contentDescription = null)
+                Spacer(modifier = Modifier.width(16.dp))
+            }
         }
     }
 }
@@ -229,6 +327,8 @@ private fun RecordButton(
 
 @Composable
 private fun SelectedElementSection(modifier: Modifier = Modifier, state: SelectedUiElementState) {
+    Column(modifier = modifier) {
+    }
 }
 
 @Preview
@@ -244,23 +344,12 @@ private fun PreviewEmpty() {
 
 @Preview
 @Composable
-private fun PreviewLoading() {
-    KeyMapperTheme {
-        InteractUiElementScreen(
-            recordState = State.Loading,
-            selectedElementState = null,
-        )
-    }
-}
-
-@Preview
-@Composable
 private fun PreviewSelectedElement() {
     val appIcon = LocalContext.current.drawable(R.mipmap.ic_launcher_round)
 
     KeyMapperTheme {
         InteractUiElementScreen(
-            recordState = State.Data(RecordUiElementState.Recorded(0)),
+            recordState = State.Data(RecordUiElementState.Recorded(3)),
             selectedElementState = SelectedUiElementState(
                 description = "Test",
                 appName = "Test App",
@@ -272,6 +361,17 @@ private fun PreviewSelectedElement() {
                 interactionTypes = listOf(),
                 selectedInteraction = 0,
             ),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewLoading() {
+    KeyMapperTheme {
+        InteractUiElementScreen(
+            recordState = State.Loading,
+            selectedElementState = null,
         )
     }
 }
