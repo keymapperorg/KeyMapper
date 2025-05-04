@@ -605,6 +605,7 @@ private fun PreviewSelectedElement() {
             recordState = State.Data(RecordUiElementState.Recorded(3)),
             selectedElementState = SelectedUiElementState(
                 description = "Tap test node",
+                packageName = "com.example.test",
                 appName = "Test App",
                 appIcon = ComposeIconInfo.Drawable(appIcon),
                 nodeText = "Test Node",

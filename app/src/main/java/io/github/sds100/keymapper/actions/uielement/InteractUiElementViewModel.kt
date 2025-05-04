@@ -185,6 +185,7 @@ class InteractUiElementViewModel(
 
             val newState = SelectedUiElementState(
                 description = action.description,
+                packageName = action.packageName,
                 appName = appName,
                 appIcon = appIcon,
                 nodeText = action.text ?: action.contentDescription,
@@ -212,7 +213,7 @@ class InteractUiElementViewModel(
         val action = ActionData.InteractUiElement(
             description = selectedElementState.description,
             nodeAction = selectedElementState.selectedInteraction,
-            packageName = selectedElementState.appName,
+            packageName = selectedElementState.packageName,
             text = selectedElementState.nodeText,
             contentDescription = selectedElementState.nodeText,
             className = selectedElementState.nodeClassName,
@@ -256,6 +257,7 @@ class InteractUiElementViewModel(
 
             val newState = SelectedUiElementState(
                 description = "",
+                packageName = interaction.packageName,
                 appName = appName,
                 appIcon = appIcon,
                 nodeText = interaction.text ?: interaction.contentDescription,
@@ -371,6 +373,7 @@ class InteractUiElementViewModel(
 
 data class SelectedUiElementState(
     val description: String,
+    val packageName: String,
     val appName: String,
     val appIcon: ComposeIconInfo.Drawable?,
     val nodeText: String?,

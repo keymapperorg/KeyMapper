@@ -177,6 +177,7 @@ class ConfigActionsViewModel(
     override fun onEditClick() {
         val actionUid = actionOptionsUid.value ?: return
         coroutineScope.launch {
+            actionOptionsUid.update { null }
             val keyMap = config.keyMap.first().dataOrNull() ?: return@launch
 
             val oldAction = keyMap.actionList.find { it.uid == actionUid } ?: return@launch

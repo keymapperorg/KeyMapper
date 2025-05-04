@@ -909,6 +909,8 @@
     <string name="error_swipe_screen_fingercount_must_be_more_than_zero">Must be greater than 0!</string>
     <string name="error_swipe_screen_duration_must_be_more_than_zero">Must be greater than 0!</string>
     <string name="error_swipe_screen_must_be_ten_or_less_fingers">Must be %d or less!</string>
+
+    <string name="error_ui_element_not_found">UI element not found!</string>
     <!-- Error messages -->
 
     <!-- action labels -->
