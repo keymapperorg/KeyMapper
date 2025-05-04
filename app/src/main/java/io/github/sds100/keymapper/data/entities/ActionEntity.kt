@@ -90,6 +90,17 @@ data class ActionEntity(
         const val EXTRA_HTTP_DESCRIPTION = "extra_http_description"
         const val EXTRA_HTTP_AUTHORIZATION_HEADER = "extra_http_authorization_header"
 
+        // Accessibility node extras
+        const val EXTRA_ACCESSIBILITY_PACKAGE_NAME = "extra_accessibility_package_name"
+        const val EXTRA_ACCESSIBILITY_CONTENT_DESCRIPTION =
+            "extra_accessibility_content_description"
+        const val EXTRA_ACCESSIBILITY_TEXT = "extra_accessibility_text"
+        const val EXTRA_ACCESSIBILITY_CLASS_NAME = "extra_accessibility_class_name"
+        const val EXTRA_ACCESSIBILITY_VIEW_RESOURCE_ID = "extra_accessibility_view_resource_id"
+        const val EXTRA_ACCESSIBILITY_UNIQUE_ID = "extra_accessibility_unique_id"
+        const val EXTRA_ACCESSIBILITY_ACTIONS = "extra_accessibility_actions"
+        const val EXTRA_ACCESSIBILITY_NODE_ACTION = "extra_accessibility_node_action"
+
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_ACTION_TYPE = "type"
         const val NAME_DATA = "data"
@@ -153,6 +164,7 @@ data class ActionEntity(
         INTENT,
         PHONE_CALL,
         SOUND,
+        INTERACT_UI_ELEMENT,
     }
 
     constructor(

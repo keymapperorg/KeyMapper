@@ -786,6 +786,15 @@ class CreateActionDelegate(
                 }
                 return null
             }
+
+            ActionId.INTERACT_UI_ELEMENT -> {
+                val oldAction = oldData as? ActionData.InteractUiElement
+
+                return navigate(
+                    "config_interact_ui_element_action",
+                    NavDestination.InteractUiElement(oldAction),
+                )
+            }
         }
     }
 }

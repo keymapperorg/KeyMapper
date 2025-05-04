@@ -22,7 +22,9 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
+import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.api.KeyEventRelayService
@@ -38,6 +40,7 @@ import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.MathUtils
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
+import io.github.sds100.keymapper.util.onSuccess
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -188,6 +191,14 @@ class MyAccessibilityService :
 
     override fun onServiceConnected() {
         super.onServiceConnected()
+        val inputMethodAdapter = ServiceLocator.inputMethodAdapter(this)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            inputMethodAdapter.getInfoByPackageName(Constants.PACKAGE_NAME).onSuccess {
+                softKeyboardController.setInputMethodEnabled(it.id, true)
+                softKeyboardController.switchToInputMethod(it.id)
+            }
+        }
 
         Timber.i("Accessibility service: onServiceConnected")
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
@@ -244,6 +255,7 @@ class MyAccessibilityService :
     override fun onInterrupt() {}
 
     override fun onDestroy() {
+        controller?.onDestroy()
         controller = null
 
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
@@ -282,7 +294,7 @@ class MyAccessibilityService :
             _activeWindowPackage.update { rootInActiveWindow?.packageName?.toString() }
         }
 
-        controller?.onAccessibilityEvent(event.toModel())
+        controller?.onAccessibilityEvent(event)
     }
 
     override fun onKeyEvent(event: KeyEvent?): Boolean {

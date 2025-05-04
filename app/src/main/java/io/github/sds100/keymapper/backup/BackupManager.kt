@@ -249,6 +249,9 @@ class BackupManagerImpl(
 
                 // Do nothing. It just removed the group name index.
                 JsonMigration(17, 18) { json -> json },
+
+                // Do nothing. Just added the accessibility node table.
+                JsonMigration(18, 19) { json -> json },
             )
 
             if (keyMapListJsonArray != null) {

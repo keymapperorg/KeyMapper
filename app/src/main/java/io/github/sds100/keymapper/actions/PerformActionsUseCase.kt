@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeAction
+import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeModel
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
@@ -65,6 +66,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import splitties.bitflags.withFlag
@@ -799,6 +801,19 @@ class PerformActionsUseCaseImpl(
                     authorizationHeader = action.authorizationHeader,
                 )
             }
+
+            is ActionData.InteractUiElement -> {
+                if (accessibilityService.activeWindowPackage.first() != action.packageName) {
+                    result = Error.UiElementNotFound
+                } else {
+                    result = accessibilityService.performActionOnNode(
+                        findNode = { node ->
+                            matchAccessibilityNode(node, action)
+                        },
+                        performAction = { AccessibilityNodeAction(action = action.nodeAction.accessibilityActionId) },
+                    )
+                }
+            }
         }
 
         when (result) {
@@ -890,6 +905,45 @@ class PerformActionsUseCaseImpl(
         onFailure {
             popupMessageAdapter.showPopupMessage(it.getFullMessage(resourceProvider))
         }
+    }
+
+    private fun matchAccessibilityNode(
+        node: AccessibilityNodeModel,
+        action: ActionData.InteractUiElement,
+    ): Boolean {
+        if (compareIfNonNull(node.uniqueId, action.uniqueId)) {
+            return true
+        }
+
+        val viewResourceIdMatches = node.viewResourceId == action.viewResourceId
+        val classNameMatches = node.className == action.className
+
+        if (compareIfNonNull(
+                node.contentDescription,
+                action.contentDescription,
+            ) &&
+            viewResourceIdMatches &&
+            classNameMatches
+        ) {
+            return true
+        }
+
+        if (compareIfNonNull(node.text, action.text) &&
+            viewResourceIdMatches &&
+            classNameMatches
+        ) {
+            return true
+        }
+
+        if (viewResourceIdMatches) {
+            return true
+        }
+
+        return false
+    }
+
+    private fun <T> compareIfNonNull(a: T?, b: T?): Boolean {
+        return a != null && b != null && a == b
     }
 }
 

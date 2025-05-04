@@ -145,6 +145,8 @@ sealed class Error : Result<Nothing>() {
      */
     data object DpadTriggerImeNotSelected : Error()
     data object MalformedUrl : Error()
+
+    data object UiElementNotFound : Error()
 }
 
 inline fun <T> Result<T>.onSuccess(f: (T) -> Unit): Result<T> {

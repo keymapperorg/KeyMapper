@@ -24,7 +24,8 @@
     <string name="button_enable_accessibility_service">Enable accessibility service</string>
     <string name="button_restart_accessibility_service">Restart accessibility service</string>
     <string name="share_backup">Share</string>
-
+    <string name="app_list_empty">Nothing here!</string>
+    <string name="ui_element_list_empty">Nothing here!</string>
     <string name="stop_repeating_dot_dot_dot">Stop repeating when…</string>
     <string name="stop_repeating_when_trigger_released">Trigger is released</string>
     <string name="stop_repeating_trigger_pressed_again">Trigger is pressed again</string>
@@ -908,6 +909,8 @@
     <string name="error_swipe_screen_fingercount_must_be_more_than_zero">Must be greater than 0!</string>
     <string name="error_swipe_screen_duration_must_be_more_than_zero">Must be greater than 0!</string>
     <string name="error_swipe_screen_must_be_ten_or_less_fingers">Must be %d or less!</string>
+
+    <string name="error_ui_element_not_found">UI element not found!</string>
     <!-- Error messages -->
 
     <!-- action labels -->
@@ -1048,6 +1051,7 @@
     <string name="action_toggle_keyboard_message">This action will only work if you have tapped on an input field where the keyboard is supposed to be shown.</string>
     <string name="action_show_keyboard">Show keyboard</string>
     <string name="action_hide_keyboard">Hide keyboard</string>
+
     <string name="action_show_keyboard_picker">Show keyboard picker</string>
 
     <string name="action_switch_keyboard">Switch keyboard</string>
@@ -1061,9 +1065,9 @@
     <string name="action_open_settings">Open settings</string>
     <string name="action_show_power_menu">Show power menu</string>
 
-    <string name="action_toggle_airplane_mode">Toggle Airplane mode</string>
-    <string name="action_enable_airplane_mode">Enable Airplane mode</string>
-    <string name="action_disable_airplane_mode">Disable Airplane mode</string>
+    <string name="action_toggle_airplane_mode">Toggle airplane mode</string>
+    <string name="action_enable_airplane_mode">Enable airplane mode</string>
+    <string name="action_disable_airplane_mode">Disable airplane mode</string>
 
     <string name="action_open_app">Launch app</string>
     <string name="action_open_app_dialog_message">Some devices require apps to have permission before they can launch apps in the background. Tap \"Read more\" to view the instructions on our website.</string>
@@ -1098,6 +1102,45 @@
     <string name="action_http_request_body_label">Request body (optional)</string>
     <string name="action_http_request_authorization_label">Authorization header (optional)</string>
     <string name="action_http_request_authorization_supporting_text">You must prepend \'Bearer\' if necessary</string>
+
+    <string name="action_interact_ui_element_title">Interact with app element</string>
+    <string name="action_interact_ui_element_description">Key Mapper can detect and interact with app elements like menus, tabs, buttons and checkboxes. You need to record yourself interacting with the app element so that Key Mapper knows what you want to do.</string>
+    <string name="action_interact_ui_element_start_recording">Start recording</string>
+    <string name="action_interact_ui_element_stop_recording">Stop recording (%s min left)</string>
+    <string name="action_interact_ui_element_record_instruction">Go to another app and interact with it. Key Mapper will record what you do and you can choose which interactions you want to use in your key map. Open Key Mapper again when you’re done.</string>
+    <plurals name="action_interact_ui_element_interactions_detected">
+        <item quantity="one">%d interaction detected</item>
+        <item quantity="other">%d interactions detected</item>
+    </plurals>
+    <string name="action_interact_ui_element_choose_interaction">Choose the app to interact with</string>
+    <string name="action_interact_ui_element_record_again">Record again</string>
+    <string name="action_interact_ui_element_choose_element_title">Choose app element</string>
+    <string name="action_interact_ui_element_choose_element_text">Choose the element you want your key map to interact with.</string>
+    <string name="action_interact_ui_element_choose_element_not_found_subtitle">Can\'t find what you’re looking for?</string>
+    <string name="action_interact_ui_element_choose_element_not_found_text">Not all apps are compatible. For incompatible apps you can try the Tap Screen action instead.</string>
+    <string name="action_interact_ui_element_interaction_type_dropdown">Interaction type</string>
+    <string name="action_interact_ui_element_interaction_type_dropdown_caption">Select how you want to interact with the UI element.</string>
+    <string name="action_interact_ui_element_filter_interaction_type_dropdown">Filter interaction type</string>
+
+    <string name="action_interact_ui_element_interaction_type_any">Any</string>
+    <string name="action_interact_ui_element_interaction_type_click">Tap</string>
+    <string name="action_interact_ui_element_interaction_type_long_click">Tap and hold</string>
+    <string name="action_interact_ui_element_interaction_type_focus">Focus</string>
+    <string name="action_interact_ui_element_interaction_type_select">Select</string>
+    <string name="action_interact_ui_element_interaction_type_scroll_forward">Scroll forward</string>
+    <string name="action_interact_ui_element_interaction_type_scroll_backward">Scroll backward</string>
+    <string name="action_interact_ui_element_interaction_type_expand">Expand</string>
+    <string name="action_interact_ui_element_interaction_type_collapse">Collapse</string>
+    <string name="action_interact_ui_element_interaction_type_unknown">Unknown: %d</string>
+
+    <string name="action_interact_ui_element_interaction_details_title">Interaction details</string>
+    <string name="action_interact_ui_element_description_label">Description</string>
+    <string name="action_interact_ui_element_app_label">App</string>
+    <string name="action_interact_ui_element_text_label">Text / content description</string>
+    <string name="action_interact_ui_element_class_name_label">Class name</string>
+    <string name="action_interact_ui_element_view_id_label">View resource ID</string>
+    <string name="action_interact_ui_element_unique_id_label">Unique ID</string>
+    <string name="action_interact_ui_element_interaction_types_label">Interaction types</string>
     <!-- action labels -->
 
     <!-- action category labels -->

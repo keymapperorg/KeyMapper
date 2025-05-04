@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.system.accessibility
 
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
+import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.mappings.PauseKeyMapsUseCase
@@ -17,7 +18,7 @@ import kotlinx.coroutines.flow.SharedFlow
 
 class AccessibilityServiceController(
     coroutineScope: CoroutineScope,
-    accessibilityService: IAccessibilityService,
+    accessibilityService: MyAccessibilityService,
     inputEvents: SharedFlow<ServiceEvent>,
     outputEvents: MutableSharedFlow<ServiceEvent>,
     detectConstraintsUseCase: DetectConstraintsUseCase,
@@ -30,6 +31,7 @@ class AccessibilityServiceController(
     suAdapter: SuAdapter,
     inputMethodAdapter: InputMethodAdapter,
     settingsRepository: PreferenceRepository,
+    nodeRepository: AccessibilityNodeRepository,
 ) : BaseAccessibilityServiceController(
     coroutineScope,
     accessibilityService,
@@ -45,4 +47,5 @@ class AccessibilityServiceController(
     suAdapter,
     inputMethodAdapter,
     settingsRepository,
+    nodeRepository,
 )

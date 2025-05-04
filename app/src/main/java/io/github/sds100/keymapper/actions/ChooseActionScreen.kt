@@ -15,27 +15,18 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.Bluetooth
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -51,7 +42,8 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.util.ui.compose.SimpleListItem
+import io.github.sds100.keymapper.util.ui.compose.SearchAppBarActions
+import io.github.sds100.keymapper.util.ui.compose.SimpleListItemFixedHeight
 import io.github.sds100.keymapper.util.ui.compose.SimpleListItemGroup
 import io.github.sds100.keymapper.util.ui.compose.SimpleListItemHeader
 import io.github.sds100.keymapper.util.ui.compose.SimpleListItemModel
@@ -92,69 +84,18 @@ private fun ChooseActionScreen(
     onClickAction: (String) -> Unit = {},
     onNavigateBack: () -> Unit = {},
 ) {
-    var isExpanded: Boolean by rememberSaveable { mutableStateOf(false) }
-
     Scaffold(
         modifier = modifier.displayCutoutPadding(),
         bottomBar = {
             BottomAppBar(
                 modifier = Modifier.imePadding(),
                 actions = {
-                    IconButton(onClick = {
-                        if (isExpanded) {
-                            onCloseSearch()
-                            isExpanded = false
-                        } else {
-                            onNavigateBack()
-                        }
-                    }) {
-                        Icon(
-                            Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.bottom_app_bar_back_content_description),
-                        )
-                    }
-
-                    DockedSearchBar(
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        inputField = {
-                            SearchBarDefaults.InputField(
-                                modifier = Modifier.align(Alignment.CenterVertically),
-                                onSearch = {
-                                    onQueryChange(it)
-                                    isExpanded = false
-                                },
-                                leadingIcon = {
-                                    Icon(
-                                        Icons.Rounded.Search,
-                                        contentDescription = null,
-                                    )
-                                },
-                                enabled = state is State.Data,
-                                placeholder = { Text(stringResource(R.string.search_placeholder)) },
-                                query = query ?: "",
-                                onQueryChange = onQueryChange,
-                                expanded = isExpanded,
-                                onExpandedChange = { expanded ->
-                                    if (expanded) {
-                                        isExpanded = true
-                                    } else {
-                                        onCloseSearch()
-                                        isExpanded = false
-                                    }
-                                },
-                            )
-                        },
-                        // This is false to prevent an empty "content" showing underneath.
-                        expanded = isExpanded,
-                        onExpandedChange = { expanded ->
-                            if (expanded) {
-                                isExpanded = true
-                            } else {
-                                onCloseSearch()
-                                isExpanded = false
-                            }
-                        },
-                        content = {},
+                    SearchAppBarActions(
+                        onCloseSearch = onCloseSearch,
+                        onNavigateBack = onNavigateBack,
+                        onQueryChange = onQueryChange,
+                        enabled = state is State.Data,
+                        query = query,
                     )
                 },
             )
@@ -260,7 +201,7 @@ private fun ListScreen(
                 group.items,
                 contentType = { "list_item" },
             ) { model ->
-                SimpleListItem(
+                SimpleListItemFixedHeight(
                     modifier = Modifier.fillMaxWidth(),
                     model = model,
                     onClick = { onClickAction(model.id) },
@@ -359,6 +300,15 @@ private fun PreviewGrid() {
                                 title = "Toggle Bluetooth",
                                 icon = ComposeIconInfo.Vector(Icons.Rounded.Bluetooth),
                                 subtitle = "Requires root",
+                                isSubtitleError = true,
+                                isEnabled = false,
+                            ),
+
+                            SimpleListItemModel(
+                                "long",
+                                title = "Very very very very very very very long title",
+                                icon = ComposeIconInfo.Vector(Icons.Rounded.Bluetooth),
+                                subtitle = null,
                                 isSubtitleError = true,
                                 isEnabled = false,
                             ),

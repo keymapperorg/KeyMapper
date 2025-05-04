@@ -73,6 +73,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.ui.compose.icons.HomeIotDevice
 import io.github.sds100.keymapper.util.ui.compose.icons.InstantMix
+import io.github.sds100.keymapper.util.ui.compose.icons.JumpToElement
 import io.github.sds100.keymapper.util.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.util.ui.compose.icons.MatchWord
 import io.github.sds100.keymapper.util.ui.compose.icons.NfcOff
@@ -230,6 +231,8 @@ object ActionUtils {
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> ActionCategory.NOTIFICATIONS
         ActionId.DISMISS_ALL_NOTIFICATIONS -> ActionCategory.NOTIFICATIONS
         ActionId.DEVICE_CONTROLS -> ActionCategory.APPS
+
+        ActionId.INTERACT_UI_ELEMENT -> ActionCategory.APPS
     }
 
     @StringRes
@@ -342,6 +345,7 @@ object ActionUtils {
         ActionId.END_PHONE_CALL -> R.string.action_end_call
         ActionId.DEVICE_CONTROLS -> R.string.action_device_controls
         ActionId.HTTP_REQUEST -> R.string.action_http_request
+        ActionId.INTERACT_UI_ELEMENT -> R.string.action_interact_ui_element_title
     }
 
     @DrawableRes
@@ -454,6 +458,7 @@ object ActionUtils {
         ActionId.END_PHONE_CALL -> R.drawable.ic_outline_call_end_24
         ActionId.DEVICE_CONTROLS -> R.drawable.ic_home_automation
         ActionId.HTTP_REQUEST -> null
+        ActionId.INTERACT_UI_ELEMENT -> null
     }
 
     fun getMinApi(id: ActionId): Int = when (id) {
@@ -770,6 +775,7 @@ object ActionUtils {
         ActionId.END_PHONE_CALL -> Icons.Outlined.CallEnd
         ActionId.DEVICE_CONTROLS -> KeyMapperIcons.HomeIotDevice
         ActionId.HTTP_REQUEST -> Icons.Outlined.Http
+        ActionId.INTERACT_UI_ELEMENT -> KeyMapperIcons.JumpToElement
     }
 }
 
@@ -821,6 +827,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.Url,
     is ActionData.PhoneCall,
     is ActionData.HttpRequest,
+    is ActionData.InteractUiElement,
     -> true
 
     else -> false

@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.actions.sound.ChooseSoundFileUseCaseImpl
 import io.github.sds100.keymapper.actions.sound.ChooseSoundFileViewModel
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickDisplayCoordinateViewModel
 import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateViewModel
+import io.github.sds100.keymapper.actions.uielement.InteractUiElementViewModel
 import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapper
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCaseImpl
 import io.github.sds100.keymapper.constraints.ChooseConstraintViewModel
@@ -229,6 +230,7 @@ object Inject {
         ),
         inputMethodAdapter = ServiceLocator.inputMethodAdapter(service),
         settingsRepository = ServiceLocator.settingsRepository(service),
+        nodeRepository = ServiceLocator.accessibilityNodeRepository(service),
     )
 
     fun chooseBluetoothDeviceViewModel(ctx: Context): ChooseBluetoothDeviceViewModel.Factory = ChooseBluetoothDeviceViewModel.Factory(
@@ -247,5 +249,12 @@ object Inject {
             ServiceLocator.fileAdapter(ctx),
         ),
         ServiceLocator.resourceProvider(ctx),
+    )
+
+    fun interactUiElementViewModel(
+        ctx: Context,
+    ): InteractUiElementViewModel.Factory = InteractUiElementViewModel.Factory(
+        (ctx.applicationContext as KeyMapperApp).interactUiElementController,
+        resourceProvider = ServiceLocator.resourceProvider(ctx),
     )
 }

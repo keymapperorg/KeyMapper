@@ -1,7 +1,9 @@
 package io.github.sds100.keymapper.actions
 
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
+import io.github.sds100.keymapper.actions.uielement.NodeInteractionType
 import io.github.sds100.keymapper.data.db.typeconverter.ConstantTypeConverters
+import io.github.sds100.keymapper.data.db.typeconverter.NodeInteractionTypeSetTypeConverter
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData
@@ -12,6 +14,9 @@ import io.github.sds100.keymapper.system.network.HttpMethod
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.getKey
 import io.github.sds100.keymapper.util.success
 import io.github.sds100.keymapper.util.then
@@ -41,6 +46,8 @@ object ActionDataEntityMapper {
             ActionEntity.Type.SYSTEM_ACTION -> {
                 SYSTEM_ACTION_ID_MAP.getKey(entity.data) ?: return null
             }
+
+            ActionEntity.Type.INTERACT_UI_ELEMENT -> ActionId.INTERACT_UI_ELEMENT
         }
 
         return when (actionId) {
@@ -522,7 +529,57 @@ object ActionDataEntityMapper {
                     authorizationHeader = authorizationHeader,
                 )
             }
+
+            ActionId.INTERACT_UI_ELEMENT -> {
+                val packageName =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_PACKAGE_NAME)
+                        .valueOrNull()!!
+
+                val contentDescription =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_CONTENT_DESCRIPTION)
+                        .valueOrNull()
+
+                val text =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_TEXT).valueOrNull()
+
+                val className =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_CLASS_NAME).valueOrNull()
+
+                val viewResourceId =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_VIEW_RESOURCE_ID)
+                        .valueOrNull()
+
+                val uniqueId =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_UNIQUE_ID).valueOrNull()
+
+                val actions = entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_ACTIONS).then {
+                    Success(NodeInteractionTypeSetTypeConverter().toSet(it.toInt()))
+                }.valueOrNull() ?: emptySet()
+
+                val nodeAction =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_NODE_ACTION).then {
+                        convertNodeInteractionType(it)
+                    }.valueOrNull() ?: return null
+
+                ActionData.InteractUiElement(
+                    description = entity.data,
+                    nodeAction = nodeAction,
+                    packageName = packageName,
+                    text = text,
+                    contentDescription = contentDescription,
+                    className = className,
+                    viewResourceId = viewResourceId,
+                    uniqueId = uniqueId,
+                    nodeActions = actions,
+                )
+            }
         }
+    }
+
+    private fun convertNodeInteractionType(string: String): Result<NodeInteractionType> = try {
+        Success(NodeInteractionType.valueOf(string))
+    } catch (e: IllegalArgumentException) {
+        Error.Exception(e)
     }
 
     fun toEntity(data: ActionData): ActionEntity {
@@ -538,6 +595,7 @@ object ActionDataEntityMapper {
             is ActionData.Text -> ActionEntity.Type.TEXT_BLOCK
             is ActionData.Url -> ActionEntity.Type.URL
             is ActionData.Sound -> ActionEntity.Type.SOUND
+            is ActionData.InteractUiElement -> ActionEntity.Type.INTERACT_UI_ELEMENT
             else -> ActionEntity.Type.SYSTEM_ACTION
         }
 
@@ -579,6 +637,7 @@ object ActionDataEntityMapper {
         is ActionData.Text -> data.text
         is ActionData.Url -> data.url
         is ActionData.Sound -> data.soundUid
+        is ActionData.InteractUiElement -> data.description
         else -> SYSTEM_ACTION_ID_MAP[data.id]!!
     }
 
@@ -749,6 +808,69 @@ object ActionDataEntityMapper {
                 data.authorizationHeader,
             ),
         )
+
+        is ActionData.InteractUiElement -> buildList {
+            add(
+                EntityExtra(
+                    ActionEntity.EXTRA_ACCESSIBILITY_NODE_ACTION,
+                    data.nodeAction.toString(),
+                ),
+            )
+
+            add(
+                EntityExtra(
+                    ActionEntity.EXTRA_ACCESSIBILITY_PACKAGE_NAME,
+                    data.packageName,
+                ),
+            )
+
+            data.contentDescription?.let {
+                add(
+                    EntityExtra(
+                        ActionEntity.EXTRA_ACCESSIBILITY_CONTENT_DESCRIPTION,
+                        it,
+                    ),
+                )
+            }
+
+            data.text?.let { add(EntityExtra(ActionEntity.EXTRA_ACCESSIBILITY_TEXT, it)) }
+
+            data.className?.let {
+                add(
+                    EntityExtra(
+                        ActionEntity.EXTRA_ACCESSIBILITY_CLASS_NAME,
+                        it,
+                    ),
+                )
+            }
+
+            data.viewResourceId?.let {
+                add(
+                    EntityExtra(
+                        ActionEntity.EXTRA_ACCESSIBILITY_VIEW_RESOURCE_ID,
+                        it,
+                    ),
+                )
+            }
+
+            data.uniqueId?.let {
+                add(
+                    EntityExtra(
+                        ActionEntity.EXTRA_ACCESSIBILITY_UNIQUE_ID,
+                        it,
+                    ),
+                )
+            }
+
+            if (data.nodeActions.isNotEmpty()) {
+                add(
+                    EntityExtra(
+                        ActionEntity.EXTRA_ACCESSIBILITY_ACTIONS,
+                        NodeInteractionTypeSetTypeConverter().toMask(data.nodeActions).toString(),
+                    ),
+                )
+            }
+        }
 
         else -> emptyList()
     }

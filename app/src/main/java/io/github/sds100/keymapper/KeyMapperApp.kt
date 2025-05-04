@@ -12,6 +12,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
+import io.github.sds100.keymapper.actions.uielement.InteractUiElementController
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.logging.KeyMapperLoggingTree
@@ -149,6 +150,15 @@ class KeyMapperApp : MultiDexApplication() {
 
     val recordTriggerController by lazy {
         RecordTriggerController(appCoroutineScope, accessibilityServiceAdapter)
+    }
+
+    val interactUiElementController by lazy {
+        InteractUiElementController(
+            appCoroutineScope,
+            accessibilityServiceAdapter,
+            ServiceLocator.accessibilityNodeRepository(this),
+            packageManagerAdapter,
+        )
     }
 
     val autoGrantPermissionController by lazy {

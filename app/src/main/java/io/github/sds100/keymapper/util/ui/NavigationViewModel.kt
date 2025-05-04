@@ -20,6 +20,7 @@ import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickDisplayCoordinateFragment
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateFragment
+import io.github.sds100.keymapper.actions.uielement.InteractUiElementFragment
 import io.github.sds100.keymapper.constraints.ChooseConstraintFragment
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.system.apps.ActivityInfo
@@ -42,7 +43,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 /**
@@ -225,6 +225,11 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
             is NavDestination.ConfigFloatingButton -> NavAppDirections.toConfigFloatingButton(
                 destination.buttonUid,
             )
+
+            is NavDestination.InteractUiElement -> NavAppDirections.interactUiElement(
+                requestKey = requestKey,
+                action = destination.action?.let { Json.encodeToString(destination.action) },
+            )
         }
 
         fragment.findNavController().navigate(direction)
@@ -325,6 +330,12 @@ fun NavigationViewModel.sendNavResultFromBundle(
             val name = bundle.getString(ChooseBluetoothDeviceFragment.EXTRA_NAME)!!
 
             onNavResult(NavResult(requestKey, BluetoothDeviceInfo(address, name)))
+        }
+
+        NavDestination.ID_INTERACT_UI_ELEMENT_ACTION -> {
+            val json = bundle.getString(InteractUiElementFragment.EXTRA_ACTION)!!
+            val result = Json.decodeFromString<ActionData.InteractUiElement>(json)
+            onNavResult(NavResult(requestKey, result))
         }
     }
 }

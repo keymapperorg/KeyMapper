@@ -5,6 +5,11 @@
 ## Added
 
 - #699 Time constraints ⏰
+- #257 Action to interact with user interface elements inside other apps.
+
+## Changed
+
+- Rename tap screen actions inside key maps.
 
 ## Changed
 

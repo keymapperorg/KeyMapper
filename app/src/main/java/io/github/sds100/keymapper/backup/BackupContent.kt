@@ -6,7 +6,6 @@ import io.github.sds100.keymapper.data.entities.FloatingLayoutEntity
 import io.github.sds100.keymapper.data.entities.GroupEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 
-// TODO back up groups that are referenced by key maps - back up all the children as well. If the parent is not included in the back up then set the parent uid to null
 data class BackupContent(
     @SerializedName(NAME_DB_VERSION)
     val dbVersion: Int,
