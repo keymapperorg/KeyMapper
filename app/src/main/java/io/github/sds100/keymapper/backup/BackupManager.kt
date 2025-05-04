@@ -225,7 +225,7 @@ class BackupManagerImpl(
             val deviceInfoList by rootElement.byNullableArray(BackupContent.NAME_DEVICE_INFO)
 
             val migratedKeyMapList = mutableListOf<KeyMapEntity>()
-            
+
             val keyMapMigrations = listOf(
                 JsonMigration(9, 10) { json -> Migration9To10.migrateJson(json) },
                 JsonMigration(10, 11) { json -> Migration10To11.migrateJson(json) },
