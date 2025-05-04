@@ -151,7 +151,7 @@ fun ChooseElementScreen(
                                 modifier = Modifier.padding(horizontal = 16.dp),
                                 expanded = interactionTypeExpanded,
                                 onExpandedChange = { interactionTypeExpanded = it },
-                                label = stringResource(R.string.action_interact_ui_element_filter_interaction_type_dropdown),
+                                label = { Text(stringResource(R.string.action_interact_ui_element_filter_interaction_type_dropdown)) },
                                 values = state.data.interactionTypes,
                                 selectedValue = state.data.selectedInteractionType,
                                 onValueChanged = onSelectInteractionType,

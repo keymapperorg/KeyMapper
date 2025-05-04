@@ -17,7 +17,7 @@ fun <T> KeyMapperDropdownMenu(
     modifier: Modifier = Modifier,
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit = {},
-    label: String,
+    label: (@Composable () -> Unit)? = null,
     selectedValue: T,
     values: List<Pair<T, String>>,
     onValueChanged: (T) -> Unit = {},
@@ -29,12 +29,12 @@ fun <T> KeyMapperDropdownMenu(
     ) {
         TextField(
             modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
-            value = values.single { it.first == selectedValue }.second,
+            value = values.find { it.first == selectedValue }?.second ?: values.first().second,
             onValueChange = { newValue ->
                 onValueChanged(values.single { it.second == newValue }.first)
             },
             readOnly = true,
-            label = { Text(text = label) },
+            label = label,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
         )

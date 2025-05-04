@@ -139,7 +139,7 @@ private fun HttpRequestBottomSheet(
                     .padding(horizontal = 16.dp),
                 expanded = methodExpanded,
                 onExpandedChange = { methodExpanded = it },
-                label = stringResource(R.string.action_http_request_method_label),
+                label = { Text(stringResource(R.string.action_http_request_method_label)) },
                 selectedValue = state.method,
                 values = HttpMethod.entries.map { it to it.toString() },
                 onValueChanged = onSelectMethod,

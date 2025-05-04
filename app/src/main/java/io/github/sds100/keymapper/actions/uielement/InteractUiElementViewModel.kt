@@ -17,7 +17,6 @@ import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.ifIsData
 import io.github.sds100.keymapper.util.mapData
 import io.github.sds100.keymapper.util.onFailure
-import io.github.sds100.keymapper.util.otherwise
 import io.github.sds100.keymapper.util.then
 import io.github.sds100.keymapper.util.ui.PopupViewModel
 import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
@@ -33,6 +32,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class InteractUiElementViewModel(
     private val useCase: InteractUiElementUseCase,
@@ -50,7 +51,7 @@ class InteractUiElementViewModel(
     PopupViewModel by PopupViewModelImpl() {
 
     private val _returnAction: MutableSharedFlow<ActionData.InteractUiElement> = MutableSharedFlow()
-    val returnAction: SharedFlow<ActionData.InteractUiElement> = _returnAction
+    val returnAction: SharedFlow<ActionData.InteractUiElement> = _returnAction.asSharedFlow()
 
     val recordState: StateFlow<State<RecordUiElementState>> = combine(
         useCase.recordState,
@@ -63,9 +64,16 @@ class InteractUiElementViewModel(
                 val mins = recordState.timeLeft / 60
                 val secs = recordState.timeLeft % 60
 
+                val timeRemainingText = String.format(
+                    Locale.getDefault(),
+                    "%02d:%02d",
+                    mins,
+                    secs,
+                )
+
                 State.Data(
                     RecordUiElementState.CountingDown(
-                        timeRemaining = "$mins:$secs",
+                        timeRemaining = timeRemainingText,
                         interactionCount = interactionCount,
                     ),
                 )
@@ -116,7 +124,18 @@ class InteractUiElementViewModel(
 
     private val interactionTypesFilterItems: Flow<State<List<Pair<NodeInteractionType?, String>>>> =
         interactionsByPackage
-            .map { state -> state.mapData(::buildInteractionTypeFilterItems) }
+            .map { state ->
+                state.mapData { list ->
+                    val any = Pair(
+                        null,
+                        getString(R.string.action_interact_ui_element_interaction_type_any),
+                    )
+
+                    val interactionTypes = list.flatMap { it.actions }.toSet()
+
+                    listOf(any).plus(buildInteractionTypeFilterItems(interactionTypes))
+                }
+            }
 
     private val selectedInteractionTypeFilter = MutableStateFlow<NodeInteractionType?>(null)
 
@@ -172,7 +191,7 @@ class InteractUiElementViewModel(
                 nodeClassName = action.className,
                 nodeViewResourceId = action.viewResourceId,
                 nodeUniqueId = action.uniqueId,
-                interactionTypes = action.nodeActions,
+                interactionTypes = buildInteractionTypeFilterItems(action.nodeActions),
                 selectedInteraction = action.nodeAction,
             )
 
@@ -186,6 +205,10 @@ class InteractUiElementViewModel(
             return
         }
 
+        if (selectedElementState.description.isBlank()) {
+            return
+        }
+
         val action = ActionData.InteractUiElement(
             description = selectedElementState.description,
             nodeAction = selectedElementState.selectedInteraction,
@@ -195,10 +218,12 @@ class InteractUiElementViewModel(
             className = selectedElementState.nodeClassName,
             viewResourceId = selectedElementState.nodeViewResourceId,
             uniqueId = selectedElementState.nodeUniqueId,
-            nodeActions = selectedElementState.interactionTypes,
+            nodeActions = selectedElementState.interactionTypes.map { it.first }.toSet(),
         )
 
-        _returnAction.tryEmit(action)
+        viewModelScope.launch {
+            _returnAction.emit(action)
+        }
     }
 
     fun onRecordClick() {
@@ -226,6 +251,9 @@ class InteractUiElementViewModel(
                 useCase.getAppName(interaction.packageName).valueOrNull() ?: interaction.packageName
             val appIcon = getAppIcon(interaction.packageName)
 
+            val selectedInteraction =
+                NodeInteractionType.entries.first { interaction.actions.contains(it) }
+
             val newState = SelectedUiElementState(
                 description = "",
                 appName = appName,
@@ -234,17 +262,28 @@ class InteractUiElementViewModel(
                 nodeClassName = interaction.className,
                 nodeViewResourceId = interaction.viewResourceId,
                 nodeUniqueId = interaction.uniqueId,
-                interactionTypes = interaction.actions.toList(),
-                selectedInteraction = interaction.userInteractedActionId
-                    ?: interaction.actions.first(),
+                interactionTypes = buildInteractionTypeFilterItems(interaction.actions),
+                selectedInteraction = selectedInteraction,
             )
 
             _selectedElementState.update { newState }
         }
     }
 
+    fun onSelectElementInteractionType(interactionType: NodeInteractionType) {
+        _selectedElementState.update { state ->
+            state?.copy(selectedInteraction = interactionType)
+        }
+    }
+
     fun onSelectInteractionTypeFilter(interactionType: NodeInteractionType?) {
         selectedInteractionTypeFilter.update { interactionType }
+    }
+
+    fun onDescriptionChanged(description: String) {
+        _selectedElementState.update { state ->
+            state?.copy(description = description)
+        }
     }
 
     private suspend fun startRecording() {
@@ -267,7 +306,7 @@ class InteractUiElementViewModel(
 
     private fun buildInteractedPackageListItem(packageName: String): SimpleListItemModel {
         val appName = useCase.getAppName(packageName).valueOrNull() ?: packageName
-        val appIcon = getAppIcon(packageName)
+        val appIcon = getAppIcon(packageName) ?: ComposeIconInfo.Vector(Icons.Rounded.Android)
 
         return SimpleListItemModel(
             id = packageName,
@@ -290,12 +329,8 @@ class InteractUiElementViewModel(
         )
     }
 
-    private fun buildInteractionTypeFilterItems(nodes: List<AccessibilityNodeEntity>): List<Pair<NodeInteractionType?, String>> {
-        val interactionTypes = nodes.flatMap { it.actions }.toSet()
-
+    private fun buildInteractionTypeFilterItems(interactionTypes: Set<NodeInteractionType>): List<Pair<NodeInteractionType, String>> {
         return buildList {
-            add(null to getString(R.string.action_interact_ui_element_interaction_type_any))
-
             // They should always be in the same order so iterate over the Enum entries.
             for (type in NodeInteractionType.entries) {
                 if (interactionTypes.contains(type)) {
@@ -305,11 +340,10 @@ class InteractUiElementViewModel(
         }
     }
 
-    private fun getAppIcon(packageName: String): ComposeIconInfo = useCase
+    private fun getAppIcon(packageName: String): ComposeIconInfo.Drawable? = useCase
         .getAppIcon(packageName)
         .then { Success(ComposeIconInfo.Drawable(it)) }
-        .otherwise { Success(ComposeIconInfo.Vector(Icons.Rounded.Android)) }
-        .valueOrNull()!!
+        .valueOrNull()
 
     private fun getInteractionTypeString(interactionType: NodeInteractionType): String {
         return when (interactionType) {
@@ -338,12 +372,12 @@ class InteractUiElementViewModel(
 data class SelectedUiElementState(
     val description: String,
     val appName: String,
-    val appIcon: ComposeIconInfo,
+    val appIcon: ComposeIconInfo.Drawable?,
     val nodeText: String?,
     val nodeClassName: String?,
     val nodeViewResourceId: String?,
     val nodeUniqueId: String?,
-    val interactionTypes: List<NodeInteractionType>,
+    val interactionTypes: List<Pair<NodeInteractionType, String>>,
     val selectedInteraction: NodeInteractionType,
 )
 

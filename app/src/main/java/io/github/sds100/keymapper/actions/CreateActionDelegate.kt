@@ -788,11 +788,7 @@ class CreateActionDelegate(
             }
 
             ActionId.INTERACT_UI_ELEMENT -> {
-                val oldAction = if (oldData is ActionData.InteractUiElement) {
-                    oldData
-                } else {
-                    null
-                }
+                val oldAction = oldData as? ActionData.InteractUiElement
 
                 return navigate(
                     "config_interact_ui_element_action",

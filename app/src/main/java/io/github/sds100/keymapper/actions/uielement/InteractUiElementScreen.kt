@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.actions.uielement
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,9 +14,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material3.BottomAppBar
@@ -23,22 +29,29 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.pluralStringResource
@@ -50,6 +63,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
@@ -57,7 +71,10 @@ import io.github.sds100.keymapper.system.apps.ChooseAppScreen
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.util.ui.compose.KeyMapperDropdownMenu
+import io.github.sds100.keymapper.util.ui.compose.OptionsHeaderRow
 import io.github.sds100.keymapper.util.ui.compose.icons.AdGroup
+import io.github.sds100.keymapper.util.ui.compose.icons.JumpToElement
 import io.github.sds100.keymapper.util.ui.compose.icons.KeyMapperIcons
 import kotlinx.coroutines.flow.update
 
@@ -110,6 +127,8 @@ fun InteractUiElementScreen(
                 openSelectAppScreen = {
                     navController.navigate(DEST_SELECT_APP)
                 },
+                onSelectInteractionType = viewModel::onSelectElementInteractionType,
+                onDescriptionChanged = viewModel::onDescriptionChanged,
             )
         }
 
@@ -156,6 +175,8 @@ private fun LandingScreen(
     onBackClick: () -> Unit = {},
     onDoneClick: () -> Unit = {},
     openSelectAppScreen: () -> Unit = {},
+    onSelectInteractionType: (NodeInteractionType) -> Unit = {},
+    onDescriptionChanged: (String) -> Unit = {},
 ) {
     val snackbarHostState = SnackbarHostState()
 
@@ -171,7 +192,12 @@ private fun LandingScreen(
                     )
                 }
             }, floatingActionButton = {
-                if (selectedElementState != null) {
+                if (selectedElementState == null || selectedElementState.description.isBlank()) {
+                    DisabledExtendedFloatingActionButton(
+                        icon = { Icon(Icons.Rounded.Check, stringResource(R.string.button_done)) },
+                        text = stringResource(R.string.button_done),
+                    )
+                } else {
                     ExtendedFloatingActionButton(
                         onClick = onDoneClick,
                         text = { Text(stringResource(R.string.button_done)) },
@@ -198,7 +224,7 @@ private fun LandingScreen(
                     end = endPadding,
                 ),
         ) {
-            Column {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 Text(
                     modifier = Modifier.padding(
                         start = 16.dp,
@@ -232,8 +258,58 @@ private fun LandingScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 if (selectedElementState != null) {
-                    SelectedElementSection(modifier = Modifier.fillMaxWidth(), selectedElementState)
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    SelectedElementSection(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        state = selectedElementState,
+                        onSelectInteractionType = onSelectInteractionType,
+                        onDescriptionChanged = onDescriptionChanged,
+                    )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DisabledExtendedFloatingActionButton(
+    modifier: Modifier = Modifier,
+    icon: @Composable () -> Unit,
+    text: String,
+) {
+    Surface(
+        modifier = modifier,
+        shape = FloatingActionButtonDefaults.extendedFabShape,
+        color = FloatingActionButtonDefaults.containerColor.copy(alpha = 0.5f),
+    ) {
+        Row(
+            modifier =
+            Modifier
+                .sizeIn(minWidth = 80.dp, minHeight = 56.dp)
+                .padding(start = 16.dp, end = 20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+        ) {
+            val contentColor =
+                MaterialTheme.colorScheme.contentColorFor(FloatingActionButtonDefaults.containerColor)
+                    .copy(alpha = 0.5f)
+
+            CompositionLocalProvider(LocalContentColor provides contentColor) {
+                icon()
+                Spacer(Modifier.width(12.dp))
+                Text(
+                    text,
+                    style = MaterialTheme.typography.labelLarge,
+                )
             }
         }
     }
@@ -382,8 +458,129 @@ private fun RecordButton(
 }
 
 @Composable
-private fun SelectedElementSection(modifier: Modifier = Modifier, state: SelectedUiElementState) {
+private fun SelectedElementSection(
+    modifier: Modifier = Modifier,
+    state: SelectedUiElementState,
+    onDescriptionChanged: (String) -> Unit = {},
+    onSelectInteractionType: (NodeInteractionType) -> Unit = {},
+) {
+    var interactionTypeExpanded by rememberSaveable { mutableStateOf(false) }
+
     Column(modifier = modifier) {
+        val isError = state.description.isBlank()
+
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = state.description,
+            onValueChange = onDescriptionChanged,
+            isError = isError,
+            supportingText = if (isError) {
+                { Text(stringResource(R.string.error_cant_be_empty)) }
+            } else {
+                null
+            },
+            label = {
+                Text(stringResource(R.string.action_interact_ui_element_description_label))
+            },
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OptionsHeaderRow(
+            icon = Icons.Outlined.Info,
+            text = stringResource(R.string.action_interact_ui_element_interaction_details_title),
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = stringResource(R.string.action_interact_ui_element_app_label),
+            style = MaterialTheme.typography.titleSmall,
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            if (state.appIcon != null) {
+                val painter = rememberDrawablePainter(state.appIcon.drawable)
+                Icon(
+                    modifier = Modifier.size(24.dp),
+                    painter = painter,
+                    contentDescription = null,
+                    tint = Color.Unspecified,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = state.appName, style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (state.nodeText != null) {
+            Text(
+                text = stringResource(R.string.action_interact_ui_element_text_label),
+                style = MaterialTheme.typography.titleSmall,
+            )
+
+            Text(text = state.nodeText, style = MaterialTheme.typography.bodyMedium)
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (state.nodeClassName != null) {
+            Text(
+                text = stringResource(R.string.action_interact_ui_element_class_name_label),
+                style = MaterialTheme.typography.titleSmall,
+            )
+
+            Text(text = state.nodeClassName, style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        if (state.nodeViewResourceId != null) {
+            Text(
+                text = stringResource(R.string.action_interact_ui_element_view_id_label),
+                style = MaterialTheme.typography.titleSmall,
+            )
+
+            Text(text = state.nodeViewResourceId, style = MaterialTheme.typography.bodyMedium)
+
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        if (state.nodeUniqueId != null) {
+            Text(
+                text = stringResource(R.string.action_interact_ui_element_unique_id_label),
+                style = MaterialTheme.typography.titleSmall,
+            )
+
+            Text(text = state.nodeUniqueId, style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        OptionsHeaderRow(
+            icon = KeyMapperIcons.JumpToElement,
+            text = stringResource(R.string.action_interact_ui_element_interaction_type_dropdown),
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = stringResource(R.string.action_interact_ui_element_interaction_type_dropdown_caption),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        KeyMapperDropdownMenu<NodeInteractionType>(
+            expanded = interactionTypeExpanded,
+            onExpandedChange = { interactionTypeExpanded = it },
+            values = state.interactionTypes,
+            selectedValue = state.selectedInteraction,
+            onValueChanged = onSelectInteractionType,
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }
 
@@ -407,14 +604,14 @@ private fun PreviewSelectedElement() {
         LandingScreen(
             recordState = State.Data(RecordUiElementState.Recorded(3)),
             selectedElementState = SelectedUiElementState(
-                description = "Test",
+                description = "Tap test node",
                 appName = "Test App",
                 appIcon = ComposeIconInfo.Drawable(appIcon),
                 nodeText = "Test Node",
                 nodeClassName = "android.widget.ImageButton",
                 nodeViewResourceId = "io.github.sds100.keymapper:id/menu_button",
                 nodeUniqueId = "123",
-                interactionTypes = listOf(),
+                interactionTypes = listOf(NodeInteractionType.LONG_CLICK to "Tap and hold"),
                 selectedInteraction = NodeInteractionType.LONG_CLICK,
             ),
         )

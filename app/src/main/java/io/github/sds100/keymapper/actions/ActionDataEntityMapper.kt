@@ -293,7 +293,7 @@ object ActionDataEntityMapper {
             ActionId.TOGGLE_FLASHLIGHT,
             ActionId.ENABLE_FLASHLIGHT,
             ActionId.CHANGE_FLASHLIGHT_STRENGTH,
-                -> {
+            -> {
                 val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
                     LENS_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -552,12 +552,17 @@ object ActionDataEntityMapper {
                     entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_UNIQUE_ID).valueOrNull()
 
                 val actions = entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_ACTIONS).then {
-                    val typeList = it
-                        .split(",")
-                        .mapNotNull { action -> convertNodeInteractionType(it).valueOrNull() }
-                    
-                    Success(typeList)
-                }.valueOrNull() ?: emptyList()
+                    val nodeActionMask = it.toInt()
+                    val interactionTypeSet = mutableSetOf<NodeInteractionType>()
+
+                    for (type in NodeInteractionType.entries) {
+                        if (nodeActionMask and type.accessibilityActionId == type.accessibilityActionId) {
+                            interactionTypeSet.add(type)
+                        }
+                    }
+
+                    Success(interactionTypeSet)
+                }.valueOrNull() ?: emptySet()
 
                 val nodeAction =
                     entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_NODE_ACTION).then {
@@ -820,14 +825,12 @@ object ActionDataEntityMapper {
                 ),
             )
 
-            data.packageName.let {
-                add(
-                    EntityExtra(
-                        ActionEntity.EXTRA_ACCESSIBILITY_PACKAGE_NAME,
-                        it,
-                    ),
-                )
-            }
+            add(
+                EntityExtra(
+                    ActionEntity.EXTRA_ACCESSIBILITY_PACKAGE_NAME,
+                    data.packageName,
+                ),
+            )
 
             data.contentDescription?.let {
                 add(
@@ -868,10 +871,16 @@ object ActionDataEntityMapper {
             }
 
             if (data.nodeActions.isNotEmpty()) {
+                var nodeActionMask = 0
+
+                for (nodeAction in data.nodeActions) {
+                    nodeActionMask = nodeActionMask or nodeAction.accessibilityActionId
+                }
+
                 add(
                     EntityExtra(
                         ActionEntity.EXTRA_ACCESSIBILITY_ACTIONS,
-                        data.nodeActions.joinToString(","),
+                        nodeActionMask.toString(),
                     ),
                 )
             }

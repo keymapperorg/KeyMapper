@@ -20,6 +20,7 @@ import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickDisplayCoordinateFragment
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateFragment
+import io.github.sds100.keymapper.actions.uielement.InteractUiElementFragment
 import io.github.sds100.keymapper.constraints.ChooseConstraintFragment
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.system.apps.ActivityInfo
@@ -329,6 +330,12 @@ fun NavigationViewModel.sendNavResultFromBundle(
             val name = bundle.getString(ChooseBluetoothDeviceFragment.EXTRA_NAME)!!
 
             onNavResult(NavResult(requestKey, BluetoothDeviceInfo(address, name)))
+        }
+
+        NavDestination.ID_INTERACT_UI_ELEMENT_ACTION -> {
+            val json = bundle.getString(InteractUiElementFragment.EXTRA_ACTION)!!
+            val result = Json.decodeFromString<ActionData.InteractUiElement>(json)
+            onNavResult(NavResult(requestKey, result))
         }
     }
 }

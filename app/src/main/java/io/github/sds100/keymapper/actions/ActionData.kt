@@ -860,7 +860,7 @@ sealed class ActionData : Comparable<ActionData> {
         /**
          * A list of the allowed accessibility node actions.
          */
-        val nodeActions: List<NodeInteractionType>,
+        val nodeActions: Set<NodeInteractionType>,
     ) : ActionData() {
         override val id: ActionId = ActionId.INTERACT_UI_ELEMENT
     }

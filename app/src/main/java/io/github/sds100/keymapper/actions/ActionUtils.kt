@@ -827,6 +827,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.Url,
     is ActionData.PhoneCall,
     is ActionData.HttpRequest,
+    is ActionData.InteractUiElement,
     -> true
 
     else -> false
