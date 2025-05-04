@@ -63,6 +63,7 @@ class InteractUiElementController(
     override fun getAppIcon(packageName: String): Result<Drawable> = packageManagerAdapter.getAppIcon(packageName)
 
     override suspend fun startRecording(): Result<*> {
+        nodeRepository.deleteAll()
         return serviceAdapter.send(ServiceEvent.StartRecordingNodes)
     }
 

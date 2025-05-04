@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.system.accessibility
 import android.os.Build
 import android.os.CountDownTimer
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import io.github.sds100.keymapper.actions.uielement.NodeInteractionType
 import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
 import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
@@ -60,34 +61,43 @@ class AccessibilityNodeRecorder(
 
         val source = event.source ?: return
 
+        val entity = buildNodeEntity(source) ?: return
+
+        val entities = mutableListOf<AccessibilityNodeEntity>()
+        entities.add(entity)
+
+        if (source.childCount > 0) {
+            for (i in 0 until source.childCount) {
+                val child = source.getChild(i) ?: continue
+                buildNodeEntity(child)?.also { entities.add(it) }
+            }
+        }
+
+        nodeRepository.insert(*entities.toTypedArray())
+    }
+
+    private fun buildNodeEntity(source: AccessibilityNodeInfo): AccessibilityNodeEntity? {
         val interactionTypes = source.actionList.mapNotNull { action ->
             NodeInteractionType.entries.find { it.accessibilityActionId == action.id }
         }.distinct()
 
         if (interactionTypes.isEmpty()) {
-            return
+            return null
         }
 
-        val userInteractedActionId =
-            NodeInteractionType.entries.find { it.accessibilityActionId == event.action }
-
-        val entity =
-            AccessibilityNodeEntity(
-                packageName = event.packageName.toString(),
-                text = source.text?.toString(),
-                contentDescription = source.contentDescription?.toString(),
-                className = source.className?.toString(),
-                viewResourceId = source.viewIdResourceName,
-                uniqueId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    source.uniqueId
-                } else {
-                    null
-                },
-                actions = interactionTypes.toSet(),
-                userInteractedActionId = userInteractedActionId,
-            )
-
-        nodeRepository.insert(entity)
+        return AccessibilityNodeEntity(
+            packageName = source.packageName.toString(),
+            text = source.text?.toString(),
+            contentDescription = source.contentDescription?.toString(),
+            className = source.className?.toString(),
+            viewResourceId = source.viewIdResourceName,
+            uniqueId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                source.uniqueId
+            } else {
+                null
+            },
+            actions = interactionTypes.toSet(),
+        )
     }
 
     fun teardown() {

@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.actions
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.actions.uielement.NodeInteractionType
 import io.github.sds100.keymapper.data.db.typeconverter.ConstantTypeConverters
+import io.github.sds100.keymapper.data.db.typeconverter.NodeInteractionTypeSetTypeConverter
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData
@@ -319,7 +320,7 @@ object ActionDataEntityMapper {
             }
 
             ActionId.DISABLE_FLASHLIGHT,
-                -> {
+            -> {
                 val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
                     LENS_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -552,16 +553,7 @@ object ActionDataEntityMapper {
                     entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_UNIQUE_ID).valueOrNull()
 
                 val actions = entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_ACTIONS).then {
-                    val nodeActionMask = it.toInt()
-                    val interactionTypeSet = mutableSetOf<NodeInteractionType>()
-
-                    for (type in NodeInteractionType.entries) {
-                        if (nodeActionMask and type.accessibilityActionId == type.accessibilityActionId) {
-                            interactionTypeSet.add(type)
-                        }
-                    }
-
-                    Success(interactionTypeSet)
+                    Success(NodeInteractionTypeSetTypeConverter().toSet(it.toInt()))
                 }.valueOrNull() ?: emptySet()
 
                 val nodeAction =
@@ -871,16 +863,10 @@ object ActionDataEntityMapper {
             }
 
             if (data.nodeActions.isNotEmpty()) {
-                var nodeActionMask = 0
-
-                for (nodeAction in data.nodeActions) {
-                    nodeActionMask = nodeActionMask or nodeAction.accessibilityActionId
-                }
-
                 add(
                     EntityExtra(
                         ActionEntity.EXTRA_ACCESSIBILITY_ACTIONS,
-                        nodeActionMask.toString(),
+                        NodeInteractionTypeSetTypeConverter().toMask(data.nodeActions).toString(),
                     ),
                 )
             }

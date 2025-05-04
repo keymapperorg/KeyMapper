@@ -223,6 +223,7 @@ object ServiceLocator {
         synchronized(this) {
             return accessibilityNodeRepository ?: AccessibilityNodeRepositoryImpl(
                 (context.applicationContext as KeyMapperApp).appCoroutineScope,
+                database(context).accessibilityNodeDao(),
             ).also {
                 this.accessibilityNodeRepository = it
             }
