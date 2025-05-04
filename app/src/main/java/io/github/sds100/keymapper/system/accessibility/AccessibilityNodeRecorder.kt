@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.system.accessibility
 
+import android.graphics.Rect
 import android.os.Build
 import android.os.CountDownTimer
 import android.view.accessibility.AccessibilityEvent
@@ -60,20 +61,47 @@ class AccessibilityNodeRecorder(
         }
 
         val source = event.source ?: return
+        val sourceBounds = Rect()
+        source.getBoundsInScreen(sourceBounds)
 
-        val entity = buildNodeEntity(source) ?: return
+        val root: AccessibilityNodeInfo = source.window.root ?: return
 
-        val entities = mutableListOf<AccessibilityNodeEntity>()
-        entities.add(entity)
+        // This searches for all nodes that are within the bounds of the source of the
+        // AccessibilityEvent because the source is not necessarily the element
+        // the user wants to tap.
+        val entities = getNodesInBounds(root, sourceBounds).toTypedArray()
+        nodeRepository.insert(*entities)
+    }
 
-        if (source.childCount > 0) {
-            for (i in 0 until source.childCount) {
-                val child = source.getChild(i) ?: continue
-                buildNodeEntity(child)?.also { entities.add(it) }
+    /**
+     * Get all the nodes that are within the given bounds.
+     */
+    private fun getNodesInBounds(
+        node: AccessibilityNodeInfo,
+        bounds: Rect,
+    ): Set<AccessibilityNodeEntity> {
+        val set = mutableSetOf<AccessibilityNodeEntity>()
+
+        val nodeBounds = Rect()
+        node.getBoundsInScreen(nodeBounds)
+
+        if (bounds.contains(nodeBounds)) {
+            val entity = buildNodeEntity(node)
+
+            if (entity != null) {
+                set.add(entity)
             }
         }
 
-        nodeRepository.insert(*entities.toTypedArray())
+        if (node.childCount > 0) {
+            for (i in 0 until node.childCount) {
+                val child = node.getChild(i) ?: continue
+
+                set.addAll(getNodesInBounds(child, bounds))
+            }
+        }
+
+        return set
     }
 
     private fun buildNodeEntity(source: AccessibilityNodeInfo): AccessibilityNodeEntity? {
