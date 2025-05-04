@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.system.accessibility
 import android.os.Build
 import android.os.CountDownTimer
 import android.view.accessibility.AccessibilityEvent
+import io.github.sds100.keymapper.actions.uielement.NodeInteractionType
 import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
 import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,9 +60,16 @@ class AccessibilityNodeRecorder(
 
         val source = event.source ?: return
 
-        if (source.actionList.isNullOrEmpty()) {
+        val interactionTypes = source.actionList.mapNotNull { action ->
+            NodeInteractionType.entries.find { it.accessibilityActionId == action.id }
+        }.distinct()
+
+        if (interactionTypes.isEmpty()) {
             return
         }
+
+        val userInteractedActionId =
+            NodeInteractionType.entries.find { it.accessibilityActionId == event.action }
 
         val entity =
             AccessibilityNodeEntity(
@@ -75,8 +83,8 @@ class AccessibilityNodeRecorder(
                 } else {
                     null
                 },
-                actions = source.actionList?.map { it.id } ?: emptyList(),
-                userInteractedActionId = event.action,
+                actions = interactionTypes,
+                userInteractedActionId = userInteractedActionId,
             )
 
         nodeRepository.insert(entity)

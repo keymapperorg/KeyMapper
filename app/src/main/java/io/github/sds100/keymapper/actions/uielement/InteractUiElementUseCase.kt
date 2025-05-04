@@ -54,6 +54,10 @@ class InteractUiElementController(
         }
     }
 
+    override suspend fun getInteractionById(id: Long): AccessibilityNodeEntity? {
+        return nodeRepository.get(id)
+    }
+
     override fun getAppName(packageName: String): Result<String> = packageManagerAdapter.getAppName(packageName)
 
     override fun getAppIcon(packageName: String): Result<Drawable> = packageManagerAdapter.getAppIcon(packageName)
@@ -79,6 +83,7 @@ interface InteractUiElementUseCase {
     val interactionCount: Flow<State<Int>>
     val interactedPackages: Flow<State<List<String>>>
     fun getInteractionsByPackage(packageName: String): Flow<State<List<AccessibilityNodeEntity>>>
+    suspend fun getInteractionById(id: Long): AccessibilityNodeEntity?
 
     fun getAppName(packageName: String): Result<String>
     fun getAppIcon(packageName: String): Result<Drawable>

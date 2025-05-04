@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.data.entities
 
 import android.os.Parcelable
+import io.github.sds100.keymapper.actions.uielement.NodeInteractionType
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
@@ -18,11 +19,11 @@ data class AccessibilityNodeEntity(
     /**
      * A list of the allowed accessibility node actions.
      */
-    val actions: List<Int>,
+    val actions: List<NodeInteractionType>,
     /**
      * The accessibility action id of how the user interacted
      * with this node. This is null if the user didn't interact with
      * this node.
      */
-    val userInteractedActionId: Int?,
+    val userInteractedActionId: NodeInteractionType?,
 ) : Parcelable

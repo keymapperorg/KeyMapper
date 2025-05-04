@@ -76,8 +76,11 @@ fun InteractUiElementScreen(
     val recordState by viewModel.recordState.collectAsStateWithLifecycle()
     val selectedElementState by viewModel.selectedElementState.collectAsStateWithLifecycle()
 
-    val chooseAppState by viewModel.filteredAppListItems.collectAsStateWithLifecycle()
+    val appListState by viewModel.filteredAppListItems.collectAsStateWithLifecycle()
     val appSearchQuery by viewModel.appSearchQuery.collectAsStateWithLifecycle()
+
+    val elementListState by viewModel.filteredElementListItems.collectAsStateWithLifecycle()
+    val elementSearchQuery by viewModel.elementSearchQuery.collectAsStateWithLifecycle()
 
     val onBackClick = {
         if (!navController.navigateUp()) {
@@ -114,11 +117,30 @@ fun InteractUiElementScreen(
             ChooseAppScreen(
                 modifier = Modifier.fillMaxSize(),
                 title = stringResource(R.string.action_interact_ui_element_choose_element_title),
-                state = chooseAppState,
+                state = appListState,
                 query = appSearchQuery,
                 onQueryChange = { query -> viewModel.appSearchQuery.update { query } },
                 onCloseSearch = { viewModel.appSearchQuery.update { null } },
                 onNavigateBack = onBackClick,
+                onClickApp = {
+                    viewModel.onSelectApp(it)
+                    navController.navigate(DEST_SELECT_ELEMENT)
+                },
+            )
+        }
+
+        composable(DEST_SELECT_ELEMENT) {
+            ChooseElementScreen(
+                modifier = Modifier.fillMaxSize(),
+                state = elementListState,
+                query = elementSearchQuery,
+                onCloseSearch = { viewModel.elementSearchQuery.update { null } },
+                onNavigateBack = onBackClick,
+                onQueryChange = { query -> viewModel.elementSearchQuery.update { query } },
+                onClickElement = {
+                    viewModel.onSelectElement(it)
+                    navController.popBackStack(route = DEST_LANDING, inclusive = false)
+                },
             )
         }
     }
@@ -388,11 +410,11 @@ private fun PreviewSelectedElement() {
                 appName = "Test App",
                 appIcon = ComposeIconInfo.Drawable(appIcon),
                 nodeText = "Test Node",
-                nodeClassName = "Test Class",
+                nodeClassName = "android.widget.ImageButton",
                 nodeViewResourceId = "io.github.sds100.keymapper:id/menu_button",
                 nodeUniqueId = "123",
                 interactionTypes = listOf(),
-                selectedInteraction = 0,
+                selectedInteraction = NodeInteractionType.LONG_CLICK,
             ),
         )
     }

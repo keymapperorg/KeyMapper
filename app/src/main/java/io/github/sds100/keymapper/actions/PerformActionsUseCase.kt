@@ -811,7 +811,7 @@ class PerformActionsUseCaseImpl(
                         // TODO compare other values
                         node.uniqueId == action.uniqueId
                     },
-                    performAction = { AccessibilityNodeAction(action = action.nodeAction) },
+                    performAction = { AccessibilityNodeAction(action = action.nodeAction.accessibilityActionId) },
                 )
             }
         }

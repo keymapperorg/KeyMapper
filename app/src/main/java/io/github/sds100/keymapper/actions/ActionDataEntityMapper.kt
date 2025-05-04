@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.actions
 
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
+import io.github.sds100.keymapper.actions.uielement.NodeInteractionType
 import io.github.sds100.keymapper.data.db.typeconverter.ConstantTypeConverters
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
@@ -12,6 +13,8 @@ import io.github.sds100.keymapper.system.network.HttpMethod
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.getKey
 import io.github.sds100.keymapper.util.success
@@ -269,7 +272,7 @@ object ActionDataEntityMapper {
             ActionId.VOLUME_TOGGLE_MUTE,
             ActionId.VOLUME_UNMUTE,
             ActionId.VOLUME_MUTE,
-                -> {
+            -> {
                 val showVolumeUi =
                     entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI)
 
@@ -549,14 +552,17 @@ object ActionDataEntityMapper {
                     entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_UNIQUE_ID).valueOrNull()
 
                 val actions = entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_ACTIONS).then {
-                    val intList = it.split(",").map { action -> action.toInt() }
-                    Success(intList)
+                    val typeList = it
+                        .split(",")
+                        .mapNotNull { action -> convertNodeInteractionType(it).valueOrNull() }
+                    
+                    Success(typeList)
                 }.valueOrNull() ?: emptyList()
 
                 val nodeAction =
                     entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_NODE_ACTION).then {
-                        Success(it.toInt())
-                    }.valueOrNull()!!
+                        convertNodeInteractionType(it)
+                    }.valueOrNull() ?: return null
 
                 ActionData.InteractUiElement(
                     description = entity.data,
@@ -571,6 +577,12 @@ object ActionDataEntityMapper {
                 )
             }
         }
+    }
+
+    private fun convertNodeInteractionType(string: String): Result<NodeInteractionType> = try {
+        Success(NodeInteractionType.valueOf(string))
+    } catch (e: IllegalArgumentException) {
+        Error.Exception(e)
     }
 
     fun toEntity(data: ActionData): ActionEntity {

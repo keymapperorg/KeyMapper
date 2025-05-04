@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.actions.uielement
 
-import android.view.accessibility.AccessibilityNodeInfo
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Android
 import androidx.lifecycle.ViewModel
@@ -8,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.ActionData
+import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
 import io.github.sds100.keymapper.system.accessibility.RecordAccessibilityNodeState
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
@@ -26,6 +26,7 @@ import io.github.sds100.keymapper.util.ui.ViewModelHelper
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.util.ui.compose.SimpleListItemModel
 import io.github.sds100.keymapper.util.valueOrNull
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,6 +35,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -85,7 +88,7 @@ class InteractUiElementViewModel(
     val appSearchQuery = MutableStateFlow<String?>(null)
 
     private val appListItems: Flow<State<List<SimpleListItemModel>>> = useCase.interactedPackages
-        .map { state -> state.mapData(::createInteractedPackageListItems) }
+        .map { state -> state.mapData { list -> list.map(::buildInteractedPackageListItem) } }
 
     val filteredAppListItems = combine(
         appListItems,
@@ -98,11 +101,39 @@ class InteractUiElementViewModel(
         }
     }.stateIn(viewModelScope, SharingStarted.Lazily, State.Loading)
 
+    private val selectedApp = MutableStateFlow<String?>(null)
+
+    val elementSearchQuery = MutableStateFlow<String?>(null)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val elementListItems: StateFlow<State<List<UiElementListItemModel>>> = selectedApp
+        .filterNotNull()
+        .flatMapLatest { packageName -> useCase.getInteractionsByPackage(packageName) }
+        .map { state -> state.mapData { list -> list.map(::buildUiElementListItem) } }
+        .stateIn(viewModelScope, SharingStarted.Lazily, State.Loading)
+
+    val filteredElementListItems = combine(
+        elementListItems,
+        elementSearchQuery,
+    ) { state, query ->
+        state.mapData { listItems ->
+            listItems.filter { model ->
+                val modelString = buildString {
+                    append(model.nodeText)
+                    append(" ")
+                    append(model.nodeClassName)
+                    append(" ")
+                    append(model.nodeViewResourceId)
+                }
+                modelString.containsQuery(query)
+            }
+        }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, State.Loading)
+
     fun loadAction(action: ActionData.InteractUiElement) {
         viewModelScope.launch {
             val appName = useCase.getAppName(action.packageName).valueOrNull() ?: action.packageName
-            val appIcon = useCase.getAppIcon(action.packageName).valueOrNull()
-                ?.let { ComposeIconInfo.Drawable(it) }
+            val appIcon = getAppIcon(action.packageName)
 
             val newState = SelectedUiElementState(
                 description = action.description,
@@ -153,6 +184,36 @@ class InteractUiElementViewModel(
         }
     }
 
+    fun onSelectApp(packageName: String) {
+        elementSearchQuery.update { null }
+        selectedApp.update { packageName }
+    }
+
+    fun onSelectElement(id: Long) {
+        viewModelScope.launch {
+            val interaction = useCase.getInteractionById(id) ?: return@launch
+
+            val appName =
+                useCase.getAppName(interaction.packageName).valueOrNull() ?: interaction.packageName
+            val appIcon = getAppIcon(interaction.packageName)
+
+            val newState = SelectedUiElementState(
+                description = "",
+                appName = appName,
+                appIcon = appIcon,
+                nodeText = interaction.text ?: interaction.contentDescription,
+                nodeClassName = interaction.className,
+                nodeViewResourceId = interaction.viewResourceId,
+                nodeUniqueId = interaction.uniqueId,
+                interactionTypes = interaction.actions,
+                selectedInteraction = interaction.userInteractedActionId
+                    ?: interaction.actions.first(),
+            )
+
+            _selectedElementState.update { newState }
+        }
+    }
+
     private suspend fun startRecording() {
         useCase.startRecording().onFailure { error ->
             if (error == Error.AccessibilityServiceDisabled) {
@@ -171,37 +232,46 @@ class InteractUiElementViewModel(
         }
     }
 
-    private fun createInteractedPackageListItems(packages: List<String>): List<SimpleListItemModel> {
-        return packages.map { packageName ->
-            val appName = useCase.getAppName(packageName).valueOrNull() ?: packageName
-            val appIcon = useCase
-                .getAppIcon(packageName)
-                .then { Success(ComposeIconInfo.Drawable(it)) }
-                .otherwise { Success(ComposeIconInfo.Vector(Icons.Rounded.Android)) }
-                .valueOrNull()!!
+    private fun buildInteractedPackageListItem(packageName: String): SimpleListItemModel {
+        val appName = useCase.getAppName(packageName).valueOrNull() ?: packageName
+        val appIcon = getAppIcon(packageName)
 
-            SimpleListItemModel(
-                id = packageName,
-                title = appName,
-                icon = appIcon,
-            )
-        }
+        return SimpleListItemModel(
+            id = packageName,
+            title = appName,
+            icon = appIcon,
+        )
     }
 
-    private fun getNodeActionName(nodeAction: Int): String {
-        return when (nodeAction) {
-            AccessibilityNodeInfo.ACTION_CLICK -> getString(R.string.action_interact_ui_element_interaction_type_click)
-            AccessibilityNodeInfo.ACTION_LONG_CLICK -> getString(R.string.action_interact_ui_element_interaction_type_long_click)
-            AccessibilityNodeInfo.ACTION_FOCUS -> getString(R.string.action_interact_ui_element_interaction_type_focus)
-            AccessibilityNodeInfo.ACTION_SELECT -> getString(R.string.action_interact_ui_element_interaction_type_select)
-            AccessibilityNodeInfo.ACTION_SCROLL_FORWARD -> getString(R.string.action_interact_ui_element_interaction_type_scroll_forward)
-            AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD -> getString(R.string.action_interact_ui_element_interaction_type_scroll_backward)
-            AccessibilityNodeInfo.ACTION_EXPAND -> getString(R.string.action_interact_ui_element_interaction_type_expand)
-            AccessibilityNodeInfo.ACTION_COLLAPSE -> getString(R.string.action_interact_ui_element_interaction_type_collapse)
-            else -> getString(
-                R.string.action_interact_ui_element_interaction_type_unknown,
-                nodeAction,
-            )
+    private fun buildUiElementListItem(node: AccessibilityNodeEntity): UiElementListItemModel {
+        val resourceIdText = node.viewResourceId?.split("/")?.lastOrNull()
+
+        return UiElementListItemModel(
+            id = node.id,
+            nodeViewResourceId = resourceIdText,
+            nodeText = node.text ?: node.contentDescription,
+            nodeClassName = node.className,
+            nodeUniqueId = node.uniqueId?.toString(),
+            interactionTypes = node.actions.joinToString { getInteractionTypeString(it) },
+        )
+    }
+
+    private fun getAppIcon(packageName: String): ComposeIconInfo = useCase
+        .getAppIcon(packageName)
+        .then { Success(ComposeIconInfo.Drawable(it)) }
+        .otherwise { Success(ComposeIconInfo.Vector(Icons.Rounded.Android)) }
+        .valueOrNull()!!
+
+    private fun getInteractionTypeString(interactionType: NodeInteractionType): String {
+        return when (interactionType) {
+            NodeInteractionType.CLICK -> getString(R.string.action_interact_ui_element_interaction_type_click)
+            NodeInteractionType.LONG_CLICK -> getString(R.string.action_interact_ui_element_interaction_type_long_click)
+            NodeInteractionType.FOCUS -> getString(R.string.action_interact_ui_element_interaction_type_focus)
+            NodeInteractionType.SELECT -> getString(R.string.action_interact_ui_element_interaction_type_select)
+            NodeInteractionType.SCROLL_FORWARD -> getString(R.string.action_interact_ui_element_interaction_type_scroll_forward)
+            NodeInteractionType.SCROLL_BACKWARD -> getString(R.string.action_interact_ui_element_interaction_type_scroll_backward)
+            NodeInteractionType.EXPAND -> getString(R.string.action_interact_ui_element_interaction_type_expand)
+            NodeInteractionType.COLLAPSE -> getString(R.string.action_interact_ui_element_interaction_type_collapse)
         }
     }
 
@@ -219,13 +289,13 @@ class InteractUiElementViewModel(
 data class SelectedUiElementState(
     val description: String,
     val appName: String,
-    val appIcon: ComposeIconInfo.Drawable?,
+    val appIcon: ComposeIconInfo,
     val nodeText: String?,
     val nodeClassName: String?,
     val nodeViewResourceId: String?,
     val nodeUniqueId: String?,
-    val interactionTypes: List<Int>,
-    val selectedInteraction: Int,
+    val interactionTypes: List<NodeInteractionType>,
+    val selectedInteraction: NodeInteractionType,
 )
 
 sealed class RecordUiElementState {
@@ -238,3 +308,12 @@ sealed class RecordUiElementState {
 
     data object Empty : RecordUiElementState()
 }
+
+data class UiElementListItemModel(
+    val id: Long,
+    val nodeViewResourceId: String?,
+    val nodeText: String?,
+    val nodeClassName: String?,
+    val nodeUniqueId: String?,
+    val interactionTypes: String,
+)

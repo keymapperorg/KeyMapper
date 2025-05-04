@@ -25,6 +25,7 @@
     <string name="button_restart_accessibility_service">Restart accessibility service</string>
     <string name="share_backup">Share</string>
     <string name="app_list_empty">Nothing here!</string>
+    <string name="ui_element_list_empty">Nothing here!</string>
     <string name="stop_repeating_dot_dot_dot">Stop repeating when…</string>
     <string name="stop_repeating_when_trigger_released">Trigger is released</string>
     <string name="stop_repeating_trigger_pressed_again">Trigger is pressed again</string>
@@ -1131,9 +1132,9 @@
 
     <string name="action_interact_ui_element_text_label">Text</string>
 
-    <string name="action_interact_ui_element_view_id_label">View ID</string>
     <string name="action_interact_ui_element_class_name_label">Class name</string>
     <string name="action_interact_ui_element_unique_id_label">Unique ID</string>
+    <string name="action_interact_ui_element_interaction_types_label">Interaction types</string>
     <!-- action labels -->
 
     <!-- action category labels -->
