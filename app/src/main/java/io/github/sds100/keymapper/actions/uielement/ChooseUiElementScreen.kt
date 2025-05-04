@@ -28,6 +28,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -42,18 +46,22 @@ import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.ui.compose.KeyMapperDropdownMenu
 import io.github.sds100.keymapper.util.ui.compose.SearchAppBarActions
 
 @Composable
 fun ChooseElementScreen(
     modifier: Modifier = Modifier,
-    state: State<List<UiElementListItemModel>>,
+    state: State<SelectUiElementState>,
     query: String?,
     onCloseSearch: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
     onQueryChange: (String) -> Unit = {},
     onClickElement: (Long) -> Unit = {},
+    onSelectInteractionType: (NodeInteractionType?) -> Unit = {},
 ) {
+    var interactionTypeExpanded by rememberSaveable { mutableStateOf(false) }
+
     Scaffold(
         modifier.displayCutoutPadding(),
         bottomBar = {
@@ -129,20 +137,31 @@ fun ChooseElementScreen(
                     text = stringResource(R.string.action_interact_ui_element_choose_element_not_found_text),
                     style = MaterialTheme.typography.bodyMedium,
                 )
-
-                // TODO key mapper dropdown menu
+                Spacer(modifier = Modifier.height(8.dp))
 
                 when (state) {
                     State.Loading -> LoadingList(modifier = Modifier.fillMaxSize())
                     is State.Data -> {
-                        val items = state.data
+                        val listItems = state.data.listItems
 
-                        if (items.isEmpty()) {
+                        if (listItems.isEmpty()) {
                             EmptyList(modifier = Modifier.fillMaxSize())
                         } else {
+                            KeyMapperDropdownMenu<NodeInteractionType?>(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                expanded = interactionTypeExpanded,
+                                onExpandedChange = { interactionTypeExpanded = it },
+                                label = stringResource(R.string.action_interact_ui_element_filter_interaction_type_dropdown),
+                                values = state.data.interactionTypes,
+                                selectedValue = state.data.selectedInteractionType,
+                                onValueChanged = onSelectInteractionType,
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
                             LoadedList(
                                 modifier = Modifier.fillMaxSize(),
-                                listItems = items,
+                                listItems = listItems,
                                 onClick = onClickElement,
                             )
                         }
@@ -216,7 +235,7 @@ private fun UiElementListItem(
         ) {
             if (model.nodeViewResourceId != null) {
                 Text(
-                    text = model.nodeViewResourceId,
+                    text = "View ID: ${model.nodeViewResourceId}",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
                     maxLines = 2,
@@ -226,7 +245,7 @@ private fun UiElementListItem(
 
             if (model.nodeText != null) {
                 Text(
-                    text = model.nodeText,
+                    text = "\"${model.nodeText}\"",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
@@ -249,7 +268,7 @@ private fun UiElementListItem(
 
             TextWithLeadingLabel(
                 title = stringResource(R.string.action_interact_ui_element_interaction_types_label),
-                text = model.interactionTypes,
+                text = model.interactionTypesText,
             )
         }
     }
@@ -263,7 +282,7 @@ private fun TextWithLeadingLabel(
 ) {
     val text = buildAnnotatedString {
         pushStyle(
-            MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold).toSpanStyle(),
+            MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold).toSpanStyle(),
         )
         append(title)
         pop()
@@ -285,7 +304,13 @@ private fun TextWithLeadingLabel(
 private fun Empty() {
     KeyMapperTheme {
         ChooseElementScreen(
-            state = State.Data(emptyList()),
+            state = State.Data(
+                SelectUiElementState(
+                    listItems = emptyList(),
+                    interactionTypes = emptyList(),
+                    selectedInteractionType = null,
+                ),
+            ),
             query = "Key Mapper",
         )
     }
@@ -305,20 +330,35 @@ private fun Loading() {
 @Preview
 @Composable
 private fun Loaded() {
+    val listItems = listOf(
+        UiElementListItemModel(
+            id = 1L,
+            nodeText = "Open Settings",
+            nodeClassName = "android.widget.ImageButton",
+            nodeViewResourceId = "menu_button",
+            nodeUniqueId = "123456789",
+            interactionTypesText = "Tap, Tap and hold, Scroll forward",
+            interactionTypes = setOf(
+                NodeInteractionType.CLICK,
+                NodeInteractionType.LONG_CLICK,
+                NodeInteractionType.SCROLL_FORWARD,
+            ),
+        ),
+    )
+
+    val state = SelectUiElementState(
+        listItems = listItems,
+        interactionTypes = listOf(
+            null to "Any",
+            NodeInteractionType.CLICK to "Tap",
+            NodeInteractionType.LONG_CLICK to "Tap and hold",
+        ),
+        selectedInteractionType = null,
+    )
+
     KeyMapperTheme {
         ChooseElementScreen(
-            state = State.Data(
-                listOf(
-                    UiElementListItemModel(
-                        id = 1L,
-                        nodeText = "Open Settings",
-                        nodeClassName = "android.widget.ImageButton",
-                        nodeViewResourceId = "menu_button",
-                        nodeUniqueId = "123456789",
-                        interactionTypes = "Tap, Tap and hold, Scroll forward",
-                    ),
-                ),
-            ),
+            state = State.Data(state),
             query = "Key Mapper",
         )
     }

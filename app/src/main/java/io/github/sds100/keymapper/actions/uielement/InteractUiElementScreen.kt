@@ -79,7 +79,7 @@ fun InteractUiElementScreen(
     val appListState by viewModel.filteredAppListItems.collectAsStateWithLifecycle()
     val appSearchQuery by viewModel.appSearchQuery.collectAsStateWithLifecycle()
 
-    val elementListState by viewModel.filteredElementListItems.collectAsStateWithLifecycle()
+    val elementListState by viewModel.selectUiElementState.collectAsStateWithLifecycle()
     val elementSearchQuery by viewModel.elementSearchQuery.collectAsStateWithLifecycle()
 
     val onBackClick = {
@@ -141,6 +141,7 @@ fun InteractUiElementScreen(
                     viewModel.onSelectElement(it)
                     navController.popBackStack(route = DEST_LANDING, inclusive = false)
                 },
+                onSelectInteractionType = viewModel::onSelectInteractionTypeFilter,
             )
         }
     }

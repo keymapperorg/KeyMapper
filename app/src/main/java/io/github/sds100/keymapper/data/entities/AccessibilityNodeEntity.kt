@@ -19,7 +19,7 @@ data class AccessibilityNodeEntity(
     /**
      * A list of the allowed accessibility node actions.
      */
-    val actions: List<NodeInteractionType>,
+    val actions: Set<NodeInteractionType>,
     /**
      * The accessibility action id of how the user interacted
      * with this node. This is null if the user didn't interact with

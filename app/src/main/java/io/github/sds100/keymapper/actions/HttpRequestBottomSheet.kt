@@ -48,7 +48,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HttpRequestBottomSheet(delegate: CreateActionDelegate) {
-    val scope = rememberCoroutineScope()
+    rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     if (delegate.httpRequestBottomSheetState != null) {
@@ -139,10 +139,10 @@ private fun HttpRequestBottomSheet(
                     .padding(horizontal = 16.dp),
                 expanded = methodExpanded,
                 onExpandedChange = { methodExpanded = it },
-                value = state.method.toString(),
-                onValueChanged = {
-                    onSelectMethod(HttpMethod.valueOf(it))
-                },
+                label = stringResource(R.string.action_http_request_method_label),
+                selectedValue = state.method,
+                values = HttpMethod.entries.map { it to it.toString() },
+                onValueChanged = onSelectMethod,
 
             )
 

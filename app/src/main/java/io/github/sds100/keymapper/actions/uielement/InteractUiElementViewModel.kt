@@ -106,18 +106,31 @@ class InteractUiElementViewModel(
     val elementSearchQuery = MutableStateFlow<String?>(null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val elementListItems: StateFlow<State<List<UiElementListItemModel>>> = selectedApp
+    private val interactionsByPackage: StateFlow<State<List<AccessibilityNodeEntity>>> = selectedApp
         .filterNotNull()
         .flatMapLatest { packageName -> useCase.getInteractionsByPackage(packageName) }
-        .map { state -> state.mapData { list -> list.map(::buildUiElementListItem) } }
         .stateIn(viewModelScope, SharingStarted.Lazily, State.Loading)
 
-    val filteredElementListItems = combine(
+    private val elementListItems: Flow<State<List<UiElementListItemModel>>> = interactionsByPackage
+        .map { state -> state.mapData { list -> list.map(::buildUiElementListItem) } }
+
+    private val interactionTypesFilterItems: Flow<State<List<Pair<NodeInteractionType?, String>>>> =
+        interactionsByPackage
+            .map { state -> state.mapData(::buildInteractionTypeFilterItems) }
+
+    private val selectedInteractionTypeFilter = MutableStateFlow<NodeInteractionType?>(null)
+
+    private val filteredElementListItems = combine(
         elementListItems,
         elementSearchQuery,
-    ) { state, query ->
+        selectedInteractionTypeFilter,
+    ) { state, query, interactionType ->
         state.mapData { listItems ->
             listItems.filter { model ->
+                if (interactionType != null && !model.interactionTypes.contains(interactionType)) {
+                    return@filter false
+                }
+
                 val modelString = buildString {
                     append(model.nodeText)
                     append(" ")
@@ -128,6 +141,22 @@ class InteractUiElementViewModel(
                 modelString.containsQuery(query)
             }
         }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, State.Loading)
+
+    val selectUiElementState: StateFlow<State<SelectUiElementState>> = combine(
+        filteredElementListItems,
+        interactionTypesFilterItems,
+        selectedInteractionTypeFilter,
+    ) { listItemsState, interactionTypesState, selectedInteractionType ->
+        val listItems = listItemsState.dataOrNull() ?: return@combine State.Loading
+        val interactionTypes = interactionTypesState.dataOrNull() ?: return@combine State.Loading
+
+        val newState = SelectUiElementState(
+            listItems = listItems,
+            interactionTypes = interactionTypes,
+            selectedInteractionType = selectedInteractionType,
+        )
+        State.Data(newState)
     }.stateIn(viewModelScope, SharingStarted.Lazily, State.Loading)
 
     fun loadAction(action: ActionData.InteractUiElement) {
@@ -205,13 +234,17 @@ class InteractUiElementViewModel(
                 nodeClassName = interaction.className,
                 nodeViewResourceId = interaction.viewResourceId,
                 nodeUniqueId = interaction.uniqueId,
-                interactionTypes = interaction.actions,
+                interactionTypes = interaction.actions.toList(),
                 selectedInteraction = interaction.userInteractedActionId
                     ?: interaction.actions.first(),
             )
 
             _selectedElementState.update { newState }
         }
+    }
+
+    fun onSelectInteractionTypeFilter(interactionType: NodeInteractionType?) {
+        selectedInteractionTypeFilter.update { interactionType }
     }
 
     private suspend fun startRecording() {
@@ -252,8 +285,24 @@ class InteractUiElementViewModel(
             nodeText = node.text ?: node.contentDescription,
             nodeClassName = node.className,
             nodeUniqueId = node.uniqueId?.toString(),
-            interactionTypes = node.actions.joinToString { getInteractionTypeString(it) },
+            interactionTypesText = node.actions.joinToString { getInteractionTypeString(it) },
+            interactionTypes = node.actions,
         )
+    }
+
+    private fun buildInteractionTypeFilterItems(nodes: List<AccessibilityNodeEntity>): List<Pair<NodeInteractionType?, String>> {
+        val interactionTypes = nodes.flatMap { it.actions }.toSet()
+
+        return buildList {
+            add(null to getString(R.string.action_interact_ui_element_interaction_type_any))
+
+            // They should always be in the same order so iterate over the Enum entries.
+            for (type in NodeInteractionType.entries) {
+                if (interactionTypes.contains(type)) {
+                    add(type to getInteractionTypeString(type))
+                }
+            }
+        }
     }
 
     private fun getAppIcon(packageName: String): ComposeIconInfo = useCase
@@ -309,11 +358,18 @@ sealed class RecordUiElementState {
     data object Empty : RecordUiElementState()
 }
 
+data class SelectUiElementState(
+    val listItems: List<UiElementListItemModel>,
+    val interactionTypes: List<Pair<NodeInteractionType?, String>>,
+    val selectedInteractionType: NodeInteractionType?,
+)
+
 data class UiElementListItemModel(
     val id: Long,
     val nodeViewResourceId: String?,
     val nodeText: String?,
     val nodeClassName: String?,
     val nodeUniqueId: String?,
-    val interactionTypes: String,
+    val interactionTypesText: String,
+    val interactionTypes: Set<NodeInteractionType>,
 )

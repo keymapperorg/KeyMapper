@@ -83,7 +83,7 @@ class AccessibilityNodeRecorder(
                 } else {
                     null
                 },
-                actions = interactionTypes,
+                actions = interactionTypes.toSet(),
                 userInteractedActionId = userInteractedActionId,
             )
 

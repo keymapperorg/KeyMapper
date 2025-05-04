@@ -1120,6 +1120,7 @@
     <string name="action_interact_ui_element_interaction_type_dropdown_caption">Select how you want to interact with the UI element.</string>
     <string name="action_interact_ui_element_filter_interaction_type_dropdown">Filter interaction type</string>
 
+    <string name="action_interact_ui_element_interaction_type_any">Any</string>
     <string name="action_interact_ui_element_interaction_type_click">Tap</string>
     <string name="action_interact_ui_element_interaction_type_long_click">Tap and hold</string>
     <string name="action_interact_ui_element_interaction_type_focus">Focus</string>
