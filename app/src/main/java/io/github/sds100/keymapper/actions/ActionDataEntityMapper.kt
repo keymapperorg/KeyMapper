@@ -356,7 +356,7 @@ object ActionDataEntityMapper {
             ActionId.PREVIOUS_TRACK_PACKAGE,
             ActionId.FAST_FORWARD_PACKAGE,
             ActionId.REWIND_PACKAGE,
-                -> {
+            -> {
                 val packageName =
                     entity.extras.getData(ActionEntity.EXTRA_PACKAGE_NAME).valueOrNull()
                         ?: return null

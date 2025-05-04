@@ -225,7 +225,7 @@ class BackupManagerImpl(
             val deviceInfoList by rootElement.byNullableArray(BackupContent.NAME_DEVICE_INFO)
 
             val migratedKeyMapList = mutableListOf<KeyMapEntity>()
-
+            ac
             val keyMapMigrations = listOf(
                 JsonMigration(9, 10) { json -> Migration9To10.migrateJson(json) },
                 JsonMigration(10, 11) { json -> Migration10To11.migrateJson(json) },
@@ -249,6 +249,9 @@ class BackupManagerImpl(
 
                 // Do nothing. It just removed the group name index.
                 JsonMigration(17, 18) { json -> json },
+
+                // Do nothing. Just added the accessibility node table.
+                JsonMigration(18, 19) { json -> json },
             )
 
             if (keyMapListJsonArray != null) {
