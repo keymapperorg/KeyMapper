@@ -573,7 +573,6 @@ abstract class BaseAccessibilityServiceController(
     }
 
     private fun recordTriggerJob() = coroutineScope.launch {
-        // TODO use Kotlin timer.
         repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
             if (isActive) {
                 val timeLeft = RECORD_TRIGGER_TIMER_LENGTH - iteration
