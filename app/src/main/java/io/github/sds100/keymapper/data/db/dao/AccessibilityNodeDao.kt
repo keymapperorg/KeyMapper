@@ -32,4 +32,4 @@ interface AccessibilityNodeDao {
 
     @Query("DELETE FROM $TABLE_NAME")
     suspend fun deleteAll()
-} 
+}

@@ -49,5 +49,5 @@ enum class ConstraintId {
     CHARGING,
     DISCHARGING,
 
-    TIME
+    TIME,
 }

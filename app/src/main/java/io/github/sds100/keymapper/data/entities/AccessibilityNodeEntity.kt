@@ -19,7 +19,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @Parcelize
-@Entity(tableName = TABLE_NAME,)
+@Entity(tableName = TABLE_NAME)
 data class AccessibilityNodeEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = KEY_ID)
