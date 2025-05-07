@@ -12,10 +12,6 @@
 
 - Rename tap screen actions inside key maps.
 
-## Changed
-
-- Rename tap screen actions inside key maps.
-
 ## [3.0.1](https://github.com/sds100/KeyMapper/releases/tag/v3.0.1)
 
 #### 28 April 2025
