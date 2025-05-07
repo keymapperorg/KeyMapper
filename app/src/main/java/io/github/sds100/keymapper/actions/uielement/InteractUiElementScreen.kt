@@ -389,7 +389,7 @@ private fun InteractionCountBox(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         pluralStringResource(
-                            R.plurals.action_interact_ui_element_interactions_detected,
+                            R.plurals.action_interact_ui_element_elements_detected,
                             interactionCount,
                             interactionCount,
                         ),

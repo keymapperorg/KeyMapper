@@ -1104,13 +1104,12 @@
     <string name="action_http_request_authorization_supporting_text">You must prepend \'Bearer\' if necessary</string>
 
     <string name="action_interact_ui_element_title">Interact with app element</string>
-    <string name="action_interact_ui_element_description">Key Mapper can detect and interact with app elements like menus, tabs, buttons and checkboxes. You need to record yourself interacting with the app element so that Key Mapper knows what you want to do.</string>
+    <string name="action_interact_ui_element_description">Key Mapper can detect and interact with app elements like menus, tabs, buttons and checkboxes. You need to record yourself interacting with the app so that Key Mapper knows what you want to do.</string>
     <string name="action_interact_ui_element_start_recording">Start recording</string>
     <string name="action_interact_ui_element_stop_recording">Stop recording (%s min left)</string>
-    <string name="action_interact_ui_element_record_instruction">Go to another app and interact with it. Key Mapper will record what you do and you can choose which interactions you want to use in your key map. Open Key Mapper again when you’re done.</string>
-    <plurals name="action_interact_ui_element_interactions_detected">
-        <item quantity="one">%d interaction detected</item>
-        <item quantity="other">%d interactions detected</item>
+    <plurals name="action_interact_ui_element_elements_detected">
+        <item quantity="one">%d element detected</item>
+        <item quantity="other">%d elements detected</item>
     </plurals>
     <string name="action_interact_ui_element_choose_interaction">Choose the app to interact with</string>
     <string name="action_interact_ui_element_record_again">Record again</string>
@@ -1118,7 +1117,7 @@
     <string name="action_interact_ui_element_choose_element_text">Choose the element you want your key map to interact with.</string>
     <string name="action_interact_ui_element_choose_element_not_found_subtitle">Can\'t find what you’re looking for?</string>
     <string name="action_interact_ui_element_choose_element_not_found_text">Not all apps are compatible. For incompatible apps you can try the Tap Screen action instead.</string>
-    <string name="action_interact_ui_element_interaction_type_dropdown">Interaction type</string>
+    <string name="action_interact_ui_element_interaction_type_dropdown">Possible interactions</string>
     <string name="action_interact_ui_element_interaction_type_dropdown_caption">Select how you want to interact with the UI element.</string>
     <string name="action_interact_ui_element_filter_interaction_type_dropdown">Filter interaction type</string>
 
