@@ -70,8 +70,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.compose.draggable.DraggableItem
-import io.github.sds100.keymapper.compose.draggable.rememberDragDropState
+import io.github.sds100.keymapper.util.ui.compose.DraggableItem
+import io.github.sds100.keymapper.util.ui.compose.rememberDragDropState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
