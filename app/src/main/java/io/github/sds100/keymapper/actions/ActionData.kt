@@ -370,6 +370,16 @@ sealed class ActionData : Comparable<ActionData> {
         data class Stop(override val packageName: String) : ControlMediaForApp() {
             override val id = ActionId.STOP_MEDIA_PACKAGE
         }
+
+        @Serializable
+        data class StepForward(override val packageName: String) : ControlMediaForApp() {
+            override val id = ActionId.STEP_FORWARD_PACKAGE
+        }
+
+        @Serializable
+        data class StepBackward(override val packageName: String) : ControlMediaForApp() {
+            override val id = ActionId.STEP_BACKWARD_PACKAGE
+        }
     }
 
     @Serializable
@@ -412,6 +422,16 @@ sealed class ActionData : Comparable<ActionData> {
         @Serializable
         data object Stop : ControlMedia() {
             override val id = ActionId.STOP_MEDIA
+        }
+
+        @Serializable
+        data object StepForward : ControlMedia() {
+            override val id = ActionId.STEP_FORWARD
+        }
+
+        @Serializable
+        data object StepBackward : ControlMedia() {
+            override val id = ActionId.STEP_BACKWARD
         }
     }
 

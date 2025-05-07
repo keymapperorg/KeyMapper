@@ -30,6 +30,7 @@ import androidx.compose.material.icons.outlined.FastForward
 import androidx.compose.material.icons.outlined.FastRewind
 import androidx.compose.material.icons.outlined.FlashlightOff
 import androidx.compose.material.icons.outlined.FlashlightOn
+import androidx.compose.material.icons.outlined.Forward30
 import androidx.compose.material.icons.outlined.Fullscreen
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Http
@@ -45,6 +46,7 @@ import androidx.compose.material.icons.outlined.PhonelinkRing
 import androidx.compose.material.icons.outlined.Pinch
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.PowerSettingsNew
+import androidx.compose.material.icons.outlined.Replay30
 import androidx.compose.material.icons.outlined.ScreenLockRotation
 import androidx.compose.material.icons.outlined.ScreenRotation
 import androidx.compose.material.icons.outlined.Settings
@@ -185,6 +187,10 @@ object ActionUtils {
         ActionId.REWIND_PACKAGE -> ActionCategory.MEDIA
         ActionId.STOP_MEDIA -> ActionCategory.MEDIA
         ActionId.STOP_MEDIA_PACKAGE -> ActionCategory.MEDIA
+        ActionId.STEP_FORWARD -> ActionCategory.MEDIA
+        ActionId.STEP_FORWARD_PACKAGE -> ActionCategory.MEDIA
+        ActionId.STEP_BACKWARD -> ActionCategory.MEDIA
+        ActionId.STEP_BACKWARD_PACKAGE -> ActionCategory.MEDIA
 
         ActionId.GO_BACK -> ActionCategory.NAVIGATION
         ActionId.GO_HOME -> ActionCategory.NAVIGATION
@@ -296,6 +302,10 @@ object ActionUtils {
         ActionId.REWIND_PACKAGE -> R.string.action_rewind_package
         ActionId.STOP_MEDIA -> R.string.action_stop_media
         ActionId.STOP_MEDIA_PACKAGE -> R.string.action_stop_media_package
+        ActionId.STEP_FORWARD -> R.string.action_step_forward_media
+        ActionId.STEP_FORWARD_PACKAGE -> R.string.action_step_forward_media_package
+        ActionId.STEP_BACKWARD -> R.string.action_step_backward_media
+        ActionId.STEP_BACKWARD_PACKAGE -> R.string.action_step_backward_media_package
         ActionId.GO_BACK -> R.string.action_go_back
         ActionId.GO_HOME -> R.string.action_go_home
         ActionId.OPEN_RECENTS -> R.string.action_open_recents
@@ -411,6 +421,10 @@ object ActionUtils {
         ActionId.REWIND_PACKAGE -> R.drawable.ic_outline_fast_rewind_24
         ActionId.STOP_MEDIA -> R.drawable.ic_outline_pause_24
         ActionId.STOP_MEDIA_PACKAGE -> R.drawable.ic_outline_pause_24
+        ActionId.STEP_FORWARD -> null
+        ActionId.STEP_FORWARD_PACKAGE -> null
+        ActionId.STEP_BACKWARD -> null
+        ActionId.STEP_BACKWARD_PACKAGE -> null
         ActionId.GO_BACK -> R.drawable.ic_baseline_arrow_back_24
         ActionId.GO_HOME -> R.drawable.ic_outline_home_24
         ActionId.OPEN_RECENTS -> null
@@ -730,6 +744,10 @@ object ActionUtils {
         ActionId.REWIND_PACKAGE -> Icons.Outlined.FastRewind
         ActionId.STOP_MEDIA -> Icons.Outlined.StopCircle
         ActionId.STOP_MEDIA_PACKAGE -> Icons.Outlined.StopCircle
+        ActionId.STEP_FORWARD -> Icons.Outlined.Forward30
+        ActionId.STEP_FORWARD_PACKAGE -> Icons.Outlined.Forward30
+        ActionId.STEP_BACKWARD -> Icons.Outlined.Replay30
+        ActionId.STEP_BACKWARD_PACKAGE -> Icons.Outlined.Replay30
         ActionId.GO_BACK -> Icons.AutoMirrored.Outlined.ArrowBack
         ActionId.GO_HOME -> Icons.Outlined.Home
         ActionId.OPEN_RECENTS -> Icons.Outlined.ViewArray

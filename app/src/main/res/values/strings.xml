@@ -1001,6 +1001,14 @@
     <string name="action_stop_media_package">Stop media for an app</string>
     <string name="action_stop_media_package_formatted">Stop media for %s</string>
 
+    <string name="action_step_forward_media">Step media forward</string>
+    <string name="action_step_forward_media_package">Step media forward for an app</string>
+    <string name="action_step_forward_media_package_formatted">Step media forward for %s</string>
+
+    <string name="action_step_backward_media">Step media backward</string>
+    <string name="action_step_backward_media_package">Step media backward for an app</string>
+    <string name="action_step_backward_media_package_formatted">Step media backward for %s</string>
+
     <string name="action_go_back">Go back</string>
     <string name="action_go_home">Go home</string>
     <string name="action_open_recents">Open recents</string>

@@ -94,6 +94,22 @@ class AndroidMediaAdapter(context: Context, coroutineScope: CoroutineScope) : Me
         return Success(Unit)
     }
 
+    override fun stepForward(packageName: String?): Result<*> {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_STEP_FORWARD, packageName)
+        } else {
+            return Error.SdkVersionTooLow(Build.VERSION_CODES.M)
+        }
+    }
+
+    override fun stepBackward(packageName: String?): Result<*> {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_STEP_BACKWARD, packageName)
+        } else {
+            return Error.SdkVersionTooLow(Build.VERSION_CODES.M)
+        }
+    }
+
     override fun getActiveMediaSessionPackages(): List<String> {
         return activeMediaSessions.value
             .filter { it.playbackState?.state == PlaybackState.STATE_PLAYING }

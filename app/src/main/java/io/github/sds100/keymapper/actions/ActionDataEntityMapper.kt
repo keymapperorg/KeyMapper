@@ -357,6 +357,8 @@ object ActionDataEntityMapper {
             ActionId.FAST_FORWARD_PACKAGE,
             ActionId.REWIND_PACKAGE,
             ActionId.STOP_MEDIA_PACKAGE,
+            ActionId.STEP_FORWARD_PACKAGE,
+            ActionId.STEP_BACKWARD_PACKAGE,
             -> {
                 val packageName =
                     entity.extras.getData(ActionEntity.EXTRA_PACKAGE_NAME).valueOrNull()
@@ -386,6 +388,12 @@ object ActionDataEntityMapper {
 
                     ActionId.STOP_MEDIA_PACKAGE ->
                         ActionData.ControlMediaForApp.Stop(packageName)
+
+                    ActionId.STEP_FORWARD_PACKAGE ->
+                        ActionData.ControlMediaForApp.StepForward(packageName)
+
+                    ActionId.STEP_BACKWARD_PACKAGE ->
+                        ActionData.ControlMediaForApp.StepBackward(packageName)
 
                     else -> throw Exception("don't know how to create system action for $actionId")
                 }
@@ -466,6 +474,8 @@ object ActionDataEntityMapper {
             ActionId.FAST_FORWARD -> ActionData.ControlMedia.FastForward
             ActionId.REWIND -> ActionData.ControlMedia.Rewind
             ActionId.STOP_MEDIA -> ActionData.ControlMedia.Stop
+            ActionId.STEP_FORWARD -> ActionData.ControlMedia.StepForward
+            ActionId.STEP_BACKWARD -> ActionData.ControlMedia.StepBackward
 
             ActionId.GO_BACK -> ActionData.GoBack
             ActionId.GO_HOME -> ActionData.GoHome
@@ -994,6 +1004,10 @@ object ActionDataEntityMapper {
         ActionId.REWIND_PACKAGE to "rewind_package",
         ActionId.STOP_MEDIA to "stop_media",
         ActionId.STOP_MEDIA_PACKAGE to "stop_media_package",
+        ActionId.STEP_FORWARD to "step_forward",
+        ActionId.STEP_FORWARD_PACKAGE to "step_forward_package",
+        ActionId.STEP_BACKWARD to "step_backward",
+        ActionId.STEP_BACKWARD_PACKAGE to "step_backward_package",
 
         ActionId.GO_BACK to "go_back",
         ActionId.GO_HOME to "go_home",
