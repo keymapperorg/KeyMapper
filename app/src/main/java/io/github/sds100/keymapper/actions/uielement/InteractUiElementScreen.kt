@@ -135,7 +135,7 @@ fun InteractUiElementScreen(
         composable(DEST_SELECT_APP) {
             ChooseAppScreen(
                 modifier = Modifier.fillMaxSize(),
-                title = stringResource(R.string.action_interact_ui_element_choose_element_title),
+                title = stringResource(R.string.action_interact_ui_element_choose_app_title),
                 state = appListState,
                 query = appSearchQuery,
                 onQueryChange = { query -> viewModel.appSearchQuery.update { query } },
@@ -397,7 +397,7 @@ private fun InteractionCountBox(
                     )
 
                     Text(
-                        stringResource(R.string.action_interact_ui_element_choose_interaction),
+                        stringResource(R.string.action_interact_ui_element_choose_app_title),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
@@ -474,6 +474,8 @@ private fun SelectedElementSection(
             value = state.description,
             onValueChange = onDescriptionChanged,
             isError = isError,
+            maxLines = 1,
+            singleLine = true,
             supportingText = if (isError) {
                 { Text(stringResource(R.string.error_cant_be_empty)) }
             } else {

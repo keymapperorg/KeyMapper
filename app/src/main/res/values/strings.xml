@@ -1111,7 +1111,7 @@
         <item quantity="one">%d element detected</item>
         <item quantity="other">%d elements detected</item>
     </plurals>
-    <string name="action_interact_ui_element_choose_interaction">Choose the app to interact with</string>
+    <string name="action_interact_ui_element_choose_app_title">Choose the app to interact with</string>
     <string name="action_interact_ui_element_record_again">Record again</string>
     <string name="action_interact_ui_element_choose_element_title">Choose app element</string>
     <string name="action_interact_ui_element_choose_element_text">Choose the element you want your key map to interact with.</string>
