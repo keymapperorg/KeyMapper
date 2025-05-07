@@ -223,6 +223,10 @@ class PerformActionsUseCaseImpl(
                 result = mediaAdapter.rewind(action.packageName)
             }
 
+            is ActionData.ControlMediaForApp.Stop -> {
+                result = mediaAdapter.stop(action.packageName)
+            }
+
             is ActionData.Rotation.CycleRotations -> {
                 result = displayAdapter.disableAutoRotate().then {
                     val currentOrientation = displayAdapter.cachedOrientation
@@ -340,7 +344,7 @@ class PerformActionsUseCaseImpl(
 
             is ActionData.Sound -> {
                 result = soundsManager.getSound(action.soundUid).then { file ->
-                    mediaAdapter.playSoundFile(file.uri, VolumeStream.ACCESSIBILITY)
+                    mediaAdapter.playFile(file.uri, VolumeStream.ACCESSIBILITY)
                 }
             }
 
@@ -545,6 +549,10 @@ class PerformActionsUseCaseImpl(
 
             is ActionData.ControlMedia.Rewind -> {
                 result = mediaAdapter.rewind()
+            }
+
+            is ActionData.ControlMedia.Stop -> {
+                result = mediaAdapter.stop()
             }
 
             is ActionData.GoBack -> {

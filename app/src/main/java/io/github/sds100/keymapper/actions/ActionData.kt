@@ -365,6 +365,11 @@ sealed class ActionData : Comparable<ActionData> {
         data class Rewind(override val packageName: String) : ControlMediaForApp() {
             override val id = ActionId.REWIND_PACKAGE
         }
+
+        @Serializable
+        data class Stop(override val packageName: String) : ControlMediaForApp() {
+            override val id = ActionId.STOP_MEDIA_PACKAGE
+        }
     }
 
     @Serializable
@@ -402,6 +407,11 @@ sealed class ActionData : Comparable<ActionData> {
         @Serializable
         data object Rewind : ControlMedia() {
             override val id = ActionId.REWIND
+        }
+
+        @Serializable
+        data object Stop : ControlMedia() {
+            override val id = ActionId.STOP_MEDIA
         }
     }
 

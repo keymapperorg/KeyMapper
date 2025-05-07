@@ -82,6 +82,18 @@ class AndroidMediaAdapter(context: Context, coroutineScope: CoroutineScope) : Me
 
     override fun nextTrack(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_NEXT, packageName)
 
+    override fun stop(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_STOP, packageName)
+
+    override fun stopFileMedia(): Result<*> {
+        synchronized(mediaPlayerLock) {
+            mediaPlayer?.stop()
+            mediaPlayer?.release()
+            mediaPlayer = null
+        }
+
+        return Success(Unit)
+    }
+
     override fun getActiveMediaSessionPackages(): List<String> {
         return activeMediaSessions.value
             .filter { it.playbackState?.state == PlaybackState.STATE_PLAYING }
@@ -105,7 +117,7 @@ class AndroidMediaAdapter(context: Context, coroutineScope: CoroutineScope) : Me
         return audioVolumeControlStreams
     }
 
-    override fun playSoundFile(uri: String, stream: VolumeStream): Result<*> {
+    override fun playFile(uri: String, stream: VolumeStream): Result<*> {
         try {
             synchronized(mediaPlayerLock) {
                 mediaPlayer?.stop()
@@ -145,16 +157,6 @@ class AndroidMediaAdapter(context: Context, coroutineScope: CoroutineScope) : Me
         } catch (e: Exception) {
             return Error.Exception(e)
         }
-    }
-
-    override fun stopMedia(): Result<*> {
-        synchronized(mediaPlayerLock) {
-            mediaPlayer?.stop()
-            mediaPlayer?.release()
-            mediaPlayer = null
-        }
-
-        return Success(Unit)
     }
 
     fun onActiveMediaSessionChange(mediaSessions: List<MediaController>) {

@@ -55,6 +55,7 @@ import androidx.compose.material.icons.outlined.SkipPrevious
 import androidx.compose.material.icons.outlined.Splitscreen
 import androidx.compose.material.icons.outlined.StayCurrentLandscape
 import androidx.compose.material.icons.outlined.StayCurrentPortrait
+import androidx.compose.material.icons.outlined.StopCircle
 import androidx.compose.material.icons.outlined.Swipe
 import androidx.compose.material.icons.outlined.TouchApp
 import androidx.compose.material.icons.outlined.ViewArray
@@ -182,6 +183,8 @@ object ActionUtils {
         ActionId.FAST_FORWARD_PACKAGE -> ActionCategory.MEDIA
         ActionId.REWIND -> ActionCategory.MEDIA
         ActionId.REWIND_PACKAGE -> ActionCategory.MEDIA
+        ActionId.STOP_MEDIA -> ActionCategory.MEDIA
+        ActionId.STOP_MEDIA_PACKAGE -> ActionCategory.MEDIA
 
         ActionId.GO_BACK -> ActionCategory.NAVIGATION
         ActionId.GO_HOME -> ActionCategory.NAVIGATION
@@ -291,6 +294,8 @@ object ActionUtils {
         ActionId.FAST_FORWARD_PACKAGE -> R.string.action_fast_forward_package
         ActionId.REWIND -> R.string.action_rewind
         ActionId.REWIND_PACKAGE -> R.string.action_rewind_package
+        ActionId.STOP_MEDIA -> R.string.action_stop_media
+        ActionId.STOP_MEDIA_PACKAGE -> R.string.action_stop_media_package
         ActionId.GO_BACK -> R.string.action_go_back
         ActionId.GO_HOME -> R.string.action_go_home
         ActionId.OPEN_RECENTS -> R.string.action_open_recents
@@ -404,6 +409,8 @@ object ActionUtils {
         ActionId.FAST_FORWARD_PACKAGE -> R.drawable.ic_outline_fast_forward_24
         ActionId.REWIND -> R.drawable.ic_outline_fast_rewind_24
         ActionId.REWIND_PACKAGE -> R.drawable.ic_outline_fast_rewind_24
+        ActionId.STOP_MEDIA -> R.drawable.ic_outline_pause_24
+        ActionId.STOP_MEDIA_PACKAGE -> R.drawable.ic_outline_pause_24
         ActionId.GO_BACK -> R.drawable.ic_baseline_arrow_back_24
         ActionId.GO_HOME -> R.drawable.ic_outline_home_24
         ActionId.OPEN_RECENTS -> null
@@ -721,6 +728,8 @@ object ActionUtils {
         ActionId.FAST_FORWARD_PACKAGE -> Icons.Outlined.FastForward
         ActionId.REWIND -> Icons.Outlined.FastRewind
         ActionId.REWIND_PACKAGE -> Icons.Outlined.FastRewind
+        ActionId.STOP_MEDIA -> Icons.Outlined.StopCircle
+        ActionId.STOP_MEDIA_PACKAGE -> Icons.Outlined.StopCircle
         ActionId.GO_BACK -> Icons.AutoMirrored.Outlined.ArrowBack
         ActionId.GO_HOME -> Icons.Outlined.Home
         ActionId.OPEN_RECENTS -> Icons.Outlined.ViewArray

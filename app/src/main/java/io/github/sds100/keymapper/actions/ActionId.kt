@@ -79,6 +79,8 @@ enum class ActionId {
     FAST_FORWARD_PACKAGE,
     REWIND,
     REWIND_PACKAGE,
+    STOP_MEDIA,
+    STOP_MEDIA_PACKAGE,
 
     GO_BACK,
     GO_HOME,

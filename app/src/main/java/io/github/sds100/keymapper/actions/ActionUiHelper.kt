@@ -222,6 +222,7 @@ class ActionUiHelper(
                         is ActionData.ControlMediaForApp.PlayPause -> R.string.action_play_pause_media_package_formatted
                         is ActionData.ControlMediaForApp.PreviousTrack -> R.string.action_previous_track_package_formatted
                         is ActionData.ControlMediaForApp.Rewind -> R.string.action_rewind_package_formatted
+                        is ActionData.ControlMediaForApp.Stop -> R.string.action_stop_media_package_formatted
                     }
 
                     getString(resId, appName)
@@ -235,6 +236,7 @@ class ActionUiHelper(
                         is ActionData.ControlMediaForApp.PlayPause -> R.string.action_play_pause_media_package
                         is ActionData.ControlMediaForApp.PreviousTrack -> R.string.action_previous_track_package
                         is ActionData.ControlMediaForApp.Rewind -> R.string.action_rewind_package
+                        is ActionData.ControlMediaForApp.Stop -> R.string.action_stop_media_package
                     }
 
                     getString(resId)
@@ -453,6 +455,7 @@ class ActionUiHelper(
         ActionData.ControlMedia.PlayPause -> getString(R.string.action_play_pause_media)
         ActionData.ControlMedia.PreviousTrack -> getString(R.string.action_previous_track)
         ActionData.ControlMedia.Rewind -> getString(R.string.action_rewind)
+        ActionData.ControlMedia.Stop -> getString(R.string.action_stop_media)
 
         ActionData.CopyText -> getString(R.string.action_text_copy)
         ActionData.CutText -> getString(R.string.action_text_cut)
