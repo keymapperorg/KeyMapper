@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.compose.draggable
+package io.github.sds100.keymapper.util.ui.compose
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring

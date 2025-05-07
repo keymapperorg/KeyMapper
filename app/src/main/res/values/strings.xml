@@ -981,11 +981,11 @@
 
     <string name="action_next_track">Next track</string>
     <string name="action_next_track_package">Next track for an app</string>
-    <string name="action_next_track_package_formatted">Next track for %s</string>>
+    <string name="action_next_track_package_formatted">Next track for %s</string>
 
     <string name="action_previous_track">Previous track</string>
     <string name="action_previous_track_package">Previous track for an app</string>
-    <string name="action_previous_track_package_formatted">Previous track for %s</string>>
+    <string name="action_previous_track_package_formatted">Previous track for %s</string>
 
     <string name="action_fast_forward">Fast forward</string>
     <string name="action_fast_forward_package">Fast forward for an app</string>
@@ -994,8 +994,20 @@
 
     <string name="action_rewind">Rewind</string>
     <string name="action_rewind_package">Rewind for an app</string>
-    <string name="action_rewind_package_formatted">Rewind for %s</string>>
+    <string name="action_rewind_package_formatted">Rewind for %s</string>
     <string name="action_rewind_message">Not all media apps support rewinding. E.g Google Play Music.</string>
+
+    <string name="action_stop_media">Stop media</string>
+    <string name="action_stop_media_package">Stop media for an app</string>
+    <string name="action_stop_media_package_formatted">Stop media for %s</string>
+
+    <string name="action_step_forward_media">Step media forward</string>
+    <string name="action_step_forward_media_package">Step media forward for an app</string>
+    <string name="action_step_forward_media_package_formatted">Step media forward for %s</string>
+
+    <string name="action_step_backward_media">Step media backward</string>
+    <string name="action_step_backward_media_package">Step media backward for an app</string>
+    <string name="action_step_backward_media_package_formatted">Step media backward for %s</string>
 
     <string name="action_go_back">Go back</string>
     <string name="action_go_home">Go home</string>
