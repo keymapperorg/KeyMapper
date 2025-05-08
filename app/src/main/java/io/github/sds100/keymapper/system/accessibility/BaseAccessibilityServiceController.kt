@@ -286,11 +286,8 @@ abstract class BaseAccessibilityServiceController(
         val imeInputFocusEvents =
             AccessibilityEvent.TYPE_VIEW_FOCUSED or AccessibilityEvent.TYPE_VIEW_CLICKED
 
-        // Listen to WINDOWS_CHANGED event in case no events are received when the user
-        // interacts directly with elements.
-        val recordNodeEvents = AccessibilityEvent.TYPE_VIEW_FOCUSED or
-            AccessibilityEvent.TYPE_VIEW_CLICKED or
-            AccessibilityEvent.TYPE_WINDOWS_CHANGED
+        val recordNodeEvents =
+            AccessibilityEvent.TYPE_VIEW_FOCUSED or AccessibilityEvent.TYPE_VIEW_CLICKED
 
         coroutineScope.launch {
             combine(

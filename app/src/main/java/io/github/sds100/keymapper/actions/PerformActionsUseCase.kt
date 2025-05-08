@@ -844,7 +844,7 @@ class PerformActionsUseCaseImpl(
                             matchAccessibilityNode(node, action)
                         },
                         performAction = { AccessibilityNodeAction(action = action.nodeAction.accessibilityActionId) },
-                    )
+                    ).otherwise { Error.UiElementNotFound }
                 }
             }
         }
@@ -944,32 +944,36 @@ class PerformActionsUseCaseImpl(
         node: AccessibilityNodeModel,
         action: ActionData.InteractUiElement,
     ): Boolean {
+        if (!node.actions.contains(action.nodeAction.accessibilityActionId)) {
+            return false
+        }
+
         if (compareIfNonNull(node.uniqueId, action.uniqueId)) {
             return true
         }
 
-        val viewResourceIdMatches = node.viewResourceId == action.viewResourceId
-        val classNameMatches = node.className == action.className
+        if (action.contentDescription == null && action.text == null) {
+            if (compareIfNonNull(node.viewResourceId, action.viewResourceId)) {
+                return true
+            }
 
-        if (compareIfNonNull(
-                node.contentDescription,
-                action.contentDescription,
-            ) &&
-            viewResourceIdMatches &&
-            classNameMatches
-        ) {
-            return true
-        }
+            if (compareIfNonNull(node.className, action.className)) {
+                return true
+            }
+        } else {
+            if (compareIfNonNull(node.contentDescription, action.contentDescription) ||
+                compareIfNonNull(node.text, action.text)
+            ) {
+                if (action.viewResourceId != null) {
+                    return node.viewResourceId == action.viewResourceId
+                }
 
-        if (compareIfNonNull(node.text, action.text) &&
-            viewResourceIdMatches &&
-            classNameMatches
-        ) {
-            return true
-        }
+                if (action.className != null) {
+                    return node.className == action.className
+                }
 
-        if (viewResourceIdMatches) {
-            return true
+                return true
+            }
         }
 
         return false
