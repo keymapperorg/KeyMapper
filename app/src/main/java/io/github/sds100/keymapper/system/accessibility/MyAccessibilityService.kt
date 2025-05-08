@@ -124,6 +124,16 @@ class MyAccessibilityService :
             }
         }
 
+    override var notificationTimeout: Long?
+        get() = serviceInfo?.notificationTimeout
+        set(value) {
+            if (serviceInfo != null && value != null) {
+                serviceInfo = serviceInfo.apply {
+                    notificationTimeout = value
+                }
+            }
+        }
+
     private val relayServiceCallback: IKeyEventRelayServiceCallback =
         object : IKeyEventRelayServiceCallback.Stub() {
             override fun onKeyEvent(event: KeyEvent?): Boolean {

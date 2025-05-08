@@ -19,6 +19,9 @@ interface AccessibilityNodeDao {
         const val KEY_VIEW_RESOURCE_ID = "view_resource_id"
         const val KEY_UNIQUE_ID = "unique_id"
         const val KEY_ACTIONS = "actions"
+        const val KEY_INTERACTED = "interacted"
+        const val KEY_TOOLTIP = "tooltip"
+        const val KEY_HINT = "hint"
     }
 
     @Query("SELECT * FROM $TABLE_NAME WHERE $KEY_ID = (:id)")

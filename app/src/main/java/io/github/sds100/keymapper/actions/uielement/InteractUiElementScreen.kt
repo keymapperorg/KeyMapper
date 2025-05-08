@@ -161,6 +161,7 @@ fun InteractUiElementScreen(
                     navController.popBackStack(route = DEST_LANDING, inclusive = false)
                 },
                 onSelectInteractionType = viewModel::onSelectInteractionTypeFilter,
+                onAdditionalElementsCheckedChange = viewModel::onAdditionalElementsCheckedChanged,
             )
         }
     }

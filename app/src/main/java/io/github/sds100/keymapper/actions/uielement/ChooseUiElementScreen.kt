@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.util.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.util.ui.compose.KeyMapperDropdownMenu
 import io.github.sds100.keymapper.util.ui.compose.SearchAppBarActions
 
@@ -59,6 +60,7 @@ fun ChooseElementScreen(
     onQueryChange: (String) -> Unit = {},
     onClickElement: (Long) -> Unit = {},
     onSelectInteractionType: (NodeInteractionType?) -> Unit = {},
+    onAdditionalElementsCheckedChange: (Boolean) -> Unit = {},
 ) {
     var interactionTypeExpanded by rememberSaveable { mutableStateOf(false) }
 
@@ -144,10 +146,25 @@ fun ChooseElementScreen(
                     is State.Data -> {
                         val listItems = state.data.listItems
 
+                        CheckBoxText(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp),
+                            text = stringResource(R.string.action_interact_ui_element_checkbox_additional_elements),
+                            isChecked = state.data.showAdditionalElements,
+                            onCheckedChange = onAdditionalElementsCheckedChange,
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
                         if (listItems.isEmpty()) {
-                            EmptyList(modifier = Modifier.fillMaxSize())
+                            EmptyList(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(16.dp),
+                            )
                         } else {
-                            KeyMapperDropdownMenu<NodeInteractionType?>(
+                            KeyMapperDropdownMenu(
                                 modifier = Modifier.padding(horizontal = 16.dp),
                                 expanded = interactionTypeExpanded,
                                 onExpandedChange = { interactionTypeExpanded = it },
@@ -309,6 +326,7 @@ private fun Empty() {
                     listItems = emptyList(),
                     interactionTypes = emptyList(),
                     selectedInteractionType = null,
+                    showAdditionalElements = false,
                 ),
             ),
             query = "Key Mapper",
@@ -343,6 +361,7 @@ private fun Loaded() {
                 NodeInteractionType.LONG_CLICK,
                 NodeInteractionType.SCROLL_FORWARD,
             ),
+            interacted = true,
         ),
     )
 
@@ -354,6 +373,7 @@ private fun Loaded() {
             NodeInteractionType.LONG_CLICK to "Tap and hold",
         ),
         selectedInteractionType = null,
+        showAdditionalElements = true,
     )
 
     KeyMapperTheme {

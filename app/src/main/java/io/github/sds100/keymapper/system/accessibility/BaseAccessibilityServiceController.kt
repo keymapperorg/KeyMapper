@@ -85,6 +85,8 @@ abstract class BaseAccessibilityServiceController(
          * How long should the accessibility service record a trigger in seconds.
          */
         private const val RECORD_TRIGGER_TIMER_LENGTH = 5
+
+        private const val DEFAULT_NOTIFICATION_TIMEOUT = 200L
     }
 
     private val triggerKeyMapFromOtherAppsController = TriggerKeyMapFromOtherAppsController(
@@ -107,7 +109,7 @@ abstract class BaseAccessibilityServiceController(
     )
 
     private val accessibilityNodeRecorder: AccessibilityNodeRecorder =
-        AccessibilityNodeRecorder(nodeRepository)
+        AccessibilityNodeRecorder(nodeRepository, service)
 
     private var recordingTriggerJob: Job? = null
     private val recordingTrigger: Boolean
@@ -179,6 +181,9 @@ abstract class BaseAccessibilityServiceController(
     val serviceEventTypes: MutableStateFlow<Int> =
         MutableStateFlow(AccessibilityEvent.TYPE_WINDOWS_CHANGED)
 
+    private val serviceNotificationTimeout: MutableStateFlow<Long> =
+        MutableStateFlow(DEFAULT_NOTIFICATION_TIMEOUT)
+
     init {
 
         serviceFlags.onEach { flags ->
@@ -199,6 +204,13 @@ abstract class BaseAccessibilityServiceController(
             // check that it isn't null because this can only be called once the service is bound
             if (service.serviceEventTypes != null) {
                 service.serviceEventTypes = eventTypes
+            }
+        }.launchIn(coroutineScope)
+
+        serviceNotificationTimeout.onEach { timeout ->
+            // check that it isn't null because this can only be called once the service is bound
+            if (service.notificationTimeout != null) {
+                service.notificationTimeout = timeout
             }
         }.launchIn(coroutineScope)
 
@@ -274,11 +286,11 @@ abstract class BaseAccessibilityServiceController(
         val imeInputFocusEvents =
             AccessibilityEvent.TYPE_VIEW_FOCUSED or AccessibilityEvent.TYPE_VIEW_CLICKED
 
+        // Listen to WINDOWS_CHANGED event in case no events are received when the user
+        // interacts directly with elements.
         val recordNodeEvents = AccessibilityEvent.TYPE_VIEW_FOCUSED or
             AccessibilityEvent.TYPE_VIEW_CLICKED or
-            AccessibilityEvent.TYPE_VIEW_LONG_CLICKED or
-            AccessibilityEvent.TYPE_VIEW_SELECTED or
-            AccessibilityEvent.TYPE_VIEW_SCROLLED
+            AccessibilityEvent.TYPE_WINDOWS_CHANGED
 
         coroutineScope.launch {
             combine(
@@ -304,6 +316,14 @@ abstract class BaseAccessibilityServiceController(
 
                     newEventTypes
                 }
+
+                serviceNotificationTimeout.update {
+                    if (recordState is RecordAccessibilityNodeState.CountingDown) {
+                        0L
+                    } else {
+                        DEFAULT_NOTIFICATION_TIMEOUT
+                    }
+                }
             }.collect()
         }
     }
@@ -312,6 +332,7 @@ abstract class BaseAccessibilityServiceController(
         service.serviceFlags = serviceFlags.value
         service.serviceFeedbackType = serviceFeedbackType.value
         service.serviceEventTypes = serviceEventTypes.value
+        service.notificationTimeout = serviceNotificationTimeout.value
 
         // check if fingerprint gestures are supported
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

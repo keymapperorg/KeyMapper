@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.system.accessibility
 
-import android.graphics.Rect
+import android.accessibilityservice.AccessibilityService
 import android.os.Build
 import android.os.CountDownTimer
 import android.view.accessibility.AccessibilityEvent
@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.update
 
 class AccessibilityNodeRecorder(
     private val nodeRepository: AccessibilityNodeRepository,
+    private val service: AccessibilityService,
 ) {
     companion object {
         private const val RECORD_DURATION = 60000L
@@ -60,51 +61,54 @@ class AccessibilityNodeRecorder(
             return
         }
 
-        val source = event.source ?: return
-        val sourceBounds = Rect()
-        source.getBoundsInScreen(sourceBounds)
+        if (event.eventType == AccessibilityEvent.TYPE_VIEW_CLICKED ||
+            event.eventType == AccessibilityEvent.TYPE_VIEW_FOCUSED
+        ) {
+            val source = event.source ?: return
 
-        val root: AccessibilityNodeInfo = source.window.root ?: return
+            buildNodeEntity(source, interacted = true)?.also { nodeRepository.insert(it) }
+        } else if (event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED) {
+            // Only dump the whole window when a window is added because there can be
+            // many windows changed events sent in rapid succession.
+            val windowRoot: AccessibilityNodeInfo = service.rootInActiveWindow ?: return
 
-        // This searches for all nodes that are within the bounds of the source of the
-        // AccessibilityEvent because the source is not necessarily the element
-        // the user wants to tap.
-        val entities = getNodesInBounds(root, sourceBounds).toTypedArray()
-        nodeRepository.insert(*entities)
+            // This searches for all nodes that are within the bounds of the source of the
+            // AccessibilityEvent because the source is not necessarily the element
+            // the user wants to tap.
+            val entities = getNodesRecursively(windowRoot).toTypedArray()
+            nodeRepository.insert(*entities)
+        }
     }
 
-    /**
-     * Get all the nodes that are within the given bounds.
-     */
-    private fun getNodesInBounds(
+    private fun getNodesRecursively(
         node: AccessibilityNodeInfo,
-        bounds: Rect,
     ): Set<AccessibilityNodeEntity> {
         val set = mutableSetOf<AccessibilityNodeEntity>()
 
-        val nodeBounds = Rect()
-        node.getBoundsInScreen(nodeBounds)
+        val entity = buildNodeEntity(node, interacted = false)
 
-        if (bounds.contains(nodeBounds)) {
-            val entity = buildNodeEntity(node)
-
-            if (entity != null) {
-                set.add(entity)
-            }
+        if (entity != null) {
+            set.add(entity)
         }
 
         if (node.childCount > 0) {
             for (i in 0 until node.childCount) {
                 val child = node.getChild(i) ?: continue
 
-                set.addAll(getNodesInBounds(child, bounds))
+                set.addAll(getNodesRecursively(child))
             }
         }
 
         return set
     }
 
-    private fun buildNodeEntity(source: AccessibilityNodeInfo): AccessibilityNodeEntity? {
+    /**
+     * @param interacted Whether the user interacted with this node.
+     */
+    private fun buildNodeEntity(
+        source: AccessibilityNodeInfo,
+        interacted: Boolean,
+    ): AccessibilityNodeEntity? {
         val interactionTypes = source.actionList.mapNotNull { action ->
             NodeInteractionType.entries.find { it.accessibilityActionId == action.id }
         }.distinct()
@@ -125,6 +129,17 @@ class AccessibilityNodeRecorder(
                 null
             },
             actions = interactionTypes.toSet(),
+            interacted = interacted,
+            tooltip = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                source.tooltipText?.toString()
+            } else {
+                null
+            },
+            hint = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                source.hintText?.toString()
+            } else {
+                null
+            },
         )
     }
 

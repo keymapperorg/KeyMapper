@@ -32,6 +32,7 @@ import io.github.sds100.keymapper.data.migration.AutoMigration14To15
 import io.github.sds100.keymapper.data.migration.AutoMigration15To16
 import io.github.sds100.keymapper.data.migration.AutoMigration16To17
 import io.github.sds100.keymapper.data.migration.AutoMigration18To19
+import io.github.sds100.keymapper.data.migration.AutoMigration19To20
 import io.github.sds100.keymapper.data.migration.Migration10To11
 import io.github.sds100.keymapper.data.migration.Migration11To12
 import io.github.sds100.keymapper.data.migration.Migration13To14
@@ -60,6 +61,8 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
         AutoMigration(from = 16, to = 17, spec = AutoMigration16To17::class),
         // Adds accessibility node table
         AutoMigration(from = 18, to = 19, spec = AutoMigration18To19::class),
+        // Adds interacted, tooltip, and hint fields to accessibility node entity
+        AutoMigration(from = 19, to = 20, spec = AutoMigration19To20::class),
     ],
 )
 @TypeConverters(
@@ -72,7 +75,7 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         const val DATABASE_NAME = "key_map_database"
-        const val DATABASE_VERSION = 19
+        const val DATABASE_VERSION = 20
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
 

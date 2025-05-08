@@ -139,13 +139,20 @@ class InteractUiElementViewModel(
 
     private val selectedInteractionTypeFilter = MutableStateFlow<NodeInteractionType?>(null)
 
+    private val showAdditionalElements: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
     private val filteredElementListItems = combine(
         elementListItems,
         elementSearchQuery,
         selectedInteractionTypeFilter,
-    ) { state, query, interactionType ->
+        showAdditionalElements,
+    ) { state, query, interactionType, showAdditionalElements ->
         state.mapData { listItems ->
             listItems.filter { model ->
+                if (!showAdditionalElements && !model.interacted) {
+                    return@filter false
+                }
+
                 if (interactionType != null && !model.interactionTypes.contains(interactionType)) {
                     return@filter false
                 }
@@ -166,7 +173,8 @@ class InteractUiElementViewModel(
         filteredElementListItems,
         interactionTypesFilterItems,
         selectedInteractionTypeFilter,
-    ) { listItemsState, interactionTypesState, selectedInteractionType ->
+        showAdditionalElements,
+    ) { listItemsState, interactionTypesState, selectedInteractionType, showAdditionalElements ->
         val listItems = listItemsState.dataOrNull() ?: return@combine State.Loading
         val interactionTypes = interactionTypesState.dataOrNull() ?: return@combine State.Loading
 
@@ -174,6 +182,7 @@ class InteractUiElementViewModel(
             listItems = listItems,
             interactionTypes = interactionTypes,
             selectedInteractionType = selectedInteractionType,
+            showAdditionalElements = showAdditionalElements,
         )
         State.Data(newState)
     }.stateIn(viewModelScope, SharingStarted.Lazily, State.Loading)
@@ -288,6 +297,10 @@ class InteractUiElementViewModel(
         }
     }
 
+    fun onAdditionalElementsCheckedChanged(checked: Boolean) {
+        showAdditionalElements.update { checked }
+    }
+
     private suspend fun startRecording() {
         useCase.startRecording().onFailure { error ->
             if (error == Error.AccessibilityServiceDisabled) {
@@ -325,9 +338,10 @@ class InteractUiElementViewModel(
             nodeViewResourceId = resourceIdText,
             nodeText = node.text ?: node.contentDescription,
             nodeClassName = node.className,
-            nodeUniqueId = node.uniqueId?.toString(),
+            nodeUniqueId = node.uniqueId,
             interactionTypesText = node.actions.joinToString { getInteractionTypeString(it) },
             interactionTypes = node.actions,
+            interacted = node.interacted,
         )
     }
 
@@ -352,7 +366,6 @@ class InteractUiElementViewModel(
             NodeInteractionType.CLICK -> getString(R.string.action_interact_ui_element_interaction_type_click)
             NodeInteractionType.LONG_CLICK -> getString(R.string.action_interact_ui_element_interaction_type_long_click)
             NodeInteractionType.FOCUS -> getString(R.string.action_interact_ui_element_interaction_type_focus)
-            NodeInteractionType.SELECT -> getString(R.string.action_interact_ui_element_interaction_type_select)
             NodeInteractionType.SCROLL_FORWARD -> getString(R.string.action_interact_ui_element_interaction_type_scroll_forward)
             NodeInteractionType.SCROLL_BACKWARD -> getString(R.string.action_interact_ui_element_interaction_type_scroll_backward)
             NodeInteractionType.EXPAND -> getString(R.string.action_interact_ui_element_interaction_type_expand)
@@ -399,6 +412,7 @@ data class SelectUiElementState(
     val listItems: List<UiElementListItemModel>,
     val interactionTypes: List<Pair<NodeInteractionType?, String>>,
     val selectedInteractionType: NodeInteractionType?,
+    val showAdditionalElements: Boolean,
 )
 
 data class UiElementListItemModel(
@@ -409,4 +423,8 @@ data class UiElementListItemModel(
     val nodeUniqueId: String?,
     val interactionTypesText: String,
     val interactionTypes: Set<NodeInteractionType>,
+    /**
+     * Whether the user interacted with this element.
+     */
+    val interacted: Boolean,
 )

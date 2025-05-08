@@ -40,6 +40,7 @@ interface IAccessibilityService {
     var serviceFlags: Int?
     var serviceFeedbackType: Int?
     var serviceEventTypes: Int?
+    var notificationTimeout: Long?
 
     fun performActionOnNode(
         findNode: (node: AccessibilityNodeModel) -> Boolean,

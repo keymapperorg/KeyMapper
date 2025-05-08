@@ -252,6 +252,9 @@ class BackupManagerImpl(
 
                 // Do nothing. Just added the accessibility node table.
                 JsonMigration(18, 19) { json -> json },
+
+                // Do nothing. Just added columns to the accessibility node table.
+                JsonMigration(19, 20) { json -> json },
             )
 
             if (keyMapListJsonArray != null) {

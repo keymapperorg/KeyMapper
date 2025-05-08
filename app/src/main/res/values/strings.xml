@@ -25,7 +25,7 @@
     <string name="button_restart_accessibility_service">Restart accessibility service</string>
     <string name="share_backup">Share</string>
     <string name="app_list_empty">Nothing here!</string>
-    <string name="ui_element_list_empty">Nothing here!</string>
+    <string name="ui_element_list_empty">Key Mapper did not detect any interactions. Try showing additional elements.</string>
     <string name="stop_repeating_dot_dot_dot">Stop repeating when…</string>
     <string name="stop_repeating_when_trigger_released">Trigger is released</string>
     <string name="stop_repeating_trigger_pressed_again">Trigger is pressed again</string>
@@ -1132,12 +1132,12 @@
     <string name="action_interact_ui_element_interaction_type_dropdown">Possible interactions</string>
     <string name="action_interact_ui_element_interaction_type_dropdown_caption">Select how you want to interact with the UI element.</string>
     <string name="action_interact_ui_element_filter_interaction_type_dropdown">Filter interaction type</string>
+    <string name="action_interact_ui_element_checkbox_additional_elements">Show additional elements</string>
 
     <string name="action_interact_ui_element_interaction_type_any">Any</string>
     <string name="action_interact_ui_element_interaction_type_click">Tap</string>
     <string name="action_interact_ui_element_interaction_type_long_click">Tap and hold</string>
     <string name="action_interact_ui_element_interaction_type_focus">Focus</string>
-    <string name="action_interact_ui_element_interaction_type_select">Select</string>
     <string name="action_interact_ui_element_interaction_type_scroll_forward">Scroll forward</string>
     <string name="action_interact_ui_element_interaction_type_scroll_backward">Scroll backward</string>
     <string name="action_interact_ui_element_interaction_type_expand">Expand</string>
