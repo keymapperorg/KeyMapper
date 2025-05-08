@@ -12,6 +12,10 @@
 
 - Rename tap screen actions inside key maps.
 
+## Bug fixes
+
+- #1683 key event actions work in Minecraft and other apps again.
+
 ## [3.0.1](https://github.com/sds100/KeyMapper/releases/tag/v3.0.1)
 
 #### 28 April 2025
