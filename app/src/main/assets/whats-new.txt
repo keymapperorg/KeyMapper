@@ -2,6 +2,8 @@
 
 🔎 Action to interact with app elements.
 
+Fix for Minecraft 1.21.80.
+
 == 3.0 features ==
 
 🫧 Floating Buttons: you can create custom on-screen buttons to trigger key maps.
