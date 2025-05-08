@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.actions
 
 import android.accessibilityservice.AccessibilityService
 import android.os.Build
+import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import io.github.sds100.keymapper.R
@@ -152,11 +153,19 @@ class PerformActionsUseCaseImpl(
             is ActionData.InputKeyEvent -> {
                 val deviceId: Int = getDeviceIdForKeyEventAction(action)
 
+                // See issue #1683. Some apps ignore key events which do not have a source.
+                val source = when {
+                    InputEventUtils.isDpadKeyCode(action.keyCode) -> InputDevice.SOURCE_DPAD
+                    InputEventUtils.isGamepadButton(action.keyCode) -> InputDevice.SOURCE_GAMEPAD
+                    else -> InputDevice.SOURCE_KEYBOARD
+                }
+
                 val model = InputKeyModel(
                     keyCode = action.keyCode,
                     inputType = inputEventType,
                     metaState = keyMetaState.withFlag(action.metaState),
                     deviceId = deviceId,
+                    source = source,
                 )
 
                 result = when {

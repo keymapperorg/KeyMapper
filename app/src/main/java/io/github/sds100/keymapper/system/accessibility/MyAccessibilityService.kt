@@ -140,6 +140,7 @@ class MyAccessibilityService :
                             scanCode = event.scanCode,
                             device = device,
                             repeatCount = event.repeatCount,
+                            source = event.source,
                         ),
                     )
                 }
@@ -315,6 +316,7 @@ class MyAccessibilityService :
                     scanCode = event.scanCode,
                     device = device,
                     repeatCount = event.repeatCount,
+                    source = event.source,
                 ),
                 KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
             )

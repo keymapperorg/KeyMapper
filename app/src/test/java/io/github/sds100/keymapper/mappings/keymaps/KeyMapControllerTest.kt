@@ -1166,6 +1166,7 @@ class KeyMapControllerTest {
                 any(),
                 any(),
                 any(),
+                any(),
             )
 
             // If both triggers are detected
@@ -1180,6 +1181,7 @@ class KeyMapControllerTest {
                 any(),
                 any(),
                 any(),
+                any(),
             )
 
             // If no triggers are detected
@@ -1189,6 +1191,7 @@ class KeyMapControllerTest {
             verify(performActionsUseCase, never()).perform(TEST_ACTION_2.data)
             verify(performActionsUseCase, never()).perform(TEST_ACTION.data)
             verify(detectKeyMapsUseCase, times(1)).imitateButtonPress(
+                any(),
                 any(),
                 any(),
                 any(),
@@ -2665,11 +2668,13 @@ class KeyMapControllerTest {
                 any(),
                 any(),
                 any(),
+                any(),
             )
 
             verify(detectKeyMapsUseCase, times(1)).imitateButtonPress(
                 any(),
                 metaState = eq(0),
+                any(),
                 any(),
                 any(),
                 any(),
@@ -3068,6 +3073,7 @@ class KeyMapControllerTest {
             any(),
             any(),
             any(),
+            any(),
         )
     }
 
@@ -3099,6 +3105,7 @@ class KeyMapControllerTest {
             any(),
             any(),
             any(),
+            any(),
         )
     }
 
@@ -3121,6 +3128,7 @@ class KeyMapControllerTest {
 
         // then
         verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+            any(),
             any(),
             any(),
             any(),
@@ -4137,6 +4145,7 @@ class KeyMapControllerTest {
             scanCode = scanCode,
             device = device,
             repeatCount = repeatCount,
+            source = 0,
         ),
     )
 

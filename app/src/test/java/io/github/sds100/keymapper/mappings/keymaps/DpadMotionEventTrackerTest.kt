@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
+import android.view.InputDevice
 import android.view.KeyEvent
 import io.github.sds100.keymapper.mappings.keymaps.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
@@ -70,6 +71,7 @@ class DpadMotionEventTrackerTest {
                     scanCode = 0,
                     device = CONTROLLER_1_DEVICE,
                     repeatCount = 0,
+                    source = InputDevice.SOURCE_DPAD,
                 ),
             ),
         )
@@ -83,6 +85,7 @@ class DpadMotionEventTrackerTest {
                     scanCode = 0,
                     device = CONTROLLER_1_DEVICE,
                     repeatCount = 0,
+                    source = InputDevice.SOURCE_DPAD,
                 ),
             ),
         )
@@ -277,6 +280,7 @@ class DpadMotionEventTrackerTest {
             scanCode = 0,
             device = device,
             repeatCount = 0,
+            source = 0,
         )
     }
 
@@ -288,6 +292,7 @@ class DpadMotionEventTrackerTest {
             scanCode = 0,
             device = device,
             repeatCount = 0,
+            source = 0,
         )
     }
 }
