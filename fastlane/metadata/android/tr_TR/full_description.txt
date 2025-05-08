@@ -1,0 +1,55 @@
+# Klavyenizde veya oyun kumandanızda özel makrolar oluşturun, herhangi bir uygulamada ekran üstü düğmeler yapın ve ses düğmelerinizden yeni işlevler açın!
+
+Key Mapper, çok çeşitli düğme ve tuşları destekler*:
+
+- TÜM telefon düğmeleriniz (ses VE yan tuş)
+- Oyun kumandaları (D-pad, ABXY ve çoğu diğer tuşlar)
+- Klavyeler
+- Kulaklık setleri ve kulaklıklar
+- Parmak izi sensörü
+
+Yeterli tuş yok mu? Kendi ekran üstü düğme düzenlerinizi tasarlayın ve bunları gerçek tuşlar gibi yeniden atayın!
+
+
+## Ne tür kısayollar oluşturabilirim?
+--------------------------
+
+100'den fazla bireysel eylemle, sınır gökyüzüdür.
+Ekran dokunuşları ve hareketleri, klavye girişleri, uygulama açma, medya kontrolü ve hatta diğer uygulamalara doğrudan intent gönderme ile karmaşık makrolar oluşturun.
+
+
+## Ne kadar kontrole sahibim?
+---------------------------
+
+TETİKLEYİCİLER: Bir tuş haritasını nasıl tetikleyeceğinize siz karar verirsiniz. Uzun basma, çift basma, istediğiniz kadar basma! Farklı cihazlardaki tuşları birleştirin ve hatta ekran üstü düğmelerinizi de dahil edin.
+
+EYLEMLER: Yapmak istediğiniz şey için özel makrolar tasarlayın. 100'den fazla eylemi birleştirin ve her biri arasındaki gecikmeyi seçin. Yavaş görevleri otomatikleştirmek ve hızlandırmak için tekrarlayan eylemler ayarlayın.
+
+KISITLAMALAR: Tuş haritalarının ne zaman çalışacağını ve ne zaman çalışmayacağını siz seçersiniz. Sadece belirli bir uygulamada mı gerekli? Ya da medya oynatılırken mi? Kilit ekranınızda mı? Maksimum kontrol için tuş haritalarınızı kısıtlayın.
+
+* Çoğu cihaz zaten desteklenmektedir ve zamanla yeni cihazlar eklenmektedir. Sizin için çalışmıyorsa bize bildirin, cihazınıza öncelik verebiliriz.
+
+Şu anda desteklenmeyen:
+ - Fare düğmeleri
+ - Oyun kumandalarındaki joystick ve tetikler (LT, RT)
+
+
+Güvenlik ve erişilebilirlik hizmetleri
+---------------------------
+
+Bu uygulama, odaktaki uygulamayı algılamak ve tuş basımlarını kullanıcı tarafından tanımlanan tuş haritalarına uyarlamak için Android Erişilebilirlik API’sini kullanan Key Mapper Erişilebilirlik hizmetimizi içermektedir. Ayrıca, diğer uygulamaların üzerinde yardımcı Floating Button (Yüzen Düğme) katmanları çizmek için de kullanılmaktadır.
+
+Erişilebilirlik hizmetini çalıştırmayı kabul ettiğinizde, uygulama cihazınızı kullanırken tuş vuruşlarını izleyebilecektir. Ayrıca, uygulamada bu hareketleri kullanıyorsanız, kaydırma ve yakınlaştırma/daraltma hareketlerini de taklit edecektir.
+
+Herhangi bir kullanıcı verisi toplamayacak veya herhangi bir veriyi göndermek üzere internete bağlanmayacaktır.
+
+Erişilebilirlik hizmetimiz, yalnızca kullanıcı cihazındaki fiziksel bir tuşa bastığında tetiklenir. Kullanıcı, sistem erişilebilirlik ayarlarından bu hizmeti istediği zaman kapatabilir.
+
+Discord topluluğumuza gelip merhaba deyin!
+www.keymapper.club
+
+Kodu kendiniz görün! (Açık kaynak)
+code.keymapper.club
+
+Belgeleri okuyun:
+docs.keymapper.club
