@@ -39,14 +39,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.util.ui.compose.DraggableItem
-import io.github.sds100.keymapper.util.ui.compose.rememberDragDropState
 import io.github.sds100.keymapper.mappings.keymaps.ShortcutModel
 import io.github.sds100.keymapper.mappings.keymaps.ShortcutRow
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.LinkType
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.util.ui.compose.DraggableItem
+import io.github.sds100.keymapper.util.ui.compose.rememberDragDropState
 import kotlinx.coroutines.flow.update
 
 @OptIn(ExperimentalMaterial3Api::class)
