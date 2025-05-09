@@ -276,6 +276,13 @@ private fun UiElementListItem(
                 )
             }
 
+            if (model.nodeTooltipHint != null) {
+                TextWithLeadingLabel(
+                    title = stringResource(R.string.action_interact_ui_element_tooltip_label),
+                    text = model.nodeTooltipHint,
+                )
+            }
+
             if (model.nodeUniqueId != null) {
                 TextWithLeadingLabel(
                     title = stringResource(R.string.action_interact_ui_element_unique_id_label),
@@ -355,6 +362,7 @@ private fun Loaded() {
             nodeClassName = "android.widget.ImageButton",
             nodeViewResourceId = "menu_button",
             nodeUniqueId = "123456789",
+            nodeTooltipHint = "Open menu",
             interactionTypesText = "Tap, Tap and hold, Scroll forward",
             interactionTypes = setOf(
                 NodeInteractionType.CLICK,

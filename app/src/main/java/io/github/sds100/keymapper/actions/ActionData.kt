@@ -883,6 +883,8 @@ sealed class ActionData : Comparable<ActionData> {
         val nodeAction: NodeInteractionType,
         val packageName: String,
         val text: String?,
+        val tooltip: String?,
+        val hint: String?,
         val contentDescription: String?,
         val className: String?,
         val viewResourceId: String?,

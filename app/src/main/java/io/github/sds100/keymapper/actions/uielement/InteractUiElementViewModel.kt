@@ -89,6 +89,7 @@ class InteractUiElementViewModel(
         }
     }.stateIn(viewModelScope, SharingStarted.Lazily, State.Loading)
 
+    private val selectedElementEntity = MutableStateFlow<AccessibilityNodeEntity?>(null)
     private val _selectedElementState = MutableStateFlow<SelectedUiElementState?>(null)
     val selectedElementState: StateFlow<SelectedUiElementState?> =
         _selectedElementState.asStateFlow()
@@ -160,6 +161,8 @@ class InteractUiElementViewModel(
                 val modelString = buildString {
                     append(model.nodeText)
                     append(" ")
+                    append(model.nodeTooltipHint)
+                    append(" ")
                     append(model.nodeClassName)
                     append(" ")
                     append(model.nodeViewResourceId)
@@ -198,6 +201,7 @@ class InteractUiElementViewModel(
                 appName = appName,
                 appIcon = appIcon,
                 nodeText = action.text ?: action.contentDescription,
+                nodeToolTipHint = action.tooltip ?: action.hint,
                 nodeClassName = action.className,
                 nodeViewResourceId = action.viewResourceId,
                 nodeUniqueId = action.uniqueId,
@@ -211,7 +215,9 @@ class InteractUiElementViewModel(
 
     fun onDoneClick() {
         val selectedElementState = _selectedElementState.value
-        if (selectedElementState == null) {
+        val selectedElementEntity = selectedElementEntity.value
+
+        if (selectedElementState == null || selectedElementEntity == null) {
             return
         }
 
@@ -222,13 +228,15 @@ class InteractUiElementViewModel(
         val action = ActionData.InteractUiElement(
             description = selectedElementState.description,
             nodeAction = selectedElementState.selectedInteraction,
-            packageName = selectedElementState.packageName,
-            text = selectedElementState.nodeText,
-            contentDescription = selectedElementState.nodeText,
-            className = selectedElementState.nodeClassName,
-            viewResourceId = selectedElementState.nodeViewResourceId,
-            uniqueId = selectedElementState.nodeUniqueId,
-            nodeActions = selectedElementState.interactionTypes.map { it.first }.toSet(),
+            packageName = selectedElementEntity.packageName,
+            text = selectedElementEntity.text,
+            contentDescription = selectedElementEntity.contentDescription,
+            tooltip = selectedElementEntity.tooltip,
+            hint = selectedElementEntity.hint,
+            className = selectedElementEntity.className,
+            viewResourceId = selectedElementEntity.viewResourceId,
+            uniqueId = selectedElementEntity.uniqueId,
+            nodeActions = selectedElementEntity.actions,
         )
 
         viewModelScope.launch {
@@ -271,6 +279,7 @@ class InteractUiElementViewModel(
                 appIcon = appIcon,
                 nodeText = interaction.text ?: interaction.contentDescription,
                 nodeClassName = interaction.className,
+                nodeToolTipHint = interaction.tooltip ?: interaction.hint,
                 nodeViewResourceId = interaction.viewResourceId,
                 nodeUniqueId = interaction.uniqueId,
                 interactionTypes = buildInteractionTypeFilterItems(interaction.actions),
@@ -339,6 +348,7 @@ class InteractUiElementViewModel(
             nodeText = node.text ?: node.contentDescription,
             nodeClassName = node.className,
             nodeUniqueId = node.uniqueId,
+            nodeTooltipHint = node.tooltip ?: node.hint,
             interactionTypesText = node.actions.joinToString { getInteractionTypeString(it) },
             interactionTypes = node.actions,
             interacted = node.interacted,
@@ -390,6 +400,7 @@ data class SelectedUiElementState(
     val appName: String,
     val appIcon: ComposeIconInfo.Drawable?,
     val nodeText: String?,
+    val nodeToolTipHint: String?,
     val nodeClassName: String?,
     val nodeViewResourceId: String?,
     val nodeUniqueId: String?,
@@ -419,6 +430,7 @@ data class UiElementListItemModel(
     val id: Long,
     val nodeViewResourceId: String?,
     val nodeText: String?,
+    val nodeTooltipHint: String?,
     val nodeClassName: String?,
     val nodeUniqueId: String?,
     val interactionTypesText: String,

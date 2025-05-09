@@ -95,6 +95,8 @@ data class ActionEntity(
         const val EXTRA_ACCESSIBILITY_CONTENT_DESCRIPTION =
             "extra_accessibility_content_description"
         const val EXTRA_ACCESSIBILITY_TEXT = "extra_accessibility_text"
+        const val EXTRA_ACCESSIBILITY_TOOLTIP = "extra_accessibility_tooltip"
+        const val EXTRA_ACCESSIBILITY_HINT = "extra_accessibility_hint"
         const val EXTRA_ACCESSIBILITY_CLASS_NAME = "extra_accessibility_class_name"
         const val EXTRA_ACCESSIBILITY_VIEW_RESOURCE_ID = "extra_accessibility_view_resource_id"
         const val EXTRA_ACCESSIBILITY_UNIQUE_ID = "extra_accessibility_unique_id"

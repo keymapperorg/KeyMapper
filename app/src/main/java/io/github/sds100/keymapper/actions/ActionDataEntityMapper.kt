@@ -557,6 +557,12 @@ object ActionDataEntityMapper {
                 val text =
                     entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_TEXT).valueOrNull()
 
+                val tooltip =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_TOOLTIP).valueOrNull()
+
+                val hint =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_HINT).valueOrNull()
+
                 val className =
                     entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_CLASS_NAME).valueOrNull()
 
@@ -582,6 +588,8 @@ object ActionDataEntityMapper {
                     packageName = packageName,
                     text = text,
                     contentDescription = contentDescription,
+                    tooltip = tooltip,
+                    hint = hint,
                     className = className,
                     viewResourceId = viewResourceId,
                     uniqueId = uniqueId,
@@ -854,6 +862,10 @@ object ActionDataEntityMapper {
             }
 
             data.text?.let { add(EntityExtra(ActionEntity.EXTRA_ACCESSIBILITY_TEXT, it)) }
+
+            data.tooltip?.let { add(EntityExtra(ActionEntity.EXTRA_ACCESSIBILITY_TOOLTIP, it)) }
+
+            data.hint?.let { add(EntityExtra(ActionEntity.EXTRA_ACCESSIBILITY_HINT, it)) }
 
             data.className?.let {
                 add(

@@ -530,6 +530,17 @@ private fun SelectedElementSection(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        if (state.nodeToolTipHint != null) {
+            Text(
+                text = stringResource(R.string.action_interact_ui_element_tooltip_label),
+                style = MaterialTheme.typography.titleSmall,
+            )
+
+            Text(text = state.nodeToolTipHint, style = MaterialTheme.typography.bodyMedium)
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         if (state.nodeClassName != null) {
             Text(
                 text = stringResource(R.string.action_interact_ui_element_class_name_label),
@@ -575,7 +586,7 @@ private fun SelectedElementSection(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        KeyMapperDropdownMenu<NodeInteractionType>(
+        KeyMapperDropdownMenu(
             expanded = interactionTypeExpanded,
             onExpandedChange = { interactionTypeExpanded = it },
             values = state.interactionTypes,
@@ -612,6 +623,7 @@ private fun PreviewSelectedElement() {
                 appName = "Test App",
                 appIcon = ComposeIconInfo.Drawable(appIcon),
                 nodeText = "Test Node",
+                nodeToolTipHint = "Test tooltip",
                 nodeClassName = "android.widget.ImageButton",
                 nodeViewResourceId = "io.github.sds100.keymapper:id/menu_button",
                 nodeUniqueId = "123",

@@ -1147,8 +1147,9 @@
     <string name="action_interact_ui_element_interaction_details_title">Interaction details</string>
     <string name="action_interact_ui_element_description_label">Description</string>
     <string name="action_interact_ui_element_app_label">App</string>
-    <string name="action_interact_ui_element_text_label">Text / content description</string>
+    <string name="action_interact_ui_element_text_label">Text/content description</string>
     <string name="action_interact_ui_element_class_name_label">Class name</string>
+    <string name="action_interact_ui_element_tooltip_label">Tooltip/hint</string>
     <string name="action_interact_ui_element_view_id_label">View resource ID</string>
     <string name="action_interact_ui_element_unique_id_label">Unique ID</string>
     <string name="action_interact_ui_element_interaction_types_label">Interaction types</string>
