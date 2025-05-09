@@ -1283,6 +1283,7 @@
     <string name="unlock_product_button">Unlock (%s)</string>
     <string name="use_product_button">Use</string>
     <string name="loading_product_button">Loading…</string>
+    <string name="purchased_product_label">Purchased!</string>
     <string name="retry_loading_price_button">Retry fetching price</string>
     <string name="purchasing_error_cancelled">Purchase cancelled.</string>
     <string name="purchasing_error_not_implemented">This requires a paid feature that can only be bought by downloading Key Mapper from Google Play.</string>

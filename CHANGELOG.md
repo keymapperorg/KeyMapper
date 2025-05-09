@@ -7,6 +7,7 @@
 - #699 Time constraints ⏰
 - #257 Action to interact with user interface elements inside other apps.
 - #1663 Actions to stop, step forward, and step backward playing media.
+- #1682 Show "Purchased!" text next to the use button for advanced triggers.
 
 ## Changed
 
