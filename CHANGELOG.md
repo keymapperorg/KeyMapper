@@ -18,6 +18,7 @@
 - #1683 key event actions work in Minecraft and other apps again.
 - Export log files as .txt instead of .zip files.
 - #1684 Removed the redundant and broken refresh devices button when configuring a key event action because they are automatically refreshed anyway.
+- #1687 restoring key map groups would sometimes fail.
 
 ## [3.0.1](https://github.com/sds100/KeyMapper/releases/tag/v3.0.1)
 

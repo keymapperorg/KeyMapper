@@ -141,6 +141,61 @@ class BackupManagerTest {
      * parent must be restored first. Otherwise the SqliteConstraintException will be thrown.
      */
     @Test
+    fun `restore groups breadth first so parents exist before children are restored with child first in the backup`() = runTest(testDispatcher) {
+        val parentGroup1 = GroupEntity(
+            uid = "parent_group_1_uid",
+            name = "parent_group_1_name",
+            parentUid = null,
+            lastOpenedDate = 0L,
+        )
+
+        val parentGroup2 = GroupEntity(
+            uid = "parent_group_2_uid",
+            name = "parent_group_2_name",
+            parentUid = null,
+            lastOpenedDate = 0L,
+        )
+
+        val childGroup = GroupEntity(
+            uid = "child_group_uid",
+            name = "child_group_name",
+            parentUid = parentGroup1.uid,
+            lastOpenedDate = 0L,
+        )
+
+        val grandChildGroup = GroupEntity(
+            uid = "grand_child_group_uid",
+            name = "grand_child_group_name",
+            parentUid = childGroup.uid,
+            lastOpenedDate = 0L,
+        )
+
+        val backupContent = BackupContent(
+            appVersion = Constants.VERSION_CODE,
+            dbVersion = AppDatabase.DATABASE_VERSION,
+            groups = listOf(childGroup, grandChildGroup, parentGroup1),
+        )
+
+        inOrder(mockGroupRepository) {
+            backupManager.restore(
+                RestoreType.REPLACE,
+                backupContent,
+                emptyList(),
+                currentTime = 0L,
+            )
+
+            verify(mockGroupRepository).insert(parentGroup1)
+            verify(mockGroupRepository).insert(childGroup)
+            verify(mockGroupRepository).insert(grandChildGroup)
+            verify(mockGroupRepository, never()).update(any())
+        }
+    }
+
+    /**
+     * Issue #1655. If the list of groups in the backup has a child before the parent then the
+     * parent must be restored first. Otherwise the SqliteConstraintException will be thrown.
+     */
+    @Test
     fun `restore groups breadth first so parents exist before children are restored`() = runTest(testDispatcher) {
         val parentGroup1 = GroupEntity(
             uid = "parent_group_1_uid",
@@ -184,10 +239,10 @@ class BackupManagerTest {
                 currentTime = 0L,
             )
 
+            verify(mockGroupRepository).insert(parentGroup2)
             verify(mockGroupRepository).insert(parentGroup1)
             verify(mockGroupRepository).insert(childGroup)
             verify(mockGroupRepository).insert(grandChildGroup)
-            verify(mockGroupRepository).insert(parentGroup2)
             verify(mockGroupRepository, never()).update(any())
         }
     }
