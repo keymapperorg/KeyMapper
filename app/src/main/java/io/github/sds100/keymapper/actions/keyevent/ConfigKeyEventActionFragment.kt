@@ -175,12 +175,6 @@ class ConfigKeyEventActionFragment : Fragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        viewModel.rebuildUiState()
-    }
-
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()

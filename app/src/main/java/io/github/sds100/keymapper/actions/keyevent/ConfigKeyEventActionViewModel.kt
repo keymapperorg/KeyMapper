@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
@@ -63,11 +62,8 @@ class ConfigKeyEventActionViewModel(
     private val _returnResult = MutableSharedFlow<ActionData.InputKeyEvent>()
     val returnResult = _returnResult.asSharedFlow()
 
-    private val rebuildUiState = MutableSharedFlow<Unit>()
-
     init {
         viewModelScope.launch {
-
             combine(
                 keyEventState,
                 useCase.inputDevices,
@@ -176,14 +172,6 @@ class ConfigKeyEventActionViewModel(
                 ),
             )
         }
-    }
-
-    fun refreshDevices() {
-        rebuildUiState()
-    }
-
-    fun rebuildUiState() {
-        runBlocking { rebuildUiState.emit(Unit) }
     }
 
     private fun buildUiState(

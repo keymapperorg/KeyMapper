@@ -28,7 +28,9 @@
             android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="@dimen/bottom_app_bar_height">
+            android:layout_marginBottom="@dimen/bottom_app_bar_height"
+            app:layout_anchor="@+id/scrollView"
+            app:layout_anchorGravity="center">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -112,7 +114,7 @@
                     android:layout_marginEnd="16dp"
                     android:hint="@string/hint_from_device"
                     android:visibility="@{viewModel.uiState.isDevicePickerShown ? View.VISIBLE : View.GONE}"
-                    app:layout_constraintEnd_toStartOf="@id/buttonRefreshDevices"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/checkBoxUseShell">
 
@@ -125,20 +127,6 @@
                         tools:ignore="LabelFor" />
 
                 </com.google.android.material.textfield.TextInputLayout>
-
-                <io.github.sds100.keymapper.util.ui.SquareImageButton
-                    android:id="@+id/buttonRefreshDevices"
-                    style="@style/Widget.Material3.Button.TextButton"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginEnd="16dp"
-                    android:onClick="@{() -> viewModel.refreshDevices()}"
-                    android:tint="?attr/colorOnSurface"
-                    android:visibility="@{viewModel.uiState.isDevicePickerShown ? View.VISIBLE : View.GONE}"
-                    app:layout_constraintBottom_toBottomOf="@id/menuFromDevice"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/menuFromDevice"
-                    app:srcCompat="@drawable/ic_baseline_refresh_24" />
 
                 <TextView
                     android:id="@+id/headerModifiers"
@@ -172,12 +160,12 @@
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/appBar"
-            app:menuAlignmentMode="auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             app:fabAlignmentMode="end"
             app:fabAnimationMode="slide"
+            app:menuAlignmentMode="auto"
             app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

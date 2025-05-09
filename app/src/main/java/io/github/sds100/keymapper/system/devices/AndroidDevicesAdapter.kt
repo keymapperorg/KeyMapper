@@ -125,8 +125,8 @@ class AndroidDevicesAdapter(
     }
 
     override fun getInputDeviceName(descriptor: String): Result<String> {
-        InputDevice.getDeviceIds().forEach {
-            val device = InputDevice.getDevice(it) ?: return@forEach
+        for (id in InputDevice.getDeviceIds()) {
+            val device = InputDevice.getDevice(id) ?: continue
 
             if (device.descriptor == descriptor) {
                 return Success(device.name)
@@ -139,8 +139,8 @@ class AndroidDevicesAdapter(
     private fun updateInputDevices() {
         val devices = mutableListOf<InputDeviceInfo>()
 
-        InputDevice.getDeviceIds().forEach {
-            val device = InputDevice.getDevice(it) ?: return@forEach
+        for (id in InputDevice.getDeviceIds()) {
+            val device = InputDevice.getDevice(id) ?: continue
 
             devices.add(InputDeviceUtils.createInputDeviceInfo(device))
         }
