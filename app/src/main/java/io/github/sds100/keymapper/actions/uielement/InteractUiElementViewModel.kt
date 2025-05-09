@@ -38,6 +38,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -118,6 +119,15 @@ class InteractUiElementViewModel(
     private val interactionsByPackage: StateFlow<State<List<AccessibilityNodeEntity>>> = selectedApp
         .filterNotNull()
         .flatMapLatest { packageName -> useCase.getInteractionsByPackage(packageName) }
+        .onEach { state ->
+            // Automatically show additional elements if no elements that were interacted with
+            // were detected.
+            state.ifIsData { list ->
+                if (list.count { it.interacted } == 0) {
+                    showAdditionalElements.update { true }
+                }
+            }
+        }
         .stateIn(viewModelScope, SharingStarted.Lazily, State.Loading)
 
     private val elementListItems: Flow<State<List<UiElementListItemModel>>> = interactionsByPackage
@@ -258,6 +268,7 @@ class InteractUiElementViewModel(
 
     fun onSelectApp(packageName: String) {
         elementSearchQuery.update { null }
+        showAdditionalElements.update { false }
         selectedApp.update { packageName }
     }
 
