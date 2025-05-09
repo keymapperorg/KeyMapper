@@ -526,9 +526,8 @@ private fun SelectedElementSection(
             )
 
             Text(text = state.nodeText, style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(8.dp))
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         if (state.nodeToolTipHint != null) {
             Text(
@@ -537,9 +536,8 @@ private fun SelectedElementSection(
             )
 
             Text(text = state.nodeToolTipHint, style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(8.dp))
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         if (state.nodeClassName != null) {
             Text(

@@ -268,7 +268,11 @@ class InteractUiElementViewModel(
 
     fun onSelectApp(packageName: String) {
         elementSearchQuery.update { null }
-        showAdditionalElements.update { false }
+
+        if (packageName != selectedApp.value) {
+            showAdditionalElements.update { false }
+        }
+
         selectedApp.update { packageName }
     }
 
@@ -282,9 +286,19 @@ class InteractUiElementViewModel(
 
             val selectedInteraction =
                 NodeInteractionType.entries.first { interaction.actions.contains(it) }
+            val interactionText = getInteractionTypeString(selectedInteraction)
+            val descriptionElement =
+                interaction.text ?: interaction.contentDescription ?: interaction.tooltip
+                    ?: interaction.hint ?: interaction.viewResourceId
+
+            val description = if (descriptionElement == null) {
+                ""
+            } else {
+                "$interactionText: $descriptionElement"
+            }
 
             val newState = SelectedUiElementState(
-                description = "",
+                description = description,
                 packageName = interaction.packageName,
                 appName = appName,
                 appIcon = appIcon,
