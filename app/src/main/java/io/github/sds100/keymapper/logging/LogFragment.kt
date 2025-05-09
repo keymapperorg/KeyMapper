@@ -44,7 +44,7 @@ class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
     private val recyclerViewController by lazy { RecyclerViewController() }
 
     private val saveLogToFileLauncher =
-        registerForActivityResult(CreateDocument(FileUtils.MIME_TYPE_ZIP)) {
+        registerForActivityResult(CreateDocument(FileUtils.MIME_TYPE_TEXT)) {
             it ?: return@registerForActivityResult
 
             viewModel.onPickFileToSaveTo(it.toString())

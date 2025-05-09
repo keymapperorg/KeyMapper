@@ -15,6 +15,7 @@
 ## Bug fixes
 
 - #1683 key event actions work in Minecraft and other apps again.
+- Export log files as .txt instead of .zip files.
 
 ## [3.0.1](https://github.com/sds100/KeyMapper/releases/tag/v3.0.1)
 
