@@ -311,6 +311,7 @@ class InteractUiElementViewModel(
                 selectedInteraction = selectedInteraction,
             )
 
+            selectedElementEntity.update { interaction }
             _selectedElementState.update { newState }
         }
     }
