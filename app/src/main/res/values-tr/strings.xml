@@ -885,7 +885,6 @@
     <string name="action_interact_ui_element_interaction_type_click">Dokun</string>
     <string name="action_interact_ui_element_interaction_type_long_click">Dokun ve basılı tut</string>
     <string name="action_interact_ui_element_interaction_type_focus">Odakla</string>
-    <string name="action_interact_ui_element_interaction_type_select">Seç</string>
     <string name="action_interact_ui_element_interaction_type_scroll_forward">İleri kaydır</string>
     <string name="action_interact_ui_element_interaction_type_scroll_backward">Geriye kaydır</string>
     <string name="action_interact_ui_element_interaction_type_expand">Genişlet</string>
