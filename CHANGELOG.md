@@ -2,6 +2,10 @@
 
 #### TO BE RELEASED
 
+## Added
+
+- #1637 show a home screen error if notification permission is not granted.
+
 ## Bug fixes
 
 - Do not automatically select the key mapper keyboard when the accessibility service starts.

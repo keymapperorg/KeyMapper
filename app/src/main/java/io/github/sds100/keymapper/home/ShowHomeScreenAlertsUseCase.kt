@@ -52,6 +52,13 @@ class ShowHomeScreenAlertsUseCaseImpl(
     override fun disableLogging() {
         preferences.set(Keys.log, false)
     }
+
+    override val isNotificationPermissionGranted: Flow<Boolean> =
+        permissions.isGrantedFlow(Permission.POST_NOTIFICATIONS)
+
+    override fun requestNotificationPermission() {
+        permissions.request(Permission.POST_NOTIFICATIONS)
+    }
 }
 
 interface ShowHomeScreenAlertsUseCase {
@@ -68,4 +75,7 @@ interface ShowHomeScreenAlertsUseCase {
 
     val isLoggingEnabled: Flow<Boolean>
     fun disableLogging()
+
+    val isNotificationPermissionGranted: Flow<Boolean>
+    fun requestNotificationPermission()
 }

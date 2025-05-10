@@ -90,6 +90,7 @@
     <string name="home_success_accessibility_service_is_enabled">The accessibility service is enabled! Your key maps should work.</string>
     <string name="home_error_logging_enabled">Extra logging is turned on! Turn this off if you aren\'t trying to fix an issue.</string>
     <string name="home_error_logging_enabled_button">Turn off</string>
+    <string name="home_error_notification_permission">Turn on notifications for better on-screen messages, more actions and service updates.</string>
 
     <string name="title_about">About</string>
     <!--  Action descriptions  -->
