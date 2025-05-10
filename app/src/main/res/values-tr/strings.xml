@@ -41,8 +41,6 @@
     <string name="content_description_done_configuring_coordinate">Koordinat seçimi tamamlandı</string>
     <string name="clip_key_mapper_log">Key Mapper günlüğü</string>
     <string name="whats_new">Neler Yeni</string>
-    <string name="caption_action_type_sound">Ses dosyası, Key Mapper’ın özel veri klasörüne kopyalanacak; bu, dosya taşınsa veya silinse bile eylemlerinizin çalışmaya devam edeceği anlamına gelir. Ayrıca, tuş eşlemelerinizle birlikte zip klasöründe yedeklenecektir.
-    Kaydedilen ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="caption_no_paired_bt_devices">Eşleştirilmiş cihaz bulunamadı. Bluetooth açık mı?</string>
     <string name="create_key_map_shortcut_footer">Kısayol olarak kullanmak için bir tuş eşlemesine dokunun.</string>
     <string name="create_key_map_shortcut_app_title">Tuş eşleme kısayolu oluştur</string>
