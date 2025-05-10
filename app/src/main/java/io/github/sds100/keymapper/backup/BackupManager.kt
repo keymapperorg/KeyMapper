@@ -54,7 +54,9 @@ import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.Success
+import io.github.sds100.keymapper.util.TreeNode
 import io.github.sds100.keymapper.util.UuidGenerator
+import io.github.sds100.keymapper.util.breadFirstTraversal
 import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.then
 import kotlinx.coroutines.CoroutineScope
@@ -249,6 +251,12 @@ class BackupManagerImpl(
 
                 // Do nothing. It just removed the group name index.
                 JsonMigration(17, 18) { json -> json },
+
+                // Do nothing. Just added the accessibility node table.
+                JsonMigration(18, 19) { json -> json },
+
+                // Do nothing. Just added columns to the accessibility node table.
+                JsonMigration(19, 20) { json -> json },
             )
 
             if (keyMapListJsonArray != null) {
@@ -467,55 +475,11 @@ class BackupManagerImpl(
 
                 // Group parents must be restored first so an SqliteConstraintException
                 // is not thrown when restoring a child group.
-                val groupsToRestoreMap = backupContent.groups.associateBy { it.uid }.toMutableMap()
-                val groupRestoreQueue = LinkedList<GroupEntity>()
+                val groupRestoreTrees = buildGroupTrees(backupContent.groups)
 
-                // Order the groups into a queue such that a parent is always before a child.
-                for (group in backupContent.groups) {
-                    if (groupsToRestoreMap.containsKey(group.uid)) {
-                        groupRestoreQueue.addFirst(group)
-                    }
-
-                    var parent = groupsToRestoreMap[group.parentUid]
-
-                    while (parent != null) {
-                        groupRestoreQueue.addFirst(parent)
-                        groupsToRestoreMap.remove(parent.uid)
-                        parent = groupsToRestoreMap[parent.parentUid]
-                    }
-                }
-
-                for (group in groupRestoreQueue) {
-                    // Set the last opened date to now so that the imported group
-                    // shows as the most recent.
-                    var modifiedGroup = group.copy(lastOpenedDate = currentTime)
-
-                    // If the group's parent wasn't backed up or doesn't exist
-                    // then set it the parent to the root group
-                    if (!groupUids.contains(group.parentUid)) {
-                        modifiedGroup = modifiedGroup.copy(parentUid = null)
-                    }
-
-                    val siblings =
-                        groupRepository.getGroupsByParent(modifiedGroup.parentUid).first()
-
-                    modifiedGroup = RepositoryUtils.saveUniqueName(
-                        modifiedGroup,
-                        saveBlock = { renamedGroup ->
-                            // Do not rename the group with a (1) if it is the same UID. Just overwrite the name.
-                            if (siblings.any { sibling -> sibling.uid != renamedGroup.uid && sibling.name == renamedGroup.name }) {
-                                throw IllegalStateException("Non unique group name")
-                            }
-                        },
-                        renameBlock = { entity, suffix ->
-                            entity.copy(name = "${entity.name} $suffix")
-                        },
-                    )
-
-                    if (existingGroupUids.contains(modifiedGroup.uid)) {
-                        groupRepository.update(modifiedGroup)
-                    } else {
-                        groupRepository.insert(modifiedGroup)
+                for (tree in groupRestoreTrees) {
+                    tree.breadFirstTraversal { group ->
+                        restoreGroup(group, currentTime, groupUids, existingGroupUids)
                     }
                 }
             }
@@ -607,6 +571,91 @@ class BackupManagerImpl(
 
             return Error.Exception(e)
         }
+    }
+
+    private suspend fun restoreGroup(
+        group: GroupEntity,
+        currentTime: Long,
+        groupUids: Set<String>,
+        existingGroupUids: Set<String>,
+    ) {
+        // Set the last opened date to now so that the imported group
+        // shows as the most recent.
+        var modifiedGroup = group.copy(lastOpenedDate = currentTime)
+
+        // If the group's parent wasn't backed up or doesn't exist
+        // then set it the parent to the root group
+        if (!groupUids.contains(group.parentUid)) {
+            modifiedGroup = modifiedGroup.copy(parentUid = null)
+        }
+
+        val siblings =
+            groupRepository.getGroupsByParent(modifiedGroup.parentUid).first()
+
+        modifiedGroup = RepositoryUtils.saveUniqueName(
+            modifiedGroup,
+            saveBlock = { renamedGroup ->
+                // Do not rename the group with a (1) if it is the same UID. Just overwrite the name.
+                if (siblings.any { sibling -> sibling.uid != renamedGroup.uid && sibling.name == renamedGroup.name }) {
+                    throw IllegalStateException("Non unique group name")
+                }
+            },
+            renameBlock = { entity, suffix ->
+                entity.copy(name = "${entity.name} $suffix")
+            },
+        )
+
+        if (existingGroupUids.contains(modifiedGroup.uid)) {
+            groupRepository.update(modifiedGroup)
+        } else {
+            groupRepository.insert(modifiedGroup)
+        }
+    }
+
+    /**
+     * Converts the group relationships into trees. This first finds all the root groups which
+     * have no parent. Then it loops over all the other groups indefinitely until they have been
+     * added to their parent. If the parent does not exist while looping then it is skipped and
+     * processed in the next iteration.
+     *
+     * @return A list of the root nodes for all the group trees.
+     */
+    private fun buildGroupTrees(groups: List<GroupEntity>): List<TreeNode<GroupEntity>> {
+        if (groups.isEmpty()) {
+            return emptyList()
+        }
+
+        val nodeMap = mutableMapOf<String, TreeNode<GroupEntity>>()
+        val rootNodes = mutableListOf<TreeNode<GroupEntity>>()
+
+        val groupQueue = LinkedList<GroupEntity>()
+
+        for (group in groups) {
+            if (group.parentUid == null) {
+                val node = TreeNode(group)
+                nodeMap[group.uid] = node
+                rootNodes.add(node)
+            } else {
+                groupQueue.add(group)
+            }
+        }
+
+        while (groupQueue.isNotEmpty()) {
+            val groupsToRemove = mutableListOf<GroupEntity>()
+
+            for (group in groupQueue) {
+                if (nodeMap.containsKey(group.parentUid)) {
+                    val node = TreeNode(group)
+                    nodeMap[group.uid] = node
+                    nodeMap[group.parentUid]!!.children.add(node)
+                    groupsToRemove.add(group)
+                }
+            }
+
+            groupQueue.removeAll(groupsToRemove.toSet())
+        }
+
+        return rootNodes
     }
 
     private suspend fun appendKeyMapsInRepository(keyMaps: List<KeyMapEntity>) = withContext(dispatchers.default()) {

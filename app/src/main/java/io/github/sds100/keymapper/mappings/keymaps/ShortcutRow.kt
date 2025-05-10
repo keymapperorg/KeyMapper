@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
@@ -97,6 +98,8 @@ private fun ShortcutButton(
                 text = text,
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }
@@ -133,6 +136,27 @@ private fun PreviewDrawable() {
                     ShortcutModel(
                         icon = ComposeIconInfo.Drawable(icon),
                         text = stringResource(R.string.trigger_key_shortcut_add_fingerprint_gesture),
+                        data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
+                    ),
+                ),
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewMultipleLines() {
+    val ctx = LocalContext.current
+    val icon = ctx.drawable(R.mipmap.ic_launcher_round)
+
+    KeyMapperTheme {
+        Surface {
+            ShortcutRow(
+                shortcuts = setOf(
+                    ShortcutModel(
+                        icon = ComposeIconInfo.Drawable(icon),
+                        text = "Line 1\nLine 2\nLine 3",
                         data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
                     ),
                 ),

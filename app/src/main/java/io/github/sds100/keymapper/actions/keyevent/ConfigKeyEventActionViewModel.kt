@@ -27,13 +27,13 @@ import io.github.sds100.keymapper.util.ui.navigate
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
@@ -51,34 +51,24 @@ class ConfigKeyEventActionViewModel(
 
     private val keyEventState = MutableStateFlow(KeyEventState())
 
-    private val _uiState = MutableStateFlow(
+    val uiState: StateFlow<ConfigKeyEventUiState> = combine(
+        keyEventState,
+        useCase.inputDevices,
+        useCase.showDeviceDescriptors,
+    ) { state, inputDevices, showDeviceDescriptors ->
+        buildUiState(state, inputDevices, showDeviceDescriptors)
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
         buildUiState(
             keyEventState.value,
             inputDeviceList = emptyList(),
             showDeviceDescriptors = false,
         ),
     )
-    val uiState = _uiState.asStateFlow()
 
     private val _returnResult = MutableSharedFlow<ActionData.InputKeyEvent>()
     val returnResult = _returnResult.asSharedFlow()
-
-    private val rebuildUiState = MutableSharedFlow<Unit>()
-
-    init {
-        viewModelScope.launch {
-
-            combine(
-                keyEventState,
-                useCase.inputDevices,
-                useCase.showDeviceDescriptors,
-            ) { state, inputDevices, showDeviceDescriptors ->
-                buildUiState(state, inputDevices, showDeviceDescriptors)
-            }.collectLatest {
-                _uiState.value = it
-            }
-        }
-    }
 
     fun setModifierKeyChecked(modifier: Int, isChecked: Boolean) {
         val oldMetaState = keyEventState.value.metaState
@@ -143,17 +133,15 @@ class ConfigKeyEventActionViewModel(
     }
 
     fun chooseDevice(index: Int) {
-        viewModelScope.launch {
-            val chosenDevice = uiState.value.deviceListItems.getOrNull(index)
+        val chosenDevice = uiState.value.deviceListItems.getOrNull(index)
 
-            if (chosenDevice == null) {
-                return@launch
-            }
-
-            keyEventState.value = keyEventState.value.copy(
-                chosenDevice = chosenDevice,
-            )
+        if (chosenDevice == null) {
+            return
         }
+
+        keyEventState.value = keyEventState.value.copy(
+            chosenDevice = chosenDevice,
+        )
     }
 
     fun onDoneClick() {
@@ -176,14 +164,6 @@ class ConfigKeyEventActionViewModel(
                 ),
             )
         }
-    }
-
-    fun refreshDevices() {
-        rebuildUiState()
-    }
-
-    fun rebuildUiState() {
-        runBlocking { rebuildUiState.emit(Unit) }
     }
 
     private fun buildUiState(

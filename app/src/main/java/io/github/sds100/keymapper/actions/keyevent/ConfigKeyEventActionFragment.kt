@@ -51,6 +51,14 @@ class ConfigKeyEventActionFragment : Fragment() {
     val binding: FragmentConfigKeyEventBinding
         get() = _binding!!
 
+    private val deviceArrayAdapter: ArrayAdapter<String> by lazy {
+        ArrayAdapter<String>(
+            requireContext(),
+            R.layout.dropdown_menu_popup_item,
+            mutableListOf(),
+        )
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -98,47 +106,9 @@ class ConfigKeyEventActionFragment : Fragment() {
             findNavController().navigateUp()
         }
 
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.returnResult.collectLatest {
-                setFragmentResult(
-                    requestKey,
-                    Bundle().apply { putJsonSerializable(EXTRA_RESULT, it) },
-                )
-
-                findNavController().navigateUp()
-            }
-        }
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.uiState.collectLatest { state ->
-                binding.epoxyRecyclerViewModifiers.withModels {
-                    state.modifierListItems.forEach { listItem ->
-                        configuredCheckBox(listItem) { isChecked ->
-                            viewModel.setModifierKeyChecked(listItem.id.toInt(), isChecked)
-                        }
-                    }
-                }
-
-                ArrayAdapter<String>(
-                    requireContext(),
-                    R.layout.dropdown_menu_popup_item,
-                    mutableListOf(),
-                ).apply {
-                    clear()
-                    add(str(R.string.from_no_device))
-
-                    state.deviceListItems.forEach {
-                        add(it.name)
-                    }
-
-                    binding.dropdownDeviceId.setAdapter(this)
-                }
-
-                binding.textInputLayoutKeyCode.error = state.keyCodeErrorMessage
-            }
-        }
-
         binding.dropdownDeviceId.apply {
+            setAdapter(deviceArrayAdapter)
+
             // set the default value
             setText(str(R.string.from_no_device), false)
 
@@ -173,12 +143,44 @@ class ConfigKeyEventActionFragment : Fragment() {
                 }
             }
         }
-    }
 
-    override fun onResume() {
-        super.onResume()
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.returnResult.collectLatest {
+                setFragmentResult(
+                    requestKey,
+                    Bundle().apply { putJsonSerializable(EXTRA_RESULT, it) },
+                )
 
-        viewModel.rebuildUiState()
+                findNavController().navigateUp()
+            }
+        }
+
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.uiState.collect { state ->
+                binding.epoxyRecyclerViewModifiers.withModels {
+                    state.modifierListItems.forEach { listItem ->
+                        configuredCheckBox(listItem) { isChecked ->
+                            viewModel.setModifierKeyChecked(listItem.id.toInt(), isChecked)
+                        }
+                    }
+                }
+
+                deviceArrayAdapter.apply {
+                    clear()
+                    add(str(R.string.from_no_device))
+                    for (device in state.deviceListItems) {
+                        add(device.name)
+                    }
+                    notifyDataSetChanged()
+                }
+
+                // Filtering must be false so that the dropdown items aren't cleared
+                // when setting text.
+                binding.dropdownDeviceId.setText(state.chosenDeviceName, false)
+
+                binding.textInputLayoutKeyCode.error = state.keyCodeErrorMessage
+            }
+        }
     }
 
     override fun onDestroyView() {

@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.actions
 
 import android.accessibilityservice.AccessibilityService
 import android.os.Build
+import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import io.github.sds100.keymapper.R
@@ -10,6 +11,7 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeAction
+import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeModel
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
@@ -65,6 +67,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import splitties.bitflags.withFlag
@@ -150,11 +153,19 @@ class PerformActionsUseCaseImpl(
             is ActionData.InputKeyEvent -> {
                 val deviceId: Int = getDeviceIdForKeyEventAction(action)
 
+                // See issue #1683. Some apps ignore key events which do not have a source.
+                val source = when {
+                    InputEventUtils.isDpadKeyCode(action.keyCode) -> InputDevice.SOURCE_DPAD
+                    InputEventUtils.isGamepadButton(action.keyCode) -> InputDevice.SOURCE_GAMEPAD
+                    else -> InputDevice.SOURCE_KEYBOARD
+                }
+
                 val model = InputKeyModel(
                     keyCode = action.keyCode,
                     inputType = inputEventType,
                     metaState = keyMetaState.withFlag(action.metaState),
                     deviceId = deviceId,
+                    source = source,
                 )
 
                 result = when {
@@ -219,6 +230,18 @@ class PerformActionsUseCaseImpl(
 
             is ActionData.ControlMediaForApp.Rewind -> {
                 result = mediaAdapter.rewind(action.packageName)
+            }
+
+            is ActionData.ControlMediaForApp.Stop -> {
+                result = mediaAdapter.stop(action.packageName)
+            }
+
+            is ActionData.ControlMediaForApp.StepForward -> {
+                result = mediaAdapter.stepForward(action.packageName)
+            }
+
+            is ActionData.ControlMediaForApp.StepBackward -> {
+                result = mediaAdapter.stepBackward(action.packageName)
             }
 
             is ActionData.Rotation.CycleRotations -> {
@@ -338,7 +361,7 @@ class PerformActionsUseCaseImpl(
 
             is ActionData.Sound -> {
                 result = soundsManager.getSound(action.soundUid).then { file ->
-                    mediaAdapter.playSoundFile(file.uri, VolumeStream.ACCESSIBILITY)
+                    mediaAdapter.playFile(file.uri, VolumeStream.ACCESSIBILITY)
                 }
             }
 
@@ -543,6 +566,18 @@ class PerformActionsUseCaseImpl(
 
             is ActionData.ControlMedia.Rewind -> {
                 result = mediaAdapter.rewind()
+            }
+
+            is ActionData.ControlMedia.Stop -> {
+                result = mediaAdapter.stop()
+            }
+
+            is ActionData.ControlMedia.StepForward -> {
+                result = mediaAdapter.stepForward()
+            }
+
+            is ActionData.ControlMedia.StepBackward -> {
+                result = mediaAdapter.stepBackward()
             }
 
             is ActionData.GoBack -> {
@@ -799,6 +834,19 @@ class PerformActionsUseCaseImpl(
                     authorizationHeader = action.authorizationHeader,
                 )
             }
+
+            is ActionData.InteractUiElement -> {
+                if (accessibilityService.activeWindowPackage.first() != action.packageName) {
+                    result = Error.UiElementNotFound
+                } else {
+                    result = accessibilityService.performActionOnNode(
+                        findNode = { node ->
+                            matchAccessibilityNode(node, action)
+                        },
+                        performAction = { AccessibilityNodeAction(action = action.nodeAction.accessibilityActionId) },
+                    ).otherwise { Error.UiElementNotFound }
+                }
+            }
         }
 
         when (result) {
@@ -890,6 +938,49 @@ class PerformActionsUseCaseImpl(
         onFailure {
             popupMessageAdapter.showPopupMessage(it.getFullMessage(resourceProvider))
         }
+    }
+
+    private fun matchAccessibilityNode(
+        node: AccessibilityNodeModel,
+        action: ActionData.InteractUiElement,
+    ): Boolean {
+        if (!node.actions.contains(action.nodeAction.accessibilityActionId)) {
+            return false
+        }
+
+        if (compareIfNonNull(node.uniqueId, action.uniqueId)) {
+            return true
+        }
+
+        if (action.contentDescription == null && action.text == null) {
+            if (compareIfNonNull(node.viewResourceId, action.viewResourceId)) {
+                return true
+            }
+
+            if (compareIfNonNull(node.className, action.className)) {
+                return true
+            }
+        } else {
+            if (compareIfNonNull(node.contentDescription, action.contentDescription) ||
+                compareIfNonNull(node.text, action.text)
+            ) {
+                if (action.viewResourceId != null) {
+                    return node.viewResourceId == action.viewResourceId
+                }
+
+                if (action.className != null) {
+                    return node.className == action.className
+                }
+
+                return true
+            }
+        }
+
+        return false
+    }
+
+    private fun <T> compareIfNonNull(a: T?, b: T?): Boolean {
+        return a != null && b != null && a == b
     }
 }
 

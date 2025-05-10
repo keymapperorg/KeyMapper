@@ -1,0 +1,71 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+
+# Android Native (Jetpack Compose)
+
+# Android Jetpack Compose .cursorrules
+
+## Flexibility Notice
+**Note:** This is a recommended project structure, but be flexible and adapt to existing project structures. Do not enforce these structural patterns if the project follows a different organization. Focus on maintaining consistency with the existing project architecture while applying Jetpack Compose best practices.
+
+## Project Architecture and Best Practices
+```kotlin
+val androidJetpackComposeBestPractices = listOf(
+    "Adapt to existing project architecture while maintaining clean code principles",
+    "Follow Material Design 3 guidelines and components",
+    "Implement clean architecture with domain, data, and presentation layers",
+    "Use Kotlin coroutines and Flow for asynchronous operations",
+    "Implement dependency injection using Hilt",
+    "Follow unidirectional data flow with ViewModel and UI State",
+    "Use Compose navigation for screen management",
+    "Implement proper state hoisting and composition"
+)
+```
+
+## Folder Structure
+**Note:** This is a reference structure. Adapt to the project's existing organization.
+```plaintext
+app/
+  src/
+    main/
+      java/io/github/sds100/keymapper
+        actions/
+        constraints/
+        groups/
+        home/
+        mappings/
+            keymaps/
+        utils/
+      res/
+        values/
+        drawable/
+        mipmap/
+    test/
+    androidTest/
+```
+
+## Compose UI Guidelines
+1. Use `remember` and `derivedStateOf` appropriately
+2. Implement proper recomposition optimization
+3. Use proper Compose modifiers ordering
+4. Follow composable function naming conventions
+5. Implement proper preview annotations
+6. Use proper state management with `MutableState`
+7. Implement proper error handling and loading states
+8. Use proper theming with `MaterialTheme`
+9. Follow accessibility guidelines
+10. Implement proper animation patterns
+
+## Performance Guidelines
+1. Minimize recomposition using proper keys
+2. Use proper lazy loading with `LazyColumn` and `LazyRow`
+3. Implement efficient image loading
+4. Use proper state management to prevent unnecessary updates
+5. Follow proper lifecycle awareness
+6. Implement proper memory management
+7. Use proper background processing
+
+

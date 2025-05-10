@@ -7,6 +7,8 @@ import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.then
 import io.github.sds100.keymapper.util.valueOrNull
+import java.time.LocalDate
+import java.time.ZoneOffset
 
 class KeyMapConstraintsComparator(
     private val displayConstraints: DisplayConstraintUseCase,
@@ -125,6 +127,11 @@ class KeyMapConstraintsComparator(
             is Constraint.WifiOn -> Success("")
             is Constraint.LockScreenNotShowing -> Success("")
             is Constraint.LockScreenShowing -> Success("")
+            is Constraint.Time -> Success(
+                constraint.startTime
+                    .toEpochSecond(LocalDate.now(), ZoneOffset.UTC)
+                    .toString(),
+            )
         }
     }
 }

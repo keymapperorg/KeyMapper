@@ -10,18 +10,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.system.network.HttpMethod
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun KeyMapperDropdownMenu(
+fun <T> KeyMapperDropdownMenu(
     modifier: Modifier = Modifier,
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit = {},
-    value: String,
-    onValueChanged: (String) -> Unit = {},
+    label: (@Composable () -> Unit)? = null,
+    selectedValue: T,
+    values: List<Pair<T, String>>,
+    onValueChanged: (T) -> Unit = {},
 ) {
     ExposedDropdownMenuBox(
         modifier = modifier,
@@ -30,28 +29,31 @@ fun KeyMapperDropdownMenu(
     ) {
         TextField(
             modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
-            value = value,
-            onValueChange = onValueChanged,
+            value = values.find { it.first == selectedValue }?.second ?: values.first().second,
+            onValueChange = { newValue ->
+                onValueChanged(values.single { it.second == newValue }.first)
+            },
             readOnly = true,
-            label = { Text(stringResource(R.string.action_http_request_method_label)) },
+            label = label,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
         )
+
         ExposedDropdownMenu(
             matchTextFieldWidth = true,
             expanded = expanded,
             onDismissRequest = { onExpandedChange(false) },
         ) {
-            for (method in HttpMethod.entries) {
+            for ((value, valueText) in values) {
                 DropdownMenuItem(
                     text = {
                         Text(
-                            method.toString(),
+                            valueText,
                             style = MaterialTheme.typography.bodyLarge,
                         )
                     },
                     onClick = {
-                        onValueChanged(method.toString())
+                        onValueChanged(value)
                         onExpandedChange(false)
                     },
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,

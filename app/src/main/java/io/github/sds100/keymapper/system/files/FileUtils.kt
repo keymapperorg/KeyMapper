@@ -26,6 +26,7 @@ object FileUtils {
     const val MIME_TYPE_AUDIO = "audio/*"
     const val MIME_TYPE_ZIP = "application/zip"
     const val MIME_TYPE_JSON = "text/json"
+    const val MIME_TYPE_TEXT = "text/plain"
 
     @SuppressLint("SimpleDateFormat")
     fun createFileDate(): String {

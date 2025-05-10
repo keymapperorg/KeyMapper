@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.system.inputmethod
 
+import android.view.InputDevice
 import io.github.sds100.keymapper.util.InputEventType
 
 /**
@@ -12,4 +13,5 @@ data class InputKeyModel(
     val deviceId: Int = 0,
     val scanCode: Int = 0,
     val repeat: Int = 0,
+    val source: Int = InputDevice.SOURCE_UNKNOWN,
 )

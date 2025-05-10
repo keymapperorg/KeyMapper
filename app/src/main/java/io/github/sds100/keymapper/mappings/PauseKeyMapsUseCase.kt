@@ -21,7 +21,7 @@ class PauseKeyMapsUseCaseImpl(
 
     override fun pause() {
         preferenceRepository.set(Keys.mappingsPaused, true)
-        mediaAdapter.stopMedia()
+        mediaAdapter.stopFileMedia()
         Timber.d("Pause mappings")
     }
 

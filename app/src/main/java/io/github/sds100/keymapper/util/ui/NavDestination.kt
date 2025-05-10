@@ -36,6 +36,7 @@ sealed class NavDestination<R> {
         const val ID_CONFIG_KEY_MAP = "config_key_map"
         const val ID_SHIZUKU_SETTINGS = "shizuku_settings"
         const val ID_CONFIG_FLOATING_BUTTON = "config_floating_button"
+        const val ID_INTERACT_UI_ELEMENT_ACTION = "interact_ui_element_action"
     }
 
     data class ChooseApp(
@@ -122,5 +123,9 @@ sealed class NavDestination<R> {
 
     data class ConfigFloatingButton(val buttonUid: String?) : NavDestination<Unit>() {
         override val id: String = ID_CONFIG_FLOATING_BUTTON
+    }
+
+    data class InteractUiElement(val action: ActionData.InteractUiElement?) : NavDestination<ActionData.InteractUiElement>() {
+        override val id: String = ID_INTERACT_UI_ELEMENT_ACTION
     }
 }

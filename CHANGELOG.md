@@ -1,3 +1,25 @@
+## [3.1.0](https://github.com/sds100/KeyMapper/releases/tag/v3.1.0)
+
+#### 10 May 2025
+
+## Added
+
+- #699 Time constraints ⏰
+- #257 Action to interact with user interface elements inside other apps.
+- #1663 Actions to stop, step forward, and step backward playing media.
+- #1682 Show "Purchased!" text next to the use button for advanced triggers.
+
+## Changed
+
+- Rename tap screen actions inside key maps.
+
+## Bug fixes
+
+- #1683 key event actions work in Minecraft and other apps again.
+- Export log files as .txt instead of .zip files.
+- #1684 Removed the redundant and broken refresh devices button when configuring a key event action because they are automatically refreshed anyway.
+- #1687 restoring key map groups would sometimes fail.
+
 ## [3.0.1](https://github.com/sds100/KeyMapper/releases/tag/v3.0.1)
 
 #### 28 April 2025

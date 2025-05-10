@@ -9,4 +9,5 @@ data class MyKeyEvent(
     val scanCode: Int,
     val device: InputDeviceInfo?,
     val repeatCount: Int,
+    val source: Int,
 )

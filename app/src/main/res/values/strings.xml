@@ -24,7 +24,8 @@
     <string name="button_enable_accessibility_service">Enable accessibility service</string>
     <string name="button_restart_accessibility_service">Restart accessibility service</string>
     <string name="share_backup">Share</string>
-
+    <string name="app_list_empty">Nothing here!</string>
+    <string name="ui_element_list_empty">Key Mapper did not detect any interactions. Try showing additional elements.</string>
     <string name="stop_repeating_dot_dot_dot">Stop repeating when…</string>
     <string name="stop_repeating_when_trigger_released">Trigger is released</string>
     <string name="stop_repeating_trigger_pressed_again">Trigger is pressed again</string>
@@ -98,8 +99,8 @@
     <string name="description_keyevent_through_shell">Input %s through shell</string>
     <string name="description_keyevent_from_device">Input %s%s from %s</string>
     <string name="description_url">Open %s</string>
-    <string name="description_tap_coordinate_default">Tap coordinates %d, %d</string>
-    <string name="description_tap_coordinate_with_description">Tap coordinates %d, %d (%s)</string>
+    <string name="description_tap_coordinate_default">Tap screen (%d, %d)</string>
+    <string name="description_tap_coordinate_with_description">Tap screen (%s)</string>
     <string name="description_swipe_coordinate_default">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms</string>
     <string name="description_swipe_coordinate_with_description">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms (%s)</string>
     <string name="description_pinch_coordinate_default">%s with %d finger(s) on coordinates %d/%d with a pinch distance of %dpx in %dms</string>
@@ -288,6 +289,14 @@
     <string name="orientation_90">Landscape (90°)</string>
     <string name="orientation_180">Portrait (180°)</string>
     <string name="orientation_270">Landscape (270°)</string>
+
+    <string name="constraint_time">Time</string>
+    <string name="constraint_time_formatted">Time between %s and %s</string>
+    <string name="constraint_time_bottom_sheet_title">Time constraint</string>
+    <string name="constraint_time_bottom_sheet_start_time">Start time</string>
+    <string name="constraint_time_bottom_sheet_edit_start_time">Edit start time</string>
+    <string name="constraint_time_bottom_sheet_end_time">End time</string>
+    <string name="constraint_time_bottom_sheet_edit_end_time">Edit end time</string>
     <!-- Constraints -->
 
     <!-- Click types -->
@@ -900,6 +909,8 @@
     <string name="error_swipe_screen_fingercount_must_be_more_than_zero">Must be greater than 0!</string>
     <string name="error_swipe_screen_duration_must_be_more_than_zero">Must be greater than 0!</string>
     <string name="error_swipe_screen_must_be_ten_or_less_fingers">Must be %d or less!</string>
+
+    <string name="error_ui_element_not_found">UI element not found!</string>
     <!-- Error messages -->
 
     <!-- action labels -->
@@ -970,11 +981,11 @@
 
     <string name="action_next_track">Next track</string>
     <string name="action_next_track_package">Next track for an app</string>
-    <string name="action_next_track_package_formatted">Next track for %s</string>>
+    <string name="action_next_track_package_formatted">Next track for %s</string>
 
     <string name="action_previous_track">Previous track</string>
     <string name="action_previous_track_package">Previous track for an app</string>
-    <string name="action_previous_track_package_formatted">Previous track for %s</string>>
+    <string name="action_previous_track_package_formatted">Previous track for %s</string>
 
     <string name="action_fast_forward">Fast forward</string>
     <string name="action_fast_forward_package">Fast forward for an app</string>
@@ -983,8 +994,20 @@
 
     <string name="action_rewind">Rewind</string>
     <string name="action_rewind_package">Rewind for an app</string>
-    <string name="action_rewind_package_formatted">Rewind for %s</string>>
+    <string name="action_rewind_package_formatted">Rewind for %s</string>
     <string name="action_rewind_message">Not all media apps support rewinding. E.g Google Play Music.</string>
+
+    <string name="action_stop_media">Stop media</string>
+    <string name="action_stop_media_package">Stop media for an app</string>
+    <string name="action_stop_media_package_formatted">Stop media for %s</string>
+
+    <string name="action_step_forward_media">Step media forward</string>
+    <string name="action_step_forward_media_package">Step media forward for an app</string>
+    <string name="action_step_forward_media_package_formatted">Step media forward for %s</string>
+
+    <string name="action_step_backward_media">Step media backward</string>
+    <string name="action_step_backward_media_package">Step media backward for an app</string>
+    <string name="action_step_backward_media_package_formatted">Step media backward for %s</string>
 
     <string name="action_go_back">Go back</string>
     <string name="action_go_home">Go home</string>
@@ -1040,6 +1063,7 @@
     <string name="action_toggle_keyboard_message">This action will only work if you have tapped on an input field where the keyboard is supposed to be shown.</string>
     <string name="action_show_keyboard">Show keyboard</string>
     <string name="action_hide_keyboard">Hide keyboard</string>
+
     <string name="action_show_keyboard_picker">Show keyboard picker</string>
 
     <string name="action_switch_keyboard">Switch keyboard</string>
@@ -1053,9 +1077,9 @@
     <string name="action_open_settings">Open settings</string>
     <string name="action_show_power_menu">Show power menu</string>
 
-    <string name="action_toggle_airplane_mode">Toggle Airplane mode</string>
-    <string name="action_enable_airplane_mode">Enable Airplane mode</string>
-    <string name="action_disable_airplane_mode">Disable Airplane mode</string>
+    <string name="action_toggle_airplane_mode">Toggle airplane mode</string>
+    <string name="action_enable_airplane_mode">Enable airplane mode</string>
+    <string name="action_disable_airplane_mode">Disable airplane mode</string>
 
     <string name="action_open_app">Launch app</string>
     <string name="action_open_app_dialog_message">Some devices require apps to have permission before they can launch apps in the background. Tap \"Read more\" to view the instructions on our website.</string>
@@ -1090,6 +1114,45 @@
     <string name="action_http_request_body_label">Request body (optional)</string>
     <string name="action_http_request_authorization_label">Authorization header (optional)</string>
     <string name="action_http_request_authorization_supporting_text">You must prepend \'Bearer\' if necessary</string>
+
+    <string name="action_interact_ui_element_title">Interact with app element</string>
+    <string name="action_interact_ui_element_description">Key Mapper can detect and interact with app elements like menus, tabs, buttons and checkboxes. You need to record yourself interacting with the app so that Key Mapper knows what you want to do.</string>
+    <string name="action_interact_ui_element_start_recording">Start recording</string>
+    <string name="action_interact_ui_element_stop_recording">Stop recording (%s min left)</string>
+    <plurals name="action_interact_ui_element_elements_detected">
+        <item quantity="one">%d element detected</item>
+        <item quantity="other">%d elements detected</item>
+    </plurals>
+    <string name="action_interact_ui_element_choose_app_title">Choose the app to interact with</string>
+    <string name="action_interact_ui_element_record_again">Record again</string>
+    <string name="action_interact_ui_element_choose_element_title">Choose app element</string>
+    <string name="action_interact_ui_element_choose_element_text">Choose the element you want your key map to interact with.</string>
+    <string name="action_interact_ui_element_choose_element_not_found_subtitle">Can\'t find what you’re looking for?</string>
+    <string name="action_interact_ui_element_choose_element_not_found_text">Not all apps are compatible. For incompatible apps you can try the Tap Screen action instead.</string>
+    <string name="action_interact_ui_element_interaction_type_dropdown">Possible interactions</string>
+    <string name="action_interact_ui_element_interaction_type_dropdown_caption">Select how you want to interact with the UI element.</string>
+    <string name="action_interact_ui_element_filter_interaction_type_dropdown">Filter interaction type</string>
+    <string name="action_interact_ui_element_checkbox_additional_elements">Show additional elements</string>
+
+    <string name="action_interact_ui_element_interaction_type_any">Any</string>
+    <string name="action_interact_ui_element_interaction_type_click">Tap</string>
+    <string name="action_interact_ui_element_interaction_type_long_click">Tap and hold</string>
+    <string name="action_interact_ui_element_interaction_type_focus">Focus</string>
+    <string name="action_interact_ui_element_interaction_type_scroll_forward">Scroll forward</string>
+    <string name="action_interact_ui_element_interaction_type_scroll_backward">Scroll backward</string>
+    <string name="action_interact_ui_element_interaction_type_expand">Expand</string>
+    <string name="action_interact_ui_element_interaction_type_collapse">Collapse</string>
+    <string name="action_interact_ui_element_interaction_type_unknown">Unknown: %d</string>
+
+    <string name="action_interact_ui_element_interaction_details_title">Interaction details</string>
+    <string name="action_interact_ui_element_description_label">Description</string>
+    <string name="action_interact_ui_element_app_label">App</string>
+    <string name="action_interact_ui_element_text_label">Text/content description</string>
+    <string name="action_interact_ui_element_class_name_label">Class name</string>
+    <string name="action_interact_ui_element_tooltip_label">Tooltip/hint</string>
+    <string name="action_interact_ui_element_view_id_label">View resource ID</string>
+    <string name="action_interact_ui_element_unique_id_label">Unique ID</string>
+    <string name="action_interact_ui_element_interaction_types_label">Interaction types</string>
     <!-- action labels -->
 
     <!-- action category labels -->
@@ -1220,6 +1283,7 @@
     <string name="unlock_product_button">Unlock (%s)</string>
     <string name="use_product_button">Use</string>
     <string name="loading_product_button">Loading…</string>
+    <string name="purchased_product_label">Purchased!</string>
     <string name="retry_loading_price_button">Retry fetching price</string>
     <string name="purchasing_error_cancelled">Purchase cancelled.</string>
     <string name="purchasing_error_not_implemented">This requires a paid feature that can only be bought by downloading Key Mapper from Google Play.</string>

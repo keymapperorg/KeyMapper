@@ -42,10 +42,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.compose.draggable.DragDropState
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.FingerprintGestureType
 import io.github.sds100.keymapper.util.ui.LinkType
+import io.github.sds100.keymapper.util.ui.compose.DragDropState
 
 @Composable
 fun TriggerKeyListItem(

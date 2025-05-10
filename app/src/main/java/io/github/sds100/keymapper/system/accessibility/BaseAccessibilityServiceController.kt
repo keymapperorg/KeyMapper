@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
+import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.mappings.FingerprintGestureType
 import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCase
@@ -40,6 +41,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -47,6 +50,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -60,7 +64,7 @@ import timber.log.Timber
  */
 abstract class BaseAccessibilityServiceController(
     private val coroutineScope: CoroutineScope,
-    private val accessibilityService: IAccessibilityService,
+    private val service: MyAccessibilityService,
     private val inputEvents: SharedFlow<ServiceEvent>,
     private val outputEvents: MutableSharedFlow<ServiceEvent>,
     private val detectConstraintsUseCase: DetectConstraintsUseCase,
@@ -73,6 +77,7 @@ abstract class BaseAccessibilityServiceController(
     private val suAdapter: SuAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
     private val settingsRepository: PreferenceRepository,
+    private val nodeRepository: AccessibilityNodeRepository,
 ) {
 
     companion object {
@@ -80,6 +85,8 @@ abstract class BaseAccessibilityServiceController(
          * How long should the accessibility service record a trigger in seconds.
          */
         private const val RECORD_TRIGGER_TIMER_LENGTH = 5
+
+        private const val DEFAULT_NOTIFICATION_TIMEOUT = 200L
     }
 
     private val triggerKeyMapFromOtherAppsController = TriggerKeyMapFromOtherAppsController(
@@ -101,6 +108,9 @@ abstract class BaseAccessibilityServiceController(
         rerouteKeyEventsUseCase,
     )
 
+    private val accessibilityNodeRecorder: AccessibilityNodeRecorder =
+        AccessibilityNodeRecorder(nodeRepository, service)
+
     private var recordingTriggerJob: Job? = null
     private val recordingTrigger: Boolean
         get() = recordingTriggerJob != null && recordingTriggerJob?.isActive == true
@@ -114,7 +124,7 @@ abstract class BaseAccessibilityServiceController(
         detectKeyMapsUseCase.detectScreenOffTriggers
             .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
-    private val changeImeOnInputFocus: StateFlow<Boolean> =
+    private val changeImeOnInputFocusFlow: StateFlow<Boolean> =
         settingsRepository
             .get(Keys.changeImeOnInputFocus)
             .map { it ?: PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS }
@@ -145,6 +155,7 @@ abstract class BaseAccessibilityServiceController(
             // This is required for receive TYPE_WINDOWS_CHANGED events so can
             // detect when to show/hide overlays.
             .withFlag(AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS)
+            .withFlag(AccessibilityServiceInfo.FLAG_INPUT_METHOD_EDITOR)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             flags = flags.withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
@@ -170,25 +181,36 @@ abstract class BaseAccessibilityServiceController(
     val serviceEventTypes: MutableStateFlow<Int> =
         MutableStateFlow(AccessibilityEvent.TYPE_WINDOWS_CHANGED)
 
+    private val serviceNotificationTimeout: MutableStateFlow<Long> =
+        MutableStateFlow(DEFAULT_NOTIFICATION_TIMEOUT)
+
     init {
+
         serviceFlags.onEach { flags ->
             // check that it isn't null because this can only be called once the service is bound
-            if (accessibilityService.serviceFlags != null) {
-                accessibilityService.serviceFlags = flags
+            if (service.serviceFlags != null) {
+                service.serviceFlags = flags
             }
         }.launchIn(coroutineScope)
 
         serviceFeedbackType.onEach { feedbackType ->
             // check that it isn't null because this can only be called once the service is bound
-            if (accessibilityService.serviceFeedbackType != null) {
-                accessibilityService.serviceFeedbackType = feedbackType
+            if (service.serviceFeedbackType != null) {
+                service.serviceFeedbackType = feedbackType
             }
         }.launchIn(coroutineScope)
 
         serviceEventTypes.onEach { eventTypes ->
             // check that it isn't null because this can only be called once the service is bound
-            if (accessibilityService.serviceEventTypes != null) {
-                accessibilityService.serviceEventTypes = eventTypes
+            if (service.serviceEventTypes != null) {
+                service.serviceEventTypes = eventTypes
+            }
+        }.launchIn(coroutineScope)
+
+        serviceNotificationTimeout.onEach { timeout ->
+            // check that it isn't null because this can only be called once the service is bound
+            if (service.notificationTimeout != null) {
+                service.notificationTimeout = timeout
             }
         }.launchIn(coroutineScope)
 
@@ -224,7 +246,7 @@ abstract class BaseAccessibilityServiceController(
             onEventFromUi(it)
         }.launchIn(coroutineScope)
 
-        accessibilityService.isKeyboardHidden
+        service.isKeyboardHidden
             .drop(1) // Don't send it when collecting initially
             .onEach { isHidden ->
                 if (isHidden) {
@@ -255,23 +277,59 @@ abstract class BaseAccessibilityServiceController(
             }
         }.launchIn(coroutineScope)
 
-        changeImeOnInputFocus.onEach { changeImeOnInputFocus ->
-            if (changeImeOnInputFocus) {
-                serviceEventTypes.value = serviceEventTypes.value
-                    .withFlag(AccessibilityEvent.TYPE_VIEW_FOCUSED)
-                    .withFlag(AccessibilityEvent.TYPE_VIEW_CLICKED)
-            } else {
-                serviceEventTypes.value = serviceEventTypes.value
-                    .minusFlag(AccessibilityEvent.TYPE_VIEW_FOCUSED)
-                    .minusFlag(AccessibilityEvent.TYPE_VIEW_CLICKED)
+        coroutineScope.launch {
+            accessibilityNodeRecorder.recordState.collectLatest { state ->
+                outputEvents.emit(ServiceEvent.OnRecordNodeStateChanged(state))
             }
-        }.launchIn(coroutineScope)
+        }
+
+        val imeInputFocusEvents =
+            AccessibilityEvent.TYPE_VIEW_FOCUSED or AccessibilityEvent.TYPE_VIEW_CLICKED
+
+        val recordNodeEvents =
+            AccessibilityEvent.TYPE_VIEW_FOCUSED or AccessibilityEvent.TYPE_VIEW_CLICKED
+
+        coroutineScope.launch {
+            combine(
+                changeImeOnInputFocusFlow,
+                accessibilityNodeRecorder.recordState,
+            ) { changeImeOnInputFocus, recordState ->
+
+                serviceEventTypes.update { eventTypes ->
+                    var newEventTypes = eventTypes
+
+                    if (!changeImeOnInputFocus && recordState == RecordAccessibilityNodeState.Idle) {
+                        newEventTypes =
+                            newEventTypes and (imeInputFocusEvents or recordNodeEvents).inv()
+                    } else {
+                        if (changeImeOnInputFocus) {
+                            newEventTypes = newEventTypes or imeInputFocusEvents
+                        }
+
+                        if (recordState is RecordAccessibilityNodeState.CountingDown) {
+                            newEventTypes = newEventTypes or recordNodeEvents
+                        }
+                    }
+
+                    newEventTypes
+                }
+
+                serviceNotificationTimeout.update {
+                    if (recordState is RecordAccessibilityNodeState.CountingDown) {
+                        0L
+                    } else {
+                        DEFAULT_NOTIFICATION_TIMEOUT
+                    }
+                }
+            }.collect()
+        }
     }
 
     open fun onServiceConnected() {
-        accessibilityService.serviceFlags = serviceFlags.value
-        accessibilityService.serviceFeedbackType = serviceFeedbackType.value
-        accessibilityService.serviceEventTypes = serviceEventTypes.value
+        service.serviceFlags = serviceFlags.value
+        service.serviceFeedbackType = serviceFeedbackType.value
+        service.serviceEventTypes = serviceEventTypes.value
+        service.notificationTimeout = serviceNotificationTimeout.value
 
         // check if fingerprint gestures are supported
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -284,7 +342,7 @@ abstract class BaseAccessibilityServiceController(
              * used while this is called. */
             if (fingerprintGesturesSupported.isSupported.firstBlocking() != true) {
                 fingerprintGesturesSupported.setSupported(
-                    accessibilityService.isFingerprintGestureDetectionAvailable,
+                    service.isFingerprintGestureDetectionAvailable,
                 )
             }
 
@@ -292,6 +350,10 @@ abstract class BaseAccessibilityServiceController(
                 denyFingerprintGestureDetection()
             }
         }
+    }
+
+    open fun onDestroy() {
+        accessibilityNodeRecorder.teardown()
     }
 
     open fun onConfigurationChanged(newConfig: Configuration) {
@@ -441,10 +503,12 @@ abstract class BaseAccessibilityServiceController(
         }
     }
 
-    open fun onAccessibilityEvent(event: AccessibilityEventModel) {
-        if (changeImeOnInputFocus.value) {
+    open fun onAccessibilityEvent(event: AccessibilityEvent) {
+        accessibilityNodeRecorder.onAccessibilityEvent(event)
+
+        if (changeImeOnInputFocusFlow.value) {
             val focussedNode =
-                accessibilityService.findFocussedNode(AccessibilityNodeInfo.FOCUS_INPUT)
+                service.findFocussedNode(AccessibilityNodeInfo.FOCUS_INPUT)
 
             if (focussedNode?.isEditable == true && focussedNode.isFocused) {
                 Timber.d("Got input focus")
@@ -501,17 +565,25 @@ abstract class BaseAccessibilityServiceController(
                 outputEvents.emit(ServiceEvent.Pong(event.key))
             }
 
-            is ServiceEvent.HideKeyboard -> accessibilityService.hideKeyboard()
-            is ServiceEvent.ShowKeyboard -> accessibilityService.showKeyboard()
-            is ServiceEvent.ChangeIme -> accessibilityService.switchIme(event.imeId)
+            is ServiceEvent.HideKeyboard -> service.hideKeyboard()
+            is ServiceEvent.ShowKeyboard -> service.showKeyboard()
+            is ServiceEvent.ChangeIme -> service.switchIme(event.imeId)
             is ServiceEvent.DisableService -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                accessibilityService.disableSelf()
+                service.disableSelf()
             }
 
             is ServiceEvent.TriggerKeyMap -> triggerKeyMapFromIntent(event.uid)
 
             is ServiceEvent.EnableInputMethod -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                accessibilityService.setInputMethodEnabled(event.imeId, true)
+                service.setInputMethodEnabled(event.imeId, true)
+            }
+
+            is ServiceEvent.StartRecordingNodes -> {
+                accessibilityNodeRecorder.startRecording()
+            }
+
+            is ServiceEvent.StopRecordingNodes -> {
+                accessibilityNodeRecorder.stopRecording()
             }
 
             else -> Unit

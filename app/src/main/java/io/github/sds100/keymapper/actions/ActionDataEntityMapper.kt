@@ -1,7 +1,9 @@
 package io.github.sds100.keymapper.actions
 
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
+import io.github.sds100.keymapper.actions.uielement.NodeInteractionType
 import io.github.sds100.keymapper.data.db.typeconverter.ConstantTypeConverters
+import io.github.sds100.keymapper.data.db.typeconverter.NodeInteractionTypeSetTypeConverter
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData
@@ -12,6 +14,9 @@ import io.github.sds100.keymapper.system.network.HttpMethod
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
+import io.github.sds100.keymapper.util.Error
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.getKey
 import io.github.sds100.keymapper.util.success
 import io.github.sds100.keymapper.util.then
@@ -41,6 +46,8 @@ object ActionDataEntityMapper {
             ActionEntity.Type.SYSTEM_ACTION -> {
                 SYSTEM_ACTION_ID_MAP.getKey(entity.data) ?: return null
             }
+
+            ActionEntity.Type.INTERACT_UI_ELEMENT -> ActionId.INTERACT_UI_ELEMENT
         }
 
         return when (actionId) {
@@ -349,6 +356,9 @@ object ActionDataEntityMapper {
             ActionId.PREVIOUS_TRACK_PACKAGE,
             ActionId.FAST_FORWARD_PACKAGE,
             ActionId.REWIND_PACKAGE,
+            ActionId.STOP_MEDIA_PACKAGE,
+            ActionId.STEP_FORWARD_PACKAGE,
+            ActionId.STEP_BACKWARD_PACKAGE,
             -> {
                 val packageName =
                     entity.extras.getData(ActionEntity.EXTRA_PACKAGE_NAME).valueOrNull()
@@ -375,6 +385,15 @@ object ActionDataEntityMapper {
 
                     ActionId.REWIND_PACKAGE ->
                         ActionData.ControlMediaForApp.Rewind(packageName)
+
+                    ActionId.STOP_MEDIA_PACKAGE ->
+                        ActionData.ControlMediaForApp.Stop(packageName)
+
+                    ActionId.STEP_FORWARD_PACKAGE ->
+                        ActionData.ControlMediaForApp.StepForward(packageName)
+
+                    ActionId.STEP_BACKWARD_PACKAGE ->
+                        ActionData.ControlMediaForApp.StepBackward(packageName)
 
                     else -> throw Exception("don't know how to create system action for $actionId")
                 }
@@ -454,6 +473,9 @@ object ActionDataEntityMapper {
             ActionId.PREVIOUS_TRACK -> ActionData.ControlMedia.PreviousTrack
             ActionId.FAST_FORWARD -> ActionData.ControlMedia.FastForward
             ActionId.REWIND -> ActionData.ControlMedia.Rewind
+            ActionId.STOP_MEDIA -> ActionData.ControlMedia.Stop
+            ActionId.STEP_FORWARD -> ActionData.ControlMedia.StepForward
+            ActionId.STEP_BACKWARD -> ActionData.ControlMedia.StepBackward
 
             ActionId.GO_BACK -> ActionData.GoBack
             ActionId.GO_HOME -> ActionData.GoHome
@@ -522,7 +544,65 @@ object ActionDataEntityMapper {
                     authorizationHeader = authorizationHeader,
                 )
             }
+
+            ActionId.INTERACT_UI_ELEMENT -> {
+                val packageName =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_PACKAGE_NAME)
+                        .valueOrNull()!!
+
+                val contentDescription =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_CONTENT_DESCRIPTION)
+                        .valueOrNull()
+
+                val text =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_TEXT).valueOrNull()
+
+                val tooltip =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_TOOLTIP).valueOrNull()
+
+                val hint =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_HINT).valueOrNull()
+
+                val className =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_CLASS_NAME).valueOrNull()
+
+                val viewResourceId =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_VIEW_RESOURCE_ID)
+                        .valueOrNull()
+
+                val uniqueId =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_UNIQUE_ID).valueOrNull()
+
+                val actions = entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_ACTIONS).then {
+                    Success(NodeInteractionTypeSetTypeConverter().toSet(it.toInt()))
+                }.valueOrNull() ?: emptySet()
+
+                val nodeAction =
+                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_NODE_ACTION).then {
+                        convertNodeInteractionType(it)
+                    }.valueOrNull() ?: return null
+
+                ActionData.InteractUiElement(
+                    description = entity.data,
+                    nodeAction = nodeAction,
+                    packageName = packageName,
+                    text = text,
+                    contentDescription = contentDescription,
+                    tooltip = tooltip,
+                    hint = hint,
+                    className = className,
+                    viewResourceId = viewResourceId,
+                    uniqueId = uniqueId,
+                    nodeActions = actions,
+                )
+            }
         }
+    }
+
+    private fun convertNodeInteractionType(string: String): Result<NodeInteractionType> = try {
+        Success(NodeInteractionType.valueOf(string))
+    } catch (e: IllegalArgumentException) {
+        Error.Exception(e)
     }
 
     fun toEntity(data: ActionData): ActionEntity {
@@ -538,6 +618,7 @@ object ActionDataEntityMapper {
             is ActionData.Text -> ActionEntity.Type.TEXT_BLOCK
             is ActionData.Url -> ActionEntity.Type.URL
             is ActionData.Sound -> ActionEntity.Type.SOUND
+            is ActionData.InteractUiElement -> ActionEntity.Type.INTERACT_UI_ELEMENT
             else -> ActionEntity.Type.SYSTEM_ACTION
         }
 
@@ -579,6 +660,12 @@ object ActionDataEntityMapper {
         is ActionData.Text -> data.text
         is ActionData.Url -> data.url
         is ActionData.Sound -> data.soundUid
+        is ActionData.InteractUiElement -> data.description
+        is ActionData.ControlMediaForApp.Rewind -> SYSTEM_ACTION_ID_MAP[data.id]!!
+        is ActionData.ControlMediaForApp.Stop -> SYSTEM_ACTION_ID_MAP[data.id]!!
+        is ActionData.ControlMedia.Rewind -> SYSTEM_ACTION_ID_MAP[data.id]!!
+        is ActionData.ControlMedia.Stop -> SYSTEM_ACTION_ID_MAP[data.id]!!
+        is ActionData.GoBack -> SYSTEM_ACTION_ID_MAP[data.id]!!
         else -> SYSTEM_ACTION_ID_MAP[data.id]!!
     }
 
@@ -750,6 +837,73 @@ object ActionDataEntityMapper {
             ),
         )
 
+        is ActionData.InteractUiElement -> buildList {
+            add(
+                EntityExtra(
+                    ActionEntity.EXTRA_ACCESSIBILITY_NODE_ACTION,
+                    data.nodeAction.toString(),
+                ),
+            )
+
+            add(
+                EntityExtra(
+                    ActionEntity.EXTRA_ACCESSIBILITY_PACKAGE_NAME,
+                    data.packageName,
+                ),
+            )
+
+            data.contentDescription?.let {
+                add(
+                    EntityExtra(
+                        ActionEntity.EXTRA_ACCESSIBILITY_CONTENT_DESCRIPTION,
+                        it,
+                    ),
+                )
+            }
+
+            data.text?.let { add(EntityExtra(ActionEntity.EXTRA_ACCESSIBILITY_TEXT, it)) }
+
+            data.tooltip?.let { add(EntityExtra(ActionEntity.EXTRA_ACCESSIBILITY_TOOLTIP, it)) }
+
+            data.hint?.let { add(EntityExtra(ActionEntity.EXTRA_ACCESSIBILITY_HINT, it)) }
+
+            data.className?.let {
+                add(
+                    EntityExtra(
+                        ActionEntity.EXTRA_ACCESSIBILITY_CLASS_NAME,
+                        it,
+                    ),
+                )
+            }
+
+            data.viewResourceId?.let {
+                add(
+                    EntityExtra(
+                        ActionEntity.EXTRA_ACCESSIBILITY_VIEW_RESOURCE_ID,
+                        it,
+                    ),
+                )
+            }
+
+            data.uniqueId?.let {
+                add(
+                    EntityExtra(
+                        ActionEntity.EXTRA_ACCESSIBILITY_UNIQUE_ID,
+                        it,
+                    ),
+                )
+            }
+
+            if (data.nodeActions.isNotEmpty()) {
+                add(
+                    EntityExtra(
+                        ActionEntity.EXTRA_ACCESSIBILITY_ACTIONS,
+                        NodeInteractionTypeSetTypeConverter().toMask(data.nodeActions).toString(),
+                    ),
+                )
+            }
+        }
+
         else -> emptyList()
     }
 
@@ -860,6 +1014,12 @@ object ActionDataEntityMapper {
         ActionId.FAST_FORWARD_PACKAGE to "fast_forward_package",
         ActionId.REWIND to "rewind",
         ActionId.REWIND_PACKAGE to "rewind_package",
+        ActionId.STOP_MEDIA to "stop_media",
+        ActionId.STOP_MEDIA_PACKAGE to "stop_media_package",
+        ActionId.STEP_FORWARD to "step_forward",
+        ActionId.STEP_FORWARD_PACKAGE to "step_forward_package",
+        ActionId.STEP_BACKWARD to "step_backward",
+        ActionId.STEP_BACKWARD_PACKAGE to "step_backward_package",
 
         ActionId.GO_BACK to "go_back",
         ActionId.GO_HOME to "go_home",

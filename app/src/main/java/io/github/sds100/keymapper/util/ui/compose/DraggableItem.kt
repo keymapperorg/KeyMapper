@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.compose.draggable
+package io.github.sds100.keymapper.util.ui.compose
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope

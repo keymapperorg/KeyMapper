@@ -162,6 +162,7 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider): String = when (thi
     Error.DpadTriggerImeNotSelected -> resourceProvider.getString(R.string.trigger_error_dpad_ime_not_selected)
     Error.InvalidBackup -> resourceProvider.getString(R.string.error_invalid_backup)
     Error.MalformedUrl -> resourceProvider.getString(R.string.error_malformed_url)
+    Error.UiElementNotFound -> resourceProvider.getString(R.string.error_ui_element_not_found)
 }
 
 val Error.isFixable: Boolean

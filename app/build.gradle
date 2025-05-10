@@ -119,6 +119,9 @@ android {
     }
 
     compileOptions {
+        // Required for desugaring new Java time API on lower than API 26
+        coreLibraryDesugaringEnabled = true
+
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
@@ -162,7 +165,7 @@ dependencies {
 
     compileOnly project(":systemstubs")
 
-    def room_version = "2.6.1"
+    def room_version = "2.7.1"
     def coroutinesVersion = "1.9.0"
     def nav_version = '2.8.9'
     def epoxy_version = "4.6.2"
@@ -176,7 +179,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0"
 
     // random stuff
-    implementation "com.google.android.material:material:1.13.0-alpha12"
+    implementation "com.google.android.material:material:1.13.0-alpha13"
     implementation "com.github.salomonbrys.kotson:kotson:2.5.0"
     implementation "com.airbnb.android:epoxy:$epoxy_version"
     implementation "com.airbnb.android:epoxy-databinding:$epoxy_version"
@@ -189,9 +192,10 @@ dependencies {
     implementation "dev.rikka.shizuku:api:$shizuku_version"
     implementation "dev.rikka.shizuku:provider:$shizuku_version"
     implementation "org.lsposed.hiddenapibypass:hiddenapibypass:4.3"
-    proImplementation 'com.revenuecat.purchases:purchases:8.15.0'
+    proImplementation 'com.revenuecat.purchases:purchases:8.17.0'
     proImplementation "com.airbnb.android:lottie-compose:6.6.3"
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 
     // splitties
     implementation "com.louiscad.splitties:splitties-bitflags:$splitties_version"
@@ -203,7 +207,7 @@ dependencies {
 
     // androidx
     implementation "androidx.legacy:legacy-support-core-ui:1.0.0"
-    implementation "androidx.core:core-ktx:1.15.0"
+    implementation "androidx.core:core-ktx:1.16.0"
 
     implementation "androidx.activity:activity-ktx:1.10.1"
     implementation "androidx.fragment:fragment-ktx:1.8.6"
@@ -221,7 +225,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.viewpager2:viewpager2:1.1.0"
-    implementation "androidx.datastore:datastore-preferences:1.2.0-alpha01"
+    implementation "androidx.datastore:datastore-preferences:1.2.0-alpha02"
     implementation "androidx.core:core-splashscreen:1.0.1"
     implementation "androidx.activity:activity-compose:1.10.1"
     implementation "androidx.navigation:navigation-compose:2.8.9"
@@ -229,7 +233,7 @@ dependencies {
     ksp "androidx.room:room-compiler:$room_version"
 
     // Compose
-    Dependency composeBom = platform('androidx.compose:compose-bom-beta:2025.03.01')
+    Dependency composeBom = platform('androidx.compose:compose-bom-beta:2025.04.01')
     implementation composeBom
     implementation 'androidx.compose.foundation:foundation'
     implementation "androidx.compose.ui:ui-android"

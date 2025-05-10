@@ -222,6 +222,9 @@ class ActionUiHelper(
                         is ActionData.ControlMediaForApp.PlayPause -> R.string.action_play_pause_media_package_formatted
                         is ActionData.ControlMediaForApp.PreviousTrack -> R.string.action_previous_track_package_formatted
                         is ActionData.ControlMediaForApp.Rewind -> R.string.action_rewind_package_formatted
+                        is ActionData.ControlMediaForApp.Stop -> R.string.action_stop_media_package_formatted
+                        is ActionData.ControlMediaForApp.StepForward -> R.string.action_step_forward_media_package_formatted
+                        is ActionData.ControlMediaForApp.StepBackward -> R.string.action_step_backward_media_package_formatted
                     }
 
                     getString(resId, appName)
@@ -235,6 +238,9 @@ class ActionUiHelper(
                         is ActionData.ControlMediaForApp.PlayPause -> R.string.action_play_pause_media_package
                         is ActionData.ControlMediaForApp.PreviousTrack -> R.string.action_previous_track_package
                         is ActionData.ControlMediaForApp.Rewind -> R.string.action_rewind_package
+                        is ActionData.ControlMediaForApp.Stop -> R.string.action_stop_media_package
+                        is ActionData.ControlMediaForApp.StepForward -> R.string.action_step_forward_media_package
+                        is ActionData.ControlMediaForApp.StepBackward -> R.string.action_step_backward_media_package
                     }
 
                     getString(resId)
@@ -356,7 +362,7 @@ class ActionUiHelper(
         } else {
             getString(
                 R.string.description_tap_coordinate_with_description,
-                arrayOf(action.x, action.y, action.description),
+                action.description,
             )
         }
 
@@ -453,6 +459,9 @@ class ActionUiHelper(
         ActionData.ControlMedia.PlayPause -> getString(R.string.action_play_pause_media)
         ActionData.ControlMedia.PreviousTrack -> getString(R.string.action_previous_track)
         ActionData.ControlMedia.Rewind -> getString(R.string.action_rewind)
+        ActionData.ControlMedia.Stop -> getString(R.string.action_stop_media)
+        ActionData.ControlMedia.StepForward -> getString(R.string.action_step_forward_media)
+        ActionData.ControlMedia.StepBackward -> getString(R.string.action_step_backward_media)
 
         ActionData.CopyText -> getString(R.string.action_text_copy)
         ActionData.CutText -> getString(R.string.action_text_cut)
@@ -529,6 +538,8 @@ class ActionUiHelper(
 
         ActionData.DeviceControls -> getString(R.string.action_device_controls)
         is ActionData.HttpRequest -> action.description
+
+        is ActionData.InteractUiElement -> action.description
     }
 
     fun getIcon(action: ActionData): ComposeIconInfo = when (action) {

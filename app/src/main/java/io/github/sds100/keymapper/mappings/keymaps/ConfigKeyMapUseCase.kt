@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
+import android.database.sqlite.SQLiteConstraintException
 import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.RepeatMode
@@ -851,7 +852,12 @@ class ConfigKeyMapUseCaseController(
         val keyMap = keyMap.value.dataOrNull() ?: return
 
         if (keyMap.dbId == null) {
-            keyMapRepository.insert(KeyMapEntityMapper.toEntity(keyMap, 0))
+            val entity = KeyMapEntityMapper.toEntity(keyMap, 0)
+            try {
+                keyMapRepository.insert(entity)
+            } catch (e: SQLiteConstraintException) {
+                keyMapRepository.update(entity)
+            }
         } else {
             keyMapRepository.update(KeyMapEntityMapper.toEntity(keyMap, keyMap.dbId))
         }

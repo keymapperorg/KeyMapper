@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.mappings.keymaps.detection
 
+import android.view.InputDevice
 import android.view.KeyEvent
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
@@ -90,6 +91,7 @@ class DetectScreenOffKeyEventsController(
                                             scanCode = 0,
                                             metaState = 0,
                                             repeatCount = 0,
+                                            source = InputDevice.SOURCE_UNKNOWN,
                                         ),
                                     )
                                 }
@@ -103,6 +105,7 @@ class DetectScreenOffKeyEventsController(
                                             scanCode = 0,
                                             metaState = 0,
                                             repeatCount = 0,
+                                            source = InputDevice.SOURCE_UNKNOWN,
                                         ),
                                     )
                                 }

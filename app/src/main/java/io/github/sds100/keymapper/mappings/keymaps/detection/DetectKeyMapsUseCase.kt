@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.mappings.keymaps.detection
 
 import android.accessibilityservice.AccessibilityService
 import android.os.SystemClock
+import android.view.InputDevice
 import android.view.KeyEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.constraints.ConstraintState
@@ -193,6 +194,7 @@ class DetectKeyMapsUseCaseImpl(
         deviceId: Int,
         inputEventType: InputEventType,
         scanCode: Int,
+        source: Int,
     ) {
         val model = InputKeyModel(
             keyCode,
@@ -200,6 +202,7 @@ class DetectKeyMapsUseCaseImpl(
             metaState,
             deviceId,
             scanCode,
+            source = source,
         )
 
         if (permissionAdapter.isGranted(Permission.SHIZUKU)) {
@@ -258,6 +261,7 @@ interface DetectKeyMapsUseCase {
         deviceId: Int = 0,
         inputEventType: InputEventType = InputEventType.DOWN_UP,
         scanCode: Int = 0,
+        source: Int = InputDevice.SOURCE_UNKNOWN,
     )
 
     val isScreenOn: Flow<Boolean>

@@ -39,15 +39,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowHeightSizeClass
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.compose.draggable.DraggableItem
-import io.github.sds100.keymapper.compose.draggable.rememberDragDropState
 import io.github.sds100.keymapper.mappings.ClickType
 import io.github.sds100.keymapper.mappings.keymaps.ShortcutModel
 import io.github.sds100.keymapper.mappings.keymaps.ShortcutRow
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.LinkType
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.util.ui.compose.DraggableItem
 import io.github.sds100.keymapper.util.ui.compose.RadioButtonText
+import io.github.sds100.keymapper.util.ui.compose.rememberDragDropState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

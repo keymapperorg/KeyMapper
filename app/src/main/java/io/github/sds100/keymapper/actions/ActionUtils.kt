@@ -30,6 +30,7 @@ import androidx.compose.material.icons.outlined.FastForward
 import androidx.compose.material.icons.outlined.FastRewind
 import androidx.compose.material.icons.outlined.FlashlightOff
 import androidx.compose.material.icons.outlined.FlashlightOn
+import androidx.compose.material.icons.outlined.Forward30
 import androidx.compose.material.icons.outlined.Fullscreen
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Http
@@ -45,6 +46,7 @@ import androidx.compose.material.icons.outlined.PhonelinkRing
 import androidx.compose.material.icons.outlined.Pinch
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.PowerSettingsNew
+import androidx.compose.material.icons.outlined.Replay30
 import androidx.compose.material.icons.outlined.ScreenLockRotation
 import androidx.compose.material.icons.outlined.ScreenRotation
 import androidx.compose.material.icons.outlined.Settings
@@ -55,6 +57,7 @@ import androidx.compose.material.icons.outlined.SkipPrevious
 import androidx.compose.material.icons.outlined.Splitscreen
 import androidx.compose.material.icons.outlined.StayCurrentLandscape
 import androidx.compose.material.icons.outlined.StayCurrentPortrait
+import androidx.compose.material.icons.outlined.StopCircle
 import androidx.compose.material.icons.outlined.Swipe
 import androidx.compose.material.icons.outlined.TouchApp
 import androidx.compose.material.icons.outlined.ViewArray
@@ -73,6 +76,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.ui.compose.icons.HomeIotDevice
 import io.github.sds100.keymapper.util.ui.compose.icons.InstantMix
+import io.github.sds100.keymapper.util.ui.compose.icons.JumpToElement
 import io.github.sds100.keymapper.util.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.util.ui.compose.icons.MatchWord
 import io.github.sds100.keymapper.util.ui.compose.icons.NfcOff
@@ -181,6 +185,12 @@ object ActionUtils {
         ActionId.FAST_FORWARD_PACKAGE -> ActionCategory.MEDIA
         ActionId.REWIND -> ActionCategory.MEDIA
         ActionId.REWIND_PACKAGE -> ActionCategory.MEDIA
+        ActionId.STOP_MEDIA -> ActionCategory.MEDIA
+        ActionId.STOP_MEDIA_PACKAGE -> ActionCategory.MEDIA
+        ActionId.STEP_FORWARD -> ActionCategory.MEDIA
+        ActionId.STEP_FORWARD_PACKAGE -> ActionCategory.MEDIA
+        ActionId.STEP_BACKWARD -> ActionCategory.MEDIA
+        ActionId.STEP_BACKWARD_PACKAGE -> ActionCategory.MEDIA
 
         ActionId.GO_BACK -> ActionCategory.NAVIGATION
         ActionId.GO_HOME -> ActionCategory.NAVIGATION
@@ -230,6 +240,8 @@ object ActionUtils {
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> ActionCategory.NOTIFICATIONS
         ActionId.DISMISS_ALL_NOTIFICATIONS -> ActionCategory.NOTIFICATIONS
         ActionId.DEVICE_CONTROLS -> ActionCategory.APPS
+
+        ActionId.INTERACT_UI_ELEMENT -> ActionCategory.APPS
     }
 
     @StringRes
@@ -288,6 +300,12 @@ object ActionUtils {
         ActionId.FAST_FORWARD_PACKAGE -> R.string.action_fast_forward_package
         ActionId.REWIND -> R.string.action_rewind
         ActionId.REWIND_PACKAGE -> R.string.action_rewind_package
+        ActionId.STOP_MEDIA -> R.string.action_stop_media
+        ActionId.STOP_MEDIA_PACKAGE -> R.string.action_stop_media_package
+        ActionId.STEP_FORWARD -> R.string.action_step_forward_media
+        ActionId.STEP_FORWARD_PACKAGE -> R.string.action_step_forward_media_package
+        ActionId.STEP_BACKWARD -> R.string.action_step_backward_media
+        ActionId.STEP_BACKWARD_PACKAGE -> R.string.action_step_backward_media_package
         ActionId.GO_BACK -> R.string.action_go_back
         ActionId.GO_HOME -> R.string.action_go_home
         ActionId.OPEN_RECENTS -> R.string.action_open_recents
@@ -342,6 +360,7 @@ object ActionUtils {
         ActionId.END_PHONE_CALL -> R.string.action_end_call
         ActionId.DEVICE_CONTROLS -> R.string.action_device_controls
         ActionId.HTTP_REQUEST -> R.string.action_http_request
+        ActionId.INTERACT_UI_ELEMENT -> R.string.action_interact_ui_element_title
     }
 
     @DrawableRes
@@ -400,6 +419,12 @@ object ActionUtils {
         ActionId.FAST_FORWARD_PACKAGE -> R.drawable.ic_outline_fast_forward_24
         ActionId.REWIND -> R.drawable.ic_outline_fast_rewind_24
         ActionId.REWIND_PACKAGE -> R.drawable.ic_outline_fast_rewind_24
+        ActionId.STOP_MEDIA -> R.drawable.ic_outline_pause_24
+        ActionId.STOP_MEDIA_PACKAGE -> R.drawable.ic_outline_pause_24
+        ActionId.STEP_FORWARD -> null
+        ActionId.STEP_FORWARD_PACKAGE -> null
+        ActionId.STEP_BACKWARD -> null
+        ActionId.STEP_BACKWARD_PACKAGE -> null
         ActionId.GO_BACK -> R.drawable.ic_baseline_arrow_back_24
         ActionId.GO_HOME -> R.drawable.ic_outline_home_24
         ActionId.OPEN_RECENTS -> null
@@ -454,6 +479,7 @@ object ActionUtils {
         ActionId.END_PHONE_CALL -> R.drawable.ic_outline_call_end_24
         ActionId.DEVICE_CONTROLS -> R.drawable.ic_home_automation
         ActionId.HTTP_REQUEST -> null
+        ActionId.INTERACT_UI_ELEMENT -> null
     }
 
     fun getMinApi(id: ActionId): Int = when (id) {
@@ -716,6 +742,12 @@ object ActionUtils {
         ActionId.FAST_FORWARD_PACKAGE -> Icons.Outlined.FastForward
         ActionId.REWIND -> Icons.Outlined.FastRewind
         ActionId.REWIND_PACKAGE -> Icons.Outlined.FastRewind
+        ActionId.STOP_MEDIA -> Icons.Outlined.StopCircle
+        ActionId.STOP_MEDIA_PACKAGE -> Icons.Outlined.StopCircle
+        ActionId.STEP_FORWARD -> Icons.Outlined.Forward30
+        ActionId.STEP_FORWARD_PACKAGE -> Icons.Outlined.Forward30
+        ActionId.STEP_BACKWARD -> Icons.Outlined.Replay30
+        ActionId.STEP_BACKWARD_PACKAGE -> Icons.Outlined.Replay30
         ActionId.GO_BACK -> Icons.AutoMirrored.Outlined.ArrowBack
         ActionId.GO_HOME -> Icons.Outlined.Home
         ActionId.OPEN_RECENTS -> Icons.Outlined.ViewArray
@@ -770,6 +802,7 @@ object ActionUtils {
         ActionId.END_PHONE_CALL -> Icons.Outlined.CallEnd
         ActionId.DEVICE_CONTROLS -> KeyMapperIcons.HomeIotDevice
         ActionId.HTTP_REQUEST -> Icons.Outlined.Http
+        ActionId.INTERACT_UI_ELEMENT -> KeyMapperIcons.JumpToElement
     }
 }
 
@@ -821,6 +854,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.Url,
     is ActionData.PhoneCall,
     is ActionData.HttpRequest,
+    is ActionData.InteractUiElement,
     -> true
 
     else -> false

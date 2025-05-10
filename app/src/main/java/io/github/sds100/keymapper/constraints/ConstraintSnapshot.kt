@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.power.PowerAdapter
 import io.github.sds100.keymapper.util.firstBlocking
 import timber.log.Timber
+import java.time.LocalTime
 
 /**
  * Created by sds100 on 08/05/2021.f
@@ -68,6 +69,8 @@ class LazyConstraintSnapshot(
     private val isLockscreenShowing: Boolean by lazy {
         lockScreenAdapter.isLockScreenShowing()
     }
+
+    private val localTime = LocalTime.now()
 
     private fun isMediaPlaying(): Boolean {
         return audioVolumeStreams.contains(AudioManager.STREAM_MUSIC) || appsPlayingMedia.isNotEmpty()
@@ -156,6 +159,13 @@ class LazyConstraintSnapshot(
             // an another activity like the camera app while the phone is locked.
             is Constraint.LockScreenShowing -> isLockscreenShowing && appInForeground == "com.android.systemui"
             is Constraint.LockScreenNotShowing -> !isLockscreenShowing || appInForeground != "com.android.systemui"
+
+            is Constraint.Time ->
+                if (constraint.startTime.isAfter(constraint.endTime)) {
+                    localTime.isAfter(constraint.startTime) || localTime.isBefore(constraint.endTime)
+                } else {
+                    localTime.isAfter(constraint.startTime) && localTime.isBefore(constraint.endTime)
+                }
         }
 
         if (isSatisfied) {

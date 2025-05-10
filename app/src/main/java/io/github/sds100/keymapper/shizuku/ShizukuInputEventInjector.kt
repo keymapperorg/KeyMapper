@@ -8,7 +8,6 @@ import android.view.KeyEvent
 import io.github.sds100.keymapper.system.inputevents.InputEventInjector
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.util.InputEventType
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import rikka.shizuku.ShizukuBinderWrapper
@@ -16,7 +15,7 @@ import rikka.shizuku.SystemServiceHelper
 import timber.log.Timber
 
 @SuppressLint("PrivateApi")
-class ShizukuInputEventInjector(private val coroutineScope: CoroutineScope) : InputEventInjector {
+class ShizukuInputEventInjector : InputEventInjector {
 
     companion object {
         // private const val INJECT_INPUT_EVENT_MODE_ASYNC = 0
@@ -40,16 +39,7 @@ class ShizukuInputEventInjector(private val coroutineScope: CoroutineScope) : In
 
         val eventTime = SystemClock.uptimeMillis()
 
-        val keyEvent = KeyEvent(
-            eventTime,
-            eventTime,
-            action,
-            model.keyCode,
-            model.repeat,
-            model.metaState,
-            model.deviceId,
-            model.scanCode,
-        )
+        val keyEvent = createInjectedKeyEvent(eventTime, action, model)
 
         withContext(Dispatchers.IO) {
             // MUST wait for the application to finish processing the event before sending the next one.
