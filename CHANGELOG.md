@@ -5,6 +5,7 @@
 ## Added
 
 - #1637 show a home screen error if notification permission is not granted.
+- #1435 Pick system sounds/ringtones for the Sound action.
 
 ## Bug fixes
 

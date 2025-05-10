@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.util.ui
 
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.pinchscreen.PinchPickCoordinateResult
-import io.github.sds100.keymapper.actions.sound.ChooseSoundFileResult
 import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.constraints.Constraint
@@ -80,7 +79,7 @@ sealed class NavDestination<R> {
         override val id: String = ID_CHOOSE_ACTIVITY
     }
 
-    data object ChooseSound : NavDestination<ChooseSoundFileResult>() {
+    data object ChooseSound : NavDestination<ActionData.Sound>() {
         override val id: String = ID_CHOOSE_SOUND
     }
 

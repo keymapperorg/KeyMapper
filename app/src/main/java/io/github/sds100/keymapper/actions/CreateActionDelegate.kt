@@ -688,14 +688,9 @@ class CreateActionDelegate(
             }
 
             ActionId.SOUND -> {
-                val result = navigate(
+                return navigate(
                     "choose_sound_file",
                     NavDestination.ChooseSound,
-                ) ?: return null
-
-                return ActionData.Sound(
-                    soundUid = result.soundUid,
-                    soundDescription = result.description,
                 )
             }
 

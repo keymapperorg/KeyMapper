@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.onSuccess
@@ -15,11 +16,13 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.showPopup
 import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
@@ -35,6 +38,9 @@ class ChooseSoundFileViewModel(
     private val _chooseSoundFile = MutableSharedFlow<Unit>()
     val chooseSoundFile = _chooseSoundFile.asSharedFlow()
 
+    private val _chooseSystemRingtone = MutableSharedFlow<Unit>()
+    val chooseSystemRingtone = _chooseSystemRingtone.asSharedFlow()
+
     val soundFileListItems: StateFlow<List<DefaultSimpleListItem>> =
         useCase.soundFiles.map { sounds ->
             sounds.map {
@@ -42,12 +48,18 @@ class ChooseSoundFileViewModel(
             }
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    private val _returnResult = MutableSharedFlow<ChooseSoundFileResult>()
-    val returnResult = _returnResult.asSharedFlow()
+    val returnResult: MutableStateFlow<ActionData.Sound?> =
+        MutableStateFlow<ActionData.Sound?>(null)
 
     fun onChooseSoundFileButtonClick() {
         viewModelScope.launch {
             _chooseSoundFile.emit(Unit)
+        }
+    }
+
+    fun onChooseSystemRingtoneButtonClick() {
+        viewModelScope.launch {
+            _chooseSystemRingtone.emit(Unit)
         }
     }
 
@@ -63,12 +75,12 @@ class ChooseSoundFileViewModel(
 
             val soundDescription = showPopup("file_description", dialog) ?: return@launch
 
-            _returnResult.emit(
-                ChooseSoundFileResult(
+            returnResult.update {
+                ActionData.Sound.SoundFile(
                     soundUid = soundFileInfo.uid,
-                    description = soundDescription,
-                ),
-            )
+                    soundDescription = soundDescription,
+                )
+            }
         }
     }
 
@@ -88,11 +100,22 @@ class ChooseSoundFileViewModel(
 
             useCase.saveSound(uri)
                 .onSuccess { soundFileUid ->
-                    _returnResult.emit(ChooseSoundFileResult(soundFileUid, soundDescription))
+                    returnResult.update {
+                        ActionData.Sound.SoundFile(
+                            soundFileUid,
+                            soundDescription,
+                        )
+                    }
                 }.onFailure { error ->
                     val toast = PopupUi.Toast(error.getFullMessage(this@ChooseSoundFileViewModel))
                     showPopup("failed_toast", toast)
                 }
+        }
+    }
+
+    fun onChooseRingtone(uri: String) {
+        viewModelScope.launch {
+            returnResult.update { ActionData.Sound.Ringtone(uri) }
         }
     }
 
@@ -102,7 +125,6 @@ class ChooseSoundFileViewModel(
         private val useCase: ChooseSoundFileUseCase,
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            ChooseSoundFileViewModel(resourceProvider, useCase) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>): T = ChooseSoundFileViewModel(resourceProvider, useCase) as T
     }
 }

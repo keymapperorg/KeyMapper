@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
+import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.onSuccess
@@ -22,6 +23,7 @@ class LazyActionErrorSnapshot(
     cameraAdapter: CameraAdapter,
     private val soundsManager: SoundsManager,
     shizukuAdapter: ShizukuAdapter,
+    private val ringtoneAdapter: RingtoneAdapter,
 ) : ActionErrorSnapshot,
     IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(
         systemFeatureAdapter,
@@ -99,9 +101,15 @@ class LazyActionErrorSnapshot(
                     return Error.PermissionDenied(Permission.ROOT)
                 }
 
-            is ActionData.Sound -> {
+            is ActionData.Sound.SoundFile -> {
                 soundsManager.getSound(action.soundUid).onFailure { error ->
                     return error
+                }
+            }
+
+            is ActionData.Sound.Ringtone -> {
+                if (!ringtoneAdapter.exists(action.uri)) {
+                    return Error.CantFindSoundFile
                 }
             }
 

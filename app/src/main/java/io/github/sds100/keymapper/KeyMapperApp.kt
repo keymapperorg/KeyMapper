@@ -50,6 +50,7 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.phone.AndroidPhoneAdapter
 import io.github.sds100.keymapper.system.popup.AndroidToastAdapter
 import io.github.sds100.keymapper.system.power.AndroidPowerAdapter
+import io.github.sds100.keymapper.system.ringtones.AndroidRingtoneAdapter
 import io.github.sds100.keymapper.system.root.SuAdapterImpl
 import io.github.sds100.keymapper.system.url.AndroidOpenUrlAdapter
 import io.github.sds100.keymapper.system.vibrator.AndroidVibratorAdapter
@@ -172,6 +173,10 @@ class KeyMapperApp : MultiDexApplication() {
 
     val purchasingManager: PurchasingManagerImpl by lazy {
         PurchasingManagerImpl(this.applicationContext, appCoroutineScope)
+    }
+
+    val ringtoneManagerAdapter: AndroidRingtoneAdapter by lazy {
+        AndroidRingtoneAdapter(this)
     }
 
     private val loggingTree by lazy {

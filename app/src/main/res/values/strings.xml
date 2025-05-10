@@ -52,7 +52,7 @@
     <string name="clip_key_mapper_log">Key Mapper log</string>
 
     <string name="whats_new">What\'s New</string>
-    <string name="caption_action_type_sound">The sound file will be copied to Key Mapper\'s private data folder, which means your actions will still work even if the file is moved or deleted. It will also be backed up with your key maps in the zip folder.
+    <string name="caption_action_type_sound">You can either use a system ringtone or select a custom sound file.\n\nThe custom sound file will be copied to Key Mapper\'s private data folder, which means your actions will still work even if the file is moved or deleted. It will also be backed up with your key maps in the zip folder.
     You can delete saved sound files in the settings.</string>
 
     <string name="caption_no_paired_bt_devices">Can\'t find any paired devices. Is Bluetooth turned on?</string>
@@ -108,6 +108,7 @@
     <string name="description_pinch_coordinate_with_description">%s with %d finger(s) on coordinates %d/%d to with a pinch distance of %dpx %dms (%s)</string>
     <string name="description_phone_call">Call %s</string>
     <string name="description_sound">Play sound: %s</string>
+    <string name="description_sound_unknown">Play unknown sound</string>
     <!--  Action descriptions  -->
 
     <!--  Headers  -->
@@ -410,6 +411,7 @@
     <string name="button_config_intent_set_flags">Set flags</string>
     <string name="button_slider_repeat_no_limit">No limit</string>
     <string name="button_choose_sound_file">Choose sound file</string>
+    <string name="button_choose_system_sound_file">Choose system ringtone</string>
     <string name="button_edit_action">Edit action</string>
     <string name="button_replace_action">Replace action</string>
     <!-- Button titles -->

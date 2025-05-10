@@ -1,11 +1,16 @@
 package io.github.sds100.keymapper.actions.sound
 
+import android.app.Activity
+import android.content.Intent
+import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.IntentCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -23,7 +28,8 @@ import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.serialization.encodeToString
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.update
 import kotlinx.serialization.json.Json
 
 /**
@@ -47,6 +53,19 @@ class ChooseSoundFileFragment : Fragment() {
             it ?: return@registerForActivityResult
 
             viewModel.onChooseNewSoundFile(it.toString())
+        }
+
+    private val chooseRingtoneLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.data != null && result.resultCode == Activity.RESULT_OK) {
+                val uri = IntentCompat.getParcelableExtra(
+                    result.data!!,
+                    RingtoneManager.EXTRA_RINGTONE_PICKED_URI,
+                    Uri::class.java,
+                ) ?: return@registerForActivityResult
+
+                viewModel.onChooseRingtone(uri.toString())
+            }
         }
 
     /**
@@ -87,6 +106,13 @@ class ChooseSoundFileFragment : Fragment() {
             }
         }
 
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.chooseSystemRingtone.collectLatest {
+                val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
+                chooseRingtoneLauncher.launch(intent)
+            }
+        }
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             findNavController().navigateUp()
         }
@@ -96,12 +122,13 @@ class ChooseSoundFileFragment : Fragment() {
         }
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.returnResult.collectLatest { result ->
+            viewModel.returnResult.filterNotNull().collect { result ->
                 setFragmentResult(
                     requestKey,
                     bundleOf(EXTRA_RESULT to Json.encodeToString(result)),
                 )
                 findNavController().navigateUp()
+                viewModel.returnResult.update { null }
             }
         }
 

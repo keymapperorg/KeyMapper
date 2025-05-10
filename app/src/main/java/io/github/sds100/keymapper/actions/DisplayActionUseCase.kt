@@ -10,6 +10,7 @@ interface DisplayActionUseCase : GetActionErrorUseCase {
     fun getAppName(packageName: String): Result<String>
     fun getAppIcon(packageName: String): Result<Drawable>
     fun getInputMethodLabel(imeId: String): Result<String>
+    fun getRingtoneLabel(uri: String): Result<String>
     suspend fun fixError(error: Error)
     fun neverShowDndTriggerError()
     fun startAccessibilityService(): Boolean
