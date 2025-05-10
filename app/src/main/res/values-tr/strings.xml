@@ -21,7 +21,6 @@
     <string name="button_restart_accessibility_service">Erişilebilirlik servisini yeniden başlat</string>
     <string name="share_backup">Paylaş</string>
     <string name="app_list_empty">Burada hiçbir şey yok!</string>
-    <string name="ui_element_list_empty">Burada hiçbir şey yok!</string>
     <string name="stop_repeating_dot_dot_dot">Tekrarlamayı durdur…</string>
     <string name="stop_repeating_when_trigger_released">Tetikleyici bırakıldığında</string>
     <string name="stop_repeating_trigger_pressed_again">Tetikleyici tekrar basıldığında</string>
@@ -893,7 +892,6 @@
     <string name="action_interact_ui_element_interaction_details_title">Etkileşim detayları</string>
     <string name="action_interact_ui_element_description_label">Açıklama</string>
     <string name="action_interact_ui_element_app_label">Uygulama</string>
-    <string name="action_interact_ui_element_text_label">Metin / içerik açıklaması</string>
     <string name="action_interact_ui_element_class_name_label">Sınıf adı</string>
     <string name="action_interact_ui_element_view_id_label">Kaynak kimliğini görüntüle</string>
     <string name="action_interact_ui_element_unique_id_label">Özgün kimlik</string>
