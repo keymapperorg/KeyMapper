@@ -1,3 +1,11 @@
+## [3.1.1](https://github.com/sds100/KeyMapper/releases/tag/v3.1.1)
+
+#### TO BE RELEASED
+
+## Bug fixes
+
+- Do not automatically select the key mapper keyboard when the accessibility service starts.
+
 ## [3.1.0](https://github.com/sds100/KeyMapper/releases/tag/v3.1.0)
 
 #### 10 May 2025
