@@ -5,6 +5,7 @@
 ## Bug fixes
 
 - Do not automatically select the key mapper keyboard when the accessibility service starts.
+- #1686 do not show some screens behind system bars on the left/right side of the device.
 
 ## [3.1.0](https://github.com/sds100/KeyMapper/releases/tag/v3.1.0)
 
