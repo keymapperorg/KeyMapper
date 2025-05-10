@@ -46,7 +46,7 @@ class ConfigKeyServiceEventActionViewModelTest {
     @Before
     fun init() {
         Dispatchers.setMain(testDispatcher)
-        inputDevices = MutableStateFlow(emptyList<InputDeviceInfo>())
+        inputDevices = MutableStateFlow(emptyList())
 
         mockUseCase = mock {
             on { showDeviceDescriptors }.then { MutableStateFlow(false) }

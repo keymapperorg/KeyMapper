@@ -59,7 +59,7 @@ class ConfigKeyEventActionViewModel(
         buildUiState(state, inputDevices, showDeviceDescriptors)
     }.stateIn(
         viewModelScope,
-        SharingStarted.Lazily,
+        SharingStarted.Eagerly,
         buildUiState(
             keyEventState.value,
             inputDeviceList = emptyList(),
@@ -133,17 +133,15 @@ class ConfigKeyEventActionViewModel(
     }
 
     fun chooseDevice(index: Int) {
-        viewModelScope.launch {
-            val chosenDevice = uiState.value.deviceListItems.getOrNull(index)
+        val chosenDevice = uiState.value.deviceListItems.getOrNull(index)
 
-            if (chosenDevice == null) {
-                return@launch
-            }
-
-            keyEventState.value = keyEventState.value.copy(
-                chosenDevice = chosenDevice,
-            )
+        if (chosenDevice == null) {
+            return
         }
+
+        keyEventState.value = keyEventState.value.copy(
+            chosenDevice = chosenDevice,
+        )
     }
 
     fun onDoneClick() {
