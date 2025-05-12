@@ -11,6 +11,7 @@ import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.NavAppDirections
@@ -98,7 +99,23 @@ class RequestPermissionDelegate(
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
 
             Permission.POST_NOTIFICATIONS -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(
+                    activity,
+                    Manifest.permission.POST_NOTIFICATIONS,
+                )
+
+                // The system will say you have to show a rationale if the user previously
+                // denied the permission. Therefore, the permission dialog will not show and so
+                // open the notification settings to turn it on manually.
+                if (showRationale) {
+                    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                        putExtra(Settings.EXTRA_APP_PACKAGE, Constants.PACKAGE_NAME)
+
+                        activity.startActivity(this)
+                    }
+                } else {
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
             }
         }
     }

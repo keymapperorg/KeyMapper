@@ -40,6 +40,7 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
+import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
 import io.github.sds100.keymapper.system.url.OpenUrlAdapter
@@ -108,6 +109,7 @@ class PerformActionsUseCaseImpl(
     private val soundsManager: SoundsManager,
     private val permissionAdapter: PermissionAdapter,
     private val notificationReceiverAdapter: ServiceAdapter,
+    private val ringtoneAdapter: RingtoneAdapter,
 ) : PerformActionsUseCase {
 
     private val openMenuHelper by lazy {
@@ -359,9 +361,16 @@ class PerformActionsUseCaseImpl(
                 result = openUrlAdapter.openUrl(action.url)
             }
 
-            is ActionData.Sound -> {
+            is ActionData.Sound.SoundFile -> {
+                ringtoneAdapter.stopPlaying()
                 result = soundsManager.getSound(action.soundUid).then { file ->
                     mediaAdapter.playFile(file.uri, VolumeStream.ACCESSIBILITY)
+                }
+            }
+
+            is ActionData.Sound.Ringtone -> {
+                result = mediaAdapter.stopFileMedia().then {
+                    ringtoneAdapter.play(action.uri)
                 }
             }
 

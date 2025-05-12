@@ -21,13 +21,17 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -394,6 +398,7 @@ private fun RootGroupAppBar(
         Surface(color = appBarContainerColor) {
             GroupRow(
                 modifier = Modifier
+                    .windowInsetsPadding(WindowInsets.systemBars.only(sides = WindowInsetsSides.Horizontal))
                     .padding(horizontal = 8.dp)
                     .fillMaxWidth(),
                 groups = state.subGroups,
@@ -405,6 +410,7 @@ private fun RootGroupAppBar(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ChildGroupAppBar(
     modifier: Modifier = Modifier,
@@ -439,7 +445,7 @@ private fun ChildGroupAppBar(
             Column {
                 Row(
                     Modifier
-                        .statusBarsPadding()
+                        .windowInsetsPadding(TopAppBarDefaults.windowInsets)
                         .fillMaxWidth()
                         .heightIn(min = 48.dp)
                         .padding(vertical = 8.dp)

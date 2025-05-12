@@ -52,7 +52,7 @@
     <string name="clip_key_mapper_log">Key Mapper log</string>
 
     <string name="whats_new">What\'s New</string>
-    <string name="caption_action_type_sound">The sound file will be copied to Key Mapper\'s private data folder, which means your actions will still work even if the file is moved or deleted. It will also be backed up with your key maps in the zip folder.
+    <string name="caption_action_type_sound">You can either use a system ringtone or select a custom sound file.\n\nThe custom sound file will be copied to Key Mapper\'s private data folder, which means your actions will still work even if the file is moved or deleted. It will also be backed up with your key maps in the zip folder.
     You can delete saved sound files in the settings.</string>
 
     <string name="caption_no_paired_bt_devices">Can\'t find any paired devices. Is Bluetooth turned on?</string>
@@ -90,6 +90,7 @@
     <string name="home_success_accessibility_service_is_enabled">The accessibility service is enabled! Your key maps should work.</string>
     <string name="home_error_logging_enabled">Extra logging is turned on! Turn this off if you aren\'t trying to fix an issue.</string>
     <string name="home_error_logging_enabled_button">Turn off</string>
+    <string name="home_error_notification_permission">Turn on notifications for better on-screen messages, more actions and service updates.</string>
 
     <string name="title_about">About</string>
     <!--  Action descriptions  -->
@@ -107,6 +108,7 @@
     <string name="description_pinch_coordinate_with_description">%s with %d finger(s) on coordinates %d/%d to with a pinch distance of %dpx %dms (%s)</string>
     <string name="description_phone_call">Call %s</string>
     <string name="description_sound">Play sound: %s</string>
+    <string name="description_sound_unknown">Play unknown sound</string>
     <!--  Action descriptions  -->
 
     <!--  Headers  -->
@@ -409,6 +411,7 @@
     <string name="button_config_intent_set_flags">Set flags</string>
     <string name="button_slider_repeat_no_limit">No limit</string>
     <string name="button_choose_sound_file">Choose sound file</string>
+    <string name="button_choose_system_sound_file">Choose system ringtone</string>
     <string name="button_edit_action">Edit action</string>
     <string name="button_replace_action">Replace action</string>
     <!-- Button titles -->
@@ -507,6 +510,9 @@
     <string name="dialog_title_keycode_to_scancode_trigger_explanation">Unrecognized key code</string>
     <string name="dialog_message_keycode_to_scancode_trigger_explanation">The pressed button was not recognized by the input system. In the past Key Mapper detected such buttons as one and the same. Currently the app tries to distinguish the button based on the scan code, which should be more unique. However, this is a makeshift incomplete solution, which doesn\'t guarantee uniqueness.</string>
 
+    <string name="dialog_title_request_notification_permission">Turn on notifications</string>
+    <string name="dialog_message_request_notification_permission">Some actions and options need this permission to work. You can also get notified when there is important news about the app.</string>
+
     <string name="pos_done">Done</string>
     <string name="pos_grant_write_secure_settings_guide">Guide</string>
     <string name="pos_start_service_with_adb_guide">Guide</string>
@@ -519,11 +525,13 @@
     <string name="pos_discard_changes">Discard changes</string>
     <string name="pos_save">Save</string>
     <string name="pos_understood">Understood</string>
+    <string name="pos_turn_on">Turn on</string>
 
     <string name="neg_turn_off">Turn off</string>
     <string name="neg_cancel">Cancel</string>
     <string name="neg_dont_show_again">Don\'t show again</string>
     <string name="neg_keep_editing">Keep editing</string>
+    <string name="neg_no_thanks">No thanks</string>
 
     <string name="neutral_hide">Hide</string>
     <string name="neutral_go_to_dont_kill_my_app">Online guide</string>

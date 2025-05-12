@@ -434,7 +434,17 @@ class ActionUiHelper(
 
         is ActionData.Text -> getString(R.string.description_text_block, action.text)
         is ActionData.Url -> getString(R.string.description_url, action.url)
-        is ActionData.Sound -> getString(R.string.description_sound, action.soundDescription)
+        is ActionData.Sound.SoundFile -> getString(
+            R.string.description_sound,
+            action.soundDescription,
+        )
+
+        is ActionData.Sound.Ringtone -> {
+            getRingtoneLabel(action.uri).handle(
+                onSuccess = { getString(R.string.description_sound, it) },
+                onError = { getString(R.string.description_sound_unknown) },
+            )
+        }
 
         ActionData.AirplaneMode.Disable -> getString(R.string.action_disable_airplane_mode)
         ActionData.AirplaneMode.Enable -> getString(R.string.action_enable_airplane_mode)

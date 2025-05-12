@@ -49,7 +49,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.util.ui.compose.SimpleListItem
+import io.github.sds100.keymapper.util.ui.compose.SimpleListItemFixedHeight
 import io.github.sds100.keymapper.util.ui.compose.SimpleListItemModel
 import kotlinx.coroutines.flow.update
 
@@ -246,7 +246,7 @@ private fun ListScreen(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(listItems, key = { it.id }) { model ->
-            SimpleListItem(
+            SimpleListItemFixedHeight(
                 modifier = Modifier.fillMaxWidth(),
                 model = model,
                 onClick = { onClickAction(model.id) },
@@ -291,12 +291,12 @@ private fun PreviewGrid() {
             state = State.Data(
                 listOf(
                     SimpleListItemModel(
-                        "app",
+                        "app1",
                         title = "App in foreground",
                         icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
                     ),
                     SimpleListItemModel(
-                        "app",
+                        "app2",
                         title = "App not in foreground",
                         icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
                         subtitle = "Error",

@@ -11,7 +11,7 @@ import java.util.Locale
  * Created by sds100 on 22/03/2021.
  */
 
-suspend fun <T : ISearchable> List<T>.filterByQuery(query: String?): Flow<State<List<T>>> = flow {
+fun <T : ISearchable> List<T>.filterByQuery(query: String?): Flow<State<List<T>>> = flow {
     if (query.isNullOrBlank()) {
         emit(State.Data(this@filterByQuery))
     } else {
@@ -30,5 +30,5 @@ suspend fun <T : ISearchable> List<T>.filterByQuery(query: String?): Flow<State<
 fun String.containsQuery(query: String?): Boolean {
     if (query.isNullOrBlank()) return true
 
-    return lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
+    return lowercase(Locale.getDefault()).contains(query.trim().lowercase(Locale.getDefault()))
 }

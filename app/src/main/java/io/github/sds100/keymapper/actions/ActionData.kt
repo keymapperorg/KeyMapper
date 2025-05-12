@@ -67,15 +67,32 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
-    data class Sound(
-        val soundUid: String,
-        val soundDescription: String,
-    ) : ActionData() {
+    sealed class Sound : ActionData() {
         override val id = ActionId.SOUND
 
-        override fun compareTo(other: ActionData) = when (other) {
-            is Sound -> soundUid.compareTo(other.soundUid)
-            else -> super.compareTo(other)
+        @Serializable
+        data class SoundFile(
+            val soundUid: String,
+            val soundDescription: String,
+        ) : Sound() {
+            override fun compareTo(other: ActionData): Int {
+                return when (other) {
+                    is SoundFile -> soundUid.compareTo(other.soundUid)
+                    else -> super.compareTo(other)
+                }
+            }
+        }
+
+        @Serializable
+        data class Ringtone(
+            val uri: String,
+        ) : Sound() {
+            override fun compareTo(other: ActionData): Int {
+                return when (other) {
+                    is Ringtone -> uri.compareTo(other.uri)
+                    else -> super.compareTo(other)
+                }
+            }
         }
     }
 

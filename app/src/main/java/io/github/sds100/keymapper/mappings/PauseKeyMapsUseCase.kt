@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.mappings
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.media.MediaAdapter
+import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
@@ -14,6 +15,7 @@ import timber.log.Timber
 class PauseKeyMapsUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
     private val mediaAdapter: MediaAdapter,
+    private val ringtoneAdapter: RingtoneAdapter,
 ) : PauseKeyMapsUseCase {
 
     override val isPaused: Flow<Boolean> =
@@ -22,6 +24,7 @@ class PauseKeyMapsUseCaseImpl(
     override fun pause() {
         preferenceRepository.set(Keys.mappingsPaused, true)
         mediaAdapter.stopFileMedia()
+        ringtoneAdapter.stopPlaying()
         Timber.d("Pause mappings")
     }
 

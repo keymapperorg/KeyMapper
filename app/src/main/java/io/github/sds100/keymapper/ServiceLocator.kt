@@ -49,6 +49,7 @@ import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
 import io.github.sds100.keymapper.system.power.PowerAdapter
+import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.url.OpenUrlAdapter
 import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
@@ -295,6 +296,8 @@ object ServiceLocator {
     fun appCoroutineScope(context: Context): CoroutineScope = (context.applicationContext as KeyMapperApp).appCoroutineScope
 
     fun purchasingManager(context: Context): PurchasingManagerImpl = (context.applicationContext as KeyMapperApp).purchasingManager
+
+    fun ringtoneAdapter(context: Context): RingtoneAdapter = (context.applicationContext as KeyMapperApp).ringtoneManagerAdapter
 
     private fun createDatabase(context: Context): AppDatabase = Room.databaseBuilder(
         context.applicationContext,

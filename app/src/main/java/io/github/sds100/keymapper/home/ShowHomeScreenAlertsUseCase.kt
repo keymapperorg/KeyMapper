@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
 /**
@@ -52,6 +53,22 @@ class ShowHomeScreenAlertsUseCaseImpl(
     override fun disableLogging() {
         preferences.set(Keys.log, false)
     }
+
+    override val showNotificationPermissionAlert: Flow<Boolean> =
+        combine(
+            permissions.isGrantedFlow(Permission.POST_NOTIFICATIONS),
+            preferences.get(Keys.neverShowNotificationPermissionAlert).map { it ?: false },
+        ) { isGranted, neverShow ->
+            !isGranted && !neverShow
+        }
+
+    override fun requestNotificationPermission() {
+        permissions.request(Permission.POST_NOTIFICATIONS)
+    }
+
+    override fun neverShowNotificationPermissionAlert() {
+        preferences.set(Keys.neverShowNotificationPermissionAlert, true)
+    }
 }
 
 interface ShowHomeScreenAlertsUseCase {
@@ -68,4 +85,8 @@ interface ShowHomeScreenAlertsUseCase {
 
     val isLoggingEnabled: Flow<Boolean>
     fun disableLogging()
+
+    val showNotificationPermissionAlert: Flow<Boolean>
+    fun requestNotificationPermission()
+    fun neverShowNotificationPermissionAlert()
 }

@@ -94,6 +94,7 @@ class KeyMapListViewModel(
         const val ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM = "accessibility_service_crashed"
         const val ID_BATTERY_OPTIMISATION_LIST_ITEM = "battery_optimised"
         const val ID_LOGGING_ENABLED_LIST_ITEM = "logging_enabled"
+        const val ID_NOTIFICATION_PERMISSION_DENIED_LIST_ITEM = "notification_permission_denied"
     }
 
     val sortViewModel = SortViewModel(coroutineScope, sortKeyMaps)
@@ -152,7 +153,8 @@ class KeyMapListViewModel(
         showAlertsUseCase.accessibilityServiceState,
         showAlertsUseCase.hideAlerts,
         showAlertsUseCase.isLoggingEnabled,
-    ) { isBatteryOptimised, serviceState, isHidden, isLoggingEnabled ->
+        showAlertsUseCase.showNotificationPermissionAlert,
+    ) { isBatteryOptimised, serviceState, isHidden, isLoggingEnabled, showNotificationPermissionAlert ->
         if (isHidden) {
             return@combine emptyList()
         }
@@ -186,6 +188,15 @@ class KeyMapListViewModel(
                     ),
                 )
             } // don't show a success message for this
+
+            if (showNotificationPermissionAlert) {
+                add(
+                    HomeWarningListItem(
+                        ID_NOTIFICATION_PERMISSION_DENIED_LIST_ITEM,
+                        getString(R.string.home_error_notification_permission),
+                    ),
+                )
+            }
 
             if (isLoggingEnabled) {
                 add(
@@ -672,7 +683,26 @@ class KeyMapListViewModel(
 
                 ID_BATTERY_OPTIMISATION_LIST_ITEM -> showAlertsUseCase.disableBatteryOptimisation()
                 ID_LOGGING_ENABLED_LIST_ITEM -> showAlertsUseCase.disableLogging()
+                ID_NOTIFICATION_PERMISSION_DENIED_LIST_ITEM -> showNotificationPermissionAlertDialog()
             }
+        }
+    }
+
+    private suspend fun showNotificationPermissionAlertDialog() {
+        val dialog = PopupUi.Dialog(
+            title = getString(R.string.dialog_title_request_notification_permission),
+            message = getText(R.string.dialog_message_request_notification_permission),
+            positiveButtonText = getString(R.string.pos_turn_on),
+            negativeButtonText = getString(R.string.neg_no_thanks),
+            neutralButtonText = getString(R.string.pos_never_show_again),
+        )
+
+        val dialogResponse = showPopup("notification_permission_alert", dialog)
+
+        if (dialogResponse == DialogResponse.POSITIVE) {
+            showAlertsUseCase.requestNotificationPermission()
+        } else if (dialogResponse == DialogResponse.NEUTRAL) {
+            showAlertsUseCase.neverShowNotificationPermissionAlert()
         }
     }
 

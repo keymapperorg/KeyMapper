@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.mappings.keymaps
 
 import android.graphics.drawable.Drawable
-import android.view.KeyEvent
 import io.github.sds100.keymapper.actions.DisplayActionUseCase
 import io.github.sds100.keymapper.actions.GetActionErrorUseCase
 import io.github.sds100.keymapper.constraints.DisplayConstraintUseCase
@@ -19,6 +18,7 @@ import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
+import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
@@ -49,18 +49,12 @@ class DisplayKeyMapUseCaseImpl(
     private val accessibilityServiceAdapter: ServiceAdapter,
     private val preferences: PreferenceRepository,
     private val purchasingManager: PurchasingManager,
+    private val ringtoneAdapter: RingtoneAdapter,
     getActionError: GetActionErrorUseCase,
     getConstraintError: GetConstraintErrorUseCase,
 ) : DisplayKeyMapUseCase,
     GetActionErrorUseCase by getActionError,
     GetConstraintErrorUseCase by getConstraintError {
-    private companion object {
-        val keysThatRequireDndAccess = arrayOf(
-            KeyEvent.KEYCODE_VOLUME_DOWN,
-            KeyEvent.KEYCODE_VOLUME_UP,
-        )
-    }
-
     private val keyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
 
     private val showDpadImeSetupError: Flow<Boolean> =
@@ -198,6 +192,10 @@ class DisplayKeyMapUseCaseImpl(
 
     override fun neverShowDndTriggerError() {
         preferenceRepository.set(Keys.neverShowDndAccessError, true)
+    }
+
+    override fun getRingtoneLabel(uri: String): Result<String> {
+        return ringtoneAdapter.getLabel(uri)
     }
 }
 

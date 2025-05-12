@@ -1,3 +1,18 @@
+## [3.1.1](https://github.com/sds100/KeyMapper/releases/tag/v3.1.1)
+
+#### 12 May 2025
+
+## Added
+
+- #1637 show a home screen error if notification permission is not granted.
+- #1435 Pick system sounds/ringtones for the Sound action.
+
+## Bug fixes
+
+- Do not automatically select the key mapper keyboard when the accessibility service starts.
+- #1686 do not show some screens behind system bars on the left/right side of the device.
+- Use same sized list items when choosing a constraint.
+
 ## [3.1.0](https://github.com/sds100/KeyMapper/releases/tag/v3.1.0)
 
 #### 10 May 2025
