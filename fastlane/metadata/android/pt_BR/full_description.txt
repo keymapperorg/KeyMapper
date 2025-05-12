@@ -1,0 +1,55 @@
+Make custom macros on your keyboard or gamepad, make on-screen buttons in any app, and unlock new functionality from your volume buttons!
+
+Key Mapper supports a huge variety of buttons and keys*:
+
+- ALL your phone buttons (volume AND side key)
+- Game controllers (D-pad, ABXY, and most others)
+- Keyboards
+- Headsets and headphones
+- Fingerprint sensor
+
+Not enough keys? Design your own on-screen button layouts and remap those just like real keys!
+
+
+What shortcuts can I make?
+--------------------------
+
+With over 100 individual actions, the sky is the limit.
+Build complex macros with screen taps and gestures, keyboard inputs, open apps, control media, and even send intents directly to other apps.
+
+
+How much control do I have?
+---------------------------
+
+TRIGGERS: You decide how to trigger a key map. Long press, double press, press as many times as you like! Combine keys on different devices, and even include your on-screen buttons.
+
+ACTIONS: Design specific macros for what you want to do. Combine over 100 actions, and choose the delay between each one. Set repeating actions to automate and speed up slow tasks.
+
+CONSTRAINTS: You choose when key maps should run and when they shouldn't. Only need it in one specific app? Or when media is playing? On your lockscreen? Constrain your key maps for maximum control.
+
+* Most devices are already supported, with new devices being added over time. Let us know if it's not working for you and we can prioritize your device.
+
+Not currently supported:
+ - Mouse buttons
+ - Joysticks and triggers (LT,RT) on gamepads
+
+
+Security and accessibility services
+---------------------------
+
+This app includes our Key Mapper Accessibility service that uses the Android Accessibility API to detect the app in focus and adapt key presses to user-defined key maps. It is also used to draw assistive Floating Button overlays on top of other apps.
+
+By accepting to run the accessibility service, the app will monitor key strokes while you're using your device. It will also emulate swipes and pinches if you are using those actions in the app.
+
+It will NOT collect any user data or connect to the internet to send any data anywhere.
+
+Our accessibility service is only triggered by the user when pressing a physical key on their device. It can be turned off any time by the user in the system accessibility settings.
+
+Come say hi in our Discord community!
+www.keymapper.club
+
+See the code for yourself! (Open source)
+code.keymapper.club
+
+Read the documentation:
+docs.keymapper.club
