@@ -93,4 +93,7 @@ object Keys {
      * Whether the user viewed the advanced triggers.
      */
     val viewedAdvancedTriggers = booleanPreferencesKey("key_viewed_advanced_triggers")
+
+    val neverShowNotificationPermissionAlert =
+        booleanPreferencesKey("key_never_show_notification_permission_alert")
 }

@@ -510,6 +510,9 @@
     <string name="dialog_title_keycode_to_scancode_trigger_explanation">Unrecognized key code</string>
     <string name="dialog_message_keycode_to_scancode_trigger_explanation">The pressed button was not recognized by the input system. In the past Key Mapper detected such buttons as one and the same. Currently the app tries to distinguish the button based on the scan code, which should be more unique. However, this is a makeshift incomplete solution, which doesn\'t guarantee uniqueness.</string>
 
+    <string name="dialog_title_request_notification_permission">Turn on notifications</string>
+    <string name="dialog_message_request_notification_permission">Some actions and options need this permission to work. You can also get notified when there is important news about the app.</string>
+
     <string name="pos_done">Done</string>
     <string name="pos_grant_write_secure_settings_guide">Guide</string>
     <string name="pos_start_service_with_adb_guide">Guide</string>
@@ -522,11 +525,13 @@
     <string name="pos_discard_changes">Discard changes</string>
     <string name="pos_save">Save</string>
     <string name="pos_understood">Understood</string>
+    <string name="pos_turn_on">Turn on</string>
 
     <string name="neg_turn_off">Turn off</string>
     <string name="neg_cancel">Cancel</string>
     <string name="neg_dont_show_again">Don\'t show again</string>
     <string name="neg_keep_editing">Keep editing</string>
+    <string name="neg_no_thanks">No thanks</string>
 
     <string name="neutral_hide">Hide</string>
     <string name="neutral_go_to_dont_kill_my_app">Online guide</string>
