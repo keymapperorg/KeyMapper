@@ -21,6 +21,7 @@
     <string name="button_restart_accessibility_service">Erişilebilirlik servisini yeniden başlat</string>
     <string name="share_backup">Paylaş</string>
     <string name="app_list_empty">Burada hiçbir şey yok!</string>
+    <string name="ui_element_list_empty">Key Mapper hiçbir etkileşim algılamadı. Ek öğeler göstermeyi deneyin.</string>
     <string name="stop_repeating_dot_dot_dot">Tekrarlamayı durdur…</string>
     <string name="stop_repeating_when_trigger_released">Tetikleyici bırakıldığında</string>
     <string name="stop_repeating_trigger_pressed_again">Tetikleyici tekrar basıldığında</string>
@@ -41,8 +42,8 @@
     <string name="content_description_done_configuring_coordinate">Koordinat seçimi tamamlandı</string>
     <string name="clip_key_mapper_log">Key Mapper günlüğü</string>
     <string name="whats_new">Neler Yeni</string>
-    <string name="caption_action_type_sound">Ses dosyası, Key Mapper’ın özel veri klasörüne kopyalanacak; bu, dosya taşınsa veya silinse bile eylemlerinizin çalışmaya devam edeceği anlamına gelir. Ayrıca, tuş eşlemelerinizle birlikte zip klasöründe yedeklenecektir.
-    Kaydedilen ses dosyalarını ayarlardan silebilirsiniz.</string>
+    <string name="caption_action_type_sound">Sistem zil sesini kullanabilir veya özel bir ses dosyası seçebilirsiniz.\n\nÖzel ses dosyası, Key Mapper\'ın özel veri klasörüne kopyalanacak; bu, dosya taşınsa veya silinse bile işlemlerinizin çalışmaya devam edeceği anlamına gelir. Ayrıca, anahtar haritalarınızla birlikte zip klasöründe yedeklenecektir.
+Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="caption_no_paired_bt_devices">Eşleştirilmiş cihaz bulunamadı. Bluetooth açık mı?</string>
     <string name="create_key_map_shortcut_footer">Kısayol olarak kullanmak için bir tuş eşlemesine dokunun.</string>
     <string name="create_key_map_shortcut_app_title">Tuş eşleme kısayolu oluştur</string>
@@ -71,6 +72,7 @@
     <string name="home_success_accessibility_service_is_enabled">Erişilebilirlik servisi etkin! Tuş eşlemeleriniz çalışmalı.</string>
     <string name="home_error_logging_enabled">Ekstra günlük kaydı açık! Bir sorunu düzeltmeye çalışmıyorsanız bunu kapatın.</string>
     <string name="home_error_logging_enabled_button">Kapat</string>
+    <string name="home_error_notification_permission">Daha iyi ekran mesajları, daha fazla işlem ve hizmet güncellemeleri için bildirimleri açın.</string>
     <string name="title_about">Hakkında</string>
     <!--  Action descriptions  -->
     <string name="description_open_app">%s uygulamasını aç</string>
@@ -87,6 +89,7 @@
     <string name="description_pinch_coordinate_with_description">%s, %d parmakla %d/%d koordinatlarında %dpx sıkıştırma mesafesiyle %dms içinde (%s)</string>
     <string name="description_phone_call">%s numarayı ara</string>
     <string name="description_sound">Ses çal: %s</string>
+    <string name="description_sound_unknown">Bilinmeyen sesi oynat</string>
     <!--  Action descriptions  -->
     <!--  Headers  -->
     <string name="option_list_header">Seçenekler:</string>
@@ -319,6 +322,7 @@
     <string name="button_config_intent_set_flags">Bayrakları ayarla</string>
     <string name="button_slider_repeat_no_limit">Sınır yok</string>
     <string name="button_choose_sound_file">Ses dosyası seç</string>
+    <string name="button_choose_system_sound_file">Sistem zil sesini seç</string>
     <string name="button_edit_action">Eylemi düzenle</string>
     <string name="button_replace_action">Eylemi değiştir</string>
     <!-- Button titles -->
@@ -777,6 +781,15 @@
     <string name="action_rewind_package">Bir uygulama için geri sar</string>
     <string name="action_rewind_package_formatted">%s için geri sar</string>
     <string name="action_rewind_message">Tüm medya uygulamaları geri sarmayı desteklemez. Örn. Google Play Music.</string>
+    <string name="action_stop_media">Medyayı durdur</string>
+    <string name="action_stop_media_package">Bir uygulama için medyayı durdur</string>
+    <string name="action_stop_media_package_formatted">%s için medyayı durdur</string>
+    <string name="action_step_forward_media">Medyayı ileri sar</string>
+    <string name="action_step_forward_media_package">Bir uygulama için medyayı ileri sar</string>
+    <string name="action_step_forward_media_package_formatted">%s için medyayı ileri sar</string>
+    <string name="action_step_backward_media">Medyayı geri sar</string>
+    <string name="action_step_backward_media_package">Bir uygulama için medyayı geri sar</string>
+    <string name="action_step_backward_media_package_formatted">%s için medyayı geri sar</string>
     <string name="action_go_back">Geri dön</string>
     <string name="action_go_home">Ana ekrana git</string>
     <string name="action_open_recents">Son uygulamaları aç</string>
@@ -872,6 +885,7 @@
         <item quantity="one">%d öğe seçildi</item>
         <item quantity="other">%d öğe seçildi</item>
     </plurals>
+    <string name="action_interact_ui_element_choose_app_title">Etkileşim kuracağınız uygulamayı seçin</string>
     <string name="action_interact_ui_element_record_again">Tekrar kaydet</string>
     <string name="action_interact_ui_element_choose_element_title">Uygulama öğesini seçin</string>
     <string name="action_interact_ui_element_choose_element_text">Tuş haritanızın etkileşime geçmesini istediğiniz öğeyi seçin.</string>
@@ -880,6 +894,7 @@
     <string name="action_interact_ui_element_interaction_type_dropdown">Olası etkileşimler</string>
     <string name="action_interact_ui_element_interaction_type_dropdown_caption">UI öğesiyle nasıl etkileşim kurmak istediğinizi seçin.</string>
     <string name="action_interact_ui_element_filter_interaction_type_dropdown">Etkileşim türünü filtrele</string>
+    <string name="action_interact_ui_element_checkbox_additional_elements">Ek öğeleri göster</string>
     <string name="action_interact_ui_element_interaction_type_any">Herhangi biri</string>
     <string name="action_interact_ui_element_interaction_type_click">Dokun</string>
     <string name="action_interact_ui_element_interaction_type_long_click">Dokun ve basılı tut</string>
@@ -892,7 +907,9 @@
     <string name="action_interact_ui_element_interaction_details_title">Etkileşim detayları</string>
     <string name="action_interact_ui_element_description_label">Açıklama</string>
     <string name="action_interact_ui_element_app_label">Uygulama</string>
+    <string name="action_interact_ui_element_text_label">Metin/içerik açıklaması</string>
     <string name="action_interact_ui_element_class_name_label">Sınıf adı</string>
+    <string name="action_interact_ui_element_tooltip_label">Araç ipucu/öneri</string>
     <string name="action_interact_ui_element_view_id_label">Kaynak kimliğini görüntüle</string>
     <string name="action_interact_ui_element_unique_id_label">Özgün kimlik</string>
     <string name="action_interact_ui_element_interaction_types_label">Etkileşim türü</string>
@@ -1000,6 +1017,7 @@
     <string name="unlock_product_button">Kilidi aç (%s)</string>
     <string name="use_product_button">Kullan</string>
     <string name="loading_product_button">Yükleniyor…</string>
+    <string name="purchased_product_label">Satın alındı!</string>
     <string name="retry_loading_price_button">Fiyatı tekrar almayı dene</string>
     <string name="purchasing_error_cancelled">Satın alma iptal edildi.</string>
     <string name="purchasing_error_not_implemented">Bu, yalnızca Google Play\'den Key Mapper indirilerek satın alınabilen ücretli bir özellik gerektiriyor.</string>
