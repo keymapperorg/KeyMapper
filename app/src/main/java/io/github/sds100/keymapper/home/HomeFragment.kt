@@ -4,6 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -58,6 +66,11 @@ class HomeFragment : Fragment() {
                 setContent {
                     KeyMapperTheme {
                         HomeScreen(
+                            modifier = Modifier
+                                .windowInsetsPadding(
+                                    WindowInsets.systemBars.only(sides = WindowInsetsSides.Horizontal)
+                                        .add(WindowInsets.displayCutout.only(sides = WindowInsetsSides.Horizontal)),
+                                ),
                             viewModel = homeViewModel,
                             onSettingsClick = {
                                 findNavController().navigate(NavAppDirections.toSettingsFragment())

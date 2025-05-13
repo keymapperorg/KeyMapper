@@ -4,7 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
@@ -71,7 +78,12 @@ class InteractUiElementFragment : Fragment() {
                 setContent {
                     KeyMapperTheme {
                         InteractUiElementScreen(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .windowInsetsPadding(
+                                    WindowInsets.systemBars.only(sides = WindowInsetsSides.Horizontal)
+                                        .add(WindowInsets.displayCutout.only(sides = WindowInsetsSides.Horizontal)),
+                                ),
                             viewModel = viewModel,
                             navigateBack = findNavController()::navigateUp,
                         )

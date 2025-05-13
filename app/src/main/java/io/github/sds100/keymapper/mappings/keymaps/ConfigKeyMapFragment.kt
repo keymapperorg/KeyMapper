@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
@@ -71,7 +73,10 @@ class ConfigKeyMapFragment : Fragment() {
                     KeyMapperTheme {
                         ConfigKeyMapScreen(
                             modifier = Modifier
-                                .windowInsetsPadding(WindowInsets.systemBars.only(sides = WindowInsetsSides.Horizontal))
+                                .windowInsetsPadding(
+                                    WindowInsets.systemBars.only(sides = WindowInsetsSides.Horizontal)
+                                        .add(WindowInsets.displayCutout.only(sides = WindowInsetsSides.Horizontal)),
+                                )
                                 .fillMaxSize(),
                             viewModel = viewModel,
                             navigateBack = findNavController()::navigateUp,

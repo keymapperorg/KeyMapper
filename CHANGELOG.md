@@ -1,3 +1,11 @@
+## [3.1.2](https://github.com/sds100/KeyMapper/releases/tag/v3.1.2)
+
+#### TO BE RELEASED
+
+## Bug fixes
+
+- #1686 (more fixes) do not show some screens behind system bars on the left/right side of the device.
+
 ## [3.1.1](https://github.com/sds100/KeyMapper/releases/tag/v3.1.1)
 
 #### 12 May 2025
