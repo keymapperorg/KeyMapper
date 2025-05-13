@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.util
 
 import androidx.annotation.IntRange
+import kotlin.math.roundToInt
 
 /**
  * Created by sds100 on 24/04/2021.
@@ -45,5 +46,5 @@ fun String.getWordBoundaries(@IntRange(from = 0L) cursorPosition: Int): Pair<Int
 }
 
 fun Float.toPercentString(): String {
-    return "${(this * 100).toInt()}%"
+    return "${(this * 100).roundToInt()}%"
 }
