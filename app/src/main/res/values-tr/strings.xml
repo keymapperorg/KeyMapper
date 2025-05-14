@@ -969,10 +969,6 @@ Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="intent_type_short_array_example">Java programlama dilinde geçerli Kısa sayıların virgülle ayrılmış bir listesi. Örn. 3242,12354</string>
     <string name="intent_flags_example">Intent bayrakları bit bayrakları olarak saklanır. Bu bayraklar Intent\'in nasıl işleneceğini değiştirir. Bir Etkinlik Intent\'i için bu alan boş bırakılırsa, Key Mapper varsayılan olarak FLAG_ACTIVITY_NEW_TASK kullanır. Daha fazla bilgi için Android geliştirici belgelerini görmek üzere \'dokümanlar\'a dokunun.</string>
     <!--  Intent action type strings  -->
-    <!--  Tap targets  -->
-    <string name="tap_target_quick_start_guide_primary">Hızlı Başlangıç Kılavuzu</string>
-    <string name="tap_target_quick_start_guide_secondary">Eğer takılırsanız Hızlı Başlangıç Kılavuzu\'na göz atın.</string>
-    <!--  Tap targets  -->
     <!--  About  -->
     <string name="about_link_github">GitHub</string>
     <string name="about_link_website">Web Sitesi</string>
