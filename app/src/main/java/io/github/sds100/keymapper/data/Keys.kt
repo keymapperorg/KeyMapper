@@ -101,6 +101,9 @@ object Keys {
     val shownTapTargetRecordTrigger =
         booleanPreferencesKey("key_shown_tap_target_record_trigger")
 
+    val shownTapTargetAdvancedTriggers =
+        booleanPreferencesKey("key_shown_tap_target_advanced_triggers")
+
     val shownTapTargetChooseAction =
         booleanPreferencesKey("key_shown_tap_target_choose_action")
 

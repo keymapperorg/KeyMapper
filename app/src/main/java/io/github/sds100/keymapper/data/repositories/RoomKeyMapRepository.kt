@@ -122,6 +122,10 @@ class RoomKeyMapRepository(
         }
     }
 
+    override fun count(): Flow<Int> {
+        return keyMapDao.count().flowOn(dispatchers.io())
+    }
+
     private suspend fun migrateFingerprintMaps() = withContext(dispatchers.io()) {
         val entities = fingerprintMapDao.getAll().first()
 

@@ -4,13 +4,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Badge
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -21,9 +18,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.canopas.lib.showcase.IntroShowcase
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
+import io.github.sds100.keymapper.onboarding.OnboardingTapTarget
+import io.github.sds100.keymapper.util.ui.compose.KeyMapperTapTarget
+import io.github.sds100.keymapper.util.ui.compose.keyMapperShowcaseStyle
 
 @Composable
 fun RecordTriggerButtonRow(
@@ -31,25 +32,53 @@ fun RecordTriggerButtonRow(
     onRecordTriggerClick: () -> Unit = {},
     recordTriggerState: RecordTriggerState,
     onAdvancedTriggersClick: () -> Unit = {},
-    showNewBadge: Boolean,
+    showRecordTriggerTapTarget: Boolean = false,
+    onRecordTriggerTapTargetCompleted: () -> Unit = {},
+    onSkipTapTarget: () -> Unit = {},
+    showAdvancedTriggerTapTarget: Boolean = false,
+    onAdvancedTriggerTapTargetCompleted: () -> Unit = {},
 ) {
     Row(modifier) {
-        RecordTriggerButton(
-            modifier = Modifier
-                .weight(1f)
-                .align(Alignment.Bottom),
-            recordTriggerState,
-            onClick = onRecordTriggerClick,
-        )
+        IntroShowcase(
+            showIntroShowCase = showRecordTriggerTapTarget,
+            onShowCaseCompleted = onRecordTriggerTapTargetCompleted,
+            dismissOnClickOutside = true,
+        ) {
+            RecordTriggerButton(
+                modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.Bottom)
+                    .introShowCaseTarget(0, style = keyMapperShowcaseStyle()) {
+                        KeyMapperTapTarget(
+                            OnboardingTapTarget.RECORD_TRIGGER,
+                            onSkipClick = onSkipTapTarget,
+                        )
+                    },
+                recordTriggerState,
+                onClick = onRecordTriggerClick,
+            )
+        }
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        AdvancedTriggersButton(
-            modifier = Modifier.weight(1f),
-            isEnabled = recordTriggerState !is RecordTriggerState.CountingDown,
-            onClick = onAdvancedTriggersClick,
-            showNewBadge = showNewBadge,
-        )
+        IntroShowcase(
+            showIntroShowCase = showAdvancedTriggerTapTarget,
+            onShowCaseCompleted = onAdvancedTriggerTapTargetCompleted,
+            dismissOnClickOutside = true,
+        ) {
+            AdvancedTriggersButton(
+                modifier = Modifier
+                    .weight(1f)
+                    .introShowCaseTarget(0, style = keyMapperShowcaseStyle()) {
+                        KeyMapperTapTarget(
+                            OnboardingTapTarget.ADVANCED_TRIGGERS,
+                            showSkipButton = false,
+                        )
+                    },
+                isEnabled = recordTriggerState !is RecordTriggerState.CountingDown,
+                onClick = onAdvancedTriggersClick,
+            )
+        }
     }
 }
 
@@ -89,7 +118,6 @@ private fun RecordTriggerButton(
 private fun AdvancedTriggersButton(
     modifier: Modifier,
     isEnabled: Boolean,
-    showNewBadge: Boolean,
     onClick: () -> Unit,
 ) {
     Box(modifier = modifier) {
@@ -106,22 +134,6 @@ private fun AdvancedTriggersButton(
                 overflow = TextOverflow.Ellipsis,
             )
         }
-
-        if (showNewBadge) {
-            Badge(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .height(36.dp),
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            ) {
-                Text(
-                    modifier = Modifier.padding(horizontal = 8.dp),
-                    text = stringResource(R.string.button_advanced_triggers_badge),
-                    style = MaterialTheme.typography.labelLarge,
-                )
-            }
-        }
     }
 }
 
@@ -133,7 +145,6 @@ private fun PreviewCountingDown() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.CountingDown(3),
-                showNewBadge = true,
             )
         }
     }
@@ -147,7 +158,6 @@ private fun PreviewStopped() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.Idle,
-                showNewBadge = false,
             )
         }
     }

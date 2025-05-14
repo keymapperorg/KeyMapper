@@ -16,7 +16,11 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.onboarding.OnboardingTapTarget
 
 @Composable
-fun KeyMapperTapTarget(tapTarget: OnboardingTapTarget, onSkipClick: () -> Unit) {
+fun KeyMapperTapTarget(
+    tapTarget: OnboardingTapTarget,
+    showSkipButton: Boolean = true,
+    onSkipClick: () -> Unit = {},
+) {
     val textColor = MaterialTheme.colorScheme.onPrimary
     Column {
         Text(
@@ -33,19 +37,20 @@ fun KeyMapperTapTarget(tapTarget: OnboardingTapTarget, onSkipClick: () -> Unit) 
             style = MaterialTheme.typography.bodyMedium,
         )
 
-        Spacer(Modifier.height(16.dp))
-
-        OutlinedButton(
-            onClick = onSkipClick,
-            border = BorderStroke(
-                width = 1.dp,
-                color = textColor,
-            ),
-        ) {
-            Text(
-                text = stringResource(R.string.tap_target_skip_tutorial_button),
-                color = textColor,
-            )
+        if (showSkipButton) {
+            Spacer(Modifier.height(16.dp))
+            OutlinedButton(
+                onClick = onSkipClick,
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = textColor,
+                ),
+            ) {
+                Text(
+                    text = stringResource(R.string.tap_target_skip_tutorial_button),
+                    color = textColor,
+                )
+            }
         }
     }
 }

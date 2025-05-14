@@ -7,6 +7,9 @@ import io.github.sds100.keymapper.actions.canUseImeToPerform
 import io.github.sds100.keymapper.actions.canUseShizukuToPerform
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.keymaps.KeyMapRepository
+import io.github.sds100.keymapper.purchasing.ProductId
+import io.github.sds100.keymapper.purchasing.PurchasingManager
 import io.github.sds100.keymapper.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
@@ -16,9 +19,13 @@ import io.github.sds100.keymapper.system.leanback.LeanbackAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.util.PrefDelegate
+import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.VersionHelper
+import io.github.sds100.keymapper.util.handle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -32,6 +39,8 @@ class OnboardingUseCaseImpl(
     private val shizukuAdapter: ShizukuAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val packageManagerAdapter: PackageManagerAdapter,
+    private val purchasingManager: PurchasingManager,
+    private val keyMapRepository: KeyMapRepository,
 ) : PreferenceRepository by preferences,
     OnboardingUseCase {
 
@@ -140,13 +149,33 @@ class OnboardingUseCaseImpl(
     }
 
     override fun showTapTarget(tapTarget: OnboardingTapTarget): Flow<Boolean> {
-        val key = getTapTargetKey(tapTarget)
-        return combine(
-            preferences.get(key).map { it != true },
-            preferences.get(Keys.skipTapTargetTutorial)
-                .map { it ?: false },
-        ) { showTapTarget, skipTapTarget ->
-            showTapTarget && !skipTapTarget
+        val shownKey = getTapTargetKey(tapTarget)
+
+        if (tapTarget == OnboardingTapTarget.ADVANCED_TRIGGERS) {
+            return combine(
+                preferences.get(shownKey).map { it ?: false },
+                purchasingManager.purchases.filterIsInstance<State.Data<Result<Set<ProductId>>>>(),
+                keyMapRepository.count(),
+            ) { isShown, purchases, keyMapCount ->
+                // Only show the tap target for advanced triggers if it has not already been shown
+                // and the user has not made any purchases. Also, the user must have saved a key map
+                // as a heuristic for they actually interacted with Key Mapper a bit before
+                // pushing them to paid features.
+                !isShown &&
+                    keyMapCount > 0 &&
+                    purchases.data.handle(
+                        onSuccess = { it.isEmpty() },
+                        onError = { false },
+                    )
+            }
+        } else {
+            return combine(
+                preferences.get(shownKey).map { it ?: false },
+                preferences.get(Keys.skipTapTargetTutorial).map { it ?: false },
+                keyMapRepository.count(),
+            ) { isShown, skipTapTarget, keyMapCount ->
+                !isShown && !skipTapTarget && keyMapCount == 0
+            }
         }
     }
 
@@ -159,6 +188,7 @@ class OnboardingUseCaseImpl(
         val key = when (tapTarget) {
             OnboardingTapTarget.CREATE_KEY_MAP -> Keys.shownTapTargetCreateKeyMap
             OnboardingTapTarget.RECORD_TRIGGER -> Keys.shownTapTargetRecordTrigger
+            OnboardingTapTarget.ADVANCED_TRIGGERS -> Keys.shownTapTargetAdvancedTriggers
             OnboardingTapTarget.CHOOSE_ACTION -> Keys.shownTapTargetChooseAction
             OnboardingTapTarget.CHOOSE_CONSTRAINT -> Keys.shownTapTargetChooseConstraint
         }

@@ -17,6 +17,7 @@ interface KeyMapRepository {
     suspend fun get(uid: String): KeyMapEntity?
     fun delete(vararg uid: String)
     suspend fun deleteAll()
+    fun count(): Flow<Int>
 
     fun duplicate(vararg uid: String)
     fun enableById(vararg uid: String)
