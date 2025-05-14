@@ -915,7 +915,7 @@ class KeyMapListViewModel(
     }
 
     fun onTapTargetsCompleted() {
-        onboarding.dismissedTapTarget(OnboardingTapTarget.CREATE_KEY_MAP)
+        onboarding.completedTapTarget(OnboardingTapTarget.CREATE_KEY_MAP)
     }
 
     fun onSkipTapTargetClick() {

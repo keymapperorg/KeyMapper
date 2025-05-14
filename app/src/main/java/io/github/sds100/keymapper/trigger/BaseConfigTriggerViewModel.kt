@@ -786,7 +786,7 @@ abstract class BaseConfigTriggerViewModel(
     }
 
     fun onRecordTriggerTapTargetCompleted() {
-        onboarding.dismissedTapTarget(OnboardingTapTarget.RECORD_TRIGGER)
+        onboarding.completedTapTarget(OnboardingTapTarget.RECORD_TRIGGER)
     }
 
     fun onSkipTapTargetClick() {
@@ -794,7 +794,7 @@ abstract class BaseConfigTriggerViewModel(
     }
 
     fun onAdvancedTriggersTapTargetCompleted() {
-        onboarding.dismissedTapTarget(OnboardingTapTarget.ADVANCED_TRIGGERS)
+        onboarding.completedTapTarget(OnboardingTapTarget.ADVANCED_TRIGGERS)
     }
 }
 

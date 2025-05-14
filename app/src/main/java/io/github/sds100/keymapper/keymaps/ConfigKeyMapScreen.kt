@@ -54,11 +54,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.canopas.lib.showcase.IntroShowcase
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.ActionsScreen
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.constraints.ConstraintsScreen
+import io.github.sds100.keymapper.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.trigger.TriggerScreen
+import io.github.sds100.keymapper.util.ui.compose.KeyMapperTapTarget
+import io.github.sds100.keymapper.util.ui.compose.keyMapperShowcaseStyle
 import io.github.sds100.keymapper.util.ui.compose.openUriSafe
 import kotlinx.coroutines.launch
 
@@ -69,6 +73,9 @@ fun ConfigKeyMapScreen(
     navigateBack: () -> Unit,
 ) {
     val isKeyMapEnabled by viewModel.isEnabled.collectAsStateWithLifecycle()
+    val showActionTapTarget by viewModel.showActionsTapTarget.collectAsStateWithLifecycle()
+    val showConstraintTapTarget by viewModel.showConstraintsTapTarget.collectAsStateWithLifecycle()
+
     val snackbarHostState = remember { SnackbarHostState() }
 
     var showBackDialog by rememberSaveable { mutableStateOf(false) }
@@ -118,6 +125,11 @@ fun ConfigKeyMapScreen(
             navigateBack()
         },
         snackbarHostState = snackbarHostState,
+        showActionTapTarget = showActionTapTarget,
+        onActionTapTargetCompleted = viewModel::onActionTapTargetCompleted,
+        showConstraintTapTarget = showConstraintTapTarget,
+        onConstraintTapTargetCompleted = viewModel::onConstraintTapTargetCompleted,
+        onSkipTutorialClick = viewModel::onSkipTutorialClick,
     )
 }
 
@@ -134,6 +146,11 @@ private fun ConfigKeyMapScreen(
     onBackClick: () -> Unit = {},
     onDoneClick: () -> Unit = {},
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
+    showActionTapTarget: Boolean = false,
+    onActionTapTargetCompleted: () -> Unit = {},
+    showConstraintTapTarget: Boolean = false,
+    onConstraintTapTargetCompleted: () -> Unit = {},
+    onSkipTutorialClick: () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
     val triggerHelpUrl = stringResource(R.string.url_trigger_guide)
@@ -187,22 +204,49 @@ private fun ConfigKeyMapScreen(
                     @Composable
                     fun Tabs() {
                         for ((index, tab) in tabs.withIndex()) {
-                            Tab(
-                                selected = pagerState.targetPage == index,
-                                text = {
-                                    Text(
-                                        text = getTabTitle(tab),
-                                        maxLines = 1,
-                                    )
-                                },
-                                onClick = {
-                                    scope.launch {
-                                        pagerState.animateScrollToPage(
-                                            tabs.indexOf(tab),
+                            val tapTarget: OnboardingTapTarget? = when {
+                                showActionTapTarget && tab == ConfigKeyMapTab.ACTIONS -> OnboardingTapTarget.CHOOSE_ACTION
+                                showConstraintTapTarget && (tab == ConfigKeyMapTab.CONSTRAINTS || tab == ConfigKeyMapTab.CONSTRAINTS_AND_OPTIONS) -> OnboardingTapTarget.CHOOSE_CONSTRAINT
+                                else -> null
+                            }
+
+                            IntroShowcase(
+                                showIntroShowCase = tapTarget != null,
+                                onShowCaseCompleted = if (tapTarget == OnboardingTapTarget.CHOOSE_ACTION) onActionTapTargetCompleted else onConstraintTapTargetCompleted,
+                                dismissOnClickOutside = true,
+                            ) {
+                                var tabModifier: Modifier = Modifier
+
+                                if (tapTarget != null) {
+                                    tabModifier = tabModifier.introShowCaseTarget(
+                                        index = 0,
+                                        style = keyMapperShowcaseStyle(),
+                                    ) {
+                                        KeyMapperTapTarget(
+                                            tapTarget = tapTarget,
+                                            onSkipClick = onSkipTutorialClick,
                                         )
                                     }
-                                },
-                            )
+                                }
+
+                                Tab(
+                                    modifier = tabModifier,
+                                    selected = pagerState.targetPage == index,
+                                    text = {
+                                        Text(
+                                            text = getTabTitle(tab),
+                                            maxLines = 1,
+                                        )
+                                    },
+                                    onClick = {
+                                        scope.launch {
+                                            pagerState.animateScrollToPage(
+                                                tabs.indexOf(tab),
+                                            )
+                                        }
+                                    },
+                                )
+                            }
                         }
                     }
 

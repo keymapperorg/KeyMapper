@@ -6,6 +6,7 @@ import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.canUseImeToPerform
 import io.github.sds100.keymapper.actions.canUseShizukuToPerform
 import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.purchasing.ProductId
@@ -172,14 +173,14 @@ class OnboardingUseCaseImpl(
             return combine(
                 preferences.get(shownKey).map { it ?: false },
                 preferences.get(Keys.skipTapTargetTutorial).map { it ?: false },
-                keyMapRepository.count(),
-            ) { isShown, skipTapTarget, keyMapCount ->
-                !isShown && !skipTapTarget && keyMapCount == 0
+                keyMapRepository.keyMapList.filterIsInstance<State.Data<List<KeyMapEntity>>>(),
+            ) { isShown, skipTapTarget, keyMapList ->
+                showTutorialTapTarget(tapTarget, isShown, skipTapTarget, keyMapList.data)
             }
         }
     }
 
-    override fun dismissedTapTarget(tapTarget: OnboardingTapTarget) {
+    override fun completedTapTarget(tapTarget: OnboardingTapTarget) {
         val key = getTapTargetKey(tapTarget)
         preferences.set(key, true)
     }
@@ -193,6 +194,35 @@ class OnboardingUseCaseImpl(
             OnboardingTapTarget.CHOOSE_CONSTRAINT -> Keys.shownTapTargetChooseConstraint
         }
         return key
+    }
+
+    /**
+     * Whether to show a tutorial tap target. This will try to determine whether the user
+     * has interacted with each feature before by checking the key maps they've created (if any).
+     * E.g if they have no key maps with actions then show a tap target highlighting the action tab
+     * when they create a key map.
+     */
+    private fun showTutorialTapTarget(
+        tapTarget: OnboardingTapTarget,
+        isShown: Boolean,
+        skipTutorial: Boolean,
+        keyMapList: List<KeyMapEntity>,
+    ): Boolean {
+        if (isShown) {
+            return false
+        }
+
+        if (skipTutorial) {
+            return false
+        }
+
+        return when (tapTarget) {
+            OnboardingTapTarget.CREATE_KEY_MAP -> keyMapList.isEmpty()
+            OnboardingTapTarget.RECORD_TRIGGER -> keyMapList.all { it.trigger.keys.isEmpty() }
+            OnboardingTapTarget.CHOOSE_ACTION -> keyMapList.all { it.actionList.isEmpty() }
+            OnboardingTapTarget.CHOOSE_CONSTRAINT -> keyMapList.all { it.constraintList.isEmpty() }
+            else -> throw IllegalArgumentException("This is not a tutorial tap target: $tapTarget")
+        }
     }
 
     override fun skipTapTargetOnboarding() {
@@ -241,6 +271,6 @@ interface OnboardingUseCase {
     fun viewedAdvancedTriggers()
 
     fun showTapTarget(tapTarget: OnboardingTapTarget): Flow<Boolean>
-    fun dismissedTapTarget(tapTarget: OnboardingTapTarget)
+    fun completedTapTarget(tapTarget: OnboardingTapTarget)
     fun skipTapTargetOnboarding()
 }

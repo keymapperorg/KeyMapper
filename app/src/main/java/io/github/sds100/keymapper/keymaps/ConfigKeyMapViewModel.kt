@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.actions.ConfigActionsViewModel
 import io.github.sds100.keymapper.actions.CreateActionUseCase
 import io.github.sds100.keymapper.actions.TestActionUseCase
 import io.github.sds100.keymapper.constraints.ConfigConstraintsViewModel
+import io.github.sds100.keymapper.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.purchasing.PurchasingManager
 import io.github.sds100.keymapper.trigger.ConfigTriggerViewModel
@@ -21,6 +22,7 @@ import io.github.sds100.keymapper.util.ifIsData
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -85,6 +87,24 @@ class ConfigKeyMapViewModel(
     val isKeyMapEdited: Boolean
         get() = config.isEdited
 
+    val showActionsTapTarget: StateFlow<Boolean> =
+        combine(
+            onboarding.showTapTarget(OnboardingTapTarget.CHOOSE_ACTION),
+            config.keyMap,
+        ) { showTapTarget, keyMapState ->
+            // Show the choose action tap target if they have recorded a key.
+            showTapTarget && keyMapState.dataOrNull()?.trigger?.keys?.isNotEmpty() ?: false
+        }.stateIn(viewModelScope, SharingStarted.Lazily, false)
+
+    val showConstraintsTapTarget: StateFlow<Boolean> =
+        combine(
+            onboarding.showTapTarget(OnboardingTapTarget.CHOOSE_CONSTRAINT),
+            config.keyMap,
+        ) { showTapTarget, keyMapState ->
+            // Show the choose constraint tap target if they have added an action.
+            showTapTarget && keyMapState.dataOrNull()?.actionList?.isNotEmpty() ?: false
+        }.stateIn(viewModelScope, SharingStarted.Lazily, false)
+
     fun save() = config.save()
 
     fun saveState(outState: Bundle) {
@@ -115,6 +135,18 @@ class ConfigKeyMapViewModel(
 
     fun onEnabledChanged(enabled: Boolean) {
         config.setEnabled(enabled)
+    }
+
+    fun onActionTapTargetCompleted() {
+        onboarding.completedTapTarget(OnboardingTapTarget.CHOOSE_ACTION)
+    }
+
+    fun onConstraintTapTargetCompleted() {
+        onboarding.completedTapTarget(OnboardingTapTarget.CHOOSE_CONSTRAINT)
+    }
+
+    fun onSkipTutorialClick() {
+        onboarding.skipTapTargetOnboarding()
     }
 
     class Factory(
