@@ -11,9 +11,13 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -25,11 +29,14 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -52,6 +59,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.canopas.lib.showcase.IntroShowcase
+import com.canopas.lib.showcase.component.ShowcaseStyle
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.ImportExportState
 import io.github.sds100.keymapper.backup.RestoreType
@@ -151,107 +160,150 @@ fun HomeKeyMapListScreen(
 
     var keyMapListBottomPadding by remember { mutableStateOf(100.dp) }
 
-    HomeKeyMapListScreen(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        snackbarState = snackbarState,
-        floatingActionButton = {
-            AnimatedVisibility(
-                state.appBarState !is KeyMapAppBarState.Selecting,
-                enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
-                exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it }),
-            ) {
-                CollapsableFloatingActionButton(
-                    modifier = Modifier
-                        .padding(bottom = fabBottomPadding)
-                        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.End)),
-                    onClick = viewModel::onNewKeyMapClick,
-                    showText = viewModel.showFabText,
-                    text = stringResource(R.string.home_fab_new_key_map),
-                )
-            }
-        },
-        listContent = {
-            KeyMapList(
-                modifier = Modifier.animateContentSize(),
-                lazyListState = rememberLazyListState(),
-                listItems = state.listItems,
-                footerText = stringResource(R.string.home_key_map_list_footer_text),
-                isSelectable = state.appBarState is KeyMapAppBarState.Selecting,
-                onClickKeyMap = viewModel::onKeyMapCardClick,
-                onLongClickKeyMap = viewModel::onKeyMapCardLongClick,
-                onSelectedChange = viewModel::onKeyMapSelectedChanged,
-                onFixClick = viewModel::onFixClick,
-                onTriggerErrorClick = viewModel::onFixTriggerError,
-                bottomListPadding = keyMapListBottomPadding,
-            )
-        },
-        appBarContent = {
-            KeyMapListAppBar(
-                state = state.appBarState,
-                scrollBehavior = scrollBehavior,
-                onSettingsClick = onSettingsClick,
-                onAboutClick = onAboutClick,
-                onSortClick = { viewModel.showSortBottomSheet = true },
-                onHelpClick = { uriHandler.openUriSafe(ctx, helpUrl) },
-                onExportClick = viewModel::onExportClick,
-                onImportClick = { importFileLauncher.launch(FileUtils.MIME_TYPE_ALL) },
-                onInputMethodPickerClick = viewModel::showInputMethodPicker,
-                onTogglePausedClick = viewModel::onTogglePausedClick,
-                onFixWarningClick = viewModel::onFixWarningClick,
-                onBackClick = {
-                    if (!viewModel.onBackClick()) {
-                        finishActivity()
-                    }
-                },
-                onSelectAllClick = viewModel::onSelectAllClick,
-                onNewGroupClick = viewModel::onNewGroupClick,
-                onRenameGroupClick = viewModel::onRenameGroupClick,
-                onEditGroupNameClick = viewModel::onEditGroupNameClick,
-                onGroupClick = viewModel::onGroupClick,
-                onDeleteGroupClick = viewModel::onDeleteGroupClick,
-                onNewConstraintClick = viewModel::onNewGroupConstraintClick,
-                onRemoveConstraintClick = viewModel::onRemoveGroupConstraintClick,
-                onConstraintModeChanged = viewModel::onGroupConstraintModeChanged,
-                onFixConstraintClick = viewModel::onFixClick,
-            )
-        },
-        selectionBottomSheet = {
-            AnimatedVisibility(
-                visible = state.appBarState is KeyMapAppBarState.Selecting,
-                enter = slideInVertically { it },
-                exit = slideOutVertically { it },
-            ) {
-                val selectionState = (state.appBarState as? KeyMapAppBarState.Selecting)
-                    ?: KeyMapAppBarState.Selecting(
-                        selectionCount = 0,
-                        selectedKeyMapsEnabled = SelectedKeyMapsEnabled.NONE,
-                        isAllSelected = false,
-                        groups = emptyList(),
-                        breadcrumbs = emptyList(),
-                        showThisGroup = false,
-                    )
+    IntroShowcase(
+        showIntroShowCase = true,
+        onShowCaseCompleted = {},
+        dismissOnClickOutside = true,
+    ) {
+        HomeKeyMapListScreen(
+            modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            snackbarState = snackbarState,
+            floatingActionButton = {
+                AnimatedVisibility(
+                    state.appBarState !is KeyMapAppBarState.Selecting,
+                    enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
+                    exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it }),
+                ) {
+                    CollapsableFloatingActionButton(
+                        modifier = Modifier
+                            .padding(bottom = fabBottomPadding)
+                            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.End))
+                            .introShowCaseTarget(
+                                index = 0,
+                                style = ShowcaseStyle(
+                                    backgroundColor = MaterialTheme.colorScheme.primary,
+                                    backgroundAlpha = 0.99f,
+                                ),
+                            ) {
+                                Column {
+                                    Text(
+                                        text = "Create your first key map!",
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        style = MaterialTheme.typography.titleLarge,
+                                    )
 
-                SelectionBottomSheet(
-                    modifier = Modifier.onSizeChanged { size ->
-                        keyMapListBottomPadding =
-                            ((size.height.dp / 2) - 100.dp).coerceAtLeast(0.dp)
-                    },
-                    enabled = selectionState.selectionCount > 0,
-                    groups = selectionState.groups,
-                    breadcrumbs = selectionState.breadcrumbs,
-                    selectedKeyMapsEnabled = selectionState.selectedKeyMapsEnabled,
-                    onEnabledKeyMapsChange = viewModel::onEnabledKeyMapsChange,
-                    onDuplicateClick = viewModel::onDuplicateSelectedKeyMapsClick,
-                    onExportClick = viewModel::onExportSelectedKeyMaps,
-                    onDeleteClick = { showDeleteDialog = true },
-                    onGroupClick = viewModel::onSelectionGroupClick,
-                    onNewGroupClick = viewModel::onNewGroupClick,
-                    showThisGroup = selectionState.showThisGroup,
-                    onThisGroupClick = viewModel::onMoveToThisGroupClick,
+                                    Spacer(Modifier.height(16.dp))
+                                    Text(
+                                        text = "A key map is a rule to tell your device what to do when a button is pressed.",
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                    )
+                                    Spacer(Modifier.height(16.dp))
+
+                                    OutlinedButton(
+                                        onClick = {},
+                                        // Set border color to white
+                                        border = BorderStroke(
+                                            width = 1.dp,
+                                            color = MaterialTheme.colorScheme.onPrimary,
+                                        ),
+                                    ) {
+                                        Text(
+                                            text = "Skip tutorial",
+                                            color = MaterialTheme.colorScheme.onPrimary,
+                                        )
+                                    }
+                                }
+                            },
+                        onClick = viewModel::onNewKeyMapClick,
+                        showText = viewModel.showFabText,
+                        text = stringResource(R.string.home_fab_new_key_map),
+                    )
+                }
+            },
+            listContent = {
+                KeyMapList(
+                    modifier = Modifier.animateContentSize(),
+                    lazyListState = rememberLazyListState(),
+                    listItems = state.listItems,
+                    footerText = stringResource(R.string.home_key_map_list_footer_text),
+                    isSelectable = state.appBarState is KeyMapAppBarState.Selecting,
+                    onClickKeyMap = viewModel::onKeyMapCardClick,
+                    onLongClickKeyMap = viewModel::onKeyMapCardLongClick,
+                    onSelectedChange = viewModel::onKeyMapSelectedChanged,
+                    onFixClick = viewModel::onFixClick,
+                    onTriggerErrorClick = viewModel::onFixTriggerError,
+                    bottomListPadding = keyMapListBottomPadding,
                 )
-            }
-        },
-    )
+            },
+            appBarContent = {
+                KeyMapListAppBar(
+                    state = state.appBarState,
+                    scrollBehavior = scrollBehavior,
+                    onSettingsClick = onSettingsClick,
+                    onAboutClick = onAboutClick,
+                    onSortClick = { viewModel.showSortBottomSheet = true },
+                    onHelpClick = { uriHandler.openUriSafe(ctx, helpUrl) },
+                    onExportClick = viewModel::onExportClick,
+                    onImportClick = { importFileLauncher.launch(FileUtils.MIME_TYPE_ALL) },
+                    onInputMethodPickerClick = viewModel::showInputMethodPicker,
+                    onTogglePausedClick = viewModel::onTogglePausedClick,
+                    onFixWarningClick = viewModel::onFixWarningClick,
+                    onBackClick = {
+                        if (!viewModel.onBackClick()) {
+                            finishActivity()
+                        }
+                    },
+                    onSelectAllClick = viewModel::onSelectAllClick,
+                    onNewGroupClick = viewModel::onNewGroupClick,
+                    onRenameGroupClick = viewModel::onRenameGroupClick,
+                    onEditGroupNameClick = viewModel::onEditGroupNameClick,
+                    onGroupClick = viewModel::onGroupClick,
+                    onDeleteGroupClick = viewModel::onDeleteGroupClick,
+                    onNewConstraintClick = viewModel::onNewGroupConstraintClick,
+                    onRemoveConstraintClick = viewModel::onRemoveGroupConstraintClick,
+                    onConstraintModeChanged = viewModel::onGroupConstraintModeChanged,
+                    onFixConstraintClick = viewModel::onFixClick,
+                )
+            },
+            selectionBottomSheet = {
+                AnimatedVisibility(
+                    visible = state.appBarState is KeyMapAppBarState.Selecting,
+                    enter = slideInVertically { it },
+                    exit = slideOutVertically { it },
+                ) {
+                    val selectionState = (state.appBarState as? KeyMapAppBarState.Selecting)
+                        ?: KeyMapAppBarState.Selecting(
+                            selectionCount = 0,
+                            selectedKeyMapsEnabled = SelectedKeyMapsEnabled.NONE,
+                            isAllSelected = false,
+                            groups = emptyList(),
+                            breadcrumbs = emptyList(),
+                            showThisGroup = false,
+                        )
+
+                    SelectionBottomSheet(
+                        modifier = Modifier.onSizeChanged { size ->
+                            keyMapListBottomPadding =
+                                ((size.height.dp / 2) - 100.dp).coerceAtLeast(0.dp)
+                        },
+                        enabled = selectionState.selectionCount > 0,
+                        groups = selectionState.groups,
+                        breadcrumbs = selectionState.breadcrumbs,
+                        selectedKeyMapsEnabled = selectionState.selectedKeyMapsEnabled,
+                        onEnabledKeyMapsChange = viewModel::onEnabledKeyMapsChange,
+                        onDuplicateClick = viewModel::onDuplicateSelectedKeyMapsClick,
+                        onExportClick = viewModel::onExportSelectedKeyMaps,
+                        onDeleteClick = { showDeleteDialog = true },
+                        onGroupClick = viewModel::onSelectionGroupClick,
+                        onNewGroupClick = viewModel::onNewGroupClick,
+                        showThisGroup = selectionState.showThisGroup,
+                        onThisGroupClick = viewModel::onMoveToThisGroupClick,
+                    )
+                }
+            },
+        )
+    }
 }
 
 @Composable
