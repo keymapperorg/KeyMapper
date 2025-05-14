@@ -22,13 +22,12 @@ import io.github.sds100.keymapper.constraints.ChooseConstraintViewModel
 import io.github.sds100.keymapper.constraints.CreateConstraintUseCaseImpl
 import io.github.sds100.keymapper.home.HomeViewModel
 import io.github.sds100.keymapper.home.ShowHomeScreenAlertsUseCaseImpl
+import io.github.sds100.keymapper.keymaps.ConfigKeyMapViewModel
+import io.github.sds100.keymapper.keymaps.CreateKeyMapShortcutViewModel
+import io.github.sds100.keymapper.keymaps.FingerprintGesturesSupportedUseCaseImpl
+import io.github.sds100.keymapper.keymaps.ListKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.logging.DisplayLogUseCaseImpl
 import io.github.sds100.keymapper.logging.LogViewModel
-import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCaseImpl
-import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapViewModel
-import io.github.sds100.keymapper.mappings.keymaps.CreateKeyMapShortcutViewModel
-import io.github.sds100.keymapper.mappings.keymaps.ListKeyMapsUseCaseImpl
-import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCaseImpl
 import io.github.sds100.keymapper.settings.ConfigSettingsUseCaseImpl
 import io.github.sds100.keymapper.settings.SettingsViewModel
 import io.github.sds100.keymapper.sorting.SortKeyMapsUseCaseImpl
@@ -42,6 +41,7 @@ import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceUseCaseI
 import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceViewModel
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCaseImpl
 import io.github.sds100.keymapper.system.intents.ConfigIntentViewModel
+import io.github.sds100.keymapper.trigger.SetupGuiKeyboardUseCaseImpl
 
 /**
  * Created by sds100 on 26/01/2020.

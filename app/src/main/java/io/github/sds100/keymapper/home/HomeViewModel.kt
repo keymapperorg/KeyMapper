@@ -13,13 +13,13 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.floating.ListFloatingLayoutsUseCase
 import io.github.sds100.keymapper.floating.ListFloatingLayoutsViewModel
-import io.github.sds100.keymapper.mappings.PauseKeyMapsUseCase
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapListViewModel
-import io.github.sds100.keymapper.mappings.keymaps.ListKeyMapsUseCase
-import io.github.sds100.keymapper.mappings.keymaps.trigger.SetupGuiKeyboardUseCase
+import io.github.sds100.keymapper.keymaps.KeyMapListViewModel
+import io.github.sds100.keymapper.keymaps.ListKeyMapsUseCase
+import io.github.sds100.keymapper.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
+import io.github.sds100.keymapper.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.util.ui.DialogResponse
 import io.github.sds100.keymapper.util.ui.NavigationViewModel
 import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl

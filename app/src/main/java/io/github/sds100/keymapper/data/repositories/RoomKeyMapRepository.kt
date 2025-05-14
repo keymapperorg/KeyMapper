@@ -5,7 +5,7 @@ import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintToKeyMapMigration
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapRepository
+import io.github.sds100.keymapper.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.util.DefaultDispatcherProvider
 import io.github.sds100.keymapper.util.DispatcherProvider
 import io.github.sds100.keymapper.util.State

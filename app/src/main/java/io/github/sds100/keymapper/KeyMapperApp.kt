@@ -16,7 +16,6 @@ import io.github.sds100.keymapper.actions.uielement.InteractUiElementController
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.logging.KeyMapperLoggingTree
-import io.github.sds100.keymapper.mappings.keymaps.trigger.RecordTriggerController
 import io.github.sds100.keymapper.purchasing.PurchasingManagerImpl
 import io.github.sds100.keymapper.settings.ThemeUtils
 import io.github.sds100.keymapper.shizuku.ShizukuAdapterImpl
@@ -55,6 +54,7 @@ import io.github.sds100.keymapper.system.root.SuAdapterImpl
 import io.github.sds100.keymapper.system.url.AndroidOpenUrlAdapter
 import io.github.sds100.keymapper.system.vibrator.AndroidVibratorAdapter
 import io.github.sds100.keymapper.system.volume.AndroidVolumeAdapter
+import io.github.sds100.keymapper.trigger.RecordTriggerController
 import io.github.sds100.keymapper.util.ui.ResourceProviderImpl
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.collectLatest

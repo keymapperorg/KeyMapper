@@ -1,12 +1,11 @@
 package io.github.sds100.keymapper.util
 
-import io.github.sds100.keymapper.mappings.ClickType
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyCodeTriggerKey
-import io.github.sds100.keymapper.mappings.keymaps.trigger.KeyEventDetectionSource
-import io.github.sds100.keymapper.mappings.keymaps.trigger.Trigger
-import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKey
-import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerKeyDevice
-import io.github.sds100.keymapper.mappings.keymaps.trigger.TriggerMode
+import io.github.sds100.keymapper.keymaps.ClickType
+import io.github.sds100.keymapper.keymaps.keymaps.trigger.KeyEventDetectionSource
+import io.github.sds100.keymapper.keymaps.keymaps.trigger.Trigger
+import io.github.sds100.keymapper.keymaps.keymaps.trigger.TriggerKey
+import io.github.sds100.keymapper.keymaps.keymaps.trigger.TriggerKeyDevice
+import io.github.sds100.keymapper.keymaps.keymaps.trigger.TriggerMode
 
 /**
  * Created by sds100 on 19/04/2021.
@@ -33,7 +32,7 @@ fun triggerKey(
     clickType: ClickType = ClickType.SHORT_PRESS,
     consume: Boolean = true,
     detectionSource: KeyEventDetectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
-): KeyCodeTriggerKey = KeyCodeTriggerKey(
+): _root_ide_package_.io.github.sds100.keymapper.trigger.KeyCodeTriggerKey = _root_ide_package_.io.github.sds100.keymapper.trigger.KeyCodeTriggerKey(
     keyCode = keyCode,
     device = device,
     clickType = clickType,

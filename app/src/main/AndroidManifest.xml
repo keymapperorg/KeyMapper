@@ -126,7 +126,7 @@
 
         <!-- Use a different task affinity so this activity can be opened at the same time as others -->
         <activity
-            android:name=".mappings.keymaps.CreateKeyMapShortcutActivity"
+            android:name=".keymaps.CreateKeyMapShortcutActivity"
             android:exported="true"
             android:label="@string/shortcut_label_action"
             android:taskAffinity="">
