@@ -20,8 +20,8 @@ import io.github.sds100.keymapper.data.repositories.RoomGroupRepository
 import io.github.sds100.keymapper.data.repositories.RoomKeyMapRepository
 import io.github.sds100.keymapper.data.repositories.RoomLogRepository
 import io.github.sds100.keymapper.data.repositories.SettingsPreferenceRepository
+import io.github.sds100.keymapper.keymaps.ConfigKeyMapUseCaseController
 import io.github.sds100.keymapper.logging.LogRepository
-import io.github.sds100.keymapper.mappings.keymaps.ConfigKeyMapUseCaseController
 import io.github.sds100.keymapper.purchasing.PurchasingManagerImpl
 import io.github.sds100.keymapper.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter

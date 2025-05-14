@@ -4,9 +4,9 @@ import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.mappings.FingerprintGesturesSupportedUseCase
-import io.github.sds100.keymapper.mappings.PauseKeyMapsUseCase
-import io.github.sds100.keymapper.mappings.keymaps.detection.DetectKeyMapsUseCase
+import io.github.sds100.keymapper.keymaps.FingerprintGesturesSupportedUseCase
+import io.github.sds100.keymapper.keymaps.PauseKeyMapsUseCase
+import io.github.sds100.keymapper.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsUseCase
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter

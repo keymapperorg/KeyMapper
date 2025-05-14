@@ -39,8 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.mappings.keymaps.ShortcutModel
-import io.github.sds100.keymapper.mappings.keymaps.ShortcutRow
+import io.github.sds100.keymapper.keymaps.ShortcutModel
+import io.github.sds100.keymapper.keymaps.ShortcutRow
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.drawable

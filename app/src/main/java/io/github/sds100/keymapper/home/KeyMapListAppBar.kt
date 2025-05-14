@@ -100,7 +100,7 @@ import io.github.sds100.keymapper.groups.GroupBreadcrumbRow
 import io.github.sds100.keymapper.groups.GroupConstraintRow
 import io.github.sds100.keymapper.groups.GroupListItemModel
 import io.github.sds100.keymapper.groups.GroupRow
-import io.github.sds100.keymapper.mappings.keymaps.KeyMapAppBarState
+import io.github.sds100.keymapper.keymaps.KeyMapAppBarState
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
