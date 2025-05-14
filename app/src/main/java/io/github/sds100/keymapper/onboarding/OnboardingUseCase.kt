@@ -156,14 +156,14 @@ class OnboardingUseCaseImpl(
             return combine(
                 preferences.get(shownKey).map { it ?: false },
                 purchasingManager.purchases.filterIsInstance<State.Data<Result<Set<ProductId>>>>(),
-                keyMapRepository.count(),
-            ) { isShown, purchases, keyMapCount ->
+                keyMapRepository.keyMapList.filterIsInstance<State.Data<List<KeyMapEntity>>>(),
+            ) { isShown, purchases, keyMapList ->
                 // Only show the tap target for advanced triggers if it has not already been shown
-                // and the user has not made any purchases. Also, the user must have saved a key map
+                // and the user has not made any purchases. Also, the user must have saved a working key map
                 // as a heuristic for they actually interacted with Key Mapper a bit before
                 // pushing them to paid features.
                 !isShown &&
-                    keyMapCount > 0 &&
+                    keyMapList.data.any { it.trigger.keys.isNotEmpty() && it.actionList.isNotEmpty() } &&
                     purchases.data.handle(
                         onSuccess = { it.isEmpty() },
                         onError = { false },
