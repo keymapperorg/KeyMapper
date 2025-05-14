@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.keymaps.keymaps
+package io.github.sds100.keymapper.keymaps
 
 import android.view.InputDevice
 import android.view.KeyEvent

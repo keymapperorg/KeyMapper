@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.keymaps.keymaps
+package io.github.sds100.keymapper.keymaps
 
 import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.ActionData
@@ -6,10 +6,9 @@ import io.github.sds100.keymapper.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
-import io.github.sds100.keymapper.keymaps.KeyMap
 import io.github.sds100.keymapper.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.keymaps.detection.TriggerKeyMapFromOtherAppsController
-import io.github.sds100.keymapper.keymaps.keymaps.trigger.Trigger
+import io.github.sds100.keymapper.trigger.Trigger
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.TestConstraintSnapshot
 import junitparams.JUnitParamsRunner

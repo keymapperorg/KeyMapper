@@ -1,11 +1,11 @@
 package io.github.sds100.keymapper.util
 
 import io.github.sds100.keymapper.keymaps.ClickType
-import io.github.sds100.keymapper.keymaps.keymaps.trigger.KeyEventDetectionSource
-import io.github.sds100.keymapper.keymaps.keymaps.trigger.Trigger
-import io.github.sds100.keymapper.keymaps.keymaps.trigger.TriggerKey
-import io.github.sds100.keymapper.keymaps.keymaps.trigger.TriggerKeyDevice
-import io.github.sds100.keymapper.keymaps.keymaps.trigger.TriggerMode
+import io.github.sds100.keymapper.trigger.KeyEventDetectionSource
+import io.github.sds100.keymapper.trigger.Trigger
+import io.github.sds100.keymapper.trigger.TriggerKey
+import io.github.sds100.keymapper.trigger.TriggerKeyDevice
+import io.github.sds100.keymapper.trigger.TriggerMode
 
 /**
  * Created by sds100 on 19/04/2021.
