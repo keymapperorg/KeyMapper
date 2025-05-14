@@ -1,10 +1,9 @@
-package io.github.sds100.keymapper.keymaps.keymaps
+package io.github.sds100.keymapper.keymaps
 
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.groups.Group
-import io.github.sds100.keymapper.keymaps.KeyMap
 import io.github.sds100.keymapper.keymaps.detection.DetectKeyMapModel
 import io.github.sds100.keymapper.keymaps.detection.DetectKeyMapsUseCaseImpl
 import org.hamcrest.MatcherAssert.assertThat

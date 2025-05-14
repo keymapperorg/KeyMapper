@@ -92,9 +92,9 @@ data class KeyCodeTriggerKey(
             val deviceName =
                 if (key.device is TriggerKeyDevice.External) {
                     key.device.name
-            } else {
-                null
-            }
+                } else {
+                    null
+                }
 
             val clickType = when (key.clickType) {
                 ClickType.SHORT_PRESS -> TriggerKeyEntity.SHORT_PRESS

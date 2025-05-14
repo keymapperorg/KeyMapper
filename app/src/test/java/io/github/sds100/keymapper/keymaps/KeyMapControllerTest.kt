@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.keymaps.keymaps
+package io.github.sds100.keymapper.keymaps
 
 import android.view.KeyEvent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
@@ -12,22 +12,20 @@ import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
-import io.github.sds100.keymapper.keymaps.ClickType
-import io.github.sds100.keymapper.keymaps.FingerprintGestureType
-import io.github.sds100.keymapper.keymaps.KeyMap
 import io.github.sds100.keymapper.keymaps.detection.DetectKeyMapModel
 import io.github.sds100.keymapper.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.keymaps.detection.KeyMapController
-import io.github.sds100.keymapper.keymaps.keymaps.trigger.FingerprintTriggerKey
-import io.github.sds100.keymapper.keymaps.keymaps.trigger.KeyEventDetectionSource
-import io.github.sds100.keymapper.keymaps.keymaps.trigger.Trigger
-import io.github.sds100.keymapper.keymaps.keymaps.trigger.TriggerKey
-import io.github.sds100.keymapper.keymaps.keymaps.trigger.TriggerKeyDevice
-import io.github.sds100.keymapper.keymaps.keymaps.trigger.TriggerMode
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
+import io.github.sds100.keymapper.trigger.FingerprintTriggerKey
+import io.github.sds100.keymapper.trigger.KeyCodeTriggerKey
+import io.github.sds100.keymapper.trigger.KeyEventDetectionSource
+import io.github.sds100.keymapper.trigger.Trigger
+import io.github.sds100.keymapper.trigger.TriggerKey
+import io.github.sds100.keymapper.trigger.TriggerKeyDevice
+import io.github.sds100.keymapper.trigger.TriggerMode
 import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.TestConstraintSnapshot
@@ -2899,7 +2897,7 @@ class KeyMapControllerTest {
             listOf(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
 
         // when
-        (trigger.keys[1] as _root_ide_package_.io.github.sds100.keymapper.trigger.KeyCodeTriggerKey).let {
+        (trigger.keys[1] as KeyCodeTriggerKey).let {
             inputKeyEvent(
                 it.keyCode,
                 KeyEvent.ACTION_DOWN,
@@ -2907,7 +2905,7 @@ class KeyMapControllerTest {
             )
         }
 
-        (trigger.keys[1] as _root_ide_package_.io.github.sds100.keymapper.trigger.KeyCodeTriggerKey).let {
+        (trigger.keys[1] as KeyCodeTriggerKey).let {
             val consumed = inputKeyEvent(
                 it.keyCode,
                 KeyEvent.ACTION_UP,
@@ -2949,7 +2947,7 @@ class KeyMapControllerTest {
             listOf(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
 
         // when
-        for (key in trigger.keys.mapNotNull { it as? _root_ide_package_.io.github.sds100.keymapper.trigger.KeyCodeTriggerKey }) {
+        for (key in trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
             inputKeyEvent(
                 key.keyCode,
                 KeyEvent.ACTION_DOWN,
@@ -2959,7 +2957,7 @@ class KeyMapControllerTest {
 
         var consumedUpCount = 0
 
-        for (key in trigger.keys.mapNotNull { it as? _root_ide_package_.io.github.sds100.keymapper.trigger.KeyCodeTriggerKey }) {
+        for (key in trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
             val consumed =
                 inputKeyEvent(
                     key.keyCode,
@@ -2988,7 +2986,7 @@ class KeyMapControllerTest {
             listOf(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
 
         // when
-        for (key in trigger.keys.mapNotNull { it as? _root_ide_package_.io.github.sds100.keymapper.trigger.KeyCodeTriggerKey }) {
+        for (key in trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
             inputKeyEvent(
                 key.keyCode,
                 KeyEvent.ACTION_DOWN,
@@ -3000,7 +2998,7 @@ class KeyMapControllerTest {
 
         var consumedUpCount = 0
 
-        for (key in trigger.keys.mapNotNull { it as? _root_ide_package_.io.github.sds100.keymapper.trigger.KeyCodeTriggerKey }) {
+        for (key in trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
             val consumed =
                 inputKeyEvent(
                     key.keyCode,
@@ -3222,7 +3220,7 @@ class KeyMapControllerTest {
         // WHEN
         var consumedCount = 0
 
-        for (key in keyMap.trigger.keys.mapNotNull { it as? _root_ide_package_.io.github.sds100.keymapper.trigger.KeyCodeTriggerKey }) {
+        for (key in keyMap.trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
             val consumed =
                 inputKeyEvent(
                     999,
@@ -3248,7 +3246,7 @@ class KeyMapControllerTest {
 
         var consumedCount = 0
 
-        for (key in keyMap.trigger.keys.mapNotNull { it as? _root_ide_package_.io.github.sds100.keymapper.trigger.KeyCodeTriggerKey }) {
+        for (key in keyMap.trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
             val consumed =
                 inputKeyEvent(
                     key.keyCode,
@@ -3272,7 +3270,7 @@ class KeyMapControllerTest {
 
         var consumedCount = 0
 
-        for (key in keyMap.trigger.keys.mapNotNull { it as? _root_ide_package_.io.github.sds100.keymapper.trigger.KeyCodeTriggerKey }) {
+        for (key in keyMap.trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
             val consumed =
                 inputKeyEvent(
                     key.keyCode,
@@ -4066,7 +4064,7 @@ class KeyMapControllerTest {
     }
 
     private suspend fun mockTriggerKeyInput(key: TriggerKey, delay: Long? = null) {
-        if (key !is _root_ide_package_.io.github.sds100.keymapper.trigger.KeyCodeTriggerKey) {
+        if (key !is KeyCodeTriggerKey) {
             return
         }
 
@@ -4154,10 +4152,10 @@ class KeyMapControllerTest {
         delay: Long? = null,
     ) {
         require(trigger.mode is TriggerMode.Parallel)
-        require(trigger.keys.all { it is _root_ide_package_.io.github.sds100.keymapper.trigger.KeyCodeTriggerKey })
+        require(trigger.keys.all { it is KeyCodeTriggerKey })
 
         for (key in trigger.keys) {
-            if (key !is _root_ide_package_.io.github.sds100.keymapper.trigger.KeyCodeTriggerKey) {
+            if (key !is KeyCodeTriggerKey) {
                 continue
             }
 
@@ -4177,7 +4175,7 @@ class KeyMapControllerTest {
         }
 
         for (key in trigger.keys) {
-            if (key !is _root_ide_package_.io.github.sds100.keymapper.trigger.KeyCodeTriggerKey) {
+            if (key !is KeyCodeTriggerKey) {
                 continue
             }
 
