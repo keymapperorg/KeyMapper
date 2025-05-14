@@ -59,8 +59,6 @@ object Keys {
     val lastInstalledVersionCodeBackground =
         intPreferencesKey("last_installed_version_accessibility_service")
 
-    val shownQuickStartGuideHint = booleanPreferencesKey("tap_target_quick_start_guide")
-
     val fingerprintGesturesAvailable =
         booleanPreferencesKey("fingerprint_gestures_available")
 
@@ -96,4 +94,19 @@ object Keys {
 
     val neverShowNotificationPermissionAlert =
         booleanPreferencesKey("key_never_show_notification_permission_alert")
+
+    val shownTapTargetCreateKeyMap =
+        booleanPreferencesKey("key_shown_tap_target_create_key_map")
+
+    val shownTapTargetRecordTrigger =
+        booleanPreferencesKey("key_shown_tap_target_record_trigger")
+
+    val shownTapTargetChooseAction =
+        booleanPreferencesKey("key_shown_tap_target_choose_action")
+
+    val shownTapTargetChooseConstraint =
+        booleanPreferencesKey("key_shown_tap_target_choose_constraint")
+
+    val skipTapTargetTutorial =
+        booleanPreferencesKey("key_skip_tap_target_tutorial")
 }

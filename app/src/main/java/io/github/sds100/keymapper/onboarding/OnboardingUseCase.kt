@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.onboarding
 
+import androidx.datastore.preferences.core.Preferences
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.canUseImeToPerform
@@ -101,18 +102,6 @@ class OnboardingUseCaseImpl(
         set(Keys.lastInstalledVersionCodeBackground, Constants.VERSION_CODE)
     }
 
-    override val showQuickStartGuideHint: Flow<Boolean> = get(Keys.shownQuickStartGuideHint).map {
-        if (it == null) {
-            true
-        } else {
-            !it
-        }
-    }
-
-    override fun shownQuickStartGuideHint() {
-        preferences.set(Keys.shownQuickStartGuideHint, true)
-    }
-
     override fun isTvDevice(): Boolean = leanbackAdapter.isTvDevice()
 
     override val promptForShizukuPermission: Flow<Boolean> = combine(
@@ -149,6 +138,36 @@ class OnboardingUseCaseImpl(
     override fun viewedAdvancedTriggers() {
         set(Keys.viewedAdvancedTriggers, true)
     }
+
+    override fun showTapTarget(tapTarget: OnboardingTapTarget): Flow<Boolean> {
+        val key = getTapTargetKey(tapTarget)
+        return combine(
+            preferences.get(key).map { it != true },
+            preferences.get(Keys.skipTapTargetTutorial)
+                .map { it ?: false },
+        ) { showTapTarget, skipTapTarget ->
+            showTapTarget && !skipTapTarget
+        }
+    }
+
+    override fun dismissedTapTarget(tapTarget: OnboardingTapTarget) {
+        val key = getTapTargetKey(tapTarget)
+        preferences.set(key, true)
+    }
+
+    private fun getTapTargetKey(tapTarget: OnboardingTapTarget): Preferences.Key<Boolean> {
+        val key = when (tapTarget) {
+            OnboardingTapTarget.CREATE_KEY_MAP -> Keys.shownTapTargetCreateKeyMap
+            OnboardingTapTarget.RECORD_TRIGGER -> Keys.shownTapTargetRecordTrigger
+            OnboardingTapTarget.CHOOSE_ACTION -> Keys.shownTapTargetChooseAction
+            OnboardingTapTarget.CHOOSE_CONSTRAINT -> Keys.shownTapTargetChooseConstraint
+        }
+        return key
+    }
+
+    override fun skipTapTargetOnboarding() {
+        preferences.set(Keys.skipTapTargetTutorial, true)
+    }
 }
 
 interface OnboardingUseCase {
@@ -181,9 +200,6 @@ interface OnboardingUseCase {
     fun showedWhatsNew()
     fun getWhatsNewText(): String
 
-    val showQuickStartGuideHint: Flow<Boolean>
-    fun shownQuickStartGuideHint()
-
     val promptForShizukuPermission: Flow<Boolean>
 
     val showShizukuAppIntroSlide: Boolean
@@ -193,4 +209,8 @@ interface OnboardingUseCase {
 
     val hasViewedAdvancedTriggers: Flow<Boolean>
     fun viewedAdvancedTriggers()
+
+    fun showTapTarget(tapTarget: OnboardingTapTarget): Flow<Boolean>
+    fun dismissedTapTarget(tapTarget: OnboardingTapTarget)
+    fun skipTapTargetOnboarding()
 }

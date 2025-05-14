@@ -17,6 +17,8 @@ import io.github.sds100.keymapper.groups.GroupListItemModel
 import io.github.sds100.keymapper.home.HomeWarningListItem
 import io.github.sds100.keymapper.home.SelectedKeyMapsEnabled
 import io.github.sds100.keymapper.home.ShowHomeScreenAlertsUseCase
+import io.github.sds100.keymapper.onboarding.OnboardingTapTarget
+import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.sorting.SortViewModel
 import io.github.sds100.keymapper.system.accessibility.ServiceState
@@ -83,7 +85,7 @@ class KeyMapListViewModel(
     private val pauseKeyMaps: PauseKeyMapsUseCase,
     private val backupRestore: BackupRestoreMappingsUseCase,
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
-
+    private val onboarding: OnboardingUseCase,
 ) : PopupViewModel by PopupViewModelImpl(),
     ResourceProvider by resourceProvider,
     NavigationViewModel by NavigationViewModelImpl() {
@@ -111,6 +113,7 @@ class KeyMapListViewModel(
             isPaused = false,
         ),
         listItems = State.Loading,
+        showCreateKeyMapTapTarget = false,
     )
     private val _state: MutableStateFlow<KeyMapListState> = MutableStateFlow(initialState)
     val state = _state.asStateFlow()
@@ -316,20 +319,29 @@ class KeyMapListViewModel(
                 }
             }
 
+        val showCreateKeyMapTapTarget = combine(
+            onboarding.showTapTarget(OnboardingTapTarget.CREATE_KEY_MAP),
+            onboarding.showWhatsNew,
+        ) { showTapTarget, showWhatsNew ->
+            // Only show the tap target if whats new is not showing.
+            showTapTarget && !showWhatsNew
+        }
+
         coroutineScope.launch {
             combine(
                 listItemStateFlow,
                 appBarStateFlow,
-            ) { listState, appBarState ->
-                Pair(listState, appBarState)
-            }.collectLatest { (listState, appBarState) ->
+                showCreateKeyMapTapTarget,
+            ) { listState, appBarState, showCreateKeyMapTapTarget ->
+                Triple(listState, appBarState, showCreateKeyMapTapTarget)
+            }.collectLatest { (listState, appBarState, showCreateKeyMapTapTarget) ->
                 listState.ifIsData { list ->
                     if (list.isNotEmpty()) {
                         showFabText = false
                     }
                 }
 
-                _state.value = KeyMapListState(appBarState, listState)
+                _state.value = KeyMapListState(appBarState, listState, showCreateKeyMapTapTarget)
             }
         }
 
@@ -900,5 +912,13 @@ class KeyMapListViewModel(
                 }
             }
         }
+    }
+
+    fun onTapTargetsCompleted() {
+        onboarding.dismissedTapTarget(OnboardingTapTarget.CREATE_KEY_MAP)
+    }
+
+    fun onSkipTapTargetClick() {
+        onboarding.skipTapTargetOnboarding()
     }
 }

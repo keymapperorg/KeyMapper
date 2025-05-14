@@ -11,13 +11,9 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -29,14 +25,11 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -60,7 +53,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.canopas.lib.showcase.IntroShowcase
-import com.canopas.lib.showcase.component.ShowcaseStyle
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.ImportExportState
 import io.github.sds100.keymapper.backup.RestoreType
@@ -70,6 +62,7 @@ import io.github.sds100.keymapper.groups.GroupListItemModel
 import io.github.sds100.keymapper.keymaps.KeyMapAppBarState
 import io.github.sds100.keymapper.keymaps.KeyMapList
 import io.github.sds100.keymapper.keymaps.KeyMapListViewModel
+import io.github.sds100.keymapper.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.sorting.SortBottomSheet
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.trigger.DpadTriggerSetupBottomSheet
@@ -82,6 +75,8 @@ import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.ui.compose.CollapsableFloatingActionButton
 import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.util.ui.compose.KeyMapperTapTarget
+import io.github.sds100.keymapper.util.ui.compose.keyMapperShowcaseStyle
 import io.github.sds100.keymapper.util.ui.compose.openUriSafe
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -161,8 +156,10 @@ fun HomeKeyMapListScreen(
     var keyMapListBottomPadding by remember { mutableStateOf(100.dp) }
 
     IntroShowcase(
-        showIntroShowCase = true,
-        onShowCaseCompleted = {},
+        showIntroShowCase = state.showCreateKeyMapTapTarget,
+        onShowCaseCompleted = {
+            viewModel.onTapTargetsCompleted()
+        },
         dismissOnClickOutside = true,
     ) {
         HomeKeyMapListScreen(
@@ -180,40 +177,12 @@ fun HomeKeyMapListScreen(
                             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.End))
                             .introShowCaseTarget(
                                 index = 0,
-                                style = ShowcaseStyle(
-                                    backgroundColor = MaterialTheme.colorScheme.primary,
-                                    backgroundAlpha = 0.99f,
-                                ),
+                                style = keyMapperShowcaseStyle(),
                             ) {
-                                Column {
-                                    Text(
-                                        text = "Create your first key map!",
-                                        color = MaterialTheme.colorScheme.onPrimary,
-                                        style = MaterialTheme.typography.titleLarge,
-                                    )
-
-                                    Spacer(Modifier.height(16.dp))
-                                    Text(
-                                        text = "A key map is a rule to tell your device what to do when a button is pressed.",
-                                        color = MaterialTheme.colorScheme.onPrimary,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                    )
-                                    Spacer(Modifier.height(16.dp))
-
-                                    OutlinedButton(
-                                        onClick = {},
-                                        // Set border color to white
-                                        border = BorderStroke(
-                                            width = 1.dp,
-                                            color = MaterialTheme.colorScheme.onPrimary,
-                                        ),
-                                    ) {
-                                        Text(
-                                            text = "Skip tutorial",
-                                            color = MaterialTheme.colorScheme.onPrimary,
-                                        )
-                                    }
-                                }
+                                KeyMapperTapTarget(
+                                    OnboardingTapTarget.CREATE_KEY_MAP,
+                                    onSkipClick = viewModel::onSkipTapTargetClick,
+                                )
                             },
                         onClick = viewModel::onNewKeyMapClick,
                         showText = viewModel.showFabText,
