@@ -2,6 +2,14 @@
 
 #### TO BE RELEASED
 
+## Added
+
+- #1466 show onboarding when creating a key map for the first time
+
+## Changed
+
+- #1701 improve the order of the actions and categories
+
 ## Bug fixes
 
 - #1686 (more fixes) do not show some screens behind system bars on the left/right side of the device.

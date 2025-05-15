@@ -6,7 +6,7 @@ package io.github.sds100.keymapper.actions
 enum class ActionCategory {
     APPS,
     INPUT,
-    CAMERA_SOUND,
+    FLASHLIGHT,
     CONNECTIVITY,
     CONTENT,
     NAVIGATION,
@@ -17,4 +17,5 @@ enum class ActionCategory {
     INTERFACE,
     TELEPHONY,
     NOTIFICATIONS,
+    SPECIAL,
 }

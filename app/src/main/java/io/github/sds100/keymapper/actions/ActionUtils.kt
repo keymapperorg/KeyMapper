@@ -98,17 +98,17 @@ object ActionUtils {
         ActionCategory.KEYBOARD -> R.string.action_cat_keyboard
         ActionCategory.APPS -> R.string.action_cat_apps
         ActionCategory.INPUT -> R.string.action_cat_input
-        ActionCategory.CAMERA_SOUND -> R.string.action_cat_camera_sound
+        ActionCategory.FLASHLIGHT -> R.string.action_cat_flashlight
         ActionCategory.CONNECTIVITY -> R.string.action_cat_connectivity
         ActionCategory.CONTENT -> R.string.action_cat_content
         ActionCategory.INTERFACE -> R.string.action_cat_interface
         ActionCategory.TELEPHONY -> R.string.action_cat_telephony
         ActionCategory.DISPLAY -> R.string.action_cat_display
         ActionCategory.NOTIFICATIONS -> R.string.action_cat_notifications
+        ActionCategory.SPECIAL -> R.string.action_cat_special
     }
 
     fun getCategory(id: ActionId): ActionCategory = when (id) {
-        ActionId.CONSUME_KEY_EVENT -> ActionCategory.INPUT
         ActionId.KEY_CODE -> ActionCategory.INPUT
         ActionId.KEY_EVENT -> ActionCategory.INPUT
         ActionId.TAP_SCREEN -> ActionCategory.INPUT
@@ -171,6 +171,7 @@ object ActionUtils {
         ActionId.TOGGLE_QUICK_SETTINGS -> ActionCategory.NAVIGATION
         ActionId.COLLAPSE_STATUS_BAR -> ActionCategory.NAVIGATION
 
+        ActionId.SOUND -> ActionCategory.MEDIA
         ActionId.PAUSE_MEDIA -> ActionCategory.MEDIA
         ActionId.PAUSE_MEDIA_PACKAGE -> ActionCategory.MEDIA
         ActionId.PLAY_MEDIA -> ActionCategory.MEDIA
@@ -199,11 +200,10 @@ object ActionUtils {
         ActionId.GO_LAST_APP -> ActionCategory.NAVIGATION
         ActionId.OPEN_MENU -> ActionCategory.NAVIGATION
 
-        ActionId.TOGGLE_FLASHLIGHT -> ActionCategory.CAMERA_SOUND
-        ActionId.ENABLE_FLASHLIGHT -> ActionCategory.CAMERA_SOUND
-        ActionId.DISABLE_FLASHLIGHT -> ActionCategory.CAMERA_SOUND
-        ActionId.CHANGE_FLASHLIGHT_STRENGTH -> ActionCategory.CAMERA_SOUND
-        ActionId.SOUND -> ActionCategory.CAMERA_SOUND
+        ActionId.TOGGLE_FLASHLIGHT -> ActionCategory.FLASHLIGHT
+        ActionId.ENABLE_FLASHLIGHT -> ActionCategory.FLASHLIGHT
+        ActionId.DISABLE_FLASHLIGHT -> ActionCategory.FLASHLIGHT
+        ActionId.CHANGE_FLASHLIGHT_STRENGTH -> ActionCategory.FLASHLIGHT
 
         ActionId.ENABLE_NFC -> ActionCategory.CONNECTIVITY
         ActionId.DISABLE_NFC -> ActionCategory.CONNECTIVITY
@@ -242,6 +242,8 @@ object ActionUtils {
         ActionId.DEVICE_CONTROLS -> ActionCategory.APPS
 
         ActionId.INTERACT_UI_ELEMENT -> ActionCategory.APPS
+
+        ActionId.CONSUME_KEY_EVENT -> ActionCategory.SPECIAL
     }
 
     @StringRes

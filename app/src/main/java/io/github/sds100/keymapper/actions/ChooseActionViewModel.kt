@@ -46,17 +46,18 @@ class ChooseActionViewModel(
         private val CATEGORY_ORDER = arrayOf(
             ActionCategory.INPUT,
             ActionCategory.APPS,
+            ActionCategory.FLASHLIGHT,
+            ActionCategory.CONTENT,
             ActionCategory.NAVIGATION,
             ActionCategory.VOLUME,
             ActionCategory.DISPLAY,
             ActionCategory.MEDIA,
             ActionCategory.INTERFACE,
-            ActionCategory.CONTENT,
             ActionCategory.KEYBOARD,
             ActionCategory.CONNECTIVITY,
             ActionCategory.TELEPHONY,
-            ActionCategory.CAMERA_SOUND,
             ActionCategory.NOTIFICATIONS,
+            ActionCategory.SPECIAL,
         )
     }
 
