@@ -1,11 +1,15 @@
 package io.github.sds100.keymapper.trigger
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
@@ -16,6 +20,7 @@ import androidx.compose.material3.SheetValue.Expanded
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
@@ -59,70 +64,75 @@ private fun AdvancedTriggersBottomSheet(
         // Hide drag handle because other bottom sheets don't have it
         dragHandle = {},
     ) {
-        Spacer(modifier = Modifier.height(8.dp))
+        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            Spacer(modifier = Modifier.height(8.dp))
 
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            text = stringResource(R.string.advanced_triggers_sheet_title),
-            style = MaterialTheme.typography.headlineMedium,
-        )
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                text = stringResource(R.string.advanced_triggers_sheet_title),
+                style = MaterialTheme.typography.headlineMedium,
+            )
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-        Text(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(),
-            text = stringResource(R.string.advanced_triggers_sheet_text),
-        )
+            Text(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+                text = stringResource(R.string.advanced_triggers_sheet_text),
+            )
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-        Text(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(),
-            text = stringResource(R.string.purchasing_not_implemented_bottom_sheet_text),
-            fontStyle = FontStyle.Italic,
-        )
+            Text(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+                text = stringResource(R.string.purchasing_not_implemented_bottom_sheet_text),
+                fontStyle = FontStyle.Italic,
+            )
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-        val uriHandler = LocalUriHandler.current
-        val googlePlayUrl = stringResource(R.string.url_play_store_listing)
+            val uriHandler = LocalUriHandler.current
+            val googlePlayUrl = stringResource(R.string.url_play_store_listing)
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            OutlinedButton(
-                modifier = Modifier,
-                onClick = {
-                    scope.launch {
-                        sheetState.hide()
-                        onDismissRequest()
-                    }
-                },
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(stringResource(R.string.neg_cancel))
+                OutlinedButton(
+                    modifier = Modifier,
+                    onClick = {
+                        scope.launch {
+                            sheetState.hide()
+                            onDismissRequest()
+                        }
+                    },
+                ) {
+                    Text(stringResource(R.string.neg_cancel))
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                FilledTonalButton(
+                    modifier = Modifier,
+                    onClick = {
+                        scope.launch {
+                            uriHandler.openUri(googlePlayUrl)
+                        }
+                    },
+                ) {
+                    Text(stringResource(R.string.purchasing_download_key_mapper_from_google_play))
+                }
             }
 
-            FilledTonalButton(
-                modifier = Modifier,
-                onClick = {
-                    scope.launch {
-                        uriHandler.openUri(googlePlayUrl)
-                    }
-                },
-            ) {
-                Text(stringResource(R.string.purchasing_download_key_mapper_from_google_play))
-            }
+            Spacer(Modifier.height(16.dp))
         }
-
-        Spacer(Modifier.height(16.dp))
     }
 }
 

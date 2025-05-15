@@ -1,16 +1,16 @@
 package io.github.sds100.keymapper.trigger
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.canopas.lib.showcase.IntroShowcase
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
@@ -38,7 +39,7 @@ fun RecordTriggerButtonRow(
     showAdvancedTriggerTapTarget: Boolean = false,
     onAdvancedTriggerTapTargetCompleted: () -> Unit = {},
 ) {
-    Row(modifier) {
+    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         IntroShowcase(
             showIntroShowCase = showRecordTriggerTapTarget,
             onShowCaseCompleted = onRecordTriggerTapTargetCompleted,
@@ -47,7 +48,6 @@ fun RecordTriggerButtonRow(
             RecordTriggerButton(
                 modifier = Modifier
                     .weight(1f)
-                    .align(Alignment.Bottom)
                     .introShowCaseTarget(0, style = keyMapperShowcaseStyle()) {
                         KeyMapperTapTarget(
                             OnboardingTapTarget.RECORD_TRIGGER,
@@ -106,9 +106,15 @@ private fun RecordTriggerButton(
         onClick = onClick,
         colors = colors,
     ) {
-        Text(
+        BasicText(
             text = text,
-            maxLines = 2,
+            maxLines = 1,
+            autoSize = TextAutoSize.StepBased(
+                minFontSize = 5.sp,
+                maxFontSize = MaterialTheme.typography.labelLarge.fontSize,
+            ),
+            style = MaterialTheme.typography.labelLarge,
+            color = { colors.contentColor },
             overflow = TextOverflow.Ellipsis,
         )
     }
@@ -120,20 +126,23 @@ private fun AdvancedTriggersButton(
     isEnabled: Boolean,
     onClick: () -> Unit,
 ) {
-    Box(modifier = modifier) {
-        OutlinedButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp),
-            enabled = isEnabled,
-            onClick = onClick,
-        ) {
-            Text(
-                text = stringResource(R.string.button_advanced_triggers),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
+    OutlinedButton(
+        modifier = modifier,
+        enabled = isEnabled,
+        onClick = onClick,
+    ) {
+        val color = ButtonDefaults.textButtonColors().contentColor
+        BasicText(
+            text = stringResource(R.string.button_advanced_triggers),
+            maxLines = 1,
+            autoSize = TextAutoSize.StepBased(
+                minFontSize = 5.sp,
+                maxFontSize = MaterialTheme.typography.labelLarge.fontSize,
+            ),
+            style = MaterialTheme.typography.labelLarge,
+            color = { color },
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
@@ -153,6 +162,19 @@ private fun PreviewCountingDown() {
 @Preview(widthDp = 400)
 @Composable
 private fun PreviewStopped() {
+    KeyMapperTheme {
+        Surface {
+            RecordTriggerButtonRow(
+                modifier = Modifier.fillMaxWidth(),
+                recordTriggerState = RecordTriggerState.Idle,
+            )
+        }
+    }
+}
+
+@Preview(widthDp = 300)
+@Composable
+private fun PreviewStoppedCompact() {
     KeyMapperTheme {
         Surface {
             RecordTriggerButtonRow(

@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowHeightSizeClass
+import androidx.window.core.layout.WindowWidthSizeClass
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.keymaps.ClickType
@@ -168,6 +169,13 @@ private fun isHorizontalLayout(): Boolean {
 }
 
 @Composable
+private fun isVerticalCompactLayout(): Boolean {
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+
+    return windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT && windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
+}
+
+@Composable
 private fun Loading(modifier: Modifier = Modifier) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         CircularProgressIndicator()
@@ -231,6 +239,7 @@ private fun TriggerScreenVertical(
                 }
 
                 is ConfigTriggerState.Loaded -> {
+                    val isCompact = isVerticalCompactLayout()
                     Spacer(Modifier.height(8.dp))
 
                     TriggerList(
@@ -251,16 +260,26 @@ private fun TriggerScreenVertical(
                             clickTypes = configState.clickTypeButtons,
                             checkedClickType = configState.checkedClickType,
                             onSelectClickType = onSelectClickType,
+                            maxLines = if (isCompact) 1 else 2,
                         )
                     }
 
                     if (configState.triggerModeButtonsVisible) {
+                        if (!isCompact) {
+                            Text(
+                                modifier = Modifier.padding(horizontal = 8.dp),
+                                text = stringResource(R.string.press_dot_dot_dot),
+                                style = MaterialTheme.typography.labelLarge,
+                            )
+                        }
+
                         TriggerModeRadioGroup(
                             modifier = Modifier.padding(horizontal = 8.dp),
                             mode = configState.checkedTriggerMode,
                             isEnabled = configState.triggerModeButtonsEnabled,
                             onSelectParallelMode = onSelectParallelMode,
                             onSelectSequenceMode = onSelectSequenceMode,
+                            maxLines = if (isCompact) 1 else 2,
                         )
                     }
                 }
@@ -389,6 +408,12 @@ private fun TriggerScreenHorizontal(
                             )
                         }
 
+                        Text(
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            text = stringResource(R.string.press_dot_dot_dot),
+                            style = MaterialTheme.typography.labelLarge,
+                        )
+
                         if (configState.triggerModeButtonsVisible) {
                             TriggerModeRadioGroup(
                                 modifier = Modifier.padding(horizontal = 8.dp),
@@ -501,15 +526,17 @@ private fun ClickTypeRadioGroup(
     clickTypes: Set<ClickType>,
     checkedClickType: ClickType?,
     onSelectClickType: (ClickType) -> Unit,
+    maxLines: Int = 2,
 ) {
     Column(modifier = modifier) {
-        Row(modifier = Modifier.fillMaxWidth()) {
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             if (clickTypes.contains(ClickType.SHORT_PRESS)) {
                 RadioButtonText(
                     modifier = Modifier.weight(1f),
                     isSelected = checkedClickType == ClickType.SHORT_PRESS,
                     text = stringResource(R.string.radio_button_short_press),
                     onSelected = { onSelectClickType(ClickType.SHORT_PRESS) },
+                    maxLines = maxLines,
                 )
             }
             if (clickTypes.contains(ClickType.LONG_PRESS)) {
@@ -518,6 +545,7 @@ private fun ClickTypeRadioGroup(
                     isSelected = checkedClickType == ClickType.LONG_PRESS,
                     text = stringResource(R.string.radio_button_long_press),
                     onSelected = { onSelectClickType(ClickType.LONG_PRESS) },
+                    maxLines = maxLines,
                 )
             }
             if (clickTypes.contains(ClickType.DOUBLE_PRESS)) {
@@ -526,6 +554,7 @@ private fun ClickTypeRadioGroup(
                     isSelected = checkedClickType == ClickType.DOUBLE_PRESS,
                     text = stringResource(R.string.radio_button_double_press),
                     onSelected = { onSelectClickType(ClickType.DOUBLE_PRESS) },
+                    maxLines = maxLines,
                 )
             }
         }
@@ -539,21 +568,17 @@ private fun TriggerModeRadioGroup(
     isEnabled: Boolean,
     onSelectParallelMode: () -> Unit,
     onSelectSequenceMode: () -> Unit,
+    maxLines: Int = 2,
 ) {
     Column(modifier = modifier) {
-        Text(
-            modifier = Modifier.padding(horizontal = 8.dp),
-            text = stringResource(R.string.press_dot_dot_dot),
-            style = MaterialTheme.typography.labelLarge,
-        )
-
-        Row(modifier = Modifier.fillMaxWidth()) {
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             RadioButtonText(
                 modifier = Modifier.weight(1f),
                 isSelected = mode is TriggerMode.Parallel,
                 isEnabled = isEnabled,
                 text = stringResource(R.string.radio_button_parallel),
                 onSelected = onSelectParallelMode,
+                maxLines = maxLines,
             )
             RadioButtonText(
                 modifier = Modifier.weight(1f),
@@ -561,6 +586,7 @@ private fun TriggerModeRadioGroup(
                 isEnabled = isEnabled,
                 text = stringResource(R.string.radio_button_sequence),
                 onSelected = onSelectSequenceMode,
+                maxLines = maxLines,
             )
         }
     }
@@ -616,6 +642,17 @@ private val previewState = ConfigTriggerState.Loaded(
 @Preview(device = Devices.PIXEL)
 @Composable
 private fun VerticalPreview() {
+    KeyMapperTheme {
+        TriggerScreenVertical(
+            configState = previewState,
+            recordTriggerState = RecordTriggerState.Idle,
+        )
+    }
+}
+
+@Preview(heightDp = 400, widthDp = 300)
+@Composable
+private fun VerticalPreviewTiny() {
     KeyMapperTheme {
         TriggerScreenVertical(
             configState = previewState,

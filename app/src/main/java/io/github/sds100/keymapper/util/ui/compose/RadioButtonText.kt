@@ -21,13 +21,14 @@ fun RadioButtonText(
     text: String,
     isSelected: Boolean,
     isEnabled: Boolean = true,
+    maxLines: Int = 2,
     onSelected: () -> Unit,
 ) {
     Surface(modifier = modifier, shape = MaterialTheme.shapes.medium, color = Color.Transparent) {
         Row(
             modifier = Modifier
                 .clickable(enabled = isEnabled, onClick = onSelected)
-                .padding(12.dp),
+                .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             RadioButton(
@@ -49,8 +50,8 @@ fun RadioButtonText(
                         ),
                     )
                 },
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
+                maxLines = maxLines,
+                overflow = TextOverflow.Clip,
             )
         }
     }

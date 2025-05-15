@@ -13,6 +13,7 @@
 ## Bug fixes
 
 - #1686 (more fixes) do not show some screens behind system bars on the left/right side of the device.
+- #1701 optimize the trigger screen for smaller screens so elements are less cut off.
 
 ## [3.1.1](https://github.com/sds100/KeyMapper/releases/tag/v3.1.1)
 
