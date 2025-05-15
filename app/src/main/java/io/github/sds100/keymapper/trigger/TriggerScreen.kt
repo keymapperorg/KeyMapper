@@ -132,6 +132,9 @@ fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewMod
                     onMoveTriggerKey = viewModel::onMoveTriggerKey,
                     onFixErrorClick = viewModel::onTriggerErrorClick,
                     onClickShortcut = viewModel::onClickTriggerKeyShortcut,
+                    onRecordTriggerTapTargetCompleted = viewModel::onRecordTriggerTapTargetCompleted,
+                    onSkipTapTarget = viewModel::onSkipTapTargetClick,
+                    onAdvancedTriggerTapTargetCompleted = viewModel::onAdvancedTriggersTapTargetCompleted,
                 )
             } else {
                 TriggerScreenVertical(
@@ -148,6 +151,9 @@ fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewMod
                     onMoveTriggerKey = viewModel::onMoveTriggerKey,
                     onFixErrorClick = viewModel::onTriggerErrorClick,
                     onClickShortcut = viewModel::onClickTriggerKeyShortcut,
+                    onRecordTriggerTapTargetCompleted = viewModel::onRecordTriggerTapTargetCompleted,
+                    onSkipTapTarget = viewModel::onSkipTapTargetClick,
+                    onAdvancedTriggerTapTargetCompleted = viewModel::onAdvancedTriggersTapTargetCompleted,
                 )
             }
         }
@@ -183,6 +189,9 @@ private fun TriggerScreenVertical(
     onMoveTriggerKey: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     onFixErrorClick: (TriggerError) -> Unit = {},
     onClickShortcut: (TriggerKeyShortcut) -> Unit = {},
+    onRecordTriggerTapTargetCompleted: () -> Unit = {},
+    onSkipTapTarget: () -> Unit = {},
+    onAdvancedTriggerTapTargetCompleted: () -> Unit = {},
 ) {
     Surface(modifier = modifier) {
         Column {
@@ -264,7 +273,12 @@ private fun TriggerScreenVertical(
                 onRecordTriggerClick = onRecordTriggerClick,
                 recordTriggerState = recordTriggerState,
                 onAdvancedTriggersClick = onAdvancedTriggersClick,
-                showNewBadge = configState.showNewBadge,
+                showRecordTriggerTapTarget = (configState as? ConfigTriggerState.Empty)?.showRecordTriggerTapTarget
+                    ?: false,
+                onRecordTriggerTapTargetCompleted = onRecordTriggerTapTargetCompleted,
+                onSkipTapTarget = onSkipTapTarget,
+                showAdvancedTriggerTapTarget = configState.showAdvancedTriggersTapTarget,
+                onAdvancedTriggerTapTargetCompleted = onAdvancedTriggerTapTargetCompleted,
             )
         }
     }
@@ -285,6 +299,9 @@ private fun TriggerScreenHorizontal(
     onMoveTriggerKey: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     onFixErrorClick: (TriggerError) -> Unit = {},
     onClickShortcut: (TriggerKeyShortcut) -> Unit = {},
+    onRecordTriggerTapTargetCompleted: () -> Unit = {},
+    onSkipTapTarget: () -> Unit = {},
+    onAdvancedTriggerTapTargetCompleted: () -> Unit = {},
 ) {
     Surface(modifier = modifier) {
         when (configState) {
@@ -328,7 +345,11 @@ private fun TriggerScreenHorizontal(
                         onRecordTriggerClick = onRecordTriggerClick,
                         recordTriggerState = recordTriggerState,
                         onAdvancedTriggersClick = onAdvancedTriggersClick,
-                        showNewBadge = configState.showNewBadge,
+                        showRecordTriggerTapTarget = (configState as? ConfigTriggerState.Empty)?.showRecordTriggerTapTarget
+                            ?: false,
+                        onRecordTriggerTapTargetCompleted = onRecordTriggerTapTargetCompleted,
+                        onSkipTapTarget = onSkipTapTarget,
+                        showAdvancedTriggerTapTarget = configState.showAdvancedTriggersTapTarget,
                     )
                 }
             }
@@ -384,7 +405,11 @@ private fun TriggerScreenHorizontal(
                         onRecordTriggerClick = onRecordTriggerClick,
                         recordTriggerState = recordTriggerState,
                         onAdvancedTriggersClick = onAdvancedTriggersClick,
-                        showNewBadge = configState.showNewBadge,
+                        showRecordTriggerTapTarget = false,
+                        onRecordTriggerTapTargetCompleted = onRecordTriggerTapTargetCompleted,
+                        onSkipTapTarget = onSkipTapTarget,
+                        showAdvancedTriggerTapTarget = configState.showAdvancedTriggersTapTarget,
+                        onAdvancedTriggerTapTargetCompleted = onAdvancedTriggerTapTargetCompleted,
                     )
                 }
             }
@@ -586,7 +611,6 @@ private val previewState = ConfigTriggerState.Loaded(
             data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
         ),
     ),
-    showNewBadge = true,
 )
 
 @Preview(device = Devices.PIXEL)
@@ -613,7 +637,6 @@ private fun VerticalEmptyPreview() {
                         data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
                     ),
                 ),
-                showNewBadge = true,
             ),
             recordTriggerState = RecordTriggerState.Idle,
         )
@@ -644,7 +667,6 @@ private fun HorizontalEmptyPreview() {
                         data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
                     ),
                 ),
-                showNewBadge = true,
 
             ),
             recordTriggerState = RecordTriggerState.Idle,

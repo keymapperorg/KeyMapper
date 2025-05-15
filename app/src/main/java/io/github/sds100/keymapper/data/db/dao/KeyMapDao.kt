@@ -70,4 +70,7 @@ interface KeyMapDao {
 
     @Update(onConflict = OnConflictStrategy.ABORT)
     suspend fun update(vararg keyMap: KeyMapEntity)
+
+    @Query("SELECT COUNT(*) FROM $TABLE_NAME")
+    fun count(): Flow<Int>
 }

@@ -6,4 +6,5 @@ import io.github.sds100.keymapper.util.State
 data class KeyMapListState(
     val appBarState: KeyMapAppBarState,
     val listItems: State<List<KeyMapListItemModel>>,
+    val showCreateKeyMapTapTarget: Boolean = false,
 )

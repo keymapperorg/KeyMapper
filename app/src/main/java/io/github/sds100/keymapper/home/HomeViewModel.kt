@@ -32,7 +32,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -81,6 +80,7 @@ class HomeViewModel(
             pauseKeyMaps,
             backupRestore,
             showInputMethodPickerUseCase,
+            onboarding,
         )
     }
 
@@ -93,15 +93,13 @@ class HomeViewModel(
     }
 
     init {
-
-        combine(
-            onboarding.showWhatsNew,
-            onboarding.showQuickStartGuideHint,
-        ) { showWhatsNew, showQuickStartGuideHint ->
-            if (showWhatsNew) {
-                showWhatsNewDialog()
+        viewModelScope.launch {
+            onboarding.showWhatsNew.collect { showWhatsNew ->
+                if (showWhatsNew) {
+                    showWhatsNewDialog()
+                }
             }
-        }.launchIn(viewModelScope)
+        }
 
         viewModelScope.launch {
             if (setupGuiKeyboard.isInstalled.first() && !setupGuiKeyboard.isCompatibleVersion.first()) {

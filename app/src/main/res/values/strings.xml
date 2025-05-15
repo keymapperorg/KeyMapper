@@ -1223,8 +1223,18 @@
     <!--  Intent action type strings  -->
 
     <!--  Tap targets  -->
-    <string name="tap_target_quick_start_guide_primary">Quick Start Guide</string>
-    <string name="tap_target_quick_start_guide_secondary">Check out the Quick Start Guide if you are stuck.</string>
+    <string name="tap_target_skip_tutorial_button">Skip tutorial</string>
+    <string name="tap_target_create_key_map_title">Create your first key map!</string>
+    <string name="tap_target_create_key_map_message">A key map is a rule to tell your device what to do when a button is pressed.</string>
+    <string name="tap_target_record_trigger_title">Record a trigger</string>
+    <string name="tap_target_record_trigger_message">Tap record, and then press the physical buttons you want to change.</string>
+    <string name="tap_target_advanced_triggers_title">Love Key Mapper? ❤️</string>
+    <string name="tap_target_advanced_triggers_message">For an affordable price, make powerful key maps with on-screen floating buttons and support the development of more great features 👨‍💻.</string>
+
+    <string name="tap_target_choose_action_title">Choose an action</string>
+    <string name="tap_target_choose_action_message">An action is what should happen when you press the trigger.</string>
+    <string name="tap_target_choose_constraint_title">Choose a constraint (optional)</string>
+    <string name="tap_target_choose_constraint_message">If you want the key map to only work in certain situations, for example, when an app is open.</string>
     <!--  Tap targets  -->
 
     <!--  About  -->
