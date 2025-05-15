@@ -1,16 +1,14 @@
-package io.github.sds100.keymapper.system
+package io.github.sds100.keymapper.system.shell
 
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
-import io.github.sds100.keymapper.system.shell.ShellAdapter
 import java.io.IOException
-import java.io.InputStream
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class Shell @Inject constructor() : ShellAdapter {
+class SimpleShell @Inject constructor() : ShellAdapter {
     /**
      * @return whether the command was executed successfully
      */
@@ -25,18 +23,6 @@ class Shell @Inject constructor() : ShellAdapter {
     } catch (e: IOException) {
         false
     }
-
-    /**
-     * Remember to close it after using it.
-     */
-    @Throws(IOException::class)
-    override fun getShellCommandStdOut(vararg command: String): InputStream = Runtime.getRuntime().exec(command).inputStream
-
-    /**
-     * Remember to close it after using it.
-     */
-    @Throws(IOException::class)
-    fun getShellCommandStdErr(vararg command: String): InputStream = Runtime.getRuntime().exec(command).errorStream
 
     override fun execute(command: String): KMResult<*> {
         try {

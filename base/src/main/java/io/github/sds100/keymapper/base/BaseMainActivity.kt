@@ -38,6 +38,7 @@ import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
+import io.github.sds100.keymapper.system.root.SuAdapterImpl
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
@@ -85,6 +86,9 @@ abstract class BaseMainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var privServiceSetup: PrivServiceSetupController
+
+    @Inject
+    lateinit var suAdapter: SuAdapterImpl
 
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
 
@@ -197,6 +201,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
         // the activities have not necessarily resumed at that point.
         permissionAdapter.onPermissionsChanged()
         serviceAdapter.invalidateState()
+        suAdapter.invalidateIsRooted()
     }
 
     override fun onDestroy() {

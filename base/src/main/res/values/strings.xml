@@ -634,9 +634,8 @@
 
     <string name="title_pref_show_toast_when_auto_changing_ime">Show an on-screen message when automatically changing the keyboard</string>
 
-    <string name="title_pref_root_permission">Key Mapper has root permission</string>
-    <string name="summary_pref_root_permission">Enable this if you want to use features/actions which only work on rooted devices. Key Mapper must have root permission from your root-access-management app (e.g Magisk, SuperSU) for these features to work.
-            Only turn this on if you know your device is rooted and you have given Key Mapper root permission.</string>
+    <string name="title_pref_root_permission">Request root permission</string>
+    <string name="summary_pref_root_permission">If your device is rooted then this will show the root permission pop up from Magisk or your root app.</string>
 
     <string name="title_pref_dark_theme">Choose theme</string>
     <string name="summary_pref_dark_theme">Light and dark themes available</string>

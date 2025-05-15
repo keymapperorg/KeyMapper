@@ -502,13 +502,15 @@ class MainSettingsFragment : BaseSettingsFragment() {
         }
 
         // root permission switch
-        SwitchPreferenceCompat(requireContext()).apply {
-            key = Keys.hasRootPermission.name
-            setDefaultValue(false)
-
+        Preference(requireContext()).apply {
             isSingleLineTitle = false
             setTitle(R.string.title_pref_root_permission)
             setSummary(R.string.summary_pref_root_permission)
+
+            setOnPreferenceClickListener {
+                viewModel.onRequestRootClick()
+                true
+            }
 
             addPreference(this)
         }

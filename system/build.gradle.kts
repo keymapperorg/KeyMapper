@@ -41,10 +41,8 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":systemstubs"))
 
-    // kotlin stuff
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.jakewharton.timber)
     implementation(libs.dagger.hilt.android)
@@ -58,4 +56,5 @@ dependencies {
     implementation(libs.rikka.shizuku.provider)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.preference.ktx)
+    implementation(libs.github.topjohnwu.libsu)
 }

@@ -46,7 +46,7 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
         )
     }
 
-    override val isRootGranted: Flow<Boolean> = suAdapter.isGranted
+    override val isRootGranted: Flow<Boolean> = suAdapter.isRooted
 
     override val isWriteSecureSettingsGranted: Flow<Boolean> = channelFlow {
         send(permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS))
@@ -162,6 +162,10 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
         permissionAdapter.request(Permission.POST_NOTIFICATIONS)
     }
 
+    override fun requestRootPermission() {
+        suAdapter.requestPermission()
+    }
+
     override fun isNotificationsPermissionGranted(): Boolean = permissionAdapter.isGranted(Permission.POST_NOTIFICATIONS)
 
     override fun getSoundFiles(): List<SoundFileInfo> = soundsManager.soundFiles.value
@@ -184,14 +188,15 @@ interface ConfigSettingsUseCase {
     fun setAutomaticBackupLocation(uri: String)
     fun disableAutomaticBackup()
     val isRootGranted: Flow<Boolean>
-    val isWriteSecureSettingsGranted: Flow<Boolean>
+    fun requestRootPermission()
 
+    val isWriteSecureSettingsGranted: Flow<Boolean>
     val isShizukuInstalled: Flow<Boolean>
     val isShizukuStarted: Flow<Boolean>
     val isShizukuPermissionGranted: Flow<Boolean>
     fun downloadShizuku()
-    fun openShizukuApp()
 
+    fun openShizukuApp()
     val rerouteKeyEvents: Flow<Boolean>
     val isCompatibleImeChosen: Flow<Boolean>
     val isCompatibleImeEnabled: Flow<Boolean>
@@ -204,17 +209,17 @@ interface ConfigSettingsUseCase {
     val defaultRepeatDelay: Flow<Int>
     val defaultSequenceTriggerTimeout: Flow<Int>
     val defaultVibrateDuration: Flow<Int>
-    val defaultRepeatRate: Flow<Int>
 
+    val defaultRepeatRate: Flow<Int>
     fun getSoundFiles(): List<SoundFileInfo>
     fun deleteSoundFiles(uid: List<String>)
     fun resetDefaultMappingOptions()
     fun requestWriteSecureSettingsPermission()
     fun requestNotificationsPermission()
     fun isNotificationsPermissionGranted(): Boolean
+
     fun requestShizukuPermission()
 
     val connectedInputDevices: StateFlow<State<List<InputDeviceInfo>>>
-
     fun resetAllSettings()
 }

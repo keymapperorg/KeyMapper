@@ -52,6 +52,7 @@ import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.root.SuAdapterImpl
 import io.github.sds100.keymapper.system.shell.ShellAdapter
+import io.github.sds100.keymapper.system.shell.SimpleShell
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapterImpl
 import io.github.sds100.keymapper.system.url.AndroidOpenUrlAdapter
@@ -167,7 +168,7 @@ abstract class SystemHiltModule {
 
     @Singleton
     @Binds
-    abstract fun provideShellAdapter(impl: Shell): ShellAdapter
+    abstract fun provideShellAdapter(impl: SimpleShell): ShellAdapter
 
     @Singleton
     @Binds

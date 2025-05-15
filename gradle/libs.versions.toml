@@ -69,6 +69,8 @@ room-testing-legacy = "1.1.1"
 espresso-core = "3.6.1"
 ui-tooling = "1.8.1" # android.arch.persistence.room:testing
 
+libsu-core = "6.0.0"
+
 [libraries]
 # Kotlin
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
@@ -169,6 +171,7 @@ jakewharton-timber = { group = "com.jakewharton.timber", name = "timber", versio
 kotson = { group = "com.github.salomonbrys.kotson", name = "kotson", version.ref = "kotson" }
 lsposed-hiddenapibypass = { group = "org.lsposed.hiddenapibypass", name = "hiddenapibypass", version.ref = "hiddenapibypass" }
 net-lingala-zip4j = { group = "net.lingala.zip4j", name = "zip4j", version.ref = "lingala-zip4j" }
+github-topjohnwu-libsu = { group = "com.github.topjohnwu.libsu", name = "core", version.ref = "libsu-core" }
 
 # Gradle Plugins - Aliases for buildscript dependencies / plugins block
 # These are referenced in build.gradle.kts files' plugins blocks by their ID.

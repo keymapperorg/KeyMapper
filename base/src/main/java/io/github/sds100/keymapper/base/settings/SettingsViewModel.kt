@@ -215,6 +215,10 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun onRequestRootClick() {
+        useCase.requestRootPermission()
+    }
+
     fun onProModeClick() {
         viewModelScope.launch {
             navigate("pro_mode_settings", NavDestination.ProMode)

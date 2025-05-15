@@ -13,6 +13,8 @@ Many thanks to...
  - @[MFlisar](https://github.com/MFlisar) for their [drag and select](https://github.com/MFlisar/DragSelectRecyclerView) library.
  - @[RikkaApps](https://github.com/RikkaApps) for Shizuku! It is amazing.
  - @[canopas](https://github.com/canopas) for their Jetpack Compose Tap Target library https://github.com/canopas/compose-intro-showcase.
+- @[topjohnwu](https://github.com/topjohnwu) for Magisk
+  and [libsu](https://github.com/topjohnwu/libsu).
 
 [salomonbrys]: https://github.com/salomonbrys
 [Kotson]: https://github.com/salomonbrys/Kotson
