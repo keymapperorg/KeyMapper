@@ -2,6 +2,7 @@
 compile-sdk = "35"
 min-sdk = "21"
 build-tools = "35.0.0"
+target-sdk = "35"
 
 android-gradle-plugin = "8.9.1"
 androidx-activity = "1.10.1"
@@ -25,9 +26,12 @@ androidx-room = "2.7.1" # room_version for dependencies
 androidx-room-gradle-plugin = "2.6.1" # For plugin
 androidx-test-core = "1.6.1"
 androidx-viewpager2 = "1.1.0"
-compose-bom = "2025.05.00"
+
+dagger-hilt-android = "2.56.2"
+
+compose-bom = "2025.04.01"
 compose-compiler = "1.5.10" # kotlinCompilerExtensionVersion
-coroutines = "1.9.0"
+
 desugar-jdk-libs = "2.1.5"
 epoxy = "4.6.2"
 flexbox = "3.0.0"
@@ -36,8 +40,11 @@ hiddenapibypass = "4.3"
 introshowcaseview = "2.0.2"
 junit = "4.13.2"
 junit-params = "1.1.1"
+
 kotlin = "2.1.0"
 kotlin-serialization-json = "1.8.0"
+coroutines = "1.9.0"
+
 kotson = "2.5.0"
 ksp-gradle-plugin = "2.1.0-1.0.28"
 ktlint-gradle = "12.1.0"
@@ -45,24 +52,28 @@ ktlint-gradle = "12.1.0"
 lingala-zip4j = "2.8.0"
 lottie-compose = "6.6.3"
 material = "1.13.0-alpha13"
+
 mflisar-dragselectrecyclerview = "0.3"
 mockito-android = "4.6.1"
 mockito-core = "5.15.2"
 mockito-inline = "5.2.0"
 mockito-kotlin = "4.0.0"
+
 okhttp = "4.12.0"
 revenuecat-purchases = "8.17.1"
 robolectric = "4.14.1"
 shizuku = "13.1.5"
 splitties = "3.0.0"
 storage-anggrayudi = "0.8.1"
-target-sdk = "35"
 timber = "5.0.1"
 room-testing-legacy = "1.1.1"
-espresso-core = "3.6.1" # android.arch.persistence.room:testing
+espresso-core = "3.6.1"
+ui-tooling = "1.8.1" # android.arch.persistence.room:testing
 
 [libraries]
 # Kotlin
+dagger-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "dagger-hilt-android" }
+dagger-hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "dagger-hilt-android" }
 kotlin-stdlib-jdk8 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
@@ -103,9 +114,9 @@ androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version
 androidx-viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "androidx-viewpager2" }
 
 # Compose
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom-beta", version.ref = "compose-bom" } # Corrected name
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
-androidx-compose-material = { group = "androidx.compose.material", name = "material-icons-extended-android" } # Assuming this is the one meant by material-icons-extended
+androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended-android" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3-android" }
 androidx-compose-material3-adaptive = { group = "androidx.compose.material3.adaptive", name = "adaptive-android" }
 androidx-compose-material3-adaptive-navigation = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation" }
@@ -169,11 +180,11 @@ kotlin-gradleplugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-pl
 kotlin-serialization-gradleplugin = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "kotlin" }
 ksp-gradleplugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp-gradle-plugin" }
 navigation-safeargs-gradleplugin = { group = "androidx.navigation", name = "navigation-safe-args-gradle-plugin", version.ref = "androidx-navigation-safeargs-gradle-plugin" }
-ktlint-gradleplugin = { group = "org.jlleitschuh.gradle", name = "ktlint-gradle", version.ref = "ktlint-gradle"}
+ktlint-gradleplugin = { group = "org.jlleitschuh.gradle", name = "ktlint-gradle", version.ref = "ktlint-gradle" }
 kotlin-compose-compiler-gradleplugin = { group = "org.jetbrains.kotlin.plugin.compose", name = "org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" } # Using kotlin version for compose plugin as per original setup
 room-gradleplugin = { group = "androidx.room", name = "androidx.room.gradle.plugin", version.ref = "androidx-room-gradle-plugin" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
-
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "ui-tooling" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
@@ -187,6 +198,7 @@ kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "android-gradle-plugin" }
+dagger-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "dagger-hilt-android" }
 
 [bundles]
 splitties = [
@@ -208,6 +220,3 @@ androidx-navigation = [
     "androidx-navigation-compose",
     "androidx-navigation-fragment-compose",
 ]
-# Example: if you had common test dependencies
-# test-common = ["junit", "kotlinx-coroutines-test", "androidx-arch-core-testing"]
-# androidtest-common = ["androidx-test-ext-junit", "androidx-espresso-core"] 

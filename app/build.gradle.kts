@@ -4,16 +4,16 @@ import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
-    alias(libs.plugins.android.application) 
-    alias(libs.plugins.kotlin.android) 
-    alias(libs.plugins.kotlin.compose) 
-    alias(libs.plugins.kotlin.kapt) 
-    alias(libs.plugins.kotlin.serialization) 
-    alias(libs.plugins.kotlin.parcelize) 
-    alias(libs.plugins.androidx.navigation.safeargs.kotlin) 
-    alias(libs.plugins.androidx.room) 
-    alias(libs.plugins.google.devtools.ksp) 
-    alias(libs.plugins.jlleitschuh.gradle.ktlint) 
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.androidx.navigation.safeargs.kotlin)
+    alias(libs.plugins.androidx.room)
+    alias(libs.plugins.google.devtools.ksp)
+    alias(libs.plugins.jlleitschuh.gradle.ktlint)
 }
 
 android {
@@ -39,7 +39,7 @@ android {
 
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments["room.schemaLocation"] = "${projectDir}/schemas"
+                arguments["room.schemaLocation"] = "$projectDir/schemas"
             }
         }
     }
@@ -56,7 +56,10 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
             signingConfig = signingConfigs.getByName("release")
         }
 
@@ -85,7 +88,10 @@ android {
             matchingFallbacks.add("debug")
             applicationIdSuffix = ".ci"
             versionNameSuffix = "-ci.${versionProperties.getProperty("VERSION_NUM")}"
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
             signingConfig = signingConfigs.getByName("debug") // Assuming debug signing for CI
         }
     }
@@ -138,7 +144,7 @@ android {
 
     sourceSets {
         getByName("androidTest") {
-            assets.srcDirs(files("${projectDir}/schemas"))
+            assets.srcDirs(files("$projectDir/schemas"))
             resources.srcDirs("src/test/resources")
         }
         getByName("test") {
@@ -169,7 +175,6 @@ dependencies {
 
     // kotlin stuff
     implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.kotlin.stdlib.jdk8) // Already included by kotlin-android plugin usually, but explicit is fine
     implementation(libs.kotlinx.serialization.json)
 
     // random stuff
@@ -177,6 +182,7 @@ dependencies {
     implementation(libs.kotson)
     implementation(libs.airbnb.epoxy)
     implementation(libs.airbnb.epoxy.databinding)
+    debugImplementation(libs.androidx.ui.tooling)
     kapt(libs.airbnb.epoxy.processor)
     implementation(libs.jakewharton.timber)
     implementation(libs.net.lingala.zip4j)
@@ -191,6 +197,8 @@ dependencies {
     implementation(libs.squareup.okhttp)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.canopas.introshowcaseview)
+    implementation(libs.dagger.hilt.android)
+    ksp(libs.dagger.hilt.android.compiler)
 
     // splitties
     implementation(libs.bundles.splitties)
@@ -213,11 +221,7 @@ dependencies {
     implementation(libs.androidx.viewpager2)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.core.splashscreen)
-    implementation(libs.androidx.activity.compose) // Repeated, covered by activity-ktx or compose deps
-    // implementation(libs.androidx.navigation.compose) // Covered by bundle
-    // implementation(libs.androidx.navigation.fragment.compose) // Covered by bundle
     ksp(libs.androidx.room.compiler)
-
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
@@ -225,14 +229,11 @@ dependencies {
     implementation(libs.androidx.compose.ui.android)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material) // material-icons-extended
+    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.material3.adaptive)
     implementation(libs.androidx.compose.material3.adaptive.navigation)
     implementation(libs.google.accompanist.drawablepainter)
-    // implementation(libs.androidx.activity.compose) // Already listed
-
-    debugImplementation(libs.androidx.compose.ui.tooling)
-//    "debug_releaseImplementation"(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.ui.tooling)
 
 //    debugImplementation(libs.squareup.leakcanary.android) // Keep commented
 
@@ -241,6 +242,7 @@ dependencies {
     testImplementation(libs.hamcrest.all)
     testImplementation(libs.androidx.junit.ktx) // androidx.test.ext:junit-ktx
     testImplementation(libs.androidx.test.core.ktx)
+    testImplementation(libs.androidx.test.core)
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.arch.core.testing)
     testImplementation(libs.kotlinx.coroutines.test)
@@ -248,14 +250,12 @@ dependencies {
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.inline)
+    testDebugImplementation(libs.androidx.fragment.testing)
 
     // Dependencies for Android instrumented tests
     androidTestImplementation(libs.androidx.test.ext.junit) // androidx.test.ext:junit
-    androidTestImplementation(libs.androidx.arch.core.testing) // Repeated, fine
     androidTestImplementation(libs.junit) // Repeated, fine
     androidTestImplementation(libs.androidx.navigation.testing)
     androidTestImplementation(libs.androidx.room.testing.legacy)
     androidTestImplementation(libs.mockito.android)
-    debugImplementation(libs.androidx.fragment.testing)
-    implementation(libs.androidx.test.core) // Implementation, not testImplementation? Check usage.
 }
