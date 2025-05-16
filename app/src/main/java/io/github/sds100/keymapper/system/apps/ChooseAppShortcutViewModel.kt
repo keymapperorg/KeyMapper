@@ -26,10 +26,14 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.Locale
+import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.sds100.keymapper.system.apps.DisplayAppShortcutsUseCase
+import javax.inject.Inject
 
-class ChooseAppShortcutViewModel internal constructor(
+@HiltViewModel
+class ChooseAppShortcutViewModel @Inject constructor(
     private val useCase: DisplayAppShortcutsUseCase,
-    resourceProvider: ResourceProvider,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel(),
     PopupViewModel by PopupViewModelImpl(),
     ResourceProvider by resourceProvider {
@@ -120,18 +124,5 @@ class ChooseAppShortcutViewModel internal constructor(
                 ),
             )
         }
-    }
-
-    class Factory(
-        private val useCase: DisplayAppShortcutsUseCase,
-        private val resourceProvider: ResourceProvider,
-    ) : ViewModelProvider.Factory {
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>) =
-            ChooseAppShortcutViewModel(
-                useCase,
-                resourceProvider,
-            ) as T
     }
 }

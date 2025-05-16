@@ -24,11 +24,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.sds100.keymapper.settings.ConfigSettingsUseCase
+import javax.inject.Inject
 
-
-class SettingsViewModel(
+@HiltViewModel
+class SettingsViewModel @Inject constructor(
     private val useCase: ConfigSettingsUseCase,
-    resourceProvider: ResourceProvider,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel(),
     PopupViewModel by PopupViewModelImpl(),
     ResourceProvider by resourceProvider {
@@ -207,17 +210,5 @@ class SettingsViewModel(
                 useCase.resetAllSettings()
             }
         }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val configSettingsUseCase: ConfigSettingsUseCase,
-        private val resourceProvider: ResourceProvider,
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = SettingsViewModel(
-            configSettingsUseCase,
-            resourceProvider,
-        ) as T
     }
 }

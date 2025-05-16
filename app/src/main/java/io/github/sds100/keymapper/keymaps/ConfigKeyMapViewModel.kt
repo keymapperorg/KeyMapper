@@ -26,8 +26,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class ConfigKeyMapViewModel(
+@HiltViewModel
+class ConfigKeyMapViewModel @Inject constructor(
     private val config: ConfigKeyMapUseCase,
     private val testAction: TestActionUseCase,
     private val onboarding: OnboardingUseCase,
@@ -143,35 +146,5 @@ class ConfigKeyMapViewModel(
 
     fun onSkipTutorialClick() {
         onboarding.skipTapTargetOnboarding()
-    }
-
-    class Factory(
-        private val config: ConfigKeyMapUseCase,
-        private val testAction: TestActionUseCase,
-        private val onboard: OnboardingUseCase,
-        private val recordTrigger: RecordTriggerUseCase,
-        private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
-        private val displayMapping: DisplayKeyMapUseCase,
-        private val createActionUseCase: CreateActionUseCase,
-        private val resourceProvider: ResourceProvider,
-        private val purchasingManager: PurchasingManager,
-        private val setupGuiKeyboardUseCase: SetupGuiKeyboardUseCase,
-        private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
-    ) : ViewModelProvider.Factory {
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>) = ConfigKeyMapViewModel(
-            config,
-            testAction,
-            onboard,
-            recordTrigger,
-            createKeyMapShortcut,
-            displayMapping,
-            createActionUseCase,
-            resourceProvider,
-            purchasingManager,
-            setupGuiKeyboardUseCase,
-            fingerprintGesturesSupported,
-        ) as T
     }
 }

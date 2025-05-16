@@ -1,19 +1,24 @@
 package io.github.sds100.keymapper.keymaps
 
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.media.MediaAdapter
-import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
+import io.github.sds100.keymapper.system.ringtone.RingtoneAdapter
+import io.github.sds100.keymapper.util.SettingsRepository
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
 
-
-
-class PauseKeyMapsUseCaseImpl(
+@Singleton
+class PauseKeyMapsUseCaseImpl @Inject constructor(
+    private val settingsRepository: SettingsRepository,
     private val preferenceRepository: PreferenceRepository,
     private val mediaAdapter: MediaAdapter,
-    private val ringtoneAdapter: RingtoneAdapter,
+    private val ringtoneAdapter: RingtoneAdapter
 ) : PauseKeyMapsUseCase {
 
     override val isPaused: Flow<Boolean> =

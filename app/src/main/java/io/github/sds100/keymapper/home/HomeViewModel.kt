@@ -6,8 +6,8 @@ import androidx.compose.material.icons.outlined.BubbleChart
 import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCase
@@ -34,8 +34,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeViewModel(
+@HiltViewModel
+class HomeViewModel @Inject constructor(
     private val listKeyMaps: ListKeyMapsUseCase,
     private val pauseKeyMaps: PauseKeyMapsUseCase,
     private val backupRestore: BackupRestoreMappingsUseCase,
@@ -171,34 +173,6 @@ class HomeViewModel(
                 PopupUi.OpenUrl(getString(R.string.url_play_store_keymapper_gui_keyboard)),
             )
         }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val listKeyMaps: ListKeyMapsUseCase,
-        private val pauseMappings: PauseKeyMapsUseCase,
-        private val backupRestore: BackupRestoreMappingsUseCase,
-        private val showAlertsUseCase: ShowHomeScreenAlertsUseCase,
-        private val onboarding: OnboardingUseCase,
-        private val resourceProvider: ResourceProvider,
-        private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
-        private val sortKeyMaps: SortKeyMapsUseCase,
-        private val listFloatingLayouts: ListFloatingLayoutsUseCase,
-        private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeViewModel(
-            listKeyMaps,
-            pauseMappings,
-            backupRestore,
-            showAlertsUseCase,
-            onboarding,
-            resourceProvider,
-            setupGuiKeyboard,
-            sortKeyMaps,
-            listFloatingLayouts,
-            showInputMethodPickerUseCase,
-        ) as T
     }
 }
 

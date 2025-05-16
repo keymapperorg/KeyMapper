@@ -1,21 +1,26 @@
 package io.github.sds100.keymapper.actions
 
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.camera.CameraFlashInfo
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
-import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
+import io.github.sds100.keymapper.system.systemfeature.SystemFeatureAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class CreateActionUseCaseImpl(
+@Singleton
+class CreateActionUseCaseImpl @Inject constructor(
     private val inputMethodAdapter: InputMethodAdapter,
     private val systemFeatureAdapter: SystemFeatureAdapter,
     private val cameraAdapter: CameraAdapter,
-    private val permissionAdapter: PermissionAdapter,
+    private val permissionAdapter: PermissionAdapter
 ) : CreateActionUseCase,
     IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(
         systemFeatureAdapter,

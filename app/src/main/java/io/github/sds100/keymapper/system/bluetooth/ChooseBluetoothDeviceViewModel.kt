@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.system.bluetooth
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
@@ -19,10 +19,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
+import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceUseCase
+import javax.inject.Inject
 
-class ChooseBluetoothDeviceViewModel(
-    val useCase: ChooseBluetoothDeviceUseCase,
-    resourceProvider: ResourceProvider,
+@HiltViewModel
+class ChooseBluetoothDeviceViewModel @Inject constructor(
+    private val useCase: ChooseBluetoothDeviceUseCase,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl() {
@@ -77,18 +80,5 @@ class ChooseBluetoothDeviceViewModel(
             val deviceInfo = useCase.devices.value.find { it.address == id } ?: return@launch
             _returnResult.emit(deviceInfo)
         }
-    }
-
-    class Factory(
-        private val useCase: ChooseBluetoothDeviceUseCase,
-        private val resourceProvider: ResourceProvider,
-    ) : ViewModelProvider.Factory {
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>) =
-            ChooseBluetoothDeviceViewModel(
-                useCase,
-                resourceProvider,
-            ) as T
     }
 }

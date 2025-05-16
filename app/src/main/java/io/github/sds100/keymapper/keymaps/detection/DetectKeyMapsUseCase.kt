@@ -32,7 +32,8 @@ import io.github.sds100.keymapper.trigger.FingerprintTriggerKey
 import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.common.state.dataOrNull
-import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ResourceProvider
+import io.github.sds100.keymapper.util.SettingsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -42,8 +43,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class DetectKeyMapsUseCaseImpl(
+@Singleton
+class DetectKeyMapsUseCaseImpl @Inject constructor(
     private val keyMapRepository: KeyMapRepository,
     private val floatingButtonRepository: FloatingButtonRepository,
     private val groupRepository: GroupRepository,

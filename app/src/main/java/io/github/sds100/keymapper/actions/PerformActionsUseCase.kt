@@ -73,26 +73,37 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import splitties.bitflags.withFlag
 import timber.log.Timber
+import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapper
+import io.github.sds100.keymapper.system.IAccessibilityService
+import io.github.sds100.keymapper.system.Shell
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
+import io.github.sds100.keymapper.system.audio.AudioAdapter
+import io.github.sds100.keymapper.system.inputmethod.ImeInputEventInjectorImpl
+import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
+import io.github.sds100.keymapper.util.SettingsRepository
+import io.github.sds100.keymapper.system.power.PowerAdapter
+import javax.inject.Inject
+import javax.inject.Singleton
 
-
-
-class PerformActionsUseCaseImpl(
-    private val coroutineScope: CoroutineScope,
-    private val accessibilityService: IAccessibilityService,
+@Singleton
+class PerformActionsUseCaseImpl @Inject constructor(
+    private val appCoroutineScope: CoroutineScope,
+    private val service: IAccessibilityService,
     private val inputMethodAdapter: InputMethodAdapter,
     private val fileAdapter: FileAdapter,
     private val suAdapter: SuAdapter,
-    private val shellAdapter: ShellAdapter,
+    private val shell: Shell,
     private val intentAdapter: IntentAdapter,
-    private val getActionError: GetActionErrorUseCase,
-    private val imeInputEventInjector: ImeInputEventInjector,
-    private val shizukuInputEventInjector: InputEventInjector,
+    private val getActionErrorUseCase: GetActionErrorUseCase,
+    private val keyMapperImeMessenger: ImeInputEventInjectorImpl,
+    private val shizukuInputEventInjector: ShizukuInputEventInjector,
     private val packageManagerAdapter: PackageManagerAdapter,
     private val appShortcutAdapter: AppShortcutAdapter,
     private val popupMessageAdapter: PopupMessageAdapter,
-    private val deviceAdapter: DevicesAdapter,
+    private val devicesAdapter: DevicesAdapter,
     private val phoneAdapter: PhoneAdapter,
-    private val volumeAdapter: VolumeAdapter,
+    private val audioAdapter: AudioAdapter,
     private val cameraAdapter: CameraAdapter,
     private val displayAdapter: DisplayAdapter,
     private val lockScreenAdapter: LockScreenAdapter,
@@ -103,20 +114,20 @@ class PerformActionsUseCaseImpl(
     private val nfcAdapter: NfcAdapter,
     private val openUrlAdapter: OpenUrlAdapter,
     private val resourceProvider: ResourceProvider,
-    private val preferenceRepository: PreferenceRepository,
+    private val settingsRepository: SettingsRepository,
     private val soundsManager: SoundsManager,
     private val permissionAdapter: PermissionAdapter,
-    private val notificationReceiverAdapter: ServiceAdapter,
-    private val ringtoneAdapter: RingtoneAdapter,
+    private val notificationReceiverAdapter: NotificationReceiverAdapter,
+    private val ringtoneAdapter: RingtoneAdapter
 ) : PerformActionsUseCase {
 
     private val openMenuHelper by lazy {
         OpenMenuHelper(
             suAdapter,
-            accessibilityService,
+            service,
             shizukuInputEventInjector,
             permissionAdapter,
-            coroutineScope,
+            appCoroutineScope,
         )
     }
 
@@ -125,7 +136,7 @@ class PerformActionsUseCaseImpl(
      */
     private val inputKeyEventsWithShizuku: StateFlow<Boolean> =
         permissionAdapter.isGrantedFlow(Permission.SHIZUKU)
-            .stateIn(coroutineScope, SharingStarted.Eagerly, false)
+            .stateIn(appCoroutineScope, SharingStarted.Eagerly, false)
 
     override suspend fun perform(
         action: ActionData,
@@ -177,7 +188,7 @@ class PerformActionsUseCaseImpl(
                     action.useShell -> suAdapter.execute("input keyevent ${model.keyCode}")
 
                     else -> {
-                        imeInputEventInjector.inputKeyEvent(model)
+                        keyMapperImeMessenger.inputKeyEvent(model)
 
                         Success(Unit)
                     }
@@ -189,19 +200,19 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.DoNotDisturb.Enable -> {
-                result = volumeAdapter.enableDndMode(action.dndMode)
+                result = audioAdapter.enableDndMode(action.dndMode)
             }
 
             is ActionData.DoNotDisturb.Toggle -> {
-                result = if (volumeAdapter.isDndEnabled()) {
-                    volumeAdapter.disableDndMode()
+                result = if (audioAdapter.isDndEnabled()) {
+                    audioAdapter.disableDndMode()
                 } else {
-                    volumeAdapter.enableDndMode(action.dndMode)
+                    audioAdapter.enableDndMode(action.dndMode)
                 }
             }
 
             is ActionData.Volume.SetRingerMode -> {
-                result = volumeAdapter.setRingerMode(action.ringerMode)
+                result = audioAdapter.setRingerMode(action.ringerMode)
             }
 
             is ActionData.ControlMediaForApp.FastForward -> {
@@ -289,45 +300,45 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.Volume.Down -> {
-                result = volumeAdapter.lowerVolume(showVolumeUi = action.showVolumeUi)
+                result = audioAdapter.lowerVolume(showVolumeUi = action.showVolumeUi)
             }
 
             is ActionData.Volume.Up -> {
-                result = volumeAdapter.raiseVolume(showVolumeUi = action.showVolumeUi)
+                result = audioAdapter.raiseVolume(showVolumeUi = action.showVolumeUi)
             }
 
             is ActionData.Volume.Mute -> {
-                result = volumeAdapter.muteVolume(showVolumeUi = action.showVolumeUi)
+                result = audioAdapter.muteVolume(showVolumeUi = action.showVolumeUi)
             }
 
             is ActionData.Volume.Stream.Decrease -> {
-                result = volumeAdapter.lowerVolume(
+                result = audioAdapter.lowerVolume(
                     stream = action.volumeStream,
                     showVolumeUi = action.showVolumeUi,
                 )
             }
 
             is ActionData.Volume.Stream.Increase -> {
-                result = volumeAdapter.raiseVolume(
+                result = audioAdapter.raiseVolume(
                     stream = action.volumeStream,
                     showVolumeUi = action.showVolumeUi,
                 )
             }
 
             is ActionData.Volume.ToggleMute -> {
-                result = volumeAdapter.toggleMuteVolume(showVolumeUi = action.showVolumeUi)
+                result = audioAdapter.toggleMuteVolume(showVolumeUi = action.showVolumeUi)
             }
 
             is ActionData.Volume.UnMute -> {
-                result = volumeAdapter.unmuteVolume(showVolumeUi = action.showVolumeUi)
+                result = audioAdapter.unmuteVolume(showVolumeUi = action.showVolumeUi)
             }
 
             is ActionData.TapScreen -> {
-                result = accessibilityService.tapScreen(action.x, action.y, inputEventType)
+                result = service.tapScreen(action.x, action.y, inputEventType)
             }
 
             is ActionData.SwipeScreen -> {
-                result = accessibilityService.swipeScreen(
+                result = service.swipeScreen(
                     action.xStart,
                     action.yStart,
                     action.xEnd,
@@ -339,7 +350,7 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.PinchScreen -> {
-                result = accessibilityService.pinchScreen(
+                result = service.pinchScreen(
                     action.x,
                     action.y,
                     action.distance,
@@ -351,7 +362,7 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.Text -> {
-                imeInputEventInjector.inputText(action.text)
+                keyMapperImeMessenger.inputText(action.text)
                 result = Success(Unit)
             }
 
@@ -481,42 +492,42 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.Volume.CycleRingerMode -> {
-                result = when (volumeAdapter.ringerMode) {
-                    RingerMode.NORMAL -> volumeAdapter.setRingerMode(RingerMode.VIBRATE)
-                    RingerMode.VIBRATE -> volumeAdapter.setRingerMode(RingerMode.SILENT)
-                    RingerMode.SILENT -> volumeAdapter.setRingerMode(RingerMode.NORMAL)
+                result = when (audioAdapter.ringerMode) {
+                    RingerMode.NORMAL -> audioAdapter.setRingerMode(RingerMode.VIBRATE)
+                    RingerMode.VIBRATE -> audioAdapter.setRingerMode(RingerMode.SILENT)
+                    RingerMode.SILENT -> audioAdapter.setRingerMode(RingerMode.NORMAL)
                 }
             }
 
             is ActionData.Volume.CycleVibrateRing -> {
-                result = when (volumeAdapter.ringerMode) {
-                    RingerMode.NORMAL -> volumeAdapter.setRingerMode(RingerMode.VIBRATE)
-                    RingerMode.VIBRATE -> volumeAdapter.setRingerMode(RingerMode.NORMAL)
-                    RingerMode.SILENT -> volumeAdapter.setRingerMode(RingerMode.NORMAL)
+                result = when (audioAdapter.ringerMode) {
+                    RingerMode.NORMAL -> audioAdapter.setRingerMode(RingerMode.VIBRATE)
+                    RingerMode.VIBRATE -> audioAdapter.setRingerMode(RingerMode.NORMAL)
+                    RingerMode.SILENT -> audioAdapter.setRingerMode(RingerMode.NORMAL)
                 }
             }
 
             is ActionData.DoNotDisturb.Disable -> {
-                result = volumeAdapter.disableDndMode()
+                result = audioAdapter.disableDndMode()
             }
 
             is ActionData.StatusBar.ExpandNotifications -> {
                 val globalAction = AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS
 
-                result = accessibilityService.doGlobalAction(globalAction).otherwise {
-                    shellAdapter.execute("cmd statusbar expand-notifications")
+                result = service.doGlobalAction(globalAction).otherwise {
+                    shell.execute("cmd statusbar expand-notifications")
                 }
             }
 
             is ActionData.StatusBar.ToggleNotifications -> {
                 result =
-                    if (accessibilityService.rootNode?.packageName == "com.android.systemui") {
+                    if (service.rootNode?.packageName == "com.android.systemui") {
                         closeStatusBarShade()
                     } else {
                         val globalAction = AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS
 
-                        accessibilityService.doGlobalAction(globalAction).otherwise {
-                            shellAdapter.execute("cmd statusbar expand-notifications")
+                        service.doGlobalAction(globalAction).otherwise {
+                            shell.execute("cmd statusbar expand-notifications")
                         }
                     }
             }
@@ -525,20 +536,20 @@ class PerformActionsUseCaseImpl(
                 val globalAction = AccessibilityService.GLOBAL_ACTION_QUICK_SETTINGS
 
                 result =
-                    accessibilityService.doGlobalAction(globalAction).otherwise {
-                        shellAdapter.execute("cmd statusbar expand-settings")
+                    service.doGlobalAction(globalAction).otherwise {
+                        shell.execute("cmd statusbar expand-settings")
                     }
             }
 
             is ActionData.StatusBar.ToggleQuickSettings -> {
                 result =
-                    if (accessibilityService.rootNode?.packageName == "com.android.systemui") {
+                    if (service.rootNode?.packageName == "com.android.systemui") {
                         closeStatusBarShade()
                     } else {
                         val globalAction = AccessibilityService.GLOBAL_ACTION_QUICK_SETTINGS
 
-                        accessibilityService.doGlobalAction(globalAction).otherwise {
-                            shellAdapter.execute("cmd statusbar expand-settings")
+                        service.doGlobalAction(globalAction).otherwise {
+                            shell.execute("cmd statusbar expand-settings")
                         }
                     }
             }
@@ -589,32 +600,32 @@ class PerformActionsUseCaseImpl(
 
             is ActionData.GoBack -> {
                 result =
-                    accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
+                    service.doGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
             }
 
             is ActionData.GoHome -> {
                 result =
-                    accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
+                    service.doGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
             }
 
             is ActionData.OpenRecents -> {
                 result =
-                    accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
+                    service.doGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
             }
 
             is ActionData.ToggleSplitScreen -> {
                 result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN)
+                    service.doGlobalAction(AccessibilityService.GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN)
                 } else {
                     Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.N)
                 }
             }
 
             is ActionData.GoLastApp -> {
-                accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
+                service.doGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
                 delay(100)
                 result =
-                    accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
+                    service.doGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS)
             }
 
             is ActionData.OpenMenu -> {
@@ -646,30 +657,30 @@ class PerformActionsUseCaseImpl(
                 if (inputKeyEventsWithShizuku.value) {
                     shizukuInputEventInjector.inputKeyEvent(keyModel)
                 } else {
-                    imeInputEventInjector.inputKeyEvent(keyModel)
+                    keyMapperImeMessenger.inputKeyEvent(keyModel)
                 }
 
                 result = Success(Unit)
             }
 
             is ActionData.ToggleKeyboard -> {
-                val isHidden = accessibilityService.isKeyboardHidden.firstBlocking()
+                val isHidden = service.isKeyboardHidden.firstBlocking()
                 if (isHidden) {
-                    accessibilityService.showKeyboard()
+                    service.showKeyboard()
                 } else {
-                    accessibilityService.hideKeyboard()
+                    service.hideKeyboard()
                 }
 
                 result = Success(Unit)
             }
 
             is ActionData.ShowKeyboard -> {
-                accessibilityService.showKeyboard()
+                service.showKeyboard()
                 result = Success(Unit)
             }
 
             is ActionData.HideKeyboard -> {
-                accessibilityService.hideKeyboard()
+                service.hideKeyboard()
                 result = Success(Unit)
             }
 
@@ -678,25 +689,25 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.CutText -> {
-                result = accessibilityService.performActionOnNode({ it.isFocused }) {
+                result = service.performActionOnNode({ it.isFocused }) {
                     AccessibilityNodeAction(AccessibilityNodeInfo.ACTION_CUT)
                 }
             }
 
             is ActionData.CopyText -> {
-                result = accessibilityService.performActionOnNode({ it.isFocused }) {
+                result = service.performActionOnNode({ it.isFocused }) {
                     AccessibilityNodeAction(AccessibilityNodeInfo.ACTION_COPY)
                 }
             }
 
             is ActionData.PasteText -> {
-                result = accessibilityService.performActionOnNode({ it.isFocused }) {
+                result = service.performActionOnNode({ it.isFocused }) {
                     AccessibilityNodeAction(AccessibilityNodeInfo.ACTION_PASTE)
                 }
             }
 
             is ActionData.SelectWordAtCursor -> {
-                result = accessibilityService.performActionOnNode({ it.isFocused }) { node ->
+                result = service.performActionOnNode({ it.isFocused }) { node ->
                     // it is at the cursor position if they both return the same value
                     if (node.textSelectionStart == node.textSelectionEnd) {
                         val cursorPosition = node.textSelectionStart
@@ -758,7 +769,7 @@ class PerformActionsUseCaseImpl(
                             }
                 } else {
                     result =
-                        accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_TAKE_SCREENSHOT)
+                        service.doGlobalAction(AccessibilityService.GLOBAL_ACTION_TAKE_SCREENSHOT)
                 }
             }
 
@@ -778,7 +789,7 @@ class PerformActionsUseCaseImpl(
                 result = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
                     suAdapter.execute("input keyevent ${KeyEvent.KEYCODE_POWER}")
                 } else {
-                    accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN)
+                    service.doGlobalAction(AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN)
                 }
             }
 
@@ -800,11 +811,11 @@ class PerformActionsUseCaseImpl(
 
             is ActionData.ShowPowerMenu -> {
                 result =
-                    accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
+                    service.doGlobalAction(AccessibilityService.GLOBAL_ACTION_POWER_DIALOG)
             }
 
             is ActionData.Volume.ShowDialog -> {
-                result = volumeAdapter.showVolumeUi()
+                result = audioAdapter.showVolumeUi()
             }
 
             ActionData.DismissAllNotifications -> {
@@ -843,10 +854,10 @@ class PerformActionsUseCaseImpl(
             }
 
             is ActionData.InteractUiElement -> {
-                if (accessibilityService.activeWindowPackage.first() != action.packageName) {
+                if (service.activeWindowPackage.first() != action.packageName) {
                     result = Error.UiElementNotFound
                 } else {
-                    result = accessibilityService.performActionOnNode(
+                    result = service.performActionOnNode(
                         findNode = { node ->
                             matchAccessibilityNode(node, action)
                         },
@@ -867,21 +878,21 @@ class PerformActionsUseCaseImpl(
     }
 
     override fun getErrorSnapshot(): ActionErrorSnapshot {
-        return getActionError.actionErrorSnapshot.firstBlocking()
+        return getActionErrorUseCase.actionErrorSnapshot.firstBlocking()
     }
 
     override val defaultRepeatDelay: Flow<Long> =
-        preferenceRepository.get(Keys.defaultRepeatDelay)
+        settingsRepository.get(Keys.defaultRepeatDelay)
             .map { it ?: PreferenceDefaults.REPEAT_DELAY }
             .map { it.toLong() }
 
     override val defaultRepeatRate: Flow<Long> =
-        preferenceRepository.get(Keys.defaultRepeatRate)
+        settingsRepository.get(Keys.defaultRepeatRate)
             .map { it ?: PreferenceDefaults.REPEAT_RATE }
             .map { it.toLong() }
 
     override val defaultHoldDownDuration: Flow<Long> =
-        preferenceRepository.get(Keys.defaultHoldDownDuration)
+        settingsRepository.get(Keys.defaultHoldDownDuration)
             .map { it ?: PreferenceDefaults.HOLD_DOWN_DURATION }
             .map { it.toLong() }
 
@@ -890,7 +901,7 @@ class PerformActionsUseCaseImpl(
             // automatically select a game controller as the input device for game controller key events
 
             if (InputEventUtils.isGamepadKeyCode(action.keyCode)) {
-                deviceAdapter.connectedInputDevices.value.ifIsData { inputDevices ->
+                devicesAdapter.connectedInputDevices.value.ifIsData { inputDevices ->
                     val device = inputDevices.find { it.isGameController }
 
                     if (device != null) {
@@ -902,7 +913,7 @@ class PerformActionsUseCaseImpl(
             return 0
         }
 
-        val inputDevices = deviceAdapter.connectedInputDevices.value
+        val inputDevices = devicesAdapter.connectedInputDevices.value
 
         val devicesWithSameDescriptor =
             inputDevices.dataOrNull()
@@ -922,7 +933,7 @@ class PerformActionsUseCaseImpl(
         code. if none do then use the first one
          */
         val deviceThatHasKey = devicesWithSameDescriptor.singleOrNull {
-            deviceAdapter.deviceHasKey(it.id, action.keyCode)
+            devicesAdapter.deviceHasKey(it.id, action.keyCode)
         }
 
         val device = deviceThatHasKey
@@ -934,10 +945,10 @@ class PerformActionsUseCaseImpl(
 
     private fun closeStatusBarShade(): Result<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            return accessibilityService
+            return service
                 .doGlobalAction(AccessibilityService.GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE)
         } else {
-            return shellAdapter.execute("cmd statusbar collapse")
+            return shell.execute("cmd statusbar collapse")
         }
     }
 

@@ -7,8 +7,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.actions.ActionUiHelper
 import io.github.sds100.keymapper.constraints.ConstraintErrorSnapshot
@@ -19,7 +19,7 @@ import io.github.sds100.keymapper.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.common.state.mapData
-import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ResourceProvider
 import io.github.sds100.keymapper.util.ui.TintType
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,14 +31,15 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CreateKeyMapShortcutViewModel(
-    private val configKeyMapUseCase: ConfigKeyMapUseCase,
+@HiltViewModel
+class CreateKeyMapShortcutViewModel @Inject constructor(
+    private val config: ConfigKeyMapUseCase,
     private val listKeyMaps: ListKeyMapsUseCase,
-    private val createShortcutUseCase: CreateKeyMapShortcutUseCase,
-    resourceProvider: ResourceProvider,
-) : ViewModel(),
-    ResourceProvider by resourceProvider {
+    private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
+    private val resourceProvider: ResourceProvider
+) : ViewModel() {
     private val actionUiHelper = ActionUiHelper(listKeyMaps, resourceProvider)
     private val constraintUiHelper = ConstraintUiHelper(
         listKeyMaps,
@@ -155,10 +156,10 @@ class CreateKeyMapShortcutViewModel(
 
             if (state.keyMaps !is State.Data) return@launch
 
-            configKeyMapUseCase.loadKeyMap(uid)
-            configKeyMapUseCase.setTriggerFromOtherAppsEnabled(true)
+            config.loadKeyMap(uid)
+            config.setTriggerFromOtherAppsEnabled(true)
 
-            val keyMapState = configKeyMapUseCase.keyMap.first()
+            val keyMapState = config.keyMap.first()
 
             if (keyMapState !is State.Data) return@launch
 
@@ -205,13 +206,13 @@ class CreateKeyMapShortcutViewModel(
                 return@launch
             }
 
-            val intent = createShortcutUseCase.createIntent(
+            val intent = createKeyMapShortcut.createIntent(
                 keyMapUid = keyMap.uid,
                 shortcutLabel = shortcutName,
                 icon = icon,
             )
 
-            configKeyMapUseCase.save()
+            config.save()
 
             _returnIntentResult.emit(intent)
         }
@@ -227,21 +228,5 @@ class CreateKeyMapShortcutViewModel(
         viewModelScope.launch {
             listKeyMaps.popGroup()
         }
-    }
-
-    class Factory(
-        private val configKeyMapUseCase: ConfigKeyMapUseCase,
-        private val listUseCase: ListKeyMapsUseCase,
-        private val createShortcutUseCase: CreateKeyMapShortcutUseCase,
-        private val resourceProvider: ResourceProvider,
-    ) : ViewModelProvider.Factory {
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>) = CreateKeyMapShortcutViewModel(
-            configKeyMapUseCase,
-            listUseCase,
-            createShortcutUseCase,
-            resourceProvider,
-        ) as T
     }
 }

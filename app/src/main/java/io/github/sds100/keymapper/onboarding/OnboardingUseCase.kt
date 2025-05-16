@@ -1,6 +1,8 @@
 package io.github.sds100.keymapper.onboarding
 
+import android.content.Context
 import androidx.datastore.preferences.core.Preferences
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.canUseImeToPerform
@@ -24,29 +26,33 @@ import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.util.PrefDelegate
 import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.util.VersionHelper
+import io.github.sds100.keymapper.util.ResourceProvider
+import io.github.sds100.keymapper.util.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+import javax.inject.Singleton
 
-
-class OnboardingUseCaseImpl(
-    private val preferences: PreferenceRepository,
+@Singleton
+class OnboardingUseCaseImpl @Inject constructor(
+    private val settingsRepository: SettingsRepository,
     private val fileAdapter: FileAdapter,
     private val leanbackAdapter: LeanbackAdapter,
     private val shizukuAdapter: ShizukuAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val packageManagerAdapter: PackageManagerAdapter,
     private val purchasingManager: PurchasingManager,
-    private val keyMapRepository: KeyMapRepository,
-) : PreferenceRepository by preferences,
+    private val keyMapRepository: KeyMapRepository
+) : PreferenceRepository by settingsRepository,
     OnboardingUseCase {
 
     override var shownAppIntro by PrefDelegate(Keys.shownAppIntro, false)
 
     override suspend fun showInstallGuiKeyboardPrompt(action: ActionData): Boolean {
-        val acknowledged = preferences.get(Keys.acknowledgedGuiKeyboard).first()
+        val acknowledged = settingsRepository.get(Keys.acknowledgedGuiKeyboard).first()
         val isGuiKeyboardInstalled =
             packageManagerAdapter.isAppInstalled(KeyMapperImeHelper.KEY_MAPPER_GUI_IME_PACKAGE)
 
@@ -63,7 +69,7 @@ class OnboardingUseCaseImpl(
         action.canUseShizukuToPerform()
 
     override fun neverShowGuiKeyboardPromptsAgain() {
-        preferences.set(Keys.acknowledgedGuiKeyboard, true)
+        settingsRepository.set(Keys.acknowledgedGuiKeyboard, true)
     }
 
     override var shownParallelTriggerOrderExplanation by PrefDelegate(
@@ -113,7 +119,7 @@ class OnboardingUseCaseImpl(
     override fun isTvDevice(): Boolean = leanbackAdapter.isTvDevice()
 
     override val promptForShizukuPermission: Flow<Boolean> = combine(
-        preferences.get(Keys.shownShizukuPermissionPrompt),
+        settingsRepository.get(Keys.shownShizukuPermissionPrompt),
         shizukuAdapter.isInstalled,
         permissionAdapter.isGrantedFlow(Permission.SHIZUKU),
     ) {
@@ -128,7 +134,7 @@ class OnboardingUseCaseImpl(
         get() = shizukuAdapter.isInstalled.value
 
     override val showNoKeysDetectedBottomSheet: Flow<Boolean> =
-        preferences.get(Keys.neverShowNoKeysRecordedError).map { neverShow ->
+        settingsRepository.get(Keys.neverShowNoKeysRecordedError).map { neverShow ->
             if (neverShow == null) {
                 true
             } else {
@@ -137,7 +143,7 @@ class OnboardingUseCaseImpl(
         }
 
     override fun neverShowNoKeysRecordedBottomSheet() {
-        preferences.set(Keys.neverShowNoKeysRecordedError, true)
+        settingsRepository.set(Keys.neverShowNoKeysRecordedError, true)
     }
 
     override val hasViewedAdvancedTriggers: Flow<Boolean> =
@@ -152,7 +158,7 @@ class OnboardingUseCaseImpl(
 
         if (tapTarget == OnboardingTapTarget.ADVANCED_TRIGGERS) {
             return combine(
-                preferences.get(shownKey).map { it ?: false },
+                settingsRepository.get(shownKey).map { it ?: false },
                 purchasingManager.purchases.filterIsInstance<State.Data<Result<Set<ProductId>>>>(),
                 keyMapRepository.keyMapList.filterIsInstance<State.Data<List<KeyMapEntity>>>(),
             ) { isShown, purchases, keyMapList ->
@@ -169,8 +175,8 @@ class OnboardingUseCaseImpl(
             }
         } else {
             return combine(
-                preferences.get(shownKey).map { it ?: false },
-                preferences.get(Keys.skipTapTargetTutorial).map { it ?: false },
+                settingsRepository.get(shownKey).map { it ?: false },
+                settingsRepository.get(Keys.skipTapTargetTutorial).map { it ?: false },
                 keyMapRepository.keyMapList.filterIsInstance<State.Data<List<KeyMapEntity>>>(),
             ) { isShown, skipTapTarget, keyMapList ->
                 showTutorialTapTarget(tapTarget, isShown, skipTapTarget, keyMapList.data)
@@ -180,7 +186,7 @@ class OnboardingUseCaseImpl(
 
     override fun completedTapTarget(tapTarget: OnboardingTapTarget) {
         val key = getTapTargetKey(tapTarget)
-        preferences.set(key, true)
+        settingsRepository.set(key, true)
     }
 
     private fun getTapTargetKey(tapTarget: OnboardingTapTarget): Preferences.Key<Boolean> {
@@ -224,7 +230,7 @@ class OnboardingUseCaseImpl(
     }
 
     override fun skipTapTargetOnboarding() {
-        preferences.set(Keys.skipTapTargetTutorial, true)
+        settingsRepository.set(Keys.skipTapTargetTutorial, true)
     }
 }
 

@@ -30,10 +30,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.sds100.keymapper.actions.CreateActionUseCase
+import javax.inject.Inject
 
-class ChooseActionViewModel(
+@HiltViewModel
+class ChooseActionViewModel @Inject constructor(
     private val useCase: CreateActionUseCase,
-    resourceProvider: ResourceProvider,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
@@ -216,14 +220,5 @@ class ChooseActionViewModel(
         }
 
         return true
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val useCase: CreateActionUseCase,
-        private val resourceProvider: ResourceProvider,
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = ChooseActionViewModel(useCase, resourceProvider) as T
     }
 }

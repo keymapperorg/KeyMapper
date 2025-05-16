@@ -5,6 +5,7 @@ import android.view.KeyEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.common.result.Error
@@ -37,10 +38,12 @@ import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
+import javax.inject.Inject
 
-class ConfigKeyEventActionViewModel(
+@HiltViewModel
+class ConfigKeyEventActionViewModel @Inject constructor(
     private val useCase: ConfigKeyEventUseCase,
-    resourceProvider: ResourceProvider,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     NavigationViewModel by NavigationViewModelImpl() {
@@ -232,15 +235,6 @@ class ConfigKeyEventActionViewModel(
             deviceListItems = deviceListItems,
             chosenDeviceName = chosenDeviceName,
         )
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val useCase: ConfigKeyEventUseCase,
-        private val resourceProvider: ResourceProvider,
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = ConfigKeyEventActionViewModel(useCase, resourceProvider) as T
     }
 
     private data class KeyEventState(

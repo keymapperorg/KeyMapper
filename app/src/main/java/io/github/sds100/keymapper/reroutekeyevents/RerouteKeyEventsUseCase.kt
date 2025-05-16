@@ -1,6 +1,9 @@
 package io.github.sds100.keymapper.reroutekeyevents
 
+import android.content.Context
 import android.os.Build
+import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapper
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.inputmethod.ImeInputEventInjector
@@ -8,20 +11,23 @@ import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.util.firstBlocking
+import io.github.sds100.keymapper.util.SettingsRepository
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
-
-
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * This is used for the feature created in issue #618 to fix the device IDs of key events
  * on Android 11. There was a bug in the system where enabling an accessibility service
  * would reset the device ID of key events to -1.
  */
-class RerouteKeyEventsUseCaseImpl(
+@Singleton
+class RerouteKeyEventsUseCaseImpl @Inject constructor(
     private val inputMethodAdapter: InputMethodAdapter,
-    private val imeInputEventInjector: ImeInputEventInjector,
+    private val keyMapperImeMessenger: ImeInputEventInjector,
     private val preferenceRepository: PreferenceRepository,
+    private val settingsRepository: SettingsRepository
 ) : RerouteKeyEventsUseCase {
 
     private val rerouteKeyEvents =
@@ -49,7 +55,7 @@ class RerouteKeyEventsUseCaseImpl(
     override fun inputKeyEvent(keyModel: InputKeyModel) {
         // It is safe to run the ime injector on the main thread.
         runBlocking {
-            imeInputEventInjector.inputKeyEvent(keyModel)
+            keyMapperImeMessenger.inputKeyEvent(keyModel)
         }
     }
 }

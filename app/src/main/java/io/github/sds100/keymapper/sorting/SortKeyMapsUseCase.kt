@@ -1,5 +1,7 @@
 package io.github.sds100.keymapper.sorting
 
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.keymaps.DisplayKeyMapUseCase
@@ -8,13 +10,18 @@ import io.github.sds100.keymapper.sorting.comparators.KeyMapActionsComparator
 import io.github.sds100.keymapper.sorting.comparators.KeyMapConstraintsComparator
 import io.github.sds100.keymapper.sorting.comparators.KeyMapOptionsComparator
 import io.github.sds100.keymapper.sorting.comparators.KeyMapTriggerComparator
+import io.github.sds100.keymapper.util.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class SortKeyMapsUseCaseImpl(
+@Singleton
+class SortKeyMapsUseCaseImpl @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
-    private val displaySimpleMappingUseCase: DisplayKeyMapUseCase,
+    private val displayKeyMapUseCase: DisplayKeyMapUseCase,
+    private val settingsRepository: SettingsRepository
 ) : SortKeyMapsUseCase {
 
     override val showHelp = preferenceRepository.get(Keys.sortShowHelp).map { it ?: true }
@@ -72,9 +79,9 @@ class SortKeyMapsUseCaseImpl(
 
         return when (sortFieldOrder.field) {
             SortField.TRIGGER -> KeyMapTriggerComparator(reverseOrder)
-            SortField.ACTIONS -> KeyMapActionsComparator(displaySimpleMappingUseCase, reverseOrder)
+            SortField.ACTIONS -> KeyMapActionsComparator(displayKeyMapUseCase, reverseOrder)
             SortField.CONSTRAINTS -> KeyMapConstraintsComparator(
-                displaySimpleMappingUseCase,
+                displayKeyMapUseCase,
                 reverseOrder,
             )
 

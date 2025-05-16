@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.system.apps
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.common.result.valueOrNull
 import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.util.filterByQuery
@@ -17,8 +17,12 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class ChooseActivityViewModel(private val useCase: DisplayAppsUseCase) : ViewModel() {
+@HiltViewModel
+class ChooseActivityViewModel @Inject constructor(
+    private val useCase: DisplayAppsUseCase
+) : ViewModel() {
 
     val searchQuery = MutableStateFlow<String?>(null)
 
@@ -72,14 +76,5 @@ class ChooseActivityViewModel(private val useCase: DisplayAppsUseCase) : ViewMod
                 _listItems.value = unfilteredListItemsState
             }
         }.flowOn(Dispatchers.Default).launchIn(viewModelScope)
-    }
-
-    class Factory(
-        private val useCase: DisplayAppsUseCase,
-    ) : ViewModelProvider.Factory {
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>) =
-            ChooseActivityViewModel(useCase) as T
     }
 }

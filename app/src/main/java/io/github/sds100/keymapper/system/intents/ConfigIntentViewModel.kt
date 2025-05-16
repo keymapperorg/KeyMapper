@@ -8,19 +8,20 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.apps.ActivityInfo
-import io.github.sds100.keymapper.util.ui.DialogResponse
-import io.github.sds100.keymapper.util.ui.MultiChoiceItem
-import io.github.sds100.keymapper.util.ui.NavDestination
-import io.github.sds100.keymapper.util.ui.NavigationViewModel
-import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
-import io.github.sds100.keymapper.util.ui.PopupUi
-import io.github.sds100.keymapper.util.ui.PopupViewModel
-import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
-import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.navigate
-import io.github.sds100.keymapper.util.ui.showPopup
+import io.github.sds100.keymapper.util.DialogResponse
+import io.github.sds100.keymapper.util.MultiChoiceItem
+import io.github.sds100.keymapper.util.NavDestination
+import io.github.sds100.keymapper.util.NavigationViewModel
+import io.github.sds100.keymapper.util.NavigationViewModelImpl
+import io.github.sds100.keymapper.util.PopupUi
+import io.github.sds100.keymapper.util.PopupViewModel
+import io.github.sds100.keymapper.util.PopupViewModelImpl
+import io.github.sds100.keymapper.util.ResourceProvider
+import io.github.sds100.keymapper.util.navigate
+import io.github.sds100.keymapper.util.showPopup
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,9 +35,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
+import javax.inject.Inject
 
-class ConfigIntentViewModel(resourceProvider: ResourceProvider) :
-    ViewModel(),
+@HiltViewModel
+class ConfigIntentViewModel @Inject constructor(
+    private val resourceProvider: ResourceProvider
+) : ViewModel(),
     ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
     NavigationViewModel by NavigationViewModelImpl() {
@@ -515,14 +519,5 @@ class ConfigIntentViewModel(resourceProvider: ResourceProvider) :
                 inputType,
             )
         }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val resourceProvider: ResourceProvider,
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            ConfigIntentViewModel(resourceProvider) as T
     }
 }
