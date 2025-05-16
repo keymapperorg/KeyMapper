@@ -26,3 +26,4 @@ rootProject.name = "KeyMapper"
 include(":app")
 include(":systemstubs")
 include(":base")
+include(":api")

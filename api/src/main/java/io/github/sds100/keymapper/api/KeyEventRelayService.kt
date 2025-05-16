@@ -8,7 +8,6 @@ import android.os.IBinder
 import android.os.IBinder.DeathRecipient
 import android.view.KeyEvent
 import android.view.MotionEvent
-import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import timber.log.Timber
 import java.util.concurrent.ConcurrentHashMap
 
@@ -38,9 +37,25 @@ class KeyEventRelayService : Service() {
          * Used when a client registers a callback without specifying an ID.
          */
         private const val CALLBACK_ID_DEFAULT = "default"
+
+        const val KEY_MAPPER_GUI_IME_PACKAGE =
+            "io.github.sds100.keymapper.inputmethod.latin"
+
+        private const val KEY_MAPPER_LEANBACK_IME_PACKAGE =
+            "io.github.sds100.keymapper.inputmethod.leanback"
+
+        private const val KEY_MAPPER_HACKERS_KEYBOARD_PACKAGE =
+            "io.github.sds100.keymapper.inputmethod.hackers"
     }
 
-    val permittedPackages = KeyMapperImeHelper.KEY_MAPPER_IME_PACKAGE_LIST
+    val permittedPackages by lazy {
+        arrayOf(
+            packageName,
+            KEY_MAPPER_GUI_IME_PACKAGE,
+            KEY_MAPPER_LEANBACK_IME_PACKAGE,
+            KEY_MAPPER_HACKERS_KEYBOARD_PACKAGE,
+        )
+    }
 
     private val binderInterface: IKeyEventRelayService = object : IKeyEventRelayService.Stub() {
         override fun sendKeyEvent(

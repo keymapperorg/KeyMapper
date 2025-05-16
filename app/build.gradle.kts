@@ -29,6 +29,7 @@ android {
         applicationId = "io.github.sds100.keymapper"
         minSdk = libs.versions.min.sdk.get().toInt()
         targetSdk = libs.versions.target.sdk.get().toInt()
+
         versionCode = versionProperties.getProperty("VERSION_CODE").toInt()
         versionName = versionProperties.getProperty("VERSION_NAME")
         multiDexEnabled = true
@@ -160,6 +161,7 @@ android {
 dependencies {
     implementation(fileTree(mapOf("include" to listOf("*.jar"), "dir" to "libs")))
 
+    implementation(project(":api"))
     implementation(project(":base"))
     compileOnly(project(":systemstubs"))
 

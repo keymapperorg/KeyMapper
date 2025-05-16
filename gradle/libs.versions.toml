@@ -58,7 +58,8 @@ splitties = "3.0.0"
 storage-anggrayudi = "0.8.1"
 target-sdk = "35"
 timber = "5.0.1"
-room-testing-legacy = "1.1.1" # android.arch.persistence.room:testing
+room-testing-legacy = "1.1.1"
+espresso-core = "3.6.1" # android.arch.persistence.room:testing
 
 [libraries]
 # Kotlin
@@ -171,6 +172,7 @@ navigation-safeargs-gradleplugin = { group = "androidx.navigation", name = "navi
 ktlint-gradleplugin = { group = "org.jlleitschuh.gradle", name = "ktlint-gradle", version.ref = "ktlint-gradle"}
 kotlin-compose-compiler-gradleplugin = { group = "org.jetbrains.kotlin.plugin.compose", name = "org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" } # Using kotlin version for compose plugin as per original setup
 room-gradleplugin = { group = "androidx.room", name = "androidx.room.gradle.plugin", version.ref = "androidx-room-gradle-plugin" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
 
 
 [plugins]
@@ -184,6 +186,7 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+android-library = { id = "com.android.library", version.ref = "android-gradle-plugin" }
 
 [bundles]
 splitties = [
