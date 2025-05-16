@@ -4,9 +4,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import kotlinx.serialization.Serializable
 
-/**
- * Created by sds100 on 21/04/2021.
- */
 @Serializable
 data class AccessibilityNodeModel(
     val packageName: String?,

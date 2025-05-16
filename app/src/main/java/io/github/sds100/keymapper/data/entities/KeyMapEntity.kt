@@ -19,10 +19,6 @@ import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import kotlinx.parcelize.Parcelize
 import java.util.UUID
 
-/**
- * Created by sds100 on 12/07/2018.
- */
-
 @Entity(
     tableName = KeyMapDao.TABLE_NAME,
     indices = [Index(value = [KeyMapDao.KEY_UID], unique = true)],

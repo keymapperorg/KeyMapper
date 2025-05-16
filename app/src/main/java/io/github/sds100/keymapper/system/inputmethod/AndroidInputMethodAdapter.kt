@@ -46,10 +46,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
-/**
- * Created by sds100 on 14/02/2021.
- */
-
 class AndroidInputMethodAdapter(
     context: Context,
     private val coroutineScope: CoroutineScope,

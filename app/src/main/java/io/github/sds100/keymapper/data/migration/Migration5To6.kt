@@ -8,9 +8,7 @@ import com.github.salomonbrys.kotson.set
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 
-/**
- * Created by sds100 on 25/06/20.
- */
+
 
 /**
  * move keymap flags to trigger flags

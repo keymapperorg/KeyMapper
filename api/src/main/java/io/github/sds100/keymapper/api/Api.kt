@@ -1,8 +1,5 @@
 package io.github.sds100.keymapper.api
 
-/**
- * Created by sds100 on 17/06/2021.
- */
 object Api {
     // Do not use the package name for debug/ci builds
     const val ACTION_TRIGGER_KEYMAP_BY_UID =

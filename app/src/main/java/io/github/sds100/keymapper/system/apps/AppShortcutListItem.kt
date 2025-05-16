@@ -4,10 +4,6 @@ import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.SimpleListItemOld
 import io.github.sds100.keymapper.util.ui.TintType
 
-/**
- * Created by sds100 on 29/03/2020.
- */
-
 data class AppShortcutListItem(
     val shortcutInfo: AppShortcutInfo,
     val label: String,

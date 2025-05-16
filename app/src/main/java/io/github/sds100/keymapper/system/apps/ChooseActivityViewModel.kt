@@ -18,9 +18,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 
-/**
- * Created by sds100 on 27/01/2020.
- */
 class ChooseActivityViewModel(private val useCase: DisplayAppsUseCase) : ViewModel() {
 
     val searchQuery = MutableStateFlow<String?>(null)

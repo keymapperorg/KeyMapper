@@ -20,9 +20,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 07/04/2021.
- */
 class ChooseBluetoothDeviceViewModel(
     val useCase: ChooseBluetoothDeviceUseCase,
     resourceProvider: ResourceProvider,

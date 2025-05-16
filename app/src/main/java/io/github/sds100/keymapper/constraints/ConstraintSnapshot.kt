@@ -20,10 +20,6 @@ import timber.log.Timber
 import java.time.LocalTime
 
 /**
- * Created by sds100 on 08/05/2021.f
- */
-
-/**
  * This allows constraints to be checked lazily because some system calls take a significant amount of time.
  */
 class LazyConstraintSnapshot(

@@ -18,9 +18,7 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 04/03/2021.
- */
+
 class RecordTriggerController(
     private val coroutineScope: CoroutineScope,
     private val serviceAdapter: ServiceAdapter,

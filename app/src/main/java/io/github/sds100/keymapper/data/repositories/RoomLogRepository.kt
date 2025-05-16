@@ -16,9 +16,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 13/05/2021.
- */
+
 class RoomLogRepository(
     private val coroutineScope: CoroutineScope,
     private val dao: LogEntryDao,

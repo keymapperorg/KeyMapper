@@ -6,9 +6,6 @@ import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.common.result.Result
 import io.github.sds100.keymapper.system.root.SuAdapter
 
-/**
- * Created by sds100 on 24/04/2021.
- */
 class AndroidNfcAdapter(
     context: Context,
     private val suAdapter: SuAdapter,

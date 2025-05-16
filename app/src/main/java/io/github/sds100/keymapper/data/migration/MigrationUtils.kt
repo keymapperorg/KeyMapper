@@ -2,9 +2,7 @@ package io.github.sds100.keymapper.data.migration
 
 import com.google.gson.JsonObject
 
-/**
- * Created by sds100 on 24/01/21.
- */
+
 object MigrationUtils {
     fun migrate(
         migrations: List<JsonMigration>,

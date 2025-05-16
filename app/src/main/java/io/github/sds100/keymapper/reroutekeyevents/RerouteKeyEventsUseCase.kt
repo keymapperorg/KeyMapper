@@ -11,9 +11,7 @@ import io.github.sds100.keymapper.util.firstBlocking
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 
-/**
- * Created by sds100 on 27/04/2021.
- */
+
 
 /**
  * This is used for the feature created in issue #618 to fix the device IDs of key events

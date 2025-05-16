@@ -4,9 +4,6 @@ import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.SimpleListItemOld
 import io.github.sds100.keymapper.util.ui.TintType
 
-/**
- * Created by sds100 on 27/01/2020.
- */
 data class AppActivityListItem(
     val appName: String,
     val activityInfo: ActivityInfo,

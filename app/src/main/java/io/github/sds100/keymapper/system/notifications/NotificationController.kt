@@ -30,9 +30,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 24/03/2019.
- */
+
 
 class NotificationController(
     private val coroutineScope: CoroutineScope,

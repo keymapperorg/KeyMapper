@@ -11,9 +11,6 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.ViewModelHelper
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 23/07/2021.
- */
 class ActivityViewModel(
     resourceProvider: ResourceProvider,
 ) : ViewModel(),

@@ -6,9 +6,7 @@ import io.github.sds100.keymapper.common.result.Result
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Created by sds100 on 21/04/2021.
- */
+
 interface MediaAdapter {
 
     /**

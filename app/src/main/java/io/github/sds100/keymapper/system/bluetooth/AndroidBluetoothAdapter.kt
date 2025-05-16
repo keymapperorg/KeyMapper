@@ -18,10 +18,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 14/02/2021.
- */
-
 class AndroidBluetoothAdapter(
     context: Context,
     private val coroutineScope: CoroutineScope,

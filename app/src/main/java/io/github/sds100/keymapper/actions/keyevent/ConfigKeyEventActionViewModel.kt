@@ -38,10 +38,6 @@ import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
 
-/**
- * Created by sds100 on 30/03/2020.
- */
-
 class ConfigKeyEventActionViewModel(
     private val useCase: ConfigKeyEventUseCase,
     resourceProvider: ResourceProvider,

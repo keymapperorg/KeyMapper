@@ -32,9 +32,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Date
 
-/**
- * Created by sds100 on 14/05/2021.
- */
+
 
 class LogViewModel(
     private val useCase: DisplayLogUseCase,

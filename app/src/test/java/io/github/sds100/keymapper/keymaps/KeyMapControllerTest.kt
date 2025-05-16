@@ -65,10 +65,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import splitties.bitflags.withFlag
 
-/**
- * Created by sds100 on 17/05/2020.
- */
-
 @ExperimentalCoroutinesApi
 @RunWith(JUnitParamsRunner::class)
 class KeyMapControllerTest {

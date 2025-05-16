@@ -16,10 +16,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/**
- * Created by sds100 on 15/05/2021.
- */
-
 @ExperimentalCoroutinesApi
 @RunWith(JUnitParamsRunner::class)
 class DpadMotionEventTrackerTest {

@@ -51,9 +51,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import java.util.LinkedList
 
-/**
- * Created by sds100 on 16/02/2021.
- */
 class ConfigKeyMapUseCaseController(
     private val coroutineScope: CoroutineScope,
     private val keyMapRepository: KeyMapRepository,

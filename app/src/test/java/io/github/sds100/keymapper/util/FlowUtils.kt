@@ -4,9 +4,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.withTimeoutOrNull
 
-/**
- * Created by sds100 on 19/04/2021.
- */
 object FlowUtils {
     /**
      * This is useful for collecting SharedFlow in tests.

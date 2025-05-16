@@ -12,10 +12,6 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import java.time.format.FormatStyle
 
-/**
- * Created by sds100 on 18/03/2021.
- */
-
 class ConstraintUiHelper(
     displayConstraintUseCase: DisplayConstraintUseCase,
     resourceProvider: ResourceProvider,

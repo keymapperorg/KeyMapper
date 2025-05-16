@@ -23,10 +23,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import splitties.toast.toast
 
-/**
- * Created by sds100 on 29/03/2020.
- */
-
 class ChooseAppShortcutFragment : SimpleRecyclerViewFragment<AppShortcutListItem>() {
 
     companion object {

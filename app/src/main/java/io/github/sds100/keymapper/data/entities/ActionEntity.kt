@@ -12,10 +12,6 @@ import kotlinx.parcelize.Parcelize
 import java.util.UUID
 
 /**
- * Created by sds100 on 16/07/2018.
- */
-
-/**
  * @property [data] The information required to perform the action. E.g if the type is [Type.APP],
  * the data will be the package name of the application
  *

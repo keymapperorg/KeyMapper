@@ -35,10 +35,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 21/03/2020.
- */
-
 class ChooseConstraintViewModel(
     private val useCase: CreateConstraintUseCase,
     resourceProvider: ResourceProvider,

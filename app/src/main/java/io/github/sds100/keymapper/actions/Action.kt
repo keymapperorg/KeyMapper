@@ -12,10 +12,6 @@ import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
 import java.util.UUID
 
-/**
- * Created by sds100 on 09/03/2021.
- */
-
 @Serializable
 data class Action(
     val uid: String = UUID.randomUUID().toString(),

@@ -27,9 +27,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.Locale
 
-/**
- * Created by sds100 on 27/01/2020.
- */
 class ChooseAppShortcutViewModel internal constructor(
     private val useCase: DisplayAppShortcutsUseCase,
     resourceProvider: ResourceProvider,

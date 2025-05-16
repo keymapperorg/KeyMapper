@@ -7,10 +7,6 @@ import com.google.gson.GsonBuilder
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.ConstraintEntity
 
-/**
- * Created by sds100 on 05/09/2018.
- */
-
 class ActionListTypeConverter {
     private val gson = GsonBuilder().registerTypeAdapter(ConstraintEntity.DESERIALIZER).create()
 

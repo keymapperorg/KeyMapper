@@ -33,9 +33,7 @@ import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCas
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCaseImpl
 import io.github.sds100.keymapper.system.inputmethod.ToggleCompatibleImeUseCaseImpl
 
-/**
- * Created by sds100 on 03/03/2021.
- */
+
 object UseCases {
 
     fun listFloatingLayouts(ctx: Context): ListFloatingLayoutsUseCase = ListFloatingLayoutsUseCaseImpl(

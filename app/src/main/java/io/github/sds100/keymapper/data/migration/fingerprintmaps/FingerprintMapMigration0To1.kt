@@ -9,10 +9,6 @@ import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
 
 /**
- * Created by sds100 on 22/01/21.
- */
-
-/**
  * Move the action option "show performing toast when performing" to a trigger option.
  */
 object FingerprintMapMigration0To1 {

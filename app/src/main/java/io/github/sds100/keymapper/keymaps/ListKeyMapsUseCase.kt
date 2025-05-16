@@ -37,9 +37,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import java.util.LinkedList
 
-/**
- * Created by sds100 on 16/04/2021.
- */
 @OptIn(ExperimentalCoroutinesApi::class)
 class ListKeyMapsUseCaseImpl(
     private val keyMapRepository: KeyMapRepository,

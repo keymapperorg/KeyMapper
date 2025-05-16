@@ -35,10 +35,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 26/07/2021.
- */
-
 class CreateActionDelegate(
     private val coroutineScope: CoroutineScope,
     private val useCase: CreateActionUseCase,

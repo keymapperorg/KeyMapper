@@ -3,9 +3,7 @@ package io.github.sds100.keymapper.util.ui
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
-/**
- * Created by sds100 on 11/02/2020.
- */
+
 
 class MultiSelectProvider {
     private val lock = Any()

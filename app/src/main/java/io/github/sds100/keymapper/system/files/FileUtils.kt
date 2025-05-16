@@ -14,10 +14,6 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
-/**
- * Created by sds100 on 15/12/2018.
- */
-
 object FileUtils {
 
     const val MIME_TYPE_IMAGES = "image/*"

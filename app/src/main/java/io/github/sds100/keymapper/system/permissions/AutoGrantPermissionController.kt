@@ -9,9 +9,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 
-/**
- * Created by sds100 on 12/09/2021.
- */
 class AutoGrantPermissionController(
     private val coroutineScope: CoroutineScope,
     private val permissionAdapter: PermissionAdapter,

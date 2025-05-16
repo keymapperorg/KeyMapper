@@ -7,10 +7,6 @@ import io.github.sds100.keymapper.trigger.TriggerKey
 import io.github.sds100.keymapper.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.trigger.TriggerMode
 
-/**
- * Created by sds100 on 19/04/2021.
- */
-
 fun singleKeyTrigger(key: TriggerKey): Trigger = Trigger(
     keys = listOf(key),
     mode = TriggerMode.Undefined,

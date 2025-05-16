@@ -13,9 +13,6 @@ import io.github.sds100.keymapper.common.result.then
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
 
-/**
- * Created by sds100 on 20/04/2021.
- */
 class AndroidVolumeAdapter(context: Context) : VolumeAdapter {
     private val ctx = context.applicationContext
 

@@ -22,10 +22,6 @@ import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
-/**
- * Created by sds100 on 01/05/2021.
- */
-
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class GetActionFailedUseCaseTest {

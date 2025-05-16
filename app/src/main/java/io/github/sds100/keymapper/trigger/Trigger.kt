@@ -16,9 +16,7 @@ import kotlinx.serialization.Serializable
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
 
-/**
- * Created by sds100 on 03/03/2021.
- */
+
 
 @Serializable
 data class Trigger(

@@ -13,10 +13,6 @@ import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.databinding.FragmentAboutBinding
 
-/**
- * Created by sds100 on 05/04/2020.
- */
-
 class AboutFragment : Fragment() {
 
     /**

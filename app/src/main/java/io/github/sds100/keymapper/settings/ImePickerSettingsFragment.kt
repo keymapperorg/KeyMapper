@@ -13,9 +13,6 @@ import io.github.sds100.keymapper.system.notifications.NotificationController
 import io.github.sds100.keymapper.system.notifications.NotificationUtils
 import io.github.sds100.keymapper.util.viewLifecycleScope
 
-/**
- * Created by sds100 on 18/07/2021.
- */
 class ImePickerSettingsFragment : BaseSettingsFragment() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

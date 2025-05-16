@@ -3,9 +3,7 @@ package io.github.sds100.keymapper.trigger
 import io.github.sds100.keymapper.keymaps.ClickType
 import kotlinx.serialization.Serializable
 
-/**
- * Created by sds100 on 21/02/2021.
- */
+
 
 @Serializable
 sealed class TriggerMode : Comparable<TriggerMode> {

@@ -6,10 +6,6 @@ import android.content.Context
 import android.content.Intent
 import io.github.sds100.keymapper.KeyMapperApp
 
-/**
- * Created by sds100 on 28/12/2018.
- */
-
 class BluetoothBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {

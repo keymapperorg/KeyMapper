@@ -62,10 +62,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 24/11/20.
- */
-
 abstract class BaseConfigTriggerViewModel(
     private val coroutineScope: CoroutineScope,
     private val onboarding: OnboardingUseCase,

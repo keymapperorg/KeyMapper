@@ -5,10 +5,6 @@ import android.content.Context
 import android.content.res.Configuration
 import androidx.core.content.getSystemService
 
-/**
- * Created by sds100 on 21/07/2021.
- */
-
 class LeanbackAdapterImpl(context: Context) : LeanbackAdapter {
     private val ctx = context.applicationContext
 

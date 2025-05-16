@@ -4,10 +4,6 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Created by sds100 on 16/04/2021.
- */
-
 class ControlAccessibilityServiceUseCaseImpl(
     private val adapter: ServiceAdapter,
     private val permissionAdapter: PermissionAdapter,

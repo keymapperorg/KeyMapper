@@ -2,10 +2,6 @@ package io.github.sds100.keymapper.util
 
 import java.util.Collections
 
-/**
- * Created by sds100 on 11/03/2021.
- */
-
 fun MutableList<*>.moveElement(fromIndex: Int, toIndex: Int) {
     if (toIndex >= size || fromIndex >= size) {
         return

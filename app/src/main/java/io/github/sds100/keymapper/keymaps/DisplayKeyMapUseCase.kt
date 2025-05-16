@@ -39,10 +39,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.withTimeout
 
-/**
- * Created by sds100 on 04/04/2021.
- */
-
 class DisplayKeyMapUseCaseImpl(
     private val permissionAdapter: PermissionAdapter,
     private val inputMethodAdapter: InputMethodAdapter,

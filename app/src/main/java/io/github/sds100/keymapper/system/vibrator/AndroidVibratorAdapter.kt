@@ -7,9 +7,6 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import androidx.core.content.getSystemService
 
-/**
- * Created by sds100 on 17/04/2021.
- */
 class AndroidVibratorAdapter(context: Context) : VibratorAdapter {
     private val vibrator: Vibrator? = context.getSystemService()
 

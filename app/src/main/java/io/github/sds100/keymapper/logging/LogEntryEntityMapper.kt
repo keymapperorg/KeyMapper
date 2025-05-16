@@ -2,9 +2,7 @@ package io.github.sds100.keymapper.logging
 
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 
-/**
- * Created by sds100 on 13/05/2021.
- */
+
 object LogEntryEntityMapper {
     fun toEntity(model: LogEntry): LogEntryEntity {
         val severity = when (model.severity) {

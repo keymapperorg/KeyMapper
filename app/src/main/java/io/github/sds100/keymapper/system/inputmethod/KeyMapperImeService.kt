@@ -21,10 +21,6 @@ import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.api.KeyEventRelayService
 import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapperImpl
 
-/**
- * Created by sds100 on 31/03/2020.
- */
-
 class KeyMapperImeService : InputMethodService() {
     companion object {
 

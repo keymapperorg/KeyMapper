@@ -6,10 +6,6 @@ import io.github.sds100.keymapper.common.result.Error
 import io.github.sds100.keymapper.common.result.Result
 import io.github.sds100.keymapper.common.result.Success
 
-/**
- * Created by sds100 on 21/04/2021.
- */
-
 class IntentAdapterImpl(context: Context) : IntentAdapter {
     private val ctx = context.applicationContext
 

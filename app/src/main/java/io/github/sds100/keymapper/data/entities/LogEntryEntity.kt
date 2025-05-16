@@ -5,9 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import io.github.sds100.keymapper.data.db.dao.LogEntryDao
 
-/**
- * Created by sds100 on 13/05/2021.
- */
+
 @Entity(tableName = LogEntryDao.TABLE_NAME)
 data class LogEntryEntity(
     @PrimaryKey(autoGenerate = true)

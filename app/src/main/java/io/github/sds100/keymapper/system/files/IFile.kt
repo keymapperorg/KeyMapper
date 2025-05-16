@@ -5,9 +5,6 @@ import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 
-/**
- * Created by sds100 on 28/06/2021.
- */
 interface IFile {
     val uri: String
     val path: String

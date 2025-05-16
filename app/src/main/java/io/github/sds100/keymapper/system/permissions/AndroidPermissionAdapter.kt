@@ -49,9 +49,6 @@ import rikka.shizuku.ShizukuBinderWrapper
 import rikka.shizuku.SystemServiceHelper
 import timber.log.Timber
 
-/**
- * Created by sds100 on 17/03/2021.
- */
 class AndroidPermissionAdapter(
     context: Context,
     private val coroutineScope: CoroutineScope,

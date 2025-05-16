@@ -13,9 +13,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-/**
- * Created by sds100 on 22/02/2020.
- */
 class ChooseActivityFragment : SimpleRecyclerViewFragment<AppActivityListItem>() {
 
     companion object {

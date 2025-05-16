@@ -23,9 +23,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-/**
- * Created by sds100 on 03/08/20.
- */
+
 
 class PickDisplayCoordinateViewModel(
     resourceProvider: ResourceProvider,

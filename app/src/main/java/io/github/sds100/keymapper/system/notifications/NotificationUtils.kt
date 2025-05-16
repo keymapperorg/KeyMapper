@@ -7,9 +7,7 @@ import android.provider.Settings
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.Constants
 
-/**
- * Created by sds100 on 30/09/2018.
- */
+
 
 object NotificationUtils {
 

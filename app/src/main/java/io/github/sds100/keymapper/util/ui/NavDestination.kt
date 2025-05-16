@@ -10,9 +10,7 @@ import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.intents.ConfigIntentResult
 
-/**
- * Created by sds100 on 25/07/2021.
- */
+
 sealed class NavDestination<R> {
     abstract val id: String
 

@@ -9,9 +9,7 @@ import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
-/**
- * Created by sds100 on 16/07/2018.
- */
+
 
 @Parcelize
 data class TriggerEntity(

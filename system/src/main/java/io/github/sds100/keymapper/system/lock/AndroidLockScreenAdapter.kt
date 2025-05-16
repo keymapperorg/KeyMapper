@@ -16,9 +16,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
-/**
- * Created by sds100 on 22/04/2021.
- */
 class AndroidLockScreenAdapter(context: Context) : LockScreenAdapter {
     private val ctx = context.applicationContext
 

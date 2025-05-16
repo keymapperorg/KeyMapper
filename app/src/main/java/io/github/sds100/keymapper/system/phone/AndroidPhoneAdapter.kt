@@ -16,9 +16,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 21/04/2021.
- */
 class AndroidPhoneAdapter(
     context: Context,
     private val coroutineScope: CoroutineScope,

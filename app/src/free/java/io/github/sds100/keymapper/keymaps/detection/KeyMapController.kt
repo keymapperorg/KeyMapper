@@ -39,10 +39,6 @@ import kotlinx.coroutines.launch
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
 
-/**
- * Created by sds100 on 05/05/2020.
- */
-
 class KeyMapController(
     private val coroutineScope: CoroutineScope,
     private val useCase: DetectKeyMapsUseCase,

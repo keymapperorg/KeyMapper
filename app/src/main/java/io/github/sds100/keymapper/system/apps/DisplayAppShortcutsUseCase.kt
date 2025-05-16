@@ -5,10 +5,6 @@ import io.github.sds100.keymapper.common.result.Result
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Created by sds100 on 04/04/2021.
- */
-
 class DisplayAppShortcutsUseCaseImpl(
     private val appShortcutAdapter: AppShortcutAdapter,
 ) : DisplayAppShortcutsUseCase {

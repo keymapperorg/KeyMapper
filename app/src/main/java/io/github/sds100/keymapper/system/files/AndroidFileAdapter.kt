@@ -21,9 +21,6 @@ import java.io.File
 import java.io.InputStream
 import java.util.UUID
 
-/**
- * Created by sds100 on 13/04/2021.
- */
 class AndroidFileAdapter(context: Context) : FileAdapter {
     private val ctx = context.applicationContext
     private val contentResolver: ContentResolver = ctx.contentResolver

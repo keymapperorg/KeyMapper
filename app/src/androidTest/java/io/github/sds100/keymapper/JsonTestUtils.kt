@@ -11,9 +11,6 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
 import org.junit.Assert
 
-/**
- * Created by sds100 on 25/01/21.
- */
 object JsonTestUtils {
     private const val NAME_SEPARATOR = '/'
 

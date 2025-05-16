@@ -2,9 +2,6 @@ package io.github.sds100.keymapper
 
 import android.os.Build
 
-/**
- * Created by sds100 on 22/11/2018.
- */
 object Constants {
     const val MIN_API = Build.VERSION_CODES.LOLLIPOP
     const val MAX_API = 1000

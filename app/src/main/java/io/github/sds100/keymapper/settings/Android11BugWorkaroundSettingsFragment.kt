@@ -19,9 +19,6 @@ import io.github.sds100.keymapper.util.ui.showPopup
 import io.github.sds100.keymapper.util.viewLifecycleScope
 import kotlinx.coroutines.flow.collectLatest
 
-/**
- * Created by sds100 on 18/07/2021.
- */
 class Android11BugWorkaroundSettingsFragment : BaseSettingsFragment() {
 
     companion object {

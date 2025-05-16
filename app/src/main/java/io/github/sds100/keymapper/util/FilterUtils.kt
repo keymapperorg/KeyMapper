@@ -7,10 +7,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import java.util.Locale
 
-/**
- * Created by sds100 on 22/03/2021.
- */
-
 fun <T : ISearchable> List<T>.filterByQuery(query: String?): Flow<State<List<T>>> = flow {
     if (query.isNullOrBlank()) {
         emit(State.Data(this@filterByQuery))

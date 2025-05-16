@@ -11,10 +11,6 @@ import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
 import io.github.sds100.keymapper.data.db.dao.FingerprintMapDao
 
-/**
- * Created by sds100 on 08/11/20.
- */
-
 @Entity(tableName = FingerprintMapDao.TABLE_NAME)
 data class FingerprintMapEntity(
     @SerializedName(NAME_ID)

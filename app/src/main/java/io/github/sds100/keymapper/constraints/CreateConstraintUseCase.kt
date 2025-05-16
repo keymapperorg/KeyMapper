@@ -14,10 +14,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-/**
- * Created by sds100 on 06/07/2021.
- */
-
 class CreateConstraintUseCaseImpl(
     private val networkAdapter: NetworkAdapter,
     private val inputMethodAdapter: InputMethodAdapter,

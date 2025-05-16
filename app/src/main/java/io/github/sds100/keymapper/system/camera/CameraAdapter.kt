@@ -3,9 +3,6 @@ package io.github.sds100.keymapper.system.camera
 import io.github.sds100.keymapper.common.result.Result
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Created by sds100 on 17/03/2021.
- */
 interface CameraAdapter {
     /**
      * @return null if this lens does not have a flash.

@@ -8,10 +8,6 @@ import io.github.sds100.keymapper.system.files.FileAdapter
 import kotlinx.coroutines.flow.Flow
 import timber.log.Timber
 
-/**
- * Created by sds100 on 16/04/2021.
- */
-
 class BackupRestoreMappingsUseCaseImpl(
     private val fileAdapter: FileAdapter,
     private val backupManager: BackupManager,

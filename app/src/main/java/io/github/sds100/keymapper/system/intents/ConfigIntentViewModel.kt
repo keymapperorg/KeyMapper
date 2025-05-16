@@ -35,10 +35,6 @@ import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
 
-/**
- * Created by sds100 on 01/01/21.
- */
-
 class ConfigIntentViewModel(resourceProvider: ResourceProvider) :
     ViewModel(),
     ResourceProvider by resourceProvider,

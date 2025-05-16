@@ -27,10 +27,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 22/11/20.
- */
-
 class ConfigKeyMapViewModel(
     private val config: ConfigKeyMapUseCase,
     private val testAction: TestActionUseCase,

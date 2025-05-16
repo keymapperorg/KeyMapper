@@ -43,9 +43,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import timber.log.Timber
 
-/**
- * Created by sds100 on 05/04/2020.
- */
+
 
 class MyAccessibilityService :
     AccessibilityService(),

@@ -43,10 +43,6 @@ import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCas
 import io.github.sds100.keymapper.system.intents.ConfigIntentViewModel
 import io.github.sds100.keymapper.trigger.SetupGuiKeyboardUseCaseImpl
 
-/**
- * Created by sds100 on 26/01/2020.
- */
-
 object Inject {
 
     fun chooseActionViewModel(ctx: Context): ChooseActionViewModel.Factory = ChooseActionViewModel.Factory(

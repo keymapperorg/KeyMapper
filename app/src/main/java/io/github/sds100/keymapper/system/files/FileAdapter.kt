@@ -3,9 +3,6 @@ package io.github.sds100.keymapper.system.files
 import io.github.sds100.keymapper.common.result.Result
 import java.io.InputStream
 
-/**
- * Created by sds100 on 13/04/2021.
- */
 interface FileAdapter {
     fun openAsset(fileName: String): InputStream
 

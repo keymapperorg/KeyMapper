@@ -5,9 +5,6 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 
-/**
- * Created by sds100 on 19/01/21.
- */
 object Keys {
     val darkTheme = stringPreferencesKey("pref_dark_theme_mode")
     val hasRootPermission = booleanPreferencesKey("pref_allow_root_features")

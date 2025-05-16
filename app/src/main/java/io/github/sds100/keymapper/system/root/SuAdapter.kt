@@ -17,9 +17,7 @@ import kotlinx.coroutines.flow.stateIn
 import java.io.IOException
 import java.io.InputStream
 
-/**
- * Created by sds100 on 21/04/2021.
- */
+
 
 class SuAdapterImpl(
     coroutineScope: CoroutineScope,

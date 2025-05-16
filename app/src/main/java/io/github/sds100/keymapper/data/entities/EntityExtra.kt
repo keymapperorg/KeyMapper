@@ -9,10 +9,6 @@ import io.github.sds100.keymapper.common.result.Result
 import io.github.sds100.keymapper.common.result.Success
 import kotlinx.parcelize.Parcelize
 
-/**
- * Created by sds100 on 26/01/2019.
- */
-
 @Parcelize
 data class EntityExtra(
     @SerializedName(NAME_ID)

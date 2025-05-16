@@ -10,9 +10,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import rikka.shizuku.Shizuku
 
-/**
- * Created by sds100 on 20/07/2021.
- */
+
 class ShizukuAdapterImpl(
     private val coroutineScope: CoroutineScope,
     private val packageManagerAdapter: PackageManagerAdapter,

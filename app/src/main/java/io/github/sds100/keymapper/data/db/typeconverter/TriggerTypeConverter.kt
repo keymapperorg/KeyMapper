@@ -8,9 +8,7 @@ import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 
-/**
- * Created by sds100 on 05/09/2018.
- */
+
 
 class TriggerTypeConverter {
     private val gson = GsonBuilder()

@@ -20,10 +20,6 @@ import android.os.Build.VERSION_CODES.S_V2
 import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 
-/**
- * Created by sds100 on 12/01/2019.
- */
-
 object BuildUtils {
     /**
      * @return the name of the android version for each [Build.VERSION_CODES] after the minimum api for this app.

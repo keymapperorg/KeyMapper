@@ -8,9 +8,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 16/06/2021.
- */
+
 class SequenceTriggerActionPerformer(
     private val coroutineScope: CoroutineScope,
     private val useCase: PerformActionsUseCase,

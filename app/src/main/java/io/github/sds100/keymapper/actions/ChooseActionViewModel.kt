@@ -31,9 +31,6 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 22/07/2021.
- */
 class ChooseActionViewModel(
     private val useCase: CreateActionUseCase,
     resourceProvider: ResourceProvider,

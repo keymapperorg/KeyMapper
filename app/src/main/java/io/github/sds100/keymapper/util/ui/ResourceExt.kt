@@ -22,9 +22,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.color.MaterialColors
 import splitties.mainthread.isMainThread
 
-/**
- * Created by sds100 on 17/05/2020.
- */
+
 
 // Using varargs doesn't work since prints [LJava.lang.object@32f...etc
 fun Context.str(@StringRes resId: Int, formatArg: Any? = null): String = getString(resId, formatArg)

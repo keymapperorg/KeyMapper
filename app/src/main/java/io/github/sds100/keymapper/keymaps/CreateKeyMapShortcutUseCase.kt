@@ -9,10 +9,6 @@ import io.github.sds100.keymapper.common.result.Result
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 
-/**
- * Created by sds100 on 23/03/2021.
- */
-
 class CreateKeyMapShortcutUseCaseImpl(
     private val adapter: AppShortcutAdapter,
     resourceProvider: ResourceProvider,

@@ -36,10 +36,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 29/11/20.
- */
-
 class ConfigConstraintsViewModel(
     private val coroutineScope: CoroutineScope,
     private val config: ConfigKeyMapUseCase,

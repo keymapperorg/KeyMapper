@@ -11,10 +11,6 @@ import io.github.sds100.keymapper.util.firstBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-/**
- * Created by sds100 on 16/03/2021.
- */
-
 class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
     companion object {
         const val KEY_MAPPER_GUI_IME_PACKAGE =

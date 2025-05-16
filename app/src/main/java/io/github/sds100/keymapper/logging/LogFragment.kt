@@ -26,9 +26,7 @@ import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 
-/**
- * Created by sds100 on 13/05/2021.
- */
+
 class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
 
     private val viewModel by viewModels<LogViewModel> {

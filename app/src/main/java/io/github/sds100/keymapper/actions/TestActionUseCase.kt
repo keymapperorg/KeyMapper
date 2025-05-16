@@ -4,9 +4,7 @@ import io.github.sds100.keymapper.common.result.Result
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.util.ServiceEvent
 
-/**
- * Created by sds100 on 20/02/2021.
- */
+
 
 class TestActionUseCaseImpl(
     private val serviceAdapter: ServiceAdapter,

@@ -26,9 +26,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import splitties.mainthread.mainLooper
 
-/**
- * Created by sds100 on 13/03/2021.
- */
 class AndroidDevicesAdapter(
     context: Context,
     private val bluetoothAdapter: io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter,

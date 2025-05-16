@@ -17,10 +17,6 @@ import io.github.sds100.keymapper.trigger.TriggerKey
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
-/**
- * Created by sds100 on 03/03/2021.
- */
-
 @Serializable
 data class KeyMap(
     val dbId: Long? = null,

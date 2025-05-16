@@ -4,10 +4,6 @@ import android.os.Build
 import android.view.accessibility.AccessibilityNodeInfo
 
 /**
- * Created by sds100 on 06/08/2019.
- */
-
-/**
  * @return The node to find. Returns null if the node doesn't match the predicate
  */
 fun AccessibilityNodeInfo?.findNodeRecursively(

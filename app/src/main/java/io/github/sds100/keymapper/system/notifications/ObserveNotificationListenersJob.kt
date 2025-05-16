@@ -6,9 +6,7 @@ import android.os.Build
 import io.github.sds100.keymapper.KeyMapperApp
 import io.github.sds100.keymapper.system.JobSchedulerHelper
 
-/**
- * Created by sds100 on 02/04/2021.
- */
+
 class ObserveNotificationListenersJob : JobService() {
     override fun onStartJob(params: JobParameters?): Boolean {
         (applicationContext as KeyMapperApp).permissionAdapter.onPermissionsChanged()

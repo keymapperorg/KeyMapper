@@ -4,9 +4,6 @@ import android.graphics.drawable.Drawable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
-/**
- * Created by sds100 on 26/04/2021.
- */
 class FakeResourceProvider : ResourceProvider {
     val stringResourceMap: MutableMap<Int, String> = mutableMapOf()
     override val onThemeChange: Flow<Unit> = MutableSharedFlow()

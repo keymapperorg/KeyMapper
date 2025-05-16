@@ -11,10 +11,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge
 
-/**
- * Created by sds100 on 25/07/2021.
- */
-
 class CreateActionUseCaseImpl(
     private val inputMethodAdapter: InputMethodAdapter,
     private val systemFeatureAdapter: SystemFeatureAdapter,

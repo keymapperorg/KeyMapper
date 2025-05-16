@@ -19,10 +19,6 @@ import io.github.sds100.keymapper.util.str
 import io.github.sds100.keymapper.util.styledColor
 import io.github.sds100.keymapper.util.styledFloat
 
-/**
- * Created by sds100 on 25/01/2020.
- */
-
 @BindingAdapter("app:onTextChanged")
 fun EditText.onTextChangedListener(textWatcher: TextWatcher) {
     addTextChangedListener(textWatcher)

@@ -2,9 +2,7 @@ package io.github.sds100.keymapper.system.volume
 
 import io.github.sds100.keymapper.R
 
-/**
- * Created by sds100 on 23/03/2021.
- */
+
 object VolumeStreamUtils {
     fun getLabel(stream: VolumeStream) = when (stream) {
         VolumeStream.ALARM -> R.string.stream_alarm

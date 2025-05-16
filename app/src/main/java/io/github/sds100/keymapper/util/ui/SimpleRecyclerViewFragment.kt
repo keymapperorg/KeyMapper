@@ -9,9 +9,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.util.str
 
-/**
- * Created by sds100 on 22/02/2020.
- */
+
 abstract class SimpleRecyclerViewFragment<T> : RecyclerViewFragment<T, FragmentSimpleRecyclerviewBinding>() {
 
     @MenuRes

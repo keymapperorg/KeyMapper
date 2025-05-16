@@ -42,10 +42,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 22/11/20.
- */
-
 class ConfigActionsViewModel(
     private val coroutineScope: CoroutineScope,
     private val displayAction: DisplayActionUseCase,

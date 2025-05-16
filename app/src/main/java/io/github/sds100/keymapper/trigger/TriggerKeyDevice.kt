@@ -3,9 +3,7 @@ package io.github.sds100.keymapper.trigger
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import kotlinx.serialization.Serializable
 
-/**
- * Created by sds100 on 21/02/2021.
- */
+
 
 @Serializable
 sealed class TriggerKeyDevice : Comparable<TriggerKeyDevice> {

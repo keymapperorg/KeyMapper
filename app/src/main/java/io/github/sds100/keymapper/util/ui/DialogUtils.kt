@@ -37,10 +37,6 @@ import splitties.alertdialog.appcompat.title
 import splitties.alertdialog.material.materialAlertDialog
 import kotlin.coroutines.resume
 
-/**
- * Created by sds100 on 30/03/2020.
- */
-
 suspend fun Context.materialAlertDialog(
     lifecycleOwner: LifecycleOwner,
     model: PopupUi.Dialog,

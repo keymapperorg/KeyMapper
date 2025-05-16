@@ -8,9 +8,7 @@ import io.github.sds100.keymapper.common.result.Error
 import io.github.sds100.keymapper.common.result.Result
 import io.github.sds100.keymapper.common.result.success
 
-/**
- * Created by sds100 on 11/01/21.
- */
+
 
 object UrlUtils {
     fun openUrl(ctx: Context, url: String): Result<*> {

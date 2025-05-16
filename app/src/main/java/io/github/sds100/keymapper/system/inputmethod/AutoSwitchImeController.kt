@@ -21,9 +21,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 
-/**
- * Created by sds100 on 20/04/2021.
- */
 class AutoSwitchImeController(
     private val coroutineScope: CoroutineScope,
     private val preferenceRepository: PreferenceRepository,

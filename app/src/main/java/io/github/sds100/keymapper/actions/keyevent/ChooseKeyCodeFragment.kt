@@ -15,10 +15,6 @@ import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 
-/**
- * Created by sds100 on 30/03/2020.
- */
-
 class ChooseKeyCodeFragment : SimpleRecyclerViewFragment<SimpleListItemOld>() {
     companion object {
         const val EXTRA_KEYCODE = "extra_keycode"

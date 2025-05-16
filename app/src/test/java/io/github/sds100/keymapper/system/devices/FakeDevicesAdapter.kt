@@ -7,9 +7,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-/**
- * Created by sds100 on 26/04/2021.
- */
 class FakeDevicesAdapter : DevicesAdapter {
     override val onInputDeviceConnect = MutableSharedFlow<InputDeviceInfo>()
     override val onInputDeviceDisconnect = MutableSharedFlow<InputDeviceInfo>()

@@ -34,9 +34,7 @@ import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.negativeButton
 import splitties.alertdialog.appcompat.positiveButton
 
-/**
- * Created by sds100 on 16/07/2021.
- */
+
 class MainSettingsFragment : BaseSettingsFragment() {
 
     companion object {

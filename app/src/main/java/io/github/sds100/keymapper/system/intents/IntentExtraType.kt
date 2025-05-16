@@ -5,10 +5,6 @@ import io.github.sds100.keymapper.R
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
-/**
- * Created by sds100 on 01/01/21.
- */
-
 @Serializable
 sealed class IntentExtraType {
     abstract val labelStringRes: Int

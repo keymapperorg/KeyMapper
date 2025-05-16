@@ -18,9 +18,7 @@ import io.github.sds100.keymapper.util.str
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 
-/**
- * Created by sds100 on 12/06/2020.
- */
+
 
 @RequiresApi(Build.VERSION_CODES.N)
 class ToggleMappingsTile :

@@ -26,9 +26,6 @@ import okio.IOException
 import okio.use
 import timber.log.Timber
 
-/**
- * Created by sds100 on 24/04/2021.
- */
 class AndroidNetworkAdapter(
     context: Context,
     private val suAdapter: SuAdapter,

@@ -6,9 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.runBlocking
 
-/**
- * Created by sds100 on 16/04/2021.
- */
+
 
 class ShowHideInputMethodUseCaseImpl(
     private val serviceAdapter: ServiceAdapter,

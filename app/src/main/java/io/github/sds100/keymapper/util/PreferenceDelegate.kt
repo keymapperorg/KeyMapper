@@ -6,9 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlin.reflect.KProperty
 
-/**
- * Created by sds100 on 14/02/21.
- */
+
 
 class FlowPrefDelegate<T>(
     private val key: Preferences.Key<T>,

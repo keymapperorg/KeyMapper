@@ -84,10 +84,6 @@ import io.github.sds100.keymapper.util.ui.compose.icons.TextSelectEnd
 import io.github.sds100.keymapper.util.ui.compose.icons.TopPanelClose
 import io.github.sds100.keymapper.util.ui.compose.icons.TopPanelOpen
 
-/**
- * Created by sds100 on 16/03/2021.
- */
-
 object ActionUtils {
 
     @StringRes

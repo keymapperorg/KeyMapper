@@ -4,10 +4,6 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
-/**
- * Created by sds100 on 07/03/2021.
- */
-
 @Parcelize
 @Serializable
 data class InputDeviceInfo(

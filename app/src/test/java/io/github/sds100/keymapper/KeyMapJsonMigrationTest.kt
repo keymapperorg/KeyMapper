@@ -21,10 +21,6 @@ import org.junit.Rule
 import org.junit.Test
 import java.io.InputStream
 
-/**
- * Created by sds100 on 22/01/21.
- */
-
 @ExperimentalCoroutinesApi
 class KeyMapJsonMigrationTest {
     companion object {

@@ -25,9 +25,6 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 
-/**
- * Created by sds100 on 14/02/2021.
- */
 class ConfigSettingsUseCaseImpl(
     private val preferences: PreferenceRepository,
     private val permissionAdapter: PermissionAdapter,

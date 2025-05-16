@@ -5,9 +5,7 @@ import io.github.sds100.keymapper.util.ServiceEvent
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
-/**
- * Created by sds100 on 17/03/2021.
- */
+
 interface ServiceAdapter {
     val state: StateFlow<ServiceState>
 

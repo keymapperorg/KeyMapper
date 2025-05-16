@@ -18,9 +18,6 @@ import kotlinx.coroutines.flow.stateIn
 import timber.log.Timber
 import java.util.Calendar
 
-/**
- * Created by sds100 on 13/05/2021.
- */
 class KeyMapperLoggingTree(
     private val coroutineScope: CoroutineScope,
     preferenceRepository: PreferenceRepository,

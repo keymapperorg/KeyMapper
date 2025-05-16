@@ -4,9 +4,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 
-/**
- * Created by sds100 on 25/03/2020.
- */
+
 
 fun <T> NavBackStackEntry.observeLiveData(
     lifecycleOwner: LifecycleOwner,

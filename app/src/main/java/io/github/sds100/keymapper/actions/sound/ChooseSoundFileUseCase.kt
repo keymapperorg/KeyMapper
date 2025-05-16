@@ -6,10 +6,6 @@ import io.github.sds100.keymapper.common.result.Success
 import io.github.sds100.keymapper.system.files.FileAdapter
 import kotlinx.coroutines.flow.StateFlow
 
-/**
- * Created by sds100 on 25/06/2021.
- */
-
 class ChooseSoundFileUseCaseImpl(
     private val fileAdapter: FileAdapter,
     private val soundsManager: SoundsManager,

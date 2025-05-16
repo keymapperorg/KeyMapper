@@ -18,9 +18,6 @@ import io.github.sds100.keymapper.util.ui.TextListItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 
-/**
- * Created by sds100 on 22/02/2020.
- */
 class ChooseBluetoothDeviceFragment : SimpleRecyclerViewFragment<ListItem>() {
 
     companion object {

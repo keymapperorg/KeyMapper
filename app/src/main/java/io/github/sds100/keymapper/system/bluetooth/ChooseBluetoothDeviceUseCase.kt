@@ -6,10 +6,6 @@ import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
-/**
- * Created by sds100 on 07/04/2021.
- */
-
 class ChooseBluetoothDeviceUseCaseImpl(
     private val devicesAdapter: DevicesAdapter,
     private val permissionAdapter: PermissionAdapter,

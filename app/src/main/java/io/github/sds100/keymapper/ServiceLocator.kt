@@ -57,9 +57,7 @@ import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.util.ui.ResourceProviderImpl
 import kotlinx.coroutines.CoroutineScope
 
-/**
- * Created by sds100 on 17/05/2020.
- */
+
 object ServiceLocator {
 
     private var database: AppDatabase? = null

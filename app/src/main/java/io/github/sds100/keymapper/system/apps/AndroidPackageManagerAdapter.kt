@@ -38,9 +38,6 @@ import kotlinx.coroutines.withContext
 import splitties.bitflags.withFlag
 import java.io.IOException
 
-/**
- * Created by sds100 on 16/03/2021.
- */
 class AndroidPackageManagerAdapter(
     context: Context,
     coroutineScope: CoroutineScope,

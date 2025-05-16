@@ -2,9 +2,7 @@ package io.github.sds100.keymapper.shizuku
 
 import android.os.Build
 
-/**
- * Created by sds100 on 20/07/2021.
- */
+
 object ShizukuUtils {
     const val SHIZUKU_PACKAGE = "moe.shizuku.privileged.api"
 

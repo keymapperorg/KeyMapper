@@ -23,9 +23,6 @@ import java.io.OutputStream
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-/**
- * Created by sds100 on 28/06/2021.
- */
 class DocumentFileWrapper(val file: DocumentFile, context: Context) : IFile {
 
     private val ctx = context.applicationContext

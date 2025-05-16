@@ -16,9 +16,7 @@ import io.github.sds100.keymapper.util.firstBlocking
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 21/04/2021.
- */
+
 class OpenMenuHelper(
     private val suAdapter: SuAdapter,
     private val accessibilityService: IAccessibilityService,

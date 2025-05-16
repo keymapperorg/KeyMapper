@@ -6,9 +6,6 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-/**
- * Created by sds100 on 02/04/2021.
- */
 class FingerprintGesturesSupportedUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
 ) : FingerprintGesturesSupportedUseCase {

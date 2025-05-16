@@ -32,10 +32,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.serialization.json.Json
 
-/**
- * Created by sds100 on 22/06/2021.
- */
-
 class ChooseSoundFileFragment : Fragment() {
     companion object {
         const val EXTRA_RESULT = "extra_sound_file_result"

@@ -5,9 +5,7 @@ import android.content.Context
 import android.provider.Settings
 import androidx.annotation.RequiresPermission
 
-/**
- * Created by sds100 on 31/01/21.
- */
+
 object SettingsUtils {
 
     /**

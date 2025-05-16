@@ -33,9 +33,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
-/**
- * Created by sds100 on 17/03/2021.
- */
 class AccessibilityServiceAdapter(
     context: Context,
     private val coroutineScope: CoroutineScope,

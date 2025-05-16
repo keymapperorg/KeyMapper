@@ -32,9 +32,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 08/09/20.
- */
 class CreateKeyMapShortcutViewModel(
     private val configKeyMapUseCase: ConfigKeyMapUseCase,
     private val listKeyMaps: ListKeyMapsUseCase,

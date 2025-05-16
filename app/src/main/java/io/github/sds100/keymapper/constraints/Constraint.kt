@@ -11,10 +11,6 @@ import kotlinx.serialization.Serializable
 import java.time.LocalTime
 import java.util.UUID
 
-/**
- * Created by sds100 on 03/03/2021.
- */
-
 @Serializable
 sealed class Constraint {
     abstract val uid: String

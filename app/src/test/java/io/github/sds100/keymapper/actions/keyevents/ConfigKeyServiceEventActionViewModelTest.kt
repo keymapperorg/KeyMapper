@@ -24,10 +24,6 @@ import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 
-/**
- * Created by sds100 on 28/04/2021.
- */
-
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class ConfigKeyServiceEventActionViewModelTest {

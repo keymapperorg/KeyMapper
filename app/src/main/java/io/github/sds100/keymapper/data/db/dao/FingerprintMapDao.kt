@@ -8,10 +8,6 @@ import androidx.room.Update
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Created by sds100 on 28/04/2021.
- */
-
 @Dao
 interface FingerprintMapDao {
     companion object {

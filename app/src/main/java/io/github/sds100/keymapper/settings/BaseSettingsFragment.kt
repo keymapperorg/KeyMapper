@@ -16,9 +16,6 @@ import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.str
 import io.github.sds100.keymapper.util.ui.showPopups
 
-/**
- * Created by sds100 on 20/07/2021.
- */
 abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
 
     val viewModel by activityViewModels<SettingsViewModel> {

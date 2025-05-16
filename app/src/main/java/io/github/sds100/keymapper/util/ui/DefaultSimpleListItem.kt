@@ -1,8 +1,5 @@
 package io.github.sds100.keymapper.util.ui
 
-/**
- * Created by sds100 on 22/07/2021.
- */
 data class DefaultSimpleListItem(
     override val id: String,
     override val title: String,

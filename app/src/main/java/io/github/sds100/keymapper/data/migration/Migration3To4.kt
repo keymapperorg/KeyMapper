@@ -9,9 +9,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonParser
 import kotlin.collections.set
 
-/**
- * Created by sds100 on 25/06/20.
- */
+
 
 /**
  * #376 make trigger mode settings always visible.

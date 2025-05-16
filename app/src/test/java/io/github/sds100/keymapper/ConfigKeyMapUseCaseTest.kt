@@ -32,10 +32,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 
-/**
- * Created by sds100 on 19/04/2021.
- */
-
 @ExperimentalCoroutinesApi
 class ConfigKeyMapUseCaseTest {
 

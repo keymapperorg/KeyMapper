@@ -17,9 +17,7 @@ import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
 import splitties.bitflags.hasFlag
 import timber.log.Timber
 
-/**
- * Created by sds100 on 06/06/20.
- */
+
 
 /**
  * Mahoosive update/overhaul from 1.0 to 2.0

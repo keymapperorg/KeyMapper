@@ -2,9 +2,7 @@ package io.github.sds100.keymapper.system.volume
 
 import io.github.sds100.keymapper.common.result.Result
 
-/**
- * Created by sds100 on 20/04/2021.
- */
+
 interface VolumeAdapter {
     val ringerMode: RingerMode
 

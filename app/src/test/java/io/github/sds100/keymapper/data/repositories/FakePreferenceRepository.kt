@@ -5,9 +5,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 
-/**
- * Created by sds100 on 26/04/2021.
- */
 class FakePreferenceRepository : PreferenceRepository {
     private val preferences: MutableStateFlow<Map<Preferences.Key<*>, Any?>> =
         MutableStateFlow(emptyMap())

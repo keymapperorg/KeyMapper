@@ -25,9 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import splitties.bitflags.withFlag
 
-/**
- * Created by sds100 on 27/07/2021.
- */
+
 
 class NotificationReceiverAdapter(
     context: Context,

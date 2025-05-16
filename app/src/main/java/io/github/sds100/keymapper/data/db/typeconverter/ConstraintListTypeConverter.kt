@@ -6,10 +6,6 @@ import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.google.gson.GsonBuilder
 import io.github.sds100.keymapper.data.entities.ConstraintEntity
 
-/**
- * Created by sds100 on 05/09/2018.
- */
-
 class ConstraintListTypeConverter {
     private val gson = GsonBuilder().registerTypeAdapter(ConstraintEntity.DESERIALIZER).create()
 

@@ -23,9 +23,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.util.UUID
 
-/**
- * Created by sds100 on 20/03/2021.
- */
 class AndroidAppShortcutAdapter(context: Context) : AppShortcutAdapter {
     private val ctx = context.applicationContext
 

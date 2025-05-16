@@ -1,8 +1,6 @@
 package io.github.sds100.keymapper.util
 
-/**
- * Created by sds100 on 17/03/2021.
- */
+
 sealed class State<out T> {
     data class Data<T>(val data: T) : State<T>()
     data object Loading : State<Nothing>()

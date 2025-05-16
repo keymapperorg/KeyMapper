@@ -9,10 +9,6 @@ import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import splitties.toast.toast
 
-/**
- * Created by sds100 on 08/09/20.
- */
-
 // DON'T MOVE THIS CLASS TO A DIFFERENT PACKAGE BECAUSE IT BREAKS THE API
 /**
  * Use basic Activity, NOT AppCompatActivity so the NoDisplay theme works. Otherwise an

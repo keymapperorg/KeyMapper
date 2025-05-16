@@ -23,9 +23,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 17/04/2021.
- */
 class AndroidDisplayAdapter(
     context: Context,
     private val coroutineScope: CoroutineScope,

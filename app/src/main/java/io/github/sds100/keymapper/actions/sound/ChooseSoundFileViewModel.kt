@@ -25,9 +25,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 31/03/2020.
- */
 class ChooseSoundFileViewModel(
     resourceProvider: ResourceProvider,
     private val useCase: ChooseSoundFileUseCase,

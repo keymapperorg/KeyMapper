@@ -1,8 +1,6 @@
 package io.github.sds100.keymapper.trigger
 
-/**
- * Created by sds100 on 04/04/2021.
- */
+
 enum class TriggerError(val isFixable: Boolean) {
     DND_ACCESS_DENIED(isFixable = true),
     SCREEN_OFF_ROOT_DENIED(isFixable = true),

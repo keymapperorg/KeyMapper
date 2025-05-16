@@ -17,9 +17,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-/**
- * Created by sds100 on 21/06/2020.
- */
 class DetectScreenOffKeyEventsController(
     private val suAdapter: SuAdapter,
     private val devicesAdapter: DevicesAdapter,

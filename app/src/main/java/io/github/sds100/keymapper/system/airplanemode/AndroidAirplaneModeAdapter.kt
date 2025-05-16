@@ -7,9 +7,6 @@ import io.github.sds100.keymapper.common.result.onSuccess
 import io.github.sds100.keymapper.system.SettingsUtils
 import io.github.sds100.keymapper.system.root.SuAdapter
 
-/**
- * Created by sds100 on 24/04/2021.
- */
 class AndroidAirplaneModeAdapter(
     context: Context,
     val suAdapter: SuAdapter,

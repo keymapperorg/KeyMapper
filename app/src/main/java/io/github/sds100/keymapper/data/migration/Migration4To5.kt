@@ -15,9 +15,7 @@ import io.github.sds100.keymapper.data.entities.ActionEntity
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag
 
-/**
- * Created by sds100 on 25/06/20.
- */
+
 
 /**
  * #382 feat: unique repeat behaviour for each action

@@ -43,10 +43,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-/**
- * Created by sds100 on 19/02/2020.
- */
-
 abstract class BaseMainActivity : AppCompatActivity() {
 
     companion object {

@@ -6,9 +6,7 @@ import android.content.Intent
 import android.os.Build
 import io.github.sds100.keymapper.ServiceLocator
 
-/**
- * Created by sds100 on 24/03/2019.
- */
+
 
 class NotificationClickReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {

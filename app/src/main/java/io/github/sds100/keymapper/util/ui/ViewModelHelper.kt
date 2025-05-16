@@ -7,9 +7,7 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.isFixable
 
-/**
- * Created by sds100 on 04/11/2021.
- */
+
 object ViewModelHelper {
     suspend fun handleKeyMapperCrashedDialog(
         resourceProvider: ResourceProvider,

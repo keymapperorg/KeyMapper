@@ -20,9 +20,7 @@ import io.github.sds100.keymapper.util.str
 import kotlinx.coroutines.flow.first
 import splitties.toast.toast
 
-/**
- * Created by sds100 on 12/06/2020.
- */
+
 @RequiresApi(Build.VERSION_CODES.N)
 class ToggleKeyMapperKeyboardTile :
     TileService(),

@@ -24,9 +24,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.FileNotFoundException
 
-/**
- * Created by sds100 on 21/04/2021.
- */
 class AndroidMediaAdapter(context: Context, coroutineScope: CoroutineScope) : MediaAdapter {
     private val ctx = context.applicationContext
 

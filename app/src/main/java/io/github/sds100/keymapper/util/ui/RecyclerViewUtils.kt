@@ -7,9 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import io.github.sds100.keymapper.R
 import kotlin.math.floor
 
-/**
- * Created by sds100 on 26/07/2021.
- */
+
 
 object RecyclerViewUtils {
     fun applySimpleListItemDecorations(recyclerView: RecyclerView) {

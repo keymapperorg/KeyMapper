@@ -61,10 +61,6 @@ import org.mockito.kotlin.whenever
 import timber.log.Timber
 import java.io.File
 
-/**
- * Created by sds100 on 19/04/2021.
- */
-
 @Suppress("BlockingMethodInNonBlockingContext")
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)

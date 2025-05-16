@@ -25,10 +25,6 @@ import io.github.sds100.keymapper.util.getKey
 import kotlinx.serialization.json.Json
 import splitties.bitflags.hasFlag
 
-/**
- * Created by sds100 on 13/03/2021.
- */
-
 object ActionDataEntityMapper {
 
     fun fromEntity(entity: ActionEntity): ActionData? {

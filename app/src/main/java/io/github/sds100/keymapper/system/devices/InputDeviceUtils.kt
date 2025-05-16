@@ -5,10 +5,6 @@ import android.view.InputDevice
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
-/**
- * Created by sds100 on 24/04/2020.
- */
-
 object InputDeviceUtils {
     fun appendDeviceDescriptorToName(descriptor: String, name: String): String =
         "$name ${descriptor.substring(0..4)}"

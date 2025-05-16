@@ -1,8 +1,6 @@
 package io.github.sds100.keymapper.system.apps
 
-/**
- * Created by sds100 on 16/03/2021.
- */
+
 
 data class PackageInfo(
     val packageName: String,

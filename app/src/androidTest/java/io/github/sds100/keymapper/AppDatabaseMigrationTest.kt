@@ -28,9 +28,6 @@ import org.junit.runner.RunWith
 import java.io.File
 import java.io.IOException
 
-/**
- * Created by sds100 on 05/06/20.
- */
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class AppDatabaseMigrationTest {

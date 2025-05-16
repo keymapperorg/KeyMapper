@@ -8,9 +8,6 @@ import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 
-/**
- * Created by sds100 on 29/06/2021.
- */
 class JavaFile(val file: File) : IFile {
 
     override val uri: String

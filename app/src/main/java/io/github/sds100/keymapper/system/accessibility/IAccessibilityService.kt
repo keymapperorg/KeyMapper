@@ -7,9 +7,6 @@ import io.github.sds100.keymapper.common.result.Result
 import io.github.sds100.keymapper.util.InputEventType
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Created by sds100 on 17/04/2021.
- */
 interface IAccessibilityService {
     fun doGlobalAction(action: Int): Result<*>
 

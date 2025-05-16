@@ -17,9 +17,6 @@ import kotlinx.coroutines.flow.update
 import timber.log.Timber
 import kotlin.collections.set
 
-/**
- * Created by sds100 on 17/03/2021.
- */
 class AndroidCameraAdapter(context: Context) : CameraAdapter {
     private val ctx = context.applicationContext
 

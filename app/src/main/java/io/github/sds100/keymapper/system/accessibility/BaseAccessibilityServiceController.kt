@@ -59,9 +59,6 @@ import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
 import timber.log.Timber
 
-/**
- * Created by sds100 on 17/04/2021.
- */
 abstract class BaseAccessibilityServiceController(
     private val coroutineScope: CoroutineScope,
     private val service: MyAccessibilityService,

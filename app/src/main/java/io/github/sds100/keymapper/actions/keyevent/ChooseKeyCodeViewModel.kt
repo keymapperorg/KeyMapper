@@ -20,10 +20,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/**
- * Created by sds100 on 31/03/2020.
- */
-
 class ChooseKeyCodeViewModel : ViewModel() {
 
     val searchQuery = MutableStateFlow<String?>(null)

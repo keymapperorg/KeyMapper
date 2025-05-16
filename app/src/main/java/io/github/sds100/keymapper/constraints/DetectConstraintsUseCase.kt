@@ -17,10 +17,6 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 
-/**
- * Created by sds100 on 17/04/2021.
- */
-
 class DetectConstraintsUseCaseImpl(
     private val accessibilityService: IAccessibilityService,
     private val mediaAdapter: MediaAdapter,

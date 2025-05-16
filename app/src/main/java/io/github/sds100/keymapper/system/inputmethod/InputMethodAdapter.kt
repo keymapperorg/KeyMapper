@@ -4,9 +4,6 @@ import io.github.sds100.keymapper.common.result.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
-/**
- * Created by sds100 on 14/02/2021.
- */
 interface InputMethodAdapter {
     val isUserInputRequiredToChangeIme: Flow<Boolean>
 

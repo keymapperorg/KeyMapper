@@ -3,9 +3,7 @@ package io.github.sds100.keymapper.system.network
 import io.github.sds100.keymapper.common.result.Result
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Created by sds100 on 24/04/2021.
- */
+
 interface NetworkAdapter {
     val connectedWifiSSID: String?
     val connectedWifiSSIDFlow: Flow<String?>

@@ -44,9 +44,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 
-/**
- * Created by sds100 on 25/07/2021.
- */
+
 
 class NavigationViewModelImpl : NavigationViewModel {
     private val _onNavResult by lazy { MutableSharedFlow<NavResult>() }

@@ -19,9 +19,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-/**
- * Created by sds100 on 29/04/2022.
- */
 @ExperimentalCoroutinesApi
 internal class ConfigIntentViewModelTest {
 

@@ -6,9 +6,6 @@ import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
-/**
- * Created by sds100 on 07/03/2021.
- */
 interface DevicesAdapter {
     val onInputDeviceConnect: Flow<InputDeviceInfo>
     val onInputDeviceDisconnect: Flow<InputDeviceInfo>

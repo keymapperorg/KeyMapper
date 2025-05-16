@@ -8,10 +8,6 @@ import io.github.sds100.keymapper.common.result.Result
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Created by sds100 on 20/03/2021.
- */
-
 interface AppShortcutAdapter {
     val installedAppShortcuts: Flow<State<List<AppShortcutInfo>>>
     val areLauncherShortcutsSupported: Boolean

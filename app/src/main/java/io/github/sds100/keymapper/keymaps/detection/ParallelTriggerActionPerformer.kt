@@ -16,9 +16,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 16/06/2021.
- */
+
 class ParallelTriggerActionPerformer(
     private val coroutineScope: CoroutineScope,
     private val useCase: PerformActionsUseCase,

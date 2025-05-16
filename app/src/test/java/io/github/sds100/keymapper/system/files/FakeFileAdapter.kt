@@ -7,9 +7,6 @@ import org.junit.rules.TemporaryFolder
 import java.io.File
 import java.io.InputStream
 
-/**
- * Created by sds100 on 29/06/2021.
- */
 class FakeFileAdapter(
     private val tempFolder: TemporaryFolder,
 ) : FileAdapter {

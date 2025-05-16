@@ -33,9 +33,7 @@ import splitties.alertdialog.material.materialAlertDialog
 import splitties.toast.longToast
 import splitties.toast.toast
 
-/**
- * Created by sds100 on 13/04/2021.
- */
+
 class RequestPermissionDelegate(
     private val activity: AppCompatActivity,
     val showDialogs: Boolean,

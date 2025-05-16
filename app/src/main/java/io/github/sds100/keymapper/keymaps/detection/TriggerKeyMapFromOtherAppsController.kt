@@ -9,9 +9,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-/**
- * Created by sds100 on 11/12/20.
- */
+
 class TriggerKeyMapFromOtherAppsController(
     coroutineScope: CoroutineScope,
     detectKeyMapsUseCase: DetectKeyMapsUseCase,

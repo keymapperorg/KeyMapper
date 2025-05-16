@@ -25,9 +25,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 19/01/21.
- */
+
 class SettingsViewModel(
     private val useCase: ConfigSettingsUseCase,
     resourceProvider: ResourceProvider,

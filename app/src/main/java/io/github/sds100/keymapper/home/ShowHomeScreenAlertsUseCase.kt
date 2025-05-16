@@ -11,9 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
-/**
- * Created by sds100 on 04/04/2021.
- */
+
 
 class ShowHomeScreenAlertsUseCaseImpl(
     private val preferences: PreferenceRepository,

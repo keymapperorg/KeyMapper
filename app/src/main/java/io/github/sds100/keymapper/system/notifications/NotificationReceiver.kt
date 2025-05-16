@@ -16,9 +16,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 
-/**
- * Created by sds100 on 14/11/20.
- */
+
 class NotificationReceiver :
     NotificationListenerService(),
     LifecycleOwner {

@@ -18,10 +18,6 @@ import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import kotlinx.coroutines.flow.collectLatest
 
-/**
- * Created by sds100 on 08/09/20.
- */
-
 class CreateKeyMapShortcutActivity : AppCompatActivity() {
 
     private val viewModel by viewModels<CreateKeyMapShortcutViewModel> {

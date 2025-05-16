@@ -4,10 +4,6 @@ import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.checkbox
 import io.github.sds100.keymapper.databinding.ListItemCheckboxBinding
 
-/**
- * Created by sds100 on 20/03/2021.
- */
-
 fun EpoxyController.configuredCheckBox(
     model: CheckBoxListItem,
     onCheckedChange: (checked: Boolean) -> Unit,

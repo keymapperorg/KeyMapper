@@ -13,10 +13,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
-/**
- * Created by sds100 on 13/05/2021.
- */
-
 class DisplayLogUseCaseImpl(
     private val repository: LogRepository,
     private val resourceProvider: ResourceProvider,

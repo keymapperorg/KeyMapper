@@ -26,9 +26,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import splitties.toast.toast
 
-/**
- * Created by sds100 on 23/03/2021.
- */
+
 
 class PopupViewModelImpl : PopupViewModel {
 

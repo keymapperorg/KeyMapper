@@ -25,10 +25,6 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import java.util.Locale
 
-/**
- * Created by sds100 on 27/01/2020.
- */
-
 class ChooseAppViewModel(
     private val useCase: DisplayAppsUseCase,
 ) : ViewModel() {

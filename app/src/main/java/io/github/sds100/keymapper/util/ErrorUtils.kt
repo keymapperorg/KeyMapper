@@ -9,10 +9,6 @@ import io.github.sds100.keymapper.system.BuildUtils
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 
-/**
- * Created by sds100 on 29/02/2020.
- */
-
 fun Error.getFullMessage(resourceProvider: ResourceProvider): String = when (this) {
     is SystemError.PermissionDenied ->
         SystemError.PermissionDenied.getMessageForPermission(

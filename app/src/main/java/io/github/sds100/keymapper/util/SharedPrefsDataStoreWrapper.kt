@@ -12,9 +12,7 @@ import io.github.sds100.keymapper.settings.ConfigSettingsUseCase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
-/**
- * Created by sds100 on 19/01/21.
- */
+
 class SharedPrefsDataStoreWrapper(
     private val configSettingsUseCase: ConfigSettingsUseCase,
 ) : PreferenceDataStore() {

@@ -12,6 +12,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
+import dagger.hilt.android.HiltAndroidApp
 import io.github.sds100.keymapper.actions.uielement.InteractUiElementController
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
@@ -67,10 +68,8 @@ import splitties.toast.toast
 import timber.log.Timber
 import java.util.Calendar
 
-/**
- * Created by sds100 on 19/05/2020.
- */
 @SuppressLint("LogNotTimber")
+@HiltAndroidApp
 class KeyMapperApp : MultiDexApplication() {
     private val tag = KeyMapperApp::class.simpleName
 

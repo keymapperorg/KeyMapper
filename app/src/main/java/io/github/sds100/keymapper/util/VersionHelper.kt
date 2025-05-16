@@ -1,8 +1,6 @@
 package io.github.sds100.keymapper.util
 
-/**
- * Created by sds100 on 25/04/2021.
- */
+
 object VersionHelper {
     const val VERSION_2_3_0 = 43
 

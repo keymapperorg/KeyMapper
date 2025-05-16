@@ -7,9 +7,7 @@ import io.github.sds100.keymapper.system.shell.ShellAdapter
 import java.io.IOException
 import java.io.InputStream
 
-/**
- * Created by sds100 on 05/11/2018.
- */
+
 object Shell : ShellAdapter {
     /**
      * @return whether the command was executed successfully

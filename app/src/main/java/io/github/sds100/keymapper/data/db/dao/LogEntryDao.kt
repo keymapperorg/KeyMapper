@@ -6,9 +6,7 @@ import androidx.room.Query
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Created by sds100 on 18/02/20.
- */
+
 
 @Dao
 interface LogEntryDao {

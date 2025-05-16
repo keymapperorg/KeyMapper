@@ -8,10 +8,6 @@ import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-/**
- * Created by sds100 on 01/05/2021.
- */
-
 class ConfigKeyEventUseCaseImpl(
     private val preferenceRepository: PreferenceRepository,
     private val devicesAdapter: DevicesAdapter,

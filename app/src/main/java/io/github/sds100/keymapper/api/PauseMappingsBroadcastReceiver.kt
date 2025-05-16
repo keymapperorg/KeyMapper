@@ -6,9 +6,7 @@ import android.content.Intent
 import io.github.sds100.keymapper.UseCases
 import io.github.sds100.keymapper.util.firstBlocking
 
-/**
- * Created by sds100 on 17/06/2021.
- */
+
 
 // DON'T MOVE THIS CLASS TO A DIFFERENT PACKAGE BECAUSE IT BREAKS THE API
 class PauseMappingsBroadcastReceiver : BroadcastReceiver() {

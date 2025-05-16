@@ -13,9 +13,6 @@ import io.github.sds100.keymapper.system.inputmethod.AndroidInputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.ObserveInputMethodsJob
 import io.github.sds100.keymapper.system.notifications.ObserveNotificationListenersJob
 
-/**
- * Created by sds100 on 02/04/2021.
- */
 object JobSchedulerHelper {
 
     private const val ID_OBSERVE_ACCESSIBILITY_SERVICES = 1

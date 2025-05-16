@@ -9,10 +9,6 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import java.util.UUID
 
-/**
- * Created by sds100 on 17/03/2020.
- */
-
 @Parcelize
 data class ConstraintEntity(
     @SerializedName(NAME_TYPE)

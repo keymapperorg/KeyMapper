@@ -43,10 +43,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
-/**
- * Created by sds100 on 17/04/2021.
- */
-
 class DetectKeyMapsUseCaseImpl(
     private val keyMapRepository: KeyMapRepository,
     private val floatingButtonRepository: FloatingButtonRepository,

@@ -5,9 +5,7 @@ import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.common.result.Result
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Created by sds100 on 20/04/2021.
- */
+
 interface LockScreenAdapter {
     fun secureLockDevice(): Result<*>
 

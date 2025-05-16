@@ -15,9 +15,7 @@ import splitties.bitflags.hasFlag
 import splitties.bitflags.minusFlag
 import splitties.bitflags.withFlag
 
-/**
- * Created by sds100 on 25/06/20.
- */
+
 
 object Migration6To7 {
 

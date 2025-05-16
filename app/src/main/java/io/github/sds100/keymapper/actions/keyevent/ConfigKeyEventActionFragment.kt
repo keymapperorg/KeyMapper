@@ -27,10 +27,6 @@ import io.github.sds100.keymapper.util.ui.setupNavigation
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.json.Json
 
-/**
- * Created by sds100 on 30/03/2020.
- */
-
 class ConfigKeyEventActionFragment : Fragment() {
     companion object {
         const val EXTRA_RESULT = "extra_result"

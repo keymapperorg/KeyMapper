@@ -30,9 +30,7 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-/**
- * Created by sds100 on 14/02/21.
- */
+
 class OnboardingUseCaseImpl(
     private val preferences: PreferenceRepository,
     private val fileAdapter: FileAdapter,

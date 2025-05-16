@@ -11,9 +11,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-/**
- * Created by sds100 on 27/04/2021.
- */
+
 
 /**
  * This is used for the feature created in issue #618 to fix the device IDs of key events

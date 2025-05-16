@@ -7,9 +7,6 @@ import android.view.KeyEvent
 import io.github.sds100.keymapper.R
 import splitties.bitflags.withFlag
 
-/**
- * Created by sds100 on 17/07/2018.
- */
 object InputEventUtils {
     /**
      * Maps keys which aren't single characters like the Control keys to a string representation

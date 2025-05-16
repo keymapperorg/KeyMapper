@@ -9,9 +9,7 @@ import splitties.snackbar.onDismiss
 import splitties.snackbar.snack
 import kotlin.coroutines.resume
 
-/**
- * Created by sds100 on 06/04/2021.
- */
+
 object SnackBarUtils {
 
     suspend fun show(

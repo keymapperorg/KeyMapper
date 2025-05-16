@@ -75,10 +75,6 @@ import java.io.InputStream
 import java.util.LinkedList
 import java.util.UUID
 
-/**
- * Created by sds100 on 16/03/2021.
- */
-
 class BackupManagerImpl(
     private val coroutineScope: CoroutineScope,
     private val fileAdapter: FileAdapter,

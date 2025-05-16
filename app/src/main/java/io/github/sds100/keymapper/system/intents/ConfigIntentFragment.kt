@@ -30,10 +30,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-/**
- * Created by sds100 on 30/03/2020.
- */
-
 class ConfigIntentFragment : Fragment() {
     companion object {
         const val EXTRA_RESULT = "extra_config_intent_result"
