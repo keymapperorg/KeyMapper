@@ -35,11 +35,11 @@ import io.github.sds100.keymapper.trigger.SetupGuiKeyboardState
 import io.github.sds100.keymapper.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.trigger.TriggerError
 import io.github.sds100.keymapper.trigger.TriggerErrorSnapshot
-import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.dataOrNull
+import io.github.sds100.keymapper.common.state.State
+import io.github.sds100.keymapper.common.state.dataOrNull
 import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.ifIsData
-import io.github.sds100.keymapper.util.mapData
+import io.github.sds100.keymapper.common.state.ifIsData
+import io.github.sds100.keymapper.common.state.mapData
 import io.github.sds100.keymapper.util.ui.DialogResponse
 import io.github.sds100.keymapper.util.ui.MultiSelectProvider
 import io.github.sds100.keymapper.util.ui.NavDestination

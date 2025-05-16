@@ -27,8 +27,8 @@ import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 import io.github.sds100.keymapper.trigger.TriggerError
 import io.github.sds100.keymapper.trigger.TriggerErrorSnapshot
-import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.dataOrNull
+import io.github.sds100.keymapper.common.state.State
+import io.github.sds100.keymapper.common.state.dataOrNull
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow

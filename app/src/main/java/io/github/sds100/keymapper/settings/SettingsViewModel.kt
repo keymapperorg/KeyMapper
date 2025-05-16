@@ -9,7 +9,7 @@ import io.github.sds100.keymapper.common.result.onFailure
 import io.github.sds100.keymapper.common.result.onSuccess
 import io.github.sds100.keymapper.common.result.otherwise
 import io.github.sds100.keymapper.util.SharedPrefsDataStoreWrapper
-import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.ui.DialogResponse
 import io.github.sds100.keymapper.util.ui.MultiChoiceItem

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.common.result.valueOrNull
-import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.util.filterByQuery
 import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.TintType

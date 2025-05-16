@@ -14,11 +14,11 @@ import io.github.sds100.keymapper.common.result.then
 import io.github.sds100.keymapper.common.result.valueOrNull
 import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
 import io.github.sds100.keymapper.system.accessibility.RecordAccessibilityNodeState
-import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.util.containsQuery
-import io.github.sds100.keymapper.util.dataOrNull
-import io.github.sds100.keymapper.util.ifIsData
-import io.github.sds100.keymapper.util.mapData
+import io.github.sds100.keymapper.common.state.dataOrNull
+import io.github.sds100.keymapper.common.state.ifIsData
+import io.github.sds100.keymapper.common.state.mapData
 import io.github.sds100.keymapper.util.ui.PopupViewModel
 import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider

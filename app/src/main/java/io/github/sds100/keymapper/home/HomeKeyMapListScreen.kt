@@ -70,7 +70,7 @@ import io.github.sds100.keymapper.trigger.DpadTriggerSetupBottomSheet
 import io.github.sds100.keymapper.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.trigger.TriggerError
 import io.github.sds100.keymapper.util.ShareUtils
-import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.ui.compose.CollapsableFloatingActionButton
 import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel

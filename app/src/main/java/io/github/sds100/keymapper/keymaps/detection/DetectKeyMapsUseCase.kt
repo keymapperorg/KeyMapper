@@ -30,8 +30,8 @@ import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.trigger.FingerprintTriggerKey
 import io.github.sds100.keymapper.util.InputEventType
-import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.dataOrNull
+import io.github.sds100.keymapper.common.state.State
+import io.github.sds100.keymapper.common.state.dataOrNull
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

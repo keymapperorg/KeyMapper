@@ -28,10 +28,10 @@ import io.github.sds100.keymapper.trigger.TriggerKey
 import io.github.sds100.keymapper.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.trigger.TriggerMode
 import io.github.sds100.keymapper.util.ServiceEvent
-import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.dataOrNull
+import io.github.sds100.keymapper.common.state.State
+import io.github.sds100.keymapper.common.state.dataOrNull
 import io.github.sds100.keymapper.util.firstBlocking
-import io.github.sds100.keymapper.util.ifIsData
+import io.github.sds100.keymapper.common.state.ifIsData
 import io.github.sds100.keymapper.util.moveElement
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

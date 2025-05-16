@@ -9,11 +9,11 @@ import io.github.sds100.keymapper.keymaps.ShortcutModel
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.dataOrNull
+import io.github.sds100.keymapper.common.state.State
+import io.github.sds100.keymapper.common.state.dataOrNull
 import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.isFixable
-import io.github.sds100.keymapper.util.mapData
+import io.github.sds100.keymapper.common.state.mapData
 import io.github.sds100.keymapper.util.ui.ChooseAppStoreModel
 import io.github.sds100.keymapper.util.ui.DialogResponse
 import io.github.sds100.keymapper.util.ui.LinkType

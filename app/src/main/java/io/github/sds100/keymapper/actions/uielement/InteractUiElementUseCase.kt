@@ -9,8 +9,8 @@ import io.github.sds100.keymapper.system.accessibility.RecordAccessibilityNodeSt
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.util.ServiceEvent
-import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.mapData
+import io.github.sds100.keymapper.common.state.State
+import io.github.sds100.keymapper.common.state.mapData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

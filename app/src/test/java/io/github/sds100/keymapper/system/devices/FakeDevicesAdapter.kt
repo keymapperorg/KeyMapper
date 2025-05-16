@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.system.devices
 
 import io.github.sds100.keymapper.common.result.Result
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
-import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.common.state.State
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

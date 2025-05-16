@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.util
 
+import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.util.ui.ISearchable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

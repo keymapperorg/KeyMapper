@@ -5,10 +5,10 @@ import android.graphics.drawable.Drawable
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.ActionUiHelper
 import io.github.sds100.keymapper.common.result.onFailure
-import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.dataOrNull
+import io.github.sds100.keymapper.common.state.State
+import io.github.sds100.keymapper.common.state.dataOrNull
 import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.mapData
+import io.github.sds100.keymapper.common.state.mapData
 import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.ui.PopupViewModel
 import io.github.sds100.keymapper.util.ui.PopupViewModelImpl

@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.data.repositories
 import android.database.sqlite.SQLiteConstraintException
 import io.github.sds100.keymapper.data.db.dao.AccessibilityNodeDao
 import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
-import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.common.state.State
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

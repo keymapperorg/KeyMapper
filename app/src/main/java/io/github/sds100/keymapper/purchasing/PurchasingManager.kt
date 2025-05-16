@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.purchasing
 
 import io.github.sds100.keymapper.common.result.Result
-import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.common.state.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 

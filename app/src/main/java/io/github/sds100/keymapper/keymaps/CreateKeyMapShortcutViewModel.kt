@@ -17,8 +17,8 @@ import io.github.sds100.keymapper.constraints.ConstraintUiHelper
 import io.github.sds100.keymapper.groups.GroupListItemModel
 import io.github.sds100.keymapper.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.trigger.TriggerErrorSnapshot
-import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.mapData
+import io.github.sds100.keymapper.common.state.State
+import io.github.sds100.keymapper.common.state.mapData
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.TintType
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo

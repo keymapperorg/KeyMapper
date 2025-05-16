@@ -57,11 +57,11 @@ import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.util.InputEventType
 import io.github.sds100.keymapper.util.ServiceEvent
-import io.github.sds100.keymapper.util.dataOrNull
+import io.github.sds100.keymapper.common.state.dataOrNull
 import io.github.sds100.keymapper.util.firstBlocking
 import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.getWordBoundaries
-import io.github.sds100.keymapper.util.ifIsData
+import io.github.sds100.keymapper.common.state.ifIsData
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay

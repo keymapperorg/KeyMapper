@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.keymaps
 
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
-import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.common.state.State
 import kotlinx.coroutines.flow.Flow
 
 interface KeyMapRepository {

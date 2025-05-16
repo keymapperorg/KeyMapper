@@ -55,7 +55,7 @@ import io.github.sds100.keymapper.system.files.IFile
 import io.github.sds100.keymapper.util.DefaultDispatcherProvider
 import io.github.sds100.keymapper.util.DefaultUuidGenerator
 import io.github.sds100.keymapper.util.DispatcherProvider
-import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.util.TreeNode
 import io.github.sds100.keymapper.util.UuidGenerator
 import io.github.sds100.keymapper.util.breadFirstTraversal

@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.keymaps
 
 import io.github.sds100.keymapper.groups.Group
-import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.common.state.State
 
 data class KeyMapGroup(
     val group: Group?,

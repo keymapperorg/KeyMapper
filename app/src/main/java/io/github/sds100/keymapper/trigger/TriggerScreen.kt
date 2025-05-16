@@ -43,7 +43,7 @@ import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.keymaps.ClickType
 import io.github.sds100.keymapper.keymaps.ShortcutModel
 import io.github.sds100.keymapper.keymaps.ShortcutRow
-import io.github.sds100.keymapper.util.State
+import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.util.ui.LinkType
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.util.ui.compose.DraggableItem
