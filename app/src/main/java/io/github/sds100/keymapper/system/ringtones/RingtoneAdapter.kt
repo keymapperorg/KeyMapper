@@ -5,9 +5,9 @@ import android.media.Ringtone
 import android.media.RingtoneManager
 import android.os.Build
 import androidx.core.net.toUri
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Result
-import io.github.sds100.keymapper.util.Success
+import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.result.Success
 
 class AndroidRingtoneAdapter(context: Context) : RingtoneAdapter {
     private val ctx: Context = context.applicationContext

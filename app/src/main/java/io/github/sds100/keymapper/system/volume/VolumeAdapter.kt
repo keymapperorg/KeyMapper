@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.system.volume
 
-import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.common.result.Result
 
 /**
  * Created by sds100 on 20/04/2021.

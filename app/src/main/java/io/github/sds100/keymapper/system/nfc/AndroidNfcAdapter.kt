@@ -3,8 +3,8 @@ package io.github.sds100.keymapper.system.nfc
 import android.content.Context
 import android.nfc.NfcManager
 import androidx.core.content.getSystemService
+import io.github.sds100.keymapper.common.result.Result
 import io.github.sds100.keymapper.system.root.SuAdapter
-import io.github.sds100.keymapper.util.Result
 
 /**
  * Created by sds100 on 24/04/2021.

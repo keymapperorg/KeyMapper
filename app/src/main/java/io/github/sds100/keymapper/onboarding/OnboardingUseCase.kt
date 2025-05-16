@@ -5,6 +5,8 @@ import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.canUseImeToPerform
 import io.github.sds100.keymapper.actions.canUseShizukuToPerform
+import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.result.handle
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -20,10 +22,8 @@ import io.github.sds100.keymapper.system.leanback.LeanbackAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.util.PrefDelegate
-import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.VersionHelper
-import io.github.sds100.keymapper.util.handle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance

@@ -3,10 +3,11 @@ package io.github.sds100.keymapper.constraints
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import io.github.sds100.keymapper.common.result.Error
 import io.github.sds100.keymapper.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.keymaps.ShortcutModel
+import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.getFullMessage
@@ -108,7 +109,7 @@ class ConfigConstraintsViewModel(
             val error = constraintErrorSnapshot.filterNotNull().first().getError(constraint)
                 ?: return@launch
 
-            if (error == Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
+            if (error == SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
                 coroutineScope.launch {
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@ConfigConstraintsViewModel,

@@ -16,6 +16,11 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.MalformedJsonException
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.actions.sound.SoundsManager
+import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.result.Success
+import io.github.sds100.keymapper.common.result.onFailure
+import io.github.sds100.keymapper.common.result.then
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.db.AppDatabase
@@ -50,15 +55,10 @@ import io.github.sds100.keymapper.system.files.IFile
 import io.github.sds100.keymapper.util.DefaultDispatcherProvider
 import io.github.sds100.keymapper.util.DefaultUuidGenerator
 import io.github.sds100.keymapper.util.DispatcherProvider
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.TreeNode
 import io.github.sds100.keymapper.util.UuidGenerator
 import io.github.sds100.keymapper.util.breadFirstTraversal
-import io.github.sds100.keymapper.util.onFailure
-import io.github.sds100.keymapper.util.then
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow

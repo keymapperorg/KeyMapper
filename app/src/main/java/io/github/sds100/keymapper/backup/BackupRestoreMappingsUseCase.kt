@@ -1,10 +1,10 @@
 package io.github.sds100.keymapper.backup
 
+import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.result.Success
+import io.github.sds100.keymapper.common.result.onFailure
+import io.github.sds100.keymapper.common.result.then
 import io.github.sds100.keymapper.system.files.FileAdapter
-import io.github.sds100.keymapper.util.Result
-import io.github.sds100.keymapper.util.Success
-import io.github.sds100.keymapper.util.onFailure
-import io.github.sds100.keymapper.util.then
 import kotlinx.coroutines.flow.Flow
 import timber.log.Timber
 

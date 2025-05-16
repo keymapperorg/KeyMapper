@@ -1,12 +1,13 @@
 package io.github.sds100.keymapper.system.root
 
+import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.result.Success
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.Shell
+import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Result
-import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.firstBlocking
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -41,7 +42,7 @@ class SuAdapterImpl(
 
     override fun execute(command: String, block: Boolean): Result<*> {
         if (!isGranted.firstBlocking()) {
-            return Error.PermissionDenied(Permission.ROOT)
+            return SystemError.PermissionDenied(Permission.ROOT)
         }
 
         try {
@@ -67,7 +68,7 @@ class SuAdapterImpl(
 
     override fun getCommandOutput(command: String): Result<InputStream> {
         if (!isGranted.firstBlocking()) {
-            return Error.PermissionDenied(Permission.ROOT)
+            return SystemError.PermissionDenied(Permission.ROOT)
         }
 
         try {

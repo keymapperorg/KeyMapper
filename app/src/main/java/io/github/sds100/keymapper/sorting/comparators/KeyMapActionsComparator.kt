@@ -2,10 +2,10 @@ package io.github.sds100.keymapper.sorting.comparators
 
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.DisplayActionUseCase
+import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.result.Success
+import io.github.sds100.keymapper.common.result.valueOrNull
 import io.github.sds100.keymapper.keymaps.KeyMap
-import io.github.sds100.keymapper.util.Result
-import io.github.sds100.keymapper.util.Success
-import io.github.sds100.keymapper.util.valueOrNull
 
 class KeyMapActionsComparator(
     private val displayActions: DisplayActionUseCase,

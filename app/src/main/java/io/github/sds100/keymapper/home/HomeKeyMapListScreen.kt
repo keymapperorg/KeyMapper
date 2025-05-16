@@ -56,6 +56,7 @@ import com.canopas.lib.showcase.IntroShowcase
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.ImportExportState
 import io.github.sds100.keymapper.backup.RestoreType
+import io.github.sds100.keymapper.common.result.Error
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.groups.GroupListItemModel
@@ -68,7 +69,6 @@ import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.trigger.DpadTriggerSetupBottomSheet
 import io.github.sds100.keymapper.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.trigger.TriggerError
-import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.ShareUtils
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.drawable

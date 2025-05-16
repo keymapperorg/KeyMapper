@@ -1,8 +1,9 @@
 package io.github.sds100.keymapper.util.ui
 
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.isFixable
 
@@ -166,7 +167,7 @@ object ViewModelHelper {
         val dialogResponse = popupViewModel.showPopup("fix_dnd_trigger_error", dialog)
 
         if (dialogResponse == DialogResponse.POSITIVE) {
-            val error = Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)
+            val error = SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)
             fixError.invoke()
         } else if (dialogResponse == DialogResponse.NEUTRAL) {
             neverShowDndTriggerErrorAgain.invoke()

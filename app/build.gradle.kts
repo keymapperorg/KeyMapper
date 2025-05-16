@@ -1,7 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
-import java.util.Properties
 import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application) 
@@ -22,7 +22,7 @@ android {
     buildToolsVersion = libs.versions.build.tools.get()
 
     val versionProperties = Properties().apply {
-        rootProject.file("app/version.properties").inputStream().use { load(it) }
+        project.file("version.properties").inputStream().use { load(it) }
     }
 
     defaultConfig {
@@ -163,6 +163,8 @@ dependencies {
 
     implementation(project(":api"))
     implementation(project(":base"))
+    implementation(project(":common"))
+    implementation(project(":system"))
     compileOnly(project(":systemstubs"))
 
     // kotlin stuff

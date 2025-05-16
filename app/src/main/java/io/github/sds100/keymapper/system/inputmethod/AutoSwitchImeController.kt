@@ -1,6 +1,10 @@
 package io.github.sds100.keymapper.system.inputmethod
 
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.common.result.Success
+import io.github.sds100.keymapper.common.result.onFailure
+import io.github.sds100.keymapper.common.result.onSuccess
+import io.github.sds100.keymapper.common.result.otherwise
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -10,11 +14,7 @@ import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
 import io.github.sds100.keymapper.util.PrefDelegate
 import io.github.sds100.keymapper.util.ServiceEvent
-import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.onFailure
-import io.github.sds100.keymapper.util.onSuccess
-import io.github.sds100.keymapper.util.otherwise
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn

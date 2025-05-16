@@ -2,8 +2,11 @@ package io.github.sds100.keymapper.util
 
 import android.content.pm.PackageManager
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.common.result.Error
 import io.github.sds100.keymapper.purchasing.ProductId
+import io.github.sds100.keymapper.purchasing.PurchasingError
 import io.github.sds100.keymapper.system.BuildUtils
+import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 
 /**
@@ -11,8 +14,8 @@ import io.github.sds100.keymapper.util.ui.ResourceProvider
  */
 
 fun Error.getFullMessage(resourceProvider: ResourceProvider): String = when (this) {
-    is Error.PermissionDenied ->
-        Error.PermissionDenied.getMessageForPermission(
+    is SystemError.PermissionDenied ->
+        SystemError.PermissionDenied.getMessageForPermission(
             resourceProvider,
             permission,
         )
@@ -98,7 +101,10 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider): String = when (thi
         setting,
     )
 
-    is Error.ImeDisabled -> resourceProvider.getString(R.string.error_ime_disabled, this.ime.label)
+    is SystemError.ImeDisabled -> resourceProvider.getString(
+        R.string.error_ime_disabled,
+        this.ime.label,
+    )
     Error.FailedToChangeIme -> resourceProvider.getString(R.string.error_failed_to_change_ime)
     Error.NoCameraApp -> resourceProvider.getString(R.string.error_no_camera_app)
     Error.NoDeviceAssistant -> resourceProvider.getString(R.string.error_no_device_assistant)
@@ -145,24 +151,25 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider): String = when (thi
     Error.GestureStrokeCountTooHigh -> resourceProvider.getString(R.string.trigger_error_gesture_stroke_count_too_high)
     Error.GestureDurationTooHigh -> resourceProvider.getString(R.string.trigger_error_gesture_duration_too_high)
 
-    Error.PurchasingError.Cancelled -> resourceProvider.getString(R.string.purchasing_error_cancelled)
-    Error.PurchasingError.NetworkError -> resourceProvider.getString(R.string.purchasing_error_network)
-    Error.PurchasingError.ProductNotFound -> resourceProvider.getString(R.string.purchasing_error_product_not_found)
-    Error.PurchasingError.StoreProblem -> resourceProvider.getString(R.string.purchasing_error_store_problem)
-    Error.PurchasingError.PaymentPending -> resourceProvider.getString(R.string.purchasing_error_payment_pending)
-    Error.PurchasingError.PurchaseInvalid -> resourceProvider.getString(R.string.purchasing_error_purchase_invalid)
-    is Error.PurchasingError.Unexpected -> this.message
+    PurchasingError.PurchasingProcessError.Cancelled -> resourceProvider.getString(R.string.purchasing_error_cancelled)
+    PurchasingError.PurchasingProcessError.NetworkError -> resourceProvider.getString(R.string.purchasing_error_network)
+    PurchasingError.PurchasingProcessError.ProductNotFound -> resourceProvider.getString(R.string.purchasing_error_product_not_found)
+    PurchasingError.PurchasingProcessError.StoreProblem -> resourceProvider.getString(R.string.purchasing_error_store_problem)
+    PurchasingError.PurchasingProcessError.PaymentPending -> resourceProvider.getString(R.string.purchasing_error_payment_pending)
+    PurchasingError.PurchasingProcessError.PurchaseInvalid -> resourceProvider.getString(R.string.purchasing_error_purchase_invalid)
+    is PurchasingError.PurchasingProcessError.Unexpected -> this.message
 
-    is Error.ProductNotPurchased -> when (this.product) {
+    is PurchasingError.ProductNotPurchased -> when (this.product) {
         ProductId.ASSISTANT_TRIGGER -> resourceProvider.getString(R.string.purchasing_error_assistant_not_purchased_home_screen)
         ProductId.FLOATING_BUTTONS -> resourceProvider.getString(R.string.purchasing_error_floating_buttons_not_purchased_home_screen)
     }
 
-    Error.PurchasingNotImplemented -> resourceProvider.getString(R.string.purchasing_error_not_implemented)
+    PurchasingError.PurchasingNotImplemented -> resourceProvider.getString(R.string.purchasing_error_not_implemented)
     Error.DpadTriggerImeNotSelected -> resourceProvider.getString(R.string.trigger_error_dpad_ime_not_selected)
     Error.InvalidBackup -> resourceProvider.getString(R.string.error_invalid_backup)
     Error.MalformedUrl -> resourceProvider.getString(R.string.error_malformed_url)
     Error.UiElementNotFound -> resourceProvider.getString(R.string.error_ui_element_not_found)
+    else -> throw IllegalArgumentException("Unknown error $this")
 }
 
 val Error.isFixable: Boolean
@@ -171,10 +178,10 @@ val Error.isFixable: Boolean
         is Error.AppDisabled,
         Error.NoCompatibleImeEnabled,
         Error.NoCompatibleImeChosen,
-        is Error.ImeDisabled,
+        is SystemError.ImeDisabled,
         Error.AccessibilityServiceDisabled,
         Error.AccessibilityServiceCrashed,
-        is Error.PermissionDenied,
+        is SystemError.PermissionDenied,
         is Error.ShizukuNotStarted,
         is Error.CantDetectKeyEventsInPhoneCall,
 

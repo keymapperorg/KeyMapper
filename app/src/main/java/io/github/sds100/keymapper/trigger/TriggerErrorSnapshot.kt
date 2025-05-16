@@ -2,14 +2,14 @@ package io.github.sds100.keymapper.trigger
 
 import android.os.Build
 import android.view.KeyEvent
+import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.result.onFailure
+import io.github.sds100.keymapper.common.result.onSuccess
 import io.github.sds100.keymapper.keymaps.KeyMap
 import io.github.sds100.keymapper.keymaps.requiresImeKeyEventForwardingInPhoneCall
 import io.github.sds100.keymapper.purchasing.ProductId
+import io.github.sds100.keymapper.purchasing.PurchasingError
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Result
-import io.github.sds100.keymapper.util.onFailure
-import io.github.sds100.keymapper.util.onSuccess
 
 /**
  * Store the data required for determining trigger errors to reduce the number of calls with
@@ -39,7 +39,7 @@ data class TriggerErrorSnapshot(
                 return TriggerError.FLOATING_BUTTONS_NOT_PURCHASED
             }
         }.onFailure { error ->
-            if ((key is AssistantTriggerKey || key is FloatingButtonKey) && error == Error.PurchasingError.NetworkError) {
+            if ((key is AssistantTriggerKey || key is FloatingButtonKey) && error == PurchasingError.PurchasingProcessError.NetworkError) {
                 return TriggerError.PURCHASE_VERIFICATION_FAILED
             }
         }

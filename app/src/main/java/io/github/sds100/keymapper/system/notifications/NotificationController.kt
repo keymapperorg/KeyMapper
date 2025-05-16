@@ -6,6 +6,8 @@ import androidx.core.app.NotificationManagerCompat
 import io.github.sds100.keymapper.BaseMainActivity
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.common.result.onFailure
+import io.github.sds100.keymapper.common.result.onSuccess
 import io.github.sds100.keymapper.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
@@ -16,8 +18,6 @@ import io.github.sds100.keymapper.system.inputmethod.ToggleCompatibleImeUseCase
 import io.github.sds100.keymapper.util.DefaultDispatcherProvider
 import io.github.sds100.keymapper.util.DispatcherProvider
 import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.onFailure
-import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow

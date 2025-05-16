@@ -14,22 +14,23 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.result.Success
+import io.github.sds100.keymapper.common.result.onFailure
+import io.github.sds100.keymapper.common.result.onSuccess
+import io.github.sds100.keymapper.common.result.otherwise
+import io.github.sds100.keymapper.common.result.then
+import io.github.sds100.keymapper.common.result.valueOrNull
 import io.github.sds100.keymapper.system.JobSchedulerHelper
 import io.github.sds100.keymapper.system.SettingsUtils
+import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.ServiceEvent
-import io.github.sds100.keymapper.util.Success
-import io.github.sds100.keymapper.util.onFailure
-import io.github.sds100.keymapper.util.onSuccess
-import io.github.sds100.keymapper.util.otherwise
-import io.github.sds100.keymapper.util.then
-import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -203,7 +204,7 @@ class AndroidInputMethodAdapter(
     override suspend fun chooseImeWithoutUserInput(imeId: String): Result<ImeInfo> {
         getInfoById(imeId).onSuccess {
             if (!it.isEnabled) {
-                return Error.ImeDisabled(it)
+                return SystemError.ImeDisabled(it)
             }
         }.onFailure {
             return it

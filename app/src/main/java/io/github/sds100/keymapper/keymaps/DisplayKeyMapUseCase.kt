@@ -3,13 +3,21 @@ package io.github.sds100.keymapper.keymaps
 import android.graphics.drawable.Drawable
 import io.github.sds100.keymapper.actions.DisplayActionUseCase
 import io.github.sds100.keymapper.actions.GetActionErrorUseCase
+import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.result.Success
+import io.github.sds100.keymapper.common.result.otherwise
+import io.github.sds100.keymapper.common.result.then
+import io.github.sds100.keymapper.common.result.valueIfFailure
 import io.github.sds100.keymapper.constraints.DisplayConstraintUseCase
 import io.github.sds100.keymapper.constraints.GetConstraintErrorUseCase
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.purchasing.ProductId
+import io.github.sds100.keymapper.purchasing.PurchasingError
 import io.github.sds100.keymapper.purchasing.PurchasingManager
 import io.github.sds100.keymapper.shizuku.ShizukuUtils
+import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
@@ -19,14 +27,8 @@ import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 import io.github.sds100.keymapper.trigger.TriggerError
 import io.github.sds100.keymapper.trigger.TriggerErrorSnapshot
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.dataOrNull
-import io.github.sds100.keymapper.util.otherwise
-import io.github.sds100.keymapper.util.then
-import io.github.sds100.keymapper.util.valueIfFailure
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -129,11 +131,15 @@ class DisplayKeyMapUseCaseImpl(
 
     override suspend fun fixTriggerError(error: TriggerError) {
         when (error) {
-            TriggerError.DND_ACCESS_DENIED -> fixError(Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY))
-            TriggerError.SCREEN_OFF_ROOT_DENIED -> fixError(Error.PermissionDenied(Permission.ROOT))
+            TriggerError.DND_ACCESS_DENIED -> fixError(SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY))
+            TriggerError.SCREEN_OFF_ROOT_DENIED -> fixError(
+                SystemError.PermissionDenied(
+                    Permission.ROOT,
+                ),
+            )
             TriggerError.CANT_DETECT_IN_PHONE_CALL -> fixError(Error.CantDetectKeyEventsInPhoneCall)
             TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> fixError(
-                Error.ProductNotPurchased(
+                PurchasingError.ProductNotPurchased(
                     ProductId.ASSISTANT_TRIGGER,
                 ),
             )
@@ -141,7 +147,7 @@ class DisplayKeyMapUseCaseImpl(
             TriggerError.DPAD_IME_NOT_SELECTED -> fixError(Error.DpadTriggerImeNotSelected)
             TriggerError.FLOATING_BUTTON_DELETED -> {}
             TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> fixError(
-                Error.ProductNotPurchased(
+                PurchasingError.ProductNotPurchased(
                     ProductId.FLOATING_BUTTONS,
                 ),
             )
@@ -166,8 +172,8 @@ class DisplayKeyMapUseCaseImpl(
                 }
 
             Error.NoCompatibleImeEnabled -> keyMapperImeHelper.enableCompatibleInputMethods()
-            is Error.ImeDisabled -> inputMethodAdapter.enableIme(error.ime.id)
-            is Error.PermissionDenied -> permissionAdapter.request(error.permission)
+            is SystemError.ImeDisabled -> inputMethodAdapter.enableIme(error.ime.id)
+            is SystemError.PermissionDenied -> permissionAdapter.request(error.permission)
             is Error.ShizukuNotStarted -> packageManager.openApp(ShizukuUtils.SHIZUKU_PACKAGE)
             is Error.CantDetectKeyEventsInPhoneCall -> {
                 if (!keyMapperImeHelper.isCompatibleImeEnabled()) {

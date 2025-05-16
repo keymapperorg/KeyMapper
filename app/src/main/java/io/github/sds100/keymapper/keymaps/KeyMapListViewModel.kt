@@ -8,6 +8,11 @@ import io.github.sds100.keymapper.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.backup.ImportExportState
 import io.github.sds100.keymapper.backup.RestoreType
+import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.result.Success
+import io.github.sds100.keymapper.common.result.onFailure
+import io.github.sds100.keymapper.common.result.onSuccess
 import io.github.sds100.keymapper.constraints.ConstraintErrorSnapshot
 import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.constraints.ConstraintUiHelper
@@ -21,6 +26,7 @@ import io.github.sds100.keymapper.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.sorting.SortViewModel
+import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.system.permissions.Permission
@@ -29,16 +35,11 @@ import io.github.sds100.keymapper.trigger.SetupGuiKeyboardState
 import io.github.sds100.keymapper.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.trigger.TriggerError
 import io.github.sds100.keymapper.trigger.TriggerErrorSnapshot
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.ifIsData
 import io.github.sds100.keymapper.util.mapData
-import io.github.sds100.keymapper.util.onFailure
-import io.github.sds100.keymapper.util.onSuccess
 import io.github.sds100.keymapper.util.ui.DialogResponse
 import io.github.sds100.keymapper.util.ui.MultiSelectProvider
 import io.github.sds100.keymapper.util.ui.NavDestination
@@ -540,7 +541,7 @@ class KeyMapListViewModel(
     fun onFixClick(error: Error) {
         coroutineScope.launch {
             when (error) {
-                Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY) -> {
+                SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY) -> {
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@KeyMapListViewModel,
                         popupViewModel = this@KeyMapListViewModel,

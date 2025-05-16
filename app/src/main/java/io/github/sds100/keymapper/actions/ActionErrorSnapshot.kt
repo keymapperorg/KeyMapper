@@ -1,7 +1,11 @@
 package io.github.sds100.keymapper.actions
 
 import io.github.sds100.keymapper.actions.sound.SoundsManager
+import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.result.onFailure
+import io.github.sds100.keymapper.common.result.onSuccess
 import io.github.sds100.keymapper.shizuku.ShizukuAdapter
+import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.camera.CameraLens
@@ -11,9 +15,6 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.onFailure
-import io.github.sds100.keymapper.util.onSuccess
 
 class LazyActionErrorSnapshot(
     private val packageManager: PackageManagerAdapter,
@@ -62,7 +63,7 @@ class LazyActionErrorSnapshot(
                 when {
                     !isShizukuStarted -> return Error.ShizukuNotStarted
 
-                    !isPermissionGranted(Permission.SHIZUKU) -> return Error.PermissionDenied(
+                    !isPermissionGranted(Permission.SHIZUKU) -> return SystemError.PermissionDenied(
                         Permission.SHIZUKU,
                     )
                 }
@@ -79,7 +80,7 @@ class LazyActionErrorSnapshot(
 
         ActionUtils.getRequiredPermissions(action.id).forEach { permission ->
             if (!isPermissionGranted(permission)) {
-                return Error.PermissionDenied(permission)
+                return SystemError.PermissionDenied(permission)
             }
         }
 
@@ -98,7 +99,7 @@ class LazyActionErrorSnapshot(
                 if (
                     action.useShell && !isPermissionGranted(Permission.ROOT)
                 ) {
-                    return Error.PermissionDenied(Permission.ROOT)
+                    return SystemError.PermissionDenied(Permission.ROOT)
                 }
 
             is ActionData.Sound.SoundFile -> {

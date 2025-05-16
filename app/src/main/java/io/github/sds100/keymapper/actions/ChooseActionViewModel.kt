@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.containsQuery
 import io.github.sds100.keymapper.util.getFullMessage
@@ -142,7 +142,7 @@ class ChooseActionViewModel(
             val icon = ActionUtils.getComposeIcon(actionId)
 
             val subtitle = when {
-                error == Error.PermissionDenied(Permission.ROOT) -> getString(R.string.choose_action_warning_requires_root)
+                error == SystemError.PermissionDenied(Permission.ROOT) -> getString(R.string.choose_action_warning_requires_root)
                 error != null -> error.getFullMessage(this@ChooseActionViewModel)
                 else -> null
             }

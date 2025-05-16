@@ -2,9 +2,9 @@ package io.github.sds100.keymapper.system.intents
 
 import android.content.Context
 import android.content.Intent
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Result
-import io.github.sds100.keymapper.util.Success
+import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.result.Success
 
 /**
  * Created by sds100 on 21/04/2021.

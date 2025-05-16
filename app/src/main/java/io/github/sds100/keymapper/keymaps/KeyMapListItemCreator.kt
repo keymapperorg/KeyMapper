@@ -6,6 +6,7 @@ import androidx.compose.material.icons.outlined.Add
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.actions.ActionUiHelper
+import io.github.sds100.keymapper.common.result.Error
 import io.github.sds100.keymapper.constraints.ConstraintErrorSnapshot
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.constraints.ConstraintUiHelper
@@ -21,7 +22,6 @@ import io.github.sds100.keymapper.trigger.Trigger
 import io.github.sds100.keymapper.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.trigger.TriggerMode
-import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.isFixable
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel

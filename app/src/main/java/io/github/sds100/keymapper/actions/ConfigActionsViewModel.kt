@@ -1,18 +1,19 @@
 package io.github.sds100.keymapper.actions
 
 import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.result.onFailure
 import io.github.sds100.keymapper.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.keymaps.KeyMap
 import io.github.sds100.keymapper.keymaps.ShortcutModel
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.util.Error
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.getFullMessage
 import io.github.sds100.keymapper.util.isFixable
 import io.github.sds100.keymapper.util.mapData
-import io.github.sds100.keymapper.util.onFailure
 import io.github.sds100.keymapper.util.ui.ChooseAppStoreModel
 import io.github.sds100.keymapper.util.ui.DialogResponse
 import io.github.sds100.keymapper.util.ui.LinkType
@@ -115,7 +116,7 @@ class ConfigActionsViewModel(
             val error =
                 actionErrorSnapshot.filterNotNull().first().getError(actionData) ?: return@launch
 
-            if (error == Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
+            if (error == SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
                 coroutineScope.launch {
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@ConfigActionsViewModel,

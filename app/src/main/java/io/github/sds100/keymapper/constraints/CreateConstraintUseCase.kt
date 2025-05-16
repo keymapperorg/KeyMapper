@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.constraints
 
 import android.content.pm.PackageManager
 import android.os.Build
+import io.github.sds100.keymapper.common.result.Error
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.camera.CameraAdapter
@@ -9,7 +10,6 @@ import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
-import io.github.sds100.keymapper.util.Error
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map

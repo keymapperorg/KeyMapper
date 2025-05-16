@@ -11,14 +11,14 @@ import android.os.Looper
 import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
 import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.result.Success
 import io.github.sds100.keymapper.system.JobSchedulerHelper
+import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.ServiceEvent
-import io.github.sds100.keymapper.util.Success
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -65,7 +65,7 @@ class NotificationReceiverAdapter(
 
     override suspend fun send(event: ServiceEvent): Result<*> {
         if (state.value != ServiceState.ENABLED) {
-            return Error.PermissionDenied(Permission.NOTIFICATION_LISTENER)
+            return SystemError.PermissionDenied(Permission.NOTIFICATION_LISTENER)
         }
 
         coroutineScope.launch {

@@ -6,11 +6,12 @@ import android.media.AudioManager
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
+import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.result.Success
+import io.github.sds100.keymapper.common.result.then
+import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Result
-import io.github.sds100.keymapper.util.Success
-import io.github.sds100.keymapper.util.then
 
 /**
  * Created by sds100 on 20/04/2021.
@@ -84,7 +85,7 @@ class AndroidVolumeAdapter(context: Context) : VolumeAdapter {
 
             return Success(Unit)
         } catch (e: SecurityException) {
-            return Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)
+            return SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)
         }
     }
 
@@ -157,7 +158,7 @@ class AndroidVolumeAdapter(context: Context) : VolumeAdapter {
 
             return Success(Unit)
         } catch (e: SecurityException) {
-            return Error.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)
+            return SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)
         }
     }
 }

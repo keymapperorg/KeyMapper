@@ -1,12 +1,12 @@
 package io.github.sds100.keymapper.sorting.comparators
 
+import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.result.Success
+import io.github.sds100.keymapper.common.result.then
+import io.github.sds100.keymapper.common.result.valueOrNull
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.DisplayConstraintUseCase
 import io.github.sds100.keymapper.keymaps.KeyMap
-import io.github.sds100.keymapper.util.Result
-import io.github.sds100.keymapper.util.Success
-import io.github.sds100.keymapper.util.then
-import io.github.sds100.keymapper.util.valueOrNull
 import java.time.LocalDate
 import java.time.ZoneOffset
 

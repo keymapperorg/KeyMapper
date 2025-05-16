@@ -4,7 +4,7 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.core.content.pm.ShortcutInfoCompat
-import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.common.result.Result
 import io.github.sds100.keymapper.util.State
 import kotlinx.coroutines.flow.Flow
 

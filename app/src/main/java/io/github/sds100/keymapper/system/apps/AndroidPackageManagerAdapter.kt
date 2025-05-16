@@ -21,11 +21,11 @@ import android.provider.MediaStore
 import android.provider.Settings
 import androidx.core.content.ContextCompat
 import androidx.core.content.pm.PackageInfoCompat
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.result.Success
+import io.github.sds100.keymapper.common.result.success
 import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.Success
-import io.github.sds100.keymapper.util.success
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow

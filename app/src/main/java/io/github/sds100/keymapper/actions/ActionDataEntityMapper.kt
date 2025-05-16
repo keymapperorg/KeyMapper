@@ -3,6 +3,12 @@ package io.github.sds100.keymapper.actions
 import androidx.core.net.toUri
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.actions.uielement.NodeInteractionType
+import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.result.Success
+import io.github.sds100.keymapper.common.result.success
+import io.github.sds100.keymapper.common.result.then
+import io.github.sds100.keymapper.common.result.valueOrNull
 import io.github.sds100.keymapper.data.db.typeconverter.ConstantTypeConverters
 import io.github.sds100.keymapper.data.db.typeconverter.NodeInteractionTypeSetTypeConverter
 import io.github.sds100.keymapper.data.entities.ActionEntity
@@ -15,13 +21,7 @@ import io.github.sds100.keymapper.system.network.HttpMethod
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.Result
-import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.getKey
-import io.github.sds100.keymapper.util.success
-import io.github.sds100.keymapper.util.then
-import io.github.sds100.keymapper.util.valueOrNull
 import kotlinx.serialization.json.Json
 import splitties.bitflags.hasFlag
 

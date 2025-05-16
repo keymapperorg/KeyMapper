@@ -2,10 +2,10 @@ package io.github.sds100.keymapper.system.airplanemode
 
 import android.content.Context
 import android.provider.Settings
+import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.result.onSuccess
 import io.github.sds100.keymapper.system.SettingsUtils
 import io.github.sds100.keymapper.system.root.SuAdapter
-import io.github.sds100.keymapper.util.Result
-import io.github.sds100.keymapper.util.onSuccess
 
 /**
  * Created by sds100 on 24/04/2021.

@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.system.permissions
 
-import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.common.result.Result
 import kotlinx.coroutines.flow.Flow
 
 /**

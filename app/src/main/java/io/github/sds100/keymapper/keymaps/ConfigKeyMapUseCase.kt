@@ -4,6 +4,7 @@ import android.database.sqlite.SQLiteConstraintException
 import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.RepeatMode
+import io.github.sds100.keymapper.common.result.Result
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.constraints.ConstraintState
@@ -26,7 +27,6 @@ import io.github.sds100.keymapper.trigger.Trigger
 import io.github.sds100.keymapper.trigger.TriggerKey
 import io.github.sds100.keymapper.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.trigger.TriggerMode
-import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.ServiceEvent
 import io.github.sds100.keymapper.util.State
 import io.github.sds100.keymapper.util.dataOrNull

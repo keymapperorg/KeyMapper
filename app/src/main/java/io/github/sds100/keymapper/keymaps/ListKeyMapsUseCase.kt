@@ -5,6 +5,8 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupManager
 import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.backup.BackupUtils
+import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.result.Success
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.ConstraintEntityMapper
 import io.github.sds100.keymapper.constraints.ConstraintMode
@@ -17,9 +19,7 @@ import io.github.sds100.keymapper.groups.Group
 import io.github.sds100.keymapper.groups.GroupEntityMapper
 import io.github.sds100.keymapper.groups.GroupFamily
 import io.github.sds100.keymapper.system.files.FileAdapter
-import io.github.sds100.keymapper.util.Result
 import io.github.sds100.keymapper.util.State
-import io.github.sds100.keymapper.util.Success
 import io.github.sds100.keymapper.util.dataOrNull
 import io.github.sds100.keymapper.util.ui.ResourceProvider
 import kotlinx.coroutines.Dispatchers
