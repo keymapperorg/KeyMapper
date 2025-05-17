@@ -10,9 +10,9 @@ import androidx.preference.isEmpty
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
-import io.github.sds100.keymapper.system.notifications.NotificationController
+import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.system.notifications.NotificationUtils
-import io.github.sds100.keymapper.common.util.viewLifecycleScope
+import io.github.sds100.keymapper.base.utils.ui.viewLifecycleScope
 
 class AutomaticallyChangeImeSettings : BaseSettingsFragment() {
 

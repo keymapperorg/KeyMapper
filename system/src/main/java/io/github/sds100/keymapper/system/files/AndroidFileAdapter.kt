@@ -11,9 +11,9 @@ import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.file.toDocumentFile
 import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.common.util.result.Error
-import io.github.sds100.keymapper.common.util.result.Result
-import io.github.sds100.keymapper.common.util.result.Success
+import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.Success
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.lingala.zip4j.ZipFile

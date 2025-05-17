@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.floating
 
-import io.github.sds100.keymapper.base.util.ui.PopupViewModel
-import io.github.sds100.keymapper.base.util.ui.PopupViewModelImpl
-import io.github.sds100.keymapper.base.util.ui.ResourceProvider
+import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
+import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

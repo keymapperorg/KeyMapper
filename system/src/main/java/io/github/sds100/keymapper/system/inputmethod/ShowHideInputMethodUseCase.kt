@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.system.inputmethod
 
-import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
-import io.github.sds100.keymapper.base.util.ServiceEvent
+import io.github.sds100.keymapper.system.service.ServiceAdapter
+import io.github.sds100.keymapper.base.utils.ServiceEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.runBlocking

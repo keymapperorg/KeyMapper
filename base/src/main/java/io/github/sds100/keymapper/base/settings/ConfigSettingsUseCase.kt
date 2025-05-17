@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.base.settings
 import androidx.datastore.preferences.core.Preferences
 import io.github.sds100.keymapper.actions.sound.SoundFileInfo
 import io.github.sds100.keymapper.actions.sound.SoundsManager
-import io.github.sds100.keymapper.common.util.result.Result
+import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -18,7 +18,7 @@ import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
-import io.github.sds100.keymapper.common.util.state.State
+import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.channelFlow

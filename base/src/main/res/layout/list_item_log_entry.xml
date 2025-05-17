@@ -7,7 +7,7 @@
 
         <import type="android.view.View" />
 
-        <import type="io.github.sds100.keymapper.base.util.ui.TintType" />
+        <import type="io.github.sds100.keymapper.base.utils.ui.TintType" />
 
         <variable
             name="model"

@@ -40,8 +40,7 @@ import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.system.network.HttpMethod
-import io.github.sds100.keymapper.base.util.ui.compose.KeyMapperDropdownMenu
-import io.github.sds100.keymapper.mapping.actions.ActionData
+import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperDropdownMenu
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull

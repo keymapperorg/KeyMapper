@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.system.files
 
 import com.anggrayudi.storage.file.recreateFile
-import io.github.sds100.keymapper.common.util.result.Result
-import io.github.sds100.keymapper.common.util.result.Success
+import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.Success
 import timber.log.Timber
 import java.io.File
 import java.io.InputStream

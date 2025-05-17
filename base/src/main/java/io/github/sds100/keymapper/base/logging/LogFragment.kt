@@ -18,11 +18,11 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.logEntry
 import io.github.sds100.keymapper.system.files.FileUtils
-import io.github.sds100.keymapper.base.util.Inject
-import io.github.sds100.keymapper.common.util.state.State
-import io.github.sds100.keymapper.common.util.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.util.ui.SimpleRecyclerViewFragment
-import io.github.sds100.keymapper.base.util.ui.showPopups
+import io.github.sds100.keymapper.base.utils.Inject
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.base.utils.ui.SimpleRecyclerViewFragment
+import io.github.sds100.keymapper.base.utils.ui.showPopups
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 

@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.system
 
-import io.github.sds100.keymapper.common.util.result.Error
-import io.github.sds100.keymapper.common.util.result.Result
-import io.github.sds100.keymapper.common.util.result.Success
+import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.shell.ShellAdapter
 import java.io.IOException
 import java.io.InputStream

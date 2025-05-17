@@ -73,15 +73,15 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.system.apps.ChooseAppScreen
-import io.github.sds100.keymapper.common.util.state.State
-import io.github.sds100.keymapper.base.util.drawable
-import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.util.ui.compose.KeyMapperDropdownMenu
-import io.github.sds100.keymapper.base.util.ui.compose.OptionsHeaderRow
-import io.github.sds100.keymapper.base.util.ui.compose.WindowSizeClassExt.compareTo
-import io.github.sds100.keymapper.base.util.ui.compose.icons.AdGroup
-import io.github.sds100.keymapper.base.util.ui.compose.icons.JumpToElement
-import io.github.sds100.keymapper.base.util.ui.compose.icons.KeyMapperIcons
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.base.utils.drawable
+import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperDropdownMenu
+import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
+import io.github.sds100.keymapper.base.utils.ui.compose.WindowSizeClassExt.compareTo
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.AdGroup
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.JumpToElement
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.system.accessibility.NodeInteractionType
 import kotlinx.coroutines.flow.update
 

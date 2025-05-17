@@ -163,6 +163,7 @@ android {
 dependencies {
     implementation(fileTree(mapOf("include" to listOf("*.jar"), "dir" to "libs")))
 
+    // TODO is just base and common required?
     implementation(project(":common"))
     implementation(project(":base"))
     implementation(project(":api"))

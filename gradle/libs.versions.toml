@@ -202,12 +202,8 @@ dagger-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "da
 
 [bundles]
 splitties = [
-    "splitties-bitflags",
     "splitties-alertdialog-appcompat-coroutines",
     "splitties-alertdialog-material",
-    "splitties-snackbar",
-    "splitties-toast",
-    "splitties-mainthread",
 ]
 androidx-lifecycle = [
     "androidx-lifecycle-viewmodel-ktx",

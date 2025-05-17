@@ -10,7 +10,7 @@
 
         <variable
             name="model"
-            type="io.github.sds100.keymapper.base.util.ui.SimpleListItemOld" />
+            type="io.github.sds100.keymapper.base.utils.ui.SimpleListItemOld" />
 
         <variable
             name="onClickListener"

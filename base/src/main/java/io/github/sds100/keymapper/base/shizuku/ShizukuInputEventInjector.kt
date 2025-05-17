@@ -7,7 +7,7 @@ import android.os.SystemClock
 import android.view.KeyEvent
 import io.github.sds100.keymapper.system.inputevents.InputEventInjector
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
-import io.github.sds100.keymapper.base.util.InputEventType
+import io.github.sds100.keymapper.base.utils.InputEventType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import rikka.shizuku.ShizukuBinderWrapper

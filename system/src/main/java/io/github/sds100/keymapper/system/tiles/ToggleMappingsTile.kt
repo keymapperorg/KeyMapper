@@ -12,9 +12,9 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.UseCases
 import io.github.sds100.keymapper.system.accessibility.ServiceState
-import io.github.sds100.keymapper.base.util.firstBlocking
-import io.github.sds100.keymapper.base.util.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.util.str
+import io.github.sds100.keymapper.base.utils.firstBlocking
+import io.github.sds100.keymapper.base.utils.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.base.utils.str
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 

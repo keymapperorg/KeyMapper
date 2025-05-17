@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.base.system.apps
 
 import android.graphics.drawable.Drawable
-import io.github.sds100.keymapper.common.util.result.Result
-import io.github.sds100.keymapper.common.util.state.State
+import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.apps.PackageInfo
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import kotlinx.coroutines.flow.Flow

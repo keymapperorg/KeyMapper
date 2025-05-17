@@ -1,9 +1,9 @@
 package io.github.sds100.keymapper.purchasing
 
 import android.content.Context
-import io.github.sds100.keymapper.base.util.Error
-import io.github.sds100.keymapper.base.util.Result
-import io.github.sds100.keymapper.base.util.State
+import io.github.sds100.keymapper.base.utils.Error
+import io.github.sds100.keymapper.base.utils.Result
+import io.github.sds100.keymapper.base.utils.State
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow

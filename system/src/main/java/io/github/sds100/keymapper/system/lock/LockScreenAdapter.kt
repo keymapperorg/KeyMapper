@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.system.lock
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import io.github.sds100.keymapper.common.util.result.Result
+import io.github.sds100.keymapper.common.utils.Result
 import kotlinx.coroutines.flow.Flow
 
 

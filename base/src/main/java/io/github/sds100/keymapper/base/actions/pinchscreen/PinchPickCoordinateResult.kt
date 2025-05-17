@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.base.actions.pinchscreen
 
-import io.github.sds100.keymapper.mapping.actions.PinchScreenType
+import io.github.sds100.keymapper.common.utils.PinchScreenType
 import kotlinx.serialization.Serializable
 
 @Serializable

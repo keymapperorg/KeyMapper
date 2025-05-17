@@ -5,20 +5,19 @@ import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.common.util.state.State
-import io.github.sds100.keymapper.base.util.containsQuery
-import io.github.sds100.keymapper.base.util.getFullMessage
-import io.github.sds100.keymapper.base.util.ui.DialogResponse
-import io.github.sds100.keymapper.base.util.ui.NavigationViewModel
-import io.github.sds100.keymapper.base.util.ui.NavigationViewModelImpl
-import io.github.sds100.keymapper.base.util.ui.PopupUi
-import io.github.sds100.keymapper.base.util.ui.PopupViewModel
-import io.github.sds100.keymapper.base.util.ui.PopupViewModelImpl
-import io.github.sds100.keymapper.base.util.ui.ResourceProvider
-import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.util.ui.compose.SimpleListItemGroup
-import io.github.sds100.keymapper.base.util.ui.compose.SimpleListItemModel
-import io.github.sds100.keymapper.base.util.ui.showPopup
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.base.utils.containsQuery
+import io.github.sds100.keymapper.base.utils.getFullMessage
+import io.github.sds100.keymapper.base.utils.ui.DialogResponse
+import io.github.sds100.keymapper.base.utils.ui.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.ui.NavigationViewModelImpl
+import io.github.sds100.keymapper.base.utils.ui.PopupUi
+import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
+import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemGroup
+import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
+import io.github.sds100.keymapper.base.utils.ui.showPopup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,9 +29,6 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.sds100.keymapper.mapping.actions.ActionCategory
-import io.github.sds100.keymapper.mapping.actions.ActionId
-import io.github.sds100.keymapper.mapping.actions.ActionUtils
 import javax.inject.Inject
 
 @HiltViewModel

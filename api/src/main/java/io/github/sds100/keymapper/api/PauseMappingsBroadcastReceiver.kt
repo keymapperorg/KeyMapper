@@ -4,8 +4,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.sds100.keymapper.common.util.firstBlocking
-import io.github.sds100.keymapper.mapping.keymaps.PauseKeyMapsUseCase
+import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
+import io.github.sds100.keymapper.common.utils.firstBlocking
 import javax.inject.Inject
 
 // DON'T MOVE THIS CLASS TO A DIFFERENT PACKAGE BECAUSE IT BREAKS THE API

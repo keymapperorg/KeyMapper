@@ -39,15 +39,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.base.util.ui.SliderMaximums
-import io.github.sds100.keymapper.base.util.ui.SliderMinimums
-import io.github.sds100.keymapper.base.util.ui.SliderStepSizes
-import io.github.sds100.keymapper.base.util.ui.compose.CheckBoxText
-import io.github.sds100.keymapper.base.util.ui.compose.RadioButtonText
-import io.github.sds100.keymapper.base.util.ui.compose.SliderOptionText
-import io.github.sds100.keymapper.base.util.ui.compose.openUriSafe
-import io.github.sds100.keymapper.mapping.actions.HoldDownMode
-import io.github.sds100.keymapper.mapping.actions.RepeatMode
+import io.github.sds100.keymapper.base.utils.ui.SliderMaximums
+import io.github.sds100.keymapper.base.utils.ui.SliderMinimums
+import io.github.sds100.keymapper.base.utils.ui.SliderStepSizes
+import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
+import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
+import io.github.sds100.keymapper.base.utils.ui.compose.SliderOptionText
+import io.github.sds100.keymapper.base.utils.ui.compose.openUriSafe
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

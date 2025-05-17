@@ -40,13 +40,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.common.util.state.State
-import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.util.ui.compose.SearchAppBarActions
-import io.github.sds100.keymapper.base.util.ui.compose.SimpleListItemFixedHeight
-import io.github.sds100.keymapper.base.util.ui.compose.SimpleListItemGroup
-import io.github.sds100.keymapper.base.util.ui.compose.SimpleListItemHeader
-import io.github.sds100.keymapper.base.util.ui.compose.SimpleListItemModel
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.utils.ui.compose.SearchAppBarActions
+import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemFixedHeight
+import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemGroup
+import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemHeader
+import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
 import kotlinx.coroutines.flow.update
 
 @Composable

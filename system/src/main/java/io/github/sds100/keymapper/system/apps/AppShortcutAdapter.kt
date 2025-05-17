@@ -4,8 +4,8 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.core.content.pm.ShortcutInfoCompat
-import io.github.sds100.keymapper.common.util.result.Result
-import io.github.sds100.keymapper.common.util.state.State
+import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.flow.Flow
 
 interface AppShortcutAdapter {

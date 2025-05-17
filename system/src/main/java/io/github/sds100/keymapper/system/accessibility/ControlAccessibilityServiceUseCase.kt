@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.system.accessibility
 
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
+import io.github.sds100.keymapper.system.service.ServiceAdapter
 import kotlinx.coroutines.flow.Flow
 
 class ControlAccessibilityServiceUseCaseImpl(

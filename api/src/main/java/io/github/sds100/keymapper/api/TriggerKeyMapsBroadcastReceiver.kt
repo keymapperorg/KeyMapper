@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.base.util.ServiceEvent
+import io.github.sds100.keymapper.base.utils.ServiceEvent
 import kotlinx.coroutines.launch
 
 // DON'T MOVE THIS CLASS TO A DIFFERENT PACKAGE BECAUSE IT BREAKS THE API

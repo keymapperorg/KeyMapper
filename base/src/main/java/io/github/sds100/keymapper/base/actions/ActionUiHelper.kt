@@ -5,26 +5,22 @@ import android.view.KeyEvent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.common.util.result.handle
+import io.github.sds100.keymapper.common.utils.handle
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
-import io.github.sds100.keymapper.system.display.OrientationUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.intents.IntentTarget
 import io.github.sds100.keymapper.system.volume.DndModeUtils
 import io.github.sds100.keymapper.system.volume.RingerModeUtils
 import io.github.sds100.keymapper.system.volume.VolumeStreamUtils
-import io.github.sds100.keymapper.base.util.toPercentString
-import io.github.sds100.keymapper.base.util.ui.IconInfo
-import io.github.sds100.keymapper.base.util.ui.ResourceProvider
-import io.github.sds100.keymapper.base.util.ui.TintType
-import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.mapping.actions.Action
-import io.github.sds100.keymapper.mapping.actions.ActionData
-import io.github.sds100.keymapper.mapping.actions.ActionUtils
-import io.github.sds100.keymapper.mapping.actions.PinchScreenType
-import io.github.sds100.keymapper.mapping.actions.RepeatMode
+import io.github.sds100.keymapper.base.utils.toPercentString
+import io.github.sds100.keymapper.base.utils.ui.IconInfo
+import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.base.utils.ui.TintType
+import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.common.utils.PinchScreenType
+import io.github.sds100.keymapper.system.display.Orientation
 import splitties.bitflags.hasFlag
 
 class ActionUiHelper(
@@ -506,8 +502,13 @@ class ActionUiHelper(
         ActionData.OpenSettings -> getString(R.string.action_open_settings)
 
         is ActionData.Rotation.CycleRotations -> {
-            val orientationStrings = action.orientations.map {
-                getString(OrientationUtils.getLabel(it))
+            val orientationStrings = action.orientations.map { orientation ->
+                when (orientation) {
+                    Orientation.ORIENTATION_0 -> R.string.orientation_0
+                    Orientation.ORIENTATION_90 -> R.string.orientation_90
+                    Orientation.ORIENTATION_180 -> R.string.orientation_180
+                    Orientation.ORIENTATION_270 -> R.string.orientation_270
+                }
             }
 
             getString(

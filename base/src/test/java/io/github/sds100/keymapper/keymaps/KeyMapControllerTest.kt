@@ -7,7 +7,7 @@ import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
-import io.github.sds100.keymapper.common.util.result.Error
+import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.constraints.ConstraintSnapshot
@@ -27,12 +27,12 @@ import io.github.sds100.keymapper.trigger.Trigger
 import io.github.sds100.keymapper.trigger.TriggerKey
 import io.github.sds100.keymapper.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.trigger.TriggerMode
-import io.github.sds100.keymapper.base.util.InputEventType
-import io.github.sds100.keymapper.base.util.TestConstraintSnapshot
-import io.github.sds100.keymapper.base.util.parallelTrigger
-import io.github.sds100.keymapper.base.util.sequenceTrigger
-import io.github.sds100.keymapper.base.util.singleKeyTrigger
-import io.github.sds100.keymapper.base.util.triggerKey
+import io.github.sds100.keymapper.base.utils.InputEventType
+import io.github.sds100.keymapper.base.utils.TestConstraintSnapshot
+import io.github.sds100.keymapper.base.utils.parallelTrigger
+import io.github.sds100.keymapper.base.utils.sequenceTrigger
+import io.github.sds100.keymapper.base.utils.singleKeyTrigger
+import io.github.sds100.keymapper.base.utils.triggerKey
 import junitparams.JUnitParamsRunner
 import junitparams.Parameters
 import junitparams.naming.TestCaseName

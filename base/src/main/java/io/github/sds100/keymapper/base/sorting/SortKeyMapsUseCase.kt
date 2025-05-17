@@ -1,7 +1,5 @@
 package io.github.sds100.keymapper.base.sorting
 
-import android.content.Context
-import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
@@ -10,7 +8,7 @@ import io.github.sds100.keymapper.sorting.comparators.KeyMapActionsComparator
 import io.github.sds100.keymapper.sorting.comparators.KeyMapConstraintsComparator
 import io.github.sds100.keymapper.sorting.comparators.KeyMapOptionsComparator
 import io.github.sds100.keymapper.sorting.comparators.KeyMapTriggerComparator
-import io.github.sds100.keymapper.base.util.SettingsRepository
+import io.github.sds100.keymapper.base.utils.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json

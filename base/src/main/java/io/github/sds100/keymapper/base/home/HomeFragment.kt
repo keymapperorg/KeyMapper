@@ -22,9 +22,9 @@ import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.databinding.FragmentComposeBinding
-import io.github.sds100.keymapper.base.util.Inject
-import io.github.sds100.keymapper.base.util.ui.setupNavigation
-import io.github.sds100.keymapper.base.util.ui.showPopups
+import io.github.sds100.keymapper.base.utils.Inject
+import io.github.sds100.keymapper.base.utils.ui.setupNavigation
+import io.github.sds100.keymapper.base.utils.ui.showPopups
 
 class HomeFragment : Fragment() {
 

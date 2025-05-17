@@ -20,7 +20,7 @@ import io.github.sds100.keymapper.MainActivity
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.base.util.ui.compose.CustomDialogContent
+import io.github.sds100.keymapper.base.utils.ui.compose.CustomDialogContent
 
 class RestoreKeyMapsActivity : ComponentActivity() {
 

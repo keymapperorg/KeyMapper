@@ -56,7 +56,7 @@ import com.canopas.lib.showcase.IntroShowcase
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.ImportExportState
 import io.github.sds100.keymapper.backup.RestoreType
-import io.github.sds100.keymapper.common.util.result.Error
+import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.groups.GroupListItemModel
@@ -69,15 +69,15 @@ import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.trigger.DpadTriggerSetupBottomSheet
 import io.github.sds100.keymapper.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.trigger.TriggerError
-import io.github.sds100.keymapper.base.util.ShareUtils
-import io.github.sds100.keymapper.common.util.state.State
-import io.github.sds100.keymapper.base.util.drawable
-import io.github.sds100.keymapper.base.util.ui.compose.CollapsableFloatingActionButton
-import io.github.sds100.keymapper.base.util.ui.compose.ComposeChipModel
-import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.util.ui.compose.KeyMapperTapTarget
-import io.github.sds100.keymapper.base.util.ui.compose.keyMapperShowcaseStyle
-import io.github.sds100.keymapper.base.util.ui.compose.openUriSafe
+import io.github.sds100.keymapper.base.utils.ShareUtils
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.base.utils.drawable
+import io.github.sds100.keymapper.base.utils.ui.compose.CollapsableFloatingActionButton
+import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
+import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperTapTarget
+import io.github.sds100.keymapper.base.utils.ui.compose.keyMapperShowcaseStyle
+import io.github.sds100.keymapper.base.utils.ui.compose.openUriSafe
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

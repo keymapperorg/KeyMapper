@@ -1,13 +1,9 @@
 package io.github.sds100.keymapper.system
 
-import android.content.Context
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.airplanemode.AndroidAirplaneModeAdapter
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
 import io.github.sds100.keymapper.system.apps.AndroidAppShortcutAdapter
@@ -59,7 +55,6 @@ import io.github.sds100.keymapper.system.vibrator.AndroidVibratorAdapter
 import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
 import io.github.sds100.keymapper.system.volume.AndroidVolumeAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
-import kotlinx.coroutines.CoroutineScope
 import javax.inject.Singleton
 
 @Module

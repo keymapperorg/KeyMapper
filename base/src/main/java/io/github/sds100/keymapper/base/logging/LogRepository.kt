@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.base.logging
 
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
-import io.github.sds100.keymapper.common.util.state.State
+import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.flow.Flow
 
 

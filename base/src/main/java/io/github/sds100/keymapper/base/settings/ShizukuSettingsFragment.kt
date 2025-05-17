@@ -7,10 +7,10 @@ import androidx.preference.Preference
 import androidx.preference.isEmpty
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.url.UrlUtils
-import io.github.sds100.keymapper.base.util.drawable
-import io.github.sds100.keymapper.common.util.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.util.str
-import io.github.sds100.keymapper.common.util.viewLifecycleScope
+import io.github.sds100.keymapper.base.utils.drawable
+import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.base.utils.str
+import io.github.sds100.keymapper.base.utils.ui.viewLifecycleScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn

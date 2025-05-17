@@ -91,7 +91,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.common.util.result.Error
+import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.constraints.ConstraintMode
@@ -101,12 +101,12 @@ import io.github.sds100.keymapper.groups.GroupConstraintRow
 import io.github.sds100.keymapper.groups.GroupListItemModel
 import io.github.sds100.keymapper.groups.GroupRow
 import io.github.sds100.keymapper.base.keymaps.KeyMapAppBarState
-import io.github.sds100.keymapper.base.util.drawable
-import io.github.sds100.keymapper.base.util.ui.compose.ComposeChipModel
-import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.util.ui.compose.RadioButtonText
-import io.github.sds100.keymapper.base.util.ui.compose.icons.Import
-import io.github.sds100.keymapper.base.util.ui.compose.icons.KeyMapperIcons
+import io.github.sds100.keymapper.base.utils.drawable
+import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
+import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.Import
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import kotlinx.coroutines.launch
 
 @Composable

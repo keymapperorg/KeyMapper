@@ -3,9 +3,9 @@ package io.github.sds100.keymapper.data.repositories
 import io.github.sds100.keymapper.data.db.dao.FloatingButtonDao
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntity
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
-import io.github.sds100.keymapper.base.util.DefaultDispatcherProvider
-import io.github.sds100.keymapper.base.util.DispatcherProvider
-import io.github.sds100.keymapper.common.util.state.State
+import io.github.sds100.keymapper.base.utils.DefaultDispatcherProvider
+import io.github.sds100.keymapper.base.utils.DispatcherProvider
+import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted

@@ -8,8 +8,8 @@ import io.github.sds100.keymapper.actions.sound.SoundsManager
 import io.github.sds100.keymapper.backup.BackupContent
 import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.backup.RestoreType
-import io.github.sds100.keymapper.common.util.result.Error
-import io.github.sds100.keymapper.common.util.result.Success
+import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.data.db.AppDatabase
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
@@ -26,8 +26,8 @@ import io.github.sds100.keymapper.base.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.files.FakeFileAdapter
 import io.github.sds100.keymapper.system.files.IFile
 import io.github.sds100.keymapper.system.files.JavaFile
-import io.github.sds100.keymapper.common.util.state.State
-import io.github.sds100.keymapper.base.util.UuidGenerator
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.base.utils.UuidGenerator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

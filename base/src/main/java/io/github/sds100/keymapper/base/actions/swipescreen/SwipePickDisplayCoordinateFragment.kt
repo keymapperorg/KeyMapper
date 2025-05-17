@@ -22,11 +22,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import io.github.sds100.keymapper.databinding.FragmentSwipePickCoordinatesBinding
 import io.github.sds100.keymapper.system.files.FileUtils
-import io.github.sds100.keymapper.base.util.Inject
-import io.github.sds100.keymapper.common.util.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.util.ui.showPopups
+import io.github.sds100.keymapper.base.utils.Inject
+import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.base.utils.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class SwipePickDisplayCoordinateFragment : Fragment() {

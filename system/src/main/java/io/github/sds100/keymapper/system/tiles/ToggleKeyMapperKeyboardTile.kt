@@ -12,11 +12,11 @@ import androidx.lifecycle.lifecycleScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.UseCases
-import io.github.sds100.keymapper.common.util.result.onFailure
-import io.github.sds100.keymapper.common.util.result.onSuccess
-import io.github.sds100.keymapper.base.util.getFullMessage
-import io.github.sds100.keymapper.base.util.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.util.str
+import io.github.sds100.keymapper.common.utils.onFailure
+import io.github.sds100.keymapper.common.utils.onSuccess
+import io.github.sds100.keymapper.base.utils.getFullMessage
+import io.github.sds100.keymapper.base.utils.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.base.utils.str
 import kotlinx.coroutines.flow.first
 import splitties.toast.toast
 

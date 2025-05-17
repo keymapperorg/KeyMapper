@@ -2,15 +2,15 @@ package io.github.sds100.keymapper.actions
 
 import android.view.InputDevice
 import android.view.KeyEvent
-import io.github.sds100.keymapper.common.util.result.Error
+import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.devices.FakeDevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
-import io.github.sds100.keymapper.base.util.InputEventType
-import io.github.sds100.keymapper.common.util.state.State
+import io.github.sds100.keymapper.base.utils.InputEventType
+import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestScope

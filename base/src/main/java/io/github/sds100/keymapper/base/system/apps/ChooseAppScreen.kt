@@ -32,13 +32,13 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.common.util.state.State
+import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.base.util.drawable
-import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.util.ui.compose.SearchAppBarActions
-import io.github.sds100.keymapper.base.util.ui.compose.SimpleListItem
-import io.github.sds100.keymapper.base.util.ui.compose.SimpleListItemModel
+import io.github.sds100.keymapper.base.utils.drawable
+import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.utils.ui.compose.SearchAppBarActions
+import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItem
+import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
 
 @Composable
 fun ChooseAppScreen(

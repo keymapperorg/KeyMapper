@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
+import io.github.sds100.keymapper.system.service.ServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import javax.inject.Inject
 

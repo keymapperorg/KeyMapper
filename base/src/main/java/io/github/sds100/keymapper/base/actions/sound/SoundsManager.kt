@@ -1,11 +1,11 @@
 package io.github.sds100.keymapper.base.actions.sound
 
-import io.github.sds100.keymapper.common.util.result.Error
-import io.github.sds100.keymapper.common.util.result.Result
-import io.github.sds100.keymapper.common.util.result.Success
-import io.github.sds100.keymapper.common.util.result.onFailure
-import io.github.sds100.keymapper.common.util.result.onSuccess
-import io.github.sds100.keymapper.common.util.result.then
+import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.onFailure
+import io.github.sds100.keymapper.common.utils.onSuccess
+import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.IFile
 import kotlinx.coroutines.CoroutineScope

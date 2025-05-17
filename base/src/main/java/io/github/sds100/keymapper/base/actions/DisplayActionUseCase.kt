@@ -1,9 +1,8 @@
 package io.github.sds100.keymapper.base.actions
 
 import android.graphics.drawable.Drawable
-import io.github.sds100.keymapper.common.util.result.Error
-import io.github.sds100.keymapper.common.util.result.Result
-import io.github.sds100.keymapper.mapping.actions.GetActionErrorUseCase
+import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.Result
 import kotlinx.coroutines.flow.Flow
 
 interface DisplayActionUseCase : GetActionErrorUseCase {

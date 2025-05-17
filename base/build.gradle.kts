@@ -60,11 +60,9 @@ android {
 
 dependencies {
     implementation(project(":common"))
-    implementation(project(":api"))
     implementation(project(":data"))
     implementation(project(":system"))
     implementation(project(":systemstubs"))
-    implementation(project(":mapping"))
 
     // TODO delete the unused libraries and plugins
 
@@ -92,8 +90,6 @@ dependencies {
     implementation(libs.canopas.introshowcaseview)
     implementation(libs.dagger.hilt.android)
     ksp(libs.dagger.hilt.android.compiler)
-
-    // splitties
     implementation(libs.bundles.splitties)
 
     // androidx

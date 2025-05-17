@@ -12,7 +12,7 @@ import io.github.sds100.keymapper.data.migration.JsonMigration
 import io.github.sds100.keymapper.data.migration.MigrationUtils
 import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration0To1
 import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration1To2
-import io.github.sds100.keymapper.base.util.JsonTestUtils
+import io.github.sds100.keymapper.base.utils.JsonTestUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher

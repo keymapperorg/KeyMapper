@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.data.repositories
 import io.github.sds100.keymapper.data.db.dao.LogEntryDao
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.logging.LogRepository
-import io.github.sds100.keymapper.common.util.state.State
+import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

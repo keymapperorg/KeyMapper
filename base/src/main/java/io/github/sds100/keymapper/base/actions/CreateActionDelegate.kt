@@ -11,7 +11,6 @@ import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
 import io.github.sds100.keymapper.system.display.Orientation
-import io.github.sds100.keymapper.system.display.OrientationUtils
 import io.github.sds100.keymapper.base.ui.intents.ConfigIntentResult
 import io.github.sds100.keymapper.system.network.HttpMethod
 import io.github.sds100.keymapper.system.volume.DndMode
@@ -20,17 +19,14 @@ import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.RingerModeUtils
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.system.volume.VolumeStreamUtils
-import io.github.sds100.keymapper.base.util.ui.MultiChoiceItem
-import io.github.sds100.keymapper.base.util.ui.NavDestination
-import io.github.sds100.keymapper.base.util.ui.NavigationViewModel
-import io.github.sds100.keymapper.base.util.ui.PopupUi
-import io.github.sds100.keymapper.base.util.ui.PopupViewModel
-import io.github.sds100.keymapper.base.util.ui.ResourceProvider
-import io.github.sds100.keymapper.base.util.ui.navigate
-import io.github.sds100.keymapper.base.util.ui.showPopup
-import io.github.sds100.keymapper.mapping.actions.ActionData
-import io.github.sds100.keymapper.mapping.actions.ActionId
-import io.github.sds100.keymapper.mapping.actions.isEditable
+import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
+import io.github.sds100.keymapper.base.utils.ui.NavDestination
+import io.github.sds100.keymapper.base.utils.ui.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.ui.PopupUi
+import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
+import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.base.utils.ui.navigate
+import io.github.sds100.keymapper.base.utils.ui.showPopup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -359,9 +355,16 @@ class CreateActionDelegate(
                         false
                     }
 
+                    val label = when (orientation) {
+                        Orientation.ORIENTATION_0 -> R.string.orientation_0
+                        Orientation.ORIENTATION_90 -> R.string.orientation_90
+                        Orientation.ORIENTATION_180 -> R.string.orientation_180
+                        Orientation.ORIENTATION_270 -> R.string.orientation_270
+                    }
+
                     MultiChoiceItem(
                         orientation,
-                        getString(OrientationUtils.getLabel(orientation)),
+                        getString(label),
                         isChecked,
                     )
                 }

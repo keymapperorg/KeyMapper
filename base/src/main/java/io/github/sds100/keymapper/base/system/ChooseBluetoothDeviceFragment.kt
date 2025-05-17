@@ -4,17 +4,17 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
-import io.github.sds100.keymapper.common.util.state.State
+import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.fixError
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.base.util.Inject
-import io.github.sds100.keymapper.common.util.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.util.ui.ListItem
-import io.github.sds100.keymapper.base.util.ui.RecyclerViewUtils
-import io.github.sds100.keymapper.base.util.ui.SimpleListItemOld
-import io.github.sds100.keymapper.base.util.ui.SimpleRecyclerViewFragment
-import io.github.sds100.keymapper.base.util.ui.TextListItem
+import io.github.sds100.keymapper.base.utils.Inject
+import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.base.utils.ui.ListItem
+import io.github.sds100.keymapper.base.utils.ui.RecyclerViewUtils
+import io.github.sds100.keymapper.base.utils.ui.SimpleListItemOld
+import io.github.sds100.keymapper.base.utils.ui.SimpleRecyclerViewFragment
+import io.github.sds100.keymapper.base.utils.ui.TextListItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 

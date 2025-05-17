@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.constraints
 
-import io.github.sds100.keymapper.base.util.TestConstraintSnapshot
+import io.github.sds100.keymapper.base.utils.TestConstraintSnapshot
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.junit.Test

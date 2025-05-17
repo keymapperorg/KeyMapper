@@ -1,9 +1,9 @@
 package io.github.sds100.keymapper.base.sorting.comparators
 
-import io.github.sds100.keymapper.common.util.result.Result
-import io.github.sds100.keymapper.common.util.result.Success
-import io.github.sds100.keymapper.common.util.result.then
-import io.github.sds100.keymapper.common.util.result.valueOrNull
+import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.then
+import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.DisplayConstraintUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap

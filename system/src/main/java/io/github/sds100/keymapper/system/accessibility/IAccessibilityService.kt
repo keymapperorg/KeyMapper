@@ -2,9 +2,9 @@ package io.github.sds100.keymapper.system.accessibility
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
-import io.github.sds100.keymapper.common.util.result.Result
-import io.github.sds100.keymapper.base.util.InputEventType
+import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.base.utils.InputEventType
+import io.github.sds100.keymapper.common.utils.PinchScreenType
 import kotlinx.coroutines.flow.Flow
 
 interface IAccessibilityService {

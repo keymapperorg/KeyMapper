@@ -12,8 +12,6 @@ android {
     compileSdk = libs.versions.compile.sdk.get().toInt()
 
     defaultConfig {
-        minSdk = 21
-
         minSdk = libs.versions.min.sdk.get().toInt()
     }
 
@@ -37,7 +35,7 @@ android {
 
 dependencies {
     implementation(project(":common"))
-    implementation(project(":api"))
+    implementation(project(":data"))
 
     // kotlin stuff
     implementation(libs.kotlinx.coroutines.android)

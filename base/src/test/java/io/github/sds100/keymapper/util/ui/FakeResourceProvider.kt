@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.util.ui
+package io.github.sds100.keymapper.base.utils.ui
 
 import android.graphics.drawable.Drawable
 import kotlinx.coroutines.flow.Flow

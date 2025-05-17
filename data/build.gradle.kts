@@ -44,7 +44,6 @@ android {
 
 dependencies {
     implementation(project(":common"))
-    implementation(project(":system"))
 
     // kotlin stuff
     implementation(libs.kotlinx.coroutines.android)
@@ -52,6 +51,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.preference.ktx)
     implementation(libs.kotson)
 
     implementation(libs.dagger.hilt.android)

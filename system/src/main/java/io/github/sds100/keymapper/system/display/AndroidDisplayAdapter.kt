@@ -9,12 +9,12 @@ import android.provider.Settings
 import android.view.Surface
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
-import io.github.sds100.keymapper.common.util.result.Error
-import io.github.sds100.keymapper.common.util.result.Result
-import io.github.sds100.keymapper.common.util.result.Success
+import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.SettingsUtils
-import io.github.sds100.keymapper.base.util.SizeKM
-import io.github.sds100.keymapper.base.util.getRealDisplaySize
+import io.github.sds100.keymapper.base.utils.SizeKM
+import io.github.sds100.keymapper.base.utils.getRealDisplaySize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

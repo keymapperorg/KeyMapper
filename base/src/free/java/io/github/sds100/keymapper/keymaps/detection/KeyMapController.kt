@@ -25,9 +25,9 @@ import io.github.sds100.keymapper.trigger.Trigger
 import io.github.sds100.keymapper.trigger.TriggerKey
 import io.github.sds100.keymapper.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.trigger.TriggerMode
-import io.github.sds100.keymapper.base.util.Error
-import io.github.sds100.keymapper.base.util.InputEventType
-import io.github.sds100.keymapper.base.util.Result
+import io.github.sds100.keymapper.base.utils.Error
+import io.github.sds100.keymapper.base.utils.InputEventType
+import io.github.sds100.keymapper.base.utils.Result
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

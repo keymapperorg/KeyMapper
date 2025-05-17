@@ -50,11 +50,9 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.system.camera.CameraFlashInfo
 import io.github.sds100.keymapper.system.camera.CameraLens
-import io.github.sds100.keymapper.base.util.ui.compose.KeyMapperSliderThumb
-import io.github.sds100.keymapper.base.util.ui.compose.OptionsHeaderRow
-import io.github.sds100.keymapper.base.util.ui.compose.RadioButtonText
-import io.github.sds100.keymapper.mapping.actions.ActionId
-import io.github.sds100.keymapper.mapping.actions.ActionUtils
+import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSliderThumb
+import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
+import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
