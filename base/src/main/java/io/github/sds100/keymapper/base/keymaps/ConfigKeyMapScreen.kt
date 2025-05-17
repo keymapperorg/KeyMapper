@@ -61,9 +61,9 @@ import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.constraints.ConstraintsScreen
 import io.github.sds100.keymapper.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.trigger.TriggerScreen
-import io.github.sds100.keymapper.util.ui.compose.KeyMapperTapTarget
-import io.github.sds100.keymapper.util.ui.compose.keyMapperShowcaseStyle
-import io.github.sds100.keymapper.util.ui.compose.openUriSafe
+import io.github.sds100.keymapper.base.util.ui.compose.KeyMapperTapTarget
+import io.github.sds100.keymapper.base.util.ui.compose.keyMapperShowcaseStyle
+import io.github.sds100.keymapper.base.util.ui.compose.openUriSafe
 import kotlinx.coroutines.launch
 
 @Composable

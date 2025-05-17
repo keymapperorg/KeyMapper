@@ -7,9 +7,9 @@ import io.github.sds100.keymapper.common.result.handle
 import io.github.sds100.keymapper.common.result.valueIfFailure
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
-import io.github.sds100.keymapper.util.TimeUtils
-import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.util.TimeUtils
+import io.github.sds100.keymapper.base.util.ui.ResourceProvider
+import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
 import java.time.format.FormatStyle
 
 class ConstraintUiHelper(

@@ -42,9 +42,9 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.common.result.Error
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.constraints.ConstraintMode
-import io.github.sds100.keymapper.util.drawable
-import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
-import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.util.drawable
+import io.github.sds100.keymapper.base.util.ui.compose.ComposeChipModel
+import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
 
 @Composable
 fun GroupConstraintRow(

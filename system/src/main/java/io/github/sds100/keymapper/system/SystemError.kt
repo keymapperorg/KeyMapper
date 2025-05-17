@@ -4,7 +4,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.common.result.Error
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.base.util.ui.ResourceProvider
 
 sealed class SystemError : Error() {
     data class PermissionDenied(val permission: Permission) : Error() {

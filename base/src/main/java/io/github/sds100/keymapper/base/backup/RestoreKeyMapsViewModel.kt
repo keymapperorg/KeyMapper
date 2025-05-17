@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.common.result.onFailure
 import io.github.sds100.keymapper.common.result.onSuccess
-import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.base.util.getFullMessage
+import io.github.sds100.keymapper.base.util.ui.ResourceProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

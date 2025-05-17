@@ -15,9 +15,9 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.url.UrlUtils
-import io.github.sds100.keymapper.util.str
-import io.github.sds100.keymapper.util.styledColor
-import io.github.sds100.keymapper.util.styledFloat
+import io.github.sds100.keymapper.base.util.str
+import io.github.sds100.keymapper.base.util.styledColor
+import io.github.sds100.keymapper.base.util.styledFloat
 
 @BindingAdapter("app:onTextChanged")
 fun EditText.onTextChangedListener(textWatcher: TextWatcher) {

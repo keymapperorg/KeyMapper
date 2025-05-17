@@ -25,7 +25,7 @@ import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material.icons.outlined.WifiOff
 import androidx.compose.material.icons.rounded.Android
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
 
 object ConstraintUtils {
 

@@ -7,7 +7,7 @@ import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.purchasing.PurchasingError
 import io.github.sds100.keymapper.system.BuildUtils
 import io.github.sds100.keymapper.system.SystemError
-import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.base.util.ui.ResourceProvider
 
 fun Error.getFullMessage(resourceProvider: ResourceProvider): String = when (this) {
     is SystemError.PermissionDenied ->

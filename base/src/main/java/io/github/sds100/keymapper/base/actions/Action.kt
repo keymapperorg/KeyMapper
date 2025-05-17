@@ -6,7 +6,7 @@ import io.github.sds100.keymapper.common.result.valueOrNull
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData
-import io.github.sds100.keymapper.keymaps.KeyMap
+import io.github.sds100.keymapper.base.keymaps.KeyMap
 import kotlinx.serialization.Serializable
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag

@@ -1,12 +1,12 @@
 package io.github.sds100.keymapper.trigger
 
-import io.github.sds100.keymapper.keymaps.ConfigKeyMapUseCase
-import io.github.sds100.keymapper.keymaps.CreateKeyMapShortcutUseCase
-import io.github.sds100.keymapper.keymaps.DisplayKeyMapUseCase
-import io.github.sds100.keymapper.keymaps.FingerprintGesturesSupportedUseCase
+import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCase
+import io.github.sds100.keymapper.base.keymaps.CreateKeyMapShortcutUseCase
+import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
+import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.purchasing.PurchasingManager
-import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.base.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 
 class ConfigTriggerViewModel(

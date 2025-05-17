@@ -12,7 +12,7 @@ import io.github.sds100.keymapper.common.result.handle
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.keymaps.KeyMapRepository
+import io.github.sds100.keymapper.base.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.purchasing.PurchasingManager
 import io.github.sds100.keymapper.shizuku.ShizukuAdapter
@@ -23,11 +23,11 @@ import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.leanback.LeanbackAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
-import io.github.sds100.keymapper.util.PrefDelegate
+import io.github.sds100.keymapper.base.util.PrefDelegate
 import io.github.sds100.keymapper.common.state.State
-import io.github.sds100.keymapper.util.VersionHelper
-import io.github.sds100.keymapper.util.ResourceProvider
-import io.github.sds100.keymapper.util.SettingsRepository
+import io.github.sds100.keymapper.base.util.VersionHelper
+import io.github.sds100.keymapper.base.util.ResourceProvider
+import io.github.sds100.keymapper.base.util.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance

@@ -30,9 +30,9 @@ import io.github.sds100.keymapper.trigger.Trigger
 import io.github.sds100.keymapper.trigger.TriggerKey
 import io.github.sds100.keymapper.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.trigger.TriggerMode
-import io.github.sds100.keymapper.util.ServiceEvent
-import io.github.sds100.keymapper.util.firstBlocking
-import io.github.sds100.keymapper.util.moveElement
+import io.github.sds100.keymapper.base.util.ServiceEvent
+import io.github.sds100.keymapper.base.util.firstBlocking
+import io.github.sds100.keymapper.base.util.moveElement
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

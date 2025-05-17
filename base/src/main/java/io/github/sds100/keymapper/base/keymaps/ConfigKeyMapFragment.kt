@@ -21,9 +21,9 @@ import androidx.navigation.navGraphViewModels
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.databinding.FragmentComposeBinding
-import io.github.sds100.keymapper.util.Inject
-import io.github.sds100.keymapper.util.ui.setupNavigation
-import io.github.sds100.keymapper.util.ui.showPopups
+import io.github.sds100.keymapper.base.util.Inject
+import io.github.sds100.keymapper.base.util.ui.setupNavigation
+import io.github.sds100.keymapper.base.util.ui.showPopups
 
 class ConfigKeyMapFragment : Fragment() {
 

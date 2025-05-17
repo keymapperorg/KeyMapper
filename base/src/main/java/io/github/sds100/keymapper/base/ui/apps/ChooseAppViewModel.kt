@@ -7,10 +7,10 @@ import io.github.sds100.keymapper.common.result.valueOrNull
 import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.common.state.mapData
 import io.github.sds100.keymapper.system.apps.PackageInfo
-import io.github.sds100.keymapper.util.filterByQuery
-import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
-import io.github.sds100.keymapper.util.ui.IconInfo
-import io.github.sds100.keymapper.util.ui.SimpleListItemOld
+import io.github.sds100.keymapper.base.util.filterByQuery
+import io.github.sds100.keymapper.base.util.ui.DefaultSimpleListItem
+import io.github.sds100.keymapper.base.util.ui.IconInfo
+import io.github.sds100.keymapper.base.util.ui.SimpleListItemOld
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

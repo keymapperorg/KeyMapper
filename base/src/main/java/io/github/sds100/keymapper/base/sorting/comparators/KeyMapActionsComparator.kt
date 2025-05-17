@@ -5,7 +5,7 @@ import io.github.sds100.keymapper.actions.DisplayActionUseCase
 import io.github.sds100.keymapper.common.result.Result
 import io.github.sds100.keymapper.common.result.Success
 import io.github.sds100.keymapper.common.result.valueOrNull
-import io.github.sds100.keymapper.keymaps.KeyMap
+import io.github.sds100.keymapper.base.keymaps.KeyMap
 
 class KeyMapActionsComparator(
     private val displayActions: DisplayActionUseCase,

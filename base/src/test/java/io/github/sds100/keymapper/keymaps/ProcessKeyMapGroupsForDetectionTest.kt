@@ -4,8 +4,8 @@ import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.groups.Group
-import io.github.sds100.keymapper.keymaps.detection.DetectKeyMapModel
-import io.github.sds100.keymapper.keymaps.detection.DetectKeyMapsUseCaseImpl
+import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapModel
+import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCaseImpl
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
 import org.junit.Test

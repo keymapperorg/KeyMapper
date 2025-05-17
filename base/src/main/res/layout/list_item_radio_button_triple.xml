@@ -9,7 +9,7 @@
 
         <variable
             name="model"
-            type="io.github.sds100.keymapper.util.ui.RadioButtonTripleListItem" />
+            type="io.github.sds100.keymapper.base.util.ui.RadioButtonTripleListItem" />
 
         <variable
             name="onCheckedChange"

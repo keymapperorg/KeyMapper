@@ -4,7 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.common.result.Result
-import io.github.sds100.keymapper.util.InputEventType
+import io.github.sds100.keymapper.base.util.InputEventType
 import kotlinx.coroutines.flow.Flow
 
 interface IAccessibilityService {

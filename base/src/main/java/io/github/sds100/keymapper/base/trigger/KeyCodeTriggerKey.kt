@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.trigger
 
 import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
-import io.github.sds100.keymapper.keymaps.ClickType
+import io.github.sds100.keymapper.base.keymaps.ClickType
 import kotlinx.serialization.Serializable
 import splitties.bitflags.hasFlag
 import splitties.bitflags.withFlag

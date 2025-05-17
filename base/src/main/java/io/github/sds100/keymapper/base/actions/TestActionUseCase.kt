@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.actions
 
 import io.github.sds100.keymapper.common.result.Result
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
-import io.github.sds100.keymapper.util.ServiceEvent
+import io.github.sds100.keymapper.base.util.ServiceEvent
 
 
 

@@ -4,7 +4,7 @@ import android.Manifest
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.common.result.onSuccess
 import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
-import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.base.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn

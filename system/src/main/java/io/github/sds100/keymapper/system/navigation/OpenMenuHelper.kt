@@ -11,8 +11,8 @@ import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
-import io.github.sds100.keymapper.util.InputEventType
-import io.github.sds100.keymapper.util.firstBlocking
+import io.github.sds100.keymapper.base.util.InputEventType
+import io.github.sds100.keymapper.base.util.firstBlocking
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

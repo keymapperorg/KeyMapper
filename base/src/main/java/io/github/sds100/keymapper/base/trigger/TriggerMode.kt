@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.base.trigger
 
-import io.github.sds100.keymapper.keymaps.ClickType
+import io.github.sds100.keymapper.base.keymaps.ClickType
 import kotlinx.serialization.Serializable
 
 

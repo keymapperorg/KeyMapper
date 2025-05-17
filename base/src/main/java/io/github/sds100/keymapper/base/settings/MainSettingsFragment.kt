@@ -23,11 +23,11 @@ import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.notifications.NotificationController
 import io.github.sds100.keymapper.system.notifications.NotificationUtils
-import io.github.sds100.keymapper.util.firstBlocking
-import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.util.str
-import io.github.sds100.keymapper.util.strArray
-import io.github.sds100.keymapper.util.viewLifecycleScope
+import io.github.sds100.keymapper.base.util.firstBlocking
+import io.github.sds100.keymapper.base.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.base.util.str
+import io.github.sds100.keymapper.base.util.strArray
+import io.github.sds100.keymapper.base.util.viewLifecycleScope
 import kotlinx.coroutines.flow.collectLatest
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.messageResource

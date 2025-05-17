@@ -5,8 +5,8 @@ import android.view.KeyEvent
 import io.github.sds100.keymapper.common.result.Result
 import io.github.sds100.keymapper.common.result.onFailure
 import io.github.sds100.keymapper.common.result.onSuccess
-import io.github.sds100.keymapper.keymaps.KeyMap
-import io.github.sds100.keymapper.keymaps.requiresImeKeyEventForwardingInPhoneCall
+import io.github.sds100.keymapper.base.keymaps.KeyMap
+import io.github.sds100.keymapper.base.keymaps.requiresImeKeyEventForwardingInPhoneCall
 import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.purchasing.PurchasingError
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils

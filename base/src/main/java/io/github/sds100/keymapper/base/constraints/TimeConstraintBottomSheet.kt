@@ -43,8 +43,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.util.TimeUtils
-import io.github.sds100.keymapper.util.ui.compose.OptionsHeaderRow
+import io.github.sds100.keymapper.base.util.TimeUtils
+import io.github.sds100.keymapper.base.util.ui.compose.OptionsHeaderRow
 import kotlinx.coroutines.launch
 import java.time.format.FormatStyle
 

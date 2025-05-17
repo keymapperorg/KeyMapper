@@ -7,7 +7,7 @@ import androidx.annotation.StringRes
 import com.google.android.material.bottomappbar.BottomAppBar
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
-import io.github.sds100.keymapper.util.str
+import io.github.sds100.keymapper.base.util.str
 
 
 abstract class SimpleRecyclerViewFragment<T> : RecyclerViewFragment<T, FragmentSimpleRecyclerviewBinding>() {

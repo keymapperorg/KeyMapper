@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.keymaps
 
 import android.view.InputDevice
 import android.view.KeyEvent
-import io.github.sds100.keymapper.keymaps.detection.DpadMotionEventTracker
+import io.github.sds100.keymapper.base.keymaps.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent

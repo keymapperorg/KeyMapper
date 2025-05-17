@@ -4,10 +4,10 @@ import android.view.KeyEvent
 import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.constraints.Constraint
-import io.github.sds100.keymapper.keymaps.ClickType
-import io.github.sds100.keymapper.keymaps.ConfigKeyMapUseCaseController
-import io.github.sds100.keymapper.keymaps.FingerprintGestureType
-import io.github.sds100.keymapper.keymaps.KeyMap
+import io.github.sds100.keymapper.base.keymaps.ClickType
+import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCaseController
+import io.github.sds100.keymapper.base.keymaps.FingerprintGestureType
+import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.trigger.AssistantTriggerType
@@ -17,8 +17,8 @@ import io.github.sds100.keymapper.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.trigger.TriggerMode
 import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.common.state.dataOrNull
-import io.github.sds100.keymapper.util.singleKeyTrigger
-import io.github.sds100.keymapper.util.triggerKey
+import io.github.sds100.keymapper.base.util.singleKeyTrigger
+import io.github.sds100.keymapper.base.util.triggerKey
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher

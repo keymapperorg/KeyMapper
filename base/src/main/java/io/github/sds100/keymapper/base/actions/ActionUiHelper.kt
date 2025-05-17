@@ -7,7 +7,7 @@ import androidx.compose.material.icons.outlined.Android
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.common.result.handle
-import io.github.sds100.keymapper.keymaps.KeyMap
+import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.display.OrientationUtils
@@ -16,11 +16,11 @@ import io.github.sds100.keymapper.system.intents.IntentTarget
 import io.github.sds100.keymapper.system.volume.DndModeUtils
 import io.github.sds100.keymapper.system.volume.RingerModeUtils
 import io.github.sds100.keymapper.system.volume.VolumeStreamUtils
-import io.github.sds100.keymapper.util.toPercentString
-import io.github.sds100.keymapper.util.ui.IconInfo
-import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.TintType
-import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.util.toPercentString
+import io.github.sds100.keymapper.base.util.ui.IconInfo
+import io.github.sds100.keymapper.base.util.ui.ResourceProvider
+import io.github.sds100.keymapper.base.util.ui.TintType
+import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
 import splitties.bitflags.hasFlag
 
 class ActionUiHelper(

@@ -14,8 +14,8 @@ import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.compose.ComposeColors
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
-import io.github.sds100.keymapper.util.Inject
-import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.base.util.Inject
+import io.github.sds100.keymapper.base.util.launchRepeatOnLifecycle
 import kotlinx.coroutines.flow.collectLatest
 
 class CreateKeyMapShortcutActivity : AppCompatActivity() {

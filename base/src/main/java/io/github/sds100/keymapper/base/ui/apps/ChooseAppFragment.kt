@@ -11,11 +11,11 @@ import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.databinding.FragmentChooseAppBinding
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.util.Inject
-import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.util.ui.RecyclerViewFragment
-import io.github.sds100.keymapper.util.ui.RecyclerViewUtils
-import io.github.sds100.keymapper.util.ui.SimpleListItemOld
+import io.github.sds100.keymapper.base.util.Inject
+import io.github.sds100.keymapper.base.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.base.util.ui.RecyclerViewFragment
+import io.github.sds100.keymapper.base.util.ui.RecyclerViewUtils
+import io.github.sds100.keymapper.base.util.ui.SimpleListItemOld
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map

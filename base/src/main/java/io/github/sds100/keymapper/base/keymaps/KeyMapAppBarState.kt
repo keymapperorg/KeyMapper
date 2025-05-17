@@ -4,7 +4,7 @@ import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.groups.GroupListItemModel
 import io.github.sds100.keymapper.home.HomeWarningListItem
 import io.github.sds100.keymapper.home.SelectedKeyMapsEnabled
-import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
+import io.github.sds100.keymapper.base.util.ui.compose.ComposeChipModel
 
 sealed class KeyMapAppBarState {
     data class RootGroup(

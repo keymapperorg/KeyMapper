@@ -19,9 +19,9 @@ import io.github.sds100.keymapper.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.common.state.mapData
-import io.github.sds100.keymapper.util.ResourceProvider
-import io.github.sds100.keymapper.util.ui.TintType
-import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.util.ResourceProvider
+import io.github.sds100.keymapper.base.util.ui.TintType
+import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow

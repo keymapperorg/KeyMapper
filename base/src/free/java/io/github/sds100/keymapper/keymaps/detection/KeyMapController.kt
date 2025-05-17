@@ -13,8 +13,8 @@ import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.constraints.isSatisfied
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.entities.ActionEntity
-import io.github.sds100.keymapper.keymaps.ClickType
-import io.github.sds100.keymapper.keymaps.FingerprintGestureType
+import io.github.sds100.keymapper.base.keymaps.ClickType
+import io.github.sds100.keymapper.base.keymaps.FingerprintGestureType
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
@@ -25,9 +25,9 @@ import io.github.sds100.keymapper.trigger.Trigger
 import io.github.sds100.keymapper.trigger.TriggerKey
 import io.github.sds100.keymapper.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.trigger.TriggerMode
-import io.github.sds100.keymapper.util.Error
-import io.github.sds100.keymapper.util.InputEventType
-import io.github.sds100.keymapper.util.Result
+import io.github.sds100.keymapper.base.util.Error
+import io.github.sds100.keymapper.base.util.InputEventType
+import io.github.sds100.keymapper.base.util.Result
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

@@ -10,7 +10,7 @@ import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.floating.FloatingButtonEntityMapper
-import io.github.sds100.keymapper.keymaps.ClickType
+import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import kotlinx.serialization.Serializable
 import splitties.bitflags.hasFlag

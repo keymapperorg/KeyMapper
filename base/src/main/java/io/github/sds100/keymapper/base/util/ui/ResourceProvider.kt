@@ -5,9 +5,9 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import io.github.sds100.keymapper.util.color
-import io.github.sds100.keymapper.util.drawable
-import io.github.sds100.keymapper.util.str
+import io.github.sds100.keymapper.base.util.color
+import io.github.sds100.keymapper.base.util.drawable
+import io.github.sds100.keymapper.base.util.str
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow

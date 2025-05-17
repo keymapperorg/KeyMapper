@@ -17,9 +17,9 @@ import io.github.sds100.keymapper.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.ui.utils.getJsonSerializable
 import io.github.sds100.keymapper.ui.utils.putJsonSerializable
 import io.github.sds100.keymapper.common.state.dataOrNull
-import io.github.sds100.keymapper.util.firstBlocking
+import io.github.sds100.keymapper.base.util.firstBlocking
 import io.github.sds100.keymapper.common.state.ifIsData
-import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.base.util.ui.ResourceProvider
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine

@@ -22,9 +22,9 @@ import io.github.sds100.keymapper.common.result.isSuccess
 import io.github.sds100.keymapper.common.result.onSuccess
 import io.github.sds100.keymapper.databinding.DialogEdittextNumberBinding
 import io.github.sds100.keymapper.databinding.DialogEdittextStringBinding
-import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.util.resumeIfNotCompleted
+import io.github.sds100.keymapper.base.util.getFullMessage
+import io.github.sds100.keymapper.base.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.base.util.resumeIfNotCompleted
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest

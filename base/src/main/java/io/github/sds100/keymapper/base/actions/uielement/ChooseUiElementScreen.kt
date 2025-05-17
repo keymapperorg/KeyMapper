@@ -52,10 +52,10 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.common.state.State
-import io.github.sds100.keymapper.util.ui.compose.CheckBoxText
-import io.github.sds100.keymapper.util.ui.compose.KeyMapperDropdownMenu
-import io.github.sds100.keymapper.util.ui.compose.SearchAppBarActions
-import io.github.sds100.keymapper.util.ui.compose.WindowSizeClassExt.compareTo
+import io.github.sds100.keymapper.base.util.ui.compose.CheckBoxText
+import io.github.sds100.keymapper.base.util.ui.compose.KeyMapperDropdownMenu
+import io.github.sds100.keymapper.base.util.ui.compose.SearchAppBarActions
+import io.github.sds100.keymapper.base.util.ui.compose.WindowSizeClassExt.compareTo
 
 @Composable
 fun ChooseElementScreen(

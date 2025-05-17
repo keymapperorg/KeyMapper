@@ -8,7 +8,7 @@ import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
 import io.github.sds100.keymapper.system.accessibility.RecordAccessibilityNodeState
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
-import io.github.sds100.keymapper.util.ServiceEvent
+import io.github.sds100.keymapper.base.util.ServiceEvent
 import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.common.state.mapData
 import kotlinx.coroutines.CoroutineScope

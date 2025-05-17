@@ -33,7 +33,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import io.github.sds100.keymapper.util.ui.SelectionState
+import io.github.sds100.keymapper.base.util.ui.SelectionState
 
 @Composable
 fun HomeScreen(

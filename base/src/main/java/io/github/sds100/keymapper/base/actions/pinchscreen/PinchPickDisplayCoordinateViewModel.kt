@@ -11,11 +11,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.ui.PopupUi
-import io.github.sds100.keymapper.util.ui.PopupViewModel
-import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
-import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.showPopup
+import io.github.sds100.keymapper.base.util.ui.PopupUi
+import io.github.sds100.keymapper.base.util.ui.PopupViewModel
+import io.github.sds100.keymapper.base.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.base.util.ui.ResourceProvider
+import io.github.sds100.keymapper.base.util.ui.showPopup
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

@@ -13,7 +13,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.system.url.UrlUtils
-import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.base.util.launchRepeatOnLifecycle
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow

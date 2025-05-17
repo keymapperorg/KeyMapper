@@ -8,16 +8,16 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.common.result.onFailure
 import io.github.sds100.keymapper.common.result.onSuccess
 import io.github.sds100.keymapper.common.result.otherwise
-import io.github.sds100.keymapper.util.SharedPrefsDataStoreWrapper
+import io.github.sds100.keymapper.base.util.SharedPrefsDataStoreWrapper
 import io.github.sds100.keymapper.common.state.State
-import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.ui.DialogResponse
-import io.github.sds100.keymapper.util.ui.MultiChoiceItem
-import io.github.sds100.keymapper.util.ui.PopupUi
-import io.github.sds100.keymapper.util.ui.PopupViewModel
-import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
-import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.showPopup
+import io.github.sds100.keymapper.base.util.getFullMessage
+import io.github.sds100.keymapper.base.util.ui.DialogResponse
+import io.github.sds100.keymapper.base.util.ui.MultiChoiceItem
+import io.github.sds100.keymapper.base.util.ui.PopupUi
+import io.github.sds100.keymapper.base.util.ui.PopupViewModel
+import io.github.sds100.keymapper.base.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.base.util.ui.ResourceProvider
+import io.github.sds100.keymapper.base.util.ui.showPopup
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.sds100.keymapper.settings.ConfigSettingsUseCase
+import io.github.sds100.keymapper.base.settings.ConfigSettingsUseCase
 import javax.inject.Inject
 
 @HiltViewModel

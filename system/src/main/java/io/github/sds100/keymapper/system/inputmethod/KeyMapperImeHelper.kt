@@ -7,7 +7,7 @@ import io.github.sds100.keymapper.common.result.Success
 import io.github.sds100.keymapper.common.result.onSuccess
 import io.github.sds100.keymapper.common.result.suspendThen
 import io.github.sds100.keymapper.common.result.then
-import io.github.sds100.keymapper.util.firstBlocking
+import io.github.sds100.keymapper.base.util.firstBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

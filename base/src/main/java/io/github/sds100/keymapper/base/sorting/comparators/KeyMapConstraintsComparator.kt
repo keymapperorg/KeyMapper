@@ -6,7 +6,7 @@ import io.github.sds100.keymapper.common.result.then
 import io.github.sds100.keymapper.common.result.valueOrNull
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.DisplayConstraintUseCase
-import io.github.sds100.keymapper.keymaps.KeyMap
+import io.github.sds100.keymapper.base.keymaps.KeyMap
 import java.time.LocalDate
 import java.time.ZoneOffset
 

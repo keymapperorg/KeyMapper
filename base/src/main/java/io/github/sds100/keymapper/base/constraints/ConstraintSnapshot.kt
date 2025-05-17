@@ -15,7 +15,7 @@ import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.phone.CallState
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.power.PowerAdapter
-import io.github.sds100.keymapper.util.firstBlocking
+import io.github.sds100.keymapper.base.util.firstBlocking
 import timber.log.Timber
 import java.time.LocalTime
 

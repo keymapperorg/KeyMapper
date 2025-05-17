@@ -39,13 +39,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.keymaps.ShortcutModel
-import io.github.sds100.keymapper.keymaps.ShortcutRow
+import io.github.sds100.keymapper.base.keymaps.ShortcutModel
+import io.github.sds100.keymapper.base.keymaps.ShortcutRow
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.common.state.State
-import io.github.sds100.keymapper.util.drawable
-import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.util.ui.compose.RadioButtonText
+import io.github.sds100.keymapper.base.util.drawable
+import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.util.ui.compose.RadioButtonText
 
 @Composable
 fun ConstraintsScreen(

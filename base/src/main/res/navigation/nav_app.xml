@@ -352,7 +352,7 @@
 
     <fragment
         android:id="@+id/shizukuSettingsFragment"
-        android:name="io.github.sds100.keymapper.settings.ShizukuSettingsFragment"
+        android:name="io.github.sds100.keymapper.base.settings.ShizukuSettingsFragment"
         android:label="ShizukuSettingsFragment" />
     <fragment
         android:id="@+id/chooseActionFragment"

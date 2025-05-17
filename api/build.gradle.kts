@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.devtools.ksp)
+    alias(libs.plugins.jlleitschuh.gradle.ktlint)
 }
 
 android {
@@ -18,7 +20,7 @@ android {
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -36,5 +38,11 @@ android {
 }
 
 dependencies {
+    implementation(project(":common"))
+    implementation(project(":system"))
+
     implementation(libs.jakewharton.timber)
+
+    implementation(libs.dagger.hilt.android)
+    ksp(libs.dagger.hilt.android.compiler)
 }

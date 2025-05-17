@@ -6,7 +6,7 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.ringtone.RingtoneAdapter
-import io.github.sds100.keymapper.util.SettingsRepository
+import io.github.sds100.keymapper.base.util.SettingsRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow

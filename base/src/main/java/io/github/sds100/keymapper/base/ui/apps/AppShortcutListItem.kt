@@ -1,9 +1,9 @@
 package io.github.sds100.keymapper.base.ui.apps
 
 import io.github.sds100.keymapper.system.apps.AppShortcutInfo
-import io.github.sds100.keymapper.util.ui.IconInfo
-import io.github.sds100.keymapper.util.ui.SimpleListItemOld
-import io.github.sds100.keymapper.util.ui.TintType
+import io.github.sds100.keymapper.base.util.ui.IconInfo
+import io.github.sds100.keymapper.base.util.ui.SimpleListItemOld
+import io.github.sds100.keymapper.base.util.ui.TintType
 
 data class AppShortcutListItem(
     val shortcutInfo: AppShortcutInfo,

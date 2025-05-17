@@ -36,12 +36,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.keymaps.ClickType
-import io.github.sds100.keymapper.keymaps.FingerprintGestureType
-import io.github.sds100.keymapper.util.ui.CheckBoxListItem
-import io.github.sds100.keymapper.util.ui.compose.CheckBoxText
-import io.github.sds100.keymapper.util.ui.compose.RadioButtonText
-import io.github.sds100.keymapper.util.ui.compose.openUriSafe
+import io.github.sds100.keymapper.base.keymaps.ClickType
+import io.github.sds100.keymapper.base.keymaps.FingerprintGestureType
+import io.github.sds100.keymapper.base.util.ui.CheckBoxListItem
+import io.github.sds100.keymapper.base.util.ui.compose.CheckBoxText
+import io.github.sds100.keymapper.base.util.ui.compose.RadioButtonText
+import io.github.sds100.keymapper.base.util.ui.compose.openUriSafe
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -10,7 +10,7 @@ import io.github.sds100.keymapper.constraints.ConstraintModeEntityMapper
 import io.github.sds100.keymapper.constraints.ConstraintState
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
-import io.github.sds100.keymapper.keymaps.detection.KeyMapController
+import io.github.sds100.keymapper.base.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.trigger.Trigger
 import io.github.sds100.keymapper.trigger.TriggerEntityMapper
 import io.github.sds100.keymapper.trigger.TriggerKey

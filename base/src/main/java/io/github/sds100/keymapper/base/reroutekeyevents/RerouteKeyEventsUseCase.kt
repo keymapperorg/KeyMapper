@@ -10,8 +10,8 @@ import io.github.sds100.keymapper.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
-import io.github.sds100.keymapper.util.firstBlocking
-import io.github.sds100.keymapper.util.SettingsRepository
+import io.github.sds100.keymapper.base.util.firstBlocking
+import io.github.sds100.keymapper.base.util.SettingsRepository
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject

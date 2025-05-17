@@ -37,6 +37,7 @@ android {
 
 dependencies {
     implementation(project(":common"))
+    implementation(project(":api"))
 
     // kotlin stuff
     implementation(libs.kotlinx.coroutines.android)

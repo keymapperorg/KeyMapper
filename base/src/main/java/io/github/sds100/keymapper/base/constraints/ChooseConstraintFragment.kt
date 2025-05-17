@@ -25,11 +25,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.databinding.FragmentComposeBinding
-import io.github.sds100.keymapper.util.Inject
-import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.util.ui.setupNavigation
-import io.github.sds100.keymapper.util.ui.showPopups
-import io.github.sds100.keymapper.util.viewLifecycleScope
+import io.github.sds100.keymapper.base.util.Inject
+import io.github.sds100.keymapper.base.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.base.util.ui.setupNavigation
+import io.github.sds100.keymapper.base.util.ui.showPopups
+import io.github.sds100.keymapper.base.util.viewLifecycleScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json

@@ -7,7 +7,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.common.result.Result
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
-import io.github.sds100.keymapper.util.ResourceProvider
+import io.github.sds100.keymapper.base.util.ResourceProvider
 import javax.inject.Inject
 import javax.inject.Singleton
 

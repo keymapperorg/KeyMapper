@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.base.keymaps
 
-import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
 
 data class ShortcutModel<T>(
     val icon: ComposeIconInfo,

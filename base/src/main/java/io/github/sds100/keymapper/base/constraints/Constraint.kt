@@ -6,7 +6,7 @@ import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
-import io.github.sds100.keymapper.util.getKey
+import io.github.sds100.keymapper.base.util.getKey
 import kotlinx.serialization.Serializable
 import java.time.LocalTime
 import java.util.UUID

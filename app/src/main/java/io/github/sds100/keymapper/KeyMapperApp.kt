@@ -13,11 +13,10 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
 import dagger.hilt.android.HiltAndroidApp
-import io.github.sds100.keymapper.base.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.base.logging.KeyMapperLoggingTree
+import io.github.sds100.keymapper.base.settings.ThemeUtils
 import io.github.sds100.keymapper.data.Keys
-import io.github.sds100.keymapper.data.entities.LogEntryEntity
-import io.github.sds100.keymapper.settings.ThemeUtils
+import io.github.sds100.keymapper.data.repositories.SettingsPreferenceRepository
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.apps.AndroidPackageManagerAdapter
 import io.github.sds100.keymapper.system.devices.AndroidDevicesAdapter
@@ -77,6 +76,9 @@ class KeyMapperApp : MultiDexApplication() {
     @Inject
     private lateinit var loggingTree: KeyMapperLoggingTree
 
+    @Inject
+    private lateinit var settingsRepository: SettingsPreferenceRepository
+
     private val processLifecycleOwner by lazy { ProcessLifecycleOwner.get() }
 
     private val userManager: UserManager? by lazy { getSystemService<UserManager>() }
@@ -91,10 +93,10 @@ class KeyMapperApp : MultiDexApplication() {
 
         Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
             // log in a blocking manner and always log regardless of whether the setting is turned on
-            val entry = LogEntryEntity(
+            val entry = io.github.sds100.keymapper.data.entities.LogEntryEntity(
                 id = 0,
                 time = Calendar.getInstance().timeInMillis,
-                severity = LogEntryEntity.SEVERITY_ERROR,
+                severity = io.github.sds100.keymapper.data.entities.LogEntryEntity.SEVERITY_ERROR,
                 message = exception.stackTraceToString(),
             )
 
@@ -132,7 +134,7 @@ class KeyMapperApp : MultiDexApplication() {
     private fun init() {
         Log.i(tag, "KeyMapperApp: Init")
 
-        ServiceLocator.settingsRepository(this).get(Keys.darkTheme)
+        settingsRepository.get(Keys.darkTheme)
             .map { it?.toIntOrNull() }
             .map {
                 when (it) {

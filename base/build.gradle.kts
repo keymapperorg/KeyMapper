@@ -60,7 +60,11 @@ android {
 
 dependencies {
     implementation(project(":common"))
+    implementation(project(":api"))
+    implementation(project(":data"))
     implementation(project(":system"))
+
+    // TODO delete the unused libraries and plugins
 
     // kotlin stuff
     implementation(libs.kotlinx.coroutines.android)

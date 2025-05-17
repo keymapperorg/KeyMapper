@@ -19,11 +19,11 @@ import androidx.navigation.fragment.navArgs
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentConfigKeyEventBinding
 import io.github.sds100.keymapper.ui.utils.putJsonSerializable
-import io.github.sds100.keymapper.util.Inject
-import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.util.str
-import io.github.sds100.keymapper.util.ui.configuredCheckBox
-import io.github.sds100.keymapper.util.ui.setupNavigation
+import io.github.sds100.keymapper.base.util.Inject
+import io.github.sds100.keymapper.base.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.base.util.str
+import io.github.sds100.keymapper.base.util.ui.configuredCheckBox
+import io.github.sds100.keymapper.base.util.ui.setupNavigation
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.json.Json
 

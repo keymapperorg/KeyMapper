@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.base.constraints
 
-import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
 
 data class ConstraintListItemModel(
     val id: String,

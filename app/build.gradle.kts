@@ -11,7 +11,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.androidx.navigation.safeargs.kotlin)
-    alias(libs.plugins.androidx.room)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.jlleitschuh.gradle.ktlint)
 }
@@ -159,19 +158,19 @@ android {
         }
     }
 
-    room {
-        schemaDirectory("$projectDir/schemas")
-    }
 }
 
 dependencies {
     implementation(fileTree(mapOf("include" to listOf("*.jar"), "dir" to "libs")))
 
-    implementation(project(":api"))
-    implementation(project(":base"))
     implementation(project(":common"))
+    implementation(project(":base"))
+    implementation(project(":api"))
+    implementation(project(":data"))
     implementation(project(":system"))
     compileOnly(project(":systemstubs"))
+
+    // TODO delete the unused libraries and plugins
 
     // kotlin stuff
     implementation(libs.kotlinx.coroutines.android)
@@ -189,8 +188,6 @@ dependencies {
     implementation(libs.anggrayudi.storage)
     implementation(libs.github.mflisar.dragselectrecyclerview)
     implementation(libs.google.flexbox)
-    implementation(libs.rikka.shizuku.api)
-    implementation(libs.rikka.shizuku.provider)
     implementation(libs.lsposed.hiddenapibypass)
     "proImplementation"(libs.revenuecat.purchases)
     "proImplementation"(libs.airbnb.lottie.compose)
@@ -217,9 +214,7 @@ dependencies {
     implementation(libs.androidx.preference.ktx)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.lifecycle.extensions) // Note: Deprecated
-    implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.viewpager2)
-    implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.core.splashscreen)
     ksp(libs.androidx.room.compiler)
 

@@ -4,9 +4,14 @@ import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import io.github.sds100.keymapper.KeyMapperApp
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class BluetoothBroadcastReceiver : BroadcastReceiver() {
+
+    @Inject
+    private lateinit var bluetoothAdapter: AndroidBluetoothAdapter
 
     override fun onReceive(context: Context?, intent: Intent?) {
         context ?: return
@@ -15,7 +20,7 @@ class BluetoothBroadcastReceiver : BroadcastReceiver() {
         if (intent.action == BluetoothDevice.ACTION_ACL_CONNECTED ||
             intent.action == BluetoothDevice.ACTION_ACL_DISCONNECTED
         ) {
-            (context.applicationContext as KeyMapperApp).bluetoothMonitor.onReceiveIntent(intent)
+            bluetoothAdapter.onReceiveIntent(intent)
         }
     }
 }

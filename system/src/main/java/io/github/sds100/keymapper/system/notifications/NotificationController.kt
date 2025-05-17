@@ -3,22 +3,21 @@ package io.github.sds100.keymapper.system.notifications
 import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import io.github.sds100.keymapper.BaseMainActivity
-import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.common.result.onFailure
 import io.github.sds100.keymapper.common.result.onSuccess
-import io.github.sds100.keymapper.keymaps.PauseKeyMapsUseCase
+import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowHideInputMethodUseCase
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.system.inputmethod.ToggleCompatibleImeUseCase
-import io.github.sds100.keymapper.util.DefaultDispatcherProvider
-import io.github.sds100.keymapper.util.DispatcherProvider
-import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.base.util.DefaultDispatcherProvider
+import io.github.sds100.keymapper.base.util.DispatcherProvider
+import io.github.sds100.keymapper.base.util.getFullMessage
+import io.github.sds100.keymapper.base.util.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -33,9 +32,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import io.github.sds100.keymapper.common.BuildConfigProvider
 
-
-
-class NotificationController(
+@Singleton
+class NotificationController @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val manageNotifications: ManageNotificationsUseCase,
     private val pauseMappings: PauseKeyMapsUseCase,

@@ -24,8 +24,8 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.onboarding.OnboardingTapTarget
-import io.github.sds100.keymapper.util.ui.compose.KeyMapperTapTarget
-import io.github.sds100.keymapper.util.ui.compose.keyMapperShowcaseStyle
+import io.github.sds100.keymapper.base.util.ui.compose.KeyMapperTapTarget
+import io.github.sds100.keymapper.base.util.ui.compose.keyMapperShowcaseStyle
 
 @Composable
 fun RecordTriggerButtonRow(

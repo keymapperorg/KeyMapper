@@ -44,12 +44,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.common.state.State
-import io.github.sds100.keymapper.util.ui.SliderMaximums
-import io.github.sds100.keymapper.util.ui.SliderMinimums
-import io.github.sds100.keymapper.util.ui.SliderStepSizes
-import io.github.sds100.keymapper.util.ui.compose.CheckBoxText
-import io.github.sds100.keymapper.util.ui.compose.SliderOptionText
-import io.github.sds100.keymapper.util.ui.compose.openUriSafe
+import io.github.sds100.keymapper.base.util.ui.SliderMaximums
+import io.github.sds100.keymapper.base.util.ui.SliderMinimums
+import io.github.sds100.keymapper.base.util.ui.SliderStepSizes
+import io.github.sds100.keymapper.base.util.ui.compose.CheckBoxText
+import io.github.sds100.keymapper.base.util.ui.compose.SliderOptionText
+import io.github.sds100.keymapper.base.util.ui.compose.openUriSafe
 import kotlinx.coroutines.launch
 
 @Composable

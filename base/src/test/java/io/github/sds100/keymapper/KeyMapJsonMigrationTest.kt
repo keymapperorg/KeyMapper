@@ -11,7 +11,7 @@ import io.github.sds100.keymapper.data.migration.Migration10To11
 import io.github.sds100.keymapper.data.migration.Migration11To12
 import io.github.sds100.keymapper.data.migration.Migration9To10
 import io.github.sds100.keymapper.data.migration.MigrationUtils
-import io.github.sds100.keymapper.util.JsonTestUtils
+import io.github.sds100.keymapper.base.util.JsonTestUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher

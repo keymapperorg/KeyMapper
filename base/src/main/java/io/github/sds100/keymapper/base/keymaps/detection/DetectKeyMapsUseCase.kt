@@ -13,9 +13,9 @@ import io.github.sds100.keymapper.data.repositories.GroupRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.groups.Group
 import io.github.sds100.keymapper.groups.GroupEntityMapper
-import io.github.sds100.keymapper.keymaps.KeyMap
-import io.github.sds100.keymapper.keymaps.KeyMapEntityMapper
-import io.github.sds100.keymapper.keymaps.KeyMapRepository
+import io.github.sds100.keymapper.base.keymaps.KeyMap
+import io.github.sds100.keymapper.base.keymaps.KeyMapEntityMapper
+import io.github.sds100.keymapper.base.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.inputevents.InputEventInjector
@@ -29,11 +29,11 @@ import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.trigger.FingerprintTriggerKey
-import io.github.sds100.keymapper.util.InputEventType
+import io.github.sds100.keymapper.base.util.InputEventType
 import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.common.state.dataOrNull
-import io.github.sds100.keymapper.util.ResourceProvider
-import io.github.sds100.keymapper.util.SettingsRepository
+import io.github.sds100.keymapper.base.util.ResourceProvider
+import io.github.sds100.keymapper.base.util.SettingsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

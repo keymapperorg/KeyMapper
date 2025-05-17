@@ -21,7 +21,7 @@ import io.github.sds100.keymapper.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.DeviceAdmin
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.url.UrlUtils
-import io.github.sds100.keymapper.util.str
+import io.github.sds100.keymapper.base.util.str
 import rikka.shizuku.Shizuku
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.negativeButton

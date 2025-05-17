@@ -12,8 +12,8 @@ import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.system.systemfeature.SystemFeatureAdapter
-import io.github.sds100.keymapper.util.ResourceProvider
-import io.github.sds100.keymapper.util.SoundsManager
+import io.github.sds100.keymapper.base.util.ResourceProvider
+import io.github.sds100.keymapper.base.util.SoundsManager
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow

@@ -2,11 +2,15 @@ package io.github.sds100.keymapper.system.intents
 
 import android.content.Context
 import android.content.Intent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.result.Error
 import io.github.sds100.keymapper.common.result.Result
 import io.github.sds100.keymapper.common.result.Success
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class IntentAdapterImpl(context: Context) : IntentAdapter {
+@Singleton
+class IntentAdapterImpl @Inject constructor(@ApplicationContext private val context: Context) : IntentAdapter {
     private val ctx = context.applicationContext
 
     override fun send(

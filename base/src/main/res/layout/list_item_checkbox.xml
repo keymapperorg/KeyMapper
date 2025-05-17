@@ -8,7 +8,7 @@
 
         <variable
             name="model"
-            type="io.github.sds100.keymapper.util.ui.CheckBoxListItem" />
+            type="io.github.sds100.keymapper.base.util.ui.CheckBoxListItem" />
     </data>
 
     <CheckBox

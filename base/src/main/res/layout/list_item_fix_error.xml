@@ -12,7 +12,7 @@
 
         <variable
             name="model"
-            type="io.github.sds100.keymapper.util.ui.TextListItem.Error" />
+            type="io.github.sds100.keymapper.base.util.ui.TextListItem.Error" />
 
         <variable
             name="onFixClick"

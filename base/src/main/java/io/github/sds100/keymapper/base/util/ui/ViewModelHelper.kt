@@ -4,8 +4,8 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.common.result.Error
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.util.getFullMessage
-import io.github.sds100.keymapper.util.isFixable
+import io.github.sds100.keymapper.base.util.getFullMessage
+import io.github.sds100.keymapper.base.util.isFixable
 
 
 object ViewModelHelper {

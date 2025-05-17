@@ -10,7 +10,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.google.android.material.color.DynamicColors
 import io.github.sds100.keymapper.MainActivity
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.color
+import io.github.sds100.keymapper.base.util.color
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch

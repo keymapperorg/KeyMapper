@@ -4,8 +4,8 @@ import io.github.sds100.keymapper.data.db.typeconverter.ConstantTypeConverters
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntity
 import io.github.sds100.keymapper.floating.FloatingButtonData.Location
 import io.github.sds100.keymapper.system.display.Orientation
-import io.github.sds100.keymapper.util.SizeKM
-import io.github.sds100.keymapper.util.getKey
+import io.github.sds100.keymapper.base.util.SizeKM
+import io.github.sds100.keymapper.base.util.getKey
 import kotlinx.serialization.Serializable
 import java.util.UUID
 

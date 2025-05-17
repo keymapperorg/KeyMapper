@@ -43,8 +43,8 @@ import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.groups.GroupBreadcrumbRow
 import io.github.sds100.keymapper.groups.GroupListItemModel
 import io.github.sds100.keymapper.groups.GroupRow
-import io.github.sds100.keymapper.util.drawable
-import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.util.drawable
+import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

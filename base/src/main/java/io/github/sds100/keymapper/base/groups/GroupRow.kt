@@ -44,8 +44,8 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.util.drawable
-import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.util.drawable
+import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
 
 @Composable
 fun GroupRow(

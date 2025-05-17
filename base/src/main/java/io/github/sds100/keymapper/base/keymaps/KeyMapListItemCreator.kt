@@ -22,10 +22,10 @@ import io.github.sds100.keymapper.trigger.Trigger
 import io.github.sds100.keymapper.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.trigger.TriggerMode
-import io.github.sds100.keymapper.util.isFixable
-import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
-import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.util.isFixable
+import io.github.sds100.keymapper.base.util.ui.ResourceProvider
+import io.github.sds100.keymapper.base.util.ui.compose.ComposeChipModel
+import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
 
 class KeyMapListItemCreator(
     private val displayMapping: DisplayKeyMapUseCase,

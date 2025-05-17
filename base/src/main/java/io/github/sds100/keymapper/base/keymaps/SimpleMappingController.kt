@@ -6,8 +6,8 @@ import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.constraints.isSatisfied
 import io.github.sds100.keymapper.data.PreferenceDefaults
-import io.github.sds100.keymapper.keymaps.detection.DetectKeyMapsUseCase
-import io.github.sds100.keymapper.util.InputEventType
+import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCase
+import io.github.sds100.keymapper.base.util.InputEventType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job

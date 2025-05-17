@@ -2,8 +2,8 @@ package io.github.sds100.keymapper.base.trigger
 
 import io.github.sds100.keymapper.data.entities.FingerprintTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
-import io.github.sds100.keymapper.keymaps.ClickType
-import io.github.sds100.keymapper.keymaps.FingerprintGestureType
+import io.github.sds100.keymapper.base.keymaps.ClickType
+import io.github.sds100.keymapper.base.keymaps.FingerprintGestureType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.util.UUID

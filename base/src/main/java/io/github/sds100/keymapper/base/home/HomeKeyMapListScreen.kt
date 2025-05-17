@@ -60,24 +60,24 @@ import io.github.sds100.keymapper.common.result.Error
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.groups.GroupListItemModel
-import io.github.sds100.keymapper.keymaps.KeyMapAppBarState
-import io.github.sds100.keymapper.keymaps.KeyMapList
-import io.github.sds100.keymapper.keymaps.KeyMapListViewModel
+import io.github.sds100.keymapper.base.keymaps.KeyMapAppBarState
+import io.github.sds100.keymapper.base.keymaps.KeyMapList
+import io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel
 import io.github.sds100.keymapper.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.sorting.SortBottomSheet
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.trigger.DpadTriggerSetupBottomSheet
 import io.github.sds100.keymapper.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.trigger.TriggerError
-import io.github.sds100.keymapper.util.ShareUtils
+import io.github.sds100.keymapper.base.util.ShareUtils
 import io.github.sds100.keymapper.common.state.State
-import io.github.sds100.keymapper.util.drawable
-import io.github.sds100.keymapper.util.ui.compose.CollapsableFloatingActionButton
-import io.github.sds100.keymapper.util.ui.compose.ComposeChipModel
-import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.util.ui.compose.KeyMapperTapTarget
-import io.github.sds100.keymapper.util.ui.compose.keyMapperShowcaseStyle
-import io.github.sds100.keymapper.util.ui.compose.openUriSafe
+import io.github.sds100.keymapper.base.util.drawable
+import io.github.sds100.keymapper.base.util.ui.compose.CollapsableFloatingActionButton
+import io.github.sds100.keymapper.base.util.ui.compose.ComposeChipModel
+import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.util.ui.compose.KeyMapperTapTarget
+import io.github.sds100.keymapper.base.util.ui.compose.keyMapperShowcaseStyle
+import io.github.sds100.keymapper.base.util.ui.compose.openUriSafe
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -7,10 +7,10 @@ import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.common.result.Error
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
-import io.github.sds100.keymapper.keymaps.detection.DetectKeyMapsUseCase
-import io.github.sds100.keymapper.keymaps.detection.TriggerKeyMapFromOtherAppsController
+import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCase
+import io.github.sds100.keymapper.base.keymaps.detection.TriggerKeyMapFromOtherAppsController
 import io.github.sds100.keymapper.trigger.Trigger
-import io.github.sds100.keymapper.util.TestConstraintSnapshot
+import io.github.sds100.keymapper.base.util.TestConstraintSnapshot
 import junitparams.JUnitParamsRunner
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay

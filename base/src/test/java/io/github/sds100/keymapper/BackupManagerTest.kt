@@ -22,12 +22,12 @@ import io.github.sds100.keymapper.data.repositories.FakePreferenceRepository
 import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.GroupRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.keymaps.KeyMapRepository
+import io.github.sds100.keymapper.base.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.system.files.FakeFileAdapter
 import io.github.sds100.keymapper.system.files.IFile
 import io.github.sds100.keymapper.system.files.JavaFile
 import io.github.sds100.keymapper.common.state.State
-import io.github.sds100.keymapper.util.UuidGenerator
+import io.github.sds100.keymapper.base.util.UuidGenerator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

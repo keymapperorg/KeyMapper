@@ -13,8 +13,8 @@ import io.github.sds100.keymapper.common.result.Error
 import io.github.sds100.keymapper.common.result.Result
 import io.github.sds100.keymapper.common.result.Success
 import io.github.sds100.keymapper.system.SettingsUtils
-import io.github.sds100.keymapper.util.SizeKM
-import io.github.sds100.keymapper.util.getRealDisplaySize
+import io.github.sds100.keymapper.base.util.SizeKM
+import io.github.sds100.keymapper.base.util.getRealDisplaySize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

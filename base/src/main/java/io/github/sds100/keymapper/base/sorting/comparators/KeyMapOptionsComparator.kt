@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.base.sorting.comparators
 
-import io.github.sds100.keymapper.keymaps.KeyMap
+import io.github.sds100.keymapper.base.keymaps.KeyMap
 
 class KeyMapOptionsComparator(
     /**

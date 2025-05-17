@@ -6,7 +6,7 @@ import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.common.state.ifIsData
 import io.github.sds100.keymapper.common.state.mapData
-import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.base.util.ui.ResourceProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first

@@ -4,7 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.ui.platform.UriHandler
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.util.str
+import io.github.sds100.keymapper.base.util.str
 
 fun UriHandler.openUriSafe(ctx: Context, uri: String) {
     try {

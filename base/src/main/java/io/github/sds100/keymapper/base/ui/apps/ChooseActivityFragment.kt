@@ -6,9 +6,9 @@ import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.util.Inject
-import io.github.sds100.keymapper.util.ui.RecyclerViewUtils
-import io.github.sds100.keymapper.util.ui.SimpleRecyclerViewFragment
+import io.github.sds100.keymapper.base.util.Inject
+import io.github.sds100.keymapper.base.util.ui.RecyclerViewUtils
+import io.github.sds100.keymapper.base.util.ui.SimpleRecyclerViewFragment
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.Json
 
