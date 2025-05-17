@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.michaelflisar.dragselectrecyclerview.DragSelectionProcessor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.common.state.State
-import io.github.sds100.keymapper.common.state.ifIsData
-import io.github.sds100.keymapper.common.state.mapData
+import io.github.sds100.keymapper.common.util.state.State
+import io.github.sds100.keymapper.common.util.state.ifIsData
+import io.github.sds100.keymapper.common.util.state.mapData
 import io.github.sds100.keymapper.base.util.ui.MultiSelectProvider
 import io.github.sds100.keymapper.base.util.ui.PopupUi
 import io.github.sds100.keymapper.base.util.ui.PopupViewModel

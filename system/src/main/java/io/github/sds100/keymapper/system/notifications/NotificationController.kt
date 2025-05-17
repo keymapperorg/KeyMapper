@@ -5,8 +5,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.common.result.onFailure
-import io.github.sds100.keymapper.common.result.onSuccess
+import io.github.sds100.keymapper.common.util.result.onFailure
+import io.github.sds100.keymapper.common.util.result.onSuccess
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase

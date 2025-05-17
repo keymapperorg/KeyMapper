@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.common.state.State
+import io.github.sds100.keymapper.common.util.state.State
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.base.util.filterByQuery
 import io.github.sds100.keymapper.base.util.ui.DefaultSimpleListItem

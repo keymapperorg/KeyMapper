@@ -20,7 +20,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.databinding.FragmentConfigKeyEventBinding
 import io.github.sds100.keymapper.ui.utils.putJsonSerializable
 import io.github.sds100.keymapper.base.util.Inject
-import io.github.sds100.keymapper.base.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.common.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.util.str
 import io.github.sds100.keymapper.base.util.ui.configuredCheckBox
 import io.github.sds100.keymapper.base.util.ui.setupNavigation

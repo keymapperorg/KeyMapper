@@ -23,7 +23,7 @@ import androidx.navigation.fragment.navArgs
 import io.github.sds100.keymapper.databinding.FragmentSwipePickCoordinatesBinding
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.base.util.Inject
-import io.github.sds100.keymapper.base.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.common.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.encodeToString

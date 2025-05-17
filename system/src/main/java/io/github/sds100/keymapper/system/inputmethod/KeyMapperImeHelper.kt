@@ -1,12 +1,12 @@
 package io.github.sds100.keymapper.system.inputmethod
 
 import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.common.result.Error
-import io.github.sds100.keymapper.common.result.Result
-import io.github.sds100.keymapper.common.result.Success
-import io.github.sds100.keymapper.common.result.onSuccess
-import io.github.sds100.keymapper.common.result.suspendThen
-import io.github.sds100.keymapper.common.result.then
+import io.github.sds100.keymapper.common.util.result.Error
+import io.github.sds100.keymapper.common.util.result.Result
+import io.github.sds100.keymapper.common.util.result.Success
+import io.github.sds100.keymapper.common.util.result.onSuccess
+import io.github.sds100.keymapper.common.util.result.suspendThen
+import io.github.sds100.keymapper.common.util.result.then
 import io.github.sds100.keymapper.base.util.firstBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

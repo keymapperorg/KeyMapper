@@ -12,9 +12,9 @@ import com.anggrayudi.storage.file.openInputStream
 import com.anggrayudi.storage.file.openOutputStream
 import com.anggrayudi.storage.file.recreateFile
 import com.anggrayudi.storage.media.FileDescription
-import io.github.sds100.keymapper.common.result.Error
-import io.github.sds100.keymapper.common.result.Result
-import io.github.sds100.keymapper.common.result.Success
+import io.github.sds100.keymapper.common.util.result.Error
+import io.github.sds100.keymapper.common.util.result.Result
+import io.github.sds100.keymapper.common.util.result.Success
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File

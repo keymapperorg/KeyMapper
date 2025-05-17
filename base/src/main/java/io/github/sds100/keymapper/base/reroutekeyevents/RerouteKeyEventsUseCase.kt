@@ -1,16 +1,13 @@
 package io.github.sds100.keymapper.base.reroutekeyevents
 
-import android.content.Context
 import android.os.Build
-import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapper
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
-import io.github.sds100.keymapper.base.util.firstBlocking
+import io.github.sds100.keymapper.common.util.firstBlocking
 import io.github.sds100.keymapper.base.util.SettingsRepository
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking

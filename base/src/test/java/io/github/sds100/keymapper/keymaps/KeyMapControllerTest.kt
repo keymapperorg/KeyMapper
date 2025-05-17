@@ -7,7 +7,7 @@ import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
-import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.util.result.Error
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.constraints.ConstraintSnapshot

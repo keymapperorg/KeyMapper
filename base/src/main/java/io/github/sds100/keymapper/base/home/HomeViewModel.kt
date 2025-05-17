@@ -13,7 +13,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.floating.ListFloatingLayoutsUseCase
 import io.github.sds100.keymapper.floating.ListFloatingLayoutsViewModel
-import io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel
+import io.github.sds100.keymapper.mapping.keymaps.KeyMapListViewModel
 import io.github.sds100.keymapper.base.keymaps.ListKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
@@ -71,7 +71,7 @@ class HomeViewModel @Inject constructor(
             )
 
     val keyMapListViewModel by lazy {
-        KeyMapListViewModel(
+        io.github.sds100.keymapper.mapping.keymaps.KeyMapListViewModel(
             viewModelScope,
             listKeyMaps,
             resourceProvider,

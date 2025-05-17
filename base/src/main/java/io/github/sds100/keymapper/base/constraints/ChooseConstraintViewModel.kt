@@ -10,7 +10,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
 import io.github.sds100.keymapper.system.display.Orientation
-import io.github.sds100.keymapper.common.state.State
+import io.github.sds100.keymapper.common.util.state.State
 import io.github.sds100.keymapper.base.util.containsQuery
 import io.github.sds100.keymapper.base.util.getFullMessage
 import io.github.sds100.keymapper.base.util.ui.NavDestination

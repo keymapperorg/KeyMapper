@@ -39,7 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.util.result.Error
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.util.drawable

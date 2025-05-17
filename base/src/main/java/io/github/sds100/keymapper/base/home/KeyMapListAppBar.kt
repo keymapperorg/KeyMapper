@@ -91,7 +91,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.util.result.Error
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.constraints.ConstraintMode

@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.system.inputmethod
 
-import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.util.result.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 

@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.base.util.ui
 
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.util.result.Error
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.base.util.getFullMessage

@@ -1,16 +1,16 @@
 package io.github.sds100.keymapper.base.actions.uielement
 
 import android.graphics.drawable.Drawable
-import io.github.sds100.keymapper.common.result.Result
-import io.github.sds100.keymapper.common.result.onFailure
+import io.github.sds100.keymapper.common.util.result.Result
+import io.github.sds100.keymapper.common.util.result.onFailure
 import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
 import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
 import io.github.sds100.keymapper.system.accessibility.RecordAccessibilityNodeState
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.base.util.ServiceEvent
-import io.github.sds100.keymapper.common.state.State
-import io.github.sds100.keymapper.common.state.mapData
+import io.github.sds100.keymapper.common.util.state.State
+import io.github.sds100.keymapper.common.util.state.mapData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

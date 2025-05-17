@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.base.trigger
 
-import io.github.sds100.keymapper.common.result.valueOrNull
+import io.github.sds100.keymapper.common.util.result.valueOrNull
 import io.github.sds100.keymapper.data.entities.AssistantTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.FingerprintTriggerKeyEntity

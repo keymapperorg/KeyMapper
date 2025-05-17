@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.util
 
 import android.content.pm.PackageManager
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.util.result.Error
 import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.purchasing.PurchasingError
 import io.github.sds100.keymapper.system.BuildUtils

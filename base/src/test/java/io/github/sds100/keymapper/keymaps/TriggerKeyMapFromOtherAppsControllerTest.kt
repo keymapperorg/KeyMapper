@@ -5,7 +5,7 @@ import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.actions.RepeatMode
-import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.util.result.Error
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.detection.TriggerKeyMapFromOtherAppsController

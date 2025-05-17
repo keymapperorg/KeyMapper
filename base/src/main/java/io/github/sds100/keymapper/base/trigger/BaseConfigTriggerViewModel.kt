@@ -9,9 +9,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.common.result.Error
-import io.github.sds100.keymapper.common.result.Result
-import io.github.sds100.keymapper.common.result.onSuccess
+import io.github.sds100.keymapper.common.util.result.Error
+import io.github.sds100.keymapper.common.util.result.Result
+import io.github.sds100.keymapper.common.util.result.onSuccess
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapOptionsViewModel
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCase
@@ -27,10 +27,10 @@ import io.github.sds100.keymapper.purchasing.ProductId
 import io.github.sds100.keymapper.purchasing.PurchasingManager
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
-import io.github.sds100.keymapper.common.state.State
-import io.github.sds100.keymapper.common.state.dataOrNull
-import io.github.sds100.keymapper.common.state.ifIsData
-import io.github.sds100.keymapper.common.state.mapData
+import io.github.sds100.keymapper.common.util.state.State
+import io.github.sds100.keymapper.common.util.state.dataOrNull
+import io.github.sds100.keymapper.common.util.state.ifIsData
+import io.github.sds100.keymapper.common.util.state.mapData
 import io.github.sds100.keymapper.base.util.ui.CheckBoxListItem
 import io.github.sds100.keymapper.base.util.ui.DialogResponse
 import io.github.sds100.keymapper.base.util.ui.LinkType

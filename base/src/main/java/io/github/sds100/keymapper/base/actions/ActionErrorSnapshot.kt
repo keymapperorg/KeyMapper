@@ -1,9 +1,9 @@
 package io.github.sds100.keymapper.base.actions
 
 import io.github.sds100.keymapper.actions.sound.SoundsManager
-import io.github.sds100.keymapper.common.result.Error
-import io.github.sds100.keymapper.common.result.onFailure
-import io.github.sds100.keymapper.common.result.onSuccess
+import io.github.sds100.keymapper.common.util.result.Error
+import io.github.sds100.keymapper.common.util.result.onFailure
+import io.github.sds100.keymapper.common.util.result.onSuccess
 import io.github.sds100.keymapper.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter

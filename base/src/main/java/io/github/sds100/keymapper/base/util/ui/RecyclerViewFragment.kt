@@ -20,8 +20,8 @@ import androidx.savedstate.SavedStateRegistry
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.google.android.material.bottomappbar.BottomAppBar
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.common.state.State
-import io.github.sds100.keymapper.base.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.common.util.state.State
+import io.github.sds100.keymapper.common.util.launchRepeatOnLifecycle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 

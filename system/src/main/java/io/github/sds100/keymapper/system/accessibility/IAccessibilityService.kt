@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.system.accessibility
 import android.os.Build
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
-import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.util.result.Result
 import io.github.sds100.keymapper.base.util.InputEventType
 import kotlinx.coroutines.flow.Flow
 

@@ -12,9 +12,9 @@ import android.os.Build
 import android.view.KeyEvent
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
-import io.github.sds100.keymapper.common.result.Error
-import io.github.sds100.keymapper.common.result.Result
-import io.github.sds100.keymapper.common.result.Success
+import io.github.sds100.keymapper.common.util.result.Error
+import io.github.sds100.keymapper.common.util.result.Result
+import io.github.sds100.keymapper.common.util.result.Success
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow

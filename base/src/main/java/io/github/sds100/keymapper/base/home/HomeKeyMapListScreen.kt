@@ -56,13 +56,13 @@ import com.canopas.lib.showcase.IntroShowcase
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.ImportExportState
 import io.github.sds100.keymapper.backup.RestoreType
-import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.util.result.Error
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.groups.GroupListItemModel
 import io.github.sds100.keymapper.base.keymaps.KeyMapAppBarState
 import io.github.sds100.keymapper.base.keymaps.KeyMapList
-import io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel
+import io.github.sds100.keymapper.mapping.keymaps.KeyMapListViewModel
 import io.github.sds100.keymapper.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.sorting.SortBottomSheet
 import io.github.sds100.keymapper.system.files.FileUtils
@@ -70,7 +70,7 @@ import io.github.sds100.keymapper.trigger.DpadTriggerSetupBottomSheet
 import io.github.sds100.keymapper.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.trigger.TriggerError
 import io.github.sds100.keymapper.base.util.ShareUtils
-import io.github.sds100.keymapper.common.state.State
+import io.github.sds100.keymapper.common.util.state.State
 import io.github.sds100.keymapper.base.util.drawable
 import io.github.sds100.keymapper.base.util.ui.compose.CollapsableFloatingActionButton
 import io.github.sds100.keymapper.base.util.ui.compose.ComposeChipModel
@@ -83,7 +83,7 @@ import io.github.sds100.keymapper.base.util.ui.compose.openUriSafe
 @Composable
 fun HomeKeyMapListScreen(
     modifier: Modifier = Modifier,
-    viewModel: KeyMapListViewModel,
+    viewModel: io.github.sds100.keymapper.mapping.keymaps.KeyMapListViewModel,
     snackbarState: SnackbarHostState,
     onSettingsClick: () -> Unit,
     onAboutClick: () -> Unit,

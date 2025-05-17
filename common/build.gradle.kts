@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.jlleitschuh.gradle.ktlint)
 }
 
 android {
@@ -32,4 +34,20 @@ android {
 }
 
 dependencies {
+    // kotlin stuff
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.serialization.json)
+
+    // androidx
+    implementation(libs.androidx.legacy.support.core.ui)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.fragment.ktx)
+    implementation(libs.bundles.androidx.lifecycle)
+    implementation(libs.bundles.androidx.navigation)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.preference.ktx)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.lifecycle.extensions)
 }

@@ -7,13 +7,13 @@ import android.hardware.input.InputManager
 import android.os.Handler
 import android.view.InputDevice
 import androidx.core.content.getSystemService
-import io.github.sds100.keymapper.common.result.Error
-import io.github.sds100.keymapper.common.result.Result
-import io.github.sds100.keymapper.common.result.Success
+import io.github.sds100.keymapper.common.util.result.Error
+import io.github.sds100.keymapper.common.util.result.Result
+import io.github.sds100.keymapper.common.util.result.Success
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
-import io.github.sds100.keymapper.common.state.State
+import io.github.sds100.keymapper.common.util.state.State
 import io.github.sds100.keymapper.base.util.ifIsData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow

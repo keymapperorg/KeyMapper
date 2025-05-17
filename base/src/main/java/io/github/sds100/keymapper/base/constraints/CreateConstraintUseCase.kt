@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.constraints
 
 import android.content.pm.PackageManager
 import android.os.Build
-import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.util.result.Error
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.camera.CameraAdapter

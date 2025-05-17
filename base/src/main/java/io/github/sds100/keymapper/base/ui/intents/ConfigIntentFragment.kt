@@ -26,7 +26,7 @@ import io.github.sds100.keymapper.system.intents.BoolIntentExtraListItem
 import io.github.sds100.keymapper.system.intents.GenericIntentExtraListItem
 import io.github.sds100.keymapper.system.intents.IntentExtraListItem
 import io.github.sds100.keymapper.base.util.Inject
-import io.github.sds100.keymapper.base.util.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.common.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.util.ui.setupNavigation
 import io.github.sds100.keymapper.base.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest

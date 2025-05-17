@@ -16,11 +16,11 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.MalformedJsonException
 import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.actions.sound.SoundsManager
-import io.github.sds100.keymapper.common.result.Error
-import io.github.sds100.keymapper.common.result.Result
-import io.github.sds100.keymapper.common.result.Success
-import io.github.sds100.keymapper.common.result.onFailure
-import io.github.sds100.keymapper.common.result.then
+import io.github.sds100.keymapper.common.util.result.Error
+import io.github.sds100.keymapper.common.util.result.Result
+import io.github.sds100.keymapper.common.util.result.Success
+import io.github.sds100.keymapper.common.util.result.onFailure
+import io.github.sds100.keymapper.common.util.result.then
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.db.AppDatabase
@@ -55,7 +55,7 @@ import io.github.sds100.keymapper.system.files.IFile
 import io.github.sds100.keymapper.base.util.DefaultDispatcherProvider
 import io.github.sds100.keymapper.base.util.DefaultUuidGenerator
 import io.github.sds100.keymapper.base.util.DispatcherProvider
-import io.github.sds100.keymapper.common.state.State
+import io.github.sds100.keymapper.common.util.state.State
 import io.github.sds100.keymapper.base.util.TreeNode
 import io.github.sds100.keymapper.base.util.UuidGenerator
 import io.github.sds100.keymapper.base.util.breadFirstTraversal

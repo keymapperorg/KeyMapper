@@ -15,8 +15,8 @@ import io.github.sds100.keymapper.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.trigger.Trigger
 import io.github.sds100.keymapper.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.trigger.TriggerMode
-import io.github.sds100.keymapper.common.state.State
-import io.github.sds100.keymapper.common.state.dataOrNull
+import io.github.sds100.keymapper.common.util.state.State
+import io.github.sds100.keymapper.common.util.state.dataOrNull
 import io.github.sds100.keymapper.base.util.singleKeyTrigger
 import io.github.sds100.keymapper.base.util.triggerKey
 import kotlinx.coroutines.ExperimentalCoroutinesApi

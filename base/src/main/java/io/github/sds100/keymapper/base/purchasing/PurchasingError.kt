@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.base.purchasing
 
-import io.github.sds100.keymapper.common.result.Error
+import io.github.sds100.keymapper.common.util.result.Error
 
 sealed class PurchasingError : Error() {
     data object PurchasingNotImplemented : PurchasingError()

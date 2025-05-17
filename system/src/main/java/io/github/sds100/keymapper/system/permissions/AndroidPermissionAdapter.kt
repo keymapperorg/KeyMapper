@@ -16,11 +16,11 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.common.result.Error
-import io.github.sds100.keymapper.common.result.Result
-import io.github.sds100.keymapper.common.result.onFailure
-import io.github.sds100.keymapper.common.result.onSuccess
-import io.github.sds100.keymapper.common.result.success
+import io.github.sds100.keymapper.common.util.result.Error
+import io.github.sds100.keymapper.common.util.result.Result
+import io.github.sds100.keymapper.common.util.result.onFailure
+import io.github.sds100.keymapper.common.util.result.onSuccess
+import io.github.sds100.keymapper.common.util.result.success
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.shizuku.ShizukuUtils

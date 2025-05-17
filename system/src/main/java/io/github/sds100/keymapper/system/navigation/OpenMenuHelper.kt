@@ -2,8 +2,8 @@ package io.github.sds100.keymapper.system.navigation
 
 import android.view.KeyEvent
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
-import io.github.sds100.keymapper.common.result.Result
-import io.github.sds100.keymapper.common.result.success
+import io.github.sds100.keymapper.common.util.result.Result
+import io.github.sds100.keymapper.common.util.result.success
 import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeAction
 import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.inputevents.InputEventInjector

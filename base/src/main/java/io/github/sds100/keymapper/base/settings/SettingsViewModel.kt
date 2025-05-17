@@ -5,11 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.common.result.onFailure
-import io.github.sds100.keymapper.common.result.onSuccess
-import io.github.sds100.keymapper.common.result.otherwise
+import io.github.sds100.keymapper.common.util.result.onFailure
+import io.github.sds100.keymapper.common.util.result.onSuccess
+import io.github.sds100.keymapper.common.util.result.otherwise
 import io.github.sds100.keymapper.base.util.SharedPrefsDataStoreWrapper
-import io.github.sds100.keymapper.common.state.State
+import io.github.sds100.keymapper.common.util.state.State
 import io.github.sds100.keymapper.base.util.getFullMessage
 import io.github.sds100.keymapper.base.util.ui.DialogResponse
 import io.github.sds100.keymapper.base.util.ui.MultiChoiceItem

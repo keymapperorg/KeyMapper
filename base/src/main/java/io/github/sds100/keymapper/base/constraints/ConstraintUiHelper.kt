@@ -3,8 +3,8 @@ package io.github.sds100.keymapper.base.constraints
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Android
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.common.result.handle
-import io.github.sds100.keymapper.common.result.valueIfFailure
+import io.github.sds100.keymapper.common.util.result.handle
+import io.github.sds100.keymapper.common.util.result.valueIfFailure
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.base.util.TimeUtils

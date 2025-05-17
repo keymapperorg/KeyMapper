@@ -2,9 +2,9 @@ package io.github.sds100.keymapper.base.trigger
 
 import android.os.Build
 import android.view.KeyEvent
-import io.github.sds100.keymapper.common.result.Result
-import io.github.sds100.keymapper.common.result.onFailure
-import io.github.sds100.keymapper.common.result.onSuccess
+import io.github.sds100.keymapper.common.util.result.Result
+import io.github.sds100.keymapper.common.util.result.onFailure
+import io.github.sds100.keymapper.common.util.result.onSuccess
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.requiresImeKeyEventForwardingInPhoneCall
 import io.github.sds100.keymapper.purchasing.ProductId

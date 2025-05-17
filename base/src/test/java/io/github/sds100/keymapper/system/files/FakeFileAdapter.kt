@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.system.files
 
-import io.github.sds100.keymapper.common.result.Result
-import io.github.sds100.keymapper.common.result.Success
+import io.github.sds100.keymapper.common.util.result.Result
+import io.github.sds100.keymapper.common.util.result.Success
 import kotlinx.coroutines.runBlocking
 import org.junit.rules.TemporaryFolder
 import java.io.File

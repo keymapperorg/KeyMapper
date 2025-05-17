@@ -11,8 +11,8 @@ import android.os.Looper
 import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
 import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.common.result.Result
-import io.github.sds100.keymapper.common.result.Success
+import io.github.sds100.keymapper.common.util.result.Result
+import io.github.sds100.keymapper.common.util.result.Success
 import io.github.sds100.keymapper.system.JobSchedulerHelper
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter

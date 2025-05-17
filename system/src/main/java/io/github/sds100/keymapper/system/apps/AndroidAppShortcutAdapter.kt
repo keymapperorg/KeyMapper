@@ -14,11 +14,11 @@ import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.graphics.drawable.toBitmap
 import io.github.sds100.keymapper.api.LaunchKeyMapShortcutActivity
-import io.github.sds100.keymapper.common.result.Error
-import io.github.sds100.keymapper.common.result.Result
-import io.github.sds100.keymapper.common.result.Success
-import io.github.sds100.keymapper.common.result.success
-import io.github.sds100.keymapper.common.state.State
+import io.github.sds100.keymapper.common.util.result.Error
+import io.github.sds100.keymapper.common.util.result.Result
+import io.github.sds100.keymapper.common.util.result.Success
+import io.github.sds100.keymapper.common.util.result.success
+import io.github.sds100.keymapper.common.util.state.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.util.UUID

@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.base.trigger
 
-import io.github.sds100.keymapper.common.result.onSuccess
+import io.github.sds100.keymapper.common.util.result.onSuccess
 import io.github.sds100.keymapper.system.apps.PackageInfo
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.apps.getPackageInfoFlow

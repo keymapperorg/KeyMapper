@@ -6,7 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
-import io.github.sds100.keymapper.common.result.handle
+import io.github.sds100.keymapper.common.util.result.handle
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils

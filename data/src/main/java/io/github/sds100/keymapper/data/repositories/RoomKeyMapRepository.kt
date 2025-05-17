@@ -8,7 +8,7 @@ import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintToKe
 import io.github.sds100.keymapper.base.keymaps.KeyMapRepository
 import io.github.sds100.keymapper.base.util.DefaultDispatcherProvider
 import io.github.sds100.keymapper.base.util.DispatcherProvider
-import io.github.sds100.keymapper.common.state.State
+import io.github.sds100.keymapper.common.util.state.State
 import io.github.sds100.keymapper.base.util.splitIntoBatches
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow

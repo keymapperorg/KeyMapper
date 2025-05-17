@@ -1,19 +1,19 @@
 package io.github.sds100.keymapper.base.actions
 
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.common.result.Error
-import io.github.sds100.keymapper.common.result.onFailure
+import io.github.sds100.keymapper.common.util.result.Error
+import io.github.sds100.keymapper.common.util.result.onFailure
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.common.state.State
-import io.github.sds100.keymapper.common.state.dataOrNull
+import io.github.sds100.keymapper.common.util.state.State
+import io.github.sds100.keymapper.common.util.state.dataOrNull
 import io.github.sds100.keymapper.base.util.getFullMessage
 import io.github.sds100.keymapper.base.util.isFixable
-import io.github.sds100.keymapper.common.state.mapData
+import io.github.sds100.keymapper.common.util.state.mapData
 import io.github.sds100.keymapper.base.util.ui.ChooseAppStoreModel
 import io.github.sds100.keymapper.base.util.ui.DialogResponse
 import io.github.sds100.keymapper.base.util.ui.LinkType

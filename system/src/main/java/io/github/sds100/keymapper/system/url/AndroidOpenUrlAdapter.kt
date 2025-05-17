@@ -4,7 +4,7 @@ import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
-import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.util.result.Result
 
 @Singleton
 class AndroidOpenUrlAdapter @Inject constructor(

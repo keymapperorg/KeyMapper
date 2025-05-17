@@ -63,6 +63,8 @@ dependencies {
     implementation(project(":api"))
     implementation(project(":data"))
     implementation(project(":system"))
+    implementation(project(":systemstubs"))
+    implementation(project(":mapping"))
 
     // TODO delete the unused libraries and plugins
 

@@ -1,10 +1,10 @@
 package io.github.sds100.keymapper.system.inputmethod
 
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.common.result.Success
-import io.github.sds100.keymapper.common.result.onFailure
-import io.github.sds100.keymapper.common.result.onSuccess
-import io.github.sds100.keymapper.common.result.otherwise
+import io.github.sds100.keymapper.common.util.result.Success
+import io.github.sds100.keymapper.common.util.result.onFailure
+import io.github.sds100.keymapper.common.util.result.onSuccess
+import io.github.sds100.keymapper.common.util.result.otherwise
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository

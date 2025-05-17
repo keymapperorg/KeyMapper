@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.base.actions
 
-import io.github.sds100.keymapper.common.result.success
-import io.github.sds100.keymapper.common.result.then
-import io.github.sds100.keymapper.common.result.valueOrNull
+import io.github.sds100.keymapper.common.util.result.success
+import io.github.sds100.keymapper.common.util.result.then
+import io.github.sds100.keymapper.common.util.result.valueOrNull
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData

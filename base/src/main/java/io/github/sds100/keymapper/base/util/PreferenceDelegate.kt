@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.util
 
 import androidx.datastore.preferences.core.Preferences
+import io.github.sds100.keymapper.common.util.firstBlocking
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

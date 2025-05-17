@@ -1,5 +1,7 @@
 package io.github.sds100.keymapper.base.util.ui.compose
 
+import io.github.sds100.keymapper.common.util.result.Error
+
 sealed class ComposeChipModel {
     abstract val id: String
     abstract val text: String
@@ -13,7 +15,7 @@ sealed class ComposeChipModel {
     data class Error(
         override val id: String,
         override val text: String,
-        val error: io.github.sds100.keymapper.common.result.Error,
+        val error: io.github.sds100.keymapper.common.util.result.Error,
         val isFixable: Boolean = true,
     ) : ComposeChipModel()
 }

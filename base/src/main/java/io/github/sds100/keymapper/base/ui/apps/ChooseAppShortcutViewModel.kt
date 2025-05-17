@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.common.result.valueOrNull
-import io.github.sds100.keymapper.common.state.State
-import io.github.sds100.keymapper.common.state.mapData
+import io.github.sds100.keymapper.common.util.result.valueOrNull
+import io.github.sds100.keymapper.common.util.state.State
+import io.github.sds100.keymapper.common.util.state.mapData
 import io.github.sds100.keymapper.base.util.filterByQuery
 import io.github.sds100.keymapper.base.util.ui.IconInfo
 import io.github.sds100.keymapper.base.util.ui.PopupUi
