@@ -13,50 +13,24 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
 import dagger.hilt.android.HiltAndroidApp
-import io.github.sds100.keymapper.actions.uielement.InteractUiElementController
+import io.github.sds100.keymapper.base.data.entities.LogEntryEntity
+import io.github.sds100.keymapper.base.logging.KeyMapperLoggingTree
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
-import io.github.sds100.keymapper.logging.KeyMapperLoggingTree
-import io.github.sds100.keymapper.purchasing.PurchasingManagerImpl
 import io.github.sds100.keymapper.settings.ThemeUtils
-import io.github.sds100.keymapper.shizuku.ShizukuAdapterImpl
-import io.github.sds100.keymapper.system.AndroidSystemFeatureAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
-import io.github.sds100.keymapper.system.airplanemode.AndroidAirplaneModeAdapter
-import io.github.sds100.keymapper.system.apps.AndroidAppShortcutAdapter
 import io.github.sds100.keymapper.system.apps.AndroidPackageManagerAdapter
-import io.github.sds100.keymapper.system.bluetooth.AndroidBluetoothAdapter
-import io.github.sds100.keymapper.system.camera.AndroidCameraAdapter
-import io.github.sds100.keymapper.system.clipboard.AndroidClipboardAdapter
 import io.github.sds100.keymapper.system.devices.AndroidDevicesAdapter
-import io.github.sds100.keymapper.system.display.AndroidDisplayAdapter
-import io.github.sds100.keymapper.system.files.AndroidFileAdapter
-import io.github.sds100.keymapper.system.inputmethod.AndroidInputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.AutoSwitchImeController
 import io.github.sds100.keymapper.system.inputmethod.ShowHideInputMethodUseCaseImpl
-import io.github.sds100.keymapper.system.leanback.LeanbackAdapterImpl
-import io.github.sds100.keymapper.system.lock.AndroidLockScreenAdapter
-import io.github.sds100.keymapper.system.media.AndroidMediaAdapter
-import io.github.sds100.keymapper.system.network.AndroidNetworkAdapter
-import io.github.sds100.keymapper.system.nfc.AndroidNfcAdapter
 import io.github.sds100.keymapper.system.notifications.AndroidNotificationAdapter
 import io.github.sds100.keymapper.system.notifications.ManageNotificationsUseCaseImpl
 import io.github.sds100.keymapper.system.notifications.NotificationController
-import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.AutoGrantPermissionController
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.system.phone.AndroidPhoneAdapter
-import io.github.sds100.keymapper.system.popup.AndroidToastAdapter
-import io.github.sds100.keymapper.system.power.AndroidPowerAdapter
-import io.github.sds100.keymapper.system.ringtones.AndroidRingtoneAdapter
 import io.github.sds100.keymapper.system.root.SuAdapterImpl
-import io.github.sds100.keymapper.system.url.AndroidOpenUrlAdapter
-import io.github.sds100.keymapper.system.vibrator.AndroidVibratorAdapter
-import io.github.sds100.keymapper.system.volume.AndroidVolumeAdapter
-import io.github.sds100.keymapper.trigger.RecordTriggerController
-import io.github.sds100.keymapper.util.ui.ResourceProviderImpl
-import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -66,124 +40,42 @@ import kotlinx.coroutines.runBlocking
 import splitties.toast.toast
 import timber.log.Timber
 import java.util.Calendar
+import javax.inject.Inject
 
 @SuppressLint("LogNotTimber")
 @HiltAndroidApp
 class KeyMapperApp : MultiDexApplication() {
     private val tag = KeyMapperApp::class.simpleName
 
-    val appCoroutineScope = MainScope()
+    @Inject
+    private lateinit var appCoroutineScope: CoroutineScope
 
-    val notificationAdapter by lazy { AndroidNotificationAdapter(this, appCoroutineScope) }
+    @Inject
+    private lateinit var notificationAdapter: AndroidNotificationAdapter
 
     lateinit var notificationController: NotificationController
     lateinit var autoSwitchImeController: AutoSwitchImeController
 
-    val resourceProvider by lazy { ResourceProviderImpl(this, appCoroutineScope) }
+    @Inject
+    private lateinit var packageManagerAdapter: AndroidPackageManagerAdapter
 
-    val bluetoothMonitor by lazy { AndroidBluetoothAdapter(this, appCoroutineScope) }
+    @Inject
+    private lateinit var devicesAdapter: AndroidDevicesAdapter
 
-    val packageManagerAdapter by lazy {
-        AndroidPackageManagerAdapter(
-            this,
-            appCoroutineScope,
-        )
-    }
+    @Inject
+    private lateinit var permissionAdapter: AndroidPermissionAdapter
 
-    val inputMethodAdapter by lazy {
-        AndroidInputMethodAdapter(
-            this,
-            appCoroutineScope,
-            accessibilityServiceAdapter,
-            permissionAdapter,
-            suAdapter,
-        )
-    }
-    val devicesAdapter by lazy {
-        AndroidDevicesAdapter(
-            this,
-            bluetoothMonitor,
-            permissionAdapter,
-            appCoroutineScope,
-        )
-    }
-    val cameraAdapter by lazy { AndroidCameraAdapter(this) }
-    val permissionAdapter by lazy {
-        AndroidPermissionAdapter(
-            this,
-            appCoroutineScope,
-            suAdapter,
-            notificationReceiverAdapter,
-            ServiceLocator.settingsRepository(this),
-            packageManagerAdapter,
-        )
-    }
+    @Inject
+    private lateinit var accessibilityServiceAdapter: AccessibilityServiceAdapter
 
-    val systemFeatureAdapter by lazy { AndroidSystemFeatureAdapter(this) }
-    val accessibilityServiceAdapter by lazy { AccessibilityServiceAdapter(this, appCoroutineScope) }
-    val notificationReceiverAdapter by lazy { NotificationReceiverAdapter(this, appCoroutineScope) }
-    val appShortcutAdapter by lazy { AndroidAppShortcutAdapter(this) }
-    val fileAdapter by lazy { AndroidFileAdapter(this) }
-    val popupMessageAdapter by lazy { AndroidToastAdapter(this) }
-    val vibratorAdapter by lazy { AndroidVibratorAdapter(this) }
-    val displayAdapter by lazy { AndroidDisplayAdapter(this, coroutineScope = appCoroutineScope) }
-    val audioAdapter by lazy { AndroidVolumeAdapter(this) }
-    val suAdapter by lazy {
-        SuAdapterImpl(
-            appCoroutineScope,
-            ServiceLocator.settingsRepository(this),
-        )
-    }
-    val phoneAdapter by lazy { AndroidPhoneAdapter(this, appCoroutineScope) }
-    val intentAdapter by lazy { IntentAdapterImpl(this) }
-    val mediaAdapter by lazy { AndroidMediaAdapter(this, appCoroutineScope) }
-    val lockScreenAdapter by lazy { AndroidLockScreenAdapter(this) }
-    val airplaneModeAdapter by lazy { AndroidAirplaneModeAdapter(this, suAdapter) }
-    val networkAdapter by lazy { AndroidNetworkAdapter(this, suAdapter) }
-    val nfcAdapter by lazy { AndroidNfcAdapter(this, suAdapter) }
-    val openUrlAdapter by lazy { AndroidOpenUrlAdapter(this) }
-    val clipboardAdapter by lazy { AndroidClipboardAdapter(this) }
-    val shizukuAdapter by lazy { ShizukuAdapterImpl(appCoroutineScope, packageManagerAdapter) }
-    val leanbackAdapter by lazy { LeanbackAdapterImpl(this) }
-    val powerAdapter by lazy { AndroidPowerAdapter(this) }
+    @Inject
+    private lateinit var suAdapter: SuAdapterImpl
 
-    val recordTriggerController by lazy {
-        RecordTriggerController(appCoroutineScope, accessibilityServiceAdapter)
-    }
+    @Inject
+    private lateinit var autoGrantPermissionController: AutoGrantPermissionController
 
-    val interactUiElementController by lazy {
-        InteractUiElementController(
-            appCoroutineScope,
-            accessibilityServiceAdapter,
-            ServiceLocator.accessibilityNodeRepository(this),
-            packageManagerAdapter,
-        )
-    }
-
-    val autoGrantPermissionController by lazy {
-        AutoGrantPermissionController(
-            appCoroutineScope,
-            permissionAdapter,
-            popupMessageAdapter,
-            resourceProvider,
-        )
-    }
-
-    val purchasingManager: PurchasingManagerImpl by lazy {
-        PurchasingManagerImpl(this.applicationContext, appCoroutineScope)
-    }
-
-    val ringtoneManagerAdapter: AndroidRingtoneAdapter by lazy {
-        AndroidRingtoneAdapter(this)
-    }
-
-    private val loggingTree by lazy {
-        KeyMapperLoggingTree(
-            appCoroutineScope,
-            ServiceLocator.settingsRepository(this),
-            ServiceLocator.logRepository(this),
-        )
-    }
+    @Inject
+    private lateinit var loggingTree: KeyMapperLoggingTree
 
     private val processLifecycleOwner by lazy { ProcessLifecycleOwner.get() }
 

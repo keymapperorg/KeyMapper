@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper;
+package io.github.sds100.keymapper.base;
 
 import com.airbnb.epoxy.EpoxyDataBindingPattern;
 

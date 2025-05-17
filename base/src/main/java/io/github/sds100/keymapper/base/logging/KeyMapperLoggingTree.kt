@@ -1,9 +1,9 @@
 package io.github.sds100.keymapper.base.logging
 
 import android.util.Log
-import io.github.sds100.keymapper.data.Keys
-import io.github.sds100.keymapper.data.entities.LogEntryEntity
-import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.base.data.Keys
+import io.github.sds100.keymapper.base.data.entities.LogEntryEntity
+import io.github.sds100.keymapper.base.data.repositories.PreferenceRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
@@ -17,8 +17,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import timber.log.Timber
 import java.util.Calendar
+import javax.inject.Inject
 
-class KeyMapperLoggingTree(
+@Inject
+class KeyMapperLoggingTree constructor(
     private val coroutineScope: CoroutineScope,
     preferenceRepository: PreferenceRepository,
     private val logRepository: LogRepository,

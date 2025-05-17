@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.base
 
 import android.content.BroadcastReceiver
 import android.content.Context

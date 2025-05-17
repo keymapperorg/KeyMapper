@@ -1,14 +1,14 @@
-package io.github.sds100.keymapper
+package io.github.sds100.keymapper.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import io.github.sds100.keymapper.util.ui.NavigationViewModel
-import io.github.sds100.keymapper.util.ui.NavigationViewModelImpl
-import io.github.sds100.keymapper.util.ui.PopupViewModel
-import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
-import io.github.sds100.keymapper.util.ui.ResourceProvider
-import io.github.sds100.keymapper.util.ui.ViewModelHelper
+import io.github.sds100.keymapper.base.util.ui.NavigationViewModel
+import io.github.sds100.keymapper.base.util.ui.NavigationViewModelImpl
+import io.github.sds100.keymapper.base.util.ui.PopupViewModel
+import io.github.sds100.keymapper.base.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.base.util.ui.ResourceProvider
+import io.github.sds100.keymapper.base.util.ui.ViewModelHelper
 import kotlinx.coroutines.launch
 
 class ActivityViewModel(
@@ -35,7 +35,6 @@ class ActivityViewModel(
         private val resourceProvider: ResourceProvider,
     ) : ViewModelProvider.NewInstanceFactory() {
 
-        override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            ActivityViewModel(resourceProvider) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>): T = ActivityViewModel(resourceProvider) as T
     }
 }
