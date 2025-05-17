@@ -90,7 +90,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.common.result.Error
 import io.github.sds100.keymapper.compose.KeyMapperTheme
@@ -923,7 +922,7 @@ private fun constraintsSampleList(): List<ComposeChipModel> {
         ComposeChipModel.Error(
             id = "2",
             text = "Key Mapper not found",
-            error = Error.AppNotFound(Constants.PACKAGE_NAME),
+            error = Error.AppNotFound("io.github.sds100.keymapper"),
         ),
     )
 }

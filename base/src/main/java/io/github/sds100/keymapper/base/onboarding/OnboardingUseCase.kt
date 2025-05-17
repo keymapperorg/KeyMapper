@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
+import io.github.sds100.keymapper.common.BuildConfigProvider
 
 @Singleton
 class OnboardingUseCaseImpl @Inject constructor(
@@ -45,7 +46,9 @@ class OnboardingUseCaseImpl @Inject constructor(
     private val permissionAdapter: PermissionAdapter,
     private val packageManagerAdapter: PackageManagerAdapter,
     private val purchasingManager: PurchasingManager,
-    private val keyMapRepository: KeyMapRepository
+    private val keyMapRepository: KeyMapRepository,
+    private val keyMapRepository: KeyMapRepository,
+    private val buildConfigProvider: BuildConfigProvider
 ) : PreferenceRepository by settingsRepository,
     OnboardingUseCase {
 
@@ -86,10 +89,10 @@ class OnboardingUseCaseImpl @Inject constructor(
     )
 
     override val showWhatsNew = get(Keys.lastInstalledVersionCodeHomeScreen)
-        .map { (it ?: -1) < Constants.VERSION_CODE }
+        .map { (it ?: -1) < buildConfigProvider.versionCode }
 
     override fun showedWhatsNew() {
-        set(Keys.lastInstalledVersionCodeHomeScreen, Constants.VERSION_CODE)
+        set(Keys.lastInstalledVersionCodeHomeScreen, buildConfigProvider.versionCode)
     }
 
     override fun getWhatsNewText(): String = with(fileAdapter.openAsset("whats-new.txt").bufferedReader()) {
@@ -113,7 +116,7 @@ class OnboardingUseCaseImpl @Inject constructor(
     }
 
     override fun showedFloatingButtonFeatureNotification() {
-        set(Keys.lastInstalledVersionCodeBackground, Constants.VERSION_CODE)
+        set(Keys.lastInstalledVersionCodeBackground, buildConfigProvider.versionCode)
     }
 
     override fun isTvDevice(): Boolean = leanbackAdapter.isTvDevice()

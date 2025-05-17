@@ -29,6 +29,9 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
+import io.github.sds100.keymapper.common.BuildConfigProvider
 
 
 
@@ -43,6 +46,7 @@ class NotificationController(
     private val onboardingUseCase: OnboardingUseCase,
     private val resourceProvider: ResourceProvider,
     private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
+    private val buildConfigProvider: BuildConfigProvider,
 ) : ResourceProvider by resourceProvider {
 
     companion object {
@@ -67,28 +71,28 @@ class NotificationController(
         private const val CHANNEL_ID_PERSISTENT = "channel_persistent"
 
         private const val ACTION_RESUME_MAPPINGS =
-            "${Constants.PACKAGE_NAME}.ACTION_RESUME_MAPPINGS"
+            "${buildConfigProvider.packageName}.ACTION_RESUME_MAPPINGS"
 
-        private const val ACTION_PAUSE_MAPPINGS = "${Constants.PACKAGE_NAME}.ACTION_PAUSE_MAPPINGS"
+        private const val ACTION_PAUSE_MAPPINGS = "${buildConfigProvider.packageName}.ACTION_PAUSE_MAPPINGS"
 
         private const val ACTION_START_SERVICE =
-            "${Constants.PACKAGE_NAME}.ACTION_START_ACCESSIBILITY_SERVICE"
+            "${buildConfigProvider.packageName}.ACTION_START_ACCESSIBILITY_SERVICE"
 
         private const val ACTION_RESTART_SERVICE =
-            "${Constants.PACKAGE_NAME}.ACTION_RESTART_ACCESSIBILITY_SERVICE"
+            "${buildConfigProvider.packageName}.ACTION_RESTART_ACCESSIBILITY_SERVICE"
 
         private const val ACTION_STOP_SERVICE =
-            "${Constants.PACKAGE_NAME}.ACTION_STOP_ACCESSIBILITY_SERVICE"
+            "${buildConfigProvider.packageName}.ACTION_STOP_ACCESSIBILITY_SERVICE"
 
         private const val ACTION_DISMISS_TOGGLE_MAPPINGS =
-            "${Constants.PACKAGE_NAME}.ACTION_DISMISS_TOGGLE_MAPPINGS"
+            "${buildConfigProvider.packageName}.ACTION_DISMISS_TOGGLE_MAPPINGS"
 
         private const val ACTION_SHOW_IME_PICKER =
-            "${Constants.PACKAGE_NAME}.ACTION_SHOW_IME_PICKER"
-        private const val ACTION_SHOW_KEYBOARD = "${Constants.PACKAGE_NAME}.ACTION_SHOW_KEYBOARD"
+            "${buildConfigProvider.packageName}.ACTION_SHOW_IME_PICKER"
+        private const val ACTION_SHOW_KEYBOARD = "${buildConfigProvider.packageName}.ACTION_SHOW_KEYBOARD"
 
         private const val ACTION_TOGGLE_KEYBOARD =
-            "${Constants.PACKAGE_NAME}.ACTION_TOGGLE_KEYBOARD"
+            "${buildConfigProvider.packageName}.ACTION_TOGGLE_KEYBOARD"
     }
 
     /**

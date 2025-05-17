@@ -10,10 +10,15 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import io.github.sds100.keymapper.Constants
+import dagger.hilt.android.AndroidEntryPoint
+import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.databinding.FragmentAboutBinding
+import javax.inject.Inject
 
 class AboutFragment : Fragment() {
+
+    @Inject
+    lateinit var buildConfigProvider: BuildConfigProvider
 
     /**
      * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)
@@ -53,7 +58,7 @@ class AboutFragment : Fragment() {
                 onBackPressed()
             }
 
-            version = "${Constants.VERSION} ${Constants.VERSION_CODE}"
+            version = "${buildConfigProvider.version} ${buildConfigProvider.versionCode}"
         }
     }
 

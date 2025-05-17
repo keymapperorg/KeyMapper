@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import io.github.sds100.keymapper.common.BuildConfigProvider
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -48,6 +49,7 @@ class HomeViewModel @Inject constructor(
     private val sortKeyMaps: SortKeyMapsUseCase,
     private val listFloatingLayouts: ListFloatingLayoutsUseCase,
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
+    private val buildConfigProvider: BuildConfigProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
@@ -121,7 +123,7 @@ class HomeViewModel @Inject constructor(
             ),
         )
 
-        if (showFloatingLayouts && Build.VERSION.SDK_INT >= Constants.MIN_API_FLOATING_BUTTONS) {
+        if (showFloatingLayouts && Build.VERSION.SDK_INT >= buildConfigProvider.minApi) {
             items.add(
                 HomeNavBarItem(
                     HomeDestination.FloatingButtons,

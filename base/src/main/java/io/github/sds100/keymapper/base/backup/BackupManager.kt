@@ -74,6 +74,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.util.LinkedList
 import java.util.UUID
+import io.github.sds100.keymapper.common.BuildConfigProvider
 
 class BackupManagerImpl(
     private val coroutineScope: CoroutineScope,
@@ -87,6 +88,7 @@ class BackupManagerImpl(
     private val throwExceptions: Boolean = false,
     private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
     private val uuidGenerator: UuidGenerator = DefaultUuidGenerator(),
+    private val buildConfigProvider: BuildConfigProvider,
 ) : BackupManager {
 
     companion object {
@@ -210,7 +212,7 @@ class BackupManagerImpl(
             val backupDbVersion = rootElement.get(BackupContent.NAME_DB_VERSION).nullInt ?: 9
             val backupAppVersion = rootElement.get(BackupContent.NAME_APP_VERSION).nullInt
 
-            if (backupAppVersion != null && backupAppVersion > Constants.VERSION_CODE) {
+            if (backupAppVersion != null && backupAppVersion > buildConfigProvider.versionCode) {
                 return@withContext Error.BackupVersionTooNew
             }
 
@@ -803,7 +805,7 @@ class BackupManagerImpl(
 
         val backupContent = BackupContent(
             AppDatabase.DATABASE_VERSION,
-            Constants.VERSION_CODE,
+            buildConfigProvider.versionCode,
             keyMapList,
             defaultLongPressDelay =
             preferenceRepository

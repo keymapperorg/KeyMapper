@@ -3,8 +3,7 @@ package io.github.sds100.keymapper.base.api
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.system.accessibility.ServiceState
 import splitties.toast.toast
@@ -16,6 +15,9 @@ import splitties.toast.toast
  */
 class LaunchKeyMapShortcutActivity : Activity() {
 
+    @Inject
+    lateinit var buildConfigProvider: BuildConfigProvider
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -25,7 +27,7 @@ class LaunchKeyMapShortcutActivity : Activity() {
             ServiceState.ENABLED ->
                 if (intent.action == Api.ACTION_TRIGGER_KEYMAP_BY_UID) {
                     Intent(Api.ACTION_TRIGGER_KEYMAP_BY_UID).apply {
-                        setPackage(Constants.PACKAGE_NAME)
+                        setPackage(buildConfigProvider.packageName)
 
                         val uuid = intent.getStringExtra(Api.EXTRA_KEYMAP_UID)
                         putExtra(Api.EXTRA_KEYMAP_UID, uuid)

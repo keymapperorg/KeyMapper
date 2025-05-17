@@ -38,7 +38,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
-import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.common.result.Error
 import io.github.sds100.keymapper.compose.KeyMapperTheme
@@ -359,7 +358,7 @@ private fun PreviewMultipleItems() {
                     ComposeChipModel.Error(
                         id = "2",
                         text = "Key Mapper not found",
-                        error = Error.AppNotFound(Constants.PACKAGE_NAME),
+                        error = Error.AppNotFound("io.github.sds100.keymapper"),
                     ),
                 ),
                 mode = ConstraintMode.AND,
