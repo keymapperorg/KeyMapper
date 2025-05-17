@@ -1,5 +1,7 @@
-package io.github.sds100.keymapper.system.intents
+package io.github.sds100.keymapper.base.ui.intents
 
+import io.github.sds100.keymapper.system.intents.IntentExtraModel
+import io.github.sds100.keymapper.system.intents.IntentTarget
 import kotlinx.serialization.Serializable
 
 @Serializable

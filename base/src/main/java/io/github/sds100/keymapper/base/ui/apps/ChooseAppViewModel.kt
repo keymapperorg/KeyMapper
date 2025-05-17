@@ -1,13 +1,13 @@
-package io.github.sds100.keymapper.system.apps
+package io.github.sds100.keymapper.base.ui.apps
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.common.result.valueOrNull
 import io.github.sds100.keymapper.common.state.State
-import io.github.sds100.keymapper.util.filterByQuery
 import io.github.sds100.keymapper.common.state.mapData
+import io.github.sds100.keymapper.system.apps.PackageInfo
+import io.github.sds100.keymapper.util.filterByQuery
 import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
 import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.SimpleListItemOld

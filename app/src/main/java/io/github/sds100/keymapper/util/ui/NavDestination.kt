@@ -6,10 +6,9 @@ import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.system.apps.ActivityInfo
-import io.github.sds100.keymapper.system.apps.ChooseAppShortcutResult
+import io.github.sds100.keymapper.base.ui.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
-import io.github.sds100.keymapper.system.intents.ConfigIntentResult
-
+import io.github.sds100.keymapper.base.ui.intents.ConfigIntentResult
 
 sealed class NavDestination<R> {
     abstract val id: String

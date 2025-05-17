@@ -1,10 +1,12 @@
-package io.github.sds100.keymapper.system.bluetooth
+package io.github.sds100.keymapper.base.ui.bluetooth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.common.state.State
+import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
+import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceUseCase
 import io.github.sds100.keymapper.util.ui.DefaultSimpleListItem
 import io.github.sds100.keymapper.util.ui.ListItem
 import io.github.sds100.keymapper.util.ui.PopupViewModel
@@ -19,7 +21,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
-import io.github.sds100.keymapper.system.bluetooth.ChooseBluetoothDeviceUseCase
 import javax.inject.Inject
 
 @HiltViewModel

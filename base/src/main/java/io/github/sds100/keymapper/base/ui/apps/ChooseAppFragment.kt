@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.system.apps
+package io.github.sds100.keymapper.base.ui.apps
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,10 +8,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
+import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.databinding.FragmentChooseAppBinding
 import io.github.sds100.keymapper.simple
 import io.github.sds100.keymapper.util.Inject
-import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.RecyclerViewFragment
 import io.github.sds100.keymapper.util.ui.RecyclerViewUtils

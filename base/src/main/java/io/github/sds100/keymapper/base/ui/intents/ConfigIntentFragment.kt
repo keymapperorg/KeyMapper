@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.system.intents
+package io.github.sds100.keymapper.base.ui.intents
 
 import android.os.Bundle
 import android.text.Editable
@@ -22,12 +22,14 @@ import io.github.sds100.keymapper.databinding.FragmentConfigIntentBinding
 import io.github.sds100.keymapper.databinding.ListItemIntentExtraBoolBinding
 import io.github.sds100.keymapper.intentExtraBool
 import io.github.sds100.keymapper.intentExtraGeneric
+import io.github.sds100.keymapper.system.intents.BoolIntentExtraListItem
+import io.github.sds100.keymapper.system.intents.GenericIntentExtraListItem
+import io.github.sds100.keymapper.system.intents.IntentExtraListItem
 import io.github.sds100.keymapper.util.Inject
 import io.github.sds100.keymapper.util.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.util.ui.setupNavigation
 import io.github.sds100.keymapper.util.ui.showPopups
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class ConfigIntentFragment : Fragment() {

@@ -9,7 +9,7 @@
 
         <variable
             name="viewModel"
-            type="io.github.sds100.keymapper.system.intents.ConfigIntentViewModel" />
+            type="io.github.sds100.keymapper.base.ui.intents.ConfigIntentViewModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

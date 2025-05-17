@@ -15,7 +15,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.BadParcelableException
 import android.os.Build
-import android.os.DeadSystemException
+import android.os.RemoteException
 import android.os.TransactionTooLargeException
 import android.provider.MediaStore
 import android.provider.Settings
@@ -35,7 +35,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import splitties.bitflags.withFlag
 import java.io.IOException
 
 class AndroidPackageManagerAdapter(
@@ -98,7 +97,7 @@ class AndroidPackageManagerAdapter(
                             .mapNotNull { createPackageInfoModel(it) }
                     } catch (_: BadParcelableException) {
                         emptyList()
-                    } catch (_: DeadSystemException) {
+                    } catch (_: RemoteException) {
                         emptyList()
                     }
                 }
@@ -178,7 +177,7 @@ class AndroidPackageManagerAdapter(
     override fun enableApp(packageName: String) {
         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
             data = Uri.parse("package:$packageName")
-            flags = Intent.FLAG_ACTIVITY_NO_HISTORY.withFlag(Intent.FLAG_ACTIVITY_NEW_TASK)
+            flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_NEW_TASK
 
             ctx.startActivity(this)
         }

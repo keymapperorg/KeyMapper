@@ -34,7 +34,6 @@ import io.github.sds100.keymapper.system.files.AndroidFileAdapter
 import io.github.sds100.keymapper.system.inputmethod.AndroidInputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.AutoSwitchImeController
 import io.github.sds100.keymapper.system.inputmethod.ShowHideInputMethodUseCaseImpl
-import io.github.sds100.keymapper.system.intents.IntentAdapterImpl
 import io.github.sds100.keymapper.system.leanback.LeanbackAdapterImpl
 import io.github.sds100.keymapper.system.lock.AndroidLockScreenAdapter
 import io.github.sds100.keymapper.system.media.AndroidMediaAdapter

@@ -1,14 +1,14 @@
-package io.github.sds100.keymapper.system.apps
+package io.github.sds100.keymapper.base.ui.apps
 
 import android.content.Intent
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.common.result.valueOrNull
 import io.github.sds100.keymapper.common.state.State
-import io.github.sds100.keymapper.util.filterByQuery
 import io.github.sds100.keymapper.common.state.mapData
+import io.github.sds100.keymapper.util.filterByQuery
 import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.ui.PopupViewModel
@@ -26,8 +26,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.Locale
-import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.sds100.keymapper.system.apps.DisplayAppShortcutsUseCase
 import javax.inject.Inject
 
 @HiltViewModel

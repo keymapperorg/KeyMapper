@@ -72,7 +72,7 @@ import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
-import io.github.sds100.keymapper.system.apps.ChooseAppScreen
+import io.github.sds100.keymapper.base.ui.apps.ChooseAppScreen
 import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.util.drawable
 import io.github.sds100.keymapper.util.ui.compose.ComposeIconInfo

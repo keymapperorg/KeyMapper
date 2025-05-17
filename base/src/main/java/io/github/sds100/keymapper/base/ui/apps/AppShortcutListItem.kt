@@ -1,5 +1,6 @@
-package io.github.sds100.keymapper.system.apps
+package io.github.sds100.keymapper.base.ui.apps
 
+import io.github.sds100.keymapper.system.apps.AppShortcutInfo
 import io.github.sds100.keymapper.util.ui.IconInfo
 import io.github.sds100.keymapper.util.ui.SimpleListItemOld
 import io.github.sds100.keymapper.util.ui.TintType

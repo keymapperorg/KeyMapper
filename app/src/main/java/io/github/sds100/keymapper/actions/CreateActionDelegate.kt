@@ -12,7 +12,7 @@ import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.camera.CameraLensUtils
 import io.github.sds100.keymapper.system.display.Orientation
 import io.github.sds100.keymapper.system.display.OrientationUtils
-import io.github.sds100.keymapper.system.intents.ConfigIntentResult
+import io.github.sds100.keymapper.base.ui.intents.ConfigIntentResult
 import io.github.sds100.keymapper.system.network.HttpMethod
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.DndModeUtils

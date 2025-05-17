@@ -9,7 +9,7 @@
 
         <variable
             name="viewModel"
-            type="io.github.sds100.keymapper.system.apps.ChooseAppViewModel" />
+            type="io.github.sds100.keymapper.base.ui.apps.ChooseAppViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

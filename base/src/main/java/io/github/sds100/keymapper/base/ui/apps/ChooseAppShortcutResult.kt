@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.system.apps
+package io.github.sds100.keymapper.base.ui.apps
 
 import kotlinx.serialization.Serializable
 

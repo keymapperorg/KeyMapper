@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.system.apps
+package io.github.sds100.keymapper.base.ui.apps
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,7 +7,6 @@ import io.github.sds100.keymapper.common.result.valueOrNull
 import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.util.filterByQuery
 import io.github.sds100.keymapper.util.ui.IconInfo
-import io.github.sds100.keymapper.util.ui.TintType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
