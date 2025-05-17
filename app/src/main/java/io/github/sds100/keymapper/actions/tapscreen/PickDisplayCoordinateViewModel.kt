@@ -5,6 +5,7 @@ import android.graphics.Point
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.ui.PopupViewModel
@@ -21,11 +22,12 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.math.roundToInt
 
 
-
-class PickDisplayCoordinateViewModel(
+@HiltViewModel
+class PickDisplayCoordinateViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,

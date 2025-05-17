@@ -5,6 +5,9 @@ import io.github.sds100.keymapper.actions.Action
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.actions.RepeatMode
 import io.github.sds100.keymapper.common.result.Result
+import io.github.sds100.keymapper.common.state.State
+import io.github.sds100.keymapper.common.state.dataOrNull
+import io.github.sds100.keymapper.common.state.ifIsData
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.constraints.ConstraintState
@@ -28,10 +31,7 @@ import io.github.sds100.keymapper.trigger.TriggerKey
 import io.github.sds100.keymapper.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.trigger.TriggerMode
 import io.github.sds100.keymapper.util.ServiceEvent
-import io.github.sds100.keymapper.common.state.State
-import io.github.sds100.keymapper.common.state.dataOrNull
 import io.github.sds100.keymapper.util.firstBlocking
-import io.github.sds100.keymapper.common.state.ifIsData
 import io.github.sds100.keymapper.util.moveElement
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -50,8 +50,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import java.util.LinkedList
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class ConfigKeyMapUseCaseController(
+@Singleton
+class ConfigKeyMapUseCaseController @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val keyMapRepository: KeyMapRepository,
     private val devicesAdapter: DevicesAdapter,
@@ -450,6 +453,7 @@ class ConfigKeyMapUseCaseController(
                         key.keyCode,
                         key.device,
                     )
+
                     is FloatingButtonKey -> key.buttonUid
                 }
             }

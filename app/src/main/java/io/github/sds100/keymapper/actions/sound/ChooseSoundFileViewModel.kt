@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.actions.sound
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.common.result.onFailure
@@ -24,8 +24,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ChooseSoundFileViewModel(
+@HiltViewModel
+class ChooseSoundFileViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
     private val useCase: ChooseSoundFileUseCase,
 ) : ViewModel(),
@@ -114,14 +116,5 @@ class ChooseSoundFileViewModel(
         viewModelScope.launch {
             returnResult.update { ActionData.Sound.Ringtone(uri) }
         }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val resourceProvider: ResourceProvider,
-        private val useCase: ChooseSoundFileUseCase,
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = ChooseSoundFileViewModel(resourceProvider, useCase) as T
     }
 }

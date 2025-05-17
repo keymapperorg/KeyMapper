@@ -1,9 +1,9 @@
 package io.github.sds100.keymapper.logging
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.michaelflisar.dragselectrecyclerview.DragSelectionProcessor
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.common.state.State
 import io.github.sds100.keymapper.common.state.ifIsData
@@ -31,10 +31,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Date
+import javax.inject.Inject
 
-
-
-class LogViewModel(
+@HiltViewModel
+class LogViewModel @Inject constructor(
     private val useCase: DisplayLogUseCase,
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
@@ -195,15 +195,6 @@ class LogViewModel(
             message = message,
             isSelected = isSelected,
         )
-    }
-
-    class Factory(
-        private val useCase: DisplayLogUseCase,
-        private val resourceProvider: ResourceProvider,
-    ) : ViewModelProvider.Factory {
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>) = LogViewModel(useCase, resourceProvider) as T
     }
 }
 

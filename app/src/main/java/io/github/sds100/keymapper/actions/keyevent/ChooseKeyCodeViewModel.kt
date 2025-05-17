@@ -19,8 +19,19 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.sds100.keymapper.actions.ActionData
+import io.github.sds100.keymapper.util.ui.PopupUi
+import io.github.sds100.keymapper.util.ui.PopupViewModel
+import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.util.ui.ResourceProvider
+import io.github.sds100.keymapper.util.ui.showPopup
+import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
 
-class ChooseKeyCodeViewModel : ViewModel() {
+@HiltViewModel
+class ChooseKeyCodeViewModel : ViewModel(),
+    PopupViewModel by PopupViewModelImpl() {
 
     val searchQuery = MutableStateFlow<String?>(null)
 
@@ -38,8 +49,8 @@ class ChooseKeyCodeViewModel : ViewModel() {
         }.let { emit(it) }
     }
 
-    private val _returnResult = MutableSharedFlow<Int>()
-    val returnResult = _returnResult.asSharedFlow()
+    private val _returnResult = MutableStateFlow<ActionData.InputKeyEvent?>(null)
+    val returnResult: StateFlow<ActionData.InputKeyEvent?> = _returnResult.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -60,13 +71,7 @@ class ChooseKeyCodeViewModel : ViewModel() {
 
     fun onListItemClick(id: String) {
         viewModelScope.launch {
-            _returnResult.emit(id.toInt())
+            _returnResult.emit(ActionData.InputKeyEvent(keyCode = id.toInt(), description = null))
         }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = ChooseKeyCodeViewModel() as T
     }
 }

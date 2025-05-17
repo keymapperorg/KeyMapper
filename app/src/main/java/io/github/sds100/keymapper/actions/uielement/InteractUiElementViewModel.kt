@@ -5,6 +5,7 @@ import androidx.compose.material.icons.rounded.Android
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.actions.ActionData
 import io.github.sds100.keymapper.common.result.Error
@@ -19,6 +20,7 @@ import io.github.sds100.keymapper.util.containsQuery
 import io.github.sds100.keymapper.common.state.dataOrNull
 import io.github.sds100.keymapper.common.state.ifIsData
 import io.github.sds100.keymapper.common.state.mapData
+import io.github.sds100.keymapper.util.ui.PopupUi
 import io.github.sds100.keymapper.util.ui.PopupViewModel
 import io.github.sds100.keymapper.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.util.ui.ResourceProvider
@@ -42,14 +44,16 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import java.util.Locale
 
-class InteractUiElementViewModel(
+@HiltViewModel
+class InteractUiElementViewModel @Inject constructor(
     private val useCase: InteractUiElementUseCase,
     private val resourceProvider: ResourceProvider,
 ) : ViewModel(),
-    ResourceProvider by resourceProvider,
-    PopupViewModel by PopupViewModelImpl() {
+    PopupViewModel by PopupViewModelImpl(),
+    ResourceProvider by resourceProvider {
 
     private val _returnAction: MutableSharedFlow<ActionData.InteractUiElement> = MutableSharedFlow()
     val returnAction: SharedFlow<ActionData.InteractUiElement> = _returnAction.asSharedFlow()
@@ -409,13 +413,22 @@ class InteractUiElementViewModel(
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val useCase: InteractUiElementUseCase,
-        private val resourceProvider: ResourceProvider,
-    ) : ViewModelProvider.NewInstanceFactory() {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return InteractUiElementViewModel(useCase, resourceProvider) as T
+    fun onElementSelected(elementId: String) {
+        viewModelScope.launch {
+            val dialog = PopupUi.Text(
+                hint = getString(R.string.hint_ui_element_description),
+                allowEmpty = false,
+                text = elementId,
+            )
+
+            val description = showPopup("ui_element_description", dialog) ?: return@launch
+
+            _returnAction.emit(
+                ActionData.InteractUiElement(
+                    elementId = elementId,
+                    description = description,
+                )
+            )
         }
     }
 }

@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.backup
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.common.result.onFailure
 import io.github.sds100.keymapper.common.result.onSuccess
 import io.github.sds100.keymapper.util.getFullMessage
@@ -11,8 +11,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RestoreKeyMapsViewModel(
+@HiltViewModel
+class RestoreKeyMapsViewModel @Inject constructor(
     private val useCase: BackupRestoreMappingsUseCase,
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
@@ -46,14 +48,5 @@ class RestoreKeyMapsViewModel(
                     ImportExportState.Error(it.getFullMessage(this@RestoreKeyMapsViewModel))
             }
         }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val useCase: BackupRestoreMappingsUseCase,
-        private val resourceProvider: ResourceProvider,
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = RestoreKeyMapsViewModel(useCase, resourceProvider) as T
     }
 }
