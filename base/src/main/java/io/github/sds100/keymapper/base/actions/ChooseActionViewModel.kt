@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.base.actions
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.system.SystemError
@@ -31,7 +30,9 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.sds100.keymapper.actions.CreateActionUseCase
+import io.github.sds100.keymapper.mapping.actions.ActionCategory
+import io.github.sds100.keymapper.mapping.actions.ActionId
+import io.github.sds100.keymapper.mapping.actions.ActionUtils
 import javax.inject.Inject
 
 @HiltViewModel

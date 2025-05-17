@@ -22,7 +22,7 @@ class ChooseKeyCodeFragment : SimpleRecyclerViewFragment<SimpleListItemOld>() {
     }
 
     override var searchStateKey: String? =
-        io.github.sds100.keymapper.base.actions.keyevent.ChooseKeyCodeFragment.Companion.SEARCH_STATE_KEY
+        io.github.sds100.keymapper.mapping.actions.keyevent.ChooseKeyCodeFragment.Companion.SEARCH_STATE_KEY
 
     private val args: ChooseKeyCodeFragmentArgs by navArgs()
     private val viewModel: io.github.sds100.keymapper.base.actions.keyevent.ChooseKeyCodeViewModel by viewModels {
@@ -39,7 +39,7 @@ class ChooseKeyCodeFragment : SimpleRecyclerViewFragment<SimpleListItemOld>() {
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.returnResult.collectLatest {
-                returnResult(io.github.sds100.keymapper.base.actions.keyevent.ChooseKeyCodeFragment.Companion.EXTRA_KEYCODE to it)
+                returnResult(io.github.sds100.keymapper.mapping.actions.keyevent.ChooseKeyCodeFragment.Companion.EXTRA_KEYCODE to it)
             }
         }
     }

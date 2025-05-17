@@ -47,6 +47,7 @@ import io.github.sds100.keymapper.base.util.ui.LinkType
 import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.util.ui.compose.DraggableItem
 import io.github.sds100.keymapper.base.util.ui.compose.rememberDragDropState
+import io.github.sds100.keymapper.mapping.actions.ActionData
 import kotlinx.coroutines.flow.update
 
 @OptIn(ExperimentalMaterial3Api::class)

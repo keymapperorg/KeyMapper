@@ -72,7 +72,7 @@ import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
-import io.github.sds100.keymapper.base.ui.apps.ChooseAppScreen
+import io.github.sds100.keymapper.base.system.apps.ChooseAppScreen
 import io.github.sds100.keymapper.common.util.state.State
 import io.github.sds100.keymapper.base.util.drawable
 import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
@@ -82,6 +82,7 @@ import io.github.sds100.keymapper.base.util.ui.compose.WindowSizeClassExt.compar
 import io.github.sds100.keymapper.base.util.ui.compose.icons.AdGroup
 import io.github.sds100.keymapper.base.util.ui.compose.icons.JumpToElement
 import io.github.sds100.keymapper.base.util.ui.compose.icons.KeyMapperIcons
+import io.github.sds100.keymapper.system.accessibility.NodeInteractionType
 import kotlinx.coroutines.flow.update
 
 private const val DEST_LANDING = "landing"

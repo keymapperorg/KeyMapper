@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.base.actions
 
-import android.content.Context
-import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.sds100.keymapper.mapping.actions.IsActionSupportedUseCase
+import io.github.sds100.keymapper.mapping.actions.IsActionSupportedUseCaseImpl
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.camera.CameraFlashInfo
 import io.github.sds100.keymapper.system.camera.CameraLens

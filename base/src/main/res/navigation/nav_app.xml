@@ -116,7 +116,7 @@
 
     <fragment
         android:id="@+id/chooseAppFragment"
-        android:name="io.github.sds100.keymapper.base.ui.apps.ChooseAppFragment"
+        android:name="io.github.sds100.keymapper.base.system.apps.ChooseAppFragment"
         tools:layout="@layout/fragment_simple_recyclerview">
 
         <argument
@@ -138,7 +138,7 @@
 
     <fragment
         android:id="@+id/chooseAppShortcutFragment"
-        android:name="io.github.sds100.keymapper.base.ui.apps.ChooseAppShortcutFragment"
+        android:name="io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutFragment"
         tools:layout="@layout/fragment_simple_recyclerview">
 
         <argument
@@ -266,7 +266,7 @@
 
     <fragment
         android:id="@+id/configIntentFragment"
-        android:name="io.github.sds100.keymapper.base.ui.intents.ConfigIntentFragment"
+        android:name="io.github.sds100.keymapper.base.system.intents.ConfigIntentFragment"
         tools:layout="@layout/fragment_simple_recyclerview">
 
         <argument
@@ -289,7 +289,7 @@
 
     <fragment
         android:id="@+id/chooseActivityFragment"
-        android:name="io.github.sds100.keymapper.base.ui.apps.ChooseActivityFragment"
+        android:name="io.github.sds100.keymapper.base.system.apps.ChooseActivityFragment"
         tools:layout="@layout/fragment_simple_recyclerview">
 
         <argument
@@ -317,7 +317,7 @@
 
     <fragment
         android:id="@+id/bluetoothDevicesFragment"
-        android:name="io.github.sds100.keymapper.base.ui.bluetooth.ChooseBluetoothDeviceFragment"
+        android:name="io.github.sds100.keymapper.base.system.ChooseBluetoothDeviceFragment"
         tools:layout="@layout/fragment_simple_recyclerview">
         <argument
             android:name="requestKey"

@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.system.intents
 
 import android.content.Intent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import io.github.sds100.keymapper.base.ui.intents.ConfigIntentViewModel
+import io.github.sds100.keymapper.base.system.intents.ConfigIntentViewModel
 import io.github.sds100.keymapper.common.util.firstBlocking
 import io.github.sds100.keymapper.base.util.ui.FakeResourceProvider
 import io.github.sds100.keymapper.base.util.ui.MultiChoiceItem

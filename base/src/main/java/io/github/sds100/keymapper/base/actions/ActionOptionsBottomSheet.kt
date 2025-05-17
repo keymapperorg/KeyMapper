@@ -46,6 +46,8 @@ import io.github.sds100.keymapper.base.util.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.base.util.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.base.util.ui.compose.SliderOptionText
 import io.github.sds100.keymapper.base.util.ui.compose.openUriSafe
+import io.github.sds100.keymapper.mapping.actions.HoldDownMode
+import io.github.sds100.keymapper.mapping.actions.RepeatMode
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

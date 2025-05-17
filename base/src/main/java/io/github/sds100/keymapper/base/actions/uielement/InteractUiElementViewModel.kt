@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.base.actions.uielement
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Android
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
@@ -27,6 +26,7 @@ import io.github.sds100.keymapper.base.util.ui.ResourceProvider
 import io.github.sds100.keymapper.base.util.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.util.ui.compose.SimpleListItemModel
+import io.github.sds100.keymapper.system.accessibility.NodeInteractionType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow

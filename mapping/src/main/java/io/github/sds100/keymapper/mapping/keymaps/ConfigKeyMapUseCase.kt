@@ -1,16 +1,16 @@
 package io.github.sds100.keymapper.mapping.keymaps
 
 import android.database.sqlite.SQLiteConstraintException
-import io.github.sds100.keymapper.actions.Action
-import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.RepeatMode
+import io.github.sds100.keymapper.mapping.actions.Action
+import io.github.sds100.keymapper.mapping.actions.ActionData
+import io.github.sds100.keymapper.mapping.actions.RepeatMode
 import io.github.sds100.keymapper.common.util.result.Result
 import io.github.sds100.keymapper.common.util.state.State
 import io.github.sds100.keymapper.common.util.state.dataOrNull
 import io.github.sds100.keymapper.common.util.state.ifIsData
-import io.github.sds100.keymapper.constraints.Constraint
-import io.github.sds100.keymapper.constraints.ConstraintMode
-import io.github.sds100.keymapper.constraints.ConstraintState
+import io.github.sds100.keymapper.mapping.constraints.Constraint
+import io.github.sds100.keymapper.mapping.constraints.ConstraintMode
+import io.github.sds100.keymapper.mapping.constraints.ConstraintState
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
@@ -21,15 +21,15 @@ import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
-import io.github.sds100.keymapper.trigger.AssistantTriggerKey
-import io.github.sds100.keymapper.trigger.AssistantTriggerType
-import io.github.sds100.keymapper.trigger.FingerprintTriggerKey
-import io.github.sds100.keymapper.trigger.FloatingButtonKey
-import io.github.sds100.keymapper.trigger.KeyEventDetectionSource
-import io.github.sds100.keymapper.trigger.Trigger
-import io.github.sds100.keymapper.trigger.TriggerKey
-import io.github.sds100.keymapper.trigger.TriggerKeyDevice
-import io.github.sds100.keymapper.trigger.TriggerMode
+import io.github.sds100.keymapper.mapping.trigger.AssistantTriggerKey
+import io.github.sds100.keymapper.mapping.trigger.AssistantTriggerType
+import io.github.sds100.keymapper.mapping.trigger.FingerprintTriggerKey
+import io.github.sds100.keymapper.mapping.trigger.FloatingButtonKey
+import io.github.sds100.keymapper.mapping.trigger.KeyEventDetectionSource
+import io.github.sds100.keymapper.mapping.trigger.Trigger
+import io.github.sds100.keymapper.mapping.trigger.TriggerKey
+import io.github.sds100.keymapper.mapping.trigger.TriggerKeyDevice
+import io.github.sds100.keymapper.mapping.trigger.TriggerMode
 import io.github.sds100.keymapper.base.util.ServiceEvent
 import io.github.sds100.keymapper.base.util.firstBlocking
 import io.github.sds100.keymapper.base.util.moveElement
@@ -363,7 +363,7 @@ class ConfigKeyMapUseCaseController @Inject constructor(
         // Check whether the trigger already contains the key because if so
         // then it must be converted to a sequence trigger.
         val containsKey = trigger.keys
-            .mapNotNull { it as? io.github.sds100.keymapper.trigger.KeyCodeTriggerKey }
+            .mapNotNull { it as? KeyCodeTriggerKey }
             .any { keyToCompare ->
                 keyToCompare.keyCode == keyCode && keyToCompare.device.isSameDevice(device)
             }
@@ -375,7 +375,7 @@ class ConfigKeyMapUseCaseController @Inject constructor(
             consumeKeyEvent = false
         }
 
-        val triggerKey = io.github.sds100.keymapper.trigger.KeyCodeTriggerKey(
+        val triggerKey = KeyCodeTriggerKey(
             keyCode = keyCode,
             device = device,
             clickType = clickType,
@@ -449,7 +449,7 @@ class ConfigKeyMapUseCaseController @Inject constructor(
                 when (key) {
                     // You can't mix assistant trigger types in a parallel trigger because there is no notion of a "down" key event, which means they can't be pressed at the same time
                     is AssistantTriggerKey, is FingerprintTriggerKey -> 0
-                    is io.github.sds100.keymapper.trigger.KeyCodeTriggerKey -> Pair(
+                    is KeyCodeTriggerKey -> Pair(
                         key.keyCode,
                         key.device,
                     )
@@ -553,7 +553,7 @@ class ConfigKeyMapUseCaseController @Inject constructor(
 
     override fun setTriggerKeyDevice(keyUid: String, device: TriggerKeyDevice) {
         editTriggerKey(keyUid) { key ->
-            if (key is io.github.sds100.keymapper.trigger.KeyCodeTriggerKey) {
+            if (key is KeyCodeTriggerKey) {
                 key.copy(device = device)
             } else {
                 key
@@ -563,7 +563,7 @@ class ConfigKeyMapUseCaseController @Inject constructor(
 
     override fun setTriggerKeyConsumeKeyEvent(keyUid: String, consumeKeyEvent: Boolean) {
         editTriggerKey(keyUid) { key ->
-            if (key is io.github.sds100.keymapper.trigger.KeyCodeTriggerKey) {
+            if (key is KeyCodeTriggerKey) {
                 key.copy(consumeEvent = consumeKeyEvent)
             } else {
                 key
@@ -789,7 +789,7 @@ class ConfigKeyMapUseCaseController @Inject constructor(
                 false
             } else {
                 trigger.keys
-                    .mapNotNull { it as? io.github.sds100.keymapper.trigger.KeyCodeTriggerKey }
+                    .mapNotNull { it as? KeyCodeTriggerKey }
                     .any { InputEventUtils.isDpadKeyCode(it.keyCode) }
             }
 

@@ -53,6 +53,8 @@ import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.base.util.ui.compose.KeyMapperSliderThumb
 import io.github.sds100.keymapper.base.util.ui.compose.OptionsHeaderRow
 import io.github.sds100.keymapper.base.util.ui.compose.RadioButtonText
+import io.github.sds100.keymapper.mapping.actions.ActionId
+import io.github.sds100.keymapper.mapping.actions.ActionUtils
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 

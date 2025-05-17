@@ -1,11 +1,7 @@
 package io.github.sds100.keymapper.base.actions.pinchscreen
 
+import io.github.sds100.keymapper.mapping.actions.PinchScreenType
 import kotlinx.serialization.Serializable
-
-enum class PinchScreenType {
-    PINCH_IN,
-    PINCH_OUT,
-}
 
 @Serializable
 data class PinchPickCoordinateResult(

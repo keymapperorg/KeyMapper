@@ -28,6 +28,9 @@ import io.github.sds100.keymapper.base.util.ui.PopupViewModel
 import io.github.sds100.keymapper.base.util.ui.ResourceProvider
 import io.github.sds100.keymapper.base.util.ui.navigate
 import io.github.sds100.keymapper.base.util.ui.showPopup
+import io.github.sds100.keymapper.mapping.actions.ActionData
+import io.github.sds100.keymapper.mapping.actions.ActionId
+import io.github.sds100.keymapper.mapping.actions.isEditable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest

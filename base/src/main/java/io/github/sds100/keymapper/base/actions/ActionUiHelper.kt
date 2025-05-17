@@ -5,7 +5,6 @@ import android.view.KeyEvent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.actions.pinchscreen.PinchScreenType
 import io.github.sds100.keymapper.common.util.result.handle
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.system.camera.CameraLens
@@ -21,6 +20,11 @@ import io.github.sds100.keymapper.base.util.ui.IconInfo
 import io.github.sds100.keymapper.base.util.ui.ResourceProvider
 import io.github.sds100.keymapper.base.util.ui.TintType
 import io.github.sds100.keymapper.base.util.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.mapping.actions.Action
+import io.github.sds100.keymapper.mapping.actions.ActionData
+import io.github.sds100.keymapper.mapping.actions.ActionUtils
+import io.github.sds100.keymapper.mapping.actions.PinchScreenType
+import io.github.sds100.keymapper.mapping.actions.RepeatMode
 import splitties.bitflags.hasFlag
 
 class ActionUiHelper(

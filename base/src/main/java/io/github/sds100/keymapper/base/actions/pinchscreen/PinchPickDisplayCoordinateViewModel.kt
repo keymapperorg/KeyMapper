@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.base.util.ui.PopupViewModel
 import io.github.sds100.keymapper.base.util.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.base.util.ui.ResourceProvider
 import io.github.sds100.keymapper.base.util.ui.showPopup
+import io.github.sds100.keymapper.mapping.actions.PinchScreenType
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
