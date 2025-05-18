@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.base.constraints
 
 import android.os.Build
-import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
+import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.devices.DevicesAdapter

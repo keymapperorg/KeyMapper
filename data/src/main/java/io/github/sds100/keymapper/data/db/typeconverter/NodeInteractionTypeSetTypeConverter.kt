@@ -1,9 +1,7 @@
 package io.github.sds100.keymapper.data.db.typeconverter
 
 import androidx.room.TypeConverter
-import io.github.sds100.keymapper.actions.uielement.NodeInteractionType
-
-
+import io.github.sds100.keymapper.common.utils.NodeInteractionType
 
 class NodeInteractionTypeSetTypeConverter {
     @TypeConverter

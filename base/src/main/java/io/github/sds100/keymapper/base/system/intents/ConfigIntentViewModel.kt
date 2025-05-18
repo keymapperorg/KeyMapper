@@ -55,8 +55,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import splitties.bitflags.hasFlag
-import splitties.bitflags.withFlag
+import io.github.sds100.keymapper.common.utils.hasFlag
+import io.github.sds100.keymapper.common.utils.withFlag
 import javax.inject.Inject
 
 @HiltViewModel

@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.hardware.input.InputManager
 import android.os.Handler
+import android.os.Looper
 import android.view.InputDevice
 import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.common.utils.Error
@@ -14,7 +15,7 @@ import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.base.utils.ifIsData
+import io.github.sds100.keymapper.common.utils.ifIsData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +25,6 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import splitties.mainthread.mainLooper
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -95,7 +95,7 @@ class AndroidDevicesAdapter @Inject constructor(
                         updateInputDevices()
                     }
                 },
-                Handler(mainLooper),
+                Handler(Looper.getMainLooper()),
             )
         }
 

@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.base.trigger
 import android.view.KeyEvent
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.base.keymaps.detection.DpadMotionEventTracker
-import io.github.sds100.keymapper.system.service.ServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 
 class RecordTriggerController(
     private val coroutineScope: CoroutineScope,
-    private val serviceAdapter: ServiceAdapter,
+    private val serviceAdapter: AccessibilityServiceAdapter,
 ) : RecordTriggerUseCase {
     override val state = MutableStateFlow<RecordTriggerState>(RecordTriggerState.Idle)
 

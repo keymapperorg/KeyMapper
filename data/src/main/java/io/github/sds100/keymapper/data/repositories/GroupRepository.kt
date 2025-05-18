@@ -4,8 +4,8 @@ import io.github.sds100.keymapper.data.db.dao.GroupDao
 import io.github.sds100.keymapper.data.entities.GroupEntity
 import io.github.sds100.keymapper.data.entities.GroupEntityWithChildren
 import io.github.sds100.keymapper.data.entities.KeyMapEntitiesWithGroup
-import io.github.sds100.keymapper.base.utils.DefaultDispatcherProvider
-import io.github.sds100.keymapper.base.utils.DispatcherProvider
+import io.github.sds100.keymapper.common.utils.DefaultDispatcherProvider
+import io.github.sds100.keymapper.common.utils.DispatcherProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted

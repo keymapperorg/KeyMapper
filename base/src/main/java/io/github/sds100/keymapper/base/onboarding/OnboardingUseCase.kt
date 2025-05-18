@@ -1,29 +1,29 @@
 package io.github.sds100.keymapper.base.onboarding
 
 import androidx.datastore.preferences.core.Preferences
-import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.canUseImeToPerform
-import io.github.sds100.keymapper.actions.canUseShizukuToPerform
+import io.github.sds100.keymapper.base.actions.ActionData
+import io.github.sds100.keymapper.base.actions.canUseImeToPerform
+import io.github.sds100.keymapper.base.actions.canUseShizukuToPerform
+import io.github.sds100.keymapper.base.purchasing.ProductId
+import io.github.sds100.keymapper.base.purchasing.PurchasingManager
+import io.github.sds100.keymapper.base.shizuku.ShizukuAdapter
+import io.github.sds100.keymapper.base.shizuku.ShizukuUtils
+import io.github.sds100.keymapper.base.utils.VersionHelper
+import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.handle
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
+import io.github.sds100.keymapper.data.repositories.KeyMapRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.base.keymaps.KeyMapRepository
-import io.github.sds100.keymapper.purchasing.ProductId
-import io.github.sds100.keymapper.purchasing.PurchasingManager
-import io.github.sds100.keymapper.shizuku.ShizukuAdapter
-import io.github.sds100.keymapper.shizuku.ShizukuUtils
+import io.github.sds100.keymapper.data.utils.PrefDelegate
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.leanback.LeanbackAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
-import io.github.sds100.keymapper.base.utils.PrefDelegate
-import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.base.utils.VersionHelper
-import io.github.sds100.keymapper.base.utils.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
@@ -31,11 +31,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
-import io.github.sds100.keymapper.common.BuildConfigProvider
 
 @Singleton
 class OnboardingUseCaseImpl @Inject constructor(
-    private val settingsRepository: SettingsRepository,
+    private val settingsRepository: PreferenceRepository,
     private val fileAdapter: FileAdapter,
     private val leanbackAdapter: LeanbackAdapter,
     private val shizukuAdapter: ShizukuAdapter,
@@ -43,8 +42,7 @@ class OnboardingUseCaseImpl @Inject constructor(
     private val packageManagerAdapter: PackageManagerAdapter,
     private val purchasingManager: PurchasingManager,
     private val keyMapRepository: KeyMapRepository,
-    private val keyMapRepository: KeyMapRepository,
-    private val buildConfigProvider: BuildConfigProvider
+    private val buildConfigProvider: BuildConfigProvider,
 ) : PreferenceRepository by settingsRepository,
     OnboardingUseCase {
 

@@ -4,9 +4,9 @@ import com.github.salomonbrys.kotson.byArray
 import com.github.salomonbrys.kotson.byInt
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
-import splitties.bitflags.hasFlag
-import splitties.bitflags.minusFlag
-import splitties.bitflags.withFlag
+import io.github.sds100.keymapper.common.utils.hasFlag
+import io.github.sds100.keymapper.common.utils.minusFlag
+import io.github.sds100.keymapper.common.utils.withFlag
 
 /**
  * Move the action option "show performing toast when performing" to a trigger option.

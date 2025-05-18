@@ -13,9 +13,9 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import splitties.bitflags.hasFlag
-import splitties.bitflags.minusFlag
-import splitties.bitflags.withFlag
+import io.github.sds100.keymapper.common.utils.hasFlag
+import io.github.sds100.keymapper.common.utils.minusFlag
+import io.github.sds100.keymapper.common.utils.withFlag
 
 /**
  * Move the action option "show performing toast when performing" to a trigger option.

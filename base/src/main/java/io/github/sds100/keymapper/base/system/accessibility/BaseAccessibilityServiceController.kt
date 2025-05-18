@@ -7,7 +7,7 @@ import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import io.github.sds100.keymapper.actions.ActionData
+import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.base.keymaps.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.base.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.base.keymaps.detection.TriggerKeyMapFromOtherAppsController
 import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsUseCase
+import io.github.sds100.keymapper.base.trigger.RecordTriggerEvent
 import io.github.sds100.keymapper.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
@@ -25,14 +26,12 @@ import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.trigger.KeyEventDetectionSource
-import io.github.sds100.keymapper.base.utils.firstBlocking
+import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.mapping.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.mapping.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.mapping.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.mapping.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.mapping.keymaps.detection.DetectKeyMapsUseCase
-import io.github.sds100.keymapper.system.accessibility.FingerprintGestureType
-import io.github.sds100.keymapper.system.accessibility.RecordAccessibilityNodeState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -55,9 +54,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import splitties.bitflags.hasFlag
-import splitties.bitflags.minusFlag
-import splitties.bitflags.withFlag
+import io.github.sds100.keymapper.common.utils.hasFlag
+import io.github.sds100.keymapper.common.utils.minusFlag
+import io.github.sds100.keymapper.common.utils.withFlag
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import timber.log.Timber
 
 abstract class BaseAccessibilityServiceController(
@@ -277,7 +277,7 @@ abstract class BaseAccessibilityServiceController(
 
         coroutineScope.launch {
             accessibilityNodeRecorder.recordState.collectLatest { state ->
-                outputEvents.emit(AccessibilityServiceEvent.OnRecordNodeStateChanged(state))
+                outputEvents.emit(RecordAccessibilityNodeEvent.OnRecordNodeStateChanged(state))
             }
         }
 
@@ -394,7 +394,7 @@ abstract class BaseAccessibilityServiceController(
 
                 coroutineScope.launch {
                     outputEvents.emit(
-                        AccessibilityServiceEvent.RecordedTriggerKey(
+                        RecordTriggerEvent.RecordedTriggerKey(
                             uniqueEvent.keyCode,
                             uniqueEvent.device,
                             detectionSource,
@@ -473,7 +473,7 @@ abstract class BaseAccessibilityServiceController(
 
                     coroutineScope.launch {
                         outputEvents.emit(
-                            AccessibilityServiceEvent.RecordedTriggerKey(
+                            RecordTriggerEvent.RecordedTriggerKey(
                                 keyEvent.keyCode,
                                 keyEvent.device,
                                 KeyEventDetectionSource.INPUT_METHOD,
@@ -533,13 +533,13 @@ abstract class BaseAccessibilityServiceController(
     open fun onEventFromUi(event: AccessibilityServiceEvent) {
         Timber.d("Service received event from UI: $event")
         when (event) {
-            is AccessibilityServiceEvent.StartRecordingTrigger ->
+            is RecordTriggerEvent.StartRecordingTrigger ->
                 if (!recordingTrigger) {
                     recordDpadMotionEventTracker.reset()
                     recordingTriggerJob = recordTriggerJob()
                 }
 
-            is AccessibilityServiceEvent.StopRecordingTrigger -> {
+            is RecordTriggerEvent.StopRecordingTrigger -> {
                 val wasRecordingTrigger = recordingTrigger
 
                 recordingTriggerJob?.cancel()
@@ -548,7 +548,7 @@ abstract class BaseAccessibilityServiceController(
 
                 if (wasRecordingTrigger) {
                     coroutineScope.launch {
-                        outputEvents.emit(AccessibilityServiceEvent.OnStoppedRecordingTrigger)
+                        outputEvents.emit(RecordTriggerEvent.OnStoppedRecordingTrigger)
                     }
                 }
             }
@@ -570,17 +570,17 @@ abstract class BaseAccessibilityServiceController(
                 service.disableSelf()
             }
 
-            is AccessibilityServiceEvent.TriggerKeyMap -> triggerKeyMapFromIntent(event.uid)
+            is AccessibilityServiceEvent.TriggerKeyMapEvent -> triggerKeyMapFromIntent(event.uid)
 
             is AccessibilityServiceEvent.EnableInputMethod -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 service.setInputMethodEnabled(event.imeId, true)
             }
 
-            is AccessibilityServiceEvent.StartRecordingNodes -> {
+            is RecordAccessibilityNodeEvent.StartRecordingNodes -> {
                 accessibilityNodeRecorder.startRecording()
             }
 
-            is AccessibilityServiceEvent.StopRecordingNodes -> {
+            is RecordAccessibilityNodeEvent.StopRecordingNodes -> {
                 accessibilityNodeRecorder.stopRecording()
             }
 
@@ -592,13 +592,13 @@ abstract class BaseAccessibilityServiceController(
         repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
             if (isActive) {
                 val timeLeft = RECORD_TRIGGER_TIMER_LENGTH - iteration
-                outputEvents.emit(AccessibilityServiceEvent.OnIncrementRecordTriggerTimer(timeLeft))
+                outputEvents.emit(RecordTriggerEvent.OnIncrementRecordTriggerTimer(timeLeft))
 
                 delay(1000)
             }
         }
 
-        outputEvents.emit(AccessibilityServiceEvent.OnStoppedRecordingTrigger)
+        outputEvents.emit(RecordTriggerEvent.OnStoppedRecordingTrigger)
     }
 
     private fun requestFingerprintGestureDetection() {

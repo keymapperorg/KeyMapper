@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.system.inputmethod
 
 import android.view.InputDevice
-import io.github.sds100.keymapper.base.utils.InputEventType
+import io.github.sds100.keymapper.common.utils.InputEventType
 
 data class InputKeyModel(
     val keyCode: Int,

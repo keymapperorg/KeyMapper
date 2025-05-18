@@ -14,7 +14,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
-import splitties.bitflags.hasFlag
+import io.github.sds100.keymapper.common.utils.hasFlag
 import timber.log.Timber
 
 

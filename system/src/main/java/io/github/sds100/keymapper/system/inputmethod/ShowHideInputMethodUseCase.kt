@@ -1,30 +1,28 @@
 package io.github.sds100.keymapper.system.inputmethod
 
-import io.github.sds100.keymapper.system.service.ServiceAdapter
-import io.github.sds100.keymapper.base.utils.ServiceEvent
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.runBlocking
 
-
-
 class ShowHideInputMethodUseCaseImpl(
-    private val serviceAdapter: ServiceAdapter,
+    private val serviceAdapter: AccessibilityServiceAdapter,
 ) : ShowHideInputMethodUseCase {
     override val onHiddenChange: Flow<Boolean> = serviceAdapter.eventReceiver.mapNotNull {
         when (it) {
-            ServiceEvent.OnHideKeyboardEvent -> true
-            ServiceEvent.OnShowKeyboardEvent -> false
+            AccessibilityServiceEvent.OnHideKeyboardEvent -> true
+            AccessibilityServiceEvent.OnShowKeyboardEvent -> false
             else -> null
         }
     }
 
     override fun show() {
-        runBlocking { serviceAdapter.send(ServiceEvent.ShowKeyboard) }
+        runBlocking { serviceAdapter.send(AccessibilityServiceEvent.ShowKeyboard) }
     }
 
     override fun hide() {
-        runBlocking { serviceAdapter.send(ServiceEvent.HideKeyboard) }
+        runBlocking { serviceAdapter.send(AccessibilityServiceEvent.HideKeyboard) }
     }
 }
 

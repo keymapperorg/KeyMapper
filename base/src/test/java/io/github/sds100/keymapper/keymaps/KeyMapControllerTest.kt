@@ -2,11 +2,11 @@ package io.github.sds100.keymapper.keymaps
 
 import android.view.KeyEvent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import io.github.sds100.keymapper.actions.Action
-import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.ActionErrorSnapshot
-import io.github.sds100.keymapper.actions.PerformActionsUseCase
-import io.github.sds100.keymapper.actions.RepeatMode
+import io.github.sds100.keymapper.base.actions.Action
+import io.github.sds100.keymapper.base.actions.ActionData
+import io.github.sds100.keymapper.base.actions.ActionErrorSnapshot
+import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
+import io.github.sds100.keymapper.base.actions.RepeatMode
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.ConstraintMode
@@ -63,7 +63,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import splitties.bitflags.withFlag
+import io.github.sds100.keymapper.common.utils.withFlag
 
 @ExperimentalCoroutinesApi
 @RunWith(JUnitParamsRunner::class)

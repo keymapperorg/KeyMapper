@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.floating
 
 import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.purchasing.PurchasingManager
+import io.github.sds100.keymapper.base.purchasing.PurchasingManager
 import io.github.sds100.keymapper.system.accessibility.ServiceAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf

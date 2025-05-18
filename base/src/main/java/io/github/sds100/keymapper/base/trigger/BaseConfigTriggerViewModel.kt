@@ -23,8 +23,8 @@ import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
 import io.github.sds100.keymapper.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.onboarding.OnboardingUseCase
-import io.github.sds100.keymapper.purchasing.ProductId
-import io.github.sds100.keymapper.purchasing.PurchasingManager
+import io.github.sds100.keymapper.base.purchasing.ProductId
+import io.github.sds100.keymapper.base.purchasing.PurchasingManager
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.common.utils.State

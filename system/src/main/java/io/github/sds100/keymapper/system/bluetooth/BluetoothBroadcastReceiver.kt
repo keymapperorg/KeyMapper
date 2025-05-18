@@ -11,7 +11,7 @@ import javax.inject.Inject
 class BluetoothBroadcastReceiver : BroadcastReceiver() {
 
     @Inject
-    private lateinit var bluetoothAdapter: AndroidBluetoothAdapter
+    lateinit var bluetoothAdapter: AndroidBluetoothAdapter
 
     override fun onReceive(context: Context?, intent: Intent?) {
         context ?: return

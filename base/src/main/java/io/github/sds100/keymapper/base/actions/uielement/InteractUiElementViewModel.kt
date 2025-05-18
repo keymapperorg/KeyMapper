@@ -6,14 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.actions.ActionData
+import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
-import io.github.sds100.keymapper.system.accessibility.RecordAccessibilityNodeState
+import io.github.sds100.keymapper.base.system.accessibility.RecordAccessibilityNodeState
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.base.utils.containsQuery
 import io.github.sds100.keymapper.common.utils.dataOrNull
@@ -26,7 +26,7 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
-import io.github.sds100.keymapper.system.accessibility.NodeInteractionType
+import io.github.sds100.keymapper.common.utils.NodeInteractionType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow

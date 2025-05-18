@@ -9,8 +9,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.sds100.keymapper.actions.ActionErrorSnapshot
-import io.github.sds100.keymapper.actions.ActionUiHelper
+import io.github.sds100.keymapper.base.actions.ActionErrorSnapshot
+import io.github.sds100.keymapper.base.actions.ActionUiHelper
 import io.github.sds100.keymapper.constraints.ConstraintErrorSnapshot
 import io.github.sds100.keymapper.constraints.ConstraintMode
 import io.github.sds100.keymapper.constraints.ConstraintUiHelper

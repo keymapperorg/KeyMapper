@@ -25,6 +25,7 @@ import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.inputmethod.AndroidInputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.intents.IntentAdapter
+import io.github.sds100.keymapper.system.intents.IntentAdapterImpl
 import io.github.sds100.keymapper.system.leanback.LeanbackAdapter
 import io.github.sds100.keymapper.system.leanback.LeanbackAdapterImpl
 import io.github.sds100.keymapper.system.lock.AndroidLockScreenAdapter

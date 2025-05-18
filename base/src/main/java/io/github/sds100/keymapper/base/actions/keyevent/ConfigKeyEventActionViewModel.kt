@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.actions.ActionData
+import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.Success
@@ -34,9 +34,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import splitties.bitflags.hasFlag
-import splitties.bitflags.minusFlag
-import splitties.bitflags.withFlag
+import io.github.sds100.keymapper.common.utils.hasFlag
+import io.github.sds100.keymapper.common.utils.minusFlag
+import io.github.sds100.keymapper.common.utils.withFlag
 import javax.inject.Inject
 
 @HiltViewModel

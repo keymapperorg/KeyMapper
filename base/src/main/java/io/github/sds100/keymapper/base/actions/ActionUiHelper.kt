@@ -4,24 +4,24 @@ import android.os.Build
 import android.view.KeyEvent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
-import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.common.utils.handle
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.keymaps.KeyMap
-import io.github.sds100.keymapper.system.camera.CameraLens
-import io.github.sds100.keymapper.system.devices.InputDeviceUtils
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils
-import io.github.sds100.keymapper.system.intents.IntentTarget
-import io.github.sds100.keymapper.system.volume.DndModeUtils
-import io.github.sds100.keymapper.system.volume.RingerModeUtils
-import io.github.sds100.keymapper.system.volume.VolumeStreamUtils
-import io.github.sds100.keymapper.base.utils.toPercentString
+import io.github.sds100.keymapper.base.utils.InputEventStrings
 import io.github.sds100.keymapper.base.utils.ui.IconInfo
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.TintType
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.PinchScreenType
-import io.github.sds100.keymapper.system.display.Orientation
-import splitties.bitflags.hasFlag
+import io.github.sds100.keymapper.common.utils.handle
+import io.github.sds100.keymapper.common.utils.hasFlag
+import io.github.sds100.keymapper.common.utils.toPercentString
+import io.github.sds100.keymapper.system.camera.CameraLens
+import io.github.sds100.keymapper.system.devices.InputDeviceUtils
+import io.github.sds100.keymapper.system.intents.IntentTarget
+import io.github.sds100.keymapper.system.volume.DndModeUtils
+import io.github.sds100.keymapper.system.volume.RingerModeUtils
+import io.github.sds100.keymapper.system.volume.VolumeStreamUtils
 
 class ActionUiHelper(
     displayActionUseCase: DisplayActionUseCase,
@@ -50,9 +50,9 @@ class ActionUiHelper(
                 getString(R.string.description_keyevent_through_shell, keyCodeString)
             } else {
                 val metaStateString = buildString {
-                    InputEventUtils.MODIFIER_LABELS.entries.forEach {
-                        val modifier = it.key
-                        val labelRes = it.value
+                    for (label in InputEventStrings.MODIFIER_LABELS.entries) {
+                        val modifier = label.key
+                        val labelRes = label.value
 
                         if (action.metaState.hasFlag(modifier)) {
                             append("${getString(labelRes)} + ")

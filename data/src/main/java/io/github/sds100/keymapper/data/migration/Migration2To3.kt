@@ -8,7 +8,7 @@ import com.github.salomonbrys.kotson.get
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import splitties.bitflags.withFlag
+import io.github.sds100.keymapper.common.utils.withFlag
 
 
 

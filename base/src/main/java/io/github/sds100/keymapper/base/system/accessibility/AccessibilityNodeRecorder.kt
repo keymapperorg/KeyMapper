@@ -7,8 +7,7 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
 import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
-import io.github.sds100.keymapper.system.accessibility.NodeInteractionType
-import io.github.sds100.keymapper.system.accessibility.RecordAccessibilityNodeState
+import io.github.sds100.keymapper.common.utils.NodeInteractionType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

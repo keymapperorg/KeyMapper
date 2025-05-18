@@ -14,7 +14,6 @@ data class Success<T>(val value: T) : Result<T>()
 abstract class Error : Result<Nothing>() {
     data class Exception(val exception: java.lang.Exception) : Error()
     data class SystemFeatureNotSupported(val feature: String) : Error()
-    data class ExtraNotFound(val extraId: String) : Error()
     data class SdkVersionTooLow(val minSdk: Int) : Error()
     data class SdkVersionTooHigh(val maxSdk: Int) : Error()
     data class InputMethodNotFound(val imeLabel: String) : Error()

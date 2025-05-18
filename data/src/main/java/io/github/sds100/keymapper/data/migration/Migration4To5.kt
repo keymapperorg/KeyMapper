@@ -12,8 +12,8 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import io.github.sds100.keymapper.data.entities.ActionEntity
-import splitties.bitflags.hasFlag
-import splitties.bitflags.withFlag
+import io.github.sds100.keymapper.common.utils.hasFlag
+import io.github.sds100.keymapper.common.utils.withFlag
 
 
 

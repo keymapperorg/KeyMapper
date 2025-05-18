@@ -30,9 +30,6 @@ class KeyEventRelayService : Service() {
         const val ACTION_REBIND_RELAY_SERVICE =
             "io.github.sds100.keymapper.ACTION_REBIND_RELAY_SERVICE"
 
-        const val CALLBACK_ID_ACCESSIBILITY_SERVICE = "accessibility_service"
-        const val CALLBACK_ID_INPUT_METHOD = "input_method"
-
         /**
          * Used when a client registers a callback without specifying an ID.
          */

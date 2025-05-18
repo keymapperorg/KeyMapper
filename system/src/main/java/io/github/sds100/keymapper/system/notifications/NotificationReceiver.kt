@@ -38,7 +38,7 @@ class NotificationReceiver :
 
     private var lastNotificationKey: String? = null
 
-    private val serviceAdapter: NotificationReceiverAdapter by lazy {
+    private val serviceAdapter: NotificationReceiverAdapterImpl by lazy {
         ServiceLocator.notificationReceiverAdapter(this)
     }
 

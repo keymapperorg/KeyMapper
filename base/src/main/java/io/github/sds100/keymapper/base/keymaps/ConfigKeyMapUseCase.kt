@@ -17,7 +17,7 @@ import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.floating.FloatingButtonEntityMapper
-import io.github.sds100.keymapper.system.service.ServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
@@ -33,7 +33,8 @@ import io.github.sds100.keymapper.mapping.trigger.TriggerMode
 import io.github.sds100.keymapper.base.system.accessibility.ServiceEvent
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.moveElement
-import io.github.sds100.keymapper.system.accessibility.FingerprintGestureType
+import io.github.sds100.keymapper.data.repositories.KeyMapRepository
+import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -62,7 +63,7 @@ class ConfigKeyMapUseCaseController @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
     private val floatingLayoutRepository: FloatingLayoutRepository,
     private val floatingButtonRepository: FloatingButtonRepository,
-    private val serviceAdapter: ServiceAdapter,
+    private val serviceAdapter: AccessibilityServiceAdapter,
 ) : ConfigKeyMapUseCase,
     GetDefaultKeyMapOptionsUseCase by GetDefaultKeyMapOptionsUseCaseImpl(
         coroutineScope,

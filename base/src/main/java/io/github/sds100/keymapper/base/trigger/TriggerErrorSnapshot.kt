@@ -7,8 +7,8 @@ import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.requiresImeKeyEventForwardingInPhoneCall
-import io.github.sds100.keymapper.purchasing.ProductId
-import io.github.sds100.keymapper.purchasing.PurchasingError
+import io.github.sds100.keymapper.base.purchasing.ProductId
+import io.github.sds100.keymapper.base.purchasing.PurchasingError
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 
 /**

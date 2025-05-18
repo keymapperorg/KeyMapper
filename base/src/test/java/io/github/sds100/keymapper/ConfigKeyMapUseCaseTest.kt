@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper
 
 import android.view.KeyEvent
-import io.github.sds100.keymapper.actions.Action
-import io.github.sds100.keymapper.actions.ActionData
+import io.github.sds100.keymapper.base.actions.Action
+import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCaseController

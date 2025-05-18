@@ -9,12 +9,14 @@ import android.provider.Settings
 import android.view.Surface
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.getRealDisplaySize
 import io.github.sds100.keymapper.system.SettingsUtils
-import io.github.sds100.keymapper.base.utils.SizeKM
-import io.github.sds100.keymapper.base.utils.getRealDisplaySize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +24,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 

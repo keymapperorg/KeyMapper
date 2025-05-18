@@ -14,8 +14,8 @@ import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.mapping.keymaps.PauseKeyMapsUseCase
-import io.github.sds100.keymapper.system.accessibility.ControlAccessibilityServiceUseCase
-import io.github.sds100.keymapper.system.accessibility.ServiceState
+import io.github.sds100.keymapper.base.system.accessibility.ControlAccessibilityServiceUseCase
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowHideInputMethodUseCase
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.system.inputmethod.ToggleCompatibleImeUseCase
@@ -239,7 +239,7 @@ class NotificationController @Inject constructor(
 
     private fun invalidateToggleMappingsNotification(
         show: Boolean,
-        serviceState: ServiceState,
+        serviceState: AccessibilityServiceState,
         areMappingsPaused: Boolean,
     ) {
         manageNotifications.createChannel(
@@ -256,7 +256,7 @@ class NotificationController @Inject constructor(
         }
 
         when (serviceState) {
-            ServiceState.ENABLED -> {
+            AccessibilityServiceState.ENABLED -> {
                 if (areMappingsPaused) {
                     manageNotifications.show(mappingsPausedNotification())
                 } else {
@@ -264,10 +264,10 @@ class NotificationController @Inject constructor(
                 }
             }
 
-            ServiceState.CRASHED ->
+            AccessibilityServiceState.CRASHED ->
                 manageNotifications.show(accessibilityServiceCrashedNotification())
 
-            ServiceState.DISABLED ->
+            AccessibilityServiceState.DISABLED ->
                 manageNotifications.show(accessibilityServiceDisabledNotification())
         }
     }

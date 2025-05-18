@@ -31,6 +31,10 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    buildFeatures {
+        aidl = true
+    }
 }
 
 dependencies {
@@ -45,4 +49,7 @@ dependencies {
     implementation(libs.jakewharton.timber)
     implementation(libs.dagger.hilt.android)
     ksp(libs.dagger.hilt.android.compiler)
+    implementation(libs.net.lingala.zip4j)
+    implementation(libs.anggrayudi.storage)
+    implementation(libs.androidx.core.ktx)
 }

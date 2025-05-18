@@ -1,7 +1,8 @@
 package io.github.sds100.keymapper.system.display
 
 import io.github.sds100.keymapper.common.utils.Result
-import io.github.sds100.keymapper.base.utils.SizeKM
+import io.github.sds100.keymapper.common.utils.SizeKM
+import io.github.sds100.keymapper.common.utils.Orientation
 import kotlinx.coroutines.flow.Flow
 
 interface DisplayAdapter {

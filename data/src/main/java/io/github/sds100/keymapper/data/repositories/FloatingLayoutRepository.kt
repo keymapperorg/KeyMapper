@@ -4,8 +4,8 @@ import android.database.sqlite.SQLiteConstraintException
 import io.github.sds100.keymapper.data.db.dao.FloatingLayoutDao
 import io.github.sds100.keymapper.data.entities.FloatingLayoutEntity
 import io.github.sds100.keymapper.data.entities.FloatingLayoutEntityWithButtons
-import io.github.sds100.keymapper.base.utils.DefaultDispatcherProvider
-import io.github.sds100.keymapper.base.utils.DispatcherProvider
+import io.github.sds100.keymapper.common.utils.DefaultDispatcherProvider
+import io.github.sds100.keymapper.common.utils.DispatcherProvider
 import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow

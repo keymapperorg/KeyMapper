@@ -4,8 +4,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Add
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.actions.ActionErrorSnapshot
-import io.github.sds100.keymapper.actions.ActionUiHelper
+import io.github.sds100.keymapper.base.actions.ActionErrorSnapshot
+import io.github.sds100.keymapper.base.actions.ActionUiHelper
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.constraints.ConstraintErrorSnapshot
 import io.github.sds100.keymapper.constraints.ConstraintState
@@ -25,7 +25,7 @@ import io.github.sds100.keymapper.trigger.TriggerMode
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.system.accessibility.FingerprintGestureType
+import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 
 class KeyMapListItemCreator(
     private val displayMapping: DisplayKeyMapUseCase,

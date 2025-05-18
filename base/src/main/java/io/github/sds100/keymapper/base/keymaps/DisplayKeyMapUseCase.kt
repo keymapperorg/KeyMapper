@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.base.keymaps
 
 import android.graphics.drawable.Drawable
-import io.github.sds100.keymapper.actions.DisplayActionUseCase
-import io.github.sds100.keymapper.actions.GetActionErrorUseCase
+import io.github.sds100.keymapper.base.actions.DisplayActionUseCase
+import io.github.sds100.keymapper.base.actions.GetActionErrorUseCase
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.Success
@@ -12,10 +12,10 @@ import io.github.sds100.keymapper.common.utils.valueIfFailure
 import io.github.sds100.keymapper.constraints.DisplayConstraintUseCase
 import io.github.sds100.keymapper.constraints.GetConstraintErrorUseCase
 import io.github.sds100.keymapper.data.Keys
-import io.github.sds100.keymapper.purchasing.ProductId
-import io.github.sds100.keymapper.purchasing.PurchasingError
-import io.github.sds100.keymapper.purchasing.PurchasingManager
-import io.github.sds100.keymapper.shizuku.ShizukuUtils
+import io.github.sds100.keymapper.base.purchasing.ProductId
+import io.github.sds100.keymapper.base.purchasing.PurchasingError
+import io.github.sds100.keymapper.base.purchasing.PurchasingManager
+import io.github.sds100.keymapper.base.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
@@ -46,7 +46,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
     private val inputMethodAdapter: InputMethodAdapter,
     private val packageManagerAdapter: PackageManagerAdapter,
     private val settingsRepository: SettingsRepository,
-    private val accessibilityServiceAdapter: io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapter,
+    private val accessibilityServiceAdapter: io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapterImpl,
     private val settingsRepository2: SettingsRepository,
     private val purchasingManager: PurchasingManager,
     private val ringtoneAdapter: RingtoneAdapter,

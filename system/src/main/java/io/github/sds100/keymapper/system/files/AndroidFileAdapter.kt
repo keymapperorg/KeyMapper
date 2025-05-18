@@ -10,7 +10,6 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.file.toDocumentFile
-import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.Success
@@ -21,12 +20,14 @@ import java.io.File
 import java.io.InputStream
 import java.util.UUID
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.sds100.keymapper.common.BuildConfigProvider
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class AndroidFileAdapter @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val buildConfigProvider: BuildConfigProvider
 ) : FileAdapter {
     private val ctx = context.applicationContext
     private val contentResolver: ContentResolver = ctx.contentResolver
@@ -134,7 +135,7 @@ class AndroidFileAdapter @Inject constructor(
     override fun getPublicUriForPrivateFile(privateFile: IFile): String {
         return FileProvider.getUriForFile(
             ctx,
-            "${Constants.PACKAGE_NAME}.provider",
+            "${buildConfigProvider.packageName}.provider",
             privateFile.toJavaFile(),
         ).toString()
     }

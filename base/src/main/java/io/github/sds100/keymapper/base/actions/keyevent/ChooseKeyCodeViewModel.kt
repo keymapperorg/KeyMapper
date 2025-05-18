@@ -4,7 +4,7 @@ import android.view.KeyEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.sds100.keymapper.actions.ActionData
+import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.base.utils.filterByQuery

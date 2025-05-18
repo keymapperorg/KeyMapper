@@ -1,116 +1,40 @@
 package io.github.sds100.keymapper.system.notifications
 
-import android.content.ActivityNotFoundException
-import android.content.Context
-import android.content.Intent
-import android.database.ContentObserver
-import android.net.Uri
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import android.provider.Settings
-import androidx.core.app.NotificationManagerCompat
-import io.github.sds100.keymapper.Constants
 import io.github.sds100.keymapper.common.utils.Result
-import io.github.sds100.keymapper.common.utils.Success
-import io.github.sds100.keymapper.system.JobSchedulerHelper
-import io.github.sds100.keymapper.system.SystemError
-import io.github.sds100.keymapper.system.service.ServiceAdapter
-import io.github.sds100.keymapper.system.accessibility.ServiceState
-import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.base.utils.ServiceEvent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
-import splitties.bitflags.withFlag
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 
+interface NotificationReceiverAdapter {
+    val isEnabled: StateFlow<Boolean>
 
+    /**
+     * @return Whether the service could be started successfully.
+     */
+    fun start(): Boolean
 
-class NotificationReceiverAdapter(
-    context: Context,
-    private val coroutineScope: CoroutineScope,
-) : ServiceAdapter {
-    private val ctx: Context = context.applicationContext
-    override val state: MutableStateFlow<ServiceState> = MutableStateFlow(ServiceState.DISABLED)
+    /**
+     * @return Whether the service could be restarted successfully.
+     */
+    fun restart(): Boolean
 
-    override val eventReceiver: MutableSharedFlow<ServiceEvent> = MutableSharedFlow()
-    val eventsToService = MutableSharedFlow<ServiceEvent>()
+    /**
+     * @return Whether the service could be restarted successfully.
+     */
+    fun stop(): Boolean
 
-    init {
-        // use job scheduler because there is there is a much shorter delay when the app is in the background
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            JobSchedulerHelper.observeEnabledNotificationListeners(ctx)
-        } else {
-            val uri = Settings.Secure.getUriFor("enabled_notification_listeners")
-            val observer = object : ContentObserver(Handler(Looper.getMainLooper())) {
-                override fun onChange(selfChange: Boolean, uri: Uri?) {
-                    super.onChange(selfChange, uri)
+    /**
+     * Send an event to the service.
+     */
+    suspend fun send(event: NotificationServiceEvent): Result<*>
 
-                    coroutineScope.launch {
-                        state.value = getState()
-                    }
-                }
-            }
+    /**
+     * Send an event to the service asynchronously. This method
+     * will return immediately and you won't be notified of whether it is sent.
+     */
+    fun sendAsync(event: NotificationServiceEvent)
 
-            ctx.contentResolver.registerContentObserver(uri, false, observer)
-        }
-
-        coroutineScope.launch {
-            state.value = getState()
-        }
-    }
-
-    override suspend fun send(event: ServiceEvent): Result<*> {
-        if (state.value != ServiceState.ENABLED) {
-            return SystemError.PermissionDenied(Permission.NOTIFICATION_LISTENER)
-        }
-
-        coroutineScope.launch {
-            eventsToService.emit(event)
-        }
-
-        return Success(Unit)
-    }
-
-    override fun sendAsync(event: ServiceEvent) {
-        coroutineScope.launch {
-            eventsToService.emit(event)
-        }
-    }
-
-    override fun start(): Boolean = openSettingsPage()
-
-    override fun restart(): Boolean = openSettingsPage()
-
-    override fun stop(): Boolean = openSettingsPage()
-
-    override suspend fun isCrashed(): Boolean = false
-    override fun acknowledgeCrashed() {}
-
-    private fun openSettingsPage(): Boolean {
-        Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                .withFlag(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                .withFlag(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
-
-            try {
-                ctx.startActivity(this)
-                return true
-            } catch (e: ActivityNotFoundException) {
-                return false
-            }
-        }
-    }
-
-    private fun getState(): ServiceState {
-        val isEnabled = NotificationManagerCompat.getEnabledListenerPackages(ctx)
-            .contains(Constants.PACKAGE_NAME)
-
-        return if (isEnabled) {
-            ServiceState.ENABLED
-        } else {
-            ServiceState.DISABLED
-        }
-    }
+    /**
+     * A flow of events coming from the service.
+     */
+    val eventReceiver: SharedFlow<NotificationServiceEvent>
 }

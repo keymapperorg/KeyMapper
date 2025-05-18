@@ -56,7 +56,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperDropdownMenu
 import io.github.sds100.keymapper.base.utils.ui.compose.SearchAppBarActions
 import io.github.sds100.keymapper.base.utils.ui.compose.WindowSizeClassExt.compareTo
-import io.github.sds100.keymapper.system.accessibility.NodeInteractionType
+import io.github.sds100.keymapper.common.utils.NodeInteractionType
 
 @Composable
 fun ChooseElementScreen(

@@ -1,14 +1,14 @@
 package io.github.sds100.keymapper.base.settings
 
 import androidx.datastore.preferences.core.Preferences
-import io.github.sds100.keymapper.actions.sound.SoundFileInfo
-import io.github.sds100.keymapper.actions.sound.SoundsManager
+import io.github.sds100.keymapper.base.actions.sound.SoundFileInfo
+import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.shizuku.ShizukuAdapter
-import io.github.sds100.keymapper.shizuku.ShizukuUtils
+import io.github.sds100.keymapper.base.shizuku.ShizukuAdapter
+import io.github.sds100.keymapper.base.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo

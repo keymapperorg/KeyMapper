@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -22,6 +22,11 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.REORDER_TASKS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+
+    <uses-permission
+        android:name="android.permission.WRITE_SECURE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
 
     <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
 
@@ -65,7 +70,7 @@
 
         <!--  IMPORTANT! Must be direct boot aware so it can automatically choose a proper keyboard when the user wants to unlock their phone.  -->
         <service
-            android:name=".inputmethod.KeyMapperImeService"
+            android:name="io.github.sds100.keymapper.system.inputmethod.KeyMapperImeService"
             android:directBootAware="true"
             android:exported="true"
             android:label="@string/ime_service_label"
@@ -79,24 +84,24 @@
         </service>
 
         <service
-            android:name=".tiles.ToggleMappingsTile"
-            tools:targetApi="24"
+            android:name="io.github.sds100.keymapper.base.tiles.ToggleMappingsTile"
             android:exported="true"
             android:icon="@drawable/ic_tile_pause"
             android:label="@string/tile_pause_title"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            tools:targetApi="24">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
 
         <service
-            android:name=".tiles.ToggleKeyMapperKeyboardTile"
-            tools:targetApi="24"
+            android:name="io.github.sds100.keymapper.base.tiles.ToggleKeyMapperKeyboardTile"
             android:exported="true"
             android:icon="@drawable/ic_tile_keyboard"
             android:label="@string/tile_toggle_keymapper_keyboard"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            tools:targetApi="24">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
@@ -113,7 +118,7 @@
         </service>
 
         <service
-            android:name=".accessibility.ObserveEnabledAccessibilityServicesJob"
+            android:name="io.github.sds100.keymapper.system.accessibility.ObserveEnabledAccessibilityServicesJob"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <service

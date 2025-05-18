@@ -29,7 +29,7 @@ import com.anggrayudi.storage.extension.toDocumentFile
 import io.github.sds100.keymapper.Constants.PACKAGE_NAME
 import io.github.sds100.keymapper.compose.ComposeColors
 import io.github.sds100.keymapper.databinding.ActivityMainBinding
-import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
@@ -60,7 +60,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
         ServiceLocator.permissionAdapter(this)
     }
 
-    val serviceAdapter: AccessibilityServiceAdapter by lazy {
+    val serviceAdapter: AccessibilityServiceAdapterImpl by lazy {
         ServiceLocator.accessibilityServiceAdapter(this)
     }
 
@@ -177,7 +177,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
         // This is checked here and not in KeyMapperApp's lifecycle observer because
         // the activities have not necessarily resumed at that point.
         permissionAdapter.onPermissionsChanged()
-        serviceAdapter.updateWhetherServiceIsEnabled()
+        serviceAdapter.updateServiceState()
     }
 
     override fun onDestroy() {

@@ -1,17 +1,21 @@
 package io.github.sds100.keymapper.system.inputmethod
 
-import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.suspendThen
 import io.github.sds100.keymapper.common.utils.then
-import io.github.sds100.keymapper.base.utils.firstBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
+class KeyMapperImeHelper @Inject constructor(
+    private val imeAdapter: InputMethodAdapter,
+    private val packageName: String
+) {
     companion object {
         const val KEY_MAPPER_GUI_IME_PACKAGE =
             "io.github.sds100.keymapper.inputmethod.latin"
@@ -22,22 +26,22 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
         private const val KEY_MAPPER_HACKERS_KEYBOARD_PACKAGE =
             "io.github.sds100.keymapper.inputmethod.hackers"
 
-        val KEY_MAPPER_IME_PACKAGE_LIST = arrayOf(
-            Constants.PACKAGE_NAME,
-            KEY_MAPPER_GUI_IME_PACKAGE,
-            KEY_MAPPER_LEANBACK_IME_PACKAGE,
-            KEY_MAPPER_HACKERS_KEYBOARD_PACKAGE,
-        )
-
         const val MIN_SUPPORTED_GUI_KEYBOARD_VERSION_CODE: Int = 20
     }
+
+    private val keyMapperImePackageList = arrayOf(
+        packageName,
+        KEY_MAPPER_GUI_IME_PACKAGE,
+        KEY_MAPPER_LEANBACK_IME_PACKAGE,
+        KEY_MAPPER_HACKERS_KEYBOARD_PACKAGE,
+    )
 
     val isCompatibleImeEnabledFlow: Flow<Boolean> =
         imeAdapter.inputMethods
             .map { containsCompatibleIme(it) }
 
     suspend fun enableCompatibleInputMethods() {
-        KEY_MAPPER_IME_PACKAGE_LIST.forEach { packageName ->
+        keyMapperImePackageList.forEach { packageName ->
             imeAdapter.getInfoByPackageName(packageName).onSuccess {
                 imeAdapter.enableIme(it.id)
             }
@@ -58,7 +62,7 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
         chooseCompatibleInputMethod()
     }
 
-    fun isCompatibleImeChosen(): Boolean = imeAdapter.chosenIme.value?.packageName in KEY_MAPPER_IME_PACKAGE_LIST
+    fun isCompatibleImeChosen(): Boolean = imeAdapter.chosenIme.value?.packageName in keyMapperImePackageList
 
     fun isCompatibleImeEnabled(): Boolean = imeAdapter.inputMethods
         .map { containsCompatibleIme(it) }
@@ -66,11 +70,11 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
 
     private fun containsCompatibleIme(imeList: List<ImeInfo>): Boolean = imeList
         .filter { it.isEnabled }
-        .any { it.packageName in KEY_MAPPER_IME_PACKAGE_LIST }
+        .any { it.packageName in keyMapperImePackageList }
 
     private fun getLastUsedCompatibleImeId(): Result<String> {
         for (ime in imeAdapter.inputMethodHistory.firstBlocking()) {
-            if (ime.packageName in KEY_MAPPER_IME_PACKAGE_LIST && ime.isEnabled) {
+            if (ime.packageName in keyMapperImePackageList && ime.isEnabled) {
                 return Success(ime.id)
             }
         }
@@ -81,7 +85,7 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
             }
         }
 
-        return imeAdapter.getInfoByPackageName(Constants.PACKAGE_NAME).then { ime ->
+        return imeAdapter.getInfoByPackageName(packageName).then { ime ->
             if (ime.isEnabled) {
                 Success(ime.id)
             } else {
@@ -92,7 +96,7 @@ class KeyMapperImeHelper(private val imeAdapter: InputMethodAdapter) {
 
     private fun getLastUsedIncompatibleImeId(): Result<String> {
         for (ime in imeAdapter.inputMethodHistory.firstBlocking()) {
-            if (ime.packageName !in KEY_MAPPER_IME_PACKAGE_LIST) {
+            if (ime.packageName !in keyMapperImePackageList) {
                 return Success(ime.id)
             }
         }

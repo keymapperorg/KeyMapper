@@ -13,7 +13,8 @@ import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
-import io.github.sds100.keymapper.Constants
+import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.Success
@@ -25,12 +26,12 @@ import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.system.JobSchedulerHelper
 import io.github.sds100.keymapper.system.SettingsUtils
 import io.github.sds100.keymapper.system.SystemError
-import io.github.sds100.keymapper.system.service.ServiceAdapter
-import io.github.sds100.keymapper.system.accessibility.ServiceState
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
-import io.github.sds100.keymapper.base.utils.ServiceEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,7 +46,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -53,9 +53,10 @@ import javax.inject.Singleton
 class AndroidInputMethodAdapter @Inject constructor(
     @ApplicationContext private val context: Context,
     private val coroutineScope: CoroutineScope,
-    private val serviceAdapter: ServiceAdapter,
+    private val serviceAdapter: AccessibilityServiceAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val suAdapter: SuAdapter,
+    private val buildConfigProvider: BuildConfigProvider,
 ) : InputMethodAdapter {
 
     companion object {
@@ -100,7 +101,9 @@ class AndroidInputMethodAdapter @Inject constructor(
         suspend fun invalidate() {
             when {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
-                    serviceAdapter.state.first() == ServiceState.ENABLED -> send(true)
+                    serviceAdapter.state.first() == AccessibilityServiceState.ENABLED -> send(
+                    true,
+                )
 
                 permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS) -> send(true)
 
@@ -192,9 +195,9 @@ class AndroidInputMethodAdapter @Inject constructor(
     }
 
     private suspend fun enableImeWithoutUserInput(imeId: String): Result<*> {
-        return getInfoByPackageName(Constants.PACKAGE_NAME).then { keyMapperImeInfo ->
+        return getInfoByPackageName(buildConfigProvider.packageName).then { keyMapperImeInfo ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && imeId == keyMapperImeInfo.id) {
-                serviceAdapter.send(ServiceEvent.EnableInputMethod(keyMapperImeInfo.id))
+                serviceAdapter.send(AccessibilityServiceEvent.EnableInputMethod(keyMapperImeInfo.id))
             } else {
                 suAdapter.execute("ime enable $imeId")
             }
@@ -212,8 +215,8 @@ class AndroidInputMethodAdapter @Inject constructor(
 
         var failed = true
 
-        if (failed && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && serviceAdapter.state.value == ServiceState.ENABLED) {
-            serviceAdapter.send(ServiceEvent.ChangeIme(imeId)).onSuccess {
+        if (failed && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && serviceAdapter.state.value == AccessibilityServiceState.ENABLED) {
+            serviceAdapter.send(AccessibilityServiceEvent.ChangeIme(imeId)).onSuccess {
                 failed = false
             }
         }

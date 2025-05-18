@@ -25,9 +25,6 @@ import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.base.utils.Inject
-import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeModel
-import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
-import io.github.sds100.keymapper.system.accessibility.toModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update

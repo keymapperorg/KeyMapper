@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.base.purchasing.PurchasingError
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.BuildUtils
 import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.data.DataError
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
 
@@ -58,7 +59,7 @@ fun Error.getFullMessage(resourceProvider: ResourceProvider): String {
             else -> throw Exception("Don't know how to get error message for this system feature ${this.feature}")
         }
 
-        is Error.ExtraNotFound -> resourceProvider.getString(
+        is DataError.ExtraNotFound -> resourceProvider.getString(
             R.string.error_extra_not_found,
             extraId,
         )

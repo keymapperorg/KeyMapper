@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.preference.ktx)
     implementation(libs.kotson)
+    implementation(libs.jakewharton.timber)
 
     implementation(libs.dagger.hilt.android)
     ksp(libs.dagger.hilt.android.compiler)

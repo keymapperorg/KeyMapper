@@ -1,10 +1,10 @@
 package io.github.sds100.keymapper.keymaps
 
-import io.github.sds100.keymapper.actions.Action
-import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.ActionErrorSnapshot
-import io.github.sds100.keymapper.actions.PerformActionsUseCase
-import io.github.sds100.keymapper.actions.RepeatMode
+import io.github.sds100.keymapper.base.actions.Action
+import io.github.sds100.keymapper.base.actions.ActionData
+import io.github.sds100.keymapper.base.actions.ActionErrorSnapshot
+import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
+import io.github.sds100.keymapper.base.actions.RepeatMode
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCase

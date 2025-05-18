@@ -4,7 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.actions.ActionErrorSnapshot
+import io.github.sds100.keymapper.base.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.backup.ImportExportState
 import io.github.sds100.keymapper.backup.RestoreType
@@ -27,7 +27,7 @@ import io.github.sds100.keymapper.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.sorting.SortViewModel
 import io.github.sds100.keymapper.system.SystemError
-import io.github.sds100.keymapper.system.accessibility.ServiceState
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.trigger.KeyMapListItemModel
@@ -169,7 +169,7 @@ class KeyMapListViewModel(
 
         buildList {
             when (serviceState) {
-                ServiceState.CRASHED ->
+                AccessibilityServiceState.CRASHED ->
                     add(
                         HomeWarningListItem(
                             _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapListViewModel.Companion.ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM,
@@ -177,7 +177,7 @@ class KeyMapListViewModel(
                         ),
                     )
 
-                ServiceState.DISABLED ->
+                AccessibilityServiceState.DISABLED ->
                     add(
                         HomeWarningListItem(
                             _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapListViewModel.Companion.ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM,
@@ -185,7 +185,7 @@ class KeyMapListViewModel(
                         ),
                     )
 
-                ServiceState.ENABLED -> {}
+                AccessibilityServiceState.ENABLED -> {}
             }
 
             if (isBatteryOptimised) {

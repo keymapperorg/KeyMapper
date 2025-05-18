@@ -1,14 +1,14 @@
 package io.github.sds100.keymapper.base.actions
 
-import io.github.sds100.keymapper.actions.sound.SoundsManager
-import io.github.sds100.keymapper.shizuku.ShizukuAdapter
+import io.github.sds100.keymapper.base.actions.sound.SoundsManager
+import io.github.sds100.keymapper.base.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
-import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
+import io.github.sds100.keymapper.base.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.base.utils.SoundsManager
 import javax.inject.Inject
 import javax.inject.Singleton

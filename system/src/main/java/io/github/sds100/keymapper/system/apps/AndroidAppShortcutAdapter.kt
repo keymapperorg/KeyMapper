@@ -13,22 +13,22 @@ import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.graphics.drawable.toBitmap
-import io.github.sds100.keymapper.api.LaunchKeyMapShortcutActivity
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.success
-import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.util.UUID
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class AndroidAppShortcutAdapter @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val keyMapShortcutActivityIntentBuilder: KeyMapShortcutActivityIntentBuilder,
 ) : AppShortcutAdapter {
     private val ctx = context.applicationContext
 
@@ -89,14 +89,8 @@ class AndroidAppShortcutAdapter @Inject constructor(
         val builder = ShortcutInfoCompat.Builder(ctx, UUID.randomUUID().toString()).apply {
             setIcon(icon)
             setShortLabel(label)
-
-            Intent(ctx, LaunchKeyMapShortcutActivity::class.java).apply {
-                action = intentAction
-
-                putExtras(intentExtras)
-
-                setIntent(this)
-            }
+            val intent = keyMapShortcutActivityIntentBuilder.build(intentAction, intentExtras)
+            setIntent(intent)
         }
 
         return builder.build()

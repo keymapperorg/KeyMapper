@@ -1,9 +1,7 @@
 package io.github.sds100.keymapper.base.logging
 
 import android.util.Log
-import io.github.sds100.keymapper.data.Keys
-import io.github.sds100.keymapper.data.entities.LogEntryEntity
-import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.data.repositories.LogRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow

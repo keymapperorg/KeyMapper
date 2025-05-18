@@ -40,6 +40,7 @@ android {
 dependencies {
     implementation(project(":common"))
     implementation(project(":base"))
+    implementation(project(":system"))
 
     implementation(libs.jakewharton.timber)
 

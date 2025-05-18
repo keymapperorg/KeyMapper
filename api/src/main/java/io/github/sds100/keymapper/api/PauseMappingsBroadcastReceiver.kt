@@ -13,7 +13,7 @@ import javax.inject.Inject
 class PauseMappingsBroadcastReceiver : BroadcastReceiver() {
 
     @Inject
-    private lateinit var useCase: PauseKeyMapsUseCase
+    lateinit var useCase: PauseKeyMapsUseCase
 
     override fun onReceive(context: Context?, intent: Intent?) {
         context ?: return

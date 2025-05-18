@@ -15,7 +15,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import io.github.sds100.keymapper.base.utils.firstBlocking
+import io.github.sds100.keymapper.common.utils.firstBlocking
 
 /**
  * Move fingerprint maps from data store into sqlite database and move device info list information

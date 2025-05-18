@@ -56,7 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.canopas.lib.showcase.IntroShowcase
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.actions.ActionsScreen
+import io.github.sds100.keymapper.base.actions.ActionsScreen
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.constraints.ConstraintsScreen
 import io.github.sds100.keymapper.onboarding.OnboardingTapTarget

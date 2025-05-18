@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper
 
-import io.github.sds100.keymapper.base.utils.DispatcherProvider
+import io.github.sds100.keymapper.common.utils.DispatcherProvider
 import kotlinx.coroutines.test.TestDispatcher
 
 

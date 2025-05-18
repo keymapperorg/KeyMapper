@@ -1,6 +1,9 @@
 package io.github.sds100.keymapper.base.system.inputmethod
 
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
+import io.github.sds100.keymapper.base.utils.getFullMessage
+import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
@@ -8,22 +11,20 @@ import io.github.sds100.keymapper.common.utils.otherwise
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
-import io.github.sds100.keymapper.system.service.ServiceAdapter
+import io.github.sds100.keymapper.data.utils.PrefDelegate
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
-import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
-import io.github.sds100.keymapper.base.utils.PrefDelegate
-import io.github.sds100.keymapper.base.utils.ServiceEvent
-import io.github.sds100.keymapper.base.utils.getFullMessage
-import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
+import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
+import javax.inject.Inject
 
-class AutoSwitchImeController(
+class AutoSwitchImeController @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val preferenceRepository: PreferenceRepository,
     private val inputMethodAdapter: InputMethodAdapter,
@@ -31,7 +32,7 @@ class AutoSwitchImeController(
     private val devicesAdapter: DevicesAdapter,
     private val popupMessageAdapter: PopupMessageAdapter,
     private val resourceProvider: ResourceProvider,
-    private val accessibilityServiceAdapter: ServiceAdapter,
+    private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
 ) : PreferenceRepository by preferenceRepository {
     private val imeHelper = KeyMapperImeHelper(inputMethodAdapter)
 
@@ -95,7 +96,7 @@ class AutoSwitchImeController(
 
         accessibilityServiceAdapter.eventReceiver.onEach { event ->
             when (event) {
-                is ServiceEvent.OnInputFocusChange -> {
+                is AccessibilityServiceEvent.OnInputFocusChange -> {
                     if (!changeImeOnInputFocus) {
                         return@onEach
                     }

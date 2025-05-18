@@ -82,7 +82,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.WindowSizeClassExt.compa
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.AdGroup
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.JumpToElement
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
-import io.github.sds100.keymapper.system.accessibility.NodeInteractionType
+import io.github.sds100.keymapper.common.utils.NodeInteractionType
 import kotlinx.coroutines.flow.update
 
 private const val DEST_LANDING = "landing"

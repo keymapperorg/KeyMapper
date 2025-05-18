@@ -4,7 +4,7 @@ import io.github.sds100.keymapper.constraints.Constraint
 import io.github.sds100.keymapper.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.camera.CameraLens
-import io.github.sds100.keymapper.system.display.Orientation
+import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.system.phone.CallState
 import timber.log.Timber
 import java.time.LocalTime

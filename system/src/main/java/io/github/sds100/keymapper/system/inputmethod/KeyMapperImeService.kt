@@ -16,11 +16,16 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
-import io.github.sds100.keymapper.Constants
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
-import io.github.sds100.keymapper.api.KeyEventRelayService
-import io.github.sds100.keymapper.api.KeyEventRelayServiceWrapperImpl
+import io.github.sds100.keymapper.common.BuildConfigProvider
+import javax.inject.Inject
 
+/**
+ * DO NOT MOVE. Must stay in this package so the user's input method settings are not reset
+ * when the component name changes.
+ */
+@AndroidEntryPoint
 class KeyMapperImeService : InputMethodService() {
     companion object {
 
@@ -38,8 +43,13 @@ class KeyMapperImeService : InputMethodService() {
             "io.github.sds100.keymapper.inputmethod.EXTRA_TEXT"
         const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT =
             "io.github.sds100.keymapper.inputmethod.EXTRA_KEY_EVENT"
+
+        private const val CALLBACK_ID_ACCESSIBILITY_SERVICE = "accessibility_service"
+        private const val CALLBACK_ID_INPUT_METHOD = "input_method"
     }
 
+    @Inject
+    lateinit var buildConfigProvider: BuildConfigProvider
     private val userManager: UserManager? by lazy { getSystemService<UserManager>() }
     private val inputMethodManager: InputMethodManager? by lazy {
         getSystemService<InputMethodManager>()
@@ -109,7 +119,8 @@ class KeyMapperImeService : InputMethodService() {
     private val keyEventRelayServiceWrapper: KeyEventRelayServiceWrapperImpl by lazy {
         KeyEventRelayServiceWrapperImpl(
             ctx = this,
-            id = KeyEventRelayService.CALLBACK_ID_INPUT_METHOD,
+            id = CALLBACK_ID_INPUT_METHOD,
+            servicePackageName = buildConfigProvider.packageName,
             callback = keyEventReceiverCallback,
         )
     }
@@ -155,8 +166,8 @@ class KeyMapperImeService : InputMethodService() {
 
         val consume = keyEventRelayServiceWrapper.sendMotionEvent(
             event = event,
-            targetPackageName = Constants.PACKAGE_NAME,
-            callbackId = KeyEventRelayService.CALLBACK_ID_ACCESSIBILITY_SERVICE,
+            targetPackageName = buildConfigProvider.packageName,
+            callbackId = CALLBACK_ID_ACCESSIBILITY_SERVICE,
         )
 
         return if (consume) {
@@ -171,8 +182,8 @@ class KeyMapperImeService : InputMethodService() {
 
         val consume = keyEventRelayServiceWrapper.sendKeyEvent(
             event = event,
-            targetPackageName = Constants.PACKAGE_NAME,
-            callbackId = KeyEventRelayService.CALLBACK_ID_ACCESSIBILITY_SERVICE,
+            targetPackageName = buildConfigProvider.packageName,
+            callbackId = CALLBACK_ID_ACCESSIBILITY_SERVICE,
         )
 
         return if (consume) {
@@ -187,8 +198,8 @@ class KeyMapperImeService : InputMethodService() {
 
         val consume = keyEventRelayServiceWrapper.sendKeyEvent(
             event = event,
-            targetPackageName = Constants.PACKAGE_NAME,
-            callbackId = KeyEventRelayService.CALLBACK_ID_ACCESSIBILITY_SERVICE,
+            targetPackageName = buildConfigProvider.packageName,
+            callbackId = CALLBACK_ID_ACCESSIBILITY_SERVICE,
         )
 
         return if (consume) {

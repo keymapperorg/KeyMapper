@@ -4,8 +4,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.sds100.keymapper.base.utils.DefaultDispatcherProvider
-import io.github.sds100.keymapper.base.utils.DispatcherProvider
+import io.github.sds100.keymapper.common.utils.DefaultDispatcherProvider
+import io.github.sds100.keymapper.common.utils.DispatcherProvider
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope

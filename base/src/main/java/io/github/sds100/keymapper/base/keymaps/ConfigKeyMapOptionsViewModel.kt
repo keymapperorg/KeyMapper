@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.base.keymaps
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.actions.ActionUiHelper
+import io.github.sds100.keymapper.base.actions.ActionUiHelper
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull

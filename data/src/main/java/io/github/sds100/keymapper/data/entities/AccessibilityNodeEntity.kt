@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import io.github.sds100.keymapper.common.utils.NodeInteractionType
 import io.github.sds100.keymapper.data.db.dao.AccessibilityNodeDao.Companion.KEY_ACTIONS
 import io.github.sds100.keymapper.data.db.dao.AccessibilityNodeDao.Companion.KEY_CLASS_NAME
 import io.github.sds100.keymapper.data.db.dao.AccessibilityNodeDao.Companion.KEY_CONTENT_DESCRIPTION
@@ -16,7 +17,6 @@ import io.github.sds100.keymapper.data.db.dao.AccessibilityNodeDao.Companion.KEY
 import io.github.sds100.keymapper.data.db.dao.AccessibilityNodeDao.Companion.KEY_UNIQUE_ID
 import io.github.sds100.keymapper.data.db.dao.AccessibilityNodeDao.Companion.KEY_VIEW_RESOURCE_ID
 import io.github.sds100.keymapper.data.db.dao.AccessibilityNodeDao.Companion.TABLE_NAME
-import io.github.sds100.keymapper.system.accessibility.NodeInteractionType
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 

@@ -6,7 +6,7 @@ import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.actions.sound.SoundsManager
+import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.Success
@@ -17,9 +17,9 @@ import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
-import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeAction
-import io.github.sds100.keymapper.system.accessibility.AccessibilityNodeModel
-import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
+import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeAction
+import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeModel
+import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
@@ -27,7 +27,7 @@ import io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
-import io.github.sds100.keymapper.system.display.Orientation
+import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
@@ -65,12 +65,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import splitties.bitflags.withFlag
+import io.github.sds100.keymapper.common.utils.withFlag
 import timber.log.Timber
 import io.github.sds100.keymapper.system.Shell
 import io.github.sds100.keymapper.system.audio.AudioAdapter
-import io.github.sds100.keymapper.system.inputmethod.ImeInputEventInjectorImpl
-import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
+import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjectorImpl
+import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
 import io.github.sds100.keymapper.base.utils.SettingsRepository
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -106,7 +106,7 @@ class PerformActionsUseCaseImpl @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val soundsManager: SoundsManager,
     private val permissionAdapter: PermissionAdapter,
-    private val notificationReceiverAdapter: NotificationReceiverAdapter,
+    private val notificationReceiverAdapter: NotificationReceiverAdapterImpl,
     private val ringtoneAdapter: RingtoneAdapter
 ) : PerformActionsUseCase {
 

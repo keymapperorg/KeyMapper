@@ -1,10 +1,10 @@
 package io.github.sds100.keymapper.base.keymaps
 
 import android.view.KeyEvent
-import io.github.sds100.keymapper.actions.Action
-import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.ActionEntityMapper
-import io.github.sds100.keymapper.actions.canBeHeldDown
+import io.github.sds100.keymapper.base.actions.Action
+import io.github.sds100.keymapper.base.actions.ActionData
+import io.github.sds100.keymapper.base.actions.ActionEntityMapper
+import io.github.sds100.keymapper.base.actions.canBeHeldDown
 import io.github.sds100.keymapper.constraints.ConstraintEntityMapper
 import io.github.sds100.keymapper.constraints.ConstraintModeEntityMapper
 import io.github.sds100.keymapper.constraints.ConstraintState

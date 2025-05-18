@@ -15,7 +15,9 @@ import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.Constants
+import io.github.sds100.keymapper.base.utils.getIdentifier
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.onFailure
@@ -23,13 +25,12 @@ import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.shizuku.ShizukuUtils
+import io.github.sds100.keymapper.base.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.DeviceAdmin
 import io.github.sds100.keymapper.system.SystemError
-import io.github.sds100.keymapper.system.service.ServiceAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
-import io.github.sds100.keymapper.base.utils.getIdentifier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -48,7 +49,6 @@ import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuBinderWrapper
 import rikka.shizuku.SystemServiceHelper
 import timber.log.Timber
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -57,7 +57,7 @@ class AndroidPermissionAdapter @Inject constructor(
     @ApplicationContext private val context: Context,
     private val coroutineScope: CoroutineScope,
     private val suAdapter: SuAdapter,
-    private val notificationReceiverAdapter: ServiceAdapter,
+    private val notificationReceiverAdapter: NotificationReceiverAdapter,
     private val preferenceRepository: PreferenceRepository,
     private val packageManagerAdapter: PackageManagerAdapter,
 ) : PermissionAdapter {

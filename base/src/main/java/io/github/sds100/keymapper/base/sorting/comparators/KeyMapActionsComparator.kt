@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.base.sorting.comparators
 
-import io.github.sds100.keymapper.actions.ActionData
-import io.github.sds100.keymapper.actions.DisplayActionUseCase
+import io.github.sds100.keymapper.base.actions.ActionData
+import io.github.sds100.keymapper.base.actions.DisplayActionUseCase
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.valueOrNull

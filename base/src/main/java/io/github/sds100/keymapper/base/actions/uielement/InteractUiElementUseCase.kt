@@ -5,8 +5,8 @@ import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
 import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
-import io.github.sds100.keymapper.system.accessibility.RecordAccessibilityNodeState
-import io.github.sds100.keymapper.system.service.ServiceAdapter
+import io.github.sds100.keymapper.base.system.accessibility.RecordAccessibilityNodeState
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.base.utils.ServiceEvent
 import io.github.sds100.keymapper.common.utils.State
@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.update
 
 class InteractUiElementController(
     private val coroutineScope: CoroutineScope,
-    private val serviceAdapter: ServiceAdapter,
+    private val serviceAdapter: AccessibilityServiceAdapter,
     private val nodeRepository: AccessibilityNodeRepository,
     private val packageManagerAdapter: PackageManagerAdapter,
 ) : InteractUiElementUseCase {

@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.widget.Toast
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.system.service.ServiceAdapter
-import io.github.sds100.keymapper.system.accessibility.ServiceState
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import javax.inject.Inject
 
 // DON'T MOVE THIS CLASS TO A DIFFERENT PACKAGE BECAUSE IT BREAKS THE API
@@ -19,10 +19,10 @@ import javax.inject.Inject
 class LaunchKeyMapShortcutActivity : Activity() {
 
     @Inject
-    private lateinit var buildConfigProvider: BuildConfigProvider
+    lateinit var buildConfigProvider: BuildConfigProvider
 
     @Inject
-    private lateinit var accessibilityServiceAdapter: ServiceAdapter
+    lateinit var accessibilityServiceAdapter: AccessibilityServiceAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +30,7 @@ class LaunchKeyMapShortcutActivity : Activity() {
         val accessibilityServiceState = accessibilityServiceAdapter.state.value
 
         when (accessibilityServiceState) {
-            ServiceState.ENABLED ->
+            AccessibilityServiceState.ENABLED ->
                 if (intent.action == Api.ACTION_TRIGGER_KEYMAP_BY_UID) {
                     Intent(Api.ACTION_TRIGGER_KEYMAP_BY_UID).apply {
                         setPackage(buildConfigProvider.packageName)
@@ -42,13 +42,13 @@ class LaunchKeyMapShortcutActivity : Activity() {
                     }
                 }
 
-            ServiceState.CRASHED -> Toast.makeText(
+            AccessibilityServiceState.CRASHED -> Toast.makeText(
                 this,
                 R.string.error_accessibility_service_crashed,
                 Toast.LENGTH_SHORT,
             )
 
-            ServiceState.DISABLED -> Toast.makeText(
+            AccessibilityServiceState.DISABLED -> Toast.makeText(
                 this,
                 R.string.error_accessibility_service_disabled,
                 Toast.LENGTH_SHORT,

@@ -4,7 +4,9 @@ import android.os.Parcelable
 import com.github.salomonbrys.kotson.byString
 import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
+import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.data.DataError
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -32,7 +34,7 @@ data class EntityExtra(
 
 fun List<EntityExtra>.getData(extraId: String): Result<String> {
     return find { it.id == extraId }.let {
-        it ?: return@let Error.ExtraNotFound(extraId)
+        it ?: return@let DataError.ExtraNotFound(extraId)
 
         Success(it.data)
     }

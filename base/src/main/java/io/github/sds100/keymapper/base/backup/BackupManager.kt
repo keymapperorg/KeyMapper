@@ -14,7 +14,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.MalformedJsonException
-import io.github.sds100.keymapper.actions.sound.SoundsManager
+import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.Success
@@ -48,12 +48,12 @@ import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.GroupRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.data.repositories.RepositoryUtils
-import io.github.sds100.keymapper.base.keymaps.KeyMapRepository
+import io.github.sds100.keymapper.data.repositories.KeyMapRepository
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.IFile
-import io.github.sds100.keymapper.base.utils.DefaultDispatcherProvider
+import io.github.sds100.keymapper.common.utils.DefaultDispatcherProvider
 import io.github.sds100.keymapper.base.utils.DefaultUuidGenerator
-import io.github.sds100.keymapper.base.utils.DispatcherProvider
+import io.github.sds100.keymapper.common.utils.DispatcherProvider
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.base.utils.TreeNode
 import io.github.sds100.keymapper.base.utils.UuidGenerator

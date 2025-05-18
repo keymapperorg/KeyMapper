@@ -3,8 +3,8 @@ package io.github.sds100.keymapper
 import com.github.salomonbrys.kotson.get
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import io.github.sds100.keymapper.actions.sound.SoundFileInfo
-import io.github.sds100.keymapper.actions.sound.SoundsManager
+import io.github.sds100.keymapper.base.actions.sound.SoundFileInfo
+import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.backup.BackupContent
 import io.github.sds100.keymapper.backup.BackupManagerImpl
 import io.github.sds100.keymapper.backup.RestoreType
@@ -22,7 +22,7 @@ import io.github.sds100.keymapper.data.repositories.FakePreferenceRepository
 import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.GroupRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.base.keymaps.KeyMapRepository
+import io.github.sds100.keymapper.data.repositories.KeyMapRepository
 import io.github.sds100.keymapper.system.files.FakeFileAdapter
 import io.github.sds100.keymapper.system.files.IFile
 import io.github.sds100.keymapper.system.files.JavaFile

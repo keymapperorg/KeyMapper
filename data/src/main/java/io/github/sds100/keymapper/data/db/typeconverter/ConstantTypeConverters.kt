@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.data.db.typeconverter
 
-import io.github.sds100.keymapper.system.display.Orientation
+import io.github.sds100.keymapper.common.utils.Orientation
 
 object ConstantTypeConverters {
     val ORIENTATION_MAP = mapOf(

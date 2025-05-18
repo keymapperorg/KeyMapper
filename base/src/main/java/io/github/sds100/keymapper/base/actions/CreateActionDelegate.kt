@@ -5,12 +5,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.actions.pinchscreen.PinchPickCoordinateResult
-import io.github.sds100.keymapper.actions.swipescreen.SwipePickCoordinateResult
-import io.github.sds100.keymapper.actions.tapscreen.PickCoordinateResult
+import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickCoordinateResult
+import io.github.sds100.keymapper.base.actions.swipescreen.SwipePickCoordinateResult
+import io.github.sds100.keymapper.base.actions.tapscreen.PickCoordinateResult
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.system.camera.CameraLens
-import io.github.sds100.keymapper.system.camera.CameraLensUtils
-import io.github.sds100.keymapper.system.display.Orientation
+import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.base.ui.intents.ConfigIntentResult
 import io.github.sds100.keymapper.system.network.HttpMethod
 import io.github.sds100.keymapper.system.volume.DndMode
@@ -447,8 +447,11 @@ class CreateActionDelegate(
 
             ActionId.DISABLE_FLASHLIGHT,
             -> {
-                val items = useCase.getFlashlightLenses().map {
-                    it to getString(CameraLensUtils.getLabel(it))
+                val items = useCase.getFlashlightLenses().map {lens ->
+                    when (lens) {
+                        CameraLens.FRONT -> R.string.lens_front
+                        CameraLens.BACK -> R.string.lens_back
+                    }
                 }
 
                 if (items.size == 1) {

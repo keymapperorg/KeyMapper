@@ -15,11 +15,11 @@ import io.github.sds100.keymapper.groups.Group
 import io.github.sds100.keymapper.groups.GroupEntityMapper
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.KeyMapEntityMapper
-import io.github.sds100.keymapper.base.keymaps.KeyMapRepository
-import io.github.sds100.keymapper.system.accessibility.IAccessibilityService
+import io.github.sds100.keymapper.data.repositories.KeyMapRepository
+import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.inputevents.InputEventInjector
-import io.github.sds100.keymapper.system.inputmethod.ImeInputEventInjector
+import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.system.permissions.Permission

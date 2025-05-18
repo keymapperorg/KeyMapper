@@ -5,11 +5,10 @@ import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintToKeyMapMigration
-import io.github.sds100.keymapper.base.keymaps.KeyMapRepository
-import io.github.sds100.keymapper.base.utils.DefaultDispatcherProvider
-import io.github.sds100.keymapper.base.utils.DispatcherProvider
+import io.github.sds100.keymapper.common.utils.DefaultDispatcherProvider
+import io.github.sds100.keymapper.common.utils.DispatcherProvider
 import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.base.utils.splitIntoBatches
+import io.github.sds100.keymapper.common.utils.splitIntoBatches
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted

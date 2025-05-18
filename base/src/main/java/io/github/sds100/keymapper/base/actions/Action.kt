@@ -8,8 +8,8 @@ import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import kotlinx.serialization.Serializable
-import splitties.bitflags.hasFlag
-import splitties.bitflags.withFlag
+import io.github.sds100.keymapper.common.utils.hasFlag
+import io.github.sds100.keymapper.common.utils.withFlag
 import java.util.UUID
 
 @Serializable
