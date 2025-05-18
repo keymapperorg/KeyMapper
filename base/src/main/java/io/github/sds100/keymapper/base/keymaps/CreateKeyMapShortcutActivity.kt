@@ -13,7 +13,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.compose.ComposeColors
 import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.system.permissions.RequestPermissionDelegate
+import io.github.sds100.keymapper.base.system.permissions.RequestPermissionDelegate
 import io.github.sds100.keymapper.base.utils.Inject
 import io.github.sds100.keymapper.base.utils.launchRepeatOnLifecycle
 import kotlinx.coroutines.flow.collectLatest

@@ -6,8 +6,8 @@ import io.github.sds100.keymapper.base.actions.canUseImeToPerform
 import io.github.sds100.keymapper.base.actions.canUseShizukuToPerform
 import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
-import io.github.sds100.keymapper.base.shizuku.ShizukuAdapter
-import io.github.sds100.keymapper.base.shizuku.ShizukuUtils
+import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
+import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.base.utils.VersionHelper
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.Result

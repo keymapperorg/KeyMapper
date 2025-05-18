@@ -1,15 +1,10 @@
 package io.github.sds100.keymapper.system.intents
 
 import android.content.Intent
-import io.github.sds100.keymapper.R
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 @Serializable
 sealed class IntentExtraType {
-    abstract val labelStringRes: Int
-    abstract val exampleStringRes: Int
-
     abstract fun putInIntent(intent: Intent, name: String, value: String)
 
     /**
@@ -21,13 +16,7 @@ sealed class IntentExtraType {
 }
 
 @Serializable
-class BoolExtraType : IntentExtraType() {
-    @Transient
-    override val labelStringRes = R.string.intent_type_bool_header
-
-    @Transient
-    override val exampleStringRes = R.string.intent_type_bool_example
-
+data object BoolExtraType : IntentExtraType() {
     override fun putInIntent(intent: Intent, name: String, value: String) {
         intent.putExtra(name, parse(value))
     }
@@ -40,13 +29,7 @@ class BoolExtraType : IntentExtraType() {
 }
 
 @Serializable
-class BoolArrayExtraType : IntentExtraType() {
-    @Transient
-    override val labelStringRes = R.string.intent_type_bool_array_header
-
-    @Transient
-    override val exampleStringRes = R.string.intent_type_bool_array_example
-
+data object BoolArrayExtraType : IntentExtraType() {
     override fun putInIntent(intent: Intent, name: String, value: String) {
         intent.putExtra(name, parse(value))
     }
@@ -67,13 +50,7 @@ class BoolArrayExtraType : IntentExtraType() {
 }
 
 @Serializable
-class IntExtraType : IntentExtraType() {
-    @Transient
-    override val labelStringRes = R.string.intent_type_int_header
-
-    @Transient
-    override val exampleStringRes = R.string.intent_type_int_example
-
+data object IntExtraType : IntentExtraType() {
     override fun putInIntent(intent: Intent, name: String, value: String) {
         intent.putExtra(name, parse(value))
     }
@@ -86,13 +63,7 @@ class IntExtraType : IntentExtraType() {
 }
 
 @Serializable
-class IntArrayExtraType : IntentExtraType() {
-    @Transient
-    override val labelStringRes = R.string.intent_type_int_array_header
-
-    @Transient
-    override val exampleStringRes = R.string.intent_type_int_array_example
-
+data object IntArrayExtraType : IntentExtraType() {
     override fun putInIntent(intent: Intent, name: String, value: String) {
         intent.putExtra(name, parse(value))
     }
@@ -113,13 +84,7 @@ class IntArrayExtraType : IntentExtraType() {
 }
 
 @Serializable
-class StringExtraType : IntentExtraType() {
-    @Transient
-    override val labelStringRes = R.string.intent_type_string_header
-
-    @Transient
-    override val exampleStringRes = R.string.intent_type_string_example
-
+data object StringExtraType : IntentExtraType() {
     override fun putInIntent(intent: Intent, name: String, value: String) {
         intent.putExtra(name, parse(value))
     }
@@ -128,13 +93,7 @@ class StringExtraType : IntentExtraType() {
 }
 
 @Serializable
-class StringArrayExtraType : IntentExtraType() {
-    @Transient
-    override val labelStringRes = R.string.intent_type_string_array_header
-
-    @Transient
-    override val exampleStringRes = R.string.intent_type_string_array_example
-
+data object StringArrayExtraType : IntentExtraType() {
     override fun putInIntent(intent: Intent, name: String, value: String) {
         intent.putExtra(name, parse(value))
     }
@@ -149,13 +108,7 @@ class StringArrayExtraType : IntentExtraType() {
 }
 
 @Serializable
-class LongExtraType : IntentExtraType() {
-    @Transient
-    override val labelStringRes = R.string.intent_type_long_header
-
-    @Transient
-    override val exampleStringRes = R.string.intent_type_long_example
-
+data object LongExtraType : IntentExtraType() {
     override fun putInIntent(intent: Intent, name: String, value: String) {
         intent.putExtra(name, parse(value))
     }
@@ -168,13 +121,7 @@ class LongExtraType : IntentExtraType() {
 }
 
 @Serializable
-class LongArrayExtraType : IntentExtraType() {
-    @Transient
-    override val labelStringRes = R.string.intent_type_long_array_header
-
-    @Transient
-    override val exampleStringRes = R.string.intent_type_long_array_example
-
+data object LongArrayExtraType : IntentExtraType() {
     override fun putInIntent(intent: Intent, name: String, value: String) {
         intent.putExtra(name, parse(value))
     }
@@ -195,13 +142,7 @@ class LongArrayExtraType : IntentExtraType() {
 }
 
 @Serializable
-class ByteExtraType : IntentExtraType() {
-    @Transient
-    override val labelStringRes = R.string.intent_type_byte_header
-
-    @Transient
-    override val exampleStringRes = R.string.intent_type_byte_example
-
+data object ByteExtraType : IntentExtraType() {
     override fun putInIntent(intent: Intent, name: String, value: String) {
         intent.putExtra(name, parse(value))
     }
@@ -214,13 +155,7 @@ class ByteExtraType : IntentExtraType() {
 }
 
 @Serializable
-class ByteArrayExtraType : IntentExtraType() {
-    @Transient
-    override val labelStringRes = R.string.intent_type_byte_array_header
-
-    @Transient
-    override val exampleStringRes = R.string.intent_type_byte_array_example
-
+data object ByteArrayExtraType : IntentExtraType() {
     override fun putInIntent(intent: Intent, name: String, value: String) {
         intent.putExtra(name, parse(value))
     }
@@ -241,13 +176,7 @@ class ByteArrayExtraType : IntentExtraType() {
 }
 
 @Serializable
-class DoubleExtraType : IntentExtraType() {
-    @Transient
-    override val labelStringRes = R.string.intent_type_double_header
-
-    @Transient
-    override val exampleStringRes = R.string.intent_type_double_example
-
+data object DoubleExtraType : IntentExtraType() {
     override fun putInIntent(intent: Intent, name: String, value: String) {
         intent.putExtra(name, parse(value))
     }
@@ -260,13 +189,7 @@ class DoubleExtraType : IntentExtraType() {
 }
 
 @Serializable
-class DoubleArrayExtraType : IntentExtraType() {
-    @Transient
-    override val labelStringRes = R.string.intent_type_double_array_header
-
-    @Transient
-    override val exampleStringRes = R.string.intent_type_double_array_example
-
+data object DoubleArrayExtraType : IntentExtraType() {
     override fun putInIntent(intent: Intent, name: String, value: String) {
         intent.putExtra(name, parse(value))
     }
@@ -287,13 +210,7 @@ class DoubleArrayExtraType : IntentExtraType() {
 }
 
 @Serializable
-class CharExtraType : IntentExtraType() {
-    @Transient
-    override val labelStringRes = R.string.intent_type_char_header
-
-    @Transient
-    override val exampleStringRes = R.string.intent_type_char_example
-
+data object CharExtraType : IntentExtraType() {
     override fun putInIntent(intent: Intent, name: String, value: String) {
         intent.putExtra(name, parse(value))
     }
@@ -306,13 +223,7 @@ class CharExtraType : IntentExtraType() {
 }
 
 @Serializable
-class CharArrayExtraType : IntentExtraType() {
-    @Transient
-    override val labelStringRes = R.string.intent_type_char_array_header
-
-    @Transient
-    override val exampleStringRes = R.string.intent_type_char_array_example
-
+data object CharArrayExtraType : IntentExtraType() {
     override fun putInIntent(intent: Intent, name: String, value: String) {
         intent.putExtra(name, parse(value))
     }
@@ -333,13 +244,7 @@ class CharArrayExtraType : IntentExtraType() {
 }
 
 @Serializable
-class FloatExtraType : IntentExtraType() {
-    @Transient
-    override val labelStringRes = R.string.intent_type_float_header
-
-    @Transient
-    override val exampleStringRes = R.string.intent_type_float_example
-
+data object FloatExtraType : IntentExtraType() {
     override fun putInIntent(intent: Intent, name: String, value: String) {
         intent.putExtra(name, parse(value))
     }
@@ -352,13 +257,7 @@ class FloatExtraType : IntentExtraType() {
 }
 
 @Serializable
-class FloatArrayExtraType : IntentExtraType() {
-    @Transient
-    override val labelStringRes = R.string.intent_type_float_array_header
-
-    @Transient
-    override val exampleStringRes = R.string.intent_type_float_array_example
-
+data object FloatArrayExtraType : IntentExtraType() {
     override fun putInIntent(intent: Intent, name: String, value: String) {
         intent.putExtra(name, parse(value))
     }
@@ -379,13 +278,7 @@ class FloatArrayExtraType : IntentExtraType() {
 }
 
 @Serializable
-class ShortExtraType : IntentExtraType() {
-    @Transient
-    override val labelStringRes = R.string.intent_type_short_header
-
-    @Transient
-    override val exampleStringRes = R.string.intent_type_short_example
-
+data object ShortExtraType : IntentExtraType() {
     override fun putInIntent(intent: Intent, name: String, value: String) {
         intent.putExtra(name, parse(value))
     }
@@ -398,13 +291,7 @@ class ShortExtraType : IntentExtraType() {
 }
 
 @Serializable
-class ShortArrayExtraType : IntentExtraType() {
-    @Transient
-    override val labelStringRes = R.string.intent_type_short_array_header
-
-    @Transient
-    override val exampleStringRes = R.string.intent_type_short_array_example
-
+data object ShortArrayExtraType : IntentExtraType() {
     override fun putInIntent(intent: Intent, name: String, value: String) {
         intent.putExtra(name, parse(value))
     }

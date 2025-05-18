@@ -1,10 +1,12 @@
-package io.github.sds100.keymapper.system.permissions
+package io.github.sds100.keymapper.base.system.permissions
 
 import android.Manifest
-import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.common.utils.onSuccess
-import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.common.utils.onSuccess
+import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.system.permissions.PermissionAdapter
+import io.github.sds100.keymapper.system.popup.ToastAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
@@ -12,7 +14,7 @@ import kotlinx.coroutines.flow.launchIn
 class AutoGrantPermissionController(
     private val coroutineScope: CoroutineScope,
     private val permissionAdapter: PermissionAdapter,
-    private val popupAdapter: PopupMessageAdapter,
+    private val popupAdapter: ToastAdapter,
     private val resourceProvider: ResourceProvider,
 ) {
 
@@ -32,7 +34,7 @@ class AutoGrantPermissionController(
                         R.string.toast_granted_itself_write_secure_settings_with_shizuku
                     }
 
-                    popupAdapter.showPopupMessage(resourceProvider.getString(stringRes))
+                    popupAdapter.show(resourceProvider.getString(stringRes))
                 }
             }
         }.launchIn(coroutineScope)

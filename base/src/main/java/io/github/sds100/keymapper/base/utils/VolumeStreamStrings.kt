@@ -1,9 +1,9 @@
-package io.github.sds100.keymapper.system.volume
+package io.github.sds100.keymapper.base.utils
 
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.system.volume.VolumeStream
 
-
-object VolumeStreamUtils {
+object VolumeStreamStrings {
     fun getLabel(stream: VolumeStream) = when (stream) {
         VolumeStream.ALARM -> R.string.stream_alarm
         VolumeStream.DTMF -> R.string.stream_dtmf
@@ -14,4 +14,4 @@ object VolumeStreamUtils {
         VolumeStream.VOICE_CALL -> R.string.stream_voice_call
         VolumeStream.ACCESSIBILITY -> R.string.stream_accessibility
     }
-}
+} 

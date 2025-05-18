@@ -22,13 +22,12 @@ import io.github.sds100.keymapper.system.apps.AndroidPackageManagerAdapter
 import io.github.sds100.keymapper.system.devices.AndroidDevicesAdapter
 import io.github.sds100.keymapper.base.system.inputmethod.AutoSwitchImeController
 import io.github.sds100.keymapper.system.inputmethod.ShowHideInputMethodUseCaseImpl
-import io.github.sds100.keymapper.system.notifications.AndroidNotificationAdapter
+import io.github.sds100.keymapper.base.system.notifications.AndroidNotificationAdapter
 import io.github.sds100.keymapper.base.system.notifications.ManageNotificationsUseCaseImpl
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
-import io.github.sds100.keymapper.system.permissions.AutoGrantPermissionController
+import io.github.sds100.keymapper.base.system.permissions.AutoGrantPermissionController
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.system.root.SuAdapterImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn

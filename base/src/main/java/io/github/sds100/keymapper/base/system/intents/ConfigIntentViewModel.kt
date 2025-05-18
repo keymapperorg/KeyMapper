@@ -69,7 +69,7 @@ class ConfigIntentViewModel @Inject constructor(
 
     companion object {
         private val EXTRA_TYPES = arrayOf(
-            BoolExtraType(),
+            BoolExtraType,
             BoolArrayExtraType(),
             IntExtraType(),
             IntArrayExtraType(),
@@ -415,7 +415,7 @@ class ConfigIntentViewModel @Inject constructor(
             val value = extrasBundle.get(key) ?: continue
 
             val extraType = when (value) {
-                is Boolean -> BoolExtraType()
+                is Boolean -> BoolExtraType
                 is BooleanArray -> BoolArrayExtraType()
                 is Int -> IntExtraType()
                 is IntArray -> IntArrayExtraType()

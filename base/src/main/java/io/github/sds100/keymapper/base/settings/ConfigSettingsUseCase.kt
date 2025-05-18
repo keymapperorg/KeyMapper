@@ -7,8 +7,8 @@ import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.base.shizuku.ShizukuAdapter
-import io.github.sds100.keymapper.base.shizuku.ShizukuUtils
+import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
+import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo

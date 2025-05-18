@@ -15,7 +15,7 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingError
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
-import io.github.sds100.keymapper.base.shizuku.ShizukuUtils
+import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter

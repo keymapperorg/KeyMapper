@@ -16,21 +16,21 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.base.utils.getIdentifier
+import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.getIdentifier
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.base.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.DeviceAdmin
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
+import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -60,6 +60,7 @@ class AndroidPermissionAdapter @Inject constructor(
     private val notificationReceiverAdapter: NotificationReceiverAdapter,
     private val preferenceRepository: PreferenceRepository,
     private val packageManagerAdapter: PackageManagerAdapter,
+    private val buildConfigProvider: BuildConfigProvider,
 ) : PermissionAdapter {
     companion object {
         const val REQUEST_CODE_SHIZUKU_PERMISSION = 1
@@ -115,7 +116,7 @@ class AndroidPermissionAdapter @Inject constructor(
             }
         }
 
-        notificationReceiverAdapter.state
+        notificationReceiverAdapter.isEnabled
             .drop(1)
             .onEach { onPermissionsChanged() }
             .launchIn(coroutineScope)
@@ -158,7 +159,7 @@ class AndroidPermissionAdapter @Inject constructor(
             }
         } else if (isGranted(Permission.ROOT)) {
             suAdapter.execute(
-                "pm grant ${Constants.PACKAGE_NAME} $permissionName",
+                "pm grant ${buildConfigProvider.packageName} $permissionName",
                 block = true,
             )
             if (ContextCompat.checkSelfPermission(ctx, permissionName) == PERMISSION_GRANTED) {
@@ -189,7 +190,7 @@ class AndroidPermissionAdapter @Inject constructor(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 try {
                     shizukuPermissionManager.grantRuntimePermission(
-                        Constants.PACKAGE_NAME,
+                        buildConfigProvider.packageName,
                         permissionName,
                         ctx.deviceId,
                         userId,
@@ -197,14 +198,14 @@ class AndroidPermissionAdapter @Inject constructor(
                 } catch (_: NoSuchMethodError) {
                     try {
                         shizukuPermissionManager.grantRuntimePermission(
-                            Constants.PACKAGE_NAME,
+                            buildConfigProvider.packageName,
                             permissionName,
                             "0",
                             userId,
                         )
                     } catch (_: NoSuchMethodError) {
                         shizukuPermissionManager.grantRuntimePermission(
-                            Constants.PACKAGE_NAME,
+                            buildConfigProvider.packageName,
                             permissionName,
                             userId,
                         )
@@ -213,13 +214,13 @@ class AndroidPermissionAdapter @Inject constructor(
                 // In Android 11 this method was moved from IPackageManager to IPermissionManager.
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 shizukuPermissionManager.grantRuntimePermission(
-                    Constants.PACKAGE_NAME,
+                    buildConfigProvider.packageName,
                     permissionName,
                     userId,
                 )
             } else {
                 shizukuPackageManager.grantRuntimePermission(
-                    Constants.PACKAGE_NAME,
+                    buildConfigProvider.packageName,
                     permissionName,
                     userId,
                 )
@@ -272,7 +273,7 @@ class AndroidPermissionAdapter @Inject constructor(
 
         Permission.NOTIFICATION_LISTENER ->
             NotificationManagerCompat.getEnabledListenerPackages(ctx)
-                .contains(Constants.PACKAGE_NAME)
+                .contains(buildConfigProvider.packageName)
 
         Permission.CALL_PHONE ->
             ContextCompat.checkSelfPermission(
@@ -285,7 +286,7 @@ class AndroidPermissionAdapter @Inject constructor(
         Permission.IGNORE_BATTERY_OPTIMISATION ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 val ignoringOptimisations =
-                    powerManager?.isIgnoringBatteryOptimizations(Constants.PACKAGE_NAME)
+                    powerManager?.isIgnoringBatteryOptimizations(buildConfigProvider.packageName)
 
                 when {
                     powerManager == null -> Timber.i("Power manager is null")

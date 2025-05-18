@@ -40,6 +40,7 @@ android {
 dependencies {
     implementation(project(":common"))
     implementation(project(":data"))
+    implementation(project(":systemstubs"))
 
     // kotlin stuff
     implementation(libs.kotlinx.coroutines.android)
@@ -50,6 +51,12 @@ dependencies {
     implementation(libs.dagger.hilt.android)
     ksp(libs.dagger.hilt.android.compiler)
     implementation(libs.net.lingala.zip4j)
+    implementation(libs.lsposed.hiddenapibypass)
     implementation(libs.anggrayudi.storage)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.squareup.okhttp)
+    implementation(libs.rikka.shizuku.api)
+    implementation(libs.rikka.shizuku.provider)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.preference.ktx)
 }

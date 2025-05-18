@@ -3,16 +3,22 @@ package io.github.sds100.keymapper.system.notifications
 import android.app.job.JobParameters
 import android.app.job.JobService
 import android.os.Build
-import io.github.sds100.keymapper.KeyMapperApp
-import io.github.sds100.keymapper.base.JobSchedulerHelper
+import dagger.hilt.android.AndroidEntryPoint
+import io.github.sds100.keymapper.system.JobSchedulerHelper
+import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class ObserveNotificationListenersJob : JobService() {
+    
+    @Inject
+    lateinit var permissionAdapter: AndroidPermissionAdapter
+    
     override fun onStartJob(params: JobParameters?): Boolean {
-        (applicationContext as KeyMapperApp).permissionAdapter.onPermissionsChanged()
+       permissionAdapter.onPermissionsChanged()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            io.github.sds100.keymapper.base.JobSchedulerHelper.observeEnabledNotificationListeners(applicationContext)
+            JobSchedulerHelper.observeEnabledNotificationListeners(applicationContext)
         }
         return false
     }

@@ -129,8 +129,9 @@ class AutomaticallyChangeImeSettings : BaseSettingsFragment() {
         }
 
         NotificationUtils.openChannelSettings(
-            requireContext(),
-            NotificationController.CHANNEL_TOGGLE_KEYBOARD,
+            ctx = requireContext(),
+            packageName = requireContext().packageName!!,
+            channelId = NotificationController.CHANNEL_TOGGLE_KEYBOARD,
         )
     }
 }

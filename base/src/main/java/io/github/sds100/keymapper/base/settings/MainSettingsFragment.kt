@@ -19,7 +19,7 @@ import io.github.sds100.keymapper.R
 import io.github.sds100.keymapper.backup.BackupUtils
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
-import io.github.sds100.keymapper.base.shizuku.ShizukuUtils
+import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.system.notifications.NotificationUtils

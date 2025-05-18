@@ -4,8 +4,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.sds100.keymapper.system.airplanemode.AndroidAirplaneModeAdapter
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
+import io.github.sds100.keymapper.system.airplanemode.AndroidAirplaneModeAdapter
 import io.github.sds100.keymapper.system.apps.AndroidAppShortcutAdapter
 import io.github.sds100.keymapper.system.apps.AndroidPackageManagerAdapter
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
@@ -36,14 +36,12 @@ import io.github.sds100.keymapper.system.network.AndroidNetworkAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.nfc.AndroidNfcAdapter
 import io.github.sds100.keymapper.system.nfc.NfcAdapter
-import io.github.sds100.keymapper.system.notifications.AndroidNotificationAdapter
-import io.github.sds100.keymapper.system.notifications.NotificationAdapter
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.phone.AndroidPhoneAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.popup.AndroidToastAdapter
-import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
+import io.github.sds100.keymapper.system.popup.ToastAdapter
 import io.github.sds100.keymapper.system.power.AndroidPowerAdapter
 import io.github.sds100.keymapper.system.power.PowerAdapter
 import io.github.sds100.keymapper.system.ringtones.AndroidRingtoneAdapter
@@ -127,10 +125,6 @@ abstract class SystemHiltModule {
 
     @Singleton
     @Binds
-    abstract fun provideNotificationAdapter(impl: AndroidNotificationAdapter): NotificationAdapter
-
-    @Singleton
-    @Binds
     abstract fun providePermissionAdapter(impl: AndroidPermissionAdapter): PermissionAdapter
 
     @Singleton
@@ -139,7 +133,7 @@ abstract class SystemHiltModule {
 
     @Singleton
     @Binds
-    abstract fun providePopupMessageAdapter(impl: AndroidToastAdapter): PopupMessageAdapter
+    abstract fun providePopupMessageAdapter(impl: AndroidToastAdapter): ToastAdapter
 
     @Singleton
     @Binds

@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.shizuku
+package io.github.sds100.keymapper.system.shizuku
 
 import android.os.Build
 

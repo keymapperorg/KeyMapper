@@ -3,24 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingLeanbackLauncher">
 
-    <uses-permission
-        android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="QueryAllPackagesPermission" />
-
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
-
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-
-    <uses-permission
-        android:name="android.permission.WRITE_SETTINGS"
-        tools:ignore="ProtectedPermissions" />
-
-    <uses-permission
-        android:name="android.permission.WRITE_SECURE_SETTINGS"
-        tools:ignore="ProtectedPermissions" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -53,20 +40,6 @@
     <uses-sdk tools:overrideLibrary="rikka.shizuku.provider, rikka.shizuku.api, rikka.shizuku.shared, rikka.shizuku.aidl" />
 
     <application>
-
-        <!-- Use a different task affinity so this activity doesn't close other activities -->
-        <activity
-            android:name="io.github.sds100.keymapper.api.LaunchKeyMapShortcutActivity"
-            android:excludeFromRecents="true"
-            android:exported="true"
-            android:finishOnTaskLaunch="true"
-            android:launchMode="singleInstance"
-            android:taskAffinity=""
-            android:theme="@android:style/Theme.NoDisplay">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
 
         <!-- Use a different task affinity so this activity can be opened at the same time as others -->
         <activity

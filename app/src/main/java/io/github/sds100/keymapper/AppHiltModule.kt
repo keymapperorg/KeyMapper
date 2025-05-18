@@ -1,9 +1,11 @@
-package io.github.sds100.keymapper.base
+package io.github.sds100.keymapper
 
+import android.os.Build
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.sds100.keymapper.BuildConfig
 import io.github.sds100.keymapper.common.utils.DefaultDispatcherProvider
 import io.github.sds100.keymapper.common.utils.DispatcherProvider
 import io.github.sds100.keymapper.common.BuildConfigProvider
@@ -26,9 +28,9 @@ class AppHiltModule {
     @Provides
     fun provideBuildConfigProvider(): BuildConfigProvider = object : BuildConfigProvider {
         override val minApi: Int
-            get() = BuildConfig.MIN_API
+            get() = Build.VERSION_CODES.LOLLIPOP
         override val maxApi: Int
-            get() = BuildConfig.MAX_API
+            get() = 1000
         override val packageName: String
             get() = BuildConfig.APPLICATION_ID
         override val version: String

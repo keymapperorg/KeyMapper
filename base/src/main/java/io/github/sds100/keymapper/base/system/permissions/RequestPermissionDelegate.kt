@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.system.permissions
+package io.github.sds100.keymapper.base.system.permissions
 
 import android.Manifest
 import android.app.admin.DevicePolicyManager
@@ -8,21 +8,23 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
-import io.github.sds100.keymapper.Constants
-import io.github.sds100.keymapper.NavAppDirections
-import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.base.shizuku.ShizukuUtils
+import io.github.sds100.keymapper.base.NavAppDirections
+import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.utils.ui.str
+import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.system.DeviceAdmin
-import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
+import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
+import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
+import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.url.UrlUtils
-import io.github.sds100.keymapper.base.utils.str
-import rikka.shizuku.Shizuku
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.negativeButton
 import splitties.alertdialog.appcompat.neutralButton
@@ -30,21 +32,23 @@ import splitties.alertdialog.appcompat.okButton
 import splitties.alertdialog.appcompat.positiveButton
 import splitties.alertdialog.appcompat.titleResource
 import splitties.alertdialog.material.materialAlertDialog
-import splitties.toast.longToast
-import splitties.toast.toast
-
 
 class RequestPermissionDelegate(
     private val activity: AppCompatActivity,
     val showDialogs: Boolean,
+    private val permissionAdapter: AndroidPermissionAdapter,
+    private val notificationReceiverAdapter: NotificationReceiverAdapterImpl,
+    private val buildConfigProvider: BuildConfigProvider,
+    private val shizukuAdapter: ShizukuAdapter,
 ) {
+
     private val startActivityForResultLauncher =
         activity.activityResultRegistry.register(
             "start_activity",
             activity,
             ActivityResultContracts.StartActivityForResult(),
         ) {
-            ServiceLocator.permissionAdapter(activity).onPermissionsChanged()
+            permissionAdapter.onPermissionsChanged()
         }
 
     private val requestPermissionLauncher =
@@ -53,16 +57,8 @@ class RequestPermissionDelegate(
             activity,
             ActivityResultContracts.RequestPermission(),
         ) {
-            ServiceLocator.permissionAdapter(activity).onPermissionsChanged()
+            permissionAdapter.onPermissionsChanged()
         }
-
-    private val permissionAdapter: PermissionAdapter by lazy {
-        ServiceLocator.permissionAdapter(activity)
-    }
-
-    private val notificationReceiverAdapter: io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter by lazy {
-        ServiceLocator.notificationReceiverAdapter(activity)
-    }
 
     fun requestPermission(permission: Permission, navController: NavController?) {
         when (permission) {
@@ -88,9 +84,7 @@ class RequestPermissionDelegate(
 
             Permission.SHIZUKU ->
                 if (ShizukuUtils.isSupportedForSdkVersion()) {
-                    if (Shizuku.getBinder() != null) {
-                        Shizuku.requestPermission(AndroidPermissionAdapter.REQUEST_CODE_SHIZUKU_PERMISSION)
-                    }
+                    shizukuAdapter.requestPermission()
                 }
 
             Permission.ACCESS_FINE_LOCATION ->
@@ -107,7 +101,7 @@ class RequestPermissionDelegate(
                 // open the notification settings to turn it on manually.
                 if (showRationale) {
                     Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                        putExtra(Settings.EXTRA_APP_PACKAGE, Constants.PACKAGE_NAME)
+                        putExtra(Settings.EXTRA_APP_PACKAGE, buildConfigProvider.packageName)
 
                         activity.startActivity(this)
                     }
@@ -133,7 +127,11 @@ class RequestPermissionDelegate(
             try {
                 startActivityForResultLauncher.launch(intent)
             } catch (e: Exception) {
-                toast(R.string.error_cant_find_dnd_access_settings)
+                Toast.makeText(
+                    activity,
+                    R.string.error_cant_find_dnd_access_settings,
+                    Toast.LENGTH_SHORT,
+                ).show()
             }
         }
     }
@@ -141,7 +139,7 @@ class RequestPermissionDelegate(
     private fun requestWriteSettings() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
-                data = Uri.parse("package:${Constants.PACKAGE_NAME}")
+                data = Uri.parse("package:${buildConfigProvider.packageName}")
 
                 addFlags(
                     Intent.FLAG_ACTIVITY_NEW_TASK
@@ -154,7 +152,11 @@ class RequestPermissionDelegate(
                 try {
                     activity.startActivity(this)
                 } catch (e: Exception) {
-                    toast(R.string.error_cant_find_write_settings_page)
+                    Toast.makeText(
+                        activity,
+                        R.string.error_cant_find_write_settings_page,
+                        Toast.LENGTH_SHORT,
+                    ).show()
                 }
             }
         }
@@ -274,12 +276,16 @@ class RequestPermissionDelegate(
         try {
             val intent = Intent(
                 Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                Uri.parse("package:${Constants.PACKAGE_NAME}"),
+                Uri.parse("package:${buildConfigProvider.packageName}"),
             )
 
             activity.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            activity.longToast(R.string.error_battery_optimisation_activity_not_found)
+            Toast.makeText(
+                activity,
+                R.string.error_battery_optimisation_activity_not_found,
+                Toast.LENGTH_LONG,
+            ).show()
         }
     }
 }

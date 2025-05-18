@@ -4,6 +4,20 @@
 
     <application>
 
+        <!-- Use a different task affinity so this activity doesn't close other activities -->
+        <activity
+            android:name="io.github.sds100.keymapper.api.LaunchKeyMapShortcutActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:finishOnTaskLaunch="true"
+            android:launchMode="singleInstance"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
         <receiver
             android:name=".PauseMappingsBroadcastReceiver"
             android:exported="true">

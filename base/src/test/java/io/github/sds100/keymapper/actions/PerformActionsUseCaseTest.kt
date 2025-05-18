@@ -8,7 +8,7 @@ import io.github.sds100.keymapper.system.devices.FakeDevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
-import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
+import io.github.sds100.keymapper.system.popup.ToastAdapter
 import io.github.sds100.keymapper.base.utils.InputEventType
 import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,7 +42,7 @@ class PerformActionsUseCaseTest {
     private lateinit var mockImeInputEventInjector: ImeInputEventInjector
     private lateinit var fakeDevicesAdapter: FakeDevicesAdapter
     private lateinit var mockAccessibilityService: IAccessibilityService
-    private lateinit var mockToastAdapter: PopupMessageAdapter
+    private lateinit var mockToastAdapter: ToastAdapter
 
     @Before
     fun init() {

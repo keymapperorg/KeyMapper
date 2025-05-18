@@ -37,13 +37,13 @@ import io.github.sds100.keymapper.system.intents.IntentAdapter
 import io.github.sds100.keymapper.system.intents.IntentTarget
 import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
-import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
+import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.nfc.NfcAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
-import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
+import io.github.sds100.keymapper.system.popup.ToastAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.url.OpenUrlAdapter
@@ -89,7 +89,7 @@ class PerformActionsUseCaseImpl @Inject constructor(
     private val shizukuInputEventInjector: ShizukuInputEventInjector,
     private val packageManagerAdapter: PackageManagerAdapter,
     private val appShortcutAdapter: AppShortcutAdapter,
-    private val popupMessageAdapter: PopupMessageAdapter,
+    private val toastAdapter: ToastAdapter,
     private val devicesAdapter: DevicesAdapter,
     private val phoneAdapter: PhoneAdapter,
     private val audioAdapter: AudioAdapter,
@@ -284,7 +284,7 @@ class PerformActionsUseCaseImpl @Inject constructor(
                             R.string.toast_chose_keyboard,
                             it.label,
                         )
-                        popupMessageAdapter.showPopupMessage(message)
+                        toastAdapter.show(message)
                     }
             }
 
@@ -750,7 +750,7 @@ class PerformActionsUseCaseImpl @Inject constructor(
                                 // Wait 3 seconds so the message isn't shown in the screenshot.
                                 delay(3000)
 
-                                popupMessageAdapter.showPopupMessage(
+                                toastAdapter.show(
                                     resourceProvider.getString(
                                         R.string.toast_screenshot_taken,
                                     ),
@@ -943,7 +943,7 @@ class PerformActionsUseCaseImpl @Inject constructor(
 
     private fun Result<*>.showErrorMessageOnFail() {
         onFailure {
-            popupMessageAdapter.showPopupMessage(it.getFullMessage(resourceProvider))
+            toastAdapter.show(it.getFullMessage(resourceProvider))
         }
     }
 

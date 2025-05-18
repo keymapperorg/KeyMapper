@@ -1,20 +1,25 @@
-package io.github.sds100.keymapper.system.notifications
+package io.github.sds100.keymapper.base.system.notifications
 
 import android.app.NotificationChannel
 import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.android.material.color.DynamicColors
-import io.github.sds100.keymapper.MainActivity
-import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.base.utils.color
+import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.utils.ui.color
+import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.system.notifications.NotificationAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationChannelModel
+import io.github.sds100.keymapper.system.notifications.NotificationIntentType
+import io.github.sds100.keymapper.system.notifications.NotificationModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,6 +27,7 @@ import javax.inject.Singleton
 class AndroidNotificationAdapter @Inject constructor(
     @ApplicationContext private val context: Context,
     private val coroutineScope: CoroutineScope,
+    private val buildConfigProvider: BuildConfigProvider,
 ) : NotificationAdapter {
 
     private val ctx = context.applicationContext
@@ -33,41 +39,41 @@ class AndroidNotificationAdapter @Inject constructor(
         val builder = NotificationCompat.Builder(ctx, notification.channel).apply {
             if (!DynamicColors.isDynamicColorAvailable()) {
                 color = ctx.color(R.color.md_theme_secondary)
-            }
 
-            setContentTitle(notification.title)
-            setContentText(notification.text)
+                setContentTitle(notification.title)
+                setContentText(notification.text)
 
-            if (notification.onClickAction != null) {
-                val pendingIntent = createActionIntent(notification.onClickAction)
-                setContentIntent(pendingIntent)
-            }
+                if (notification.onClickAction != null) {
+                    val pendingIntent = createActionIntent(notification.onClickAction!!)
+                    setContentIntent(pendingIntent)
+                }
 
-            setAutoCancel(notification.autoCancel)
-            priority = notification.priority
+                setAutoCancel(notification.autoCancel)
+                priority = notification.priority
 
-            if (notification.onGoing) {
-                setOngoing(true)
-            }
+                if (notification.onGoing) {
+                    setOngoing(true)
+                }
 
-            if (notification.bigTextStyle) {
-                setStyle(NotificationCompat.BigTextStyle())
-            }
+                if (notification.bigTextStyle) {
+                    setStyle(NotificationCompat.BigTextStyle())
+                }
 
-            setSmallIcon(notification.icon)
+                setSmallIcon(notification.icon)
 
-            if (!notification.showOnLockscreen) {
-                setVisibility(NotificationCompat.VISIBILITY_SECRET)
-            }
+                if (!notification.showOnLockscreen) {
+                    setVisibility(NotificationCompat.VISIBILITY_SECRET)
+                }
 
-            for (action in notification.actions) {
-                addAction(
-                    NotificationCompat.Action(
-                        0,
-                        action.text,
-                        createActionIntent(action.intentType),
-                    ),
-                )
+                for (action in notification.actions) {
+                    addAction(
+                        NotificationCompat.Action(
+                            0,
+                            action.text,
+                            createActionIntent(action.intentType),
+                        ),
+                    )
+                }
             }
         }
 
@@ -113,7 +119,12 @@ class AndroidNotificationAdapter @Inject constructor(
             }
 
             is NotificationIntentType.MainActivity -> {
-                val intent = Intent(ctx, MainActivity::class.java).apply {
+                val mainActivityComponent = ComponentName(
+                    buildConfigProvider.packageName,
+                    "io.github.sds100.keymapper.MainActivity",
+                )
+                val intent = Intent().apply {
+                    setComponent(mainActivityComponent)
                     action = intentType.customIntentAction ?: Intent.ACTION_MAIN
                 }
 

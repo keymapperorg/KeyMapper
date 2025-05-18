@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.actions
 
 import android.view.KeyEvent
 import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.base.shizuku.ShizukuAdapter
+import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter

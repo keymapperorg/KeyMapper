@@ -10,16 +10,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.lifecycleScope
-import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.base.utils.ServiceEvent
+import dagger.hilt.android.AndroidEntryPoint
+import io.github.sds100.keymapper.system.media.AndroidMediaAdapter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
+import javax.inject.Inject
 
-
-class NotificationReceiver :
-    NotificationListenerService(),
-    LifecycleOwner {
+@AndroidEntryPoint
+class NotificationReceiver : NotificationListenerService(), LifecycleOwner {
     private val mediaSessionManager: MediaSessionManager by lazy { getSystemService()!! }
 
     private val notificationListenerComponent by lazy {
@@ -29,7 +28,8 @@ class NotificationReceiver :
         )
     }
 
-    private val mediaAdapter by lazy { ServiceLocator.mediaAdapter(this) }
+    @Inject
+    lateinit var mediaAdapter: AndroidMediaAdapter
 
     private val activeSessionsChangeListener =
         MediaSessionManager.OnActiveSessionsChangedListener { controllers ->
@@ -38,9 +38,9 @@ class NotificationReceiver :
 
     private var lastNotificationKey: String? = null
 
-    private val serviceAdapter: NotificationReceiverAdapterImpl by lazy {
-        ServiceLocator.notificationReceiverAdapter(this)
-    }
+
+    @Inject
+    lateinit var serviceAdapter: NotificationReceiverAdapterImpl
 
     private lateinit var lifecycleRegistry: LifecycleRegistry
 
@@ -53,8 +53,8 @@ class NotificationReceiver :
         serviceAdapter.eventsToService
             .onEach { event ->
                 when (event) {
-                    ServiceEvent.DismissLastNotification -> cancelNotification(lastNotificationKey)
-                    ServiceEvent.DismissAllNotifications -> cancelAllNotifications()
+                    NotificationServiceEvent.DismissLastNotification -> cancelNotification(lastNotificationKey)
+                    NotificationServiceEvent.DismissAllNotifications -> cancelAllNotifications()
                     else -> Unit
                 }
             }.launchIn(lifecycleScope)

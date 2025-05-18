@@ -21,10 +21,10 @@ import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.inputevents.InputEventInjector
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
-import io.github.sds100.keymapper.system.navigation.OpenMenuHelper
+import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
-import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
+import io.github.sds100.keymapper.system.popup.ToastAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
@@ -57,7 +57,7 @@ class DetectKeyMapsUseCaseImpl @Inject constructor(
     private val imeInputEventInjector: ImeInputEventInjector,
     private val accessibilityService: IAccessibilityService,
     private val shizukuInputEventInjector: InputEventInjector,
-    private val popupMessageAdapter: PopupMessageAdapter,
+    private val toastAdapter: ToastAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val resourceProvider: ResourceProvider,
     private val vibrator: VibratorAdapter,
@@ -180,7 +180,7 @@ class DetectKeyMapsUseCaseImpl @Inject constructor(
             .map { it.toLong() }
 
     override fun showTriggeredToast() {
-        popupMessageAdapter.showPopupMessage(resourceProvider.getString(R.string.toast_triggered_keymap))
+        toastAdapter.show(resourceProvider.getString(R.string.toast_triggered_keymap))
     }
 
     override fun vibrate(duration: Long) {

@@ -17,7 +17,7 @@ import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
-import io.github.sds100.keymapper.system.popup.PopupMessageAdapter
+import io.github.sds100.keymapper.system.popup.ToastAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -30,7 +30,7 @@ class AutoSwitchImeController @Inject constructor(
     private val inputMethodAdapter: InputMethodAdapter,
     private val pauseKeyMapsUseCase: PauseKeyMapsUseCase,
     private val devicesAdapter: DevicesAdapter,
-    private val popupMessageAdapter: PopupMessageAdapter,
+    private val toastAdapter: ToastAdapter,
     private val resourceProvider: ResourceProvider,
     private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
 ) : PreferenceRepository by preferenceRepository {
@@ -126,7 +126,7 @@ class AutoSwitchImeController @Inject constructor(
                 if (showToast) {
                     val message =
                         resourceProvider.getString(R.string.toast_chose_keyboard, ime.label)
-                    popupMessageAdapter.showPopupMessage(message)
+                    toastAdapter.show(message)
                 }
             }
             .otherwise {
@@ -137,7 +137,7 @@ class AutoSwitchImeController @Inject constructor(
                 }
             }
             .onFailure { error ->
-                popupMessageAdapter.showPopupMessage(error.getFullMessage(resourceProvider))
+                toastAdapter.show(error.getFullMessage(resourceProvider))
             }
     }
 
@@ -152,7 +152,7 @@ class AutoSwitchImeController @Inject constructor(
                 if (showToast) {
                     val message =
                         resourceProvider.getString(R.string.toast_chose_keyboard, ime.label)
-                    popupMessageAdapter.showPopupMessage(message)
+                    toastAdapter.show(message)
                 }
             }
             .otherwise {
@@ -163,7 +163,7 @@ class AutoSwitchImeController @Inject constructor(
                 }
             }
             .onFailure { error ->
-                popupMessageAdapter.showPopupMessage(error.getFullMessage(resourceProvider))
+                toastAdapter.show(error.getFullMessage(resourceProvider))
             }
     }
 }
