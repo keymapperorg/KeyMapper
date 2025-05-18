@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.base.logging
 
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.system.clipboard.ClipboardAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.common.utils.State

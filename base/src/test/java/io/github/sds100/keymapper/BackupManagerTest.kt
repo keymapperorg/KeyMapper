@@ -5,9 +5,9 @@ import com.google.gson.Gson
 import com.google.gson.JsonParser
 import io.github.sds100.keymapper.base.actions.sound.SoundFileInfo
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
-import io.github.sds100.keymapper.backup.BackupContent
-import io.github.sds100.keymapper.backup.BackupManagerImpl
-import io.github.sds100.keymapper.backup.RestoreType
+import io.github.sds100.keymapper.base.backup.BackupContent
+import io.github.sds100.keymapper.base.backup.BackupManagerImpl
+import io.github.sds100.keymapper.base.backup.RestoreType
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.data.db.AppDatabase

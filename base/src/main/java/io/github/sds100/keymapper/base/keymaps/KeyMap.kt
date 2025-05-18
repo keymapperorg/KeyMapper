@@ -5,15 +5,15 @@ import io.github.sds100.keymapper.base.actions.Action
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.ActionEntityMapper
 import io.github.sds100.keymapper.base.actions.canBeHeldDown
-import io.github.sds100.keymapper.constraints.ConstraintEntityMapper
-import io.github.sds100.keymapper.constraints.ConstraintModeEntityMapper
-import io.github.sds100.keymapper.constraints.ConstraintState
+import io.github.sds100.keymapper.base.constraints.ConstraintEntityMapper
+import io.github.sds100.keymapper.base.constraints.ConstraintModeEntityMapper
+import io.github.sds100.keymapper.base.constraints.ConstraintState
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.base.keymaps.detection.KeyMapController
-import io.github.sds100.keymapper.trigger.Trigger
-import io.github.sds100.keymapper.trigger.TriggerEntityMapper
-import io.github.sds100.keymapper.trigger.TriggerKey
+import io.github.sds100.keymapper.base.trigger.Trigger
+import io.github.sds100.keymapper.base.trigger.TriggerEntityMapper
+import io.github.sds100.keymapper.base.trigger.TriggerKey
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
@@ -67,7 +67,7 @@ fun KeyMap.requiresImeKeyEventForwarding(): Boolean {
         actionList.any { it.data is ActionData.AnswerCall || it.data is ActionData.EndCall }
 
     val hasVolumeKeys = trigger.keys
-        .mapNotNull { it as? io.github.sds100.keymapper.trigger.KeyCodeTriggerKey }
+        .mapNotNull { it as? io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey }
         .any {
             it.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ||
                 it.keyCode == KeyEvent.KEYCODE_VOLUME_UP
@@ -83,7 +83,7 @@ fun KeyMap.requiresImeKeyEventForwarding(): Boolean {
  * is incoming.
  */
 fun KeyMap.requiresImeKeyEventForwardingInPhoneCall(triggerKey: TriggerKey): Boolean {
-    if (triggerKey !is io.github.sds100.keymapper.trigger.KeyCodeTriggerKey) {
+    if (triggerKey !is io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey) {
         return false
     }
 
@@ -91,7 +91,7 @@ fun KeyMap.requiresImeKeyEventForwardingInPhoneCall(triggerKey: TriggerKey): Boo
         actionList.any { it.data is ActionData.AnswerCall || it.data is ActionData.EndCall }
 
     val hasVolumeKeys = trigger.keys
-        .mapNotNull { it as? io.github.sds100.keymapper.trigger.KeyCodeTriggerKey }
+        .mapNotNull { it as? io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey }
         .any {
             it.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ||
                 it.keyCode == KeyEvent.KEYCODE_VOLUME_UP

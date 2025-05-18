@@ -57,7 +57,7 @@
             android:excludeFromRecents="true"
             android:exported="true"
             android:launchMode="singleInstance"
-            android:taskAffinity="io.github.sds100.keymapper.restore_key_maps"
+            android:taskAffinity="io.github.sds100.keymapper.base.Restore_key_maps"
             android:theme="@style/AppTheme.DialogActivity"
             android:windowSoftInputMode="adjustResize">
 

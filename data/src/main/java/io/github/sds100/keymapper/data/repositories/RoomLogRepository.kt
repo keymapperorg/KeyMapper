@@ -14,8 +14,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class RoomLogRepository(
+@Singleton
+class RoomLogRepository @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val dao: LogEntryDao,
 ) : LogRepository {

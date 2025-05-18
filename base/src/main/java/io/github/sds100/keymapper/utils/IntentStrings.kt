@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.utils
 
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.system.intents.*
 
 fun IntentExtraType.getLabelStringRes(): Int = when (this) {

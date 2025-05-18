@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.compose.ComposeColors
 import io.github.sds100.keymapper.compose.KeyMapperTheme

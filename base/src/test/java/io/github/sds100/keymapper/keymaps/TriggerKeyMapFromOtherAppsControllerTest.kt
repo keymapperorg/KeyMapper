@@ -6,10 +6,10 @@ import io.github.sds100.keymapper.base.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.base.actions.RepeatMode
 import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
+import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.detection.TriggerKeyMapFromOtherAppsController
-import io.github.sds100.keymapper.trigger.Trigger
+import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.utils.TestConstraintSnapshot
 import junitparams.JUnitParamsRunner
 import kotlinx.coroutines.ExperimentalCoroutinesApi

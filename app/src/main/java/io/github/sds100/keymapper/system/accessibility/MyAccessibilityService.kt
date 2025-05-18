@@ -11,7 +11,7 @@ import androidx.lifecycle.Lifecycle
 import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilityService
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
-import io.github.sds100.keymapper.trigger.KeyEventDetectionSource
+import io.github.sds100.keymapper.base.trigger.KeyEventDetectionSource
 import kotlinx.coroutines.flow.update
 import timber.log.Timber
 

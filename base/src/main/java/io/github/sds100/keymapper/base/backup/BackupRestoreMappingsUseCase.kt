@@ -7,8 +7,9 @@ import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.system.files.FileAdapter
 import kotlinx.coroutines.flow.Flow
 import timber.log.Timber
+import javax.inject.Inject
 
-class BackupRestoreMappingsUseCaseImpl(
+class BackupRestoreMappingsUseCaseImpl @Inject constructor(
     private val fileAdapter: FileAdapter,
     private val backupManager: BackupManager,
 ) : BackupRestoreMappingsUseCase {

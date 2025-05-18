@@ -4,7 +4,7 @@ import android.text.InputType
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickCoordinateResult
 import io.github.sds100.keymapper.base.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.base.actions.tapscreen.PickCoordinateResult

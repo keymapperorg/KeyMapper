@@ -16,7 +16,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.databinding.FragmentConfigKeyEventBinding
 import io.github.sds100.keymapper.common.utils.putJsonSerializable
 import io.github.sds100.keymapper.base.utils.Inject

@@ -4,7 +4,7 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.ringtone.RingtoneAdapter
-import io.github.sds100.keymapper.base.utils.SettingsRepository
+import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
@@ -13,7 +13,6 @@ import timber.log.Timber
 
 @Singleton
 class PauseKeyMapsUseCaseImpl @Inject constructor(
-    private val settingsRepository: SettingsRepository,
     private val preferenceRepository: PreferenceRepository,
     private val mediaAdapter: MediaAdapter,
     private val ringtoneAdapter: RingtoneAdapter

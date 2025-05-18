@@ -3,11 +3,11 @@ package io.github.sds100.keymapper.base.keymaps
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import androidx.core.os.bundleOf
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.api.Api
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
-import io.github.sds100.keymapper.base.utils.ResourceProvider
+import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import javax.inject.Inject
 import javax.inject.Singleton
 

@@ -53,22 +53,22 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.canopas.lib.showcase.IntroShowcase
-import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.backup.ImportExportState
-import io.github.sds100.keymapper.backup.RestoreType
+import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.backup.ImportExportState
+import io.github.sds100.keymapper.base.backup.RestoreType
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.constraints.ConstraintMode
-import io.github.sds100.keymapper.groups.GroupListItemModel
+import io.github.sds100.keymapper.base.constraints.ConstraintMode
+import io.github.sds100.keymapper.base.groups.GroupListItemModel
 import io.github.sds100.keymapper.base.keymaps.KeyMapAppBarState
 import io.github.sds100.keymapper.base.keymaps.KeyMapList
-import io.github.sds100.keymapper.mapping.keymaps.KeyMapListViewModel
-import io.github.sds100.keymapper.onboarding.OnboardingTapTarget
+import io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel
+import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.sorting.SortBottomSheet
 import io.github.sds100.keymapper.system.files.FileUtils
-import io.github.sds100.keymapper.trigger.DpadTriggerSetupBottomSheet
-import io.github.sds100.keymapper.trigger.KeyMapListItemModel
-import io.github.sds100.keymapper.trigger.TriggerError
+import io.github.sds100.keymapper.base.trigger.DpadTriggerSetupBottomSheet
+import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
+import io.github.sds100.keymapper.base.trigger.TriggerError
 import io.github.sds100.keymapper.base.utils.ShareUtils
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.base.utils.drawable
@@ -83,7 +83,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.openUriSafe
 @Composable
 fun HomeKeyMapListScreen(
     modifier: Modifier = Modifier,
-    viewModel: io.github.sds100.keymapper.mapping.keymaps.KeyMapListViewModel,
+    viewModel: io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel,
     snackbarState: SnackbarHostState,
     onSettingsClick: () -> Unit,
     onAboutClick: () -> Unit,

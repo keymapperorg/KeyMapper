@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.base.keymaps
 import android.os.Build
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.base.utils.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -12,7 +11,6 @@ import javax.inject.Singleton
 @Singleton
 class FingerprintGesturesSupportedUseCaseImpl @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
-    private val settingsRepository: SettingsRepository
 ) : FingerprintGesturesSupportedUseCase {
     override val isSupported: Flow<Boolean?> =
         preferenceRepository.get(Keys.fingerprintGesturesAvailable).map {

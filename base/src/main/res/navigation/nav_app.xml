@@ -307,7 +307,7 @@
 
     <fragment
         android:id="@+id/chooseConstraintFragment"
-        android:name="io.github.sds100.keymapper.constraints.ChooseConstraintFragment"
+        android:name="io.github.sds100.keymapper.base.constraints.ChooseConstraintFragment"
         tools:layout="@layout/fragment_simple_recyclerview">
 
         <argument

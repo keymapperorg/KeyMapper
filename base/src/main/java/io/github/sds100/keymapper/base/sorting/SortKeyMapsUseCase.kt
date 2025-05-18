@@ -9,7 +9,6 @@ import io.github.sds100.keymapper.sorting.comparators.KeyMapConstraintsComparato
 import io.github.sds100.keymapper.sorting.comparators.KeyMapOptionsComparator
 import io.github.sds100.keymapper.sorting.comparators.KeyMapTriggerComparator
 import io.github.sds100.keymapper.base.utils.SettingsRepository
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -19,7 +18,6 @@ import javax.inject.Singleton
 class SortKeyMapsUseCaseImpl @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
     private val displayKeyMapUseCase: DisplayKeyMapUseCase,
-    private val settingsRepository: SettingsRepository
 ) : SortKeyMapsUseCase {
 
     override val showHelp = preferenceRepository.get(Keys.sortShowHelp).map { it ?: true }

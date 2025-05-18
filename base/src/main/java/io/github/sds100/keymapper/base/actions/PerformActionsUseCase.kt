@@ -5,7 +5,7 @@ import android.os.Build
 import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
@@ -49,7 +49,7 @@ import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.url.OpenUrlAdapter
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
-import io.github.sds100.keymapper.base.utils.InputEventType
+import io.github.sds100.keymapper.common.utils.InputEventType
 import io.github.sds100.keymapper.base.utils.ServiceEvent
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.firstBlocking
@@ -71,7 +71,8 @@ import io.github.sds100.keymapper.system.Shell
 import io.github.sds100.keymapper.system.audio.AudioAdapter
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjectorImpl
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
-import io.github.sds100.keymapper.base.utils.SettingsRepository
+import io.github.sds100.keymapper.system.shizuku.ShizukuInputEventInjector
+import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -92,7 +93,7 @@ class PerformActionsUseCaseImpl @Inject constructor(
     private val toastAdapter: ToastAdapter,
     private val devicesAdapter: DevicesAdapter,
     private val phoneAdapter: PhoneAdapter,
-    private val audioAdapter: AudioAdapter,
+    private val audioAdapter: VolumeAdapter,
     private val cameraAdapter: CameraAdapter,
     private val displayAdapter: DisplayAdapter,
     private val lockScreenAdapter: LockScreenAdapter,
@@ -103,7 +104,6 @@ class PerformActionsUseCaseImpl @Inject constructor(
     private val nfcAdapter: NfcAdapter,
     private val openUrlAdapter: OpenUrlAdapter,
     private val resourceProvider: ResourceProvider,
-    private val settingsRepository: SettingsRepository,
     private val soundsManager: SoundsManager,
     private val permissionAdapter: PermissionAdapter,
     private val notificationReceiverAdapter: NotificationReceiverAdapterImpl,

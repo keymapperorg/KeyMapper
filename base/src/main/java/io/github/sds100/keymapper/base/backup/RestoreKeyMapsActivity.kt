@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.MainActivity
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.CustomDialogContent

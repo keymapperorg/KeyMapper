@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.base.trigger
 
 import androidx.compose.ui.graphics.vector.ImageVector
-import io.github.sds100.keymapper.constraints.ConstraintMode
+import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
 
 data class KeyMapListItemModel(

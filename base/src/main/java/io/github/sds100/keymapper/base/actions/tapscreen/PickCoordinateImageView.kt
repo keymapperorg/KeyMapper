@@ -7,7 +7,7 @@ import android.graphics.Point
 import android.util.AttributeSet
 import android.view.MotionEvent
 import androidx.appcompat.widget.AppCompatImageView
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.color
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.math.roundToInt

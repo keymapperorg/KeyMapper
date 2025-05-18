@@ -3,11 +3,11 @@ package io.github.sds100.keymapper.base.keymaps
 import io.github.sds100.keymapper.base.actions.Action
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.base.actions.RepeatMode
-import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
-import io.github.sds100.keymapper.constraints.isSatisfied
+import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
+import io.github.sds100.keymapper.base.constraints.isSatisfied
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCase
-import io.github.sds100.keymapper.base.utils.InputEventType
+import io.github.sds100.keymapper.common.utils.InputEventType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job

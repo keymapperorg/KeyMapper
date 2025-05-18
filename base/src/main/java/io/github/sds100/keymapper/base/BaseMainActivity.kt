@@ -34,7 +34,7 @@ import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.base.system.permissions.RequestPermissionDelegate
-import io.github.sds100.keymapper.trigger.RecordTriggerController
+import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.showPopups
 import kotlinx.coroutines.Dispatchers

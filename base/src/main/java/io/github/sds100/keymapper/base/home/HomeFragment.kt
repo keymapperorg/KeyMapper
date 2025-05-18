@@ -20,6 +20,8 @@ import io.github.sds100.keymapper.ActivityViewModel
 import io.github.sds100.keymapper.BaseMainActivity
 import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.ServiceLocator
+import io.github.sds100.keymapper.base.BaseMainActivity
+import io.github.sds100.keymapper.base.databinding.FragmentComposeBinding
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.databinding.FragmentComposeBinding
 import io.github.sds100.keymapper.base.utils.Inject
@@ -28,7 +30,7 @@ import io.github.sds100.keymapper.base.utils.ui.showPopups
 
 class HomeFragment : Fragment() {
 
-    private val homeViewModel: HomeViewModel by activityViewModels {
+    private val homeViewModel: BaseHomeViewModel by activityViewModels {
         Inject.homeViewModel(requireContext())
     }
 

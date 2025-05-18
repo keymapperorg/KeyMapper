@@ -7,18 +7,13 @@ import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCase
-import io.github.sds100.keymapper.floating.ListFloatingLayoutsUseCase
-import io.github.sds100.keymapper.floating.ListFloatingLayoutsViewModel
-import io.github.sds100.keymapper.mapping.keymaps.KeyMapListViewModel
+import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.base.keymaps.ListKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
-import io.github.sds100.keymapper.onboarding.OnboardingUseCase
-import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
-import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
-import io.github.sds100.keymapper.trigger.SetupGuiKeyboardUseCase
+import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.base.sorting.SortKeyMapsUseCase
+import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.NavigationViewModel
 import io.github.sds100.keymapper.base.utils.ui.NavigationViewModelImpl
@@ -27,17 +22,12 @@ import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showPopup
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
-@HiltViewModel
-class HomeViewModel @Inject constructor(
+abstract class BaseHomeViewModel(
     private val listKeyMaps: ListKeyMapsUseCase,
     private val pauseKeyMaps: PauseKeyMapsUseCase,
     private val backupRestore: BackupRestoreMappingsUseCase,
@@ -46,7 +36,6 @@ class HomeViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
     private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     private val sortKeyMaps: SortKeyMapsUseCase,
-    private val listFloatingLayouts: ListFloatingLayoutsUseCase,
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
     private val buildConfigProvider: BuildConfigProvider,
 ) : ViewModel(),
@@ -54,23 +43,8 @@ class HomeViewModel @Inject constructor(
     PopupViewModel by PopupViewModelImpl(),
     NavigationViewModel by NavigationViewModelImpl() {
 
-    val navBarItems: StateFlow<List<HomeNavBarItem>> =
-        combine(
-            listFloatingLayouts.showFloatingLayouts,
-            onboarding.hasViewedAdvancedTriggers,
-            transform = ::buildNavBarItems,
-        )
-            .stateIn(
-                viewModelScope,
-                SharingStarted.Eagerly,
-                buildNavBarItems(
-                    showFloatingLayouts = false,
-                    viewedAdvancedTriggers = false,
-                ),
-            )
-
     val keyMapListViewModel by lazy {
-        io.github.sds100.keymapper.mapping.keymaps.KeyMapListViewModel(
+        io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel(
             viewModelScope,
             listKeyMaps,
             resourceProvider,
@@ -81,14 +55,6 @@ class HomeViewModel @Inject constructor(
             backupRestore,
             showInputMethodPickerUseCase,
             onboarding,
-        )
-    }
-
-    val listFloatingLayoutsViewModel by lazy {
-        ListFloatingLayoutsViewModel(
-            viewModelScope,
-            listFloatingLayouts,
-            resourceProvider,
         )
     }
 

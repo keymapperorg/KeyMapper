@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.keymaps.detection
 
 import io.github.sds100.keymapper.base.actions.Action
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
-import io.github.sds100.keymapper.base.utils.InputEventType
+import io.github.sds100.keymapper.common.utils.InputEventType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

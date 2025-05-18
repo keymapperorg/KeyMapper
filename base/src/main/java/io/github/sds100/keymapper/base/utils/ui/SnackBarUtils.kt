@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.base.utils.ui
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import kotlinx.coroutines.suspendCancellableCoroutine
 import splitties.snackbar.action
 import splitties.snackbar.longSnack

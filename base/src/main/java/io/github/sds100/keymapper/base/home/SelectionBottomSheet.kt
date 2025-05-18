@@ -38,11 +38,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.groups.GroupBreadcrumbRow
-import io.github.sds100.keymapper.groups.GroupListItemModel
-import io.github.sds100.keymapper.groups.GroupRow
+import io.github.sds100.keymapper.base.groups.GroupBreadcrumbRow
+import io.github.sds100.keymapper.base.groups.GroupListItemModel
+import io.github.sds100.keymapper.base.groups.GroupRow
 import io.github.sds100.keymapper.base.utils.drawable
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 

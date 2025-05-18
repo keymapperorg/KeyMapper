@@ -1,7 +1,5 @@
 package io.github.sds100.keymapper.base.actions
 
-import io.github.sds100.keymapper.mapping.actions.IsActionSupportedUseCase
-import io.github.sds100.keymapper.mapping.actions.IsActionSupportedUseCaseImpl
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.camera.CameraFlashInfo
 import io.github.sds100.keymapper.system.camera.CameraLens
@@ -9,7 +7,6 @@ import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
-import io.github.sds100.keymapper.system.systemfeature.SystemFeatureAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge

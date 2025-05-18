@@ -1,12 +1,12 @@
 package io.github.sds100.keymapper.base.actions
 
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
-import io.github.sds100.keymapper.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.common.utils.State
@@ -41,8 +41,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ConfigActionsViewModel(
+class ConfigActionsViewModel @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val displayAction: DisplayActionUseCase,
     private val createAction: CreateActionUseCase,

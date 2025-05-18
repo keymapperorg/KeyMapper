@@ -4,7 +4,7 @@ import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickCoordinateResult
 import io.github.sds100.keymapper.base.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.base.actions.tapscreen.PickCoordinateResult
-import io.github.sds100.keymapper.constraints.Constraint
+import io.github.sds100.keymapper.base.constraints.Constraint
 import io.github.sds100.keymapper.system.apps.ActivityInfo
 import io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo

@@ -9,7 +9,7 @@ import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.popup.ToastAdapter
-import io.github.sds100.keymapper.base.utils.InputEventType
+import io.github.sds100.keymapper.common.utils.InputEventType
 import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

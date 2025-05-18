@@ -3,80 +3,37 @@ package io.github.sds100.keymapper.base.keymaps
 import android.os.Bundle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.actions.ConfigActionsViewModel
-import io.github.sds100.keymapper.base.actions.CreateActionUseCase
-import io.github.sds100.keymapper.base.actions.TestActionUseCase
-import io.github.sds100.keymapper.constraints.ConfigConstraintsViewModel
-import io.github.sds100.keymapper.onboarding.OnboardingTapTarget
-import io.github.sds100.keymapper.onboarding.OnboardingUseCase
-import io.github.sds100.keymapper.base.purchasing.PurchasingManager
-import io.github.sds100.keymapper.trigger.ConfigTriggerViewModel
-import io.github.sds100.keymapper.trigger.RecordTriggerUseCase
-import io.github.sds100.keymapper.trigger.SetupGuiKeyboardUseCase
-import io.github.sds100.keymapper.common.utils.getJsonSerializable
-import io.github.sds100.keymapper.common.utils.putJsonSerializable
+import io.github.sds100.keymapper.base.constraints.ConfigConstraintsViewModel
+import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
+import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.base.trigger.BaseConfigTriggerViewModel
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.firstBlocking
+import io.github.sds100.keymapper.common.utils.getJsonSerializable
 import io.github.sds100.keymapper.common.utils.ifIsData
-import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.common.utils.putJsonSerializable
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class ConfigKeyMapViewModel @Inject constructor(
+    private val configActionsViewModel: ConfigActionsViewModel,
+    private val configTriggerViewModel: BaseConfigTriggerViewModel,
+    private val configConstraintsViewModel: ConfigConstraintsViewModel,
     private val config: ConfigKeyMapUseCase,
-    private val testAction: TestActionUseCase,
     private val onboarding: OnboardingUseCase,
-    private val recordTrigger: RecordTriggerUseCase,
-    private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
-    private val displayMapping: DisplayKeyMapUseCase,
-    createActionUseCase: CreateActionUseCase,
-    resourceProvider: ResourceProvider,
-    purchasingManager: PurchasingManager,
-    setupGuiKeyboardUseCase: SetupGuiKeyboardUseCase,
-    fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
-) : ViewModel(),
-    ResourceProvider by resourceProvider {
+) : ViewModel() {
 
     companion object {
         private const val STATE_KEY = "config_keymap"
     }
-
-    val configActionsViewModel = ConfigActionsViewModel(
-        viewModelScope,
-        displayMapping,
-        createActionUseCase,
-        testAction,
-        config,
-        onboarding,
-        resourceProvider,
-    )
-
-    val configTriggerViewModel = ConfigTriggerViewModel(
-        viewModelScope,
-        onboarding,
-        config,
-        recordTrigger,
-        createKeyMapShortcut,
-        displayMapping,
-        resourceProvider,
-        purchasingManager,
-        setupGuiKeyboardUseCase,
-        fingerprintGesturesSupported,
-    )
-
-    val configConstraintsViewModel = ConfigConstraintsViewModel(
-        viewModelScope,
-        config,
-        displayMapping,
-        resourceProvider,
-    )
 
     val isEnabled: StateFlow<Boolean> = config.keyMap
         .map { state -> state.dataOrNull()?.isEnabled ?: true }

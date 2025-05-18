@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.base.onboarding
 
 import androidx.annotation.StringRes
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 
 enum class OnboardingTapTarget(
     @StringRes val titleRes: Int,

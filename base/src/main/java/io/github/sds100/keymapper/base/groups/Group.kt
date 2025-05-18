@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.base.groups
 
-import io.github.sds100.keymapper.constraints.ConstraintEntityMapper
-import io.github.sds100.keymapper.constraints.ConstraintModeEntityMapper
-import io.github.sds100.keymapper.constraints.ConstraintState
+import io.github.sds100.keymapper.base.constraints.ConstraintEntityMapper
+import io.github.sds100.keymapper.base.constraints.ConstraintModeEntityMapper
+import io.github.sds100.keymapper.base.constraints.ConstraintState
 import io.github.sds100.keymapper.data.entities.GroupEntity
 
 data class Group(

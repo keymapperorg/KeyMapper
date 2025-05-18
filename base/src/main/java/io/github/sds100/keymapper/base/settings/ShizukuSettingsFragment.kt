@@ -5,7 +5,7 @@ import android.view.View
 import androidx.lifecycle.Lifecycle
 import androidx.preference.Preference
 import androidx.preference.isEmpty
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.base.utils.drawable
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle

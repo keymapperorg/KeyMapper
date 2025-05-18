@@ -5,7 +5,7 @@ import androidx.compose.material.icons.rounded.Android
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Success

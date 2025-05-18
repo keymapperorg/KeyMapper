@@ -12,8 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.canopas.lib.showcase.component.ShowcaseStyle
-import io.github.sds100.keymapper.R
-import io.github.sds100.keymapper.onboarding.OnboardingTapTarget
+import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 
 @Composable
 fun KeyMapperTapTarget(

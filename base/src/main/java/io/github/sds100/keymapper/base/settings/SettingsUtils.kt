@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.annotation.StringRes
 import androidx.datastore.preferences.core.Preferences
 import androidx.preference.Preference
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 
 
 object SettingsUtils {

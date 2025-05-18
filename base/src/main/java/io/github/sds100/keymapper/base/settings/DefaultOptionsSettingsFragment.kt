@@ -6,7 +6,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.preference.Preference
 import androidx.preference.SeekBarPreference
 import androidx.preference.isEmpty
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle

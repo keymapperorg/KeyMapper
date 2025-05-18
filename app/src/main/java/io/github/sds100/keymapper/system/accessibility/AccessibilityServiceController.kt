@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.system.accessibility
 
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
-import io.github.sds100.keymapper.constraints.DetectConstraintsUseCase
+import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase

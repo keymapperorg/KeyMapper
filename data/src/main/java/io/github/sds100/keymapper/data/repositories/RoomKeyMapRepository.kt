@@ -19,8 +19,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class RoomKeyMapRepository(
+@Singleton
+class RoomKeyMapRepository @Inject constructor(
     private val keyMapDao: KeyMapDao,
     private val fingerprintMapDao: FingerprintMapDao,
     private val coroutineScope: CoroutineScope,

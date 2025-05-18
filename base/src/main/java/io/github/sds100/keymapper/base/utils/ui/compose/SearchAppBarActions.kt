@@ -18,7 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)

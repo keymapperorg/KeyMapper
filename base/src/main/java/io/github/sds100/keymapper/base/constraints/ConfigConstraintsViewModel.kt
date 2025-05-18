@@ -3,16 +3,10 @@ package io.github.sds100.keymapper.base.constraints
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
-import io.github.sds100.keymapper.system.SystemError
-import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.isFixable
-import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.base.utils.ui.NavDestination
 import io.github.sds100.keymapper.base.utils.ui.NavigationViewModel
 import io.github.sds100.keymapper.base.utils.ui.NavigationViewModelImpl
@@ -22,6 +16,12 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.navigate
+import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.dataOrNull
+import io.github.sds100.keymapper.common.utils.mapData
+import io.github.sds100.keymapper.system.SystemError
+import io.github.sds100.keymapper.system.permissions.Permission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -35,8 +35,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ConfigConstraintsViewModel(
+class ConfigConstraintsViewModel @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val config: ConfigKeyMapUseCase,
     private val displayConstraint: DisplayConstraintUseCase,

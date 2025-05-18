@@ -4,7 +4,7 @@ import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import kotlin.math.floor
 
 

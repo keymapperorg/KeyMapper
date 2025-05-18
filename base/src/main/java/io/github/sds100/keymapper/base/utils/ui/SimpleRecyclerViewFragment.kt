@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
 import com.google.android.material.bottomappbar.BottomAppBar
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
 
 

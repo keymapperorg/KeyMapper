@@ -4,8 +4,8 @@ import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.common.utils.valueOrNull
-import io.github.sds100.keymapper.constraints.Constraint
-import io.github.sds100.keymapper.constraints.DisplayConstraintUseCase
+import io.github.sds100.keymapper.base.constraints.Constraint
+import io.github.sds100.keymapper.base.constraints.DisplayConstraintUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import java.time.LocalDate
 import java.time.ZoneOffset

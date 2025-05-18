@@ -3,38 +3,38 @@ package io.github.sds100.keymapper.base.keymaps
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.ActionErrorSnapshot
-import io.github.sds100.keymapper.backup.BackupRestoreMappingsUseCase
-import io.github.sds100.keymapper.backup.ImportExportState
-import io.github.sds100.keymapper.backup.RestoreType
+import io.github.sds100.keymapper.base.backup.BackupRestoreMappingsUseCase
+import io.github.sds100.keymapper.base.backup.ImportExportState
+import io.github.sds100.keymapper.base.backup.RestoreType
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
-import io.github.sds100.keymapper.constraints.ConstraintErrorSnapshot
-import io.github.sds100.keymapper.constraints.ConstraintMode
-import io.github.sds100.keymapper.constraints.ConstraintUiHelper
-import io.github.sds100.keymapper.groups.Group
-import io.github.sds100.keymapper.groups.GroupFamily
-import io.github.sds100.keymapper.groups.GroupListItemModel
+import io.github.sds100.keymapper.base.constraints.ConstraintErrorSnapshot
+import io.github.sds100.keymapper.base.constraints.ConstraintMode
+import io.github.sds100.keymapper.base.constraints.ConstraintUiHelper
+import io.github.sds100.keymapper.base.groups.Group
+import io.github.sds100.keymapper.base.groups.GroupFamily
+import io.github.sds100.keymapper.base.groups.GroupListItemModel
 import io.github.sds100.keymapper.home.HomeWarningListItem
 import io.github.sds100.keymapper.home.SelectedKeyMapsEnabled
 import io.github.sds100.keymapper.home.ShowHomeScreenAlertsUseCase
-import io.github.sds100.keymapper.onboarding.OnboardingTapTarget
-import io.github.sds100.keymapper.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
+import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.sorting.SortViewModel
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.trigger.KeyMapListItemModel
-import io.github.sds100.keymapper.trigger.SetupGuiKeyboardState
-import io.github.sds100.keymapper.trigger.SetupGuiKeyboardUseCase
-import io.github.sds100.keymapper.trigger.TriggerError
-import io.github.sds100.keymapper.trigger.TriggerErrorSnapshot
+import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
+import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardState
+import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
+import io.github.sds100.keymapper.base.trigger.TriggerError
+import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.base.utils.getFullMessage
@@ -78,12 +78,12 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalCoroutinesApi::class)
 class KeyMapListViewModel(
     private val coroutineScope: CoroutineScope,
-    private val listKeyMaps: io.github.sds100.keymapper.mapping.keymaps.ListKeyMapsUseCase,
+    private val listKeyMaps: io.github.sds100.keymapper.base.keymaps.ListKeyMapsUseCase,
     resourceProvider: ResourceProvider,
     private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     private val sortKeyMaps: SortKeyMapsUseCase,
     private val showAlertsUseCase: ShowHomeScreenAlertsUseCase,
-    private val pauseKeyMaps: io.github.sds100.keymapper.mapping.keymaps.PauseKeyMapsUseCase,
+    private val pauseKeyMaps: io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase,
     private val backupRestore: BackupRestoreMappingsUseCase,
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
     private val onboarding: OnboardingUseCase,
@@ -105,15 +105,15 @@ class KeyMapListViewModel(
     val multiSelectProvider: MultiSelectProvider = MultiSelectProvider()
 
     private val listItemCreator =
-        _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapListItemCreator(
+        _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapListItemCreator(
             listKeyMaps,
             resourceProvider
         )
     private val constraintUiHelper = ConstraintUiHelper(listKeyMaps, resourceProvider)
 
     private val initialState =
-        _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapListState(
-            appBarState = _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapAppBarState.RootGroup(
+        _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapListState(
+            appBarState = _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapAppBarState.RootGroup(
                 subGroups = emptyList(),
                 warnings = emptyList(),
                 isPaused = false,
@@ -121,7 +121,7 @@ class KeyMapListViewModel(
             listItems = State.Loading,
             showCreateKeyMapTapTarget = false,
         )
-    private val _state: MutableStateFlow<io.github.sds100.keymapper.mapping.keymaps.KeyMapListState> = MutableStateFlow(initialState)
+    private val _state: MutableStateFlow<io.github.sds100.keymapper.base.keymaps.KeyMapListState> = MutableStateFlow(initialState)
     val state = _state.asStateFlow()
 
     var showFabText: Boolean by mutableStateOf(true)
@@ -143,7 +143,7 @@ class KeyMapListViewModel(
     private val keyMapGroupStateFlow = listKeyMaps.keyMapGroup.stateIn(
         coroutineScope,
         SharingStarted.Eagerly,
-        _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapGroup(
+        _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapGroup(
             group = null,
             subGroups = emptyList(),
             keyMaps = State.Loading,
@@ -172,7 +172,7 @@ class KeyMapListViewModel(
                 AccessibilityServiceState.CRASHED ->
                     add(
                         HomeWarningListItem(
-                            _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapListViewModel.Companion.ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM,
+                            _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel.Companion.ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM,
                             getString(R.string.home_error_accessibility_service_is_crashed),
                         ),
                     )
@@ -180,7 +180,7 @@ class KeyMapListViewModel(
                 AccessibilityServiceState.DISABLED ->
                     add(
                         HomeWarningListItem(
-                            _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapListViewModel.Companion.ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM,
+                            _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel.Companion.ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM,
                             getString(R.string.home_error_accessibility_service_is_disabled),
                         ),
                     )
@@ -191,7 +191,7 @@ class KeyMapListViewModel(
             if (isBatteryOptimised) {
                 add(
                     HomeWarningListItem(
-                        _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapListViewModel.Companion.ID_BATTERY_OPTIMISATION_LIST_ITEM,
+                        _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel.Companion.ID_BATTERY_OPTIMISATION_LIST_ITEM,
                         getString(R.string.home_error_is_battery_optimised),
                     ),
                 )
@@ -200,7 +200,7 @@ class KeyMapListViewModel(
             if (showNotificationPermissionAlert) {
                 add(
                     HomeWarningListItem(
-                        _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapListViewModel.Companion.ID_NOTIFICATION_PERMISSION_DENIED_LIST_ITEM,
+                        _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel.Companion.ID_NOTIFICATION_PERMISSION_DENIED_LIST_ITEM,
                         getString(R.string.home_error_notification_permission),
                     ),
                 )
@@ -209,7 +209,7 @@ class KeyMapListViewModel(
             if (isLoggingEnabled) {
                 add(
                     HomeWarningListItem(
-                        _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapListViewModel.Companion.ID_LOGGING_ENABLED_LIST_ITEM,
+                        _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel.Companion.ID_LOGGING_ENABLED_LIST_ITEM,
                         getString(R.string.home_error_logging_enabled),
                     ),
                 )
@@ -317,7 +317,7 @@ class KeyMapListViewModel(
         )
 
         @OptIn(ExperimentalCoroutinesApi::class)
-        val appBarStateFlow: Flow<io.github.sds100.keymapper.mapping.keymaps.KeyMapAppBarState> =
+        val appBarStateFlow: Flow<io.github.sds100.keymapper.base.keymaps.KeyMapAppBarState> =
             multiSelectProvider.state.flatMapLatest { selectionState ->
                 when (selectionState) {
                     is SelectionState.Selecting -> selectionAppBarState
@@ -348,7 +348,7 @@ class KeyMapListViewModel(
                 }
 
                 _state.value =
-                    _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapListState(
+                    _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapListState(
                         appBarState,
                         listState,
                         showCreateKeyMapTapTarget
@@ -364,12 +364,12 @@ class KeyMapListViewModel(
     }
 
     private fun buildSelectingAppBarState(
-        keyMapGroup: io.github.sds100.keymapper.mapping.keymaps.KeyMapGroup,
+        keyMapGroup: io.github.sds100.keymapper.base.keymaps.KeyMapGroup,
         selectionState: SelectionState.Selecting,
         groupListItems: List<GroupListItemModel>,
         breadcrumbListItems: List<GroupListItemModel>,
         showThisGroup: Boolean,
-    ): io.github.sds100.keymapper.mapping.keymaps.KeyMapAppBarState.Selecting {
+    ): io.github.sds100.keymapper.base.keymaps.KeyMapAppBarState.Selecting {
         var selectedKeyMapsEnabled: SelectedKeyMapsEnabled? = null
         val keyMaps = keyMapGroup.keyMaps.dataOrNull() ?: emptyList()
 
@@ -392,7 +392,7 @@ class KeyMapListViewModel(
             }
         }
 
-        return _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapAppBarState.Selecting(
+        return _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapAppBarState.Selecting(
             selectionCount = selectionState.selectedIds.size,
             selectedKeyMapsEnabled = selectedKeyMapsEnabled ?: SelectedKeyMapsEnabled.NONE,
             isAllSelected = selectionState.selectedIds.size == keyMaps.size,
@@ -403,12 +403,12 @@ class KeyMapListViewModel(
     }
 
     private fun buildGroupAppBarState(
-        keyMapGroup: _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapGroup,
+        keyMapGroup: _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapGroup,
         warnings: List<HomeWarningListItem>,
         isPaused: Boolean,
         constraintErrorSnapshot: ConstraintErrorSnapshot,
         isEditingGroupName: Boolean,
-    ): _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapAppBarState {
+    ): _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapAppBarState {
         val subGroupListItems = keyMapGroup.subGroups.map { group ->
             buildGroupListItem(group)
         }
@@ -422,13 +422,13 @@ class KeyMapListViewModel(
         }
 
         if (keyMapGroup.group == null) {
-            return _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapAppBarState.RootGroup(
+            return _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapAppBarState.RootGroup(
                 subGroups = subGroupListItems,
                 warnings = warnings,
                 isPaused = isPaused,
             )
         } else {
-            return _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapAppBarState.ChildGroup(
+            return _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapAppBarState.ChildGroup(
                 groupName = keyMapGroup.group.name,
                 constraints = listItemCreator.buildConstraintChipList(
                     keyMapGroup.group.constraintState,
@@ -589,7 +589,7 @@ class KeyMapListViewModel(
 
     fun onSelectAllClick() {
         state.value.also { state ->
-            if (state.appBarState is _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapAppBarState.Selecting) {
+            if (state.appBarState is _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapAppBarState.Selecting) {
                 if (state.appBarState.isAllSelected) {
                     multiSelectProvider.stopSelecting()
                 } else {
@@ -676,7 +676,7 @@ class KeyMapListViewModel(
     fun onFixWarningClick(id: String) {
         coroutineScope.launch {
             when (id) {
-                _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapListViewModel.Companion.ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM -> {
+                _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel.Companion.ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM -> {
                     val explanationResponse =
                         ViewModelHelper.showAccessibilityServiceExplanationDialog(
                             resourceProvider = this@KeyMapListViewModel,
@@ -695,7 +695,7 @@ class KeyMapListViewModel(
                     }
                 }
 
-                _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapListViewModel.Companion.ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM ->
+                _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel.Companion.ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM ->
                     ViewModelHelper.handleKeyMapperCrashedDialog(
                         resourceProvider = this@KeyMapListViewModel,
                         popupViewModel = this@KeyMapListViewModel,
@@ -703,9 +703,9 @@ class KeyMapListViewModel(
                         ignoreCrashed = showAlertsUseCase::acknowledgeCrashed,
                     )
 
-                _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapListViewModel.Companion.ID_BATTERY_OPTIMISATION_LIST_ITEM -> showAlertsUseCase.disableBatteryOptimisation()
-                _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapListViewModel.Companion.ID_LOGGING_ENABLED_LIST_ITEM -> showAlertsUseCase.disableLogging()
-                _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapListViewModel.Companion.ID_NOTIFICATION_PERMISSION_DENIED_LIST_ITEM -> showNotificationPermissionAlertDialog()
+                _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel.Companion.ID_BATTERY_OPTIMISATION_LIST_ITEM -> showAlertsUseCase.disableBatteryOptimisation()
+                _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel.Companion.ID_LOGGING_ENABLED_LIST_ITEM -> showAlertsUseCase.disableLogging()
+                _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel.Companion.ID_NOTIFICATION_PERMISSION_DENIED_LIST_ITEM -> showNotificationPermissionAlertDialog()
             }
         }
     }
@@ -795,7 +795,7 @@ class KeyMapListViewModel(
                 return true
             }
 
-            state.value.appBarState is _root_ide_package_.io.github.sds100.keymapper.mapping.keymaps.KeyMapAppBarState.ChildGroup -> {
+            state.value.appBarState is _root_ide_package_.io.github.sds100.keymapper.base.keymaps.KeyMapAppBarState.ChildGroup -> {
                 if (!isEditingGroupName.value) {
                     coroutineScope.launch {
                         listKeyMaps.popGroup()

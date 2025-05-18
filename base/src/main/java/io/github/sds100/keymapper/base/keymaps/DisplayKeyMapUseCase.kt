@@ -9,8 +9,8 @@ import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.otherwise
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.common.utils.valueIfFailure
-import io.github.sds100.keymapper.constraints.DisplayConstraintUseCase
-import io.github.sds100.keymapper.constraints.GetConstraintErrorUseCase
+import io.github.sds100.keymapper.base.constraints.DisplayConstraintUseCase
+import io.github.sds100.keymapper.base.constraints.GetConstraintErrorUseCase
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingError
@@ -23,11 +23,14 @@ import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.ringtone.RingtoneAdapter
-import io.github.sds100.keymapper.trigger.TriggerError
-import io.github.sds100.keymapper.trigger.TriggerErrorSnapshot
+import io.github.sds100.keymapper.base.trigger.TriggerError
+import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
+import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
-import io.github.sds100.keymapper.base.utils.SettingsRepository
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
+import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -45,17 +48,17 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
     private val permissionAdapter: PermissionAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
     private val packageManagerAdapter: PackageManagerAdapter,
-    private val settingsRepository: SettingsRepository,
-    private val accessibilityServiceAdapter: io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapterImpl,
-    private val settingsRepository2: SettingsRepository,
+    private val settingsRepository: PreferenceRepository,
+    private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
     private val purchasingManager: PurchasingManager,
     private val ringtoneAdapter: RingtoneAdapter,
     private val getActionErrorUseCase: GetActionErrorUseCase,
-    private val getConstraintErrorUseCase: GetConstraintErrorUseCase
+    private val getConstraintErrorUseCase: GetConstraintErrorUseCase,
+    private val buildConfigProvider: BuildConfigProvider
 ) : DisplayKeyMapUseCase,
     GetActionErrorUseCase by getActionErrorUseCase,
     GetConstraintErrorUseCase by getConstraintErrorUseCase {
-    private val keyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
+    private val keyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter, buildConfigProvider.packageName)
 
     private val showDpadImeSetupError: Flow<Boolean> =
         settingsRepository.get(Keys.neverShowDpadImeTriggerError).map { neverShow ->

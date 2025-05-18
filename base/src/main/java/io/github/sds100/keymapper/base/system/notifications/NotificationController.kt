@@ -14,7 +14,7 @@ import io.github.sds100.keymapper.common.utils.DispatcherProvider
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
-import io.github.sds100.keymapper.mapping.keymaps.PauseKeyMapsUseCase
+import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState

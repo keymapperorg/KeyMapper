@@ -3,18 +3,18 @@ package io.github.sds100.keymapper
 import android.view.KeyEvent
 import io.github.sds100.keymapper.base.actions.Action
 import io.github.sds100.keymapper.base.actions.ActionData
-import io.github.sds100.keymapper.constraints.Constraint
+import io.github.sds100.keymapper.base.constraints.Constraint
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCaseController
 import io.github.sds100.keymapper.base.keymaps.FingerprintGestureType
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
-import io.github.sds100.keymapper.trigger.AssistantTriggerKey
-import io.github.sds100.keymapper.trigger.AssistantTriggerType
-import io.github.sds100.keymapper.trigger.KeyEventDetectionSource
-import io.github.sds100.keymapper.trigger.Trigger
-import io.github.sds100.keymapper.trigger.TriggerKeyDevice
-import io.github.sds100.keymapper.trigger.TriggerMode
+import io.github.sds100.keymapper.base.trigger.AssistantTriggerKey
+import io.github.sds100.keymapper.base.trigger.AssistantTriggerType
+import io.github.sds100.keymapper.base.trigger.KeyEventDetectionSource
+import io.github.sds100.keymapper.base.trigger.Trigger
+import io.github.sds100.keymapper.base.trigger.TriggerKeyDevice
+import io.github.sds100.keymapper.base.trigger.TriggerMode
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.base.utils.singleKeyTrigger
@@ -233,7 +233,7 @@ class ConfigKeyMapUseCaseTest {
         assertThat(trigger.keys, hasSize(2))
         assertThat(
             trigger.keys[0],
-            instanceOf(_root_ide_package_.io.github.sds100.keymapper.trigger.KeyCodeTriggerKey::class.java),
+            instanceOf(_root_ide_package_.io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey::class.java),
         )
         assertThat(trigger.keys[1], instanceOf(AssistantTriggerKey::class.java))
     }
@@ -255,7 +255,7 @@ class ConfigKeyMapUseCaseTest {
         assertThat(trigger.keys, hasSize(2))
         assertThat(
             trigger.keys[0],
-            instanceOf(_root_ide_package_.io.github.sds100.keymapper.trigger.KeyCodeTriggerKey::class.java),
+            instanceOf(_root_ide_package_.io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey::class.java),
         )
         assertThat(trigger.keys[1], instanceOf(AssistantTriggerKey::class.java))
     }

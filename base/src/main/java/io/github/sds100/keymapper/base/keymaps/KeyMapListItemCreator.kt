@@ -3,25 +3,25 @@ package io.github.sds100.keymapper.base.keymaps
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Add
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.base.actions.ActionUiHelper
 import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.constraints.ConstraintErrorSnapshot
-import io.github.sds100.keymapper.constraints.ConstraintState
-import io.github.sds100.keymapper.constraints.ConstraintUiHelper
+import io.github.sds100.keymapper.base.constraints.ConstraintErrorSnapshot
+import io.github.sds100.keymapper.base.constraints.ConstraintState
+import io.github.sds100.keymapper.base.constraints.ConstraintUiHelper
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
-import io.github.sds100.keymapper.trigger.AssistantTriggerKey
-import io.github.sds100.keymapper.trigger.AssistantTriggerType
-import io.github.sds100.keymapper.trigger.FingerprintTriggerKey
-import io.github.sds100.keymapper.trigger.FloatingButtonKey
-import io.github.sds100.keymapper.trigger.KeyEventDetectionSource
-import io.github.sds100.keymapper.trigger.KeyMapListItemModel
-import io.github.sds100.keymapper.trigger.Trigger
-import io.github.sds100.keymapper.trigger.TriggerErrorSnapshot
-import io.github.sds100.keymapper.trigger.TriggerKeyDevice
-import io.github.sds100.keymapper.trigger.TriggerMode
+import io.github.sds100.keymapper.base.trigger.AssistantTriggerKey
+import io.github.sds100.keymapper.base.trigger.AssistantTriggerType
+import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
+import io.github.sds100.keymapper.base.trigger.FloatingButtonKey
+import io.github.sds100.keymapper.base.trigger.KeyEventDetectionSource
+import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
+import io.github.sds100.keymapper.base.trigger.Trigger
+import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
+import io.github.sds100.keymapper.base.trigger.TriggerKeyDevice
+import io.github.sds100.keymapper.base.trigger.TriggerMode
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
@@ -55,7 +55,7 @@ class KeyMapListItemCreator(
         val triggerKeys = keyMap.trigger.keys.map { key ->
             when (key) {
                 is AssistantTriggerKey -> assistantTriggerKeyName(key)
-                is io.github.sds100.keymapper.trigger.KeyCodeTriggerKey -> keyCodeTriggerKeyName(
+                is io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey -> keyCodeTriggerKeyName(
                     key,
                     showDeviceDescriptors,
                 )
@@ -241,7 +241,7 @@ class KeyMapListItemCreator(
     }
 
     private fun keyCodeTriggerKeyName(
-        key: io.github.sds100.keymapper.trigger.KeyCodeTriggerKey,
+        key: io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey,
         showDeviceDescriptors: Boolean,
     ): String = buildString {
         when (key.clickType) {

@@ -52,12 +52,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.constraints.ConstraintMode
-import io.github.sds100.keymapper.trigger.KeyMapListItemModel
-import io.github.sds100.keymapper.trigger.TriggerError
+import io.github.sds100.keymapper.base.constraints.ConstraintMode
+import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
+import io.github.sds100.keymapper.base.trigger.TriggerError
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.base.utils.drawable
 import io.github.sds100.keymapper.base.utils.ui.compose.CompactChip

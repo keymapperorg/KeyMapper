@@ -20,10 +20,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.canopas.lib.showcase.IntroShowcase
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.compose.KeyMapperTheme
 import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
-import io.github.sds100.keymapper.onboarding.OnboardingTapTarget
+import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperTapTarget
 import io.github.sds100.keymapper.base.utils.ui.compose.keyMapperShowcaseStyle
 

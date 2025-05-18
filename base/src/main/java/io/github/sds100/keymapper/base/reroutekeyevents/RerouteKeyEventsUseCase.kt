@@ -8,7 +8,6 @@ import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.common.utils.firstBlocking
-import io.github.sds100.keymapper.base.utils.SettingsRepository
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -24,7 +23,6 @@ class RerouteKeyEventsUseCaseImpl @Inject constructor(
     private val inputMethodAdapter: InputMethodAdapter,
     private val keyMapperImeMessenger: ImeInputEventInjector,
     private val preferenceRepository: PreferenceRepository,
-    private val settingsRepository: SettingsRepository
 ) : RerouteKeyEventsUseCase {
 
     private val rerouteKeyEvents =

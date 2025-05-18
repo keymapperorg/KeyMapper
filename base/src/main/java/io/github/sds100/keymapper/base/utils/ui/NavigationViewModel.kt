@@ -20,8 +20,8 @@ import io.github.sds100.keymapper.base.actions.swipescreen.SwipePickDisplayCoord
 import io.github.sds100.keymapper.base.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.base.actions.tapscreen.PickDisplayCoordinateFragment
 import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementFragment
-import io.github.sds100.keymapper.constraints.ChooseConstraintFragment
-import io.github.sds100.keymapper.constraints.Constraint
+import io.github.sds100.keymapper.base.constraints.ChooseConstraintFragment
+import io.github.sds100.keymapper.base.constraints.Constraint
 import io.github.sds100.keymapper.system.apps.ActivityInfo
 import io.github.sds100.keymapper.base.system.apps.ChooseActivityFragment
 import io.github.sds100.keymapper.base.system.apps.ChooseAppFragment

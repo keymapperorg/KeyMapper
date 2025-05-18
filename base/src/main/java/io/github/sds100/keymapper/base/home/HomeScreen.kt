@@ -38,7 +38,7 @@ import io.github.sds100.keymapper.base.utils.ui.SelectionState
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel,
+    viewModel: BaseHomeViewModel,
     onSettingsClick: () -> Unit,
     onAboutClick: () -> Unit,
     finishActivity: () -> Unit,
