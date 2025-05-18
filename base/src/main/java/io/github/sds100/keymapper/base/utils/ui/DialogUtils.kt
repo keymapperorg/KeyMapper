@@ -20,8 +20,8 @@ import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.errorOrNull
 import io.github.sds100.keymapper.common.utils.isSuccess
 import io.github.sds100.keymapper.common.utils.onSuccess
-import io.github.sds100.keymapper.databinding.DialogEdittextNumberBinding
-import io.github.sds100.keymapper.databinding.DialogEdittextStringBinding
+import io.github.sds100.keymapper.base.databinding.DialogEdittextNumberBinding
+import io.github.sds100.keymapper.base.databinding.DialogEdittextStringBinding
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.common.utils.resumeIfNotCompleted
 import kotlinx.coroutines.CancellableContinuation

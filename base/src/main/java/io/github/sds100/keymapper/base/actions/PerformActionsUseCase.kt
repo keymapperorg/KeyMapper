@@ -50,11 +50,10 @@ import io.github.sds100.keymapper.system.url.OpenUrlAdapter
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import io.github.sds100.keymapper.common.utils.InputEventType
-import io.github.sds100.keymapper.base.utils.ServiceEvent
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.base.utils.getFullMessage
-import io.github.sds100.keymapper.base.utils.getWordBoundaries
+import io.github.sds100.keymapper.common.utils.getWordBoundaries
 import io.github.sds100.keymapper.common.utils.ifIsData
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
@@ -68,9 +67,10 @@ import kotlinx.coroutines.flow.stateIn
 import io.github.sds100.keymapper.common.utils.withFlag
 import timber.log.Timber
 import io.github.sds100.keymapper.system.Shell
-import io.github.sds100.keymapper.system.audio.AudioAdapter
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjectorImpl
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
+import io.github.sds100.keymapper.system.notifications.NotificationServiceEvent
 import io.github.sds100.keymapper.system.shizuku.ShizukuInputEventInjector
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import javax.inject.Inject
@@ -107,7 +107,8 @@ class PerformActionsUseCaseImpl @Inject constructor(
     private val soundsManager: SoundsManager,
     private val permissionAdapter: PermissionAdapter,
     private val notificationReceiverAdapter: NotificationReceiverAdapterImpl,
-    private val ringtoneAdapter: RingtoneAdapter
+    private val ringtoneAdapter: RingtoneAdapter,
+    private val settingsRepository: PreferenceRepository
 ) : PerformActionsUseCase {
 
     private val openMenuHelper by lazy {
@@ -808,11 +809,11 @@ class PerformActionsUseCaseImpl @Inject constructor(
             }
 
             ActionData.DismissAllNotifications -> {
-                result = notificationReceiverAdapter.send(ServiceEvent.DismissAllNotifications)
+                result = notificationReceiverAdapter.send(NotificationServiceEvent.DismissAllNotifications)
             }
 
             ActionData.DismissLastNotification -> {
-                result = notificationReceiverAdapter.send(ServiceEvent.DismissLastNotification)
+                result = notificationReceiverAdapter.send(NotificationServiceEvent.DismissLastNotification)
             }
 
             ActionData.AnswerCall -> {

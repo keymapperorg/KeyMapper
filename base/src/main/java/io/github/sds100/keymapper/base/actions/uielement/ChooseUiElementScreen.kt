@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowHeightSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.compose.KeyMapperTheme
+import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperDropdownMenu

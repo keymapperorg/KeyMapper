@@ -13,7 +13,7 @@
 
         <variable
             name="viewModel"
-            type="io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventActionViewModel" />
+            type="io.github.sds100.keymapper.base.actions.keyevent.ConfigKeyEventActionViewModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

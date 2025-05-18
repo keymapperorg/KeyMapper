@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.home
+package io.github.sds100.keymapper.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,27 +16,21 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
-import io.github.sds100.keymapper.ActivityViewModel
-import io.github.sds100.keymapper.BaseMainActivity
-import io.github.sds100.keymapper.NavAppDirections
-import io.github.sds100.keymapper.ServiceLocator
+import io.github.sds100.keymapper.base.ActivityViewModel
 import io.github.sds100.keymapper.base.BaseMainActivity
+import io.github.sds100.keymapper.base.NavAppDirections
+import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.databinding.FragmentComposeBinding
-import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.databinding.FragmentComposeBinding
-import io.github.sds100.keymapper.base.utils.Inject
+import io.github.sds100.keymapper.base.home.BaseHomeViewModel
+import io.github.sds100.keymapper.base.home.HomeDestination
+import io.github.sds100.keymapper.base.home.HomeScreen
 import io.github.sds100.keymapper.base.utils.ui.setupNavigation
 import io.github.sds100.keymapper.base.utils.ui.showPopups
 
 class HomeFragment : Fragment() {
 
-    private val homeViewModel: BaseHomeViewModel by activityViewModels {
-        Inject.homeViewModel(requireContext())
-    }
-
-    val activityViewModel: ActivityViewModel by activityViewModels<ActivityViewModel> {
-        ActivityViewModel.Factory(ServiceLocator.resourceProvider(requireContext()))
-    }
+    private val homeViewModel: HomeViewModel by activityViewModels()
+    private val activityViewModel: ActivityViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,6 +89,7 @@ class HomeFragment : Fragment() {
 
         homeViewModel.showPopups(this, view)
         homeViewModel.keyMapListViewModel.showPopups(this, view)
-        homeViewModel.listFloatingLayoutsViewModel.showPopups(this, view)
+        // TODO
+//        homeViewModel.listFloatingLayoutsViewModel.showPopups(this, view)
     }
 }

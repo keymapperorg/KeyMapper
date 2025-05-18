@@ -26,55 +26,71 @@ import androidx.navigation.findNavController
 import com.anggrayudi.storage.extension.openInputStream
 import com.anggrayudi.storage.extension.openOutputStream
 import com.anggrayudi.storage.extension.toDocumentFile
-import io.github.sds100.keymapper.Constants.PACKAGE_NAME
-import io.github.sds100.keymapper.compose.ComposeColors
-import io.github.sds100.keymapper.databinding.ActivityMainBinding
-import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapterImpl
-import io.github.sds100.keymapper.system.files.FileUtils
-import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
-import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
+import io.github.sds100.keymapper.base.compose.ComposeColors
+import io.github.sds100.keymapper.base.databinding.ActivityMainBinding
+import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.permissions.RequestPermissionDelegate
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
+import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.showPopups
+import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.system.files.FileUtils
+import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
+import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
+import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
+import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
 abstract class BaseMainActivity : AppCompatActivity() {
 
     companion object {
         const val ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG =
-            "$PACKAGE_NAME.ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG"
+            "${BuildConfig.LIBRARY_PACKAGE_NAME}.ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG"
 
         const val ACTION_USE_FLOATING_BUTTONS =
-            "$PACKAGE_NAME.ACTION_USE_FLOATING_BUTTONS"
+            "${BuildConfig.LIBRARY_PACKAGE_NAME}.ACTION_USE_FLOATING_BUTTONS"
 
-        const val ACTION_SAVE_FILE = "$PACKAGE_NAME.ACTION_SAVE_FILE"
-        const val EXTRA_FILE_URI = "$PACKAGE_NAME.EXTRA_FILE_URI"
+        const val ACTION_SAVE_FILE = "${BuildConfig.LIBRARY_PACKAGE_NAME}.ACTION_SAVE_FILE"
+        const val EXTRA_FILE_URI = "${BuildConfig.LIBRARY_PACKAGE_NAME}.EXTRA_FILE_URI"
     }
 
-    private val permissionAdapter: AndroidPermissionAdapter by lazy {
-        ServiceLocator.permissionAdapter(this)
-    }
+    @Inject
+    lateinit var permissionAdapter: AndroidPermissionAdapter
 
-    val serviceAdapter: AccessibilityServiceAdapterImpl by lazy {
-        ServiceLocator.accessibilityServiceAdapter(this)
-    }
+    @Inject
+    lateinit var serviceAdapter: AccessibilityServiceAdapterImpl
 
-    val viewModel by viewModels<ActivityViewModel> {
-        ActivityViewModel.Factory(ServiceLocator.resourceProvider(this))
-    }
+    @Inject
+    lateinit var resourceProvider: ResourceProviderImpl
+
+    @Inject
+    lateinit var onboardingUseCase: OnboardingUseCase
+
+    @Inject
+    lateinit var recordTriggerController: RecordTriggerController
+
+    @Inject
+    lateinit var notificationReceiverAdapter: NotificationReceiverAdapterImpl
+
+    @Inject
+    lateinit var shizukuAdapter: ShizukuAdapter
+
+    @Inject
+    lateinit var buildConfigProvider: BuildConfigProvider
+
+    private lateinit var requestPermissionDelegate: RequestPermissionDelegate
 
     private val currentNightMode: Int
         get() = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
 
-    private lateinit var requestPermissionDelegate: RequestPermissionDelegate
-    private val recordTriggerController: RecordTriggerController by lazy {
-        (applicationContext as KeyMapperApp).recordTriggerController
-    }
+    val viewModel by viewModels<ActivityViewModel>()
 
     private var originalFileUri: Uri? = null
 
@@ -120,7 +136,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         if (viewModel.previousNightMode != currentNightMode) {
-            ServiceLocator.resourceProvider(this).onThemeChange()
+            resourceProvider.onThemeChange()
         }
 
         val binding =
@@ -128,9 +144,16 @@ abstract class BaseMainActivity : AppCompatActivity() {
 
         viewModel.showPopups(this, binding.coordinatorLayout)
 
-        requestPermissionDelegate = RequestPermissionDelegate(this, showDialogs = true)
+        requestPermissionDelegate = RequestPermissionDelegate(
+            this,
+            showDialogs = true,
+            permissionAdapter,
+            notificationReceiverAdapter = notificationReceiverAdapter,
+            buildConfigProvider = buildConfigProvider,
+            shizukuAdapter = shizukuAdapter,
+        )
 
-        ServiceLocator.permissionAdapter(this@BaseMainActivity).request
+        permissionAdapter.request
             .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
             .onEach { permission ->
                 requestPermissionDelegate.requestPermission(
@@ -170,7 +193,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        Timber.i("MainActivity: onResume. Version: ${Constants.VERSION}")
+        Timber.i("MainActivity: onResume. Version: ${buildConfigProvider.version} ${buildConfigProvider.versionCode}")
 
         // This must be after onResume to ensure all the fragment lifecycles' have also
         // resumed which are observing these events.
@@ -181,7 +204,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        UseCases.onboarding(this).shownAppIntro = true
+        onboardingUseCase.shownAppIntro = true
 
         viewModel.previousNightMode = currentNightMode
         unregisterReceiver(broadcastReceiver)

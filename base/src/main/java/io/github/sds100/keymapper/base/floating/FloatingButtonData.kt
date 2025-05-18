@@ -5,7 +5,7 @@ import io.github.sds100.keymapper.data.entities.FloatingButtonEntity
 import io.github.sds100.keymapper.floating.FloatingButtonData.Location
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.SizeKM
-import io.github.sds100.keymapper.base.utils.getKey
+import io.github.sds100.keymapper.common.utils.getKey
 import kotlinx.serialization.Serializable
 import java.util.UUID
 

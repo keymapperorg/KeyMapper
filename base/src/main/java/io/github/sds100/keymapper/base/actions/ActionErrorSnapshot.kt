@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.actions
 
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
+import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
@@ -25,13 +26,14 @@ class LazyActionErrorSnapshot(
     private val soundsManager: SoundsManager,
     shizukuAdapter: ShizukuAdapter,
     private val ringtoneAdapter: RingtoneAdapter,
+    buildConfigProvider: BuildConfigProvider
 ) : ActionErrorSnapshot,
     IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(
         systemFeatureAdapter,
         cameraAdapter,
         permissionAdapter,
     ) {
-    private val keyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter)
+    private val keyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter, buildConfigProvider.packageName)
 
     private val isCompatibleImeEnabled by lazy { keyMapperImeHelper.isCompatibleImeEnabled() }
     private val isCompatibleImeChosen by lazy { keyMapperImeHelper.isCompatibleImeChosen() }

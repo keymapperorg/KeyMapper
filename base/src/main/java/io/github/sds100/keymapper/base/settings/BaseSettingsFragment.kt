@@ -13,7 +13,7 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.base.utils.Inject
-import io.github.sds100.keymapper.base.utils.str
+import io.github.sds100.keymapper.base.utils.ui.str
 import io.github.sds100.keymapper.base.utils.ui.showPopups
 
 abstract class BaseSettingsFragment : PreferenceFragmentCompat() {

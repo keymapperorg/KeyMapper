@@ -27,8 +27,8 @@ import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.base.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.common.utils.firstBlocking
-import io.github.sds100.keymapper.mapping.actions.PerformActionsUseCase
-import io.github.sds100.keymapper.mapping.constraints.DetectConstraintsUseCase
+import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
+import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCase

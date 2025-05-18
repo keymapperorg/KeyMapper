@@ -11,8 +11,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.compose.ComposeColors
-import io.github.sds100.keymapper.compose.KeyMapperTheme
+import io.github.sds100.keymapper.base.compose.ComposeColors
+import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.system.permissions.RequestPermissionDelegate
 import io.github.sds100.keymapper.base.utils.Inject
 import io.github.sds100.keymapper.base.utils.launchRepeatOnLifecycle

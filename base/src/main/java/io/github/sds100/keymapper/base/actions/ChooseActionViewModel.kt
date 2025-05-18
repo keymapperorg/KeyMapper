@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import javax.inject.Inject
 
 @HiltViewModel

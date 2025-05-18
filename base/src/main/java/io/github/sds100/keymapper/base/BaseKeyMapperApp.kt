@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.UserManager
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.getSystemService
 import androidx.lifecycle.Lifecycle
@@ -34,7 +35,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import splitties.toast.toast
 import timber.log.Timber
 import java.util.Calendar
 import javax.inject.Inject
@@ -154,7 +154,7 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
 
         notificationController.init()
 
-        autoSwitchImeController .init()
+        autoSwitchImeController.init()
 
         processLifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
             @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
@@ -179,8 +179,8 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
             }
         }
 
-        notificationController.showToast.onEach {
-            toast(it)
+        notificationController.showToast.onEach { toast ->
+            Toast.makeText(this, toast, Toast.LENGTH_SHORT).show()
         }.launchIn(appCoroutineScope)
 
         autoGrantPermissionController.start()

@@ -20,14 +20,15 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import io.github.sds100.keymapper.databinding.FragmentSwipePickCoordinatesBinding
-import io.github.sds100.keymapper.system.files.FileUtils
-import io.github.sds100.keymapper.base.utils.Inject
+import dagger.hilt.android.AndroidEntryPoint
+import io.github.sds100.keymapper.base.databinding.FragmentSwipePickCoordinatesBinding
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.showPopups
+import io.github.sds100.keymapper.system.files.FileUtils
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.json.Json
 
+@AndroidEntryPoint
 class SwipePickDisplayCoordinateFragment : Fragment() {
     companion object {
         const val EXTRA_RESULT = "extra_result"
@@ -36,9 +37,7 @@ class SwipePickDisplayCoordinateFragment : Fragment() {
     private val args: SwipePickDisplayCoordinateFragmentArgs by navArgs()
     private val requestKey: String by lazy { args.requestKey }
 
-    private val viewModel: SwipePickDisplayCoordinateViewModel by viewModels {
-        Inject.swipeCoordinateActionTypeViewModel(requireContext())
-    }
+    private val viewModel: SwipePickDisplayCoordinateViewModel by viewModels()
 
     private val screenshotLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->

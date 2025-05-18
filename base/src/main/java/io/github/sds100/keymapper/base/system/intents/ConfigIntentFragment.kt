@@ -18,8 +18,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyController
-import io.github.sds100.keymapper.databinding.FragmentConfigIntentBinding
-import io.github.sds100.keymapper.databinding.ListItemIntentExtraBoolBinding
+import io.github.sds100.keymapper.base.databinding.FragmentConfigIntentBinding
+import io.github.sds100.keymapper.base.databinding.ListItemIntentExtraBoolBinding
 import io.github.sds100.keymapper.intentExtraBool
 import io.github.sds100.keymapper.intentExtraGeneric
 import io.github.sds100.keymapper.system.intents.BoolIntentExtraListItem

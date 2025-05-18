@@ -14,7 +14,7 @@ import io.github.sds100.keymapper.UseCases
 import AccessibilityServiceState
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.base.utils.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.utils.str
+import io.github.sds100.keymapper.base.utils.ui.str
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 

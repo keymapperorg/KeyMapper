@@ -70,11 +70,11 @@ import androidx.window.core.layout.WindowHeightSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.compose.LocalCustomColorsPalette
+import io.github.sds100.keymapper.base.compose.KeyMapperTheme
+import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.system.apps.ChooseAppScreen
 import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.base.utils.drawable
+import io.github.sds100.keymapper.base.utils.ui.drawable
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperDropdownMenu
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow

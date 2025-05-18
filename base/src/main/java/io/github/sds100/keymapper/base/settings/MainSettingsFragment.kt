@@ -25,8 +25,8 @@ import io.github.sds100.keymapper.base.system.notifications.NotificationControll
 import io.github.sds100.keymapper.system.notifications.NotificationUtils
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.utils.str
-import io.github.sds100.keymapper.base.utils.strArray
+import io.github.sds100.keymapper.base.utils.ui.str
+import io.github.sds100.keymapper.base.utils.ui.strArray
 import io.github.sds100.keymapper.base.utils.ui.viewLifecycleScope
 import kotlinx.coroutines.flow.collectLatest
 import splitties.alertdialog.appcompat.alertDialog

@@ -10,7 +10,7 @@ import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.NavAppDirections
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.ChooseActionFragment
-import io.github.sds100.keymapper.mapping.actions.keyevent.ChooseKeyCodeFragment
+import io.github.sds100.keymapper.base.actions.keyevent.ChooseKeyCodeFragment
 import io.github.sds100.keymapper.base.actions.keyevent.ConfigKeyEventActionFragment
 import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickCoordinateResult
 import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickDisplayCoordinateFragment
@@ -254,7 +254,7 @@ fun NavigationViewModel.sendNavResultFromBundle(
         }
 
         NavDestination.ID_KEY_CODE -> {
-            val keyCode = bundle.getInt(io.github.sds100.keymapper.mapping.actions.keyevent.ChooseKeyCodeFragment.EXTRA_KEYCODE)
+            val keyCode = bundle.getInt(io.github.sds100.keymapper.base.actions.keyevent.ChooseKeyCodeFragment.EXTRA_KEYCODE)
 
             onNavResult(NavResult(requestKey, keyCode))
         }

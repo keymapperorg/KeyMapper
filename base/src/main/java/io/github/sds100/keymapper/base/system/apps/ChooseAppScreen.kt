@@ -33,8 +33,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.base.utils.drawable
+import io.github.sds100.keymapper.base.compose.KeyMapperTheme
+import io.github.sds100.keymapper.base.utils.ui.drawable
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.SearchAppBarActions
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItem

@@ -69,7 +69,7 @@
         android:label="ImePickerSettingsFragment" />
     <fragment
         android:id="@+id/logFragment"
-        android:name="io.github.sds100.keymapper.logging.LogFragment"
+        android:name="io.github.sds100.keymapper.base.logging.LogFragment"
         android:label="LogFragment" />
     <fragment
         android:id="@+id/shizukuSettingsFragment"

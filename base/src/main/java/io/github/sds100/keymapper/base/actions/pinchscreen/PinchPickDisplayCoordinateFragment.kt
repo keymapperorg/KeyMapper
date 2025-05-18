@@ -21,16 +21,17 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.databinding.FragmentPinchPickCoordinatesBinding
-import io.github.sds100.keymapper.system.files.FileUtils
-import io.github.sds100.keymapper.base.utils.Inject
+import io.github.sds100.keymapper.base.databinding.FragmentPinchPickCoordinatesBinding
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.utils.str
 import io.github.sds100.keymapper.base.utils.ui.showPopups
+import io.github.sds100.keymapper.base.utils.ui.str
+import io.github.sds100.keymapper.system.files.FileUtils
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.json.Json
 
+@AndroidEntryPoint
 class PinchPickDisplayCoordinateFragment : Fragment() {
     companion object {
         const val EXTRA_RESULT = "extra_result"
@@ -40,9 +41,7 @@ class PinchPickDisplayCoordinateFragment : Fragment() {
     private val requestKey: String by lazy { args.requestKey }
     private var pinchTypesDisplayValues = mutableListOf<String>()
 
-    private val viewModel: PinchPickDisplayCoordinateViewModel by viewModels {
-        Inject.pinchCoordinateActionTypeViewModel(requireContext())
-    }
+    private val viewModel: PinchPickDisplayCoordinateViewModel by viewModels()
 
     private val screenshotLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->

@@ -8,7 +8,7 @@ data class ConstraintListItemModel(
     /**
      * Null if no link should be shown between the items.
      */
-    val constraintModeLink: io.github.sds100.keymapper.mapping.constraints.ConstraintMode?,
+    val constraintModeLink: io.github.sds100.keymapper.base.constraints.ConstraintMode?,
     val text: String,
     val error: String? = null,
     val isErrorFixable: Boolean = true,

@@ -37,12 +37,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.compose.KeyMapperTheme
+import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
 import io.github.sds100.keymapper.base.keymaps.ShortcutRow
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.base.utils.drawable
+import io.github.sds100.keymapper.base.utils.ui.drawable
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 
@@ -245,7 +245,7 @@ private fun Loading(modifier: Modifier = Modifier) {
 @Composable
 private fun ConstraintList(
     modifier: Modifier = Modifier,
-    constraintList: List<io.github.sds100.keymapper.mapping.constraints.ConstraintListItemModel>,
+    constraintList: List<io.github.sds100.keymapper.base.constraints.ConstraintListItemModel>,
     shortcuts: Set<ShortcutModel<Constraint>>,
     onRemoveClick: (String) -> Unit,
     onFixErrorClick: (String) -> Unit,
@@ -325,7 +325,7 @@ private fun LoadedPreview() {
             state = State.Data(
                 ConfigConstraintsState.Loaded(
                     constraintList = listOf(
-                        io.github.sds100.keymapper.mapping.constraints.ConstraintListItemModel(
+                        io.github.sds100.keymapper.base.constraints.ConstraintListItemModel(
                             id = "1",
                             icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
                             constraintModeLink = ConstraintMode.AND,
@@ -333,7 +333,7 @@ private fun LoadedPreview() {
                             error = "Flashlight not found",
                             isErrorFixable = true,
                         ),
-                        io.github.sds100.keymapper.mapping.constraints.ConstraintListItemModel(
+                        io.github.sds100.keymapper.base.constraints.ConstraintListItemModel(
                             id = "2",
                             icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
                             constraintModeLink = null,

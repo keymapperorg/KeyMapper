@@ -12,21 +12,21 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.databinding.FragmentConfigKeyEventBinding
-import io.github.sds100.keymapper.common.utils.putJsonSerializable
-import io.github.sds100.keymapper.base.utils.Inject
-import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.utils.str
+import io.github.sds100.keymapper.base.databinding.FragmentConfigKeyEventBinding
+import io.github.sds100.keymapper.base.utils.ui.str
 import io.github.sds100.keymapper.base.utils.ui.configuredCheckBox
+import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.setupNavigation
+import io.github.sds100.keymapper.common.utils.putJsonSerializable
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.json.Json
 
+@AndroidEntryPoint
 class ConfigKeyEventActionFragment : Fragment() {
     companion object {
         const val EXTRA_RESULT = "extra_result"
@@ -36,9 +36,7 @@ class ConfigKeyEventActionFragment : Fragment() {
 
     private val requestKey: String by lazy { args.requestKey }
 
-    private val viewModel: ConfigKeyEventActionViewModel by viewModels {
-        Inject.configKeyEventViewModel(requireContext())
-    }
+    private val viewModel: ConfigKeyEventActionViewModel ()
 
     /**
      * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)

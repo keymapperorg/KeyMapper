@@ -8,17 +8,10 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickCoordinateResult
 import io.github.sds100.keymapper.base.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.base.actions.tapscreen.PickCoordinateResult
-import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.system.camera.CameraLens
-import io.github.sds100.keymapper.common.utils.Orientation
-import io.github.sds100.keymapper.base.ui.intents.ConfigIntentResult
-import io.github.sds100.keymapper.system.network.HttpMethod
-import io.github.sds100.keymapper.system.volume.DndMode
-import io.github.sds100.keymapper.system.volume.DndModeUtils
-import io.github.sds100.keymapper.system.volume.RingerMode
-import io.github.sds100.keymapper.system.volume.RingerModeUtils
-import io.github.sds100.keymapper.system.volume.VolumeStream
-import io.github.sds100.keymapper.system.volume.VolumeStreamUtils
+import io.github.sds100.keymapper.base.system.intents.ConfigIntentResult
+import io.github.sds100.keymapper.base.utils.DndModeStrings
+import io.github.sds100.keymapper.base.utils.RingerModeStrings
+import io.github.sds100.keymapper.base.utils.VolumeStreamStrings
 import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
 import io.github.sds100.keymapper.base.utils.ui.NavDestination
 import io.github.sds100.keymapper.base.utils.ui.NavigationViewModel
@@ -27,6 +20,12 @@ import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.navigate
 import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.common.utils.Orientation
+import io.github.sds100.keymapper.system.camera.CameraLens
+import io.github.sds100.keymapper.system.network.HttpMethod
+import io.github.sds100.keymapper.system.volume.DndMode
+import io.github.sds100.keymapper.system.volume.RingerMode
+import io.github.sds100.keymapper.system.volume.VolumeStream
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -295,8 +294,8 @@ class CreateActionDelegate(
 
                 val showVolumeUi = chosenFlags.contains(showVolumeUiId)
 
-                val items = VolumeStream.values()
-                    .map { it to getString(VolumeStreamUtils.getLabel(it)) }
+                val items = VolumeStream.entries
+                    .map { it to getString(VolumeStreamStrings.getLabel(it)) }
 
                 val stream = showPopup("pick_volume_stream", PopupUi.SingleChoice(items))
                     ?: return null
@@ -315,8 +314,8 @@ class CreateActionDelegate(
             }
 
             ActionId.CHANGE_RINGER_MODE -> {
-                val items = RingerMode.values()
-                    .map { it to getString(RingerModeUtils.getLabel(it)) }
+                val items = RingerMode.entries
+                    .map { it to getString(RingerModeStrings.getLabel(it)) }
 
                 val ringerMode =
                     showPopup("pick_ringer_mode", PopupUi.SingleChoice(items))
@@ -329,8 +328,8 @@ class CreateActionDelegate(
             ActionId.TOGGLE_DND_MODE,
             ActionId.ENABLE_DND_MODE,
             -> {
-                val items = DndMode.values()
-                    .map { it to getString(DndModeUtils.getLabel(it)) }
+                val items = DndMode.entries
+                    .map { it to getString(DndModeStrings.getLabel(it)) }
 
                 val dndMode =
                     showPopup("pick_dnd_mode", PopupUi.SingleChoice(items))
@@ -449,8 +448,8 @@ class CreateActionDelegate(
             -> {
                 val items = useCase.getFlashlightLenses().map {lens ->
                     when (lens) {
-                        CameraLens.FRONT -> R.string.lens_front
-                        CameraLens.BACK -> R.string.lens_back
+                        CameraLens.FRONT -> lens to getString(R.string.lens_front)
+                        CameraLens.BACK -> lens to getString(R.string.lens_back)
                     }
                 }
 

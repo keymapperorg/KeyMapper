@@ -11,7 +11,7 @@
 
         <variable
             name="model"
-            type="io.github.sds100.keymapper.logging.LogEntryListItem" />
+            type="io.github.sds100.keymapper.base.logging.LogEntryListItem" />
 
         <variable
             name="onLongClick"

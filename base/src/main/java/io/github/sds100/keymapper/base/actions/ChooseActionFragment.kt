@@ -22,9 +22,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.withStateAtLeast
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.databinding.FragmentComposeBinding
-import io.github.sds100.keymapper.base.utils.Inject
+import dagger.hilt.android.AndroidEntryPoint
+import io.github.sds100.keymapper.base.compose.KeyMapperTheme
+import io.github.sds100.keymapper.base.databinding.FragmentComposeBinding
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.setupNavigation
 import io.github.sds100.keymapper.base.utils.ui.showPopups
@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
+@AndroidEntryPoint
 class ChooseActionFragment : Fragment() {
 
     companion object {
@@ -41,9 +42,7 @@ class ChooseActionFragment : Fragment() {
 
     private val args: ChooseActionFragmentArgs by navArgs<ChooseActionFragmentArgs>()
 
-    private val viewModel by viewModels<ChooseActionViewModel> {
-        Inject.chooseActionViewModel(requireContext())
-    }
+    private val viewModel by viewModels<ChooseActionViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

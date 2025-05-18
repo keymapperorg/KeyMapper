@@ -156,7 +156,7 @@
 
     <fragment
         android:id="@+id/chooseKeyCodeFragment"
-        android:name="io.github.sds100.keymapper.actions.keyevent.ChooseKeyCodeFragment"
+        android:name="io.github.sds100.keymapper.base.actions.keyevent.ChooseKeyCodeFragment"
         tools:layout="@layout/fragment_simple_recyclerview">
 
         <argument
@@ -174,7 +174,7 @@
 
     <fragment
         android:id="@+id/configKeyEventFragment"
-        android:name="io.github.sds100.keymapper.actions.keyevent.ConfigKeyEventActionFragment"
+        android:name="io.github.sds100.keymapper.base.actions.keyevent.ConfigKeyEventActionFragment"
         tools:layout="@layout/fragment_simple_recyclerview">
 
         <argument
@@ -197,7 +197,7 @@
 
     <fragment
         android:id="@+id/pickDisplayCoordinateFragment"
-        android:name="io.github.sds100.keymapper.actions.tapscreen.PickDisplayCoordinateFragment"
+        android:name="io.github.sds100.keymapper.base.actions.tapscreen.PickDisplayCoordinateFragment"
         tools:layout="@layout/fragment_simple_recyclerview">
 
         <argument
@@ -220,7 +220,7 @@
 
     <fragment
         android:id="@+id/swipeDisplayCoordinateFragment"
-        android:name="io.github.sds100.keymapper.actions.swipescreen.SwipePickDisplayCoordinateFragment"
+        android:name="io.github.sds100.keymapper.base.actions.swipescreen.SwipePickDisplayCoordinateFragment"
         tools:layout="@layout/fragment_simple_recyclerview">
 
         <argument
@@ -243,7 +243,7 @@
 
     <fragment
         android:id="@+id/pinchDisplayCoordinateFragment"
-        android:name="io.github.sds100.keymapper.actions.pinchscreen.PinchPickDisplayCoordinateFragment"
+        android:name="io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickDisplayCoordinateFragment"
         tools:layout="@layout/fragment_simple_recyclerview">
 
         <argument
@@ -334,7 +334,7 @@
 
     <fragment
         android:id="@+id/chooseSoundFileFragment"
-        android:name="io.github.sds100.keymapper.actions.sound.ChooseSoundFileFragment"
+        android:name="io.github.sds100.keymapper.base.actions.sound.ChooseSoundFileFragment"
         tools:layout="@layout/fragment_simple_recyclerview">
 
         <argument
@@ -356,7 +356,7 @@
         android:label="ShizukuSettingsFragment" />
     <fragment
         android:id="@+id/chooseActionFragment"
-        android:name="io.github.sds100.keymapper.actions.ChooseActionFragment"
+        android:name="io.github.sds100.keymapper.base.actions.ChooseActionFragment"
         android:label="ChooseActionFragment">
         <argument
             android:name="requestKey"
@@ -389,7 +389,7 @@
 
     <fragment
         android:id="@+id/interactUiElementFragment"
-        android:name="io.github.sds100.keymapper.actions.uielement.InteractUiElementFragment">
+        android:name="io.github.sds100.keymapper.base.actions.uielement.InteractUiElementFragment">
 
         <argument
             android:name="requestKey"

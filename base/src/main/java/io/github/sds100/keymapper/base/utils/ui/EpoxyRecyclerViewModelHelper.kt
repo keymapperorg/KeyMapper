@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.utils.ui
 
 import com.airbnb.epoxy.EpoxyController
 import io.github.sds100.keymapper.checkbox
-import io.github.sds100.keymapper.databinding.ListItemCheckboxBinding
+import io.github.sds100.keymapper.base.databinding.ListItemCheckboxBinding
 
 fun EpoxyController.configuredCheckBox(
     model: CheckBoxListItem,

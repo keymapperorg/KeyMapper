@@ -38,7 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.compose.KeyMapperTheme
+import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
 import io.github.sds100.keymapper.base.keymaps.ShortcutRow
 import io.github.sds100.keymapper.system.camera.CameraLens
@@ -125,7 +125,7 @@ private fun ActionsScreen(
         State.Loading -> Loading()
         is State.Data<ConfigActionsState> -> Surface(modifier = modifier) {
             Column {
-                when (state.data) {
+                when (val data = state.data) {
                     is ConfigActionsState.Empty -> {
                         Column(
                             modifier = Modifier.weight(1f),
@@ -140,7 +140,7 @@ private fun ActionsScreen(
                                 textAlign = TextAlign.Center,
                             )
 
-                            if (state.data.shortcuts.isNotEmpty()) {
+                            if (data.shortcuts.isNotEmpty()) {
                                 Text(
                                     text = stringResource(R.string.recently_used_actions),
                                     style = MaterialTheme.typography.titleSmall,
@@ -152,7 +152,7 @@ private fun ActionsScreen(
                                     modifier = Modifier
                                         .padding(horizontal = 32.dp)
                                         .fillMaxWidth(),
-                                    shortcuts = state.data.shortcuts,
+                                    shortcuts = data.shortcuts,
                                     onClick = onClickShortcut,
                                 )
                             }
@@ -162,7 +162,7 @@ private fun ActionsScreen(
                     is ConfigActionsState.Loaded -> {
                         Spacer(Modifier.height(8.dp))
 
-                        if (state.data.actions.isNotEmpty()) {
+                        if (data.actions.isNotEmpty()) {
                             Spacer(Modifier.height(8.dp))
 
                             Text(
@@ -176,9 +176,9 @@ private fun ActionsScreen(
 
                         ActionList(
                             modifier = Modifier.weight(1f),
-                            actionList = state.data.actions,
-                            shortcuts = state.data.shortcuts,
-                            isReorderingEnabled = state.data.isReorderingEnabled,
+                            actionList = data.actions,
+                            shortcuts = data.shortcuts,
+                            isReorderingEnabled = data.isReorderingEnabled,
                             onRemoveClick = {
                                 actionToDelete = it
                                 showDeleteDialog = true

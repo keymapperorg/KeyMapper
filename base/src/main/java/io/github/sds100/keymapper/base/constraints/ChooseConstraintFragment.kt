@@ -22,8 +22,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.withStateAtLeast
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import io.github.sds100.keymapper.compose.KeyMapperTheme
-import io.github.sds100.keymapper.databinding.FragmentComposeBinding
+import io.github.sds100.keymapper.base.compose.KeyMapperTheme
+import io.github.sds100.keymapper.base.databinding.FragmentComposeBinding
 import io.github.sds100.keymapper.base.utils.Inject
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.setupNavigation

@@ -4,8 +4,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
-import io.github.sds100.keymapper.simple
+import io.github.sds100.keymapper.base.databinding.FragmentSimpleRecyclerviewBinding
+import io.github.sds100.keymapper.base.simple
 import io.github.sds100.keymapper.base.utils.Inject
 import io.github.sds100.keymapper.base.utils.ui.RecyclerViewUtils
 import io.github.sds100.keymapper.base.utils.ui.SimpleRecyclerViewFragment

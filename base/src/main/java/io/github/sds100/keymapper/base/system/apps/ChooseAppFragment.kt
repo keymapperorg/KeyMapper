@@ -9,8 +9,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
 import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.databinding.FragmentChooseAppBinding
-import io.github.sds100.keymapper.simple
+import io.github.sds100.keymapper.base.databinding.FragmentChooseAppBinding
+import io.github.sds100.keymapper.base.simple
 import io.github.sds100.keymapper.base.utils.Inject
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.RecyclerViewFragment

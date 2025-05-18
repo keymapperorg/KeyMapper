@@ -6,7 +6,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.keymaps.KeyMap
+import io.github.sds100.keymapper.base.utils.DndModeStrings
 import io.github.sds100.keymapper.base.utils.InputEventStrings
+import io.github.sds100.keymapper.base.utils.RingerModeStrings
+import io.github.sds100.keymapper.base.utils.VolumeStreamStrings
 import io.github.sds100.keymapper.base.utils.ui.IconInfo
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.TintType
@@ -19,9 +22,6 @@ import io.github.sds100.keymapper.common.utils.toPercentString
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.intents.IntentTarget
-import io.github.sds100.keymapper.system.volume.DndModeUtils
-import io.github.sds100.keymapper.system.volume.RingerModeUtils
-import io.github.sds100.keymapper.system.volume.VolumeStreamUtils
 
 class ActionUiHelper(
     displayActionUseCase: DisplayActionUseCase,
@@ -90,7 +90,7 @@ class ActionUiHelper(
         }
 
         is ActionData.DoNotDisturb.Enable -> {
-            val dndModeString = getString(DndModeUtils.getLabel(action.dndMode))
+            val dndModeString = getString(DndModeStrings.getLabel(action.dndMode))
             getString(
                 R.string.action_enable_dnd_mode_formatted,
                 dndModeString,
@@ -98,7 +98,7 @@ class ActionUiHelper(
         }
 
         is ActionData.DoNotDisturb.Toggle -> {
-            val dndModeString = getString(DndModeUtils.getLabel(action.dndMode))
+            val dndModeString = getString(DndModeStrings.getLabel(action.dndMode))
             getString(
                 R.string.action_toggle_dnd_mode_formatted,
                 dndModeString,
@@ -108,7 +108,7 @@ class ActionUiHelper(
         ActionData.DoNotDisturb.Disable -> getString(R.string.action_disable_dnd_mode)
 
         is ActionData.Volume.SetRingerMode -> {
-            val ringerModeString = getString(RingerModeUtils.getLabel(action.ringerMode))
+            val ringerModeString = getString(RingerModeStrings.getLabel(action.ringerMode))
 
             getString(R.string.action_change_ringer_mode_formatted, ringerModeString)
         }
@@ -120,7 +120,7 @@ class ActionUiHelper(
             when (action) {
                 is ActionData.Volume.Stream -> {
                     val streamString = getString(
-                        VolumeStreamUtils.getLabel(action.volumeStream),
+                        VolumeStreamStrings.getLabel(action.volumeStream),
                     )
 
                     if (action.showVolumeUi) {
@@ -190,7 +190,7 @@ class ActionUiHelper(
 
                 is ActionData.Volume.SetRingerMode -> {
                     val ringerModeString =
-                        getString(RingerModeUtils.getLabel(action.ringerMode))
+                        getString(RingerModeStrings.getLabel(action.ringerMode))
 
                     string = getString(
                         R.string.action_change_ringer_mode_formatted,

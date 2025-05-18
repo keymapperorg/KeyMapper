@@ -4,30 +4,29 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
-import io.github.sds100.keymapper.databinding.FragmentSimpleRecyclerviewBinding
-import io.github.sds100.keymapper.simple
-import io.github.sds100.keymapper.base.utils.Inject
-import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
+import dagger.hilt.android.AndroidEntryPoint
+import io.github.sds100.keymapper.base.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.base.utils.ui.RecyclerViewUtils
 import io.github.sds100.keymapper.base.utils.ui.SimpleListItemOld
 import io.github.sds100.keymapper.base.utils.ui.SimpleRecyclerViewFragment
+import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.base.simple
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 
+@AndroidEntryPoint
 class ChooseKeyCodeFragment : SimpleRecyclerViewFragment<SimpleListItemOld>() {
     companion object {
         const val EXTRA_KEYCODE = "extra_keycode"
         const val SEARCH_STATE_KEY = "key_keycode_search_state"
     }
 
-    override var searchStateKey: String? =
-        io.github.sds100.keymapper.mapping.actions.keyevent.ChooseKeyCodeFragment.Companion.SEARCH_STATE_KEY
+    override var searchStateKey: String? = SEARCH_STATE_KEY
 
     private val args: ChooseKeyCodeFragmentArgs by navArgs()
-    private val viewModel: io.github.sds100.keymapper.base.actions.keyevent.ChooseKeyCodeViewModel by viewModels {
-        Inject.chooseKeyCodeViewModel()
-    }
+
+    private val viewModel: ChooseKeyCodeViewModel by viewModels()
 
     override val listItems: Flow<State<List<SimpleListItemOld>>>
         get() = viewModel.state
@@ -39,7 +38,7 @@ class ChooseKeyCodeFragment : SimpleRecyclerViewFragment<SimpleListItemOld>() {
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.returnResult.collectLatest {
-                returnResult(io.github.sds100.keymapper.mapping.actions.keyevent.ChooseKeyCodeFragment.Companion.EXTRA_KEYCODE to it)
+                returnResult(EXTRA_KEYCODE to it)
             }
         }
     }

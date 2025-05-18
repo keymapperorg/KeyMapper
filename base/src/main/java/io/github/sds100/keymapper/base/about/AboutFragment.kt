@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.databinding.FragmentAboutBinding
+import io.github.sds100.keymapper.base.databinding.FragmentAboutBinding
 import javax.inject.Inject
 
 class AboutFragment : Fragment() {

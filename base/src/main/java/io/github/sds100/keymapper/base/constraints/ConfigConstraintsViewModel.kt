@@ -163,7 +163,7 @@ class ConfigConstraintsViewModel @Inject constructor(
             val icon: ComposeIconInfo = uiHelper.getIcon(constraint)
             val error: Error? = errorSnapshot.getError(constraint)
 
-            io.github.sds100.keymapper.mapping.constraints.ConstraintListItemModel(
+            io.github.sds100.keymapper.base.constraints.ConstraintListItemModel(
                 id = constraint.uid,
                 icon = icon,
                 constraintModeLink = if (state.constraints.size > 1 && index < state.constraints.size - 1) {
@@ -191,7 +191,7 @@ sealed class ConfigConstraintsState {
     ) : ConfigConstraintsState()
 
     data class Loaded(
-        val constraintList: List<io.github.sds100.keymapper.mapping.constraints.ConstraintListItemModel>,
+        val constraintList: List<io.github.sds100.keymapper.base.constraints.ConstraintListItemModel>,
         val selectedMode: ConstraintMode,
         val shortcuts: Set<ShortcutModel<Constraint>> = emptySet(),
     ) : ConfigConstraintsState()

@@ -1,13 +1,13 @@
 package io.github.sds100.keymapper.base.trigger
 
 import android.view.KeyEvent
-import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.base.keymaps.detection.DpadMotionEventTracker
+import io.github.sds100.keymapper.base.utils.ServiceEvent
+import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
-import io.github.sds100.keymapper.base.utils.ServiceEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -17,9 +17,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-
-class RecordTriggerController(
+class RecordTriggerController @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val serviceAdapter: AccessibilityServiceAdapter,
 ) : RecordTriggerUseCase {

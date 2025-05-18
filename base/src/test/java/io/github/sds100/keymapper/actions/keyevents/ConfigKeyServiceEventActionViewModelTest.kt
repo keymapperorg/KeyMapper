@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.actions.keyevents
+package io.github.sds100.keymapper.base.actions.keyevents
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.github.sds100.keymapper.base.actions.keyevent.ConfigKeyEventActionViewModel

@@ -1,40 +1,41 @@
 package io.github.sds100.keymapper.base.keymaps
 
 import android.database.sqlite.SQLiteConstraintException
-import io.github.sds100.keymapper.mapping.actions.Action
-import io.github.sds100.keymapper.mapping.actions.ActionData
-import io.github.sds100.keymapper.mapping.actions.RepeatMode
+import io.github.sds100.keymapper.base.actions.Action
+import io.github.sds100.keymapper.base.actions.ActionData
+import io.github.sds100.keymapper.base.actions.RepeatMode
+import io.github.sds100.keymapper.base.constraints.Constraint
+import io.github.sds100.keymapper.base.constraints.ConstraintMode
+import io.github.sds100.keymapper.base.constraints.ConstraintState
+import io.github.sds100.keymapper.base.floating.FloatingButtonEntityMapper
+import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
+import io.github.sds100.keymapper.base.trigger.AssistantTriggerKey
+import io.github.sds100.keymapper.base.trigger.AssistantTriggerType
+import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
+import io.github.sds100.keymapper.base.trigger.FloatingButtonKey
+import io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey
+import io.github.sds100.keymapper.base.trigger.KeyEventDetectionSource
+import io.github.sds100.keymapper.base.trigger.Trigger
+import io.github.sds100.keymapper.base.trigger.TriggerKey
+import io.github.sds100.keymapper.base.trigger.TriggerKeyDevice
+import io.github.sds100.keymapper.base.trigger.TriggerMode
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
+import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.ifIsData
-import io.github.sds100.keymapper.mapping.constraints.Constraint
-import io.github.sds100.keymapper.mapping.constraints.ConstraintMode
-import io.github.sds100.keymapper.mapping.constraints.ConstraintState
+import io.github.sds100.keymapper.common.utils.moveElement
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
+import io.github.sds100.keymapper.data.repositories.KeyMapRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.floating.FloatingButtonEntityMapper
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
-import io.github.sds100.keymapper.mapping.trigger.AssistantTriggerKey
-import io.github.sds100.keymapper.mapping.trigger.AssistantTriggerType
-import io.github.sds100.keymapper.mapping.trigger.FingerprintTriggerKey
-import io.github.sds100.keymapper.mapping.trigger.FloatingButtonKey
-import io.github.sds100.keymapper.mapping.trigger.KeyEventDetectionSource
-import io.github.sds100.keymapper.mapping.trigger.Trigger
-import io.github.sds100.keymapper.mapping.trigger.TriggerKey
-import io.github.sds100.keymapper.mapping.trigger.TriggerKeyDevice
-import io.github.sds100.keymapper.mapping.trigger.TriggerMode
-import io.github.sds100.keymapper.base.system.accessibility.ServiceEvent
-import io.github.sds100.keymapper.common.utils.firstBlocking
-import io.github.sds100.keymapper.common.utils.moveElement
-import io.github.sds100.keymapper.data.repositories.KeyMapRepository
-import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -872,7 +873,7 @@ class ConfigKeyMapUseCaseController @Inject constructor(
         return floatingLayoutRepository.count()
     }
 
-    override suspend fun sendServiceEvent(event: io.github.sds100.keymapper.base.system.accessibility.ServiceEvent): Result<*> {
+    override suspend fun sendServiceEvent(event: AccessibilityServiceEvent): Result<*> {
         return serviceAdapter.send(event)
     }
 
@@ -989,7 +990,7 @@ interface ConfigKeyMapUseCase : GetDefaultKeyMapOptionsUseCase {
     fun removeConstraint(id: String)
     fun setAndMode()
     fun setOrMode()
-    suspend fun sendServiceEvent(event: io.github.sds100.keymapper.base.system.accessibility.ServiceEvent): Result<*>
+    suspend fun sendServiceEvent(event: AccessibilityServiceEvent): Result<*>
 
     // trigger
     fun addKeyCodeTriggerKey(
