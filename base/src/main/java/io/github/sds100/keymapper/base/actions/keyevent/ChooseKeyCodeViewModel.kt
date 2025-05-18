@@ -5,13 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.actions.ActionData
-import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.base.utils.filterByQuery
 import io.github.sds100.keymapper.base.utils.ui.DefaultSimpleListItem
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.SimpleListItemOld
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,9 +21,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 @HiltViewModel
-class ChooseKeyCodeViewModel :
+class ChooseKeyCodeViewModel @Inject constructor() :
     ViewModel(),
     PopupViewModel by PopupViewModelImpl() {
 

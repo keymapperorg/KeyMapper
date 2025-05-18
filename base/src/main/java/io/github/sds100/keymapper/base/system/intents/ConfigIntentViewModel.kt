@@ -8,7 +8,20 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.sds100.keymapper.R
+import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.utils.ui.DialogResponse
+import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
+import io.github.sds100.keymapper.base.utils.ui.NavDestination
+import io.github.sds100.keymapper.base.utils.ui.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.ui.NavigationViewModelImpl
+import io.github.sds100.keymapper.base.utils.ui.PopupUi
+import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
+import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.base.utils.ui.navigate
+import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.common.utils.hasFlag
+import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.system.apps.ActivityInfo
 import io.github.sds100.keymapper.system.intents.BoolArrayExtraType
 import io.github.sds100.keymapper.system.intents.BoolExtraType
@@ -33,17 +46,8 @@ import io.github.sds100.keymapper.system.intents.ShortArrayExtraType
 import io.github.sds100.keymapper.system.intents.ShortExtraType
 import io.github.sds100.keymapper.system.intents.StringArrayExtraType
 import io.github.sds100.keymapper.system.intents.StringExtraType
-import io.github.sds100.keymapper.base.utils.DialogResponse
-import io.github.sds100.keymapper.base.utils.MultiChoiceItem
-import io.github.sds100.keymapper.base.utils.NavDestination
-import io.github.sds100.keymapper.base.utils.NavigationViewModel
-import io.github.sds100.keymapper.base.utils.NavigationViewModelImpl
-import io.github.sds100.keymapper.base.utils.PopupUi
-import io.github.sds100.keymapper.base.utils.PopupViewModel
-import io.github.sds100.keymapper.base.utils.PopupViewModelImpl
-import io.github.sds100.keymapper.base.utils.ResourceProvider
-import io.github.sds100.keymapper.base.utils.navigate
-import io.github.sds100.keymapper.base.utils.showPopup
+import io.github.sds100.keymapper.utils.getExampleStringRes
+import io.github.sds100.keymapper.utils.getLabelStringRes
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,8 +59,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import io.github.sds100.keymapper.common.utils.hasFlag
-import io.github.sds100.keymapper.common.utils.withFlag
 import javax.inject.Inject
 
 @HiltViewModel
@@ -70,23 +72,23 @@ class ConfigIntentViewModel @Inject constructor(
     companion object {
         private val EXTRA_TYPES = arrayOf(
             BoolExtraType,
-            BoolArrayExtraType(),
-            IntExtraType(),
-            IntArrayExtraType(),
-            StringExtraType(),
-            StringArrayExtraType(),
-            LongExtraType(),
-            LongArrayExtraType(),
-            ByteExtraType(),
-            ByteArrayExtraType(),
-            DoubleExtraType(),
-            DoubleArrayExtraType(),
-            CharExtraType(),
-            CharArrayExtraType(),
-            FloatExtraType(),
-            FloatArrayExtraType(),
-            ShortExtraType(),
-            ShortArrayExtraType(),
+            BoolArrayExtraType,
+            IntExtraType,
+            IntArrayExtraType,
+            StringExtraType,
+            StringArrayExtraType,
+            LongExtraType,
+            LongArrayExtraType,
+            ByteExtraType,
+            ByteArrayExtraType,
+            DoubleExtraType,
+            DoubleArrayExtraType,
+            CharExtraType,
+            CharArrayExtraType,
+            FloatExtraType,
+            FloatArrayExtraType,
+            ShortExtraType,
+            ShortArrayExtraType,
         )
 
         val availableIntentFlags: List<Pair<Int, String>> =
@@ -318,14 +320,14 @@ class ConfigIntentViewModel @Inject constructor(
 
     fun onAddExtraClick() {
         viewModelScope.launch {
-            val items = EXTRA_TYPES.map { it to getString(it.labelStringRes) }
+            val items = EXTRA_TYPES.map { it to getString(it.getLabelStringRes()) }
 
             val dialog = PopupUi.SingleChoice(items)
 
             val extraType = showPopup("add_extra", dialog) ?: return@launch
 
             val modelValue = when (extraType) {
-                is BoolExtraType -> "true"
+                BoolExtraType -> "true"
                 else -> ""
             }
 
@@ -416,21 +418,21 @@ class ConfigIntentViewModel @Inject constructor(
 
             val extraType = when (value) {
                 is Boolean -> BoolExtraType
-                is BooleanArray -> BoolArrayExtraType()
-                is Int -> IntExtraType()
-                is IntArray -> IntArrayExtraType()
-                is Long -> LongExtraType()
-                is LongArrayExtraType -> LongArrayExtraType()
-                is Byte -> ByteExtraType()
-                is ByteArrayExtraType -> ByteArrayExtraType()
-                is Double -> DoubleExtraType()
-                is DoubleArray -> DoubleArrayExtraType()
-                is Float -> FloatExtraType()
-                is FloatArray -> FloatArrayExtraType()
-                is Short -> ShortExtraType()
-                is ShortArray -> ShortArrayExtraType()
-                is String -> StringExtraType()
-                is Array<*> -> StringArrayExtraType()
+                is BooleanArray -> BoolArrayExtraType
+                is Int -> IntExtraType
+                is IntArray -> IntArrayExtraType
+                is Long -> LongExtraType
+                is LongArrayExtraType -> LongArrayExtraType
+                is Byte -> ByteExtraType
+                is ByteArrayExtraType -> ByteArrayExtraType
+                is Double -> DoubleExtraType
+                is DoubleArray -> DoubleArrayExtraType
+                is Float -> FloatExtraType
+                is FloatArray -> FloatArrayExtraType
+                is Short -> ShortExtraType
+                is ShortArray -> ShortArrayExtraType
+                is String -> StringExtraType
+                is Array<*> -> StringArrayExtraType
                 else -> throw IllegalArgumentException("Don't know how to convert this extra (${value.javaClass.name}) to an IntentExtraType")
             }
 
@@ -533,11 +535,11 @@ class ConfigIntentViewModel @Inject constructor(
 
             GenericIntentExtraListItem(
                 uid,
-                getString(type.labelStringRes),
+                getString(type.getLabelStringRes()),
                 name,
                 value,
                 isValidValue,
-                getString(type.exampleStringRes),
+                getString(type.getExampleStringRes()),
                 inputType,
             )
         }

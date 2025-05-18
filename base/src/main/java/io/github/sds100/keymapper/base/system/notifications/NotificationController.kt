@@ -5,6 +5,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.ui.ResourceProvider
@@ -15,6 +16,7 @@ import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.mapping.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.system.accessibility.ControlAccessibilityServiceUseCase
+import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.inputmethod.ShowHideInputMethodUseCase
 import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
@@ -105,7 +107,7 @@ class NotificationController @Inject constructor(
     private val _showToast = MutableSharedFlow<String>()
     val showToast = _showToast.asSharedFlow()
 
-    init {
+    fun init() {
         manageNotifications.deleteChannel(CHANNEL_ID_WARNINGS)
         manageNotifications.deleteChannel(CHANNEL_ID_PERSISTENT)
 

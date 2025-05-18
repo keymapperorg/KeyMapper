@@ -4,6 +4,7 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
@@ -33,8 +34,9 @@ class AutoSwitchImeController @Inject constructor(
     private val toastAdapter: ToastAdapter,
     private val resourceProvider: ResourceProvider,
     private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
+    private val buildConfigProvider: BuildConfigProvider,
 ) : PreferenceRepository by preferenceRepository {
-    private val imeHelper = KeyMapperImeHelper(inputMethodAdapter)
+    private val imeHelper = KeyMapperImeHelper(inputMethodAdapter, buildConfigProvider.packageName)
 
     private val devicesThatToggleKeyboard
         by PrefDelegate(Keys.devicesThatChangeIme, emptySet())
@@ -54,7 +56,7 @@ class AutoSwitchImeController @Inject constructor(
 
     private var showToast: Boolean = PreferenceDefaults.SHOW_TOAST_WHEN_AUTO_CHANGE_IME
 
-    init {
+    fun init() {
         pauseKeyMapsUseCase.isPaused.onEach { isPaused ->
 
             if (!toggleKeyboardOnToggleKeymaps) return@onEach
