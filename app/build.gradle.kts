@@ -22,7 +22,7 @@ android {
     buildToolsVersion = libs.versions.build.tools.get()
 
     val versionProperties = Properties().apply {
-        project.file("version.properties").inputStream().use { load(it) }
+        rootProject.file("base/version.properties").inputStream().use { load(it) }
     }
 
     defaultConfig {
@@ -231,27 +231,4 @@ dependencies {
     implementation(libs.google.accompanist.drawablepainter)
     implementation(libs.androidx.compose.ui.tooling)
 
-//    debugImplementation(libs.squareup.leakcanary.android) // Keep commented
-
-    // Dependencies for local unit tests
-    testImplementation(libs.junit)
-    testImplementation(libs.hamcrest.all)
-    testImplementation(libs.androidx.junit.ktx) // androidx.test.ext:junit-ktx
-    testImplementation(libs.androidx.test.core.ktx)
-    testImplementation(libs.androidx.test.core)
-    testImplementation(libs.robolectric)
-    testImplementation(libs.androidx.arch.core.testing)
-    testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.junit.params)
-    testImplementation(libs.mockito.kotlin)
-    testImplementation(libs.mockito.core)
-    testImplementation(libs.mockito.inline)
-    testDebugImplementation(libs.androidx.fragment.testing)
-
-    // Dependencies for Android instrumented tests
-    androidTestImplementation(libs.androidx.test.ext.junit) // androidx.test.ext:junit
-    androidTestImplementation(libs.junit) // Repeated, fine
-    androidTestImplementation(libs.androidx.navigation.testing)
-    androidTestImplementation(libs.androidx.room.testing.legacy)
-    androidTestImplementation(libs.mockito.android)
 }

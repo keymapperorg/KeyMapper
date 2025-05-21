@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -15,11 +17,21 @@ android {
     namespace = "io.github.sds100.keymapper.base"
     compileSdk = libs.versions.compile.sdk.get().toInt()
 
+    val versionProperties = Properties().apply {
+        project.file("version.properties").inputStream().use { load(it) }
+    }
+
     defaultConfig {
         minSdk = libs.versions.min.sdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+
+        buildConfigField(
+            "Integer",
+            "VERSION_CODE",
+            versionProperties.getProperty("VERSION_CODE"),
+        )
     }
 
     buildTypes {
@@ -27,7 +39,7 @@ android {
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -118,4 +130,27 @@ dependencies {
     implementation(libs.androidx.compose.material3.adaptive.navigation)
     implementation(libs.google.accompanist.drawablepainter)
     implementation(libs.androidx.compose.ui.tooling)
+
+    // Tests
+
+    testImplementation(libs.junit)
+    testImplementation(libs.hamcrest.all)
+    testImplementation(libs.androidx.junit.ktx) // androidx.test.ext:junit-ktx
+    testImplementation(libs.androidx.test.core.ktx)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.arch.core.testing)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.junit.params)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.inline)
+    testDebugImplementation(libs.androidx.fragment.testing)
+
+    // Dependencies for Android instrumented tests
+    androidTestImplementation(libs.androidx.test.ext.junit) // androidx.test.ext:junit
+    androidTestImplementation(libs.junit) // Repeated, fine
+    androidTestImplementation(libs.androidx.navigation.testing)
+    androidTestImplementation(libs.androidx.room.testing.legacy)
+    androidTestImplementation(libs.mockito.android)
 }
