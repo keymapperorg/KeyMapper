@@ -1,6 +1,10 @@
 package io.github.sds100.keymapper.base.trigger
 
+import io.github.sds100.keymapper.base.floating.FloatingButtonEntityMapper
+import io.github.sds100.keymapper.base.keymaps.ClickType
+import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.valueOrNull
+import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.entities.AssistantTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.FingerprintTriggerKeyEntity
@@ -9,13 +13,8 @@ import io.github.sds100.keymapper.data.entities.FloatingButtonKeyEntity
 import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.getData
-import io.github.sds100.keymapper.floating.FloatingButtonEntityMapper
-import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import kotlinx.serialization.Serializable
-import io.github.sds100.keymapper.common.utils.hasFlag
-import io.github.sds100.keymapper.common.utils.withFlag
-
 
 
 @Serializable

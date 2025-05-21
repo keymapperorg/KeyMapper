@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.jlleitschuh.gradle.ktlint)
+    alias(libs.plugins.dagger.hilt.android)
 }
 
 android {

@@ -5,10 +5,10 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.sds100.keymapper.BuildConfig
+import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.common.KeyMapperClassProvider
 import io.github.sds100.keymapper.common.utils.DefaultDispatcherProvider
 import io.github.sds100.keymapper.common.utils.DispatcherProvider
-import io.github.sds100.keymapper.common.BuildConfigProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import javax.inject.Singleton
@@ -37,5 +37,13 @@ class AppHiltModule {
             get() = BuildConfig.VERSION_NAME
         override val versionCode: Int
             get() = BuildConfig.VERSION_CODE
+    }
+
+    @Singleton
+    @Provides
+    fun provideClassProvider(): KeyMapperClassProvider = object : KeyMapperClassProvider {
+        override fun getMainActivity(): Class<*> {
+            return MainActivity::class.java
+        }
     }
 }

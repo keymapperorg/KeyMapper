@@ -6,21 +6,20 @@ import androidx.activity.addCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.bottomappbar.BottomAppBar
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.system.url.UrlUtils
-import io.github.sds100.keymapper.base.utils.Inject
-import io.github.sds100.keymapper.base.utils.ui.str
 import io.github.sds100.keymapper.base.utils.ui.showPopups
+import io.github.sds100.keymapper.base.utils.ui.str
+import io.github.sds100.keymapper.system.url.UrlUtils
 
+@AndroidEntryPoint
 abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
 
-    val viewModel by activityViewModels<SettingsViewModel> {
-        Inject.settingsViewModel(requireContext())
-    }
+    protected val viewModel: SettingsViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

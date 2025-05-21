@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.keymaps.ClickType
-import io.github.sds100.keymapper.base.keymaps.FingerprintGestureType
+import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
@@ -49,7 +49,7 @@ import kotlinx.coroutines.launch
 fun TriggerKeyOptionsBottomSheet(
     modifier: Modifier = Modifier,
     sheetState: SheetState,
-    state: _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyOptionsState,
+    state: TriggerKeyOptionsState,
     onDismissRequest: () -> Unit = {},
     onCheckDoNotRemap: (Boolean) -> Unit = {},
     onSelectClickType: (ClickType) -> Unit = {},
@@ -96,7 +96,7 @@ fun TriggerKeyOptionsBottomSheet(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            if (state is _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyOptionsState.KeyCode) {
+            if (state is TriggerKeyOptionsState.KeyCode) {
                 CheckBoxText(
                     modifier = Modifier.padding(8.dp),
                     text = stringResource(R.string.flag_dont_override_default_action),
@@ -146,7 +146,7 @@ fun TriggerKeyOptionsBottomSheet(
                 }
             }
 
-            if (state is _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyOptionsState.KeyCode) {
+            if (state is TriggerKeyOptionsState.KeyCode) {
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     text = stringResource(R.string.trigger_key_device_header),
@@ -161,7 +161,7 @@ fun TriggerKeyOptionsBottomSheet(
                         onSelected = { onSelectDevice(device.id) },
                     )
                 }
-            } else if (state is _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyOptionsState.Assistant) {
+            } else if (state is TriggerKeyOptionsState.Assistant) {
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     text = stringResource(R.string.trigger_key_assistant_type_header),
@@ -188,7 +188,7 @@ fun TriggerKeyOptionsBottomSheet(
                     isSelected = state.assistantType == AssistantTriggerType.VOICE,
                     onSelected = { onSelectAssistantType(AssistantTriggerType.VOICE) },
                 )
-            } else if (state is _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyOptionsState.FingerprintGesture) {
+            } else if (state is TriggerKeyOptionsState.FingerprintGesture) {
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     text = stringResource(R.string.trigger_key_fingerprint_gesture_type_header),
@@ -226,7 +226,7 @@ fun TriggerKeyOptionsBottomSheet(
 
             Spacer(Modifier.height(8.dp))
 
-            if (state is _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyOptionsState.FloatingButton && state.isPurchased) {
+            if (state is TriggerKeyOptionsState.FloatingButton && state.isPurchased) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -296,7 +296,7 @@ private fun Preview() {
 
         TriggerKeyOptionsBottomSheet(
             sheetState = sheetState,
-            state = _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyOptionsState.KeyCode(
+            state = TriggerKeyOptionsState.KeyCode(
                 doNotRemapChecked = true,
                 clickType = ClickType.DOUBLE_PRESS,
                 showClickTypes = true,
@@ -330,7 +330,7 @@ private fun AssistantPreview() {
 
         TriggerKeyOptionsBottomSheet(
             sheetState = sheetState,
-            state = _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyOptionsState.Assistant(
+            state = TriggerKeyOptionsState.Assistant(
                 assistantType = AssistantTriggerType.VOICE,
                 clickType = ClickType.DOUBLE_PRESS,
             ),
@@ -351,7 +351,7 @@ private fun FloatingButtonPreview() {
 
         TriggerKeyOptionsBottomSheet(
             sheetState = sheetState,
-            state = _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyOptionsState.FloatingButton(
+            state = TriggerKeyOptionsState.FloatingButton(
                 clickType = ClickType.SHORT_PRESS,
                 showClickTypes = true,
                 isPurchased = true,

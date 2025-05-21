@@ -1,16 +1,16 @@
 package io.github.sds100.keymapper.base.actions.uielement
 
 import android.graphics.drawable.Drawable
+import io.github.sds100.keymapper.base.system.accessibility.RecordAccessibilityNodeEvent
+import io.github.sds100.keymapper.base.system.accessibility.RecordAccessibilityNodeState
 import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
 import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
-import io.github.sds100.keymapper.base.system.accessibility.RecordAccessibilityNodeState
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
-import io.github.sds100.keymapper.base.utils.ServiceEvent
-import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.common.utils.mapData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,7 +41,7 @@ class InteractUiElementController(
 
     init {
         serviceAdapter.eventReceiver
-            .filterIsInstance<ServiceEvent.OnRecordNodeStateChanged>()
+            .filterIsInstance<RecordAccessibilityNodeEvent.OnRecordNodeStateChanged>()
             .onEach { event -> recordState.update { event.state } }
             .launchIn(coroutineScope)
     }
@@ -64,11 +64,11 @@ class InteractUiElementController(
 
     override suspend fun startRecording(): Result<*> {
         nodeRepository.deleteAll()
-        return serviceAdapter.send(ServiceEvent.StartRecordingNodes)
+        return serviceAdapter.send(RecordAccessibilityNodeEvent.StartRecordingNodes)
     }
 
     override suspend fun stopRecording() {
-        serviceAdapter.send(ServiceEvent.StopRecordingNodes).onFailure {
+        serviceAdapter.send(RecordAccessibilityNodeEvent.StopRecordingNodes).onFailure {
             recordState.update { RecordAccessibilityNodeState.Idle }
         }
     }

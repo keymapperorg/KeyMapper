@@ -1,24 +1,72 @@
 package io.github.sds100.keymapper.system.accessibility
 
-import android.app.ActivityManager
 import android.content.Intent
-import android.content.res.Configuration
-import android.os.Build
-import android.view.KeyEvent
-import android.view.accessibility.AccessibilityEvent
-import androidx.core.content.getSystemService
-import androidx.lifecycle.Lifecycle
+import dagger.hilt.android.AndroidEntryPoint
+import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
+import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
+import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
+import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
+import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCase
+import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsUseCase
+import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilityService
-import io.github.sds100.keymapper.system.devices.InputDeviceUtils
-import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
-import io.github.sds100.keymapper.base.trigger.KeyEventDetectionSource
-import kotlinx.coroutines.flow.update
+import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilityServiceController
+import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.system.devices.DevicesAdapter
+import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
+import io.github.sds100.keymapper.system.root.SuAdapter
+import kotlinx.coroutines.CoroutineScope
 import timber.log.Timber
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class MyAccessibilityService : BaseAccessibilityService() {
 
-    var controller: AccessibilityServiceController? = null
+    private var controller: AccessibilityServiceController? = null
+
+    @Inject
+    lateinit var coroutineScope: CoroutineScope
+
+    @Inject
+    lateinit var accessibilityServiceAdapter: AccessibilityServiceAdapterImpl
+
+    @Inject
+    lateinit var detectConstraintsUseCase: DetectConstraintsUseCase
+
+    @Inject
+    lateinit var performActionsUseCase: PerformActionsUseCase
+
+    @Inject
+    lateinit var detectKeyMapsUseCase: DetectKeyMapsUseCase
+
+    @Inject
+    lateinit var fingerprintGesturesSupportedUseCase: FingerprintGesturesSupportedUseCase
+
+    @Inject
+    lateinit var rerouteKeyEventsUseCase: RerouteKeyEventsUseCase
+
+    @Inject
+    lateinit var pauseKeyMapsUseCase: PauseKeyMapsUseCase
+
+    @Inject
+    lateinit var devicesAdapter: DevicesAdapter
+
+    @Inject
+    lateinit var suAdapter: SuAdapter
+
+    @Inject
+    lateinit var inputMethodAdapter: InputMethodAdapter
+
+    @Inject
+    lateinit var preferenceRepository: PreferenceRepository
+
+    @Inject
+    lateinit var nodeRepository: AccessibilityNodeRepository
+
+    override fun getController(): BaseAccessibilityServiceController? {
+        return controller
+    }
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -28,7 +76,23 @@ class MyAccessibilityService : BaseAccessibilityService() {
         context would return null
          */
         if (controller == null) {
-            controller = AccessibilityServiceController()
+            controller = AccessibilityServiceController(
+                coroutineScope = coroutineScope,
+                accessibilityService = this,
+                inputEvents = accessibilityServiceAdapter.eventReceiver,
+                outputEvents = accessibilityServiceAdapter.eventsToService,
+                detectConstraintsUseCase = detectConstraintsUseCase,
+                performActionsUseCase = performActionsUseCase,
+                detectKeyMapsUseCase = detectKeyMapsUseCase,
+                fingerprintGesturesSupportedUseCase = fingerprintGesturesSupportedUseCase,
+                rerouteKeyEventsUseCase = rerouteKeyEventsUseCase,
+                pauseKeyMapsUseCase = pauseKeyMapsUseCase,
+                devicesAdapter = devicesAdapter,
+                suAdapter = suAdapter,
+                inputMethodAdapter = inputMethodAdapter,
+                settingsRepository = preferenceRepository,
+                nodeRepository = nodeRepository,
+            )
         }
 
         controller?.onServiceConnected()
@@ -45,73 +109,6 @@ class MyAccessibilityService : BaseAccessibilityService() {
         controller?.onDestroy()
         controller = null
 
-        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            fingerprintGestureController
-                .unregisterFingerprintGestureCallback(fingerprintGestureCallback)
-        }
-
-        keyEventRelayServiceWrapper.onDestroy()
-
-        Timber.i("Accessibility service: onDestroy")
-
         super.onDestroy()
     }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-
-        controller?.onConfigurationChanged(newConfig)
-    }
-
-    override fun onTrimMemory(level: Int) {
-        val memoryInfo = ActivityManager.MemoryInfo()
-        getSystemService<ActivityManager>()?.getMemoryInfo(memoryInfo)
-
-        Timber.i("Accessibility service: onLowMemory, total: ${memoryInfo.totalMem}, available: ${memoryInfo.availMem}, is low memory: ${memoryInfo.lowMemory}, threshold: ${memoryInfo.threshold}")
-
-        super.onTrimMemory(level)
-    }
-
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        event ?: return
-
-        if (event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED) {
-            _activeWindowPackage.update { rootInActiveWindow?.packageName?.toString() }
-        }
-
-        controller?.onAccessibilityEvent(event)
-    }
-
-    override fun onKeyEvent(event: KeyEvent?): Boolean {
-        event ?: return super.onKeyEvent(event)
-
-        val device = if (event.device == null) {
-            null
-        } else {
-            InputDeviceUtils.createInputDeviceInfo(event.device)
-        }
-
-        if (controller != null) {
-            return controller!!.onKeyEvent(
-                MyKeyEvent(
-                    keyCode = event.keyCode,
-                    action = event.action,
-                    metaState = event.metaState,
-                    scanCode = event.scanCode,
-                    device = device,
-                    repeatCount = event.repeatCount,
-                    source = event.source,
-                ),
-                KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
-            )
-        }
-
-        return false
-    }
-
-    override val lifecycle: Lifecycle
-        get() = lifecycleRegistry
-
 }

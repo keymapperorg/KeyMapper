@@ -9,22 +9,53 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.base.compose.ComposeColors
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
+import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.permissions.RequestPermissionDelegate
-import io.github.sds100.keymapper.base.utils.Inject
-import io.github.sds100.keymapper.base.utils.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.base.trigger.RecordTriggerController
+import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
+import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
+import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
+import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import kotlinx.coroutines.flow.collectLatest
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class CreateKeyMapShortcutActivity : AppCompatActivity() {
 
-    private val viewModel by viewModels<CreateKeyMapShortcutViewModel> {
-        Inject.createActionShortcutViewModel(this)
-    }
+    @Inject
+    lateinit var permissionAdapter: AndroidPermissionAdapter
+
+    @Inject
+    lateinit var serviceAdapter: AccessibilityServiceAdapterImpl
+
+    @Inject
+    lateinit var resourceProvider: ResourceProviderImpl
+
+    @Inject
+    lateinit var onboardingUseCase: OnboardingUseCase
+
+    @Inject
+    lateinit var recordTriggerController: RecordTriggerController
+
+    @Inject
+    lateinit var notificationReceiverAdapter: NotificationReceiverAdapterImpl
+
+    @Inject
+    lateinit var shizukuAdapter: ShizukuAdapter
+
+    @Inject
+    lateinit var buildConfigProvider: BuildConfigProvider
 
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
+
+    private val viewModel by viewModels<CreateKeyMapShortcutViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(
@@ -48,10 +79,17 @@ class CreateKeyMapShortcutActivity : AppCompatActivity() {
             }
         }
 
-        requestPermissionDelegate = RequestPermissionDelegate(this, showDialogs = true)
+        requestPermissionDelegate = RequestPermissionDelegate(
+            this,
+            showDialogs = true,
+            permissionAdapter,
+            notificationReceiverAdapter = notificationReceiverAdapter,
+            buildConfigProvider = buildConfigProvider,
+            shizukuAdapter = shizukuAdapter,
+        )
 
         launchRepeatOnLifecycle(Lifecycle.State.STARTED) {
-            ServiceLocator.permissionAdapter(this@CreateKeyMapShortcutActivity).request
+            permissionAdapter.request
                 .collectLatest { permission ->
                     requestPermissionDelegate.requestPermission(
                         permission,

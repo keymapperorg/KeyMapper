@@ -3,12 +3,8 @@ package io.github.sds100.keymapper.base.settings
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.common.utils.onFailure
-import io.github.sds100.keymapper.common.utils.onSuccess
-import io.github.sds100.keymapper.common.utils.otherwise
-import io.github.sds100.keymapper.base.utils.SharedPrefsDataStoreWrapper
-import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
@@ -17,23 +13,27 @@ import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.onFailure
+import io.github.sds100.keymapper.common.utils.onSuccess
+import io.github.sds100.keymapper.common.utils.otherwise
+import io.github.sds100.keymapper.data.utils.SharedPrefsDataStoreWrapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val useCase: ConfigSettingsUseCase,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    val sharedPrefsDataStoreWrapper: SharedPrefsDataStoreWrapper,
 ) : ViewModel(),
     PopupViewModel by PopupViewModelImpl(),
     ResourceProvider by resourceProvider {
-    val sharedPrefsDataStoreWrapper = SharedPrefsDataStoreWrapper(useCase)
 
     val automaticBackupLocation = useCase.automaticBackupLocation
 

@@ -2,8 +2,8 @@ package io.github.sds100.keymapper.base.keymaps
 
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.groups.GroupListItemModel
-import io.github.sds100.keymapper.home.HomeWarningListItem
-import io.github.sds100.keymapper.home.SelectedKeyMapsEnabled
+import io.github.sds100.keymapper.base.home.HomeWarningListItem
+import io.github.sds100.keymapper.base.home.SelectedKeyMapsEnabled
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
 
 sealed class KeyMapAppBarState {

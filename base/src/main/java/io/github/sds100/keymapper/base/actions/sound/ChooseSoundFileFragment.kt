@@ -24,10 +24,9 @@ import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.databinding.FragmentChooseSoundFileBinding
 import io.github.sds100.keymapper.base.simple
-import io.github.sds100.keymapper.system.files.FileUtils
-import io.github.sds100.keymapper.base.utils.Inject
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.showPopups
+import io.github.sds100.keymapper.system.files.FileUtils
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update

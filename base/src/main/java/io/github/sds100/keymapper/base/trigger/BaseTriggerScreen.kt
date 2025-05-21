@@ -43,32 +43,33 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
 import io.github.sds100.keymapper.base.keymaps.ShortcutRow
-import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.DraggableItem
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.base.utils.ui.compose.rememberDragDropState
+import io.github.sds100.keymapper.common.utils.State
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewModel) {
+fun BaseTriggerScreen(modifier: Modifier = Modifier, viewModel: BaseConfigTriggerViewModel) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val setupGuiKeyboardState by viewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
     val recordTriggerState by viewModel.recordTriggerState.collectAsStateWithLifecycle()
 
-    HandleAssistantTriggerSetupBottomSheet(viewModel = viewModel)
-
-    if (viewModel.showAdvancedTriggersBottomSheet) {
-        AdvancedTriggersBottomSheet(
-            modifier = Modifier.systemBarsPadding(),
-            viewModel = viewModel,
-            onDismissRequest = {
-                viewModel.showAdvancedTriggersBottomSheet = false
-            },
-            sheetState = sheetState,
-        )
-    }
+    // TODO
+//    HandleAssistantTriggerSetupBottomSheet(viewModel = viewModel)
+//
+//    if (viewModel.showAdvancedTriggersBottomSheet) {
+//        AdvancedTriggersBottomSheet(
+//            modifier = Modifier.systemBarsPadding(),
+//            viewModel = viewModel,
+//            onDismissRequest = {
+//                viewModel.showAdvancedTriggersBottomSheet = false
+//            },
+//            sheetState = sheetState,
+//        )
+//    }
 
     if (viewModel.showDpadTriggerSetupBottomSheet) {
         DpadTriggerSetupBottomSheet(
@@ -185,7 +186,7 @@ private fun Loading(modifier: Modifier = Modifier) {
 @Composable
 private fun TriggerScreenVertical(
     modifier: Modifier = Modifier,
-    configState: _root_ide_package_.io.github.sds100.keymapper.base.trigger.ConfigTriggerState,
+    configState: ConfigTriggerState,
     recordTriggerState: RecordTriggerState,
     onRemoveClick: (String) -> Unit = {},
     onEditClick: (String) -> Unit = {},
@@ -204,7 +205,7 @@ private fun TriggerScreenVertical(
     Surface(modifier = modifier) {
         Column {
             when (configState) {
-                is _root_ide_package_.io.github.sds100.keymapper.base.trigger.ConfigTriggerState.Empty -> {
+                is ConfigTriggerState.Empty -> {
                     Column(
                         modifier = Modifier
                             .weight(1f)
@@ -238,7 +239,7 @@ private fun TriggerScreenVertical(
                     }
                 }
 
-                is _root_ide_package_.io.github.sds100.keymapper.base.trigger.ConfigTriggerState.Loaded -> {
+                is ConfigTriggerState.Loaded -> {
                     val isCompact = isVerticalCompactLayout()
                     Spacer(Modifier.height(8.dp))
 
@@ -292,7 +293,7 @@ private fun TriggerScreenVertical(
                 onRecordTriggerClick = onRecordTriggerClick,
                 recordTriggerState = recordTriggerState,
                 onAdvancedTriggersClick = onAdvancedTriggersClick,
-                showRecordTriggerTapTarget = (configState as? _root_ide_package_.io.github.sds100.keymapper.base.trigger.ConfigTriggerState.Empty)?.showRecordTriggerTapTarget
+                showRecordTriggerTapTarget = (configState as? ConfigTriggerState.Empty)?.showRecordTriggerTapTarget
                     ?: false,
                 onRecordTriggerTapTargetCompleted = onRecordTriggerTapTargetCompleted,
                 onSkipTapTarget = onSkipTapTarget,
@@ -306,7 +307,7 @@ private fun TriggerScreenVertical(
 @Composable
 private fun TriggerScreenHorizontal(
     modifier: Modifier = Modifier,
-    configState: _root_ide_package_.io.github.sds100.keymapper.base.trigger.ConfigTriggerState,
+    configState: ConfigTriggerState,
     recordTriggerState: RecordTriggerState,
     onRemoveClick: (String) -> Unit = {},
     onEditClick: (String) -> Unit = {},
@@ -324,7 +325,7 @@ private fun TriggerScreenHorizontal(
 ) {
     Surface(modifier = modifier) {
         when (configState) {
-            is _root_ide_package_.io.github.sds100.keymapper.base.trigger.ConfigTriggerState.Empty -> Row {
+            is ConfigTriggerState.Empty -> Row {
                 Text(
                     modifier = Modifier
                         .widthIn(max = 400.dp)
@@ -364,7 +365,7 @@ private fun TriggerScreenHorizontal(
                         onRecordTriggerClick = onRecordTriggerClick,
                         recordTriggerState = recordTriggerState,
                         onAdvancedTriggersClick = onAdvancedTriggersClick,
-                        showRecordTriggerTapTarget = (configState as? _root_ide_package_.io.github.sds100.keymapper.base.trigger.ConfigTriggerState.Empty)?.showRecordTriggerTapTarget
+                        showRecordTriggerTapTarget = (configState as? ConfigTriggerState.Empty)?.showRecordTriggerTapTarget
                             ?: false,
                         onRecordTriggerTapTargetCompleted = onRecordTriggerTapTargetCompleted,
                         onSkipTapTarget = onSkipTapTarget,
@@ -373,7 +374,7 @@ private fun TriggerScreenHorizontal(
                 }
             }
 
-            is _root_ide_package_.io.github.sds100.keymapper.base.trigger.ConfigTriggerState.Loaded -> Row {
+            is ConfigTriggerState.Loaded -> Row {
                 TriggerList(
                     modifier = Modifier
                         .fillMaxHeight()
@@ -445,7 +446,7 @@ private fun TriggerScreenHorizontal(
 @Composable
 private fun TriggerList(
     modifier: Modifier = Modifier,
-    triggerList: List<_root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel>,
+    triggerList: List<TriggerKeyListItemModel>,
     shortcuts: Set<ShortcutModel<TriggerKeyShortcut>>,
     isReorderingEnabled: Boolean,
     onRemoveClick: (String) -> Unit,
@@ -593,7 +594,7 @@ private fun TriggerModeRadioGroup(
 }
 
 private val sampleList = listOf(
-    _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.KeyCode(
+    TriggerKeyListItemModel.KeyCode(
         id = "id1",
         keyName = "Volume Up",
         clickType = ClickType.SHORT_PRESS,
@@ -601,7 +602,7 @@ private val sampleList = listOf(
         linkType = LinkType.ARROW,
         error = null,
     ),
-    _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.FloatingButton(
+    TriggerKeyListItemModel.FloatingButton(
         id = "id2",
         buttonName = "😎",
         layoutName = "Gaming",
@@ -609,7 +610,7 @@ private val sampleList = listOf(
         linkType = LinkType.ARROW,
         error = null,
     ),
-    _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.Assistant(
+    TriggerKeyListItemModel.Assistant(
         id = "id3",
         assistantType = AssistantTriggerType.DEVICE,
         clickType = ClickType.DOUBLE_PRESS,
@@ -618,26 +619,27 @@ private val sampleList = listOf(
     ),
 )
 
-private val previewState = _root_ide_package_.io.github.sds100.keymapper.base.trigger.ConfigTriggerState.Loaded(
-    triggerKeys = sampleList,
-    isReorderingEnabled = true,
-    clickTypeButtons = setOf(
-        ClickType.SHORT_PRESS,
-        ClickType.LONG_PRESS,
-        ClickType.DOUBLE_PRESS,
-    ),
-    checkedClickType = ClickType.LONG_PRESS,
-    checkedTriggerMode = TriggerMode.Sequence,
-    triggerModeButtonsEnabled = true,
-    triggerModeButtonsVisible = true,
-    shortcuts = setOf(
-        ShortcutModel(
-            icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),
-            text = "Fingerprint gesture",
-            data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
+private val previewState =
+    ConfigTriggerState.Loaded(
+        triggerKeys = sampleList,
+        isReorderingEnabled = true,
+        clickTypeButtons = setOf(
+            ClickType.SHORT_PRESS,
+            ClickType.LONG_PRESS,
+            ClickType.DOUBLE_PRESS,
         ),
-    ),
-)
+        checkedClickType = ClickType.LONG_PRESS,
+        checkedTriggerMode = TriggerMode.Sequence,
+        triggerModeButtonsEnabled = true,
+        triggerModeButtonsVisible = true,
+        shortcuts = setOf(
+            ShortcutModel(
+                icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),
+                text = "Fingerprint gesture",
+                data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
+            ),
+        ),
+    )
 
 @Preview(device = Devices.PIXEL)
 @Composable
@@ -666,7 +668,7 @@ private fun VerticalPreviewTiny() {
 private fun VerticalEmptyPreview() {
     KeyMapperTheme {
         TriggerScreenVertical(
-            configState = _root_ide_package_.io.github.sds100.keymapper.base.trigger.ConfigTriggerState.Empty(
+            configState = ConfigTriggerState.Empty(
                 shortcuts = setOf(
                     ShortcutModel(
                         icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),
@@ -696,7 +698,7 @@ private fun HorizontalPreview() {
 private fun HorizontalEmptyPreview() {
     KeyMapperTheme {
         TriggerScreenHorizontal(
-            configState = _root_ide_package_.io.github.sds100.keymapper.base.trigger.ConfigTriggerState.Empty(
+            configState = ConfigTriggerState.Empty(
                 shortcuts = setOf(
                     ShortcutModel(
                         icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),

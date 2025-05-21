@@ -1,17 +1,18 @@
 package io.github.sds100.keymapper.base.system.apps
 
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
-import io.github.sds100.keymapper.common.utils.State
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.base.simple
-import io.github.sds100.keymapper.base.utils.Inject
 import io.github.sds100.keymapper.base.utils.ui.RecyclerViewUtils
 import io.github.sds100.keymapper.base.utils.ui.SimpleRecyclerViewFragment
+import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.Json
 
+@AndroidEntryPoint
 class ChooseActivityFragment : SimpleRecyclerViewFragment<AppActivityListItem>() {
 
     companion object {
@@ -23,9 +24,7 @@ class ChooseActivityFragment : SimpleRecyclerViewFragment<AppActivityListItem>()
 
     private val args: ChooseActivityFragmentArgs by navArgs()
 
-    private val viewModel: ChooseActivityViewModel by activityViewModels {
-        Inject.chooseActivityViewModel(requireContext())
-    }
+    private val viewModel: ChooseActivityViewModel by viewModels()
 
     override val listItems: Flow<State<List<AppActivityListItem>>>
         get() = viewModel.listItems

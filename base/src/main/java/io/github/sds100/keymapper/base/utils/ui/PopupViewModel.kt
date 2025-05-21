@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.base.utils.ui
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Toast
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -23,9 +24,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
-import splitties.toast.toast
-
-
 
 class PopupViewModelImpl : PopupViewModel {
 
@@ -154,7 +152,7 @@ fun PopupViewModel.showPopups(
                     response = ctx.materialAlertDialog(lifecycleOwner, event.ui)
 
                 is PopupUi.Toast -> {
-                    ctx.toast(event.ui.text)
+                    Toast.makeText(ctx, event.ui.text, Toast.LENGTH_SHORT).show()
                     response = Unit
                 }
 

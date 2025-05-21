@@ -1,13 +1,14 @@
 package io.github.sds100.keymapper.base.reroutekeyevents
 
 import android.os.Build
+import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
+import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
-import io.github.sds100.keymapper.common.utils.firstBlocking
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -23,6 +24,7 @@ class RerouteKeyEventsUseCaseImpl @Inject constructor(
     private val inputMethodAdapter: InputMethodAdapter,
     private val keyMapperImeMessenger: ImeInputEventInjector,
     private val preferenceRepository: PreferenceRepository,
+    private val buildConfigProvider: BuildConfigProvider,
 ) : RerouteKeyEventsUseCase {
 
     private val rerouteKeyEvents =
@@ -31,7 +33,12 @@ class RerouteKeyEventsUseCaseImpl @Inject constructor(
     private val devicesToRerouteKeyEvents =
         preferenceRepository.get(Keys.devicesToRerouteKeyEvents).map { it ?: emptyList() }
 
-    private val imeHelper by lazy { KeyMapperImeHelper(inputMethodAdapter) }
+    private val imeHelper by lazy {
+        KeyMapperImeHelper(
+            inputMethodAdapter,
+            buildConfigProvider.packageName,
+        )
+    }
 
     override fun shouldRerouteKeyEvent(descriptor: String?): Boolean {
         if (Build.VERSION.SDK_INT != Build.VERSION_CODES.R) {

@@ -17,12 +17,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_app"
-    app:startDestination="@id/home_fragment">
-    <fragment
-        android:id="@+id/home_fragment"
-        android:name="io.github.sds100.keymapper.home.HomeFragment"
-        tools:layout="@layout/fragment_compose" />
+    android:id="@+id/nav_base_app">
 
     <action
         android:id="@+id/action_to_config_keymap"
@@ -61,11 +56,6 @@
         app:popExitAnim="@anim/slide_out_right" />
 
     <action
-        android:id="@+id/to_chooseFloatingLayoutFragment"
-        app:destination="@id/chooseFloatingLayoutFragment"
-        app:enterAnim="@anim/slide_in_right" />
-
-    <action
         android:id="@+id/to_settingsFragment"
         app:destination="@id/nav_settings"
         app:enterAnim="@anim/slide_in_right"
@@ -86,7 +76,7 @@
 
     <fragment
         android:id="@+id/aboutFragment"
-        android:name="io.github.sds100.keymapper.about.AboutFragment"
+        android:name="io.github.sds100.keymapper.base.about.AboutFragment"
         android:label="fragment_about" />
 
     <action
@@ -362,30 +352,37 @@
             android:name="requestKey"
             app:argType="string" />
     </fragment>
-    <fragment
-        android:id="@+id/chooseFloatingLayoutFragment"
-        android:name="io.github.sds100.keymapper.floating.ChooseFloatingLayoutFragment"
-        android:label="ChooseFloatingLayoutFragment" />
 
-    <activity
-        android:id="@+id/configFloatingButtonActivity"
-        android:name="io.github.sds100.keymapper.floating.FloatingButtonConfigActivity">
-        <argument
-            android:name="buttonUid"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-    </activity>
+    <!--   TODO  -->
+    <!--    <fragment-->
+    <!--        android:id="@+id/chooseFloatingLayoutFragment"-->
+    <!--        android:name="io.github.sds100.keymapper.base.floating.ChooseFloatingLayoutFragment"-->
+    <!--        android:label="ChooseFloatingLayoutFragment" />-->
 
-    <action
-        android:id="@+id/to_configFloatingButton"
-        app:destination="@id/configFloatingButtonActivity">
-        <argument
-            android:name="buttonUid"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-    </action>
+    <!--    <activity-->
+    <!--        android:id="@+id/configFloatingButtonActivity"-->
+    <!--        android:name="io.github.sds100.keymapper.base.floating.FloatingButtonConfigActivity">-->
+    <!--        <argument-->
+    <!--            android:name="buttonUid"-->
+    <!--            android:defaultValue="@null"-->
+    <!--            app:argType="string"-->
+    <!--            app:nullable="true" />-->
+    <!--    </activity>-->
+
+    <!--    <action-->
+    <!--        android:id="@+id/to_chooseFloatingLayoutFragment"-->
+    <!--        app:destination="@id/chooseFloatingLayoutFragment"-->
+    <!--        app:enterAnim="@anim/slide_in_right" />-->
+
+    <!--    <action-->
+    <!--        android:id="@+id/to_configFloatingButton"-->
+    <!--        app:destination="@id/configFloatingButtonActivity">-->
+    <!--        <argument-->
+    <!--            android:name="buttonUid"-->
+    <!--            android:defaultValue="@null"-->
+    <!--            app:argType="string"-->
+    <!--            app:nullable="true" />-->
+    <!--    </action>-->
 
     <fragment
         android:id="@+id/interactUiElementFragment"

@@ -56,28 +56,27 @@ import com.canopas.lib.showcase.IntroShowcase
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.backup.ImportExportState
 import io.github.sds100.keymapper.base.backup.RestoreType
-import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.groups.GroupListItemModel
 import io.github.sds100.keymapper.base.keymaps.KeyMapAppBarState
 import io.github.sds100.keymapper.base.keymaps.KeyMapList
-import io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel
 import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
-import io.github.sds100.keymapper.sorting.SortBottomSheet
-import io.github.sds100.keymapper.system.files.FileUtils
+import io.github.sds100.keymapper.base.sorting.SortBottomSheet
 import io.github.sds100.keymapper.base.trigger.DpadTriggerSetupBottomSheet
 import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.base.trigger.TriggerError
 import io.github.sds100.keymapper.base.utils.ShareUtils
-import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.base.utils.ui.drawable
 import io.github.sds100.keymapper.base.utils.ui.compose.CollapsableFloatingActionButton
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperTapTarget
 import io.github.sds100.keymapper.base.utils.ui.compose.keyMapperShowcaseStyle
 import io.github.sds100.keymapper.base.utils.ui.compose.openUriSafe
+import io.github.sds100.keymapper.base.utils.ui.drawable
+import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.system.files.FileUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -306,7 +305,7 @@ fun HandleImportExportState(
     setIdleState: () -> Unit,
     onConfirmImport: (RestoreType) -> Unit,
 ) {
-    when (state) {
+    when (val state = state) {
         is ImportExportState.Error -> {
             val text = stringResource(R.string.home_export_error_snackbar, state.error)
             LaunchedEffect(state) {
@@ -332,7 +331,13 @@ fun HandleImportExportState(
 
         is ImportExportState.FinishedExport -> {
             snackbarState.currentSnackbarData?.dismiss()
-            LocalActivity.current?.let { ShareUtils.shareFile(it, state.uri.toUri()) }
+            LocalActivity.current?.let {
+                ShareUtils.shareFile(
+                    it,
+                    state.uri.toUri(),
+                    packageName = LocalContext.current.packageName,
+                )
+            }
             setIdleState()
         }
 

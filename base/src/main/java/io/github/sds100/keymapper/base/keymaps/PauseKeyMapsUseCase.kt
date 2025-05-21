@@ -3,13 +3,12 @@ package io.github.sds100.keymapper.base.keymaps
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.media.MediaAdapter
-import io.github.sds100.keymapper.system.ringtone.RingtoneAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class PauseKeyMapsUseCaseImpl @Inject constructor(

@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.base.trigger
 
 import android.view.KeyEvent
 import io.github.sds100.keymapper.base.keymaps.detection.DpadMotionEventTracker
-import io.github.sds100.keymapper.base.utils.ServiceEvent
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
@@ -32,11 +31,11 @@ class RecordTriggerController @Inject constructor(
     init {
         serviceAdapter.eventReceiver.onEach { event ->
             when (event) {
-                is ServiceEvent.OnStoppedRecordingTrigger ->
+                is RecordTriggerEvent.OnStoppedRecordingTrigger ->
                     state.value =
                         RecordTriggerState.Completed(recordedKeys)
 
-                is ServiceEvent.OnIncrementRecordTriggerTimer ->
+                is RecordTriggerEvent.OnIncrementRecordTriggerTimer ->
                     state.value =
                         RecordTriggerState.CountingDown(event.timeLeft)
 
@@ -46,7 +45,7 @@ class RecordTriggerController @Inject constructor(
 
         serviceAdapter.eventReceiver
             .mapNotNull {
-                if (it is ServiceEvent.RecordedTriggerKey) {
+                if (it is RecordTriggerEvent.RecordedTriggerKey) {
                     it
                 } else {
                     null
@@ -63,11 +62,11 @@ class RecordTriggerController @Inject constructor(
     override suspend fun startRecording(): Result<*> {
         recordedKeys.clear()
         dpadMotionEventTracker.reset()
-        return serviceAdapter.send(ServiceEvent.StartRecordingTrigger)
+        return serviceAdapter.send(RecordTriggerEvent.StartRecordingTrigger)
     }
 
     override suspend fun stopRecording(): Result<*> {
-        return serviceAdapter.send(ServiceEvent.StopRecordingTrigger)
+        return serviceAdapter.send(RecordTriggerEvent.StopRecordingTrigger)
     }
 
     /**

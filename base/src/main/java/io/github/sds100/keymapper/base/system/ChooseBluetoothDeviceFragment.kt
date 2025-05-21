@@ -4,17 +4,16 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
-import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.base.databinding.FragmentSimpleRecyclerviewBinding
-import io.github.sds100.keymapper.fixError
+import io.github.sds100.keymapper.base.fixError
 import io.github.sds100.keymapper.base.simple
-import io.github.sds100.keymapper.base.utils.Inject
-import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.ListItem
 import io.github.sds100.keymapper.base.utils.ui.RecyclerViewUtils
 import io.github.sds100.keymapper.base.utils.ui.SimpleListItemOld
 import io.github.sds100.keymapper.base.utils.ui.SimpleRecyclerViewFragment
 import io.github.sds100.keymapper.base.utils.ui.TextListItem
+import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 
@@ -27,9 +26,7 @@ class ChooseBluetoothDeviceFragment : SimpleRecyclerViewFragment<ListItem>() {
 
     private val args: ChooseBluetoothDeviceFragmentArgs by navArgs()
 
-    private val viewModel: ChooseBluetoothDeviceViewModel by viewModels {
-        Inject.chooseBluetoothDeviceViewModel(requireContext())
-    }
+    private val viewModel: ChooseBluetoothDeviceViewModel by viewModels()
 
     override val listItems: Flow<State<List<ListItem>>>
         get() = viewModel.listItems

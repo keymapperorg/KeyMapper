@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.keymaps.detection
+package io.github.sds100.keymapper.base.keymaps.detection
 
 import android.view.KeyEvent
 import androidx.collection.SparseArrayCompat
@@ -11,23 +11,28 @@ import io.github.sds100.keymapper.base.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.base.constraints.ConstraintState
 import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.base.constraints.isSatisfied
-import io.github.sds100.keymapper.data.PreferenceDefaults
-import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.base.keymaps.ClickType
-import io.github.sds100.keymapper.base.keymaps.FingerprintGestureType
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils
-import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
-import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
+import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
+import io.github.sds100.keymapper.base.trigger.AssistantTriggerKey
+import io.github.sds100.keymapper.base.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
+import io.github.sds100.keymapper.base.trigger.FloatingButtonKey
 import io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.base.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerKey
 import io.github.sds100.keymapper.base.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.base.trigger.TriggerMode
-import io.github.sds100.keymapper.base.utils.Error
+import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.InputEventType
-import io.github.sds100.keymapper.base.utils.Result
+import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.minusFlag
+import io.github.sds100.keymapper.common.utils.withFlag
+import io.github.sds100.keymapper.data.PreferenceDefaults
+import io.github.sds100.keymapper.data.entities.ActionEntity
+import io.github.sds100.keymapper.system.inputevents.InputEventUtils
+import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
+import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -36,8 +41,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import splitties.bitflags.minusFlag
-import splitties.bitflags.withFlag
 
 class KeyMapController(
     private val coroutineScope: CoroutineScope,
@@ -65,9 +68,6 @@ class KeyMapController(
             trigger.mode is TriggerMode.Parallel
     }
 
-    /**
-     * A cached copy of the keymaps in the database
-     */
     private fun loadKeyMaps(value: List<DetectKeyMapModel>) {
         actionMap.clear()
 
@@ -115,47 +115,45 @@ class KeyMapController(
             for ((triggerIndex, model) in validKeyMaps.withIndex()) {
                 val keyMap = model.keyMap
                 // TRIGGER STUFF
-                keyMap.trigger.keys
-                    .filter { it is KeyCodeTriggerKey || it is FingerprintTriggerKey }
-                    .forEachIndexed { keyIndex, key ->
-                        if (key is KeyCodeTriggerKey && key.detectionSource == KeyEventDetectionSource.INPUT_METHOD && key.consumeEvent) {
-                            triggerKeysThatSendRepeatedKeyEvents.add(key)
-                        }
+                keyMap.trigger.keys.forEachIndexed { keyIndex, key ->
+                    if (key is KeyCodeTriggerKey && key.detectionSource == KeyEventDetectionSource.INPUT_METHOD && key.consumeEvent) {
+                        triggerKeysThatSendRepeatedKeyEvents.add(key)
+                    }
 
-                        if (keyMap.trigger.mode == TriggerMode.Sequence &&
-                            key.clickType == ClickType.LONG_PRESS &&
-                            key is KeyCodeTriggerKey
-                        ) {
-                            if (keyMap.trigger.keys.size > 1) {
-                                longPressSequenceTriggerKeys.add(key)
-                            }
-                        }
-
-                        if (keyMap.trigger.mode !is TriggerMode.Parallel &&
-                            key.clickType == ClickType.DOUBLE_PRESS
-                        ) {
-                            doublePressKeys.add(TriggerKeyLocation(triggerIndex, keyIndex))
-                        }
-
-                        when (key) {
-                            is KeyCodeTriggerKey -> when (key.device) {
-                                TriggerKeyDevice.Internal -> {
-                                    detectInternalEvents = true
-                                }
-
-                                TriggerKeyDevice.Any -> {
-                                    detectInternalEvents = true
-                                    detectExternalEvents = true
-                                }
-
-                                is TriggerKeyDevice.External -> {
-                                    detectExternalEvents = true
-                                }
-                            }
-
-                            else -> {}
+                    if (keyMap.trigger.mode == TriggerMode.Sequence &&
+                        key.clickType == ClickType.LONG_PRESS &&
+                        key is KeyCodeTriggerKey
+                    ) {
+                        if (keyMap.trigger.keys.size > 1) {
+                            longPressSequenceTriggerKeys.add(key)
                         }
                     }
+
+                    if (keyMap.trigger.mode !is TriggerMode.Parallel &&
+                        key.clickType == ClickType.DOUBLE_PRESS
+                    ) {
+                        doublePressKeys.add(TriggerKeyLocation(triggerIndex, keyIndex))
+                    }
+
+                    when (key) {
+                        is KeyCodeTriggerKey -> when (key.device) {
+                            TriggerKeyDevice.Internal -> {
+                                detectInternalEvents = true
+                            }
+
+                            TriggerKeyDevice.Any -> {
+                                detectInternalEvents = true
+                                detectExternalEvents = true
+                            }
+
+                            is TriggerKeyDevice.External -> {
+                                detectExternalEvents = true
+                            }
+                        }
+
+                        else -> {}
+                    }
+                }
 
                 val encodedActionList = encodeActionList(keyMap.actionList)
 
@@ -644,6 +642,7 @@ class KeyMapController(
                 deviceId = device.id,
                 scanCode = keyEvent.scanCode,
                 repeatCount = keyEvent.repeatCount,
+                source = keyEvent.source,
             )
         } else {
             KeyCodeEvent(
@@ -653,6 +652,7 @@ class KeyMapController(
                 deviceId = device?.id ?: 0,
                 scanCode = keyEvent.scanCode,
                 repeatCount = keyEvent.repeatCount,
+                source = keyEvent.source,
             )
         }
 
@@ -722,7 +722,17 @@ class KeyMapController(
                 // consume the event if the trigger contains this keycode.
                 for (key in triggerKeys) {
                     when {
+                        key is AssistantTriggerKey && event is AssistantEvent ->
+                            if (key.consumeEvent) {
+                                consumeEvent = true
+                            }
+
                         key is FingerprintTriggerKey && event is FingerprintGestureEvent ->
+                            if (key.consumeEvent) {
+                                consumeEvent = true
+                            }
+
+                        key is FloatingButtonKey && event is FloatingButtonEvent ->
                             if (key.consumeEvent) {
                                 consumeEvent = true
                             }
@@ -938,15 +948,21 @@ class KeyMapController(
             keyCodesToImitateUpAction.add(event.keyCode)
 
             useCase.imitateButtonPress(
-                event.keyCode,
-                metaStateFromKeyEvent.withFlag(metaStateFromActions),
-                event.deviceId,
-                InputEventType.DOWN,
-                event.scanCode,
+                keyCode = event.keyCode,
+                metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
+                deviceId = event.deviceId,
+                inputEventType = InputEventType.DOWN,
+                scanCode = event.scanCode,
+                source = event.source,
             )
 
             coroutineScope.launch {
-                repeatImitatingKey(event.keyCode, event.deviceId, event.scanCode)
+                repeatImitatingKey(
+                    keyCode = event.keyCode,
+                    deviceId = event.deviceId,
+                    scanCode = event.scanCode,
+                    source = event.source,
+                )
             }
         }
 
@@ -1092,9 +1108,9 @@ class KeyMapController(
                     triggers[eventLocation.triggerIndex].keys[eventLocation.keyIndex]
                 val triggerIndex = eventLocation.triggerIndex
 
-                val constraintStates = triggerConstraints[triggerIndex]
+                val constraintState = triggerConstraints[triggerIndex]
 
-                if (!constraintSnapshot.isSatisfied(*constraintStates)) continue
+                if (!constraintSnapshot.isSatisfied(*constraintState)) continue
 
                 if (lastMatchedEventIndices[triggerIndex] != eventLocation.keyIndex - 1) continue
 
@@ -1142,10 +1158,10 @@ class KeyMapController(
 
         triggerLoop@ for (triggerIndex in sequenceTriggers) {
             val trigger = triggers[triggerIndex]
-            val constraintStates = triggerConstraints[triggerIndex]
+            val constraintState = triggerConstraints[triggerIndex]
             val lastMatchedEventIndex = lastMatchedEventIndices[triggerIndex]
 
-            if (!constraintSnapshot.isSatisfied(*constraintStates)) continue
+            if (!constraintSnapshot.isSatisfied(*constraintState)) continue
 
             // the index of the next event to match in the trigger
             val nextIndex = lastMatchedEventIndex + 1
@@ -1424,6 +1440,7 @@ class KeyMapController(
                             event.keyCode,
                             inputEventType = InputEventType.DOWN_UP,
                             scanCode = event.scanCode,
+                            source = event.source,
                         )
                     }
                 }
@@ -1443,11 +1460,12 @@ class KeyMapController(
             }
 
             useCase.imitateButtonPress(
-                event.keyCode,
-                metaStateFromKeyEvent.withFlag(metaStateFromActions),
-                event.deviceId,
-                keyEventAction,
-                event.scanCode,
+                keyCode = event.keyCode,
+                metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
+                deviceId = event.deviceId,
+                inputEventType = keyEventAction,
+                scanCode = event.scanCode,
+                source = event.source,
             )
 
             keyCodesToImitateUpAction.remove(event.keyCode)
@@ -1456,9 +1474,25 @@ class KeyMapController(
         return consumeEvent
     }
 
+    fun onAssistantEvent(type: AssistantTriggerType) {
+        val event = AssistantEvent(type, clickType = null)
+        onKeyDown(event)
+        onKeyUp(event)
+    }
+
     fun onFingerprintGesture(type: FingerprintGestureType) {
         val event = FingerprintGestureEvent(type, clickType = null)
         onKeyDown(event)
+        onKeyUp(event)
+    }
+
+    fun onFloatingButtonDown(buttonUid: String) {
+        val event = FloatingButtonEvent(buttonUid, clickType = null)
+        onKeyDown(event)
+    }
+
+    fun onFloatingButtonUp(buttonUid: String) {
+        val event = FloatingButtonEvent(buttonUid, clickType = null)
         onKeyUp(event)
     }
 
@@ -1519,10 +1553,6 @@ class KeyMapController(
 
         performActionsOnFailedDoublePress.clear()
 
-        if (showToast) {
-            useCase.showTriggeredToast()
-        }
-
         detectedTriggerIndexes.forEach { triggerIndex ->
             parallelTriggerActionPerformers[triggerIndex]?.onTriggered(
                 calledOnTriggerRelease = true,
@@ -1562,16 +1592,22 @@ class KeyMapController(
         throw Exception("Action $action not in the action map!")
     }
 
-    private suspend fun repeatImitatingKey(keyCode: Int, deviceId: Int, scanCode: Int) {
+    private suspend fun repeatImitatingKey(
+        keyCode: Int,
+        deviceId: Int,
+        scanCode: Int,
+        source: Int,
+    ) {
         delay(400)
 
         while (keyCodesToImitateUpAction.contains(keyCode)) {
             useCase.imitateButtonPress(
-                keyCode,
-                metaStateFromKeyEvent.withFlag(metaStateFromActions),
-                deviceId,
-                InputEventType.DOWN,
-                scanCode,
+                keyCode = keyCode,
+                metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
+                deviceId = deviceId,
+                inputEventType = InputEventType.DOWN,
+                scanCode = scanCode,
+                source = source,
             ) // use down action because this is what Android does
 
             delay(50)
@@ -1656,8 +1692,16 @@ class KeyMapController(
                         event.descriptor == null &&
                         this.clickType == event.clickType
             }
+        } else if (this is AssistantTriggerKey && event is AssistantEvent) {
+            return if (this.type == AssistantTriggerType.ANY || event.type == AssistantTriggerType.ANY) {
+                this.clickType == event.clickType
+            } else {
+                this.type == event.type && this.clickType == event.clickType
+            }
         } else if (this is FingerprintTriggerKey && event is FingerprintGestureEvent) {
             return this.type == event.type && this.clickType == event.clickType
+        } else if (this is FloatingButtonKey && event is FloatingButtonEvent) {
+            return this.buttonUid == event.buttonUid && this.clickType == event.clickType
         } else {
             return false
         }
@@ -1680,6 +1724,10 @@ class KeyMapController(
                         otherKey.device == TriggerKeyDevice.Internal &&
                         this.clickType == otherKey.clickType
             }
+        } else if (this is AssistantTriggerKey && otherKey is AssistantTriggerKey) {
+            return this.type == otherKey.type && this.clickType == otherKey.clickType
+        } else if (this is FloatingButtonKey && otherKey is FloatingButtonKey) {
+            return this.buttonUid == otherKey.buttonUid && this.clickType == otherKey.clickType
         } else if (this is FingerprintTriggerKey && otherKey is FingerprintTriggerKey) {
             return this.type == otherKey.type && this.clickType == otherKey.clickType
         } else {
@@ -1743,6 +1791,8 @@ class KeyMapController(
 
         fun setClickType(clickType: ClickType?): Event = when (this) {
             is KeyCodeEvent -> this.copy(clickType = clickType)
+            is AssistantEvent -> this.copy(clickType = clickType)
+            is FloatingButtonEvent -> this.copy(clickType = clickType)
             is FingerprintGestureEvent -> this.copy(clickType = clickType)
         }
     }
@@ -1757,10 +1807,21 @@ class KeyMapController(
         val deviceId: Int,
         val scanCode: Int,
         val repeatCount: Int,
+        val source: Int,
+    ) : Event()
+
+    private data class AssistantEvent(
+        val type: AssistantTriggerType,
+        override val clickType: ClickType?,
     ) : Event()
 
     private data class FingerprintGestureEvent(
         val type: FingerprintGestureType,
+        override val clickType: ClickType?,
+    ) : Event()
+
+    private data class FloatingButtonEvent(
+        val buttonUid: String,
         override val clickType: ClickType?,
     ) : Event()
 

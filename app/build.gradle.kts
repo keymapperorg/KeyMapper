@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.androidx.navigation.safeargs.kotlin)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.jlleitschuh.gradle.ktlint)
+    alias(libs.plugins.dagger.hilt.android)
 }
 
 android {
@@ -157,7 +158,6 @@ android {
             output.outputFileName = "keymapper-${'$'}{variant.versionName}.apk"
         }
     }
-
 }
 
 dependencies {

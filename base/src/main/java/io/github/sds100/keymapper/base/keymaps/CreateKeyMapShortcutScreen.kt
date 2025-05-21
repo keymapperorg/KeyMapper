@@ -11,7 +11,6 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -38,7 +37,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.groups.GroupBreadcrumbRow
@@ -46,11 +44,13 @@ import io.github.sds100.keymapper.base.groups.GroupListItemModel
 import io.github.sds100.keymapper.base.groups.GroupRow
 import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.base.trigger.TriggerError
-import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.base.utils.ui.drawable
+import io.github.sds100.keymapper.base.utils.ui.UnsavedChangesDialog
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.CustomDialog
+import io.github.sds100.keymapper.base.utils.ui.drawable
+import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.State
 
 @Composable
 fun CreateKeyMapShortcutScreen(
@@ -92,7 +92,7 @@ private fun CreateKeyMapShortcutScreen(
     var showBackDialog by rememberSaveable { mutableStateOf(false) }
 
     if (showBackDialog) {
-        BackDialog(
+        UnsavedChangesDialog(
             onDismiss = { showBackDialog = false },
             onDiscardClick = finishActivity,
         )
@@ -201,24 +201,6 @@ private fun CreateKeyMapShortcutScreen(
             )
         }
     }
-}
-
-@Composable
-private fun BackDialog(
-    onDismiss: () -> Unit,
-    onDiscardClick: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.dialog_title_unsaved_changes)) },
-        text = { Text(stringResource(R.string.dialog_message_unsaved_changes)) },
-        confirmButton = {
-            TextButton(onClick = onDiscardClick) { Text(stringResource(R.string.pos_discard_changes)) }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.neg_keep_editing)) }
-        },
-    )
 }
 
 @Composable
@@ -436,14 +418,6 @@ private fun PreviewEmpty() {
             ),
             showShortcutNameDialog = null,
         )
-    }
-}
-
-@Preview
-@Composable
-private fun BackDialogPreview() {
-    KeyMapperTheme {
-        BackDialog(onDismiss = {}, onDiscardClick = {})
     }
 }
 

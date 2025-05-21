@@ -3,10 +3,11 @@ package io.github.sds100.keymapper.base.system.apps
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.sds100.keymapper.common.utils.valueOrNull
-import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.base.utils.filterByQuery
 import io.github.sds100.keymapper.base.utils.ui.IconInfo
+import io.github.sds100.keymapper.base.utils.ui.TintType
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.valueOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -7,9 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.system.camera.CameraLens
-import io.github.sds100.keymapper.common.utils.Orientation
-import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.base.utils.containsQuery
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.NavDestination
@@ -22,6 +19,9 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
 import io.github.sds100.keymapper.base.utils.ui.navigate
 import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.common.utils.Orientation
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.system.camera.CameraLens
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -217,8 +217,12 @@ class ChooseConstraintViewModel(
     }
 
     private suspend fun chooseFlashlightLens(): CameraLens? {
-        val items = useCase.getFlashlightLenses().map {
-            it to getString(CameraLensUtils.getLabel(it))
+        val items = useCase.getFlashlightLenses().map { lens ->
+            val label = when (lens) {
+                CameraLens.FRONT -> R.string.lens_front
+                CameraLens.BACK -> R.string.lens_back
+            }
+            lens to getString(label)
         }
 
         if (items.size == 1) {

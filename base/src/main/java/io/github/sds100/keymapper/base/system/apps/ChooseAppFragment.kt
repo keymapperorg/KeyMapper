@@ -8,18 +8,19 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
-import io.github.sds100.keymapper.common.utils.State
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.databinding.FragmentChooseAppBinding
 import io.github.sds100.keymapper.base.simple
-import io.github.sds100.keymapper.base.utils.Inject
-import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.RecyclerViewFragment
 import io.github.sds100.keymapper.base.utils.ui.RecyclerViewUtils
 import io.github.sds100.keymapper.base.utils.ui.SimpleListItemOld
+import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 
+@AndroidEntryPoint
 class ChooseAppFragment : RecyclerViewFragment<SimpleListItemOld, FragmentChooseAppBinding>() {
 
     companion object {
@@ -31,9 +32,7 @@ class ChooseAppFragment : RecyclerViewFragment<SimpleListItemOld, FragmentChoose
 
     override var searchStateKey: String? = SEARCH_STATE_KEY
 
-    private val viewModel: ChooseAppViewModel by viewModels {
-        Inject.chooseAppViewModel(requireContext())
-    }
+    private val viewModel: ChooseAppViewModel by viewModels()
 
     override val listItems: Flow<State<List<SimpleListItemOld>>>
         get() = viewModel.state.map { it.listItems }

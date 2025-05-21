@@ -22,9 +22,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.withStateAtLeast
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.databinding.FragmentComposeBinding
-import io.github.sds100.keymapper.base.utils.Inject
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.showPopups
 import io.github.sds100.keymapper.base.utils.ui.viewLifecycleScope
@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
+@AndroidEntryPoint
 class InteractUiElementFragment : Fragment() {
 
     companion object {
@@ -40,9 +41,7 @@ class InteractUiElementFragment : Fragment() {
 
     private val args: InteractUiElementFragmentArgs by navArgs<InteractUiElementFragmentArgs>()
 
-    private val viewModel by viewModels<InteractUiElementViewModel> {
-        Inject.interactUiElementViewModel(requireContext())
-    }
+    private val viewModel: InteractUiElementViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

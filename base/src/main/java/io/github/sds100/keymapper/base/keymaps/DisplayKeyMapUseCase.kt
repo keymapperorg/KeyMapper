@@ -3,34 +3,33 @@ package io.github.sds100.keymapper.base.keymaps
 import android.graphics.drawable.Drawable
 import io.github.sds100.keymapper.base.actions.DisplayActionUseCase
 import io.github.sds100.keymapper.base.actions.GetActionErrorUseCase
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
-import io.github.sds100.keymapper.common.utils.Success
-import io.github.sds100.keymapper.common.utils.otherwise
-import io.github.sds100.keymapper.common.utils.then
-import io.github.sds100.keymapper.common.utils.valueIfFailure
 import io.github.sds100.keymapper.base.constraints.DisplayConstraintUseCase
 import io.github.sds100.keymapper.base.constraints.GetConstraintErrorUseCase
-import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingError
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
-import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
+import io.github.sds100.keymapper.base.trigger.TriggerError
+import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
+import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.dataOrNull
+import io.github.sds100.keymapper.common.utils.otherwise
+import io.github.sds100.keymapper.common.utils.then
+import io.github.sds100.keymapper.common.utils.valueIfFailure
+import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.SystemError
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
-import io.github.sds100.keymapper.system.ringtone.RingtoneAdapter
-import io.github.sds100.keymapper.base.trigger.TriggerError
-import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
-import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.common.utils.dataOrNull
-import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
+import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -116,7 +115,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
         }
 
     override val showDeviceDescriptors: Flow<Boolean> =
-        settingsRepository2.get(Keys.showDeviceDescriptors).map { it == true }
+        settingsRepository.get(Keys.showDeviceDescriptors).map { it == true }
 
     override fun neverShowTriggerKeyboardIconExplanation() {
         settingsRepository.set(Keys.neverShowTriggerKeyboardIconExplanation, true)
@@ -198,7 +197,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
     override fun restartAccessibilityService(): Boolean = accessibilityServiceAdapter.restart()
 
     override fun neverShowDndTriggerError() {
-        settingsRepository2.set(Keys.neverShowDndAccessError, true)
+        settingsRepository.set(Keys.neverShowDndAccessError, true)
     }
 
     override fun getRingtoneLabel(uri: String): Result<String> {

@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.base.system.notifications
 
 import android.app.NotificationChannel
 import android.app.PendingIntent
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -12,7 +11,7 @@ import com.google.android.material.color.DynamicColors
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.ui.color
-import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.common.KeyMapperClassProvider
 import io.github.sds100.keymapper.system.notifications.NotificationAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationChannelModel
 import io.github.sds100.keymapper.system.notifications.NotificationIntentType
@@ -27,7 +26,7 @@ import javax.inject.Singleton
 class AndroidNotificationAdapter @Inject constructor(
     @ApplicationContext private val context: Context,
     private val coroutineScope: CoroutineScope,
-    private val buildConfigProvider: BuildConfigProvider,
+    private val classProvider: KeyMapperClassProvider,
 ) : NotificationAdapter {
 
     private val ctx = context.applicationContext
@@ -119,12 +118,7 @@ class AndroidNotificationAdapter @Inject constructor(
             }
 
             is NotificationIntentType.MainActivity -> {
-                val mainActivityComponent = ComponentName(
-                    buildConfigProvider.packageName,
-                    "io.github.sds100.keymapper.MainActivity",
-                )
-                val intent = Intent().apply {
-                    setComponent(mainActivityComponent)
+                val intent = Intent(ctx, classProvider.getMainActivity()).apply {
                     action = intentType.customIntentAction ?: Intent.ACTION_MAIN
                 }
 

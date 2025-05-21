@@ -7,17 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.ActionData
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
-import io.github.sds100.keymapper.common.utils.Success
-import io.github.sds100.keymapper.common.utils.errorOrNull
-import io.github.sds100.keymapper.common.utils.handle
-import io.github.sds100.keymapper.common.utils.isSuccess
-import io.github.sds100.keymapper.common.utils.success
-import io.github.sds100.keymapper.common.utils.valueOrNull
-import io.github.sds100.keymapper.system.devices.InputDeviceInfo
-import io.github.sds100.keymapper.system.devices.InputDeviceUtils
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils
+import io.github.sds100.keymapper.base.utils.InputEventStrings
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
 import io.github.sds100.keymapper.base.utils.ui.NavDestination
@@ -25,6 +15,19 @@ import io.github.sds100.keymapper.base.utils.ui.NavigationViewModel
 import io.github.sds100.keymapper.base.utils.ui.NavigationViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.navigate
+import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.errorOrNull
+import io.github.sds100.keymapper.common.utils.handle
+import io.github.sds100.keymapper.common.utils.hasFlag
+import io.github.sds100.keymapper.common.utils.isSuccess
+import io.github.sds100.keymapper.common.utils.minusFlag
+import io.github.sds100.keymapper.common.utils.success
+import io.github.sds100.keymapper.common.utils.valueOrNull
+import io.github.sds100.keymapper.common.utils.withFlag
+import io.github.sds100.keymapper.system.devices.InputDeviceInfo
+import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -34,9 +37,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import io.github.sds100.keymapper.common.utils.hasFlag
-import io.github.sds100.keymapper.common.utils.minusFlag
-import io.github.sds100.keymapper.common.utils.withFlag
 import javax.inject.Inject
 
 @HiltViewModel
@@ -190,7 +190,7 @@ class ConfigKeyEventActionViewModel @Inject constructor(
             onError = { "" },
         )
 
-        val modifierListItems = InputEventUtils.MODIFIER_LABELS.map { (modifier, label) ->
+        val modifierListItems = InputEventStrings.MODIFIER_LABELS.map { (modifier, label) ->
             CheckBoxListItem(
                 id = modifier.toString(),
                 label = getString(label),

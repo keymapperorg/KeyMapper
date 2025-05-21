@@ -1,14 +1,14 @@
 package io.github.sds100.keymapper.base.sorting
 
-import io.github.sds100.keymapper.data.Keys
-import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
-import io.github.sds100.keymapper.sorting.comparators.KeyMapActionsComparator
-import io.github.sds100.keymapper.sorting.comparators.KeyMapConstraintsComparator
-import io.github.sds100.keymapper.sorting.comparators.KeyMapOptionsComparator
-import io.github.sds100.keymapper.sorting.comparators.KeyMapTriggerComparator
-import io.github.sds100.keymapper.base.utils.SettingsRepository
+import io.github.sds100.keymapper.base.sorting.comparators.KeyMapActionsComparator
+import io.github.sds100.keymapper.base.sorting.comparators.KeyMapConstraintsComparator
+import io.github.sds100.keymapper.base.sorting.comparators.KeyMapOptionsComparator
+import io.github.sds100.keymapper.base.sorting.comparators.KeyMapTriggerComparator
+import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import javax.inject.Inject

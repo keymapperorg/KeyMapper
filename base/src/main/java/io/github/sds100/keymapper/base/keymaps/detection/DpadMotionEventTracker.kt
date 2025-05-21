@@ -33,7 +33,7 @@ class DpadMotionEventTracker {
      * @return whether to consume the key event.
      */
     fun onKeyEvent(event: MyKeyEvent): Boolean {
-        event.device ?: return false
+        val device = event.device ?: return false
 
         if (!InputEventUtils.isDpadKeyCode(event.keyCode)) {
             return false
@@ -47,7 +47,7 @@ class DpadMotionEventTracker {
             else -> return false
         }
 
-        val dpadState = dpadState[event.device.descriptor] ?: return false
+        val dpadState = dpadState[device.descriptor] ?: return false
 
         if (dpadState == 0) {
             return false

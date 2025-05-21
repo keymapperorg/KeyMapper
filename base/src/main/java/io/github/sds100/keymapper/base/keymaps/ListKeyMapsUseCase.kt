@@ -5,24 +5,24 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.backup.BackupManager
 import io.github.sds100.keymapper.base.backup.BackupManagerImpl
 import io.github.sds100.keymapper.base.backup.BackupUtils
-import io.github.sds100.keymapper.common.utils.Result
-import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.base.constraints.Constraint
 import io.github.sds100.keymapper.base.constraints.ConstraintEntityMapper
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.constraints.ConstraintModeEntityMapper
-import io.github.sds100.keymapper.data.entities.GroupEntity
-import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
-import io.github.sds100.keymapper.data.repositories.GroupRepository
-import io.github.sds100.keymapper.data.repositories.RepositoryUtils
 import io.github.sds100.keymapper.base.groups.Group
 import io.github.sds100.keymapper.base.groups.GroupEntityMapper
 import io.github.sds100.keymapper.base.groups.GroupFamily
-import io.github.sds100.keymapper.system.files.FileAdapter
-import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.dataOrNull
+import io.github.sds100.keymapper.data.entities.GroupEntity
+import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
+import io.github.sds100.keymapper.data.repositories.GroupRepository
 import io.github.sds100.keymapper.data.repositories.KeyMapRepository
+import io.github.sds100.keymapper.data.repositories.RepositoryUtils
+import io.github.sds100.keymapper.system.files.FileAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -229,13 +229,14 @@ class ListKeyMapsUseCaseImpl(
     override suspend fun popGroup() {
         val currentGroupUid = keyMapListGroupUid.value ?: return
         val currentGroup = groupRepository.getGroup(currentGroupUid)
+        val parentUid = currentGroup?.parentUid
 
         // If stuck in a non existent group, or the parent is null then pop to the root.
-        if (currentGroup?.parentUid == null) {
+        if (parentUid == null) {
             setCurrentGroup(null)
         } else {
             // Check if the group exists.
-            val group = groupRepository.getGroup(currentGroup.parentUid) ?: return
+            val group = groupRepository.getGroup(parentUid) ?: return
             setCurrentGroup(group.uid)
         }
     }

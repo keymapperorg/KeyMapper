@@ -68,7 +68,7 @@ fun DpadTriggerSetupBottomSheet(
 fun NoKeysRecordedBottomSheet(
     modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit,
-    viewModel: ConfigTriggerViewModel,
+    viewModel: BaseConfigTriggerViewModel,
     sheetState: SheetState,
 ) {
     val state by viewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()

@@ -3,26 +3,27 @@ package io.github.sds100.keymapper.base.system.apps
 import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.content.Intent
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.base.databinding.FragmentSimpleRecyclerviewBinding
 import io.github.sds100.keymapper.base.simple
-import io.github.sds100.keymapper.system.apps.AppShortcutInfo
-import io.github.sds100.keymapper.base.utils.Inject
-import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.RecyclerViewUtils
 import io.github.sds100.keymapper.base.utils.ui.SimpleRecyclerViewFragment
+import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.showPopups
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.system.apps.AppShortcutInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.json.Json
-import splitties.toast.toast
 
+@AndroidEntryPoint
 class ChooseAppShortcutFragment : SimpleRecyclerViewFragment<AppShortcutListItem>() {
 
     companion object {
@@ -34,9 +35,7 @@ class ChooseAppShortcutFragment : SimpleRecyclerViewFragment<AppShortcutListItem
     private val args: ChooseAppShortcutFragmentArgs by navArgs()
     override var searchStateKey: String? = SEARCH_STATE_KEY
 
-    private val viewModel: ChooseAppShortcutViewModel by viewModels {
-        Inject.chooseAppShortcutViewModel(requireContext())
-    }
+    private val viewModel: ChooseAppShortcutViewModel by viewModels()
 
     override val listItems: Flow<State<List<AppShortcutListItem>>>
         get() = viewModel.state
@@ -98,7 +97,11 @@ class ChooseAppShortcutFragment : SimpleRecyclerViewFragment<AppShortcutListItem
             try {
                 appShortcutConfigLauncher.launch(this)
             } catch (e: SecurityException) {
-                toast(R.string.error_keymapper_doesnt_have_permission_app_shortcut)
+                Toast.makeText(
+                    requireContext(),
+                    R.string.error_keymapper_doesnt_have_permission_app_shortcut,
+                    Toast.LENGTH_SHORT,
+                ).show()
             }
         }
     }

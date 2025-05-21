@@ -11,6 +11,7 @@ import android.os.Looper
 import android.provider.Settings
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.common.KeyMapperClassProvider
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.Success
@@ -19,10 +20,10 @@ import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.system.JobSchedulerHelper
 import io.github.sds100.keymapper.system.SettingsUtils
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
-import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
+import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -42,7 +43,8 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
     @ApplicationContext context: Context,
     private val coroutineScope: CoroutineScope,
     private val permissionAdapter: PermissionAdapter,
-    private val buildConfigProvider: BuildConfigProvider
+    private val buildConfigProvider: BuildConfigProvider,
+    private val classProvider: KeyMapperClassProvider,
 ) : AccessibilityServiceAdapter {
 
     private val ctx = context.applicationContext
@@ -51,7 +53,7 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
     val eventsToService = MutableSharedFlow<AccessibilityServiceEvent>()
 
     override val state = MutableStateFlow(AccessibilityServiceState.DISABLED)
-    
+
     init {
         // use job scheduler because there is there is a much shorter delay when the app is in the background
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -125,11 +127,11 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
                     delay(100)
 
                     Timber.d("Ping service to check if crashed")
-                    eventsToService.emit(E.Ping(key))
+                    eventsToService.emit(AccessibilityServiceEvent.Ping(key))
                 }
 
-                val pong: E.Pong? = withTimeoutOrNull(2000L) {
-                    eventReceiver.first { it == E.Pong(key) } as E.Pong?
+                val pong: AccessibilityServiceEvent.Pong? = withTimeoutOrNull(2000L) {
+                    eventReceiver.first { it == AccessibilityServiceEvent.Pong(key) } as AccessibilityServiceEvent.Pong?
                 }
 
                 if (pong == null) {
@@ -197,7 +199,7 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
     private suspend fun disableServiceSuspend() {
         // disableSelf method only exists in 7.0.0+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            send(E.DisableService).onSuccess {
+            send(AccessibilityServiceEvent.DisableService).onSuccess {
                 Timber.i("Disabling service by calling disableSelf()")
 
                 return
@@ -216,7 +218,7 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
 
             enabledServices ?: return
 
-            val className = io.github.sds100.keymapper.system.accessibility.MyAccessibilityService::class.java.name
+            val className = classProvider.getAccessibilityService().name
 
             val keyMapperEntry = "${buildConfigProvider.packageName}/$className"
 
@@ -247,13 +249,13 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
 
         val pingJob = coroutineScope.launch {
             repeat(20) {
-                eventsToService.emit(E.Ping(key))
+                eventsToService.emit(AccessibilityServiceEvent.Ping(key))
                 delay(100)
             }
         }
 
-        val pong: E.Pong? = withTimeoutOrNull(2000L) {
-            eventReceiver.first { it == E.Pong(key) } as E.Pong?
+        val pong: AccessibilityServiceEvent.Pong? = withTimeoutOrNull(2000L) {
+            eventReceiver.first { it == AccessibilityServiceEvent.Pong(key) } as AccessibilityServiceEvent.Pong?
         }
 
         pingJob.cancel()
@@ -275,7 +277,7 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
         }
     }
 
-    fun updateServiceState() {
+    override fun invalidateState() {
         coroutineScope.launch {
             state.value = getState()
         }
@@ -290,9 +292,9 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
                 Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
             )
 
-            val className = io.github.sds100.keymapper.system.accessibility.MyAccessibilityService::class.java.name
+            val className = classProvider.getAccessibilityService().name
 
-            val keyMapperEntry = "${Constants.PACKAGE_NAME}/$className"
+            val keyMapperEntry = "${buildConfigProvider.packageName}/$className"
 
             val newEnabledServices = when {
                 enabledServices.isNullOrBlank() -> keyMapperEntry

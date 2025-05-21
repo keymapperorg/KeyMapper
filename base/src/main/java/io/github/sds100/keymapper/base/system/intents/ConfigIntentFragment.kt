@@ -18,20 +18,21 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyController
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.databinding.FragmentConfigIntentBinding
 import io.github.sds100.keymapper.base.databinding.ListItemIntentExtraBoolBinding
-import io.github.sds100.keymapper.intentExtraBool
-import io.github.sds100.keymapper.intentExtraGeneric
-import io.github.sds100.keymapper.system.intents.BoolIntentExtraListItem
-import io.github.sds100.keymapper.system.intents.GenericIntentExtraListItem
-import io.github.sds100.keymapper.system.intents.IntentExtraListItem
-import io.github.sds100.keymapper.base.utils.Inject
+import io.github.sds100.keymapper.base.intentExtraBool
+import io.github.sds100.keymapper.base.intentExtraGeneric
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.setupNavigation
 import io.github.sds100.keymapper.base.utils.ui.showPopups
+import io.github.sds100.keymapper.system.intents.BoolIntentExtraListItem
+import io.github.sds100.keymapper.system.intents.GenericIntentExtraListItem
+import io.github.sds100.keymapper.system.intents.IntentExtraListItem
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.json.Json
 
+@AndroidEntryPoint
 class ConfigIntentFragment : Fragment() {
     companion object {
         const val EXTRA_RESULT = "extra_config_intent_result"
@@ -40,9 +41,7 @@ class ConfigIntentFragment : Fragment() {
     private val args: ConfigIntentFragmentArgs by navArgs()
     private val requestKey: String by lazy { args.requestKey }
 
-    private val viewModel: ConfigIntentViewModel by viewModels {
-        Inject.configIntentViewModel(requireContext())
-    }
+    private val viewModel: ConfigIntentViewModel by viewModels()
 
     /**
      * Scoped to the lifecycle of the fragment's view (between onCreateView and onDestroyView)

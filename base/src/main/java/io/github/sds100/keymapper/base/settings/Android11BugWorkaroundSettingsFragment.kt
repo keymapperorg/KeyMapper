@@ -6,19 +6,21 @@ import androidx.lifecycle.Lifecycle
 import androidx.preference.Preference
 import androidx.preference.SwitchPreference
 import androidx.preference.isEmpty
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.utils.ui.ChooseAppStoreModel
+import io.github.sds100.keymapper.base.utils.ui.PopupUi
+import io.github.sds100.keymapper.base.utils.ui.drawable
+import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.base.utils.ui.str
+import io.github.sds100.keymapper.base.utils.ui.viewLifecycleScope
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.system.leanback.LeanbackUtils
 import io.github.sds100.keymapper.system.url.UrlUtils
-import io.github.sds100.keymapper.base.utils.ui.drawable
-import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.utils.ui.str
-import io.github.sds100.keymapper.base.utils.ui.ChooseAppStoreModel
-import io.github.sds100.keymapper.base.utils.ui.PopupUi
-import io.github.sds100.keymapper.base.utils.ui.showPopup
-import io.github.sds100.keymapper.base.utils.ui.viewLifecycleScope
 import kotlinx.coroutines.flow.collectLatest
 
+@AndroidEntryPoint
 class Android11BugWorkaroundSettingsFragment : BaseSettingsFragment() {
 
     companion object {

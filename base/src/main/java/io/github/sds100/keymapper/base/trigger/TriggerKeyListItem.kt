@@ -43,14 +43,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.keymaps.ClickType
-import io.github.sds100.keymapper.base.keymaps.FingerprintGestureType
+import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.compose.DragDropState
 
 @Composable
 fun TriggerKeyListItem(
     modifier: Modifier = Modifier,
-    model: _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel,
+    model: TriggerKeyListItemModel,
     index: Int,
     isDraggingEnabled: Boolean = false,
     isDragging: Boolean,
@@ -109,9 +109,9 @@ fun TriggerKeyListItem(
                 // To save space only show the icon if there is no error.
                 if (model.error == null) {
                     val icon = when (model) {
-                        is _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.Assistant -> Icons.Outlined.Assistant
-                        is _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.FloatingButton -> Icons.Outlined.BubbleChart
-                        is _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.FingerprintGesture -> Icons.Outlined.Fingerprint
+                        is TriggerKeyListItemModel.Assistant -> Icons.Outlined.Assistant
+                        is TriggerKeyListItemModel.FloatingButton -> Icons.Outlined.BubbleChart
+                        is TriggerKeyListItemModel.FingerprintGesture -> Icons.Outlined.Fingerprint
                         else -> null
                     }
 
@@ -126,22 +126,22 @@ fun TriggerKeyListItem(
                 }
 
                 val primaryText = when (model) {
-                    is _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.Assistant -> when (model.assistantType) {
+                    is TriggerKeyListItemModel.Assistant -> when (model.assistantType) {
                         AssistantTriggerType.ANY -> stringResource(R.string.assistant_any_trigger_name)
                         AssistantTriggerType.VOICE -> stringResource(R.string.assistant_voice_trigger_name)
                         AssistantTriggerType.DEVICE -> stringResource(R.string.assistant_device_trigger_name)
                     }
 
-                    is _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.FloatingButton -> stringResource(
+                    is TriggerKeyListItemModel.FloatingButton -> stringResource(
                         R.string.trigger_key_floating_button_description,
                         model.buttonName,
                     )
 
-                    is _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.KeyCode -> model.keyName
+                    is TriggerKeyListItemModel.KeyCode -> model.keyName
 
-                    is _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.FloatingButtonDeleted -> stringResource(R.string.trigger_error_floating_button_deleted_title)
+                    is TriggerKeyListItemModel.FloatingButtonDeleted -> stringResource(R.string.trigger_error_floating_button_deleted_title)
 
-                    is _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.FingerprintGesture -> when (model.gestureType) {
+                    is TriggerKeyListItemModel.FingerprintGesture -> when (model.gestureType) {
                         FingerprintGestureType.SWIPE_UP -> stringResource(R.string.trigger_key_fingerprint_gesture_up)
                         FingerprintGestureType.SWIPE_DOWN -> stringResource(R.string.trigger_key_fingerprint_gesture_down)
                         FingerprintGestureType.SWIPE_LEFT -> stringResource(R.string.trigger_key_fingerprint_gesture_left)
@@ -159,8 +159,8 @@ fun TriggerKeyListItem(
                     }
 
                     val tertiaryText = when (model) {
-                        is _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.KeyCode -> model.extraInfo
-                        is _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.FloatingButton -> model.layoutName
+                        is TriggerKeyListItemModel.KeyCode -> model.extraInfo
+                        is TriggerKeyListItemModel.FloatingButton -> model.layoutName
 
                         else -> null
                     }
@@ -201,7 +201,7 @@ fun TriggerKeyListItem(
                         }
                     }
 
-                    if (model !is _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.FloatingButtonDeleted) {
+                    if (model !is TriggerKeyListItemModel.FloatingButtonDeleted) {
                         IconButton(onClick = onEditClick) {
                             Icon(
                                 imageVector = Icons.Outlined.Settings,
@@ -324,7 +324,7 @@ private fun ErrorTextColumn(
 @Composable
 private fun KeyCodePreview() {
     TriggerKeyListItem(
-        model = _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.KeyCode(
+        model = TriggerKeyListItemModel.KeyCode(
             id = "id",
             keyName = "Volume Up",
             clickType = ClickType.SHORT_PRESS,
@@ -342,7 +342,7 @@ private fun KeyCodePreview() {
 @Composable
 private fun NoDragPreview() {
     TriggerKeyListItem(
-        model = _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.KeyCode(
+        model = TriggerKeyListItemModel.KeyCode(
             id = "id",
             keyName = "Volume Up",
             clickType = ClickType.LONG_PRESS,
@@ -360,7 +360,7 @@ private fun NoDragPreview() {
 @Composable
 private fun AssistantPreview() {
     TriggerKeyListItem(
-        model = _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.Assistant(
+        model = TriggerKeyListItemModel.Assistant(
             id = "id",
             assistantType = AssistantTriggerType.DEVICE,
             clickType = ClickType.SHORT_PRESS,
@@ -377,7 +377,7 @@ private fun AssistantPreview() {
 @Composable
 private fun AssistantErrorPreview() {
     TriggerKeyListItem(
-        model = _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.Assistant(
+        model = TriggerKeyListItemModel.Assistant(
             id = "id",
             assistantType = AssistantTriggerType.DEVICE,
             clickType = ClickType.DOUBLE_PRESS,
@@ -394,7 +394,7 @@ private fun AssistantErrorPreview() {
 @Composable
 private fun FloatingButtonPreview() {
     TriggerKeyListItem(
-        model = _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.FloatingButton(
+        model = TriggerKeyListItemModel.FloatingButton(
             id = "id",
             buttonName = "😎",
             layoutName = "Gaming",
@@ -412,7 +412,7 @@ private fun FloatingButtonPreview() {
 @Composable
 private fun FloatingButtonErrorPreview() {
     TriggerKeyListItem(
-        model = _root_ide_package_.io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.FloatingButtonDeleted(
+        model = TriggerKeyListItemModel.FloatingButtonDeleted(
             id = "id",
             clickType = ClickType.DOUBLE_PRESS,
             linkType = LinkType.ARROW,

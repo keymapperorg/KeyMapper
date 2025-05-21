@@ -73,8 +73,6 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.system.apps.ChooseAppScreen
-import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.base.utils.ui.drawable
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperDropdownMenu
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
@@ -82,7 +80,9 @@ import io.github.sds100.keymapper.base.utils.ui.compose.WindowSizeClassExt.compa
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.AdGroup
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.JumpToElement
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
+import io.github.sds100.keymapper.base.utils.ui.drawable
 import io.github.sds100.keymapper.common.utils.NodeInteractionType
+import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.flow.update
 
 private const val DEST_LANDING = "landing"
@@ -382,11 +382,11 @@ private fun RecordingSection(
     openSelectAppScreen: () -> Unit = {},
 ) {
     Column(modifier = modifier) {
-        when (state) {
+        when (val state = state) {
             is State.Data<RecordUiElementState> -> {
-                val interactionCount: Int = when (state.data) {
-                    is RecordUiElementState.CountingDown -> state.data.interactionCount
-                    is RecordUiElementState.Recorded -> state.data.interactionCount
+                val interactionCount: Int = when (val data = state.data) {
+                    is RecordUiElementState.CountingDown -> data.interactionCount
+                    is RecordUiElementState.Recorded -> data.interactionCount
                     RecordUiElementState.Empty -> 0
                 }
 

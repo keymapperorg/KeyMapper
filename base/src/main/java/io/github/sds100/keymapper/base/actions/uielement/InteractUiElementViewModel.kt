@@ -7,26 +7,25 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.ActionData
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Success
-import io.github.sds100.keymapper.common.utils.onFailure
-import io.github.sds100.keymapper.common.utils.then
-import io.github.sds100.keymapper.common.utils.valueOrNull
-import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
 import io.github.sds100.keymapper.base.system.accessibility.RecordAccessibilityNodeState
-import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.base.utils.containsQuery
-import io.github.sds100.keymapper.common.utils.dataOrNull
-import io.github.sds100.keymapper.common.utils.ifIsData
-import io.github.sds100.keymapper.common.utils.mapData
-import io.github.sds100.keymapper.base.utils.ui.PopupUi
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
+import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.NodeInteractionType
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.dataOrNull
+import io.github.sds100.keymapper.common.utils.ifIsData
+import io.github.sds100.keymapper.common.utils.mapData
+import io.github.sds100.keymapper.common.utils.onFailure
+import io.github.sds100.keymapper.common.utils.then
+import io.github.sds100.keymapper.common.utils.valueOrNull
+import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -44,8 +43,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 import java.util.Locale
+import javax.inject.Inject
 
 @HiltViewModel
 class InteractUiElementViewModel @Inject constructor(
@@ -410,25 +409,6 @@ class InteractUiElementViewModel @Inject constructor(
             NodeInteractionType.SCROLL_BACKWARD -> getString(R.string.action_interact_ui_element_interaction_type_scroll_backward)
             NodeInteractionType.EXPAND -> getString(R.string.action_interact_ui_element_interaction_type_expand)
             NodeInteractionType.COLLAPSE -> getString(R.string.action_interact_ui_element_interaction_type_collapse)
-        }
-    }
-
-    fun onElementSelected(elementId: String) {
-        viewModelScope.launch {
-            val dialog = PopupUi.Text(
-                hint = getString(R.string.hint_ui_element_description),
-                allowEmpty = false,
-                text = elementId,
-            )
-
-            val description = showPopup("ui_element_description", dialog) ?: return@launch
-
-            _returnAction.emit(
-                ActionData.InteractUiElement(
-                    elementId = elementId,
-                    description = description,
-                )
-            )
         }
     }
 }

@@ -8,25 +8,29 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.UseCases
-import AccessibilityServiceState
-import io.github.sds100.keymapper.common.utils.firstBlocking
-import io.github.sds100.keymapper.base.utils.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
+import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.str
+import io.github.sds100.keymapper.common.utils.firstBlocking
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-
-
+import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.N)
+@AndroidEntryPoint
 class ToggleMappingsTile :
     TileService(),
     LifecycleOwner {
 
-    private val serviceAdapter by lazy { ServiceLocator.accessibilityServiceAdapter(this) }
-    private val useCase by lazy { UseCases.pauseKeyMaps(this) }
+    @Inject
+    lateinit var serviceAdapter: AccessibilityServiceAdapter
+
+    @Inject
+    lateinit var useCase: PauseKeyMapsUseCase
 
     private lateinit var lifecycleRegistry: LifecycleRegistry
 

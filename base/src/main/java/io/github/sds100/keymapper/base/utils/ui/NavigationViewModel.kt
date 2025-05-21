@@ -7,10 +7,9 @@ import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import io.github.sds100.keymapper.NavAppDirections
+import io.github.sds100.keymapper.base.NavBaseAppDirections
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.ChooseActionFragment
-import io.github.sds100.keymapper.base.actions.keyevent.ChooseKeyCodeFragment
 import io.github.sds100.keymapper.base.actions.keyevent.ConfigKeyEventActionFragment
 import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickCoordinateResult
 import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickDisplayCoordinateFragment
@@ -22,16 +21,16 @@ import io.github.sds100.keymapper.base.actions.tapscreen.PickDisplayCoordinateFr
 import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementFragment
 import io.github.sds100.keymapper.base.constraints.ChooseConstraintFragment
 import io.github.sds100.keymapper.base.constraints.Constraint
-import io.github.sds100.keymapper.system.apps.ActivityInfo
+import io.github.sds100.keymapper.base.system.ChooseBluetoothDeviceFragment
 import io.github.sds100.keymapper.base.system.apps.ChooseActivityFragment
 import io.github.sds100.keymapper.base.system.apps.ChooseAppFragment
 import io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutFragment
 import io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutResult
-import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
-import io.github.sds100.keymapper.base.system.ChooseBluetoothDeviceFragment
 import io.github.sds100.keymapper.base.system.intents.ConfigIntentFragment
 import io.github.sds100.keymapper.base.system.intents.ConfigIntentResult
 import io.github.sds100.keymapper.common.utils.getJsonSerializable
+import io.github.sds100.keymapper.system.apps.ActivityInfo
+import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -43,8 +42,6 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-
-
 
 class NavigationViewModelImpl : NavigationViewModel {
     private val _onNavResult by lazy { MutableSharedFlow<NavResult>() }
@@ -142,19 +139,19 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
         }
 
         val direction = when (destination) {
-            is NavDestination.ChooseApp -> NavAppDirections.chooseApp(
+            is NavDestination.ChooseApp -> NavBaseAppDirections.chooseApp(
                 destination.allowHiddenApps,
                 requestKey,
             )
 
-            NavDestination.ChooseAppShortcut -> NavAppDirections.chooseAppShortcut(requestKey)
-            NavDestination.ChooseKeyCode -> NavAppDirections.chooseKeyCode(requestKey)
+            NavDestination.ChooseAppShortcut -> NavBaseAppDirections.chooseAppShortcut(requestKey)
+            NavDestination.ChooseKeyCode -> NavBaseAppDirections.chooseKeyCode(requestKey)
             is NavDestination.ConfigKeyEventAction -> {
                 val json = destination.action?.let {
                     Json.encodeToString(it)
                 }
 
-                NavAppDirections.configKeyEvent(requestKey, json)
+                NavBaseAppDirections.configKeyEvent(requestKey, json)
             }
 
             is NavDestination.PickCoordinate -> {
@@ -162,7 +159,7 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
                     Json.encodeToString(it)
                 }
 
-                NavAppDirections.pickDisplayCoordinate(requestKey, json)
+                NavBaseAppDirections.pickDisplayCoordinate(requestKey, json)
             }
 
             is NavDestination.PickSwipeCoordinate -> {
@@ -170,7 +167,7 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
                     Json.encodeToString(it)
                 }
 
-                NavAppDirections.swipePickDisplayCoordinate(requestKey, json)
+                NavBaseAppDirections.swipePickDisplayCoordinate(requestKey, json)
             }
 
             is NavDestination.PickPinchCoordinate -> {
@@ -178,7 +175,7 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
                     Json.encodeToString(it)
                 }
 
-                NavAppDirections.pinchPickDisplayCoordinate(requestKey, json)
+                NavBaseAppDirections.pinchPickDisplayCoordinate(requestKey, json)
             }
 
             is NavDestination.ConfigIntent -> {
@@ -186,44 +183,43 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
                     Json.encodeToString(it)
                 }
 
-                NavAppDirections.configIntent(requestKey, json)
+                NavBaseAppDirections.configIntent(requestKey, json)
             }
 
-            is NavDestination.ChooseActivity -> NavAppDirections.chooseActivity(requestKey)
-            is NavDestination.ChooseSound -> NavAppDirections.chooseSoundFile(requestKey)
-            NavDestination.ChooseAction -> NavAppDirections.toChooseActionFragment(requestKey)
-            is NavDestination.ChooseConstraint -> NavAppDirections.chooseConstraint(
+            is NavDestination.ChooseActivity -> NavBaseAppDirections.chooseActivity(requestKey)
+            is NavDestination.ChooseSound -> NavBaseAppDirections.chooseSoundFile(requestKey)
+            NavDestination.ChooseAction -> NavBaseAppDirections.toChooseActionFragment(requestKey)
+            is NavDestination.ChooseConstraint -> NavBaseAppDirections.chooseConstraint(
                 requestKey = requestKey,
             )
 
-            is NavDestination.ChooseBluetoothDevice -> NavAppDirections.chooseBluetoothDevice(
+            is NavDestination.ChooseBluetoothDevice -> NavBaseAppDirections.chooseBluetoothDevice(
                 requestKey,
             )
 
-            NavDestination.About -> NavAppDirections.actionGlobalAboutFragment()
-            NavDestination.Settings -> NavAppDirections.toSettingsFragment()
+            NavDestination.About -> NavBaseAppDirections.actionGlobalAboutFragment()
+            NavDestination.Settings -> NavBaseAppDirections.toSettingsFragment()
 
             is NavDestination.ConfigKeyMap -> when (destination) {
                 is NavDestination.ConfigKeyMap.New ->
-                    NavAppDirections.actionToConfigKeymap(
+                    NavBaseAppDirections.actionToConfigKeymap(
                         groupUid = destination.groupUid,
                         showAdvancedTriggers = destination.showAdvancedTriggers,
                     )
 
                 is NavDestination.ConfigKeyMap.Open ->
-                    NavAppDirections.actionToConfigKeymap(
+                    NavBaseAppDirections.actionToConfigKeymap(
                         keyMapUid = destination.keyMapUid,
                         showAdvancedTriggers = destination.showAdvancedTriggers,
                     )
             }
 
-            is NavDestination.ChooseFloatingLayout -> NavAppDirections.toChooseFloatingLayoutFragment()
-            NavDestination.ShizukuSettings -> NavAppDirections.toShizukuSettingsFragment()
-            is NavDestination.ConfigFloatingButton -> NavAppDirections.toConfigFloatingButton(
-                destination.buttonUid,
-            )
+            // TODO
+            is NavDestination.ChooseFloatingLayout -> return@onEach
+            is NavDestination.ConfigFloatingButton -> return@onEach
 
-            is NavDestination.InteractUiElement -> NavAppDirections.interactUiElement(
+            NavDestination.ShizukuSettings -> NavBaseAppDirections.toShizukuSettingsFragment()
+            is NavDestination.InteractUiElement -> NavBaseAppDirections.interactUiElement(
                 requestKey = requestKey,
                 action = destination.action?.let { Json.encodeToString(destination.action) },
             )
@@ -254,7 +250,8 @@ fun NavigationViewModel.sendNavResultFromBundle(
         }
 
         NavDestination.ID_KEY_CODE -> {
-            val keyCode = bundle.getInt(io.github.sds100.keymapper.base.actions.keyevent.ChooseKeyCodeFragment.EXTRA_KEYCODE)
+            val keyCode =
+                bundle.getInt(io.github.sds100.keymapper.base.actions.keyevent.ChooseKeyCodeFragment.EXTRA_KEYCODE)
 
             onNavResult(NavResult(requestKey, keyCode))
         }

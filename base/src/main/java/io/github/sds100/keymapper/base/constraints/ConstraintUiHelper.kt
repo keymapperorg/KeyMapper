@@ -3,13 +3,13 @@ package io.github.sds100.keymapper.base.constraints
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Android
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.common.utils.Orientation
+import io.github.sds100.keymapper.common.utils.TimeUtils
 import io.github.sds100.keymapper.common.utils.handle
 import io.github.sds100.keymapper.common.utils.valueIfFailure
 import io.github.sds100.keymapper.system.camera.CameraLens
-import io.github.sds100.keymapper.common.utils.Orientation
-import io.github.sds100.keymapper.base.utils.TimeUtils
-import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import java.time.format.FormatStyle
 
 class ConstraintUiHelper(

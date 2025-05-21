@@ -14,24 +14,22 @@ import com.airbnb.epoxy.EpoxyRecyclerView
 import com.airbnb.epoxy.TypedEpoxyController
 import com.michaelflisar.dragselectrecyclerview.DragSelectTouchListener
 import com.michaelflisar.dragselectrecyclerview.DragSelectionProcessor
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.databinding.FragmentSimpleRecyclerviewBinding
-import io.github.sds100.keymapper.logEntry
-import io.github.sds100.keymapper.system.files.FileUtils
-import io.github.sds100.keymapper.base.utils.Inject
-import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
+import io.github.sds100.keymapper.base.logEntry
 import io.github.sds100.keymapper.base.utils.ui.SimpleRecyclerViewFragment
+import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.showPopups
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.system.files.FileUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 
-
+@AndroidEntryPoint
 class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
 
-    private val viewModel by viewModels<LogViewModel> {
-        Inject.logViewModel(requireContext())
-    }
+    private val viewModel: LogViewModel by viewModels()
 
     override val listItems: Flow<State<List<LogEntryListItem>>>
         get() = viewModel.listItems

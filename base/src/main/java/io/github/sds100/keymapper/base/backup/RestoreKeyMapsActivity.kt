@@ -16,23 +16,20 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.sds100.keymapper.MainActivity
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.ServiceLocator
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.CustomDialogContent
+import io.github.sds100.keymapper.common.KeyMapperClassProvider
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class RestoreKeyMapsActivity : ComponentActivity() {
 
-    private val viewModel by viewModels<RestoreKeyMapsViewModel> {
-        RestoreKeyMapsViewModel.Factory(
-            useCase = BackupRestoreMappingsUseCaseImpl(
-                fileAdapter = ServiceLocator.fileAdapter(this),
-                backupManager = ServiceLocator.backupManager(this),
-            ),
-            resourceProvider = ServiceLocator.resourceProvider(this),
-        )
-    }
+    @Inject
+    lateinit var classProvider: KeyMapperClassProvider
+
+    private val viewModel by viewModels<RestoreKeyMapsViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,7 +74,7 @@ class RestoreKeyMapsActivity : ComponentActivity() {
                             TextButton(onClick = {
                                 finish()
 
-                                Intent(ctx, MainActivity::class.java).apply {
+                                Intent(ctx, classProvider.getMainActivity()).apply {
                                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                     startActivity(this)
                                 }

@@ -24,9 +24,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ConfigKeyMapViewModel @Inject constructor(
-    private val configActionsViewModel: ConfigActionsViewModel,
-    private val configTriggerViewModel: BaseConfigTriggerViewModel,
-    private val configConstraintsViewModel: ConfigConstraintsViewModel,
+    val configActionsViewModel: ConfigActionsViewModel,
+    val configTriggerViewModel: BaseConfigTriggerViewModel,
+    val configConstraintsViewModel: ConfigConstraintsViewModel,
     private val config: ConfigKeyMapUseCase,
     private val onboarding: OnboardingUseCase,
 ) : ViewModel() {

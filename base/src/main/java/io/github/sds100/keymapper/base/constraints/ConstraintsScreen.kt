@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.FlashlightOn
@@ -40,11 +41,11 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
 import io.github.sds100.keymapper.base.keymaps.ShortcutRow
-import io.github.sds100.keymapper.system.camera.CameraLens
-import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.base.utils.ui.drawable
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
+import io.github.sds100.keymapper.base.utils.ui.drawable
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.system.camera.CameraLens
 
 @Composable
 fun ConstraintsScreen(
@@ -110,11 +111,11 @@ private fun ConstraintsScreen(
         )
     }
 
-    when (state) {
+    when (val state = state) {
         State.Loading -> Loading()
         is State.Data<ConfigConstraintsState> -> Surface(modifier = modifier) {
             Column {
-                when (state.data) {
+                when (val data = state.data) {
                     is ConfigConstraintsState.Empty -> {
                         Column(
                             modifier = Modifier.weight(1f),
@@ -129,7 +130,7 @@ private fun ConstraintsScreen(
                                 textAlign = TextAlign.Center,
                             )
 
-                            if (state.data.shortcuts.isNotEmpty()) {
+                            if (data.shortcuts.isNotEmpty()) {
                                 Text(
                                     text = stringResource(R.string.recently_used_constraints),
                                     style = MaterialTheme.typography.titleSmall,
@@ -141,7 +142,7 @@ private fun ConstraintsScreen(
                                     modifier = Modifier
                                         .padding(horizontal = 32.dp)
                                         .fillMaxWidth(),
-                                    shortcuts = state.data.shortcuts,
+                                    shortcuts = data.shortcuts,
                                     onClick = onClickShortcut,
                                 )
                             }
@@ -151,7 +152,7 @@ private fun ConstraintsScreen(
                     is ConfigConstraintsState.Loaded -> {
                         Spacer(Modifier.height(8.dp))
 
-                        if (state.data.constraintList.isNotEmpty()) {
+                        if (data.constraintList.isNotEmpty()) {
                             Spacer(Modifier.height(8.dp))
 
                             Text(
@@ -165,8 +166,8 @@ private fun ConstraintsScreen(
 
                         ConstraintList(
                             modifier = Modifier.weight(1f),
-                            constraintList = state.data.constraintList,
-                            shortcuts = state.data.shortcuts,
+                            constraintList = data.constraintList,
+                            shortcuts = data.shortcuts,
                             onRemoveClick = {
                                 constraintToDelete = it
                                 showDeleteDialog = true
@@ -175,12 +176,12 @@ private fun ConstraintsScreen(
                             onClickShortcut = onClickShortcut,
                         )
 
-                        if (state.data.constraintList.size > 1) {
+                        if (data.constraintList.size > 1) {
                             ConstraintModeRow(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 8.dp),
-                                mode = state.data.selectedMode,
+                                mode = data.selectedMode,
                                 onSelectMode = onSelectMode,
                             )
                         }
@@ -245,7 +246,7 @@ private fun Loading(modifier: Modifier = Modifier) {
 @Composable
 private fun ConstraintList(
     modifier: Modifier = Modifier,
-    constraintList: List<io.github.sds100.keymapper.base.constraints.ConstraintListItemModel>,
+    constraintList: List<ConstraintListItemModel>,
     shortcuts: Set<ShortcutModel<Constraint>>,
     onRemoveClick: (String) -> Unit,
     onFixErrorClick: (String) -> Unit,
@@ -325,7 +326,7 @@ private fun LoadedPreview() {
             state = State.Data(
                 ConfigConstraintsState.Loaded(
                     constraintList = listOf(
-                        io.github.sds100.keymapper.base.constraints.ConstraintListItemModel(
+                        ConstraintListItemModel(
                             id = "1",
                             icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
                             constraintModeLink = ConstraintMode.AND,
@@ -333,7 +334,7 @@ private fun LoadedPreview() {
                             error = "Flashlight not found",
                             isErrorFixable = true,
                         ),
-                        io.github.sds100.keymapper.base.constraints.ConstraintListItemModel(
+                        ConstraintListItemModel(
                             id = "2",
                             icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
                             constraintModeLink = null,

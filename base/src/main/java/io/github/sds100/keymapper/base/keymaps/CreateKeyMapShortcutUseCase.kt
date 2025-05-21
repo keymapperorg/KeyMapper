@@ -4,10 +4,9 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import androidx.core.os.bundleOf
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.api.Api
+import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
-import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,6 +15,12 @@ class CreateKeyMapShortcutUseCaseImpl @Inject constructor(
     private val appShortcutAdapter: AppShortcutAdapter,
     private val resourceProvider: ResourceProvider
 ) : CreateKeyMapShortcutUseCase {
+
+    companion object {
+        private const val ACTION_TRIGGER_KEYMAP_BY_UID =
+            "io.github.sds100.keymapper.ACTION_TRIGGER_KEYMAP_BY_UID"
+        private const val EXTRA_KEYMAP_UID = "io.github.sds100.keymapper.EXTRA_KEYMAP_UID"
+    }
 
     override val isSupported: Boolean
         get() = appShortcutAdapter.areLauncherShortcutsSupported
@@ -29,15 +34,15 @@ class CreateKeyMapShortcutUseCaseImpl @Inject constructor(
             appShortcutAdapter.createLauncherShortcut(
                 iconResId = R.mipmap.ic_launcher_round,
                 label = shortcutLabel,
-                intentAction = Api.ACTION_TRIGGER_KEYMAP_BY_UID,
-                bundleOf(Api.EXTRA_KEYMAP_UID to keyMapUid),
+                intentAction = ACTION_TRIGGER_KEYMAP_BY_UID,
+                bundleOf(EXTRA_KEYMAP_UID to keyMapUid),
             )
         } else {
             appShortcutAdapter.createLauncherShortcut(
                 icon = icon,
                 label = shortcutLabel,
-                intentAction = Api.ACTION_TRIGGER_KEYMAP_BY_UID,
-                bundleOf(Api.EXTRA_KEYMAP_UID to keyMapUid),
+                intentAction = ACTION_TRIGGER_KEYMAP_BY_UID,
+                bundleOf(EXTRA_KEYMAP_UID to keyMapUid),
             )
         }
         return appShortcutAdapter.pinShortcut(shortcut)
@@ -52,15 +57,15 @@ class CreateKeyMapShortcutUseCaseImpl @Inject constructor(
             appShortcutAdapter.createLauncherShortcut(
                 iconResId = R.mipmap.ic_launcher_round,
                 label = shortcutLabel,
-                intentAction = Api.ACTION_TRIGGER_KEYMAP_BY_UID,
-                bundleOf(Api.EXTRA_KEYMAP_UID to keyMapUid),
+                intentAction = ACTION_TRIGGER_KEYMAP_BY_UID,
+                bundleOf(EXTRA_KEYMAP_UID to keyMapUid),
             )
         } else {
             appShortcutAdapter.createLauncherShortcut(
                 icon = icon,
                 label = shortcutLabel,
-                intentAction = Api.ACTION_TRIGGER_KEYMAP_BY_UID,
-                bundleOf(Api.EXTRA_KEYMAP_UID to keyMapUid),
+                intentAction = ACTION_TRIGGER_KEYMAP_BY_UID,
+                bundleOf(EXTRA_KEYMAP_UID to keyMapUid),
             )
         }
         return appShortcutAdapter.createShortcutResultIntent(shortcut)

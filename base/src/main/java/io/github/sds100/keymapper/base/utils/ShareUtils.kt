@@ -12,7 +12,6 @@ import androidx.core.app.ShareCompat
 import androidx.core.net.toUri
 import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.common.BuildConfigProvider
 
 object ShareUtils {
     fun sendMail(ctx: Context, email: String, subject: String, body: String) {
@@ -28,7 +27,7 @@ object ShareUtils {
         }
     }
 
-    fun shareFile(ctx: Context, file: Uri, buildConfigProvider: BuildConfigProvider) {
+    fun shareFile(ctx: Context, file: Uri, packageName: String) {
         try {
             val type = ctx.contentResolver.getType(file)
 
@@ -39,7 +38,7 @@ object ShareUtils {
                 .also { intent ->
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                         val broadcast = Intent(BaseMainActivity.ACTION_SAVE_FILE).apply {
-                            setPackage(buildConfigProvider.packageName)
+                            setPackage(packageName)
                             putExtra(BaseMainActivity.EXTRA_FILE_URI, file)
                         }
 

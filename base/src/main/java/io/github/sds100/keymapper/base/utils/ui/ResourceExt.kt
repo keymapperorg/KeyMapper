@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.TypedArray
 import android.graphics.drawable.Drawable
+import android.os.Looper
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.ArrayRes
@@ -20,20 +21,14 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.getResourceIdOrThrow
 import androidx.fragment.app.Fragment
 import com.google.android.material.color.MaterialColors
-import splitties.mainthread.isMainThread
-
-
 
 // Using varargs doesn't work since prints [LJava.lang.object@32f...etc
 fun Context.str(@StringRes resId: Int, formatArg: Any? = null): String = getString(resId, formatArg)
-fun Context.str(@StringRes resId: Int, formatArgArray: Array<Any>): String =
-    getString(resId, *formatArgArray)
+fun Context.str(@StringRes resId: Int, formatArgArray: Array<Any>): String = getString(resId, *formatArgArray)
 
-fun View.str(@StringRes resId: Int, formatArgs: Any? = null): String =
-    context.str(resId, formatArgs)
+fun View.str(@StringRes resId: Int, formatArgs: Any? = null): String = context.str(resId, formatArgs)
 
-fun Fragment.str(@StringRes resId: Int, formatArgs: Any? = null): String =
-    requireContext().str(resId, formatArgs)
+fun Fragment.str(@StringRes resId: Int, formatArgs: Any? = null): String = requireContext().str(resId, formatArgs)
 
 fun Context.strArray(@ArrayRes resId: Int): Array<String> = resources.getStringArray(resId)
 fun Fragment.strArray(@ArrayRes resId: Int): Array<String> = requireContext().strArray(resId)
@@ -116,14 +111,12 @@ fun View.str(
     attributeSet: AttributeSet,
     @StyleableRes styleableId: IntArray,
     @StyleableRes attrId: Int,
-) =
-    context.str(attributeSet, styleableId, attrId)
+) = context.str(attributeSet, styleableId, attrId)
 
 /**
  * Get a resource drawable. Can be safely used to get vector drawables on pre-lollipop.
  */
-fun Context.drawable(@DrawableRes resId: Int): Drawable =
-    AppCompatResources.getDrawable(this, resId)!!
+fun Context.drawable(@DrawableRes resId: Int): Drawable = AppCompatResources.getDrawable(this, resId)!!
 
 fun View.drawable(@DrawableRes resId: Int): Drawable = context.drawable(resId)
 fun Fragment.drawable(@DrawableRes resId: Int): Drawable = requireContext().drawable(resId)
@@ -138,11 +131,9 @@ fun Context.color(@ColorRes resId: Int, harmonize: Boolean = false): Int {
     }
 }
 
-fun View.color(@ColorRes resId: Int, harmonize: Boolean = false): Int =
-    context.color(resId, harmonize)
+fun View.color(@ColorRes resId: Int, harmonize: Boolean = false): Int = context.color(resId, harmonize)
 
-fun Fragment.color(@ColorRes resId: Int, harmonize: Boolean = false): Int =
-    requireContext().color(resId, harmonize)
+fun Fragment.color(@ColorRes resId: Int, harmonize: Boolean = false): Int = requireContext().color(resId, harmonize)
 
 @ColorInt
 fun Context.styledColor(@AttrRes attr: Int) = withStyledAttributes(attr) { getColor(it, 0) }
@@ -162,14 +153,12 @@ fun Fragment.int(@IntegerRes resId: Int) = requireContext().int(resId)
 fun Context.intArray(@ArrayRes resId: Int): IntArray = resources.getIntArray(resId)
 fun Fragment.intArray(@ArrayRes resId: Int): IntArray = resources.getIntArray(resId)
 
-fun Context.styledColorSL(@AttrRes attr: Int): ColorStateList? =
-    withStyledAttributes(attr) { getColorStateList(it) }
+fun Context.styledColorSL(@AttrRes attr: Int): ColorStateList? = withStyledAttributes(attr) { getColorStateList(it) }
 
 fun Fragment.styledColorSL(@AttrRes attr: Int) = context!!.styledColorSL(attr)
 fun View.styledColorSL(@AttrRes attr: Int) = context.styledColorSL(attr)
 
-fun Context.colorSl(@ColorRes color: Int): ColorStateList? =
-    ContextCompat.getColorStateList(this, color)
+fun Context.colorSl(@ColorRes color: Int): ColorStateList? = ContextCompat.getColorStateList(this, color)
 
 fun View.colorSl(@ColorRes color: Int) = context.colorSl(color)
 
@@ -183,7 +172,7 @@ inline fun <T> Context.withStyledAttributes(
     styledAttrs.func(styledAttrs.getIndex(0)).also { styledAttrs.recycle() }
 }
 
-fun Context.obtainStyledAttr(@AttrRes attrRes: Int): TypedArray = if (isMainThread) {
+fun Context.obtainStyledAttr(@AttrRes attrRes: Int): TypedArray = if (Looper.getMainLooper().isCurrentThread) {
     uiThreadConfinedCachedAttrArray[0] = attrRes
     obtainStyledAttributes(uiThreadConfinedCachedAttrArray)
 } else {

@@ -13,21 +13,11 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputLayout
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.ServiceLocator
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
-import io.github.sds100.keymapper.common.utils.Success
-import io.github.sds100.keymapper.common.utils.errorOrNull
-import io.github.sds100.keymapper.common.utils.isSuccess
-import io.github.sds100.keymapper.common.utils.onSuccess
-import io.github.sds100.keymapper.base.databinding.DialogEdittextNumberBinding
 import io.github.sds100.keymapper.base.databinding.DialogEdittextStringBinding
-import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.common.utils.resumeIfNotCompleted
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.suspendCancellableCoroutine
 import splitties.alertdialog.appcompat.message
 import splitties.alertdialog.appcompat.negativeButton
@@ -232,76 +222,6 @@ suspend fun Context.editTextStringAlertDialog(
                     it.isNotBlank()
                 }
         }
-    }
-}
-
-suspend fun Context.editTextNumberAlertDialog(
-    lifecycleOwner: LifecycleOwner,
-    hint: String,
-    min: Int? = null,
-    max: Int? = null,
-) = suspendCancellableCoroutine<Int?> { continuation ->
-
-    fun isValid(text: String?): Result<Int> {
-        if (text.isNullOrBlank()) {
-            return Error.InvalidNumber
-        }
-
-        return try {
-            val num = text.toInt()
-
-            min?.let {
-                if (num < min) {
-                    return Error.NumberTooSmall(min)
-                }
-            }
-
-            max?.let {
-                if (num > max) {
-                    return Error.NumberTooBig(max)
-                }
-            }
-
-            Success(num)
-        } catch (e: NumberFormatException) {
-            Error.InvalidNumber
-        }
-    }
-
-    val resourceProvider = ServiceLocator.resourceProvider(this)
-    val text = MutableStateFlow("")
-
-    val inflater = LayoutInflater.from(this@editTextNumberAlertDialog)
-    val binding = DialogEdittextNumberBinding.inflate(inflater).apply {
-        setHint(hint)
-        setText(text)
-    }
-
-    val alertDialog = materialAlertDialog {
-        okButton {
-            isValid(text.value).onSuccess { num ->
-                continuation.resume(num)
-            }
-        }
-
-        negativeButton(R.string.neg_cancel) { it.cancel() }
-
-        setView(binding.root)
-    }
-
-    alertDialog.show()
-    alertDialog.resumeNullOnDismiss(continuation)
-    alertDialog.dismissOnDestroy(lifecycleOwner)
-
-    lifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-        text.map { isValid(it) }
-            .collectLatest { isValid ->
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
-                    isValid.isSuccess
-
-                binding.textInputLayout.error =
-                    isValid.errorOrNull()?.getFullMessage(resourceProvider)
-            }
     }
 }
 

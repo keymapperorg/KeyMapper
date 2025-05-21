@@ -11,10 +11,11 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.base.databinding.FragmentAboutBinding
+import io.github.sds100.keymapper.common.BuildConfigProvider
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class AboutFragment : Fragment() {
 
     @Inject

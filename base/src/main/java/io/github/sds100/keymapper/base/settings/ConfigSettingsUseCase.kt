@@ -3,12 +3,12 @@ package io.github.sds100.keymapper.base.settings
 import androidx.datastore.preferences.core.Preferences
 import io.github.sds100.keymapper.base.actions.sound.SoundFileInfo
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
+import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
-import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
@@ -18,14 +18,16 @@ import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
-import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
+import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class ConfigSettingsUseCaseImpl(
+class ConfigSettingsUseCaseImpl @Inject constructor(
     private val preferences: PreferenceRepository,
     private val permissionAdapter: PermissionAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
@@ -34,9 +36,15 @@ class ConfigSettingsUseCaseImpl(
     private val packageManagerAdapter: PackageManagerAdapter,
     private val shizukuAdapter: ShizukuAdapter,
     private val devicesAdapter: DevicesAdapter,
+    private val buildConfigProvider: BuildConfigProvider,
 ) : ConfigSettingsUseCase {
 
-    private val imeHelper by lazy { KeyMapperImeHelper(inputMethodAdapter) }
+    private val imeHelper by lazy {
+        KeyMapperImeHelper(
+            inputMethodAdapter,
+            buildConfigProvider.packageName,
+        )
+    }
 
     override val isRootGranted: Flow<Boolean> = suAdapter.isGranted
 

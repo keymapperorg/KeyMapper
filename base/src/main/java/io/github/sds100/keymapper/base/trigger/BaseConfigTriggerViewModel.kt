@@ -158,8 +158,10 @@ abstract class BaseConfigTriggerViewModel(
             isEnabled,
             isChosen,
         )
-    }.stateIn(coroutineScope, SharingStarted.Lazily,
-        SetupGuiKeyboardState.DEFAULT
+    }.stateIn(
+        coroutineScope,
+        SharingStarted.Lazily,
+        SetupGuiKeyboardState.DEFAULT,
     )
 
     val triggerKeyOptionsUid = MutableStateFlow<String?>(null)
@@ -570,7 +572,7 @@ abstract class BaseConfigTriggerViewModel(
 
                     TriggerKeyDevice.External(
                         device.descriptor,
-                        device.name
+                        device.name,
                     )
                 }
             }
@@ -798,6 +800,9 @@ abstract class BaseConfigTriggerViewModel(
     fun onAdvancedTriggersTapTargetCompleted() {
         onboarding.completedTapTarget(OnboardingTapTarget.ADVANCED_TRIGGERS)
     }
+
+    abstract fun onEditFloatingButtonClick()
+    abstract fun onEditFloatingLayoutClick()
 }
 
 sealed class ConfigTriggerState {

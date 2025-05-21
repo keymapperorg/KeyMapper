@@ -11,8 +11,9 @@ import androidx.preference.PreferenceDataStore
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
-class SharedPrefsDataStoreWrapper(
+class SharedPrefsDataStoreWrapper @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
 ) : PreferenceDataStore() {
 

@@ -200,7 +200,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
         // This is checked here and not in KeyMapperApp's lifecycle observer because
         // the activities have not necessarily resumed at that point.
         permissionAdapter.onPermissionsChanged()
-        serviceAdapter.updateServiceState()
+        serviceAdapter.invalidateState()
     }
 
     override fun onDestroy() {

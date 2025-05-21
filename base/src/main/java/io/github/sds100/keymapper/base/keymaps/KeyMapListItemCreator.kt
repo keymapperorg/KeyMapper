@@ -6,12 +6,10 @@ import androidx.compose.material.icons.outlined.Add
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.base.actions.ActionUiHelper
-import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.base.constraints.ConstraintErrorSnapshot
 import io.github.sds100.keymapper.base.constraints.ConstraintState
 import io.github.sds100.keymapper.base.constraints.ConstraintUiHelper
-import io.github.sds100.keymapper.system.devices.InputDeviceUtils
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils
+import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.base.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
@@ -22,10 +20,13 @@ import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.base.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.base.trigger.TriggerMode
+import io.github.sds100.keymapper.base.utils.InputEventStrings
+import io.github.sds100.keymapper.base.utils.isFixable
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
+import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 
 class KeyMapListItemCreator(
     private val displayMapping: DisplayKeyMapUseCase,
@@ -250,7 +251,7 @@ class KeyMapListItemCreator(
             else -> Unit
         }
 
-        append(InputEventUtils.keyCodeToString(key.keyCode))
+        append(InputEventStrings.keyCodeToString(key.keyCode))
 
         val deviceName = when (key.device) {
             is TriggerKeyDevice.Internal -> null

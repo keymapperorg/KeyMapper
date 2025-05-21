@@ -1,14 +1,10 @@
 package io.github.sds100.keymapper.base.utils.ui
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import com.google.android.material.snackbar.Snackbar
 import io.github.sds100.keymapper.base.R
 import kotlinx.coroutines.suspendCancellableCoroutine
-import splitties.snackbar.action
-import splitties.snackbar.longSnack
-import splitties.snackbar.onDismiss
-import splitties.snackbar.snack
 import kotlin.coroutines.resume
-
 
 object SnackBarUtils {
 
@@ -17,44 +13,33 @@ object SnackBarUtils {
         text: String,
         actionText: String? = null,
         long: Boolean = false,
-    ) =
-        suspendCancellableCoroutine<Unit?> { continuation ->
+    ) = suspendCancellableCoroutine { continuation ->
 
-            val snackBar = if (long) {
-                view.longSnack(text) {
-                    if (actionText != null) {
-                        action(actionText) {
-                            if (!continuation.isCompleted) {
-                                continuation.resume(Unit)
-                            }
-                        }
-                    }
-
-                    anchorView = view.findViewById(R.id.fab)
-                }
-            } else {
-                view.snack(text) {
-                    if (actionText != null) {
-                        action(actionText) {
-                            if (!continuation.isCompleted) {
-                                continuation.resume(Unit)
-                            }
-                        }
-                    }
-
-                    anchorView = view.findViewById(R.id.fab)
-                }
-            }
-
-            // if there is no action then there is no point waiting for a user response
-            if (actionText == null) {
-                continuation.resume(null)
-            }
-
-            snackBar.onDismiss {
-                if (!continuation.isCompleted) {
-                    continuation.resume(null)
-                }
-            }
+        val duration = if (long) {
+            Snackbar.LENGTH_LONG
+        } else {
+            Snackbar.LENGTH_SHORT
         }
+
+        val snackBar = Snackbar.make(view, text, duration)
+            .setAnchorView(R.id.fab)
+            .setAction(actionText, {
+                if (!continuation.isCompleted) {
+                    continuation.resume(Unit)
+                }
+            })
+            .addCallback(object : Snackbar.Callback() {
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    if (!continuation.isCompleted) {
+                        continuation.resume(null)
+                    }
+                }
+            })
+            .show()
+
+        // if there is no action then there is no point waiting for a user response
+        if (actionText == null) {
+            continuation.resume(null)
+        }
+    }
 }

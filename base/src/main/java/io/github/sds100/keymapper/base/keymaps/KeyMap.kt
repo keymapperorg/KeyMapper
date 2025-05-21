@@ -8,12 +8,12 @@ import io.github.sds100.keymapper.base.actions.canBeHeldDown
 import io.github.sds100.keymapper.base.constraints.ConstraintEntityMapper
 import io.github.sds100.keymapper.base.constraints.ConstraintModeEntityMapper
 import io.github.sds100.keymapper.base.constraints.ConstraintState
-import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
-import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.base.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerEntityMapper
 import io.github.sds100.keymapper.base.trigger.TriggerKey
+import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
+import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import kotlinx.serialization.Serializable
 import java.util.UUID
 

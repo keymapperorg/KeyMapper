@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavHostController
-import io.github.sds100.keymapper.floating.ListFloatingLayoutsViewModel
+import io.github.sds100.keymapper.base.floating.ListFloatingLayoutsViewModel
 
 @Composable
 fun HomeFloatingLayoutsScreen(

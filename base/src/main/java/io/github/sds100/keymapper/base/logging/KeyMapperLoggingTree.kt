@@ -1,7 +1,10 @@
 package io.github.sds100.keymapper.base.logging
 
 import android.util.Log
+import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.data.repositories.LogRepository
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
@@ -17,17 +20,16 @@ import timber.log.Timber
 import java.util.Calendar
 import javax.inject.Inject
 
-@Inject
-class KeyMapperLoggingTree constructor(
+class KeyMapperLoggingTree @Inject constructor(
     private val coroutineScope: CoroutineScope,
-    preferenceRepository: io.github.sds100.keymapper.data.repositories.PreferenceRepository,
+    preferenceRepository: PreferenceRepository,
     private val logRepository: LogRepository,
 ) : Timber.Tree() {
-    private val logEverything: StateFlow<Boolean> = preferenceRepository.get(io.github.sds100.keymapper.data.Keys.log)
+    private val logEverything: StateFlow<Boolean> = preferenceRepository.get(Keys.log)
         .map { it ?: false }
         .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
-    private val messagesToLog = MutableSharedFlow<io.github.sds100.keymapper.data.entities.LogEntryEntity>(
+    private val messagesToLog = MutableSharedFlow<LogEntryEntity>(
         extraBufferCapacity = 1000,
         onBufferOverflow = BufferOverflow.SUSPEND,
     )
@@ -48,14 +50,14 @@ class KeyMapperLoggingTree constructor(
         }
 
         val severity = when (priority) {
-            Log.ERROR -> io.github.sds100.keymapper.data.entities.LogEntryEntity.SEVERITY_ERROR
-            Log.DEBUG -> io.github.sds100.keymapper.data.entities.LogEntryEntity.SEVERITY_DEBUG
-            Log.INFO -> io.github.sds100.keymapper.data.entities.LogEntryEntity.SEVERITY_INFO
-            else -> io.github.sds100.keymapper.data.entities.LogEntryEntity.SEVERITY_DEBUG
+            Log.ERROR -> LogEntryEntity.SEVERITY_ERROR
+            Log.DEBUG -> LogEntryEntity.SEVERITY_DEBUG
+            Log.INFO -> LogEntryEntity.SEVERITY_INFO
+            else -> LogEntryEntity.SEVERITY_DEBUG
         }
 
         messagesToLog.tryEmit(
-            io.github.sds100.keymapper.data.entities.LogEntryEntity(
+            LogEntryEntity(
                 id = 0,
                 time = Calendar.getInstance().timeInMillis,
                 severity = severity,
