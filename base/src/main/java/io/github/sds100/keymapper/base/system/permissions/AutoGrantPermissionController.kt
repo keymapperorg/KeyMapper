@@ -10,8 +10,9 @@ import io.github.sds100.keymapper.system.popup.ToastAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import javax.inject.Inject
 
-class AutoGrantPermissionController(
+class AutoGrantPermissionController @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val permissionAdapter: PermissionAdapter,
     private val popupAdapter: ToastAdapter,

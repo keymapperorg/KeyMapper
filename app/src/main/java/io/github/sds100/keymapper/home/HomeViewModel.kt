@@ -11,7 +11,7 @@ import io.github.sds100.keymapper.base.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
+import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
 import javax.inject.Inject
 
 @HiltViewModel

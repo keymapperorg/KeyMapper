@@ -53,7 +53,7 @@ import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
-import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
+import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.system.permissions.Permission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

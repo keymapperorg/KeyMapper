@@ -5,12 +5,16 @@ import android.media.Ringtone
 import android.media.RingtoneManager
 import android.os.Build
 import androidx.core.net.toUri
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.Success
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AndroidRingtoneAdapter(context: Context) : RingtoneAdapter {
-    private val ctx: Context = context.applicationContext
+@Singleton
+class AndroidRingtoneAdapter @Inject constructor(@ApplicationContext private val ctx: Context) : RingtoneAdapter {
+
     private val ringtoneManager: RingtoneManager by lazy {
         RingtoneManager(ctx).apply {
             setType(RingtoneManager.TYPE_ALL)

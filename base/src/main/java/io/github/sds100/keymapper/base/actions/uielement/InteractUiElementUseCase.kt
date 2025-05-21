@@ -20,8 +20,11 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class InteractUiElementController(
+@Singleton
+class InteractUiElementController @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val serviceAdapter: AccessibilityServiceAdapter,
     private val nodeRepository: AccessibilityNodeRepository,

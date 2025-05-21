@@ -18,7 +18,7 @@ import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.str
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
-import io.github.sds100.keymapper.system.inputmethod.ToggleCompatibleImeUseCase
+import io.github.sds100.keymapper.base.system.inputmethod.ToggleCompatibleImeUseCase
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 

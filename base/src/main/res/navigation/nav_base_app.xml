@@ -278,7 +278,7 @@
 
     <fragment
         android:id="@+id/bluetoothDevicesFragment"
-        android:name="io.github.sds100.keymapper.base.system.ChooseBluetoothDeviceFragment"
+        android:name="io.github.sds100.keymapper.base.system.bluetooth.ChooseBluetoothDeviceFragment"
         tools:layout="@layout/fragment_simple_recyclerview">
         <argument
             android:name="requestKey"

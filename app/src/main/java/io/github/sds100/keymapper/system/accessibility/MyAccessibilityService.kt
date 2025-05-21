@@ -1,16 +1,18 @@
 package io.github.sds100.keymapper.system.accessibility
 
 import android.content.Intent
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
-import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
+import io.github.sds100.keymapper.base.actions.PerformActionsUseCaseFactory
+import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCaseFactory
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
-import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCase
+import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCaseFactory
 import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsUseCase
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilityService
 import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilityServiceController
+import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjectorImpl
 import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
@@ -32,13 +34,13 @@ class MyAccessibilityService : BaseAccessibilityService() {
     lateinit var accessibilityServiceAdapter: AccessibilityServiceAdapterImpl
 
     @Inject
-    lateinit var detectConstraintsUseCase: DetectConstraintsUseCase
+    lateinit var detectConstraintsUseCaseFactory: DetectConstraintsUseCaseFactory
 
     @Inject
-    lateinit var performActionsUseCase: PerformActionsUseCase
+    lateinit var performActionsUseCaseFactory: PerformActionsUseCaseFactory
 
     @Inject
-    lateinit var detectKeyMapsUseCase: DetectKeyMapsUseCase
+    lateinit var detectKeyMapsUseCaseFactory: DetectKeyMapsUseCaseFactory
 
     @Inject
     lateinit var fingerprintGesturesSupportedUseCase: FingerprintGesturesSupportedUseCase
@@ -76,14 +78,27 @@ class MyAccessibilityService : BaseAccessibilityService() {
         context would return null
          */
         if (controller == null) {
+            val imeInputEventInjector = ImeInputEventInjectorImpl(
+                this,
+                keyEventRelayService = keyEventRelayServiceWrapper,
+                inputMethodAdapter = inputMethodAdapter,
+            )
+
             controller = AccessibilityServiceController(
                 coroutineScope = coroutineScope,
                 accessibilityService = this,
                 inputEvents = accessibilityServiceAdapter.eventReceiver,
                 outputEvents = accessibilityServiceAdapter.eventsToService,
-                detectConstraintsUseCase = detectConstraintsUseCase,
-                performActionsUseCase = performActionsUseCase,
-                detectKeyMapsUseCase = detectKeyMapsUseCase,
+                detectConstraintsUseCase = detectConstraintsUseCaseFactory.create(this),
+                performActionsUseCase = performActionsUseCaseFactory.create(
+                    accessibilityService = this,
+                    imeInputEventInjector = imeInputEventInjector,
+                ),
+                detectKeyMapsUseCase = detectKeyMapsUseCaseFactory.create(
+                    accessibilityService = this,
+                    coroutineScope = lifecycleScope,
+                    imeInputEventInjector = imeInputEventInjector,
+                ),
                 fingerprintGesturesSupportedUseCase = fingerprintGesturesSupportedUseCase,
                 rerouteKeyEventsUseCase = rerouteKeyEventsUseCase,
                 pauseKeyMapsUseCase = pauseKeyMapsUseCase,

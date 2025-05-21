@@ -1,6 +1,5 @@
-package io.github.sds100.keymapper.system.inputmethod
+package io.github.sds100.keymapper.base.system.inputmethod
 
-import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.Success
@@ -8,13 +7,15 @@ import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.suspendThen
 import io.github.sds100.keymapper.common.utils.then
+import io.github.sds100.keymapper.system.inputmethod.ImeInfo
+import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class KeyMapperImeHelper @Inject constructor(
+class KeyMapperImeHelper(
     private val imeAdapter: InputMethodAdapter,
-    private val packageName: String
+    private val packageName: String,
 ) {
     companion object {
         const val KEY_MAPPER_GUI_IME_PACKAGE =

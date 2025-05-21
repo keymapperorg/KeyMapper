@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.Shell
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.system.shell.ShellAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -22,6 +23,7 @@ import javax.inject.Singleton
 @Singleton
 class SuAdapterImpl @Inject constructor(
     coroutineScope: CoroutineScope,
+    private val shell: ShellAdapter,
     private val preferenceRepository: PreferenceRepository,
 ) : SuAdapter {
     private var process: Process? = null
@@ -34,7 +36,7 @@ class SuAdapterImpl @Inject constructor(
         preferenceRepository.set(Keys.hasRootPermission, true)
 
         // show the su prompt
-        Shell.run("su")
+        shell.run("su")
 
         return true
     }
@@ -47,7 +49,7 @@ class SuAdapterImpl @Inject constructor(
         try {
             if (block) {
                 // Don't use the long running su process because that will block the thread indefinitely
-                Shell.run("su", "-c", command, waitFor = true)
+                shell.run("su", "-c", command, waitFor = true)
             } else {
                 if (process == null) {
                     process = ProcessBuilder("su").start()
@@ -71,7 +73,7 @@ class SuAdapterImpl @Inject constructor(
         }
 
         try {
-            val inputStream = Shell.getShellCommandStdOut("su", "-c", command)
+            val inputStream = shell.getShellCommandStdOut("su", "-c", command)
             return Success(inputStream)
         } catch (e: IOException) {
             return Error.UnknownIOError

@@ -37,9 +37,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import java.util.LinkedList
+import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ListKeyMapsUseCaseImpl(
+class ListKeyMapsUseCaseImpl @Inject constructor(
     private val keyMapRepository: KeyMapRepository,
     private val groupRepository: GroupRepository,
     private val floatingButtonRepository: FloatingButtonRepository,

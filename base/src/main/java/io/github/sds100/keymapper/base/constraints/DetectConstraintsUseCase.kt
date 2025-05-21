@@ -1,7 +1,12 @@
 package io.github.sds100.keymapper.base.constraints
 
 import android.os.Build
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import io.github.sds100.keymapper.base.actions.PerformActionsUseCaseImpl
 import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
+import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
@@ -16,8 +21,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import javax.inject.Inject
 
-class DetectConstraintsUseCaseImpl(
+class DetectConstraintsUseCaseImpl @AssistedInject constructor(
+    @Assisted
     private val accessibilityService: IAccessibilityService,
     private val mediaAdapter: MediaAdapter,
     private val devicesAdapter: DevicesAdapter,
@@ -84,4 +91,11 @@ class DetectConstraintsUseCaseImpl(
 interface DetectConstraintsUseCase {
     fun getSnapshot(): ConstraintSnapshot
     fun onDependencyChanged(dependency: ConstraintDependency): Flow<ConstraintDependency>
+}
+
+@AssistedFactory
+interface DetectConstraintsUseCaseFactory {
+    fun create(
+        accessibilityService: IAccessibilityService,
+    ): DetectConstraintsUseCaseImpl
 }

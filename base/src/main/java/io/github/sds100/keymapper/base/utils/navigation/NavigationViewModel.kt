@@ -21,7 +21,7 @@ import io.github.sds100.keymapper.base.actions.tapscreen.PickDisplayCoordinateFr
 import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementFragment
 import io.github.sds100.keymapper.base.constraints.ChooseConstraintFragment
 import io.github.sds100.keymapper.base.constraints.Constraint
-import io.github.sds100.keymapper.base.system.ChooseBluetoothDeviceFragment
+import io.github.sds100.keymapper.base.system.bluetooth.ChooseBluetoothDeviceFragment
 import io.github.sds100.keymapper.base.system.apps.ChooseActivityFragment
 import io.github.sds100.keymapper.base.system.apps.ChooseAppFragment
 import io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutFragment

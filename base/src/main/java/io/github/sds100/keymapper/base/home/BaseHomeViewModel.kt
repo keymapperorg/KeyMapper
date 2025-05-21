@@ -24,7 +24,7 @@ import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showPopup
 import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
+import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 

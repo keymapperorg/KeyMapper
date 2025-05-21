@@ -17,7 +17,6 @@ import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapt
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
-import io.github.sds100.keymapper.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.popup.ToastAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn

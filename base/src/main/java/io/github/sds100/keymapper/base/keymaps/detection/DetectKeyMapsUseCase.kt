@@ -4,35 +4,38 @@ import android.accessibilityservice.AccessibilityService
 import android.os.SystemClock
 import android.view.InputDevice
 import android.view.KeyEvent
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.constraints.ConstraintState
-import io.github.sds100.keymapper.data.Keys
-import io.github.sds100.keymapper.data.PreferenceDefaults
-import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
-import io.github.sds100.keymapper.data.repositories.GroupRepository
-import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.base.groups.Group
 import io.github.sds100.keymapper.base.groups.GroupEntityMapper
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.KeyMapEntityMapper
-import io.github.sds100.keymapper.data.repositories.KeyMapRepository
 import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
-import io.github.sds100.keymapper.system.display.DisplayAdapter
-import io.github.sds100.keymapper.system.inputevents.InputEventInjector
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
-import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
+import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
+import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.common.utils.InputEventType
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.dataOrNull
+import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.PreferenceDefaults
+import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
+import io.github.sds100.keymapper.data.repositories.GroupRepository
+import io.github.sds100.keymapper.data.repositories.KeyMapRepository
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.system.display.DisplayAdapter
+import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.popup.ToastAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
+import io.github.sds100.keymapper.system.shizuku.ShizukuInputEventInjector
 import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
-import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
-import io.github.sds100.keymapper.common.utils.InputEventType
-import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.common.utils.dataOrNull
-import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -42,11 +45,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class DetectKeyMapsUseCaseImpl @Inject constructor(
+class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
     private val keyMapRepository: KeyMapRepository,
     private val floatingButtonRepository: FloatingButtonRepository,
     private val groupRepository: GroupRepository,
@@ -54,13 +54,15 @@ class DetectKeyMapsUseCaseImpl @Inject constructor(
     private val suAdapter: SuAdapter,
     private val displayAdapter: DisplayAdapter,
     private val volumeAdapter: VolumeAdapter,
+    @Assisted
     private val imeInputEventInjector: ImeInputEventInjector,
+    @Assisted
     private val accessibilityService: IAccessibilityService,
-    private val shizukuInputEventInjector: InputEventInjector,
     private val toastAdapter: ToastAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val resourceProvider: ResourceProvider,
     private val vibrator: VibratorAdapter,
+    @Assisted
     private val coroutineScope: CoroutineScope,
 ) : DetectKeyMapsUseCase {
 
@@ -163,6 +165,8 @@ class DetectKeyMapsUseCaseImpl @Inject constructor(
     override val currentTime: Long
         get() = SystemClock.elapsedRealtime()
 
+    private val shizukuInputEventInjector = ShizukuInputEventInjector()
+
     private val openMenuHelper = OpenMenuHelper(
         suAdapter,
         accessibilityService,
@@ -264,4 +268,13 @@ interface DetectKeyMapsUseCase {
     )
 
     val isScreenOn: Flow<Boolean>
+}
+
+@AssistedFactory
+interface DetectKeyMapsUseCaseFactory {
+    fun create(
+        accessibilityService: IAccessibilityService,
+        coroutineScope: CoroutineScope,
+        imeInputEventInjector: ImeInputEventInjector,
+    ): DetectKeyMapsUseCaseImpl
 }

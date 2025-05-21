@@ -10,14 +10,15 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.Success
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
-class AndroidLockScreenAdapter(context: Context) : LockScreenAdapter {
-    private val ctx = context.applicationContext
+class AndroidLockScreenAdapter @Inject constructor(@ApplicationContext private val ctx: Context) : LockScreenAdapter {
 
     private val devicePolicyManager: DevicePolicyManager by lazy { ctx.getSystemService()!! }
     private val keyguardManager: KeyguardManager by lazy { ctx.getSystemService()!! }

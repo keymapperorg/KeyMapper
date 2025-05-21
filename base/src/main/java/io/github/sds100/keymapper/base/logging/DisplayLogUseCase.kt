@@ -1,20 +1,21 @@
 package io.github.sds100.keymapper.base.logging
 
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.system.clipboard.ClipboardAdapter
-import io.github.sds100.keymapper.system.files.FileAdapter
+import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.ifIsData
 import io.github.sds100.keymapper.common.utils.mapData
-import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.data.repositories.LogRepository
+import io.github.sds100.keymapper.system.clipboard.ClipboardAdapter
+import io.github.sds100.keymapper.system.files.FileAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class DisplayLogUseCaseImpl(
+class DisplayLogUseCaseImpl @Inject constructor(
     private val repository: LogRepository,
     private val resourceProvider: ResourceProvider,
     private val clipboardAdapter: ClipboardAdapter,

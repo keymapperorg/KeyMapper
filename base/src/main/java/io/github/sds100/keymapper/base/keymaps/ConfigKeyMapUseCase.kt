@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.keymaps
 
 import android.database.sqlite.SQLiteConstraintException
+import dagger.hilt.android.scopes.ActivityScoped
 import io.github.sds100.keymapper.base.actions.Action
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.RepeatMode

@@ -1,5 +1,6 @@
-package io.github.sds100.keymapper.system.bluetooth
+package io.github.sds100.keymapper.base.system.bluetooth
 
+import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter

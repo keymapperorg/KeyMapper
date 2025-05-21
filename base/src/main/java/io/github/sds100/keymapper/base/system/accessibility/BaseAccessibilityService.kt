@@ -161,7 +161,7 @@ abstract class BaseAccessibilityService :
             }
         }
 
-    private val keyEventRelayServiceWrapper: KeyEventRelayServiceWrapperImpl by lazy {
+     val keyEventRelayServiceWrapper: KeyEventRelayServiceWrapperImpl by lazy {
         KeyEventRelayServiceWrapperImpl(
             ctx = this,
             id = CALLBACK_ID_ACCESSIBILITY_SERVICE,

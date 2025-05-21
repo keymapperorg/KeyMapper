@@ -10,8 +10,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import rikka.shizuku.Shizuku
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class ShizukuAdapterImpl(
+@Singleton
+class ShizukuAdapterImpl @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val packageManagerAdapter: PackageManagerAdapter,
 ) : ShizukuAdapter {

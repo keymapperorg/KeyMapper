@@ -16,9 +16,9 @@ import io.github.sds100.keymapper.common.utils.DispatcherProvider
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
-import io.github.sds100.keymapper.system.inputmethod.ShowHideInputMethodUseCase
-import io.github.sds100.keymapper.system.inputmethod.ShowInputMethodPickerUseCase
-import io.github.sds100.keymapper.system.inputmethod.ToggleCompatibleImeUseCase
+import io.github.sds100.keymapper.base.system.inputmethod.ShowHideInputMethodUseCase
+import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
+import io.github.sds100.keymapper.base.system.inputmethod.ToggleCompatibleImeUseCase
 import io.github.sds100.keymapper.system.notifications.NotificationChannelModel
 import io.github.sds100.keymapper.system.notifications.NotificationIntentType
 import io.github.sds100.keymapper.system.notifications.NotificationModel

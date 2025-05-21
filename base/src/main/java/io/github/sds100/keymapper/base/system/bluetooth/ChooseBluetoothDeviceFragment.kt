@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.system
+package io.github.sds100.keymapper.base.system.bluetooth
 
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle

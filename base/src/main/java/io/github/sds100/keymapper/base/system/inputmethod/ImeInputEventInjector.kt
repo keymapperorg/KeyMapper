@@ -12,14 +12,13 @@ import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
 import timber.log.Timber
-import javax.inject.Inject
 
 /**
  * This class handles communicating with the Key Mapper input method services
  * so key events and text can be inputted.
  */
-class ImeInputEventInjectorImpl @Inject constructor(
-    context: Context,
+class ImeInputEventInjectorImpl(
+    private val ctx: Context,
     private val keyEventRelayService: KeyEventRelayServiceWrapper,
     private val inputMethodAdapter: InputMethodAdapter,
 ) : ImeInputEventInjector {
@@ -42,8 +41,6 @@ class ImeInputEventInjectorImpl @Inject constructor(
 
         private const val CALLBACK_ID_INPUT_METHOD = "input_method"
     }
-
-    private val ctx = context.applicationContext
 
     override suspend fun inputKeyEvent(model: InputKeyModel) {
         Timber.d("Inject key event with input method ${KeyEvent.keyCodeToString(model.keyCode)}, $model")

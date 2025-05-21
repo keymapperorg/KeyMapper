@@ -5,21 +5,36 @@ import android.os.Build
 import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
+import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeAction
+import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeModel
+import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
+import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
+import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
+import io.github.sds100.keymapper.base.utils.getFullMessage
+import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.InputEventType
+import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.dataOrNull
+import io.github.sds100.keymapper.common.utils.firstBlocking
+import io.github.sds100.keymapper.common.utils.getWordBoundaries
+import io.github.sds100.keymapper.common.utils.ifIsData
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.otherwise
 import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.common.utils.then
+import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
-import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeAction
-import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeModel
-import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
@@ -27,7 +42,6 @@ import io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
-import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
@@ -37,25 +51,22 @@ import io.github.sds100.keymapper.system.intents.IntentAdapter
 import io.github.sds100.keymapper.system.intents.IntentTarget
 import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
-import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.nfc.NfcAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationServiceEvent
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.popup.ToastAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
+import io.github.sds100.keymapper.system.shell.ShellAdapter
+import io.github.sds100.keymapper.system.shizuku.ShizukuInputEventInjector
 import io.github.sds100.keymapper.system.url.OpenUrlAdapter
 import io.github.sds100.keymapper.system.volume.RingerMode
+import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.system.volume.VolumeStream
-import io.github.sds100.keymapper.common.utils.InputEventType
-import io.github.sds100.keymapper.common.utils.dataOrNull
-import io.github.sds100.keymapper.common.utils.firstBlocking
-import io.github.sds100.keymapper.base.utils.getFullMessage
-import io.github.sds100.keymapper.common.utils.getWordBoundaries
-import io.github.sds100.keymapper.common.utils.ifIsData
-import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -64,30 +75,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import io.github.sds100.keymapper.common.utils.withFlag
 import timber.log.Timber
-import io.github.sds100.keymapper.system.Shell
-import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjectorImpl
-import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
-import io.github.sds100.keymapper.system.notifications.NotificationServiceEvent
-import io.github.sds100.keymapper.system.shizuku.ShizukuInputEventInjector
-import io.github.sds100.keymapper.system.volume.VolumeAdapter
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class PerformActionsUseCaseImpl @Inject constructor(
+class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val appCoroutineScope: CoroutineScope,
+    @Assisted
     private val service: IAccessibilityService,
     private val inputMethodAdapter: InputMethodAdapter,
     private val fileAdapter: FileAdapter,
     private val suAdapter: SuAdapter,
-    private val shell: Shell,
+    private val shell: ShellAdapter,
     private val intentAdapter: IntentAdapter,
     private val getActionErrorUseCase: GetActionErrorUseCase,
-    private val keyMapperImeMessenger: ImeInputEventInjectorImpl,
-    private val shizukuInputEventInjector: ShizukuInputEventInjector,
+    @Assisted
+    private val keyMapperImeMessenger: ImeInputEventInjector,
     private val packageManagerAdapter: PackageManagerAdapter,
     private val appShortcutAdapter: AppShortcutAdapter,
     private val toastAdapter: ToastAdapter,
@@ -106,10 +107,12 @@ class PerformActionsUseCaseImpl @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val soundsManager: SoundsManager,
     private val permissionAdapter: PermissionAdapter,
-    private val notificationReceiverAdapter: NotificationReceiverAdapterImpl,
+    private val notificationReceiverAdapter: NotificationReceiverAdapter,
     private val ringtoneAdapter: RingtoneAdapter,
-    private val settingsRepository: PreferenceRepository
+    private val settingsRepository: PreferenceRepository,
 ) : PerformActionsUseCase {
+
+    private val shizukuInputEventInjector: ShizukuInputEventInjector = ShizukuInputEventInjector()
 
     private val openMenuHelper by lazy {
         OpenMenuHelper(
@@ -809,11 +812,13 @@ class PerformActionsUseCaseImpl @Inject constructor(
             }
 
             ActionData.DismissAllNotifications -> {
-                result = notificationReceiverAdapter.send(NotificationServiceEvent.DismissAllNotifications)
+                result =
+                    notificationReceiverAdapter.send(NotificationServiceEvent.DismissAllNotifications)
             }
 
             ActionData.DismissLastNotification -> {
-                result = notificationReceiverAdapter.send(NotificationServiceEvent.DismissLastNotification)
+                result =
+                    notificationReceiverAdapter.send(NotificationServiceEvent.DismissLastNotification)
             }
 
             ActionData.AnswerCall -> {
@@ -1004,4 +1009,12 @@ interface PerformActionsUseCase {
     )
 
     fun getErrorSnapshot(): ActionErrorSnapshot
+}
+
+@AssistedFactory
+interface PerformActionsUseCaseFactory {
+    fun create(
+        accessibilityService: IAccessibilityService,
+        imeInputEventInjector: ImeInputEventInjector,
+    ): PerformActionsUseCaseImpl
 }

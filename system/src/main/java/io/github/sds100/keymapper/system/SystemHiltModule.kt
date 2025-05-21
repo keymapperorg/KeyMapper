@@ -36,6 +36,8 @@ import io.github.sds100.keymapper.system.network.AndroidNetworkAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.nfc.AndroidNfcAdapter
 import io.github.sds100.keymapper.system.nfc.NfcAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.phone.AndroidPhoneAdapter
@@ -48,6 +50,9 @@ import io.github.sds100.keymapper.system.ringtones.AndroidRingtoneAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.root.SuAdapterImpl
+import io.github.sds100.keymapper.system.shell.ShellAdapter
+import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
+import io.github.sds100.keymapper.system.shizuku.ShizukuAdapterImpl
 import io.github.sds100.keymapper.system.url.AndroidOpenUrlAdapter
 import io.github.sds100.keymapper.system.url.OpenUrlAdapter
 import io.github.sds100.keymapper.system.vibrator.AndroidVibratorAdapter
@@ -158,4 +163,16 @@ abstract class SystemHiltModule {
     @Singleton
     @Binds
     abstract fun provideVolumeAdapter(impl: AndroidVolumeAdapter): VolumeAdapter
+
+    @Singleton
+    @Binds
+    abstract fun provideShellAdapter(impl: Shell): ShellAdapter
+
+    @Singleton
+    @Binds
+    abstract fun provideShizukuAdapter(impl: ShizukuAdapterImpl): ShizukuAdapter
+
+    @Singleton
+    @Binds
+    abstract fun provideNotificationReceiverAdapter(impl: NotificationReceiverAdapterImpl): NotificationReceiverAdapter
 }

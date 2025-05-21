@@ -5,7 +5,9 @@ import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Singleton
 
+@Singleton
 class ControlAccessibilityServiceUseCaseImpl(
     private val adapter: AccessibilityServiceAdapter,
     private val permissionAdapter: PermissionAdapter,
