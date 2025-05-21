@@ -42,7 +42,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
-@ViewModelScoped
 class DisplayKeyMapUseCaseImpl @Inject constructor(
     private val permissionAdapter: PermissionAdapter,
     private val inputMethodAdapter: InputMethodAdapter,

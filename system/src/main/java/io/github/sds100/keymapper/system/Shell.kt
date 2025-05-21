@@ -6,10 +6,11 @@ import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.shell.ShellAdapter
 import java.io.IOException
 import java.io.InputStream
+import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class Shell : ShellAdapter {
+class Shell @Inject constructor() : ShellAdapter {
     /**
      * @return whether the command was executed successfully
      */

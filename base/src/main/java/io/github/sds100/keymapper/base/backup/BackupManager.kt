@@ -74,8 +74,11 @@ import java.io.IOException
 import java.io.InputStream
 import java.util.LinkedList
 import java.util.UUID
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class BackupManagerImpl(
+@Singleton
+class BackupManagerImpl @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val fileAdapter: FileAdapter,
     private val keyMapRepository: KeyMapRepository,

@@ -14,10 +14,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.UUID
+import javax.inject.Inject
+import javax.inject.Singleton
 
-
-
-class SoundsManagerImpl(
+@Singleton
+class SoundsManagerImpl @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val fileAdapter: FileAdapter,
 ) : SoundsManager {
@@ -104,12 +105,11 @@ class SoundsManagerImpl(
             .map { getSoundFileInfo(it.name!!) }
     }
 
-    private fun createSoundCopyFileName(originalSoundFile: IFile, uid: String): String =
-        buildString {
-            append(originalSoundFile.baseName)
-            append("_$uid")
-            append(".${originalSoundFile.extension}")
-        }
+    private fun createSoundCopyFileName(originalSoundFile: IFile, uid: String): String = buildString {
+        append(originalSoundFile.baseName)
+        append("_$uid")
+        append(".${originalSoundFile.extension}")
+    }
 }
 
 interface SoundsManager {
