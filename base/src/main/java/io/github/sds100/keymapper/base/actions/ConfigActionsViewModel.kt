@@ -43,7 +43,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class ConfigActionsViewModel @Inject constructor(
+class ConfigActionsViewModel  constructor(
     private val coroutineScope: CoroutineScope,
     private val displayAction: DisplayActionUseCase,
     private val createAction: CreateActionUseCase,

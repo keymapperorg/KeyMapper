@@ -3,8 +3,9 @@ package io.github.sds100.keymapper.base.actions
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
+import javax.inject.Inject
 
-class TestActionUseCaseImpl(
+class TestActionUseCaseImpl @Inject constructor(
     private val serviceAdapter: AccessibilityServiceAdapter,
 ) : TestActionUseCase {
     override suspend fun invoke(action: ActionData): Result<*> = serviceAdapter.send(TestActionEvent(action))

@@ -8,7 +8,7 @@ import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCaseFacto
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCaseFactory
-import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsUseCase
+import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsUseCaseImpl
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilityService
 import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilityServiceController
@@ -46,9 +46,6 @@ class MyAccessibilityService : BaseAccessibilityService() {
     lateinit var fingerprintGesturesSupportedUseCase: FingerprintGesturesSupportedUseCase
 
     @Inject
-    lateinit var rerouteKeyEventsUseCase: RerouteKeyEventsUseCase
-
-    @Inject
     lateinit var pauseKeyMapsUseCase: PauseKeyMapsUseCase
 
     @Inject
@@ -65,6 +62,19 @@ class MyAccessibilityService : BaseAccessibilityService() {
 
     @Inject
     lateinit var nodeRepository: AccessibilityNodeRepository
+
+    private val rerouteKeyEventsUseCase: RerouteKeyEventsUseCaseImpl by lazy {
+        RerouteKeyEventsUseCaseImpl(
+            inputMethodAdapter = inputMethodAdapter,
+            keyMapperImeMessenger = ImeInputEventInjectorImpl(
+                this,
+                keyEventRelayService = keyEventRelayServiceWrapper,
+                inputMethodAdapter = inputMethodAdapter,
+            ),
+            preferenceRepository = preferenceRepository,
+            packageName = packageName,
+        )
+    }
 
     override fun getController(): BaseAccessibilityServiceController? {
         return controller

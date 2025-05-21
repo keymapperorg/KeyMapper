@@ -7,8 +7,9 @@ import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class ConfigKeyEventUseCaseImpl(
+class ConfigKeyEventUseCaseImpl @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
     private val devicesAdapter: DevicesAdapter,
 ) : ConfigKeyEventUseCase {

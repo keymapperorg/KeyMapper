@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.keymaps
 
 import android.graphics.drawable.Drawable
+import dagger.hilt.android.scopes.ActivityScoped
 import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.base.actions.DisplayActionUseCase
 import io.github.sds100.keymapper.base.actions.GetActionErrorUseCase
@@ -9,6 +10,7 @@ import io.github.sds100.keymapper.base.constraints.GetConstraintErrorUseCase
 import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingError
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
+import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.base.trigger.TriggerError
 import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.common.BuildConfigProvider
@@ -26,7 +28,6 @@ import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
-import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
@@ -42,6 +43,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
+@ViewModelScoped
 class DisplayKeyMapUseCaseImpl @Inject constructor(
     private val permissionAdapter: PermissionAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
@@ -52,11 +54,12 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
     private val ringtoneAdapter: RingtoneAdapter,
     private val getActionErrorUseCase: GetActionErrorUseCase,
     private val getConstraintErrorUseCase: GetConstraintErrorUseCase,
-    private val buildConfigProvider: BuildConfigProvider
+    private val buildConfigProvider: BuildConfigProvider,
 ) : DisplayKeyMapUseCase,
     GetActionErrorUseCase by getActionErrorUseCase,
     GetConstraintErrorUseCase by getConstraintErrorUseCase {
-    private val keyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter, buildConfigProvider.packageName)
+    private val keyMapperImeHelper =
+        KeyMapperImeHelper(inputMethodAdapter, buildConfigProvider.packageName)
 
     private val showDpadImeSetupError: Flow<Boolean> =
         settingsRepository.get(Keys.neverShowDpadImeTriggerError).map { neverShow ->
@@ -136,6 +139,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
                     Permission.ROOT,
                 ),
             )
+
             TriggerError.CANT_DETECT_IN_PHONE_CALL -> fixError(Error.CantDetectKeyEventsInPhoneCall)
             TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> fixError(
                 PurchasingError.ProductNotPurchased(

@@ -19,12 +19,11 @@ import javax.inject.Singleton
  * on Android 11. There was a bug in the system where enabling an accessibility service
  * would reset the device ID of key events to -1.
  */
-@Singleton
-class RerouteKeyEventsUseCaseImpl @Inject constructor(
+class RerouteKeyEventsUseCaseImpl (
     private val inputMethodAdapter: InputMethodAdapter,
     private val keyMapperImeMessenger: ImeInputEventInjector,
     private val preferenceRepository: PreferenceRepository,
-    private val buildConfigProvider: BuildConfigProvider,
+    private val packageName: String,
 ) : RerouteKeyEventsUseCase {
 
     private val rerouteKeyEvents =
@@ -36,7 +35,7 @@ class RerouteKeyEventsUseCaseImpl @Inject constructor(
     private val imeHelper by lazy {
         KeyMapperImeHelper(
             inputMethodAdapter,
-            buildConfigProvider.packageName,
+            packageName,
         )
     }
 

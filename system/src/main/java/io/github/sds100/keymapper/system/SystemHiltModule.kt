@@ -40,6 +40,7 @@ import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapt
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
+import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import io.github.sds100.keymapper.system.phone.AndroidPhoneAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.popup.AndroidToastAdapter
@@ -175,4 +176,8 @@ abstract class SystemHiltModule {
     @Singleton
     @Binds
     abstract fun provideNotificationReceiverAdapter(impl: NotificationReceiverAdapterImpl): NotificationReceiverAdapter
+
+    @Singleton
+    @Binds
+    abstract fun provideSystemFeatureAdapter(impl: AndroidSystemFeatureAdapter): SystemFeatureAdapter
 }

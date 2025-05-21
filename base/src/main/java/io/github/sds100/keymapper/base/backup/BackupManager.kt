@@ -87,7 +87,6 @@ class BackupManagerImpl @Inject constructor(
     private val floatingButtonRepository: FloatingButtonRepository,
     private val groupRepository: GroupRepository,
     private val soundsManager: SoundsManager,
-    private val throwExceptions: Boolean = false,
     private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
     private val uuidGenerator: UuidGenerator = DefaultUuidGenerator(),
     private val buildConfigProvider: BuildConfigProvider,
@@ -396,10 +395,6 @@ class BackupManagerImpl @Inject constructor(
         } catch (e: Exception) {
             Timber.e(e)
 
-            if (throwExceptions) {
-                throw e
-            }
-
             return@withContext Error.Exception(e)
         }
     }
@@ -564,10 +559,6 @@ class BackupManagerImpl @Inject constructor(
             return Error.CorruptJsonFile(e.message ?: "")
         } catch (e: Exception) {
             Timber.e(e)
-
-            if (throwExceptions) {
-                throw e
-            }
 
             return Error.Exception(e)
         }
@@ -741,10 +732,6 @@ class BackupManagerImpl @Inject constructor(
                     .then { Success(output) }
             } catch (e: Exception) {
                 Timber.e(e)
-
-                if (throwExceptions) {
-                    throw e
-                }
 
                 return@withContext Error.Exception(e)
             }

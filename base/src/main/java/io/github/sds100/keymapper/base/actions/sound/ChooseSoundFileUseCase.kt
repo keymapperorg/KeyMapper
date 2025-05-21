@@ -5,8 +5,9 @@ import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.files.FileAdapter
 import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
 
-class ChooseSoundFileUseCaseImpl(
+class ChooseSoundFileUseCaseImpl @Inject constructor(
     private val fileAdapter: FileAdapter,
     private val soundsManager: SoundsManager,
 ) : ChooseSoundFileUseCase {

@@ -5,10 +5,11 @@ import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ControlAccessibilityServiceUseCaseImpl(
+class ControlAccessibilityServiceUseCaseImpl @Inject constructor(
     private val adapter: AccessibilityServiceAdapter,
     private val permissionAdapter: PermissionAdapter,
 ) : ControlAccessibilityServiceUseCase {

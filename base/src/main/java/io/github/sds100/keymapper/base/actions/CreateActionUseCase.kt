@@ -11,9 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class CreateActionUseCaseImpl @Inject constructor(
     private val inputMethodAdapter: InputMethodAdapter,
     private val systemFeatureAdapter: SystemFeatureAdapter,

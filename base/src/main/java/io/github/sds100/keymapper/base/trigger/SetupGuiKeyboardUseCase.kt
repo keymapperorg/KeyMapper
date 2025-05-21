@@ -1,16 +1,17 @@
 package io.github.sds100.keymapper.base.trigger
 
+import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.system.apps.PackageInfo
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.apps.getPackageInfoFlow
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
-import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class SetupGuiKeyboardUseCaseImpl(
+class SetupGuiKeyboardUseCaseImpl @Inject constructor(
     private val inputMethodAdapter: InputMethodAdapter,
     private val packageManager: PackageManagerAdapter,
 ) : SetupGuiKeyboardUseCase {

@@ -10,7 +10,6 @@ import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
 class CreateKeyMapShortcutUseCaseImpl @Inject constructor(
     private val appShortcutAdapter: AppShortcutAdapter,
     private val resourceProvider: ResourceProvider

@@ -6,8 +6,9 @@ import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import io.github.sds100.keymapper.system.apps.AppShortcutInfo
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class DisplayAppShortcutsUseCaseImpl(
+class DisplayAppShortcutsUseCaseImpl @Inject constructor(
     private val appShortcutAdapter: AppShortcutAdapter,
 ) : DisplayAppShortcutsUseCase {
     override val shortcuts: Flow<State<List<AppShortcutInfo>>> =

@@ -14,7 +14,6 @@ import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
 class SortKeyMapsUseCaseImpl @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
     private val displayKeyMapUseCase: DisplayKeyMapUseCase,

@@ -10,12 +10,12 @@ import io.github.sds100.keymapper.base.utils.isFixable
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
 import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModelImpl
+import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
@@ -37,7 +37,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class ConfigConstraintsViewModel @Inject constructor(
+class ConfigConstraintsViewModel  constructor(
     private val coroutineScope: CoroutineScope,
     private val config: ConfigKeyMapUseCase,
     private val displayConstraint: DisplayConstraintUseCase,
@@ -163,7 +163,7 @@ class ConfigConstraintsViewModel @Inject constructor(
             val icon: ComposeIconInfo = uiHelper.getIcon(constraint)
             val error: Error? = errorSnapshot.getError(constraint)
 
-            io.github.sds100.keymapper.base.constraints.ConstraintListItemModel(
+            ConstraintListItemModel(
                 id = constraint.uid,
                 icon = icon,
                 constraintModeLink = if (state.constraints.size > 1 && index < state.constraints.size - 1) {
@@ -191,7 +191,7 @@ sealed class ConfigConstraintsState {
     ) : ConfigConstraintsState()
 
     data class Loaded(
-        val constraintList: List<io.github.sds100.keymapper.base.constraints.ConstraintListItemModel>,
+        val constraintList: List<ConstraintListItemModel>,
         val selectedMode: ConstraintMode,
         val shortcuts: Set<ShortcutModel<Constraint>> = emptySet(),
     ) : ConfigConstraintsState()

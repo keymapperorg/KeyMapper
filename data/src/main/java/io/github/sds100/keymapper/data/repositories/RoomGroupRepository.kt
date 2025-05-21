@@ -14,8 +14,11 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class RoomGroupRepository(
+@Singleton
+class RoomGroupRepository @Inject constructor(
     private val dao: GroupDao,
     private val coroutineScope: CoroutineScope,
     private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),

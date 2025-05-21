@@ -17,7 +17,9 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class RecordTriggerController @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val serviceAdapter: AccessibilityServiceAdapter,
