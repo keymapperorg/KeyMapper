@@ -3,8 +3,8 @@ package io.github.sds100.keymapper.base
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import io.github.sds100.keymapper.base.utils.ui.NavigationViewModel
-import io.github.sds100.keymapper.base.utils.ui.NavigationViewModelImpl
+import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider

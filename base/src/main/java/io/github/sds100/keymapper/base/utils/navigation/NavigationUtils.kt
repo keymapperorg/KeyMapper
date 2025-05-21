@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.utils.ui
+package io.github.sds100.keymapper.base.utils.navigation
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavBackStackEntry

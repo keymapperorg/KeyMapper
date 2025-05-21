@@ -10,11 +10,11 @@ import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.utils.InputEventStrings
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
-import io.github.sds100.keymapper.base.utils.ui.NavDestination
-import io.github.sds100.keymapper.base.utils.ui.NavigationViewModel
-import io.github.sds100.keymapper.base.utils.ui.NavigationViewModelImpl
+import io.github.sds100.keymapper.base.utils.navigation.NavDestination
+import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.base.utils.ui.navigate
+import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.Success

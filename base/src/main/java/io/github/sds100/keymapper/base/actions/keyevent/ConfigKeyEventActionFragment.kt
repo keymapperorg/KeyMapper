@@ -21,7 +21,7 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.databinding.FragmentConfigKeyEventBinding
 import io.github.sds100.keymapper.base.utils.ui.configuredCheckBox
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.utils.ui.setupNavigation
+import io.github.sds100.keymapper.base.utils.navigation.setupNavigation
 import io.github.sds100.keymapper.base.utils.ui.str
 import io.github.sds100.keymapper.common.utils.putJsonSerializable
 import kotlinx.coroutines.flow.collectLatest

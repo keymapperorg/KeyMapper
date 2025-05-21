@@ -17,10 +17,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.sds100.keymapper.base.NavAppDirections
+import io.github.sds100.keymapper.base.NavBaseAppDirections
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.databinding.FragmentComposeBinding
-import io.github.sds100.keymapper.base.utils.ui.setupNavigation
+import io.github.sds100.keymapper.base.utils.navigation.setupNavigation
 import io.github.sds100.keymapper.base.utils.ui.showPopups
 
 @AndroidEntryPoint
@@ -55,10 +55,10 @@ class HomeFragment : Fragment() {
                                 ),
                             viewModel = homeViewModel,
                             onSettingsClick = {
-                                findNavController().navigate(NavAppDirections.toSettingsFragment())
+                                findNavController().navigate(NavBaseAppDirections.toSettingsFragment())
                             },
                             onAboutClick = {
-                                findNavController().navigate(NavAppDirections.actionGlobalAboutFragment())
+                                findNavController().navigate(NavBaseAppDirections.actionGlobalAboutFragment())
                             },
                             finishActivity = requireActivity()::finish,
                         )

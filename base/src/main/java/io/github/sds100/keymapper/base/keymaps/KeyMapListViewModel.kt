@@ -29,10 +29,10 @@ import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.MultiSelectProvider
-import io.github.sds100.keymapper.base.utils.ui.NavDestination
-import io.github.sds100.keymapper.base.utils.ui.NavigateEvent
-import io.github.sds100.keymapper.base.utils.ui.NavigationViewModel
-import io.github.sds100.keymapper.base.utils.ui.NavigationViewModelImpl
+import io.github.sds100.keymapper.base.utils.navigation.NavDestination
+import io.github.sds100.keymapper.base.utils.navigation.NavigateEvent
+import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.PopupUi
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
@@ -40,7 +40,7 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.SelectionState
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.utils.ui.navigate
+import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.showPopup
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result

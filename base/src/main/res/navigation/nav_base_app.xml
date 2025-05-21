@@ -20,34 +20,6 @@
     android:id="@+id/nav_base_app">
 
     <action
-        android:id="@+id/action_to_config_keymap"
-        app:destination="@id/nav_config_keymap"
-        app:enterAnim="@anim/slide_in_right"
-        app:exitAnim="@anim/slide_out_left"
-        app:popEnterAnim="@anim/slide_in_left"
-        app:popExitAnim="@anim/slide_out_right">
-        <argument
-            android:name="keyMapUid"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="groupUid"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="showAdvancedTriggers"
-            android:defaultValue="false"
-            app:argType="boolean" />
-        <argument
-            android:name="newFloatingButtonTriggerKey"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-    </action>
-
-    <action
         android:id="@+id/to_chooseActionFragment"
         app:destination="@id/chooseActionFragment"
         app:enterAnim="@anim/slide_in_right"
@@ -71,7 +43,6 @@
         app:popEnterAnim="@anim/slide_in_left"
         app:popExitAnim="@anim/slide_out_right" />
 
-    <include app:graph="@navigation/nav_config_keymap" />
     <include app:graph="@navigation/nav_settings" />
 
     <fragment

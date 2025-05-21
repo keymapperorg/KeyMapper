@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.utils.ui
+package io.github.sds100.keymapper.base.utils.navigation
 
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickCoordinateResult
@@ -10,7 +10,7 @@ import io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.base.system.intents.ConfigIntentResult
 
-sealed class NavDestination<R> {
+abstract class NavDestination<R> {
     abstract val id: String
 
     companion object {

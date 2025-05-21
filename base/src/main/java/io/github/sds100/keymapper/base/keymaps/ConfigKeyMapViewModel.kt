@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.base.keymaps
 import android.os.Bundle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.actions.ConfigActionsViewModel
 import io.github.sds100.keymapper.base.constraints.ConfigConstraintsViewModel
 import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
@@ -20,13 +19,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class ConfigKeyMapViewModel @Inject constructor(
-    val configActionsViewModel: ConfigActionsViewModel,
-    val configTriggerViewModel: BaseConfigTriggerViewModel,
-    val configConstraintsViewModel: ConfigConstraintsViewModel,
+abstract class BaseConfigKeyMapViewModel(
     private val config: ConfigKeyMapUseCase,
     private val onboarding: OnboardingUseCase,
 ) : ViewModel() {
@@ -34,6 +28,10 @@ class ConfigKeyMapViewModel @Inject constructor(
     companion object {
         private const val STATE_KEY = "config_keymap"
     }
+
+    abstract val configActionsViewModel: ConfigActionsViewModel
+    abstract val configTriggerViewModel: BaseConfigTriggerViewModel
+    abstract val configConstraintsViewModel: ConfigConstraintsViewModel
 
     val isEnabled: StateFlow<Boolean> = config.keyMap
         .map { state -> state.dataOrNull()?.isEnabled ?: true }

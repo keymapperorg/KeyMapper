@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.utils.ui
+package io.github.sds100.keymapper.base.utils.navigation
 
 import android.os.Bundle
 import androidx.core.os.bundleOf
@@ -7,7 +7,7 @@ import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import io.github.sds100.keymapper.base.NavBaseAppDirections
+import dagger.hilt.android.EntryPointAccessors
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.ChooseActionFragment
 import io.github.sds100.keymapper.base.actions.keyevent.ConfigKeyEventActionFragment
@@ -138,92 +138,8 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
             sendNavResultFromBundle(event.key, event.destination.id, bundle)
         }
 
-        val direction = when (destination) {
-            is NavDestination.ChooseApp -> NavBaseAppDirections.chooseApp(
-                destination.allowHiddenApps,
-                requestKey,
-            )
-
-            NavDestination.ChooseAppShortcut -> NavBaseAppDirections.chooseAppShortcut(requestKey)
-            NavDestination.ChooseKeyCode -> NavBaseAppDirections.chooseKeyCode(requestKey)
-            is NavDestination.ConfigKeyEventAction -> {
-                val json = destination.action?.let {
-                    Json.encodeToString(it)
-                }
-
-                NavBaseAppDirections.configKeyEvent(requestKey, json)
-            }
-
-            is NavDestination.PickCoordinate -> {
-                val json = destination.result?.let {
-                    Json.encodeToString(it)
-                }
-
-                NavBaseAppDirections.pickDisplayCoordinate(requestKey, json)
-            }
-
-            is NavDestination.PickSwipeCoordinate -> {
-                val json = destination.result?.let {
-                    Json.encodeToString(it)
-                }
-
-                NavBaseAppDirections.swipePickDisplayCoordinate(requestKey, json)
-            }
-
-            is NavDestination.PickPinchCoordinate -> {
-                val json = destination.result?.let {
-                    Json.encodeToString(it)
-                }
-
-                NavBaseAppDirections.pinchPickDisplayCoordinate(requestKey, json)
-            }
-
-            is NavDestination.ConfigIntent -> {
-                val json = destination.result?.let {
-                    Json.encodeToString(it)
-                }
-
-                NavBaseAppDirections.configIntent(requestKey, json)
-            }
-
-            is NavDestination.ChooseActivity -> NavBaseAppDirections.chooseActivity(requestKey)
-            is NavDestination.ChooseSound -> NavBaseAppDirections.chooseSoundFile(requestKey)
-            NavDestination.ChooseAction -> NavBaseAppDirections.toChooseActionFragment(requestKey)
-            is NavDestination.ChooseConstraint -> NavBaseAppDirections.chooseConstraint(
-                requestKey = requestKey,
-            )
-
-            is NavDestination.ChooseBluetoothDevice -> NavBaseAppDirections.chooseBluetoothDevice(
-                requestKey,
-            )
-
-            NavDestination.About -> NavBaseAppDirections.actionGlobalAboutFragment()
-            NavDestination.Settings -> NavBaseAppDirections.toSettingsFragment()
-
-            is NavDestination.ConfigKeyMap -> when (destination) {
-                is NavDestination.ConfigKeyMap.New ->
-                    NavBaseAppDirections.actionToConfigKeymap(
-                        groupUid = destination.groupUid,
-                        showAdvancedTriggers = destination.showAdvancedTriggers,
-                    )
-
-                is NavDestination.ConfigKeyMap.Open ->
-                    NavBaseAppDirections.actionToConfigKeymap(
-                        keyMapUid = destination.keyMapUid,
-                        showAdvancedTriggers = destination.showAdvancedTriggers,
-                    )
-            }
-
-            // TODO
-            is NavDestination.ChooseFloatingLayout -> return@onEach
-            is NavDestination.ConfigFloatingButton -> return@onEach
-
-            NavDestination.ShizukuSettings -> NavBaseAppDirections.toShizukuSettingsFragment()
-            is NavDestination.InteractUiElement -> NavBaseAppDirections.interactUiElement(
-                requestKey = requestKey,
-                action = destination.action?.let { Json.encodeToString(destination.action) },
-            )
-        }
+        val direction = EntryPointAccessors.fromFragment<BaseNavDirectionProvider>(fragment)
+            .getDirection(destination, requestKey)
 
         fragment.findNavController().navigate(direction)
     }.launchIn(fragment.lifecycleScope)

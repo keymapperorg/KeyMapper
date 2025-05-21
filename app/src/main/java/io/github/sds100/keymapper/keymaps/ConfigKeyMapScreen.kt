@@ -13,10 +13,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.actions.ActionsScreen
 import io.github.sds100.keymapper.base.constraints.ConstraintsScreen
 import io.github.sds100.keymapper.base.keymaps.BaseConfigKeyMapScreen
-import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapViewModel
 import io.github.sds100.keymapper.base.keymaps.KeyMapOptionsScreen
-import io.github.sds100.keymapper.base.trigger.TriggerScreen
 import io.github.sds100.keymapper.base.utils.ui.UnsavedChangesDialog
+import io.github.sds100.keymapper.trigger.TriggerScreen
 
 @Composable
 fun ConfigKeyMapScreen(

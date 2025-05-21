@@ -13,12 +13,12 @@ import io.github.sds100.keymapper.base.utils.DndModeStrings
 import io.github.sds100.keymapper.base.utils.RingerModeStrings
 import io.github.sds100.keymapper.base.utils.VolumeStreamStrings
 import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
-import io.github.sds100.keymapper.base.utils.ui.NavDestination
-import io.github.sds100.keymapper.base.utils.ui.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.navigation.NavDestination
+import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
 import io.github.sds100.keymapper.base.utils.ui.PopupUi
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.base.utils.ui.navigate
+import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.showPopup
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.system.camera.CameraLens

@@ -26,8 +26,8 @@ import io.github.sds100.keymapper.base.utils.InputEventStrings
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
 import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.LinkType
-import io.github.sds100.keymapper.base.utils.ui.NavigationViewModel
-import io.github.sds100.keymapper.base.utils.ui.NavigationViewModelImpl
+import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.PopupUi
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl

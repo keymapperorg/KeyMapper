@@ -21,11 +21,12 @@ import android.provider.MediaStore
 import android.provider.Settings
 import androidx.core.content.ContextCompat
 import androidx.core.content.pm.PackageInfoCompat
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.success
-import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -36,9 +37,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AndroidPackageManagerAdapter(
-    context: Context,
+@Singleton
+class AndroidPackageManagerAdapter @Inject constructor(
+    @ApplicationContext context: Context,
     coroutineScope: CoroutineScope,
 ) : PackageManagerAdapter {
     private val ctx: Context = context.applicationContext

@@ -57,20 +57,6 @@ fun BaseTriggerScreen(modifier: Modifier = Modifier, viewModel: BaseConfigTrigge
     val setupGuiKeyboardState by viewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
     val recordTriggerState by viewModel.recordTriggerState.collectAsStateWithLifecycle()
 
-    // TODO
-//    HandleAssistantTriggerSetupBottomSheet(viewModel = viewModel)
-//
-//    if (viewModel.showAdvancedTriggersBottomSheet) {
-//        AdvancedTriggersBottomSheet(
-//            modifier = Modifier.systemBarsPadding(),
-//            viewModel = viewModel,
-//            onDismissRequest = {
-//                viewModel.showAdvancedTriggersBottomSheet = false
-//            },
-//            sheetState = sheetState,
-//        )
-//    }
-
     if (viewModel.showDpadTriggerSetupBottomSheet) {
         DpadTriggerSetupBottomSheet(
             modifier = Modifier.systemBarsPadding(),

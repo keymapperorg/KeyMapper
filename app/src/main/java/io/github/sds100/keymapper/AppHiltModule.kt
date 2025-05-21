@@ -5,10 +5,13 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.sds100.keymapper.base.utils.navigation.BaseNavDirectionProvider
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.KeyMapperClassProvider
 import io.github.sds100.keymapper.common.utils.DefaultDispatcherProvider
 import io.github.sds100.keymapper.common.utils.DispatcherProvider
+import io.github.sds100.keymapper.system.accessibility.MyAccessibilityService
+import io.github.sds100.keymapper.utils.navigation.NavDirectionProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import javax.inject.Singleton
@@ -45,5 +48,12 @@ class AppHiltModule {
         override fun getMainActivity(): Class<*> {
             return MainActivity::class.java
         }
+
+        override fun getAccessibilityService(): Class<*> {
+            return MyAccessibilityService::class.java
+        }
     }
+
+    @Provides
+    fun provideNavDirectionProvider(): BaseNavDirectionProvider = NavDirectionProvider()
 }
