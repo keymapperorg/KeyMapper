@@ -54,12 +54,6 @@ class HomeFragment : Fragment() {
                                         .add(WindowInsets.displayCutout.only(sides = WindowInsetsSides.Horizontal)),
                                 ),
                             viewModel = homeViewModel,
-                            onSettingsClick = {
-                                findNavController().navigate(NavBaseAppDirections.toSettingsFragment())
-                            },
-                            onAboutClick = {
-                                findNavController().navigate(NavBaseAppDirections.actionGlobalAboutFragment())
-                            },
                             finishActivity = requireActivity()::finish,
                         )
                     }

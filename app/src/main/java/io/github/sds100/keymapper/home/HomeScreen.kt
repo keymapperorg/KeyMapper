@@ -12,8 +12,6 @@ import io.github.sds100.keymapper.base.home.HomeKeyMapListScreen
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: BaseHomeViewModel,
-    onSettingsClick: () -> Unit,
-    onAboutClick: () -> Unit,
     finishActivity: () -> Unit,
 ) {
     val snackbarState = remember { SnackbarHostState() }
@@ -22,8 +20,8 @@ fun HomeScreen(
         modifier = modifier,
         viewModel = viewModel.keyMapListViewModel,
         snackbarState = snackbarState,
-        onSettingsClick = onSettingsClick,
-        onAboutClick = onAboutClick,
+        onSettingsClick = viewModel::launchSettings,
+        onAboutClick = viewModel::launchAbout,
         finishActivity = finishActivity,
         fabBottomPadding = 0.dp,
     )

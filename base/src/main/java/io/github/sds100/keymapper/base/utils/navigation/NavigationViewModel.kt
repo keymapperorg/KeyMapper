@@ -21,11 +21,11 @@ import io.github.sds100.keymapper.base.actions.tapscreen.PickDisplayCoordinateFr
 import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementFragment
 import io.github.sds100.keymapper.base.constraints.ChooseConstraintFragment
 import io.github.sds100.keymapper.base.constraints.Constraint
-import io.github.sds100.keymapper.base.system.bluetooth.ChooseBluetoothDeviceFragment
 import io.github.sds100.keymapper.base.system.apps.ChooseActivityFragment
 import io.github.sds100.keymapper.base.system.apps.ChooseAppFragment
 import io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutFragment
 import io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutResult
+import io.github.sds100.keymapper.base.system.bluetooth.ChooseBluetoothDeviceFragment
 import io.github.sds100.keymapper.base.system.intents.ConfigIntentFragment
 import io.github.sds100.keymapper.base.system.intents.ConfigIntentResult
 import io.github.sds100.keymapper.common.utils.getJsonSerializable
@@ -126,6 +126,9 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
             }
         }
 
+    val navDirectionProvider =
+        EntryPointAccessors.fromFragment<NavDirectionsProviderEntryPoint>(fragment).provider()
+
     navigate.onEach { event ->
         val (requestKey, destination) = event
 
@@ -138,8 +141,7 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
             sendNavResultFromBundle(event.key, event.destination.id, bundle)
         }
 
-        val direction = EntryPointAccessors.fromFragment<BaseNavDirectionProvider>(fragment)
-            .getDirection(destination, requestKey)
+        val direction = navDirectionProvider.getDirection(destination, requestKey)
 
         fragment.findNavController().navigate(direction)
     }.launchIn(fragment.lifecycleScope)

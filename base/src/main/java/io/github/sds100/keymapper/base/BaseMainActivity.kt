@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
 import androidx.core.content.IntentCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -27,14 +26,12 @@ import com.anggrayudi.storage.extension.openInputStream
 import com.anggrayudi.storage.extension.openOutputStream
 import com.anggrayudi.storage.extension.toDocumentFile
 import io.github.sds100.keymapper.base.compose.ComposeColors
-import io.github.sds100.keymapper.base.databinding.ActivityMainBinding
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.permissions.RequestPermissionDelegate
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.utils.ui.showPopups
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
@@ -138,11 +135,6 @@ abstract class BaseMainActivity : AppCompatActivity() {
         if (viewModel.previousNightMode != currentNightMode) {
             resourceProvider.onThemeChange()
         }
-
-        val binding =
-            DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
-
-        viewModel.showPopups(this, binding.coordinatorLayout)
 
         requestPermissionDelegate = RequestPermissionDelegate(
             this,

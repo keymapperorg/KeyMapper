@@ -1,6 +1,9 @@
 package io.github.sds100.keymapper.base.utils.navigation
 
 import androidx.navigation.NavDirections
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.FragmentComponent
 import io.github.sds100.keymapper.base.NavBaseAppDirections
 import kotlinx.serialization.json.Json
 
@@ -77,4 +80,10 @@ abstract class BaseNavDirectionProvider {
             else -> throw IllegalArgumentException("Can not find a direction for this destination: $destination")
         }
     }
+}
+
+@EntryPoint
+@InstallIn(FragmentComponent::class)
+interface NavDirectionsProviderEntryPoint {
+    fun provider(): BaseNavDirectionProvider
 }

@@ -14,17 +14,19 @@ import io.github.sds100.keymapper.base.keymaps.ListKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.sorting.SortKeyMapsUseCase
+import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
-import io.github.sds100.keymapper.base.utils.ui.DialogResponse
+import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
 import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModelImpl
+import io.github.sds100.keymapper.base.utils.navigation.navigate
+import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.PopupUi
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showPopup
 import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -72,6 +74,18 @@ abstract class BaseHomeViewModel(
             if (setupGuiKeyboard.isInstalled.first() && !setupGuiKeyboard.isCompatibleVersion.first()) {
                 showUpgradeGuiKeyboardDialog()
             }
+        }
+    }
+
+    fun launchSettings() {
+        viewModelScope.launch {
+            navigate("settings", NavDestination.Settings)
+        }
+    }
+
+    fun launchAbout() {
+        viewModelScope.launch {
+            navigate("about", NavDestination.About)
         }
     }
 

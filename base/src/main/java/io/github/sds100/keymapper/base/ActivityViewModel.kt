@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.base
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
 import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
@@ -10,8 +11,10 @@ import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ActivityViewModel(
+@HiltViewModel
+class ActivityViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,

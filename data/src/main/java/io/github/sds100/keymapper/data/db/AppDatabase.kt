@@ -70,7 +70,6 @@ import javax.inject.Singleton
     ConstraintListTypeConverter::class,
     NodeInteractionTypeSetTypeConverter::class,
 )
-@Singleton
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         const val DATABASE_NAME = "key_map_database"

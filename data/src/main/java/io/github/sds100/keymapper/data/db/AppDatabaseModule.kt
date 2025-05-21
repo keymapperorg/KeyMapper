@@ -15,10 +15,12 @@ import io.github.sds100.keymapper.data.db.dao.FloatingLayoutDao
 import io.github.sds100.keymapper.data.db.dao.GroupDao
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.db.dao.LogEntryDao
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 internal class AppDatabaseModule {
+    @Singleton
     @Provides
     fun provideAppDatabase(
         @ApplicationContext ctx: Context,

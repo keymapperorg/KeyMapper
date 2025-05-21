@@ -38,41 +38,41 @@ class AndroidNotificationAdapter @Inject constructor(
         val builder = NotificationCompat.Builder(ctx, notification.channel).apply {
             if (!DynamicColors.isDynamicColorAvailable()) {
                 color = ctx.color(R.color.md_theme_secondary)
+            }
 
-                setContentTitle(notification.title)
-                setContentText(notification.text)
+            setContentTitle(notification.title)
+            setContentText(notification.text)
 
-                if (notification.onClickAction != null) {
-                    val pendingIntent = createActionIntent(notification.onClickAction!!)
-                    setContentIntent(pendingIntent)
-                }
+            if (notification.onClickAction != null) {
+                val pendingIntent = createActionIntent(notification.onClickAction!!)
+                setContentIntent(pendingIntent)
+            }
 
-                setAutoCancel(notification.autoCancel)
-                priority = notification.priority
+            setAutoCancel(notification.autoCancel)
+            priority = notification.priority
 
-                if (notification.onGoing) {
-                    setOngoing(true)
-                }
+            if (notification.onGoing) {
+                setOngoing(true)
+            }
 
-                if (notification.bigTextStyle) {
-                    setStyle(NotificationCompat.BigTextStyle())
-                }
+            if (notification.bigTextStyle) {
+                setStyle(NotificationCompat.BigTextStyle())
+            }
 
-                setSmallIcon(notification.icon)
+            setSmallIcon(notification.icon)
 
-                if (!notification.showOnLockscreen) {
-                    setVisibility(NotificationCompat.VISIBILITY_SECRET)
-                }
+            if (!notification.showOnLockscreen) {
+                setVisibility(NotificationCompat.VISIBILITY_SECRET)
+            }
 
-                for (action in notification.actions) {
-                    addAction(
-                        NotificationCompat.Action(
-                            0,
-                            action.text,
-                            createActionIntent(action.intentType),
-                        ),
-                    )
-                }
+            for (action in notification.actions) {
+                addAction(
+                    NotificationCompat.Action(
+                        0,
+                        action.text,
+                        createActionIntent(action.intentType),
+                    ),
+                )
             }
         }
 
