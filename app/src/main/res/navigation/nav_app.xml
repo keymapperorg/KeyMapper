@@ -16,15 +16,9 @@
 
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_app"
-    app:startDestination="@id/home_fragment">
+    app:startDestination="@id/config_key_map_fragment">
     <include app:graph="@navigation/nav_base_app" />
-
-    <fragment
-        android:id="@+id/home_fragment"
-        android:name="io.github.sds100.keymapper.home.HomeFragment"
-        tools:layout="@layout/fragment_compose" />
 
     <fragment
         android:id="@+id/config_key_map_fragment"
