@@ -41,8 +41,9 @@ class ConfigConstraintsViewModel(
     private val displayConstraint: DisplayConstraintUseCase,
     resourceProvider: ResourceProvider,
     navigationViewModel: NavigationViewModel,
+    popupViewModel: PopupViewModel,
 ) : ResourceProvider by resourceProvider,
-    PopupViewModel by PopupViewModelImpl(),
+    PopupViewModel by popupViewModel,
     NavigationViewModel by navigationViewModel {
 
     private val uiHelper = ConstraintUiHelper(displayConstraint, resourceProvider)

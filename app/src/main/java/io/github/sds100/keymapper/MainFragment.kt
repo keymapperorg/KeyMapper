@@ -26,6 +26,8 @@ import io.github.sds100.keymapper.base.utils.navigation.NavResult
 import io.github.sds100.keymapper.base.utils.navigation.NavigateEvent
 import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModelImpl
 import io.github.sds100.keymapper.base.utils.navigation.setupNavigation
+import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.base.utils.ui.showPopups
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -34,10 +36,14 @@ class MainFragment : Fragment() {
     @Inject
     lateinit var navigationProvider: NavigationViewModelImpl
 
+    @Inject
+    lateinit var popupViewModel: PopupViewModelImpl
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         navigationProvider.setupNavigation(this)
+
     }
 
     override fun onCreateView(
@@ -135,10 +141,6 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // TODO
-//        homeViewModel.showPopups(this, view)
-//        homeViewModel.keyMapListViewModel.showPopups(this, view)
-        // TODO
-//        homeViewModel.listFloatingLayoutsViewModel.showPopups(this, view)
+        popupViewModel.showPopups(this, view)
     }
 }

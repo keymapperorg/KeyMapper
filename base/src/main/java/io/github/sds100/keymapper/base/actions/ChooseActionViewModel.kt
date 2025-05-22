@@ -10,7 +10,6 @@ import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
 import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.PopupUi
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemGroup
@@ -34,11 +33,12 @@ import javax.inject.Inject
 @HiltViewModel
 class ChooseActionViewModel @Inject constructor(
     private val useCase: CreateActionUseCase,
-    private val resourceProvider: ResourceProvider,
-    private val navigationViewModel: NavigationViewModel,
+    resourceProvider: ResourceProvider,
+    navigationViewModel: NavigationViewModel,
+    popupViewModel: PopupViewModel,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
-    PopupViewModel by PopupViewModelImpl(),
+    PopupViewModel by popupViewModel,
     NavigationViewModel by navigationViewModel {
 
     companion object {
@@ -97,7 +97,7 @@ class ChooseActionViewModel @Inject constructor(
             val approvedMessage = showMessageForAction(actionId)
 
             if (!approvedMessage) {
-                showMessageForAction(actionId)
+                return@launch
             }
 
             createActionDelegate.createAction(actionId)

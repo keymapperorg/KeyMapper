@@ -24,8 +24,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
+import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class PopupViewModelImpl : PopupViewModel {
+// TODO Rename DialogProvider
+@Singleton
+class PopupViewModelImpl @Inject constructor() : PopupViewModel {
 
     private val _onUserResponse by lazy { MutableSharedFlow<OnPopupResponseEvent>() }
     override val onUserResponse by lazy { _onUserResponse.asSharedFlow() }
@@ -35,12 +40,15 @@ class PopupViewModelImpl : PopupViewModel {
 
     override suspend fun showPopup(event: ShowPopupEvent) {
         // wait for the view to collect so no dialogs are missed
+        Timber.e("SHOW POPUP ${event}")
         getUserResponse.subscriptionCount.first { it > 0 }
 
         getUserResponse.emit(event)
     }
 
     override fun onUserResponse(event: OnPopupResponseEvent) {
+        Timber.e("ON USER RESPONSE ${event}")
+
         runBlocking { _onUserResponse.emit(event) }
     }
 }

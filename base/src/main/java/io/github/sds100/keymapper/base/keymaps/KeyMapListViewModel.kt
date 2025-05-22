@@ -86,7 +86,8 @@ class KeyMapListViewModel(
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
     private val onboarding: OnboardingUseCase,
     private val navigationProvider: NavigationViewModel,
-) : PopupViewModel by PopupViewModelImpl(),
+    private val popupViewModel: PopupViewModel
+) : PopupViewModel by popupViewModel,
     ResourceProvider by resourceProvider,
     NavigationViewModel by navigationProvider {
 

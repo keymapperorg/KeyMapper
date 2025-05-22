@@ -51,10 +51,11 @@ class ConfigActionsViewModel  constructor(
     private val config: ConfigKeyMapUseCase,
     private val onboarding: OnboardingUseCase,
     resourceProvider: ResourceProvider,
-    navigationViewModel: NavigationViewModel
+    navigationViewModel: NavigationViewModel,
+    popupViewModel: PopupViewModel,
 ) : ActionOptionsBottomSheetCallback,
     ResourceProvider by resourceProvider,
-    PopupViewModel by PopupViewModelImpl(),
+    PopupViewModel by popupViewModel,
     NavigationViewModel by navigationViewModel {
 
     val createActionDelegate =

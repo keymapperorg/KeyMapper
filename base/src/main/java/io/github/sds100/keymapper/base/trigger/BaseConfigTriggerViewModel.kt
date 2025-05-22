@@ -74,9 +74,10 @@ abstract class BaseConfigTriggerViewModel(
     private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
     resourceProvider: ResourceProvider,
-    navigationViewModel: NavigationViewModel
+    navigationViewModel: NavigationViewModel,
+    popupViewModel: PopupViewModel,
 ) : ResourceProvider by resourceProvider,
-    PopupViewModel by PopupViewModelImpl(),
+    PopupViewModel by popupViewModel,
     NavigationViewModel by navigationViewModel {
 
     companion object {

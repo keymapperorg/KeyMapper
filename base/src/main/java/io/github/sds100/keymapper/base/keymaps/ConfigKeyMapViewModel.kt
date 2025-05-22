@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.trigger.BaseConfigTriggerViewModel
 import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -20,8 +21,10 @@ abstract class BaseConfigKeyMapViewModel(
     private val config: ConfigKeyMapUseCase,
     private val onboarding: OnboardingUseCase,
     navigationViewModel: NavigationViewModel,
+    popupViewModel: PopupViewModel,
 ) : ViewModel(),
-    NavigationViewModel by navigationViewModel {
+    NavigationViewModel by navigationViewModel,
+    PopupViewModel by popupViewModel {
 
     abstract val configActionsViewModel: ConfigActionsViewModel
     abstract val configTriggerViewModel: BaseConfigTriggerViewModel

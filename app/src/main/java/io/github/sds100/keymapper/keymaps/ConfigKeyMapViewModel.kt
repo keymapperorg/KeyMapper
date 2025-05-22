@@ -16,9 +16,9 @@ import io.github.sds100.keymapper.base.purchasing.PurchasingManager
 import io.github.sds100.keymapper.base.trigger.RecordTriggerUseCase
 import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.trigger.ConfigTriggerViewModel
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,11 +34,13 @@ class ConfigKeyMapViewModel @Inject constructor(
     setupGuiKeyboardUseCase: SetupGuiKeyboardUseCase,
     fingerprintGesturesSupportedUseCase: FingerprintGesturesSupportedUseCase,
     resourceProvider: ResourceProvider,
-    navigationViewModel: NavigationViewModel
+    navigationViewModel: NavigationViewModel,
+    popupViewModel: PopupViewModel,
 ) : BaseConfigKeyMapViewModel(
     config = config,
     onboarding = onboarding,
-    navigationViewModel = navigationViewModel
+    navigationViewModel = navigationViewModel,
+    popupViewModel = popupViewModel,
 ) {
     override val configActionsViewModel: ConfigActionsViewModel = ConfigActionsViewModel(
         coroutineScope = viewModelScope,
@@ -48,7 +50,8 @@ class ConfigKeyMapViewModel @Inject constructor(
         config = config,
         onboarding = onboarding,
         resourceProvider = resourceProvider,
-        navigationViewModel = navigationViewModel
+        navigationViewModel = navigationViewModel,
+        popupViewModel = popupViewModel,
     )
 
     override val configTriggerViewModel: ConfigTriggerViewModel = ConfigTriggerViewModel(
@@ -62,7 +65,8 @@ class ConfigKeyMapViewModel @Inject constructor(
         setupGuiKeyboard = setupGuiKeyboardUseCase,
         fingerprintGesturesSupported = fingerprintGesturesSupportedUseCase,
         resourceProvider = resourceProvider,
-        navigationViewModel = navigationViewModel
+        navigationViewModel = navigationViewModel,
+        popupViewModel = popupViewModel,
     )
 
     override val configConstraintsViewModel: ConfigConstraintsViewModel =
@@ -71,6 +75,7 @@ class ConfigKeyMapViewModel @Inject constructor(
             config = config,
             displayConstraint = display,
             resourceProvider = resourceProvider,
-            navigationViewModel = navigationViewModel
+            navigationViewModel = navigationViewModel,
+            popupViewModel = popupViewModel,
         )
 }
