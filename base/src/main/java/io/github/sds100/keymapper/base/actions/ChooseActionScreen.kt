@@ -20,7 +20,6 @@ import androidx.compose.material.icons.rounded.Bluetooth
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -40,20 +39,19 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
-import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.SearchAppBarActions
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemFixedHeight
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemGroup
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemHeader
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
+import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.flow.update
 
 @Composable
 fun ChooseActionScreen(
     modifier: Modifier = Modifier,
     viewModel: ChooseActionViewModel,
-    onNavigateBack: () -> Unit,
 ) {
     val state by viewModel.groups.collectAsStateWithLifecycle()
     val query by viewModel.searchQuery.collectAsStateWithLifecycle()
@@ -69,11 +67,10 @@ fun ChooseActionScreen(
         onQueryChange = { newQuery -> viewModel.searchQuery.update { newQuery } },
         onCloseSearch = { viewModel.searchQuery.update { null } },
         onClickAction = viewModel::onListItemClick,
-        onNavigateBack = onNavigateBack,
+        onNavigateBack = viewModel::onNavigateBack,
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ChooseActionScreen(
     modifier: Modifier = Modifier,

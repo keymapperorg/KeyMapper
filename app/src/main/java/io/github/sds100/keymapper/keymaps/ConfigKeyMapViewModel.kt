@@ -48,6 +48,7 @@ class ConfigKeyMapViewModel @Inject constructor(
         config = config,
         onboarding = onboarding,
         resourceProvider = resourceProvider,
+        navigationViewModel = navigationViewModel
     )
 
     override val configTriggerViewModel: ConfigTriggerViewModel = ConfigTriggerViewModel(
@@ -61,6 +62,7 @@ class ConfigKeyMapViewModel @Inject constructor(
         setupGuiKeyboard = setupGuiKeyboardUseCase,
         fingerprintGesturesSupported = fingerprintGesturesSupportedUseCase,
         resourceProvider = resourceProvider,
+        navigationViewModel = navigationViewModel
     )
 
     override val configConstraintsViewModel: ConfigConstraintsViewModel =
@@ -69,15 +71,6 @@ class ConfigKeyMapViewModel @Inject constructor(
             config = config,
             displayConstraint = display,
             resourceProvider = resourceProvider,
+            navigationViewModel = navigationViewModel
         )
-
-    init {
-        Timber.e("INIT VIEW MODEL")
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-
-        Timber.e("CLEARED VIEW MODEL")
-    }
 }

@@ -4,7 +4,6 @@ import android.view.KeyEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.utils.filterByQuery
 import io.github.sds100.keymapper.base.utils.ui.DefaultSimpleListItem
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
@@ -13,8 +12,9 @@ import io.github.sds100.keymapper.base.utils.ui.SimpleListItemOld
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -44,8 +44,8 @@ class ChooseKeyCodeViewModel @Inject constructor() :
         }.let { emit(it) }
     }
 
-    private val _returnResult = MutableStateFlow<ActionData.InputKeyEvent?>(null)
-    val returnResult: StateFlow<ActionData.InputKeyEvent?> = _returnResult.asStateFlow()
+    private val _returnResult = MutableSharedFlow<Int>()
+    val returnResult = _returnResult.asSharedFlow()
 
     init {
         viewModelScope.launch {
@@ -66,7 +66,7 @@ class ChooseKeyCodeViewModel @Inject constructor() :
 
     fun onListItemClick(id: String) {
         viewModelScope.launch {
-            _returnResult.emit(ActionData.InputKeyEvent(keyCode = id.toInt()))
+            _returnResult.emit(id.toInt())
         }
     }
 }

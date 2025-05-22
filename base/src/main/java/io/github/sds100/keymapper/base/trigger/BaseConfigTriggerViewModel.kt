@@ -74,9 +74,10 @@ abstract class BaseConfigTriggerViewModel(
     private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
     resourceProvider: ResourceProvider,
+    navigationViewModel: NavigationViewModel
 ) : ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
-    NavigationViewModel by NavigationViewModelImpl() {
+    NavigationViewModel by navigationViewModel {
 
     companion object {
         private const val DEVICE_ID_ANY = "any"

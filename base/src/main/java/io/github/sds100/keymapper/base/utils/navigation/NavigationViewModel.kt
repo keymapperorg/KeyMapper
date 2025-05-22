@@ -6,34 +6,25 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
-import dagger.hilt.android.EntryPointAccessors
-import io.github.sds100.keymapper.base.actions.ActionData
-import io.github.sds100.keymapper.base.actions.ChooseActionFragment
+import io.github.sds100.keymapper.base.NavBaseAppDirections
 import io.github.sds100.keymapper.base.actions.keyevent.ChooseKeyCodeFragment
 import io.github.sds100.keymapper.base.actions.keyevent.ConfigKeyEventActionFragment
-import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickCoordinateResult
 import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickDisplayCoordinateFragment
 import io.github.sds100.keymapper.base.actions.sound.ChooseSoundFileFragment
-import io.github.sds100.keymapper.base.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.base.actions.swipescreen.SwipePickDisplayCoordinateFragment
-import io.github.sds100.keymapper.base.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.base.actions.tapscreen.PickDisplayCoordinateFragment
 import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementFragment
 import io.github.sds100.keymapper.base.constraints.ChooseConstraintFragment
-import io.github.sds100.keymapper.base.constraints.Constraint
 import io.github.sds100.keymapper.base.system.apps.ChooseActivityFragment
 import io.github.sds100.keymapper.base.system.apps.ChooseAppFragment
 import io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutFragment
-import io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.base.system.bluetooth.ChooseBluetoothDeviceFragment
 import io.github.sds100.keymapper.base.system.intents.ConfigIntentFragment
-import io.github.sds100.keymapper.base.system.intents.ConfigIntentResult
-import io.github.sds100.keymapper.common.utils.getJsonSerializable
-import io.github.sds100.keymapper.system.apps.ActivityInfo
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.dropWhile
@@ -47,23 +38,38 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import timber.log.Timber
+import javax.inject.Inject
 import javax.inject.Singleton
 
+// TODO rename
 @Singleton
-class NavigationViewModelImpl : NavigationViewModel {
-    private var currentDestination: NavigateEvent? = null
-
+class NavigationViewModelImpl @Inject constructor() : NavigationViewModel {
     private val _onNavResult = MutableStateFlow<NavResult?>(null)
     override val onNavResult = _onNavResult.asStateFlow()
 
     private val _navigate = MutableStateFlow<NavigateEvent?>(null)
     override val navigate = _navigate.asStateFlow()
 
+    private val _onReturnResult = MutableStateFlow<String?>(null)
+    override val onReturnResult: StateFlow<String?> = _onReturnResult.asStateFlow()
+
+    private val _popBackStack = MutableStateFlow<Unit?>(null)
+    val popBackStack: StateFlow<Unit?> = _popBackStack.asStateFlow()
+
+    fun handledPop() {
+        _popBackStack.update { null }
+    }
+
+    override fun handledReturnResult() {
+        _onReturnResult.update { null }
+    }
+
     override fun handledEvent() {
         _navigate.update { null }
     }
 
-    override fun handledResult() {
+    override fun handledNavResult() {
         _onNavResult.update { null }
     }
 
@@ -71,7 +77,6 @@ class NavigationViewModelImpl : NavigationViewModel {
         // wait for the view to collect so navigating can happen
         _navigate.subscriptionCount.first { it > 0 }
 
-        currentDestination = event
         _navigate.emit(event)
     }
 
@@ -80,31 +85,32 @@ class NavigationViewModelImpl : NavigationViewModel {
     }
 
     override suspend fun popBackStack() {
-        currentDestination?.let { currentDestination ->
-            _onNavResult.subscriptionCount.first { it > 0 }
-            _onNavResult.emit(NavResult(currentDestination.key, Unit))
-        }
+        _popBackStack.value = Unit
     }
 
-    override suspend fun popBackStackWithResult(result: Any?) {
-        currentDestination?.let { currentDestination ->
-            _onNavResult.subscriptionCount.first { it > 0 }
-            _onNavResult.emit(NavResult(currentDestination.key, result))
-        }
+    /**
+     * @param data The data in String or JSON format to return.
+     */
+    override suspend fun popBackStackWithResult(data: String) {
+        _onReturnResult.subscriptionCount.first { it > 0 }
+        _onReturnResult.emit(data)
     }
 }
 
 interface NavigationViewModel {
-    val navigate: SharedFlow<NavigateEvent?>
-    val onNavResult: SharedFlow<NavResult?>
-
-    fun onNavResult(result: NavResult)
-    suspend fun popBackStackWithResult(result: Any?)
-    suspend fun popBackStack()
-    fun handledResult()
-
+    val navigate: StateFlow<NavigateEvent?>
     suspend fun navigate(event: NavigateEvent)
     fun handledEvent()
+
+    val onNavResult: StateFlow<NavResult?>
+    fun onNavResult(result: NavResult)
+    fun handledNavResult()
+
+    val onReturnResult: StateFlow<String?>
+    fun handledReturnResult()
+
+    suspend fun popBackStackWithResult(data: String)
+    suspend fun popBackStack()
 }
 
 suspend inline fun <reified R> NavigationViewModel.navigate(
@@ -121,9 +127,10 @@ suspend inline fun <reified R> NavigationViewModel.navigate(
      */
     return merge(
         navigate.drop(1).filterNotNull().dropWhile { it.key != key }.map { null },
-        onNavResult.filterNotNull().dropWhile { it.result !is R? && it.key != key }
-            .map { it.result },
-    ).first() as R?
+        onNavResult.filterNotNull()
+            .dropWhile { it.key != key }
+            .map { result -> result.data?.let { Json.decodeFromString<R>(it) } },
+    ).first()
 }
 
 /**
@@ -166,9 +173,6 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
             }
         }
 
-    val navDirectionProvider =
-        EntryPointAccessors.fromFragment<NavDirectionsProviderEntryPoint>(fragment).provider()
-
     navigate
         .filterNotNull()
         .filter { !it.destination.isCompose }
@@ -182,12 +186,86 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
             fragment.setFragmentResultListener(requestKey) { _, bundle ->
                 pendingResults.remove(event.key)
                 sendNavResultFromBundle(event.key, event.destination.id, bundle)
+                handledNavResult()
             }
 
-            val direction = navDirectionProvider.getDirection(destination, requestKey)
+            val direction = getDirection(destination, requestKey)
 
             fragment.findNavController().navigate(direction)
+            handledEvent()
         }.launchIn(fragment.lifecycleScope)
+}
+
+private fun getDirection(destination: NavDestination<*>, requestKey: String): NavDirections {
+    return when (destination) {
+        is NavDestination.ChooseApp -> NavBaseAppDirections.chooseApp(
+            destination.allowHiddenApps,
+            requestKey,
+        )
+
+        NavDestination.ChooseAppShortcut -> NavBaseAppDirections.chooseAppShortcut(requestKey)
+        NavDestination.ChooseKeyCode -> NavBaseAppDirections.chooseKeyCode(requestKey)
+        is NavDestination.ConfigKeyEventAction -> {
+            val json = destination.action?.let {
+                Json.encodeToString(it)
+            }
+
+            NavBaseAppDirections.configKeyEvent(requestKey, json)
+        }
+
+        is NavDestination.PickCoordinate -> {
+            val json = destination.result?.let {
+                Json.encodeToString(it)
+            }
+
+            NavBaseAppDirections.pickDisplayCoordinate(requestKey, json)
+        }
+
+        is NavDestination.PickSwipeCoordinate -> {
+            val json = destination.result?.let {
+                Json.encodeToString(it)
+            }
+
+            NavBaseAppDirections.swipePickDisplayCoordinate(requestKey, json)
+        }
+
+        is NavDestination.PickPinchCoordinate -> {
+            val json = destination.result?.let {
+                Json.encodeToString(it)
+            }
+
+            NavBaseAppDirections.pinchPickDisplayCoordinate(requestKey, json)
+        }
+
+        is NavDestination.ConfigIntent -> {
+            val json = destination.result?.let {
+                Json.encodeToString(it)
+            }
+
+            NavBaseAppDirections.configIntent(requestKey, json)
+        }
+
+        is NavDestination.ChooseActivity -> NavBaseAppDirections.chooseActivity(requestKey)
+        is NavDestination.ChooseSound -> NavBaseAppDirections.chooseSoundFile(requestKey)
+        is NavDestination.ChooseConstraint -> NavBaseAppDirections.chooseConstraint(
+            requestKey = requestKey,
+        )
+
+        is NavDestination.ChooseBluetoothDevice -> NavBaseAppDirections.chooseBluetoothDevice(
+            requestKey,
+        )
+
+        NavDestination.About -> NavBaseAppDirections.actionGlobalAboutFragment()
+        NavDestination.Settings -> NavBaseAppDirections.toSettingsFragment()
+
+        NavDestination.ShizukuSettings -> NavBaseAppDirections.toShizukuSettingsFragment()
+        is NavDestination.InteractUiElement -> NavBaseAppDirections.interactUiElement(
+            requestKey = requestKey,
+            action = destination.action?.let { Json.encodeToString(destination.action) },
+        )
+
+        else -> throw IllegalArgumentException("Can not find a direction for this destination: $destination")
+    }
 }
 
 fun NavigationViewModel.sendNavResultFromBundle(
@@ -199,98 +277,84 @@ fun NavigationViewModel.sendNavResultFromBundle(
         NavDestination.ID_CHOOSE_APP -> {
             val packageName = bundle.getString(ChooseAppFragment.EXTRA_PACKAGE_NAME)
 
-            onNavResult(NavResult(requestKey, packageName!!))
+            onNavResult(NavResult(requestKey, Json.encodeToString(packageName!!)))
         }
 
         NavDestination.ID_CHOOSE_APP_SHORTCUT -> {
-            val result = bundle.getJsonSerializable<ChooseAppShortcutResult>(
-                ChooseAppShortcutFragment.EXTRA_RESULT,
-            )
+            val json = bundle.getString(ChooseAppShortcutFragment.EXTRA_RESULT)
 
-            onNavResult(NavResult(requestKey, result))
+            onNavResult(NavResult(requestKey, json))
         }
 
         NavDestination.ID_KEY_CODE -> {
-            val keyCode =
-                bundle.getInt(ChooseKeyCodeFragment.EXTRA_KEYCODE)
+            val keyCode = bundle.getInt(ChooseKeyCodeFragment.EXTRA_KEYCODE)
 
-            onNavResult(NavResult(requestKey, keyCode))
+            onNavResult(NavResult(requestKey, Json.encodeToString(keyCode)))
         }
 
         NavDestination.ID_KEY_EVENT -> {
             val json = bundle.getString(ConfigKeyEventActionFragment.EXTRA_RESULT)!!
-            val keyEventAction = Json.decodeFromString<ActionData.InputKeyEvent>(json)
 
-            onNavResult(NavResult(requestKey, keyEventAction))
+            onNavResult(NavResult(requestKey, json))
         }
 
         NavDestination.ID_PICK_COORDINATE -> {
             val json = bundle.getString(PickDisplayCoordinateFragment.EXTRA_RESULT)!!
-            val result = Json.decodeFromString<PickCoordinateResult>(json)
 
-            onNavResult(NavResult(requestKey, result))
+            onNavResult(NavResult(requestKey, json))
         }
 
         NavDestination.ID_PICK_SWIPE_COORDINATE -> {
             val json = bundle.getString(SwipePickDisplayCoordinateFragment.EXTRA_RESULT)!!
-            val result = Json.decodeFromString<SwipePickCoordinateResult>(json)
 
-            onNavResult(NavResult(requestKey, result))
+            onNavResult(NavResult(requestKey, json))
         }
 
         NavDestination.ID_PICK_PINCH_COORDINATE -> {
             val json = bundle.getString(PinchPickDisplayCoordinateFragment.EXTRA_RESULT)!!
-            val result = Json.decodeFromString<PinchPickCoordinateResult>(json)
 
-            onNavResult(NavResult(requestKey, result))
+            onNavResult(NavResult(requestKey, json))
         }
 
         NavDestination.ID_CONFIG_INTENT -> {
             val json = bundle.getString(ConfigIntentFragment.EXTRA_RESULT)!!
-            val result = Json.decodeFromString<ConfigIntentResult>(json)
 
-            onNavResult(NavResult(requestKey, result))
+            onNavResult(NavResult(requestKey, json))
         }
 
         NavDestination.ID_CHOOSE_ACTIVITY -> {
             val json = bundle.getString(ChooseActivityFragment.EXTRA_RESULT)!!
-            val result = Json.decodeFromString<ActivityInfo>(json)
 
-            onNavResult(NavResult(requestKey, result))
+            onNavResult(NavResult(requestKey, json))
         }
 
         NavDestination.ID_CHOOSE_SOUND -> {
             val json = bundle.getString(ChooseSoundFileFragment.EXTRA_RESULT)!!
-            val result = Json.decodeFromString<ActionData.Sound>(json)
 
-            onNavResult(NavResult(requestKey, result))
-        }
-
-        NavDestination.ID_CHOOSE_ACTION -> {
-            val json = bundle.getString(ChooseActionFragment.EXTRA_ACTION)!!
-            val action = Json.decodeFromString<ActionData>(json)
-
-            onNavResult(NavResult(requestKey, action))
+            onNavResult(NavResult(requestKey, json))
         }
 
         NavDestination.ID_CHOOSE_CONSTRAINT -> {
             val json = bundle.getString(ChooseConstraintFragment.EXTRA_CONSTRAINT)!!
-            val constraint = Json.decodeFromString<Constraint>(json)
 
-            onNavResult(NavResult(requestKey, constraint))
+            onNavResult(NavResult(requestKey, json))
         }
 
         NavDestination.ID_CHOOSE_BLUETOOTH_DEVICE -> {
             val address = bundle.getString(ChooseBluetoothDeviceFragment.EXTRA_ADDRESS)!!
             val name = bundle.getString(ChooseBluetoothDeviceFragment.EXTRA_NAME)!!
 
-            onNavResult(NavResult(requestKey, BluetoothDeviceInfo(address, name)))
+            onNavResult(
+                NavResult(
+                    requestKey,
+                    Json.encodeToString(BluetoothDeviceInfo(address, name)),
+                ),
+            )
         }
 
         NavDestination.ID_INTERACT_UI_ELEMENT_ACTION -> {
             val json = bundle.getString(InteractUiElementFragment.EXTRA_ACTION)!!
-            val result = Json.decodeFromString<ActionData.InteractUiElement>(json)
-            onNavResult(NavResult(requestKey, result))
+            onNavResult(NavResult(requestKey, json))
         }
     }
 }

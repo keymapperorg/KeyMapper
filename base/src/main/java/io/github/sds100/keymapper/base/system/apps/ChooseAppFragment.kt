@@ -46,7 +46,7 @@ class ChooseAppFragment : RecyclerViewFragment<SimpleListItemOld, FragmentChoose
     override fun subscribeUi(binding: FragmentChooseAppBinding) {
         binding.viewModel = viewModel
 
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.CREATED) {
             viewModel.returnResult.collectLatest {
                 returnResult(EXTRA_PACKAGE_NAME to it)
             }

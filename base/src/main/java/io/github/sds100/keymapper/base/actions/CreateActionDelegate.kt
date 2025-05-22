@@ -12,13 +12,13 @@ import io.github.sds100.keymapper.base.system.intents.ConfigIntentResult
 import io.github.sds100.keymapper.base.utils.DndModeStrings
 import io.github.sds100.keymapper.base.utils.RingerModeStrings
 import io.github.sds100.keymapper.base.utils.VolumeStreamStrings
-import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.navigation.navigate
+import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
 import io.github.sds100.keymapper.base.utils.ui.PopupUi
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.showPopup
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.system.camera.CameraLens
@@ -37,11 +37,11 @@ class CreateActionDelegate(
     private val coroutineScope: CoroutineScope,
     private val useCase: CreateActionUseCase,
     popupViewModel: PopupViewModel,
-    navigationViewModelImpl: NavigationViewModel,
+    navigationViewModel: NavigationViewModel,
     resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
     PopupViewModel by popupViewModel,
-    NavigationViewModel by navigationViewModelImpl {
+    NavigationViewModel by navigationViewModel {
 
     val actionResult: MutableStateFlow<ActionData?> = MutableStateFlow(null)
     var enableFlashlightActionState: EnableFlashlightActionState? by mutableStateOf(null)
@@ -446,7 +446,7 @@ class CreateActionDelegate(
 
             ActionId.DISABLE_FLASHLIGHT,
             -> {
-                val items = useCase.getFlashlightLenses().map {lens ->
+                val items = useCase.getFlashlightLenses().map { lens ->
                     when (lens) {
                         CameraLens.FRONT -> lens to getString(R.string.lens_front)
                         CameraLens.BACK -> lens to getString(R.string.lens_back)
@@ -488,8 +488,7 @@ class CreateActionDelegate(
 
             ActionId.KEY_CODE -> {
                 val keyCode =
-                    navigate("choose_key_code", NavDestination.ChooseKeyCode)
-                        ?: return null
+                    navigate("choose_key_code", NavDestination.ChooseKeyCode) ?: return null
 
                 return ActionData.InputKeyEvent(keyCode = keyCode)
             }

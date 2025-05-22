@@ -43,6 +43,7 @@ sealed class NavDestination<R>(val isCompose: Boolean = false) {
         override val id: String = ID_HOME
     }
 
+    @Serializable
     data class ChooseApp(
         /**
          * Allow the list to show hidden apps that can't be launched.
@@ -52,58 +53,72 @@ sealed class NavDestination<R>(val isCompose: Boolean = false) {
         override val id: String = ID_CHOOSE_APP
     }
 
+    @Serializable
     data object ChooseAppShortcut : NavDestination<ChooseAppShortcutResult>() {
         override val id: String = ID_CHOOSE_APP_SHORTCUT
     }
 
+    @Serializable
     data object ChooseKeyCode : NavDestination<Int>() {
         override val id: String = ID_KEY_CODE
     }
 
+    @Serializable
     data class ConfigKeyEventAction(val action: ActionData.InputKeyEvent? = null) : NavDestination<ActionData.InputKeyEvent>() {
         override val id: String = ID_KEY_EVENT
     }
 
+    @Serializable
     data class PickCoordinate(val result: PickCoordinateResult? = null) : NavDestination<PickCoordinateResult>() {
         override val id: String = ID_PICK_COORDINATE
     }
 
+    @Serializable
     data class PickSwipeCoordinate(val result: SwipePickCoordinateResult? = null) : NavDestination<SwipePickCoordinateResult>() {
         override val id: String = ID_PICK_SWIPE_COORDINATE
     }
 
+    @Serializable
     data class PickPinchCoordinate(val result: PinchPickCoordinateResult? = null) : NavDestination<PinchPickCoordinateResult>() {
         override val id: String = ID_PICK_PINCH_COORDINATE
     }
 
+    @Serializable
     data class ConfigIntent(val result: ConfigIntentResult? = null) : NavDestination<ConfigIntentResult>() {
         override val id: String = ID_CONFIG_INTENT
     }
 
+    @Serializable
     data object ChooseActivity : NavDestination<ActivityInfo>() {
         override val id: String = ID_CHOOSE_ACTIVITY
     }
 
+    @Serializable
     data object ChooseSound : NavDestination<ActionData.Sound>() {
         override val id: String = ID_CHOOSE_SOUND
     }
 
-    data object ChooseAction : NavDestination<ActionData>() {
+    @Serializable
+    data object ChooseAction : NavDestination<ActionData>(isCompose = true) {
         override val id: String = ID_CHOOSE_ACTION
     }
 
+    @Serializable
     data object ChooseConstraint : NavDestination<Constraint>() {
         override val id: String = ID_CHOOSE_CONSTRAINT
     }
 
+    @Serializable
     data object ChooseBluetoothDevice : NavDestination<BluetoothDeviceInfo>() {
         override val id: String = ID_CHOOSE_BLUETOOTH_DEVICE
     }
 
+    @Serializable
     data object Settings : NavDestination<Unit>() {
         override val id: String = ID_SETTINGS
     }
 
+    @Serializable
     data object About : NavDestination<Unit>() {
         override val id: String = ID_ABOUT
     }
@@ -118,18 +133,22 @@ sealed class NavDestination<R>(val isCompose: Boolean = false) {
         override val id: String = ID_CONFIG_KEY_MAP
     }
 
+    @Serializable
     data object ChooseFloatingLayout : NavDestination<Unit>() {
         override val id: String = "choose_floating_layout"
     }
 
+    @Serializable
     data object ShizukuSettings : NavDestination<Unit>() {
         override val id: String = ID_SHIZUKU_SETTINGS
     }
 
+    @Serializable
     data class ConfigFloatingButton(val buttonUid: String?) : NavDestination<Unit>() {
         override val id: String = ID_CONFIG_FLOATING_BUTTON
     }
 
+    @Serializable
     data class InteractUiElement(val action: ActionData.InteractUiElement?) : NavDestination<ActionData.InteractUiElement>() {
         override val id: String = ID_INTERACT_UI_ELEMENT_ACTION
     }

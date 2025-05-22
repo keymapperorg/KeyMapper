@@ -1,6 +1,13 @@
 package io.github.sds100.keymapper
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -10,6 +17,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import io.github.sds100.keymapper.base.actions.ChooseActionScreen
+import io.github.sds100.keymapper.base.actions.ChooseActionViewModel
 import io.github.sds100.keymapper.base.home.HomeKeyMapListScreen
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.handleRoute
@@ -77,6 +86,19 @@ fun MainNavHost(
                 viewModel = viewModel,
             )
         }
+
+        composable<NavDestination.ChooseAction> {
+            val viewModel: ChooseActionViewModel = hiltViewModel()
+
+            ChooseActionScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .windowInsetsPadding(
+                        WindowInsets.systemBars.only(sides = WindowInsetsSides.Horizontal)
+                            .add(WindowInsets.displayCutout.only(sides = WindowInsetsSides.Horizontal)),
+                    ),
+                viewModel = viewModel,
+            )
+        }
     }
 }
-

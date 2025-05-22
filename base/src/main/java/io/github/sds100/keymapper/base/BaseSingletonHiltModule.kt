@@ -38,6 +38,8 @@ import io.github.sds100.keymapper.base.system.notifications.ManageNotificationsU
 import io.github.sds100.keymapper.base.system.notifications.ManageNotificationsUseCaseImpl
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.base.trigger.RecordTriggerUseCase
+import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
 import io.github.sds100.keymapper.common.utils.DefaultUuidGenerator
@@ -127,5 +129,9 @@ abstract class BaseSingletonHiltModule {
 
     @Binds
     @Singleton
-    abstract fun provideUuidGenerator(impl: DefaultUuidGenerator): UuidGenerator
+    abstract fun bindUuidGenerator(impl: DefaultUuidGenerator): UuidGenerator
+
+    @Binds
+    @Singleton
+    abstract fun bindNavigationProvider(impl: NavigationViewModelImpl): NavigationViewModel
 }

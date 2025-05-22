@@ -6,12 +6,12 @@ import androidx.navigation.fragment.navArgs
 import com.airbnb.epoxy.EpoxyRecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.databinding.FragmentSimpleRecyclerviewBinding
+import io.github.sds100.keymapper.base.simple
 import io.github.sds100.keymapper.base.utils.ui.RecyclerViewUtils
 import io.github.sds100.keymapper.base.utils.ui.SimpleListItemOld
 import io.github.sds100.keymapper.base.utils.ui.SimpleRecyclerViewFragment
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.base.simple
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 
@@ -36,7 +36,7 @@ class ChooseKeyCodeFragment : SimpleRecyclerViewFragment<SimpleListItemOld>() {
 
         RecyclerViewUtils.applySimpleListItemDecorations(binding.epoxyRecyclerView)
 
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
+        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.CREATED) {
             viewModel.returnResult.collectLatest {
                 returnResult(EXTRA_KEYCODE to it)
             }

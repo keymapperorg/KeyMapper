@@ -2,22 +2,23 @@ package io.github.sds100.keymapper.base.actions
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.system.SystemError
-import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.base.utils.containsQuery
 import io.github.sds100.keymapper.base.utils.getFullMessage
-import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
-import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModelImpl
+import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.PopupUi
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemGroup
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
 import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.system.SystemError
+import io.github.sds100.keymapper.system.permissions.Permission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,21 +26,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 @HiltViewModel
 class ChooseActionViewModel @Inject constructor(
     private val useCase: CreateActionUseCase,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val navigationViewModel: NavigationViewModel,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
-    NavigationViewModel by NavigationViewModelImpl() {
+    NavigationViewModel by navigationViewModel {
 
     companion object {
         private val CATEGORY_ORDER = arrayOf(
@@ -65,9 +65,6 @@ class ChooseActionViewModel @Inject constructor(
 
     private val allGroupedListItems: List<SimpleListItemGroup> by lazy { buildListGroups() }
 
-    val returnAction = createActionDelegate.actionResult.filterNotNull()
-        .shareIn(viewModelScope, SharingStarted.Eagerly)
-
     val searchQuery = MutableStateFlow<String?>(null)
 
     val groups: StateFlow<State<List<SimpleListItemGroup>>> =
@@ -86,6 +83,14 @@ class ChooseActionViewModel @Inject constructor(
             State.Data(groups)
         }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
 
+    init {
+        viewModelScope.launch {
+            createActionDelegate.actionResult.filterNotNull().collect { action ->
+                popBackStackWithResult(Json.encodeToString(action))
+            }
+        }
+    }
+
     fun onListItemClick(id: String) {
         viewModelScope.launch {
             val actionId = ActionId.valueOf(id)
@@ -96,6 +101,12 @@ class ChooseActionViewModel @Inject constructor(
             }
 
             createActionDelegate.createAction(actionId)
+        }
+    }
+
+    fun onNavigateBack() {
+        viewModelScope.launch {
+            popBackStack()
         }
     }
 
