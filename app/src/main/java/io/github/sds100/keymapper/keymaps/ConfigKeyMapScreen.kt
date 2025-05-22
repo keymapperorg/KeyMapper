@@ -21,7 +21,6 @@ import io.github.sds100.keymapper.trigger.TriggerScreen
 fun ConfigKeyMapScreen(
     modifier: Modifier = Modifier,
     viewModel: ConfigKeyMapViewModel,
-    navigateBack: () -> Unit,
 ) {
     val isKeyMapEnabled by viewModel.isEnabled.collectAsStateWithLifecycle()
     val showActionTapTarget by viewModel.showActionsTapTarget.collectAsStateWithLifecycle()
@@ -36,7 +35,7 @@ fun ConfigKeyMapScreen(
             onDismiss = { showBackDialog = false },
             onDiscardClick = {
                 showBackDialog = false
-                navigateBack()
+                viewModel.onBackClick()
             },
         )
     }
@@ -68,13 +67,10 @@ fun ConfigKeyMapScreen(
             if (viewModel.isKeyMapEdited) {
                 showBackDialog = true
             } else {
-                navigateBack()
+                viewModel.onBackClick()
             }
         },
-        onDoneClick = {
-            viewModel.save()
-            navigateBack()
-        },
+        onDoneClick = viewModel::onDoneClick,
         snackbarHostState = snackbarHostState,
         showActionTapTarget = showActionTapTarget,
         onActionTapTargetCompleted = viewModel::onActionTapTargetCompleted,

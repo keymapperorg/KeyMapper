@@ -15,8 +15,10 @@ import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
 import io.github.sds100.keymapper.base.trigger.RecordTriggerUseCase
 import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
+import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.trigger.ConfigTriggerViewModel
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,9 +34,11 @@ class ConfigKeyMapViewModel @Inject constructor(
     setupGuiKeyboardUseCase: SetupGuiKeyboardUseCase,
     fingerprintGesturesSupportedUseCase: FingerprintGesturesSupportedUseCase,
     resourceProvider: ResourceProvider,
+    navigationViewModel: NavigationViewModel
 ) : BaseConfigKeyMapViewModel(
     config = config,
     onboarding = onboarding,
+    navigationViewModel = navigationViewModel
 ) {
     override val configActionsViewModel: ConfigActionsViewModel = ConfigActionsViewModel(
         coroutineScope = viewModelScope,
@@ -66,4 +70,14 @@ class ConfigKeyMapViewModel @Inject constructor(
             displayConstraint = display,
             resourceProvider = resourceProvider,
         )
+
+    init {
+        Timber.e("INIT VIEW MODEL")
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+
+        Timber.e("CLEARED VIEW MODEL")
+    }
 }

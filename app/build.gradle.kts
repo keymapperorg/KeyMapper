@@ -217,6 +217,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.extensions) // Note: Deprecated
     implementation(libs.androidx.viewpager2)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.androidx.room.compiler)
 
     // Compose
@@ -230,5 +231,4 @@ dependencies {
     implementation(libs.androidx.compose.material3.adaptive.navigation)
     implementation(libs.google.accompanist.drawablepainter)
     implementation(libs.androidx.compose.ui.tooling)
-
 }

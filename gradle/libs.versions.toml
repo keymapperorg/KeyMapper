@@ -1,5 +1,6 @@
 [versions]
 compile-sdk = "35"
+hilt-navigation-compose = "1.2.0"
 min-sdk = "21"
 build-tools = "35.0.0"
 target-sdk = "35"
@@ -72,6 +73,7 @@ ui-tooling = "1.8.1" # android.arch.persistence.room:testing
 
 [libraries]
 # Kotlin
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
 dagger-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "dagger-hilt-android" }
 dagger-hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "dagger-hilt-android" }
 kotlin-stdlib-jdk8 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlin" }

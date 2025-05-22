@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.EntryPointAccessors
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.ChooseActionFragment
+import io.github.sds100.keymapper.base.actions.keyevent.ChooseKeyCodeFragment
 import io.github.sds100.keymapper.base.actions.keyevent.ConfigKeyEventActionFragment
 import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickCoordinateResult
 import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickDisplayCoordinateFragment
@@ -31,43 +32,79 @@ import io.github.sds100.keymapper.base.system.intents.ConfigIntentResult
 import io.github.sds100.keymapper.common.utils.getJsonSerializable
 import io.github.sds100.keymapper.system.apps.ActivityInfo
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.dropWhile
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import javax.inject.Singleton
 
+@Singleton
 class NavigationViewModelImpl : NavigationViewModel {
-    private val _onNavResult by lazy { MutableSharedFlow<NavResult>() }
-    override val onNavResult by lazy { _onNavResult.asSharedFlow() }
+    private var currentDestination: NavigateEvent? = null
 
-    private val _navigate = MutableSharedFlow<NavigateEvent>()
-    override val navigate = _navigate.asSharedFlow()
+    private val _onNavResult = MutableStateFlow<NavResult?>(null)
+    override val onNavResult = _onNavResult.asStateFlow()
+
+    private val _navigate = MutableStateFlow<NavigateEvent?>(null)
+    override val navigate = _navigate.asStateFlow()
+
+    override fun handledEvent() {
+        _navigate.update { null }
+    }
+
+    override fun handledResult() {
+        _onNavResult.update { null }
+    }
 
     override suspend fun navigate(event: NavigateEvent) {
         // wait for the view to collect so navigating can happen
         _navigate.subscriptionCount.first { it > 0 }
 
+        currentDestination = event
         _navigate.emit(event)
     }
 
     override fun onNavResult(result: NavResult) {
         runBlocking { _onNavResult.emit(result) }
     }
+
+    override suspend fun popBackStack() {
+        currentDestination?.let { currentDestination ->
+            _onNavResult.subscriptionCount.first { it > 0 }
+            _onNavResult.emit(NavResult(currentDestination.key, Unit))
+        }
+    }
+
+    override suspend fun popBackStackWithResult(result: Any?) {
+        currentDestination?.let { currentDestination ->
+            _onNavResult.subscriptionCount.first { it > 0 }
+            _onNavResult.emit(NavResult(currentDestination.key, result))
+        }
+    }
 }
 
 interface NavigationViewModel {
-    val navigate: SharedFlow<NavigateEvent>
-    val onNavResult: SharedFlow<NavResult>
+    val navigate: SharedFlow<NavigateEvent?>
+    val onNavResult: SharedFlow<NavResult?>
 
     fun onNavResult(result: NavResult)
+    suspend fun popBackStackWithResult(result: Any?)
+    suspend fun popBackStack()
+    fun handledResult()
+
     suspend fun navigate(event: NavigateEvent)
+    fun handledEvent()
 }
 
 suspend inline fun <reified R> NavigationViewModel.navigate(
@@ -78,11 +115,14 @@ suspend inline fun <reified R> NavigationViewModel.navigate(
 
     /*
     This ensures only one job for a dialog is active at once by cancelling previous jobs when a new
-    dialog is shown with the same key
+    dialog is shown with the same key.
+
+    Must drop the first value because it came from our call to navigate.
      */
     return merge(
-        navigate.dropWhile { it.key != key }.map { null },
-        onNavResult.dropWhile { it.result !is R? && it.key != key }.map { it.result },
+        navigate.drop(1).filterNotNull().dropWhile { it.key != key }.map { null },
+        onNavResult.filterNotNull().dropWhile { it.result !is R? && it.key != key }
+            .map { it.result },
     ).first() as R?
 }
 
@@ -129,22 +169,25 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
     val navDirectionProvider =
         EntryPointAccessors.fromFragment<NavDirectionsProviderEntryPoint>(fragment).provider()
 
-    navigate.onEach { event ->
-        val (requestKey, destination) = event
+    navigate
+        .filterNotNull()
+        .filter { !it.destination.isCompose }
+        .onEach { event ->
+            val (requestKey, destination) = event
 
-        pendingResults[requestKey] = destination.id
+            pendingResults[requestKey] = destination.id
 
-        fragment.clearFragmentResultListener(requestKey)
+            fragment.clearFragmentResultListener(requestKey)
 
-        fragment.setFragmentResultListener(requestKey) { _, bundle ->
-            pendingResults.remove(event.key)
-            sendNavResultFromBundle(event.key, event.destination.id, bundle)
-        }
+            fragment.setFragmentResultListener(requestKey) { _, bundle ->
+                pendingResults.remove(event.key)
+                sendNavResultFromBundle(event.key, event.destination.id, bundle)
+            }
 
-        val direction = navDirectionProvider.getDirection(destination, requestKey)
+            val direction = navDirectionProvider.getDirection(destination, requestKey)
 
-        fragment.findNavController().navigate(direction)
-    }.launchIn(fragment.lifecycleScope)
+            fragment.findNavController().navigate(direction)
+        }.launchIn(fragment.lifecycleScope)
 }
 
 fun NavigationViewModel.sendNavResultFromBundle(
@@ -169,7 +212,7 @@ fun NavigationViewModel.sendNavResultFromBundle(
 
         NavDestination.ID_KEY_CODE -> {
             val keyCode =
-                bundle.getInt(io.github.sds100.keymapper.base.actions.keyevent.ChooseKeyCodeFragment.EXTRA_KEYCODE)
+                bundle.getInt(ChooseKeyCodeFragment.EXTRA_KEYCODE)
 
             onNavResult(NavResult(requestKey, keyCode))
         }

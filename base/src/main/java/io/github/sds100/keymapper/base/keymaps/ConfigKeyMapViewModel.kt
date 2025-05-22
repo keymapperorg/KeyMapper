@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.base.keymaps
 
-import android.os.Bundle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.base.actions.ConfigActionsViewModel
@@ -8,11 +7,8 @@ import io.github.sds100.keymapper.base.constraints.ConfigConstraintsViewModel
 import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.trigger.BaseConfigTriggerViewModel
+import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
 import io.github.sds100.keymapper.common.utils.dataOrNull
-import io.github.sds100.keymapper.common.utils.firstBlocking
-import io.github.sds100.keymapper.common.utils.getJsonSerializable
-import io.github.sds100.keymapper.common.utils.ifIsData
-import io.github.sds100.keymapper.common.utils.putJsonSerializable
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -23,11 +19,9 @@ import kotlinx.coroutines.launch
 abstract class BaseConfigKeyMapViewModel(
     private val config: ConfigKeyMapUseCase,
     private val onboarding: OnboardingUseCase,
-) : ViewModel() {
-
-    companion object {
-        private const val STATE_KEY = "config_keymap"
-    }
+    navigationViewModel: NavigationViewModel,
+) : ViewModel(),
+    NavigationViewModel by navigationViewModel {
 
     abstract val configActionsViewModel: ConfigActionsViewModel
     abstract val configTriggerViewModel: BaseConfigTriggerViewModel
@@ -58,20 +52,15 @@ abstract class BaseConfigKeyMapViewModel(
             showTapTarget && keyMapState.dataOrNull()?.actionList?.isNotEmpty() ?: false
         }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
-    fun save() = config.save()
+    fun onDoneClick() {
+        config.save()
 
-    fun saveState(outState: Bundle) {
-        config.keyMap.firstBlocking().ifIsData {
-            outState.putJsonSerializable(STATE_KEY, it)
+        viewModelScope.launch {
+            popBackStack()
         }
     }
 
-    fun restoreState(state: Bundle) {
-        val keyMap = state.getJsonSerializable<KeyMap>(STATE_KEY) ?: KeyMap()
-        config.restoreState(keyMap)
-    }
-
-    fun loadNewKeymap(floatingButtonUid: String? = null, groupUid: String?) {
+    fun loadNewKeyMap(floatingButtonUid: String? = null, groupUid: String?) {
         config.loadNewKeyMap(groupUid)
         if (floatingButtonUid != null) {
             viewModelScope.launch {
@@ -83,6 +72,12 @@ abstract class BaseConfigKeyMapViewModel(
     fun loadKeyMap(uid: String) {
         viewModelScope.launch {
             config.loadKeyMap(uid)
+        }
+    }
+
+    fun onBackClick() {
+        viewModelScope.launch {
+            popBackStack()
         }
     }
 

@@ -8,10 +8,11 @@ import io.github.sds100.keymapper.base.keymaps.ListKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.sorting.SortKeyMapsUseCase
+import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
+import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,6 +27,7 @@ class HomeViewModel @Inject constructor(
     private val sortKeyMaps: SortKeyMapsUseCase,
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
     private val buildConfigProvider: BuildConfigProvider,
+    navigationViewModel: NavigationViewModel,
 ) : BaseHomeViewModel(
     listKeyMaps,
     pauseKeyMaps,
@@ -37,4 +39,5 @@ class HomeViewModel @Inject constructor(
     sortKeyMaps,
     showInputMethodPickerUseCase,
     buildConfigProvider,
+    navigationViewModel,
 )

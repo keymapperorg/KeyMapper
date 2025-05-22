@@ -7,6 +7,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
 import io.github.sds100.keymapper.base.utils.navigation.BaseNavDirectionProvider
+import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModelImpl
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.KeyMapperClassProvider
 import io.github.sds100.keymapper.common.utils.DefaultDispatcherProvider
@@ -62,4 +64,8 @@ class AppHiltModule {
     @Provides
     @Singleton
     fun providePurchasingManager(): PurchasingManager = PurchasingManagerImpl()
+
+    @Provides
+    @Singleton
+    fun provideNavigationProvider(): NavigationViewModel = NavigationViewModelImpl()
 }

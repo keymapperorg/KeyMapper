@@ -61,6 +61,7 @@ import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.groups.GroupListItemModel
 import io.github.sds100.keymapper.base.keymaps.KeyMapAppBarState
 import io.github.sds100.keymapper.base.keymaps.KeyMapList
+import io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel
 import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.base.sorting.SortBottomSheet
 import io.github.sds100.keymapper.base.trigger.DpadTriggerSetupBottomSheet
@@ -82,7 +83,7 @@ import io.github.sds100.keymapper.system.files.FileUtils
 @Composable
 fun HomeKeyMapListScreen(
     modifier: Modifier = Modifier,
-    viewModel: io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel,
+    viewModel: KeyMapListViewModel,
     snackbarState: SnackbarHostState,
     onSettingsClick: () -> Unit,
     onAboutClick: () -> Unit,

@@ -21,18 +21,18 @@ import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.base.sorting.SortViewModel
+import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardState
 import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.base.trigger.TriggerError
 import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.base.utils.getFullMessage
+import io.github.sds100.keymapper.base.utils.navigation.NavDestination
+import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.MultiSelectProvider
-import io.github.sds100.keymapper.base.utils.navigation.NavDestination
-import io.github.sds100.keymapper.base.utils.navigation.NavigateEvent
-import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
-import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.PopupUi
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
@@ -40,7 +40,6 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.SelectionState
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.showPopup
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
@@ -53,7 +52,6 @@ import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
-import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.system.permissions.Permission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -87,9 +85,10 @@ class KeyMapListViewModel(
     private val backupRestore: BackupRestoreMappingsUseCase,
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
     private val onboarding: OnboardingUseCase,
+    private val navigationProvider: NavigationViewModel,
 ) : PopupViewModel by PopupViewModelImpl(),
     ResourceProvider by resourceProvider,
-    NavigationViewModel by NavigationViewModelImpl() {
+    NavigationViewModel by navigationProvider {
 
     private companion object {
         const val ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM = "accessibility_service_disabled"
@@ -107,7 +106,7 @@ class KeyMapListViewModel(
     private val listItemCreator =
         KeyMapListItemCreator(
             listKeyMaps,
-            resourceProvider
+            resourceProvider,
         )
     private val constraintUiHelper = ConstraintUiHelper(listKeyMaps, resourceProvider)
 
@@ -351,7 +350,7 @@ class KeyMapListViewModel(
                     KeyMapListState(
                         appBarState,
                         listState,
-                        showCreateKeyMapTapTarget
+                        showCreateKeyMapTapTarget,
                     )
             }
         }
@@ -488,7 +487,7 @@ class KeyMapListViewModel(
             }
         } else {
             coroutineScope.launch {
-                navigate("config_key_map", NavDestination.ConfigKeyMap.Open(uid))
+                navigate("config_key_map", NavDestination.OpenKeyMap(uid))
             }
         }
     }
@@ -496,7 +495,6 @@ class KeyMapListViewModel(
     fun onKeyMapCardLongClick(uid: String) {
         if (multiSelectProvider.state.value is SelectionState.NotSelecting) {
             coroutineScope.launch {
-                val currentGroupUid = listKeyMaps.keyMapGroup.first().group?.uid
                 multiSelectProvider.startSelecting()
                 multiSelectProvider.select(uid)
             }
@@ -534,7 +532,7 @@ class KeyMapListViewModel(
                 TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED, TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> {
                     navigate(
                         "purchase_advanced_trigger",
-                        NavDestination.ConfigKeyMap.New(
+                        NavDestination.NewKeyMap(
                             groupUid = null,
                             showAdvancedTriggers = true,
                         ),
@@ -891,10 +889,8 @@ class KeyMapListViewModel(
             val groupUid = listKeyMaps.keyMapGroup.first().group?.uid
 
             navigate(
-                NavigateEvent(
-                    "config_key_map",
-                    NavDestination.ConfigKeyMap.New(groupUid = groupUid),
-                ),
+                "config_new_key_map",
+                NavDestination.NewKeyMap(groupUid = groupUid),
             )
         }
     }

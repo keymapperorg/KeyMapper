@@ -5,15 +5,18 @@ import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickCoordinateRe
 import io.github.sds100.keymapper.base.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.base.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.base.constraints.Constraint
-import io.github.sds100.keymapper.system.apps.ActivityInfo
 import io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutResult
-import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.base.system.intents.ConfigIntentResult
+import io.github.sds100.keymapper.system.apps.ActivityInfo
+import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
+import kotlinx.serialization.Serializable
 
-abstract class NavDestination<R> {
+@Serializable
+sealed class NavDestination<R>(val isCompose: Boolean = false) {
     abstract val id: String
 
     companion object {
+        const val ID_HOME = "home"
         const val ID_CHOOSE_APP = "choose_app"
         const val ID_CHOOSE_APP_SHORTCUT = "choose_app_shortcut"
         const val ID_KEY_CODE = "key_code"
@@ -33,6 +36,11 @@ abstract class NavDestination<R> {
         const val ID_SHIZUKU_SETTINGS = "shizuku_settings"
         const val ID_CONFIG_FLOATING_BUTTON = "config_floating_button"
         const val ID_INTERACT_UI_ELEMENT_ACTION = "interact_ui_element_action"
+    }
+
+    @Serializable
+    data object Home : NavDestination<Unit>() {
+        override val id: String = ID_HOME
     }
 
     data class ChooseApp(
@@ -100,13 +108,14 @@ abstract class NavDestination<R> {
         override val id: String = ID_ABOUT
     }
 
-    sealed class ConfigKeyMap : NavDestination<Unit>() {
+    @Serializable
+    data class OpenKeyMap(val keyMapUid: String, val showAdvancedTriggers: Boolean = false) : NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_CONFIG_KEY_MAP
-        abstract val showAdvancedTriggers: Boolean
+    }
 
-        data class Open(val keyMapUid: String, override val showAdvancedTriggers: Boolean = false) : ConfigKeyMap()
-
-        data class New(val groupUid: String?, override val showAdvancedTriggers: Boolean = false) : ConfigKeyMap()
+    @Serializable
+    data class NewKeyMap(val groupUid: String?, val showAdvancedTriggers: Boolean = false) : NavDestination<Unit>(isCompose = true) {
+        override val id: String = ID_CONFIG_KEY_MAP
     }
 
     data object ChooseFloatingLayout : NavDestination<Unit>() {

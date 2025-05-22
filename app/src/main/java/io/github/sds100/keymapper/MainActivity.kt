@@ -8,7 +8,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.base.utils.ui.showPopups
 import io.github.sds100.keymapper.databinding.ActivityMainBinding
-import io.github.sds100.keymapper.home.HomeFragment
 
 @AndroidEntryPoint
 class MainActivity : BaseMainActivity() {
@@ -25,7 +24,7 @@ class MainActivity : BaseMainActivity() {
 
         val homeDest = fragmentNavigator.createDestination().apply {
             id = R.id.home_fragment
-            setClassName(HomeFragment::class.java.name)
+            setClassName(MainFragment::class.java.name)
         }
 
         navController.graph = navController.navInflater.inflate(R.navigation.nav_base_app).apply {
