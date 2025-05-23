@@ -13,8 +13,9 @@ import io.github.sds100.keymapper.system.network.NetworkAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class CreateConstraintUseCaseImpl(
+class CreateConstraintUseCaseImpl @Inject constructor(
     private val networkAdapter: NetworkAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
     private val preferenceRepository: PreferenceRepository,

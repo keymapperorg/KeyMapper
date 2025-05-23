@@ -250,24 +250,6 @@
             app:argType="string" />
     </fragment>
 
-    <action
-        android:id="@+id/chooseConstraint"
-        app:destination="@id/chooseConstraintFragment"
-        app:enterAnim="@anim/slide_in_right"
-        app:exitAnim="@anim/slide_out_left"
-        app:popEnterAnim="@anim/slide_in_left"
-        app:popExitAnim="@anim/slide_out_right" />
-
-    <fragment
-        android:id="@+id/chooseConstraintFragment"
-        android:name="io.github.sds100.keymapper.base.constraints.ChooseConstraintFragment"
-        tools:layout="@layout/fragment_simple_recyclerview">
-
-        <argument
-            android:name="requestKey"
-            app:argType="string" />
-    </fragment>
-
     <fragment
         android:id="@+id/bluetoothDevicesFragment"
         android:name="io.github.sds100.keymapper.base.system.bluetooth.ChooseBluetoothDeviceFragment"
@@ -338,27 +320,5 @@
     <!--            app:argType="string"-->
     <!--            app:nullable="true" />-->
     <!--    </action>-->
-
-    <fragment
-        android:id="@+id/interactUiElementFragment"
-        android:name="io.github.sds100.keymapper.base.actions.uielement.InteractUiElementFragment">
-
-        <argument
-            android:name="requestKey"
-            app:argType="string" />
-
-        <argument
-            android:name="action"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-    </fragment>
-    <action
-        android:id="@+id/interactUiElement"
-        app:destination="@id/interactUiElementFragment"
-        app:enterAnim="@anim/slide_in_right"
-        app:exitAnim="@anim/slide_out_left"
-        app:popEnterAnim="@anim/slide_in_left"
-        app:popExitAnim="@anim/slide_out_right" />
 
 </navigation>

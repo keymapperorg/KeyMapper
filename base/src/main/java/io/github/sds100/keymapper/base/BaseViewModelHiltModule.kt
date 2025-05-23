@@ -15,6 +15,8 @@ import io.github.sds100.keymapper.base.actions.sound.ChooseSoundFileUseCase
 import io.github.sds100.keymapper.base.actions.sound.ChooseSoundFileUseCaseImpl
 import io.github.sds100.keymapper.base.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.base.backup.BackupRestoreMappingsUseCaseImpl
+import io.github.sds100.keymapper.base.constraints.CreateConstraintUseCase
+import io.github.sds100.keymapper.base.constraints.CreateConstraintUseCaseImpl
 import io.github.sds100.keymapper.base.home.ShowHomeScreenAlertsUseCase
 import io.github.sds100.keymapper.base.home.ShowHomeScreenAlertsUseCaseImpl
 import io.github.sds100.keymapper.base.keymaps.CreateKeyMapShortcutUseCase
@@ -104,4 +106,8 @@ abstract class BaseViewModelHiltModule {
     @Binds
     @ViewModelScoped
     abstract fun bindCreateActionUseCase(impl: CreateActionUseCaseImpl): CreateActionUseCase
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindCreateConstraintUseCase(impl: CreateConstraintUseCaseImpl): CreateConstraintUseCase
 }

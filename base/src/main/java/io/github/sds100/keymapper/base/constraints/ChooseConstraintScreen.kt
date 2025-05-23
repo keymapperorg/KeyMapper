@@ -57,7 +57,6 @@ import kotlinx.coroutines.flow.update
 fun ChooseConstraintScreen(
     modifier: Modifier = Modifier,
     viewModel: ChooseConstraintViewModel,
-    onNavigateBack: () -> Unit,
 ) {
     val listItems by viewModel.listItems.collectAsStateWithLifecycle()
     val query by viewModel.searchQuery.collectAsStateWithLifecycle()
@@ -71,7 +70,7 @@ fun ChooseConstraintScreen(
         onQueryChange = { newQuery -> viewModel.searchQuery.update { newQuery } },
         onCloseSearch = { viewModel.searchQuery.update { null } },
         onClickAction = viewModel::onListItemClick,
-        onNavigateBack = onNavigateBack,
+        onNavigateBack = viewModel::onNavigateBack,
     )
 }
 

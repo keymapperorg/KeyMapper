@@ -104,7 +104,7 @@ sealed class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data object ChooseConstraint : NavDestination<Constraint>() {
+    data object ChooseConstraint : NavDestination<Constraint>(isCompose = true) {
         override val id: String = ID_CHOOSE_CONSTRAINT
     }
 

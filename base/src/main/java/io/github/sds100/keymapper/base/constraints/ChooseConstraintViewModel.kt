@@ -4,20 +4,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.containsQuery
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
-import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModelImpl
+import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.PopupUi
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
-import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.showPopup
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.State
@@ -27,20 +25,24 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import javax.inject.Inject
 
-class ChooseConstraintViewModel(
+@HiltViewModel
+class ChooseConstraintViewModel @Inject constructor(
     private val useCase: CreateConstraintUseCase,
+    popupViewModel: PopupViewModel,
+    navigationViewModel: NavigationViewModel,
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
-    PopupViewModel by PopupViewModelImpl(),
-    NavigationViewModel by NavigationViewModelImpl() {
+    PopupViewModel by popupViewModel,
+    NavigationViewModel by navigationViewModel {
 
     companion object {
         private val ALL_CONSTRAINTS_ORDERED: Array<ConstraintId> = arrayOf(
@@ -92,7 +94,6 @@ class ChooseConstraintViewModel(
     }
 
     private val _returnResult = MutableSharedFlow<Constraint>()
-    val returnResult = _returnResult.asSharedFlow()
 
     private val allListItems: List<SimpleListItemModel> by lazy { buildListItems() }
 
@@ -106,12 +107,26 @@ class ChooseConstraintViewModel(
 
     var timeConstraintState: Constraint.Time? by mutableStateOf(null)
 
+    init {
+        viewModelScope.launch {
+            _returnResult.collect { constraint ->
+                popBackStackWithResult(Json.encodeToString(constraint))
+            }
+        }
+    }
+
     fun onDoneConfigTimeConstraintClick() {
         timeConstraintState?.let { constraint ->
             viewModelScope.launch {
                 _returnResult.emit(constraint)
                 timeConstraintState = null
             }
+        }
+    }
+
+    fun onNavigateBack() {
+        viewModelScope.launch {
+            popBackStack()
         }
     }
 
@@ -419,14 +434,5 @@ class ChooseConstraintViewModel(
         }
 
         _returnResult.emit(constraint)
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val isSupported: CreateConstraintUseCase,
-        private val resourceProvider: ResourceProvider,
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = ChooseConstraintViewModel(isSupported, resourceProvider) as T
     }
 }

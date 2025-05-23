@@ -15,7 +15,6 @@ import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickDisplayCoord
 import io.github.sds100.keymapper.base.actions.sound.ChooseSoundFileFragment
 import io.github.sds100.keymapper.base.actions.swipescreen.SwipePickDisplayCoordinateFragment
 import io.github.sds100.keymapper.base.actions.tapscreen.PickDisplayCoordinateFragment
-import io.github.sds100.keymapper.base.constraints.ChooseConstraintFragment
 import io.github.sds100.keymapper.base.system.apps.ChooseActivityFragment
 import io.github.sds100.keymapper.base.system.apps.ChooseAppFragment
 import io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutFragment
@@ -245,9 +244,6 @@ private fun getDirection(destination: NavDestination<*>, requestKey: String): Na
 
         is NavDestination.ChooseActivity -> NavBaseAppDirections.chooseActivity(requestKey)
         is NavDestination.ChooseSound -> NavBaseAppDirections.chooseSoundFile(requestKey)
-        is NavDestination.ChooseConstraint -> NavBaseAppDirections.chooseConstraint(
-            requestKey = requestKey,
-        )
 
         is NavDestination.ChooseBluetoothDevice -> NavBaseAppDirections.chooseBluetoothDevice(
             requestKey,
@@ -324,12 +320,6 @@ fun NavigationViewModel.sendNavResultFromBundle(
 
         NavDestination.ID_CHOOSE_SOUND -> {
             val json = bundle.getString(ChooseSoundFileFragment.EXTRA_RESULT)!!
-
-            onNavResult(NavResult(requestKey, json))
-        }
-
-        NavDestination.ID_CHOOSE_CONSTRAINT -> {
-            val json = bundle.getString(ChooseConstraintFragment.EXTRA_CONSTRAINT)!!
 
             onNavResult(NavResult(requestKey, json))
         }
