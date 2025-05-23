@@ -118,6 +118,7 @@ dependencies {
     implementation(libs.androidx.viewpager2)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))

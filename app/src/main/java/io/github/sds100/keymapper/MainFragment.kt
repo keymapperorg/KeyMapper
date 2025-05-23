@@ -8,26 +8,37 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.sds100.keymapper.base.BaseMainNavHost
+import io.github.sds100.keymapper.base.actions.ChooseActionScreen
+import io.github.sds100.keymapper.base.actions.ChooseActionViewModel
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.databinding.FragmentComposeBinding
-import io.github.sds100.keymapper.base.utils.navigation.NavResult
-import io.github.sds100.keymapper.base.utils.navigation.NavigateEvent
+import io.github.sds100.keymapper.base.home.HomeKeyMapListScreen
+import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProviderImpl
+import io.github.sds100.keymapper.base.utils.navigation.SetupNavigation
+import io.github.sds100.keymapper.base.utils.navigation.handleRouteArgs
 import io.github.sds100.keymapper.base.utils.navigation.setupFragmentNavigation
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.showPopups
+import io.github.sds100.keymapper.home.HomeViewModel
+import io.github.sds100.keymapper.keymaps.ConfigKeyMapScreen
+import io.github.sds100.keymapper.keymaps.ConfigKeyMapViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -57,78 +68,19 @@ class MainFragment : Fragment() {
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
                     val navController = rememberNavController()
-                    val navEvent: NavigateEvent? by navigationProvider.onNavigate
-                        .collectAsStateWithLifecycle(null)
-
-                    val returnResult: String? by navigationProvider.onReturnResult
-                        .collectAsStateWithLifecycle(null)
-
-                    val currentEntry by navController.currentBackStackEntryAsState()
-
-                    val popBackStack by navigationProvider.popBackStack.collectAsStateWithLifecycle(
-                        null,
-                    )
-
-                    LaunchedEffect(key1 = popBackStack) {
-                        popBackStack ?: return@LaunchedEffect
-
-                        navController.navigateUp()
-                        navigationProvider.handledPop()
-                    }
-
-                    LaunchedEffect(returnResult) {
-                        val result = returnResult ?: return@LaunchedEffect
-
-                        // Set the result in previous screen.
-                        navController.previousBackStackEntry
-                            ?.savedStateHandle
-                            ?.set("result", result)
-
-                        navController.navigateUp()
-                        navigationProvider.handledReturnResult()
-                    }
-
-                    LaunchedEffect(currentEntry) {
-                        val currentEntry = currentEntry ?: return@LaunchedEffect
-
-                        val requestKey =
-                            currentEntry.savedStateHandle.remove<String>("request_key")
-
-                        // If the current screen has a result then handle it.
-                        val data = currentEntry.savedStateHandle.remove<String?>("result")
-
-                        if (requestKey != null && data != null) {
-                            navigationProvider.onNavResult(NavResult(requestKey, data))
-                            navigationProvider.handledNavResult()
-                        }
-                    }
-
-                    LaunchedEffect(navEvent) {
-                        val navEvent = navEvent ?: return@LaunchedEffect
-
-                        if (!navEvent.destination.isCompose) {
-                            return@LaunchedEffect
-                        }
-
-                        // Store the request key before navigating.
-                        navController.currentBackStackEntry
-                            ?.savedStateHandle
-                            ?.set("request_key", navEvent.key)
-
-                        navController.navigate(navEvent.destination)
-
-                        navigationProvider.handledNavigateRequest()
-                    }
+                    SetupNavigation(navigationProvider, navController)
 
                     KeyMapperTheme {
-                        MainNavHost(
+                        BaseMainNavHost(
                             modifier = Modifier
                                 .windowInsetsPadding(
                                     WindowInsets.systemBars.only(sides = WindowInsetsSides.Horizontal)
                                         .add(WindowInsets.displayCutout.only(sides = WindowInsetsSides.Horizontal)),
                                 ),
                             navController = navController,
-                            finishActivity = requireActivity()::finish,
+                            composableDestinations = {
+                                composableDestinations()
+                            },
                         )
                     }
                 }
@@ -141,5 +93,67 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         popupViewModel.showPopups(this, view)
+    }
+
+    private fun NavGraphBuilder.composableDestinations() {
+        composable<NavDestination.Home> {
+            val snackbarState = remember { SnackbarHostState() }
+            val viewModel: HomeViewModel = hiltViewModel()
+
+            HomeKeyMapListScreen(
+                modifier = Modifier.fillMaxSize(),
+                viewModel = viewModel.keyMapListViewModel,
+                snackbarState = snackbarState,
+                onSettingsClick = viewModel::launchSettings,
+                onAboutClick = viewModel::launchAbout,
+                finishActivity = {
+                    requireActivity().finish()
+                },
+                fabBottomPadding = 0.dp,
+            )
+        }
+
+        composable<NavDestination.NewKeyMap> { backStackEntry ->
+            val viewModel: ConfigKeyMapViewModel = hiltViewModel()
+
+            backStackEntry.handleRouteArgs<NavDestination.NewKeyMap> { args ->
+                viewModel.loadNewKeyMap(groupUid = args.groupUid)
+
+                if (args.showAdvancedTriggers) {
+                    viewModel.configTriggerViewModel.showAdvancedTriggersBottomSheet = true
+                }
+            }
+
+            ConfigKeyMapScreen(
+                modifier = Modifier.fillMaxSize(),
+                viewModel = viewModel,
+            )
+        }
+
+        composable<NavDestination.OpenKeyMap> { backStackEntry ->
+            val viewModel: ConfigKeyMapViewModel = hiltViewModel()
+
+            backStackEntry.handleRouteArgs<NavDestination.OpenKeyMap> { args ->
+                viewModel.loadKeyMap(uid = args.keyMapUid)
+
+                if (args.showAdvancedTriggers) {
+                    viewModel.configTriggerViewModel.showAdvancedTriggersBottomSheet = true
+                }
+            }
+
+            ConfigKeyMapScreen(
+                modifier = Modifier.fillMaxSize(),
+                viewModel = viewModel,
+            )
+        }
+
+        composable<NavDestination.ChooseAction> {
+            val viewModel: ChooseActionViewModel = hiltViewModel()
+
+            ChooseActionScreen(
+                modifier = Modifier.fillMaxSize(),
+                viewModel = viewModel,
+            )
+        }
     }
 }

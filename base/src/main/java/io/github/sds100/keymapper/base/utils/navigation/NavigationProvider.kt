@@ -1,12 +1,18 @@
 package io.github.sds100.keymapper.base.utils.navigation
 
 import android.os.Bundle
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavDirections
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.fragment.findNavController
 import io.github.sds100.keymapper.base.NavBaseAppDirections
 import io.github.sds100.keymapper.base.actions.keyevent.ChooseKeyCodeFragment
@@ -154,6 +160,75 @@ suspend inline fun <reified R> NavigationProvider.navigate(
             .dropWhile { it.key != key }
             .map { result -> result.data?.let { Json.decodeFromString<R>(it) } },
     ).first()
+}
+
+@Composable
+fun SetupNavigation(
+    navigationProvider: NavigationProviderImpl,
+    navController: NavHostController,
+) {
+    val navEvent: NavigateEvent? by navigationProvider.onNavigate
+        .collectAsStateWithLifecycle(null)
+
+    val returnResult: String? by navigationProvider.onReturnResult
+        .collectAsStateWithLifecycle(null)
+
+    val currentEntry by navController.currentBackStackEntryAsState()
+
+    val popBackStack by navigationProvider.popBackStack.collectAsStateWithLifecycle(
+        null,
+    )
+
+    LaunchedEffect(key1 = popBackStack) {
+        popBackStack ?: return@LaunchedEffect
+
+        navController.navigateUp()
+        navigationProvider.handledPop()
+    }
+
+    LaunchedEffect(returnResult) {
+        val result = returnResult ?: return@LaunchedEffect
+
+        // Set the result in previous screen.
+        navController.previousBackStackEntry
+            ?.savedStateHandle
+            ?.set("result", result)
+
+        navController.navigateUp()
+        navigationProvider.handledReturnResult()
+    }
+
+    LaunchedEffect(currentEntry) {
+        val currentEntry = currentEntry ?: return@LaunchedEffect
+
+        val requestKey =
+            currentEntry.savedStateHandle.remove<String>("request_key")
+
+        // If the current screen has a result then handle it.
+        val data = currentEntry.savedStateHandle.remove<String?>("result")
+
+        if (requestKey != null && data != null) {
+            navigationProvider.onNavResult(NavResult(requestKey, data))
+            navigationProvider.handledNavResult()
+        }
+    }
+
+    LaunchedEffect(navEvent) {
+        val navEvent = navEvent ?: return@LaunchedEffect
+
+        if (!navEvent.destination.isCompose) {
+            return@LaunchedEffect
+        }
+
+        // Store the request key before navigating.
+        navController.currentBackStackEntry
+            ?.savedStateHandle
+            ?.set("request_key", navEvent.key)
+
+        navController.navigate(navEvent.destination)
+
+        navigationProvider.handledNavigateRequest()
+    }
 }
 
 /**
