@@ -23,8 +23,8 @@ import io.github.sds100.keymapper.base.databinding.FragmentConfigIntentBinding
 import io.github.sds100.keymapper.base.databinding.ListItemIntentExtraBoolBinding
 import io.github.sds100.keymapper.base.intentExtraBool
 import io.github.sds100.keymapper.base.intentExtraGeneric
+import io.github.sds100.keymapper.base.utils.navigation.setupFragmentNavigation
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.utils.navigation.setupNavigation
 import io.github.sds100.keymapper.base.utils.ui.showPopups
 import io.github.sds100.keymapper.system.intents.BoolIntentExtraListItem
 import io.github.sds100.keymapper.system.intents.GenericIntentExtraListItem
@@ -70,7 +70,7 @@ class ConfigIntentFragment : Fragment() {
             viewModel.loadResult(Json.decodeFromString(it))
         }
 
-        viewModel.setupNavigation(this)
+        viewModel.setupFragmentNavigation(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -1,33 +1,31 @@
 package io.github.sds100.keymapper.base.actions
 
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
-import io.github.sds100.keymapper.system.SystemError
-import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.isFixable
-import io.github.sds100.keymapper.common.utils.mapData
+import io.github.sds100.keymapper.base.utils.navigation.NavDestination
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
+import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.ChooseAppStoreModel
 import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.LinkType
-import io.github.sds100.keymapper.base.utils.navigation.NavDestination
-import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
-import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.PopupUi
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.dataOrNull
+import io.github.sds100.keymapper.common.utils.mapData
+import io.github.sds100.keymapper.common.utils.onFailure
+import io.github.sds100.keymapper.system.SystemError
+import io.github.sds100.keymapper.system.permissions.Permission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -41,9 +39,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-class ConfigActionsViewModel  constructor(
+class ConfigActionsViewModel(
     private val coroutineScope: CoroutineScope,
     private val displayAction: DisplayActionUseCase,
     private val createAction: CreateActionUseCase,
@@ -51,12 +48,12 @@ class ConfigActionsViewModel  constructor(
     private val config: ConfigKeyMapUseCase,
     private val onboarding: OnboardingUseCase,
     resourceProvider: ResourceProvider,
-    navigationViewModel: NavigationViewModel,
+    navigationProvider: NavigationProvider,
     popupViewModel: PopupViewModel,
 ) : ActionOptionsBottomSheetCallback,
     ResourceProvider by resourceProvider,
     PopupViewModel by popupViewModel,
-    NavigationViewModel by navigationViewModel {
+    NavigationProvider by navigationProvider {
 
     val createActionDelegate =
         CreateActionDelegate(coroutineScope, createAction, this, this, this)

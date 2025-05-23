@@ -38,8 +38,8 @@ import io.github.sds100.keymapper.base.system.notifications.ManageNotificationsU
 import io.github.sds100.keymapper.base.system.notifications.ManageNotificationsUseCaseImpl
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.base.trigger.RecordTriggerUseCase
-import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
-import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModelImpl
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
@@ -135,7 +135,7 @@ abstract class BaseSingletonHiltModule {
 
     @Binds
     @Singleton
-    abstract fun bindNavigationProvider(impl: NavigationViewModelImpl): NavigationViewModel
+    abstract fun bindNavigationProvider(impl: NavigationProviderImpl): NavigationProvider
 
     @Binds
     @Singleton

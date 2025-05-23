@@ -9,7 +9,7 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.system.accessibility.RecordAccessibilityNodeState
 import io.github.sds100.keymapper.base.utils.containsQuery
-import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
@@ -49,9 +49,9 @@ class InteractUiElementViewModel @Inject constructor(
     private val useCase: InteractUiElementUseCase,
     resourceProvider: ResourceProvider,
     popupViewModel: PopupViewModel,
-    navigationViewModel: NavigationViewModel,
+    navigationProvider: NavigationProvider,
 ) : ViewModel(),
-    NavigationViewModel by navigationViewModel,
+    NavigationProvider by navigationProvider,
     PopupViewModel by popupViewModel,
     ResourceProvider by resourceProvider {
 

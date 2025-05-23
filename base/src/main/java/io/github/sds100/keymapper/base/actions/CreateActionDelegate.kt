@@ -13,7 +13,7 @@ import io.github.sds100.keymapper.base.utils.DndModeStrings
 import io.github.sds100.keymapper.base.utils.RingerModeStrings
 import io.github.sds100.keymapper.base.utils.VolumeStreamStrings
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
-import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
 import io.github.sds100.keymapper.base.utils.ui.PopupUi
@@ -38,11 +38,11 @@ class CreateActionDelegate(
     private val coroutineScope: CoroutineScope,
     private val useCase: CreateActionUseCase,
     popupViewModel: PopupViewModel,
-    navigationViewModel: NavigationViewModel,
+    navigationProvider: NavigationProvider,
     resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
     PopupViewModel by popupViewModel,
-    NavigationViewModel by navigationViewModel {
+    NavigationProvider by navigationProvider {
 
     val actionResult: MutableStateFlow<ActionData?> = MutableStateFlow(null)
     var enableFlashlightActionState: EnableFlashlightActionState? by mutableStateOf(null)

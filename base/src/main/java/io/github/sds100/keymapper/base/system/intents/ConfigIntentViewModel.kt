@@ -12,8 +12,8 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.getExampleStringRes
 import io.github.sds100.keymapper.base.utils.getLabelStringRes
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
-import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
-import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModelImpl
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProviderImpl
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
@@ -67,7 +67,7 @@ class ConfigIntentViewModel @Inject constructor(
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     PopupViewModel by PopupViewModelImpl(),
-    NavigationViewModel by NavigationViewModelImpl() {
+    NavigationProvider by NavigationProviderImpl() {
 
     companion object {
         private val EXTRA_TYPES = arrayOf(

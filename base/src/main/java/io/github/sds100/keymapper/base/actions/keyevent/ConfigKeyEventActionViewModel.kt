@@ -9,12 +9,12 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.utils.InputEventStrings
 import io.github.sds100.keymapper.base.utils.getFullMessage
-import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
-import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
-import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModelImpl
-import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProviderImpl
 import io.github.sds100.keymapper.base.utils.navigation.navigate
+import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
+import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.Success
@@ -45,7 +45,7 @@ class ConfigKeyEventActionViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
-    NavigationViewModel by NavigationViewModelImpl() {
+    NavigationProvider by NavigationProviderImpl() {
 
     private val keyEventState = MutableStateFlow(KeyEventState())
 

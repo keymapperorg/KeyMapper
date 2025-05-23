@@ -39,14 +39,40 @@ import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
 
-// TODO rename
+/**
+ * This class handles communication of navigation requests and results between view models,
+ * fragments, and Compose destinations. The aim of this class is to enable a way
+ * for "synchronous" communication between destinations with suspending functions.
+ *
+ * The flow is generally this:
+ * 1. The view model calls [navigate] which then emits a value in the [onNavigate] flow. The
+ * [navigate] function will suspend until a result is returned. This is being observed in the
+ * fragment and in the Compose NavHost. The [setupFragmentNavigation] method
+ * sets up result passing between fragment destinations in a synchronous manner.
+ * 2. They check the [NavDestination.isCompose] flag to know whether to handle it. They handle
+ * navigating to the destination and then call [handledNavigateRequest] to clear the state flow. The
+ * current destination has now changed.
+ * 3. The result is handled differently depending on whether it is a fragment destination or
+ * composable.
+ *
+ * If it is a fragment then the view model has its own flow to expose results to its
+ * corresponding fragment. The fragment will observe it and then call setFragmentResult and then
+ * navigateUp on the nav controller. The [setupFragmentNavigation] registers a listener
+ * and will update the [onNavResult] flow with the result, which has been observed by the
+ * [navigate] function the entire time. The origin view model now has the result.
+ *
+ * The view model in the new destination calls [popBackStack], or
+ * [popBackStackWithResult] which then sends the result value into [onReturnResult]. The NavHost
+ * observes this, calls [handledReturnResult], then sends the result to [onNavResult], which
+ * the [navigate] function has been observing. The origin view model now has the result.
+ */
 @Singleton
-class NavigationViewModelImpl @Inject constructor() : NavigationViewModel {
+class NavigationProviderImpl @Inject constructor() : NavigationProvider {
+    private val _onNavigate = MutableStateFlow<NavigateEvent?>(null)
+    override val onNavigate = _onNavigate.asStateFlow()
+
     private val _onNavResult = MutableStateFlow<NavResult?>(null)
     override val onNavResult = _onNavResult.asStateFlow()
-
-    private val _navigate = MutableStateFlow<NavigateEvent?>(null)
-    override val navigate = _navigate.asStateFlow()
 
     private val _onReturnResult = MutableStateFlow<String?>(null)
     override val onReturnResult: StateFlow<String?> = _onReturnResult.asStateFlow()
@@ -62,8 +88,8 @@ class NavigationViewModelImpl @Inject constructor() : NavigationViewModel {
         _onReturnResult.update { null }
     }
 
-    override fun handledEvent() {
-        _navigate.update { null }
+    override fun handledNavigateRequest() {
+        _onNavigate.update { null }
     }
 
     override fun handledNavResult() {
@@ -72,9 +98,9 @@ class NavigationViewModelImpl @Inject constructor() : NavigationViewModel {
 
     override suspend fun navigate(event: NavigateEvent) {
         // wait for the view to collect so navigating can happen
-        _navigate.subscriptionCount.first { it > 0 }
+        _onNavigate.subscriptionCount.first { it > 0 }
 
-        _navigate.emit(event)
+        _onNavigate.emit(event)
     }
 
     override fun onNavResult(result: NavResult) {
@@ -94,10 +120,10 @@ class NavigationViewModelImpl @Inject constructor() : NavigationViewModel {
     }
 }
 
-interface NavigationViewModel {
-    val navigate: StateFlow<NavigateEvent?>
+interface NavigationProvider {
+    val onNavigate: StateFlow<NavigateEvent?>
     suspend fun navigate(event: NavigateEvent)
-    fun handledEvent()
+    fun handledNavigateRequest()
 
     val onNavResult: StateFlow<NavResult?>
     fun onNavResult(result: NavResult)
@@ -110,7 +136,7 @@ interface NavigationViewModel {
     suspend fun popBackStack()
 }
 
-suspend inline fun <reified R> NavigationViewModel.navigate(
+suspend inline fun <reified R> NavigationProvider.navigate(
     key: String,
     destination: NavDestination<R>,
 ): R? {
@@ -123,7 +149,7 @@ suspend inline fun <reified R> NavigationViewModel.navigate(
     Must drop the first value because it came from our call to navigate.
      */
     return merge(
-        navigate.drop(1).filterNotNull().dropWhile { it.key != key }.map { null },
+        onNavigate.drop(1).filterNotNull().dropWhile { it.key != key }.map { null },
         onNavResult.filterNotNull()
             .dropWhile { it.key != key }
             .map { result -> result.data?.let { Json.decodeFromString<R>(it) } },
@@ -133,7 +159,7 @@ suspend inline fun <reified R> NavigationViewModel.navigate(
 /**
  * Must call in fragment's onCreate
  */
-fun NavigationViewModel.setupNavigation(fragment: Fragment) {
+fun NavigationProvider.setupFragmentNavigation(fragment: Fragment) {
     val navigationSavedStateKey = "navigation:${this.javaClass.name}"
 
     val pendingResultsKeysExtra = "pending_results_keys"
@@ -170,7 +196,7 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
             }
         }
 
-    navigate
+    onNavigate
         .filterNotNull()
         .filter { !it.destination.isCompose }
         .onEach { event ->
@@ -189,7 +215,7 @@ fun NavigationViewModel.setupNavigation(fragment: Fragment) {
             val direction = getDirection(destination, requestKey)
 
             fragment.findNavController().navigate(direction)
-            handledEvent()
+            handledNavigateRequest()
         }.launchIn(fragment.lifecycleScope)
 }
 
@@ -258,7 +284,7 @@ private fun getDirection(destination: NavDestination<*>, requestKey: String): Na
     }
 }
 
-fun NavigationViewModel.sendNavResultFromBundle(
+fun NavigationProvider.sendNavResultFromBundle(
     requestKey: String,
     destinationId: String,
     bundle: Bundle,

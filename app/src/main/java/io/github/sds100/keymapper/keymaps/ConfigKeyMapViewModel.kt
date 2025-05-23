@@ -15,7 +15,7 @@ import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
 import io.github.sds100.keymapper.base.trigger.RecordTriggerUseCase
 import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
-import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.trigger.ConfigTriggerViewModel
@@ -34,12 +34,12 @@ class ConfigKeyMapViewModel @Inject constructor(
     setupGuiKeyboardUseCase: SetupGuiKeyboardUseCase,
     fingerprintGesturesSupportedUseCase: FingerprintGesturesSupportedUseCase,
     resourceProvider: ResourceProvider,
-    navigationViewModel: NavigationViewModel,
+    navigationProvider: NavigationProvider,
     popupViewModel: PopupViewModel,
 ) : BaseConfigKeyMapViewModel(
     config = config,
     onboarding = onboarding,
-    navigationViewModel = navigationViewModel,
+    navigationProvider = navigationProvider,
     popupViewModel = popupViewModel,
 ) {
     override val configActionsViewModel: ConfigActionsViewModel = ConfigActionsViewModel(
@@ -50,7 +50,7 @@ class ConfigKeyMapViewModel @Inject constructor(
         config = config,
         onboarding = onboarding,
         resourceProvider = resourceProvider,
-        navigationViewModel = navigationViewModel,
+        navigationProvider = navigationProvider,
         popupViewModel = popupViewModel,
     )
 
@@ -65,7 +65,7 @@ class ConfigKeyMapViewModel @Inject constructor(
         setupGuiKeyboard = setupGuiKeyboardUseCase,
         fingerprintGesturesSupported = fingerprintGesturesSupportedUseCase,
         resourceProvider = resourceProvider,
-        navigationViewModel = navigationViewModel,
+        navigationProvider = navigationProvider,
         popupViewModel = popupViewModel,
     )
 
@@ -75,7 +75,7 @@ class ConfigKeyMapViewModel @Inject constructor(
             config = config,
             displayConstraint = display,
             resourceProvider = resourceProvider,
-            navigationViewModel = navigationViewModel,
+            navigationProvider = navigationProvider,
             popupViewModel = popupViewModel,
         )
 }

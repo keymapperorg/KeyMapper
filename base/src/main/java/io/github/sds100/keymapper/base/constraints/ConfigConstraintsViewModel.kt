@@ -8,10 +8,9 @@ import io.github.sds100.keymapper.base.keymaps.ShortcutModel
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.isFixable
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
-import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
@@ -40,11 +39,11 @@ class ConfigConstraintsViewModel(
     private val config: ConfigKeyMapUseCase,
     private val displayConstraint: DisplayConstraintUseCase,
     resourceProvider: ResourceProvider,
-    navigationViewModel: NavigationViewModel,
+    navigationProvider: NavigationProvider,
     popupViewModel: PopupViewModel,
 ) : ResourceProvider by resourceProvider,
     PopupViewModel by popupViewModel,
-    NavigationViewModel by navigationViewModel {
+    NavigationProvider by navigationProvider {
 
     private val uiHelper = ConstraintUiHelper(displayConstraint, resourceProvider)
 

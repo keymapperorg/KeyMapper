@@ -10,7 +10,7 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.containsQuery
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
-import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.PopupUi
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
@@ -37,12 +37,12 @@ import javax.inject.Inject
 class ChooseConstraintViewModel @Inject constructor(
     private val useCase: CreateConstraintUseCase,
     popupViewModel: PopupViewModel,
-    navigationViewModel: NavigationViewModel,
+    navigationProvider: NavigationProvider,
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     PopupViewModel by popupViewModel,
-    NavigationViewModel by navigationViewModel {
+    NavigationProvider by navigationProvider {
 
     companion object {
         private val ALL_CONSTRAINTS_ORDERED: Array<ConstraintId> = arrayOf(

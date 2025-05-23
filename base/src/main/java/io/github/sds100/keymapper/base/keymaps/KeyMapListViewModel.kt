@@ -29,13 +29,12 @@ import io.github.sds100.keymapper.base.trigger.TriggerError
 import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
-import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.MultiSelectProvider
 import io.github.sds100.keymapper.base.utils.ui.PopupUi
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.SelectionState
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
@@ -85,11 +84,11 @@ class KeyMapListViewModel(
     private val backupRestore: BackupRestoreMappingsUseCase,
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
     private val onboarding: OnboardingUseCase,
-    private val navigationProvider: NavigationViewModel,
+    private val navigationProvider: NavigationProvider,
     private val popupViewModel: PopupViewModel
 ) : PopupViewModel by popupViewModel,
     ResourceProvider by resourceProvider,
-    NavigationViewModel by navigationProvider {
+    NavigationProvider by navigationProvider {
 
     private companion object {
         const val ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM = "accessibility_service_disabled"

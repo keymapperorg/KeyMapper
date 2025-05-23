@@ -24,8 +24,8 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.databinding.FragmentComposeBinding
 import io.github.sds100.keymapper.base.utils.navigation.NavResult
 import io.github.sds100.keymapper.base.utils.navigation.NavigateEvent
-import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModelImpl
-import io.github.sds100.keymapper.base.utils.navigation.setupNavigation
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProviderImpl
+import io.github.sds100.keymapper.base.utils.navigation.setupFragmentNavigation
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.showPopups
 import javax.inject.Inject
@@ -34,7 +34,7 @@ import javax.inject.Inject
 class MainFragment : Fragment() {
 
     @Inject
-    lateinit var navigationProvider: NavigationViewModelImpl
+    lateinit var navigationProvider: NavigationProviderImpl
 
     @Inject
     lateinit var popupViewModel: PopupViewModelImpl
@@ -42,7 +42,7 @@ class MainFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        navigationProvider.setupNavigation(this)
+        navigationProvider.setupFragmentNavigation(this)
     }
 
     override fun onCreateView(
@@ -57,7 +57,7 @@ class MainFragment : Fragment() {
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
                     val navController = rememberNavController()
-                    val navEvent: NavigateEvent? by navigationProvider.navigate
+                    val navEvent: NavigateEvent? by navigationProvider.onNavigate
                         .collectAsStateWithLifecycle(null)
 
                     val returnResult: String? by navigationProvider.onReturnResult
@@ -117,7 +117,7 @@ class MainFragment : Fragment() {
 
                         navController.navigate(navEvent.destination)
 
-                        navigationProvider.handledEvent()
+                        navigationProvider.handledNavigateRequest()
                     }
 
                     KeyMapperTheme {

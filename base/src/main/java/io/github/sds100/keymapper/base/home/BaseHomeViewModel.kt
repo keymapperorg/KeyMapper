@@ -17,7 +17,7 @@ import io.github.sds100.keymapper.base.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
-import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.PopupUi
@@ -39,12 +39,12 @@ abstract class BaseHomeViewModel(
     private val sortKeyMaps: SortKeyMapsUseCase,
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
     private val buildConfigProvider: BuildConfigProvider,
-    navigationViewModel: NavigationViewModel,
+    navigationProvider: NavigationProvider,
     popupViewModel: PopupViewModel,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     PopupViewModel by popupViewModel,
-    NavigationViewModel by navigationViewModel {
+    NavigationProvider by navigationProvider {
 
     val keyMapListViewModel by lazy {
         KeyMapListViewModel(
@@ -58,7 +58,7 @@ abstract class BaseHomeViewModel(
             backupRestore,
             showInputMethodPickerUseCase,
             onboarding,
-            navigationViewModel,
+            navigationProvider,
             popupViewModel,
         )
     }
