@@ -149,7 +149,7 @@ sealed class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data class InteractUiElement(val action: ActionData.InteractUiElement?) : NavDestination<ActionData.InteractUiElement>() {
+    data class InteractUiElement(val actionJson: String?) : NavDestination<ActionData.InteractUiElement>(isCompose = true) {
         override val id: String = ID_INTERACT_UI_ELEMENT_ACTION
     }
 }

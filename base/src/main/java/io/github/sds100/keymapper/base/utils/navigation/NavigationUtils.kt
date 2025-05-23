@@ -36,12 +36,13 @@ fun <T> NavController.setCurrentDestinationLiveData(key: String, value: T) {
     }
 }
 
-inline fun <reified R> NavBackStackEntry.handleRoute(block: (R) -> Unit) {
+inline fun <reified R> NavBackStackEntry.handleRouteArgs(block: (R) -> Unit) {
     if (
         savedStateHandle.contains("handled_args")
     ) {
         return
     }
+
     val args = toRoute<R>()
 
     block(args)

@@ -97,8 +97,8 @@ class MyAccessibilityService : BaseAccessibilityService() {
             controller = AccessibilityServiceController(
                 coroutineScope = coroutineScope,
                 accessibilityService = this,
-                inputEvents = accessibilityServiceAdapter.eventReceiver,
-                outputEvents = accessibilityServiceAdapter.eventsToService,
+                inputEvents = accessibilityServiceAdapter.eventsToService,
+                outputEvents = accessibilityServiceAdapter.eventReceiver,
                 detectConstraintsUseCase = detectConstraintsUseCaseFactory.create(this),
                 performActionsUseCase = performActionsUseCaseFactory.create(
                     accessibilityService = this,

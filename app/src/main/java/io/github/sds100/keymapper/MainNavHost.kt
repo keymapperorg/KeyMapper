@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper
 
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
@@ -19,12 +20,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import io.github.sds100.keymapper.base.actions.ChooseActionScreen
 import io.github.sds100.keymapper.base.actions.ChooseActionViewModel
+import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementScreen
+import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementViewModel
 import io.github.sds100.keymapper.base.home.HomeKeyMapListScreen
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
-import io.github.sds100.keymapper.base.utils.navigation.handleRoute
+import io.github.sds100.keymapper.base.utils.navigation.handleRouteArgs
 import io.github.sds100.keymapper.home.HomeViewModel
 import io.github.sds100.keymapper.keymaps.ConfigKeyMapScreen
 import io.github.sds100.keymapper.keymaps.ConfigKeyMapViewModel
+import kotlinx.serialization.json.Json
 
 @Composable
 fun MainNavHost(
@@ -38,6 +42,10 @@ fun MainNavHost(
         modifier = modifier,
         navController = navController,
         startDestination = NavDestination.Home,
+        enterTransition = { slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left) },
+        exitTransition = { slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right) },
+        popEnterTransition = { slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right) },
+        popExitTransition = { slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right) },
     ) {
         composable<NavDestination.Home> {
             val viewModel: HomeViewModel = hiltViewModel()
@@ -56,7 +64,7 @@ fun MainNavHost(
         composable<NavDestination.NewKeyMap> { backStackEntry ->
             val viewModel: ConfigKeyMapViewModel = hiltViewModel()
 
-            backStackEntry.handleRoute<NavDestination.NewKeyMap> { args ->
+            backStackEntry.handleRouteArgs<NavDestination.NewKeyMap> { args ->
                 viewModel.loadNewKeyMap(groupUid = args.groupUid)
 
                 if (args.showAdvancedTriggers) {
@@ -73,7 +81,7 @@ fun MainNavHost(
         composable<NavDestination.OpenKeyMap> { backStackEntry ->
             val viewModel: ConfigKeyMapViewModel = hiltViewModel()
 
-            backStackEntry.handleRoute<NavDestination.OpenKeyMap> { args ->
+            backStackEntry.handleRouteArgs<NavDestination.OpenKeyMap> { args ->
                 viewModel.loadKeyMap(uid = args.keyMapUid)
 
                 if (args.showAdvancedTriggers) {
@@ -91,6 +99,24 @@ fun MainNavHost(
             val viewModel: ChooseActionViewModel = hiltViewModel()
 
             ChooseActionScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .windowInsetsPadding(
+                        WindowInsets.systemBars.only(sides = WindowInsetsSides.Horizontal)
+                            .add(WindowInsets.displayCutout.only(sides = WindowInsetsSides.Horizontal)),
+                    ),
+                viewModel = viewModel,
+            )
+        }
+
+        composable<NavDestination.InteractUiElement> { backStackEntry ->
+            val viewModel: InteractUiElementViewModel = hiltViewModel()
+
+            backStackEntry.handleRouteArgs<NavDestination.InteractUiElement> { destination ->
+                destination.actionJson?.let { viewModel.loadAction(Json.decodeFromString(it)) }
+            }
+
+            InteractUiElementScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .windowInsetsPadding(

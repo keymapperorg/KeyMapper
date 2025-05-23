@@ -43,7 +43,6 @@ class MainFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         navigationProvider.setupNavigation(this)
-
     }
 
     override fun onCreateView(

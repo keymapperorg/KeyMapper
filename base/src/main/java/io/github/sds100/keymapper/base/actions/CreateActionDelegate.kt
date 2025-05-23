@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 
 class CreateActionDelegate(
     private val coroutineScope: CoroutineScope,
@@ -805,7 +806,7 @@ class CreateActionDelegate(
 
                 return navigate(
                     "config_interact_ui_element_action",
-                    NavDestination.InteractUiElement(oldAction),
+                    NavDestination.InteractUiElement(oldAction?.let { Json.encodeToString(it) }),
                 )
             }
         }

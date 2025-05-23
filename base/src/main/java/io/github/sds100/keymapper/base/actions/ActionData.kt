@@ -1,15 +1,16 @@
 package io.github.sds100.keymapper.base.actions
 
 import io.github.sds100.keymapper.common.utils.NodeInteractionType
+import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.PinchScreenType
 import io.github.sds100.keymapper.system.camera.CameraLens
-import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.system.intents.IntentExtraModel
 import io.github.sds100.keymapper.system.intents.IntentTarget
 import io.github.sds100.keymapper.system.network.HttpMethod
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.serialization.Serializable
 
 @Serializable

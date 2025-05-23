@@ -93,7 +93,6 @@ private const val DEST_SELECT_ELEMENT = "select_element"
 fun InteractUiElementScreen(
     modifier: Modifier = Modifier,
     viewModel: InteractUiElementViewModel,
-    navigateBack: () -> Unit,
 ) {
     val navController = rememberNavController()
 
@@ -108,7 +107,7 @@ fun InteractUiElementScreen(
 
     val onBackClick = {
         if (!navController.navigateUp()) {
-            navigateBack()
+            viewModel.onBackClick()
         }
     }
 

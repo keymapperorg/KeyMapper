@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -40,15 +39,12 @@ class PopupViewModelImpl @Inject constructor() : PopupViewModel {
 
     override suspend fun showPopup(event: ShowPopupEvent) {
         // wait for the view to collect so no dialogs are missed
-        Timber.e("SHOW POPUP ${event}")
         getUserResponse.subscriptionCount.first { it > 0 }
 
         getUserResponse.emit(event)
     }
 
     override fun onUserResponse(event: OnPopupResponseEvent) {
-        Timber.e("ON USER RESPONSE ${event}")
-
         runBlocking { _onUserResponse.emit(event) }
     }
 }

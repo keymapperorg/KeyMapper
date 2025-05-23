@@ -15,7 +15,6 @@ import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickDisplayCoord
 import io.github.sds100.keymapper.base.actions.sound.ChooseSoundFileFragment
 import io.github.sds100.keymapper.base.actions.swipescreen.SwipePickDisplayCoordinateFragment
 import io.github.sds100.keymapper.base.actions.tapscreen.PickDisplayCoordinateFragment
-import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementFragment
 import io.github.sds100.keymapper.base.constraints.ChooseConstraintFragment
 import io.github.sds100.keymapper.base.system.apps.ChooseActivityFragment
 import io.github.sds100.keymapper.base.system.apps.ChooseAppFragment
@@ -38,7 +37,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -259,10 +257,6 @@ private fun getDirection(destination: NavDestination<*>, requestKey: String): Na
         NavDestination.Settings -> NavBaseAppDirections.toSettingsFragment()
 
         NavDestination.ShizukuSettings -> NavBaseAppDirections.toShizukuSettingsFragment()
-        is NavDestination.InteractUiElement -> NavBaseAppDirections.interactUiElement(
-            requestKey = requestKey,
-            action = destination.action?.let { Json.encodeToString(destination.action) },
-        )
 
         else -> throw IllegalArgumentException("Can not find a direction for this destination: $destination")
     }
@@ -350,11 +344,6 @@ fun NavigationViewModel.sendNavResultFromBundle(
                     Json.encodeToString(BluetoothDeviceInfo(address, name)),
                 ),
             )
-        }
-
-        NavDestination.ID_INTERACT_UI_ELEMENT_ACTION -> {
-            val json = bundle.getString(InteractUiElementFragment.EXTRA_ACTION)!!
-            onNavResult(NavResult(requestKey, json))
         }
     }
 }

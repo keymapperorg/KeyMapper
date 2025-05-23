@@ -9,8 +9,8 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.system.accessibility.RecordAccessibilityNodeState
 import io.github.sds100.keymapper.base.utils.containsQuery
+import io.github.sds100.keymapper.base.utils.navigation.NavigationViewModel
 import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
@@ -28,12 +28,9 @@ import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -43,19 +40,20 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class InteractUiElementViewModel @Inject constructor(
     private val useCase: InteractUiElementUseCase,
-    private val resourceProvider: ResourceProvider,
+    resourceProvider: ResourceProvider,
+    popupViewModel: PopupViewModel,
+    navigationViewModel: NavigationViewModel,
 ) : ViewModel(),
-    PopupViewModel by PopupViewModelImpl(),
+    NavigationViewModel by navigationViewModel,
+    PopupViewModel by popupViewModel,
     ResourceProvider by resourceProvider {
-
-    private val _returnAction: MutableSharedFlow<ActionData.InteractUiElement> = MutableSharedFlow()
-    val returnAction: SharedFlow<ActionData.InteractUiElement> = _returnAction.asSharedFlow()
 
     val recordState: StateFlow<State<RecordUiElementState>> = combine(
         useCase.recordState,
@@ -253,7 +251,13 @@ class InteractUiElementViewModel @Inject constructor(
         )
 
         viewModelScope.launch {
-            _returnAction.emit(action)
+            popBackStackWithResult(Json.encodeToString(action))
+        }
+    }
+
+    fun onBackClick() {
+        viewModelScope.launch {
+            popBackStack()
         }
     }
 
