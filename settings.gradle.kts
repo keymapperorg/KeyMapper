@@ -22,7 +22,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "KeyMapper"
+rootProject.name = "KeyMapperFoss"
 include(":app")
 include(":systemstubs")
 include(":base")
