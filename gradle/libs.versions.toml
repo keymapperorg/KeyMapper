@@ -51,7 +51,6 @@ ksp-gradle-plugin = "2.1.0-1.0.28"
 ktlint-gradle = "12.1.0"
 #leakcanary = "2.6" # Commented out in original file
 lingala-zip4j = "2.8.0"
-lottie-compose = "6.6.3"
 material = "1.13.0-alpha13"
 
 mflisar-dragselectrecyclerview = "0.3"
@@ -61,7 +60,6 @@ mockito-inline = "5.2.0"
 mockito-kotlin = "4.0.0"
 
 okhttp = "4.12.0"
-revenuecat-purchases = "8.17.1"
 robolectric = "4.14.1"
 shizuku = "13.1.5"
 splitties = "3.0.0"
@@ -139,7 +137,6 @@ squareup-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref
 airbnb-epoxy = { group = "com.airbnb.android", name = "epoxy", version.ref = "epoxy" }
 airbnb-epoxy-databinding = { group = "com.airbnb.android", name = "epoxy-databinding", version.ref = "epoxy" }
 airbnb-epoxy-processor = { group = "com.airbnb.android", name = "epoxy-processor", version.ref = "epoxy" }
-airbnb-lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie-compose" }
 
 # Splitties
 splitties-alertdialog-appcompat-coroutines = { group = "com.louiscad.splitties", name = "splitties-alertdialog-appcompat-coroutines", version.ref = "splitties" }
@@ -172,7 +169,6 @@ jakewharton-timber = { group = "com.jakewharton.timber", name = "timber", versio
 kotson = { group = "com.github.salomonbrys.kotson", name = "kotson", version.ref = "kotson" }
 lsposed-hiddenapibypass = { group = "org.lsposed.hiddenapibypass", name = "hiddenapibypass", version.ref = "hiddenapibypass" }
 net-lingala-zip4j = { group = "net.lingala.zip4j", name = "zip4j", version.ref = "lingala-zip4j" }
-revenuecat-purchases = { group = "com.revenuecat.purchases", name = "purchases", version.ref = "revenuecat-purchases" }
 
 # Gradle Plugins - Aliases for buildscript dependencies / plugins block
 # These are referenced in build.gradle.kts files' plugins blocks by their ID.

@@ -7,7 +7,7 @@ import androidx.navigation.fragment.NavHostFragment
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.base.utils.ui.showPopups
-import io.github.sds100.keymapper.databinding.ActivityMainBinding
+import io.github.sds100.keymapper.base.databinding.ActivityMainBinding
 
 @AndroidEntryPoint
 class MainActivity : BaseMainActivity() {

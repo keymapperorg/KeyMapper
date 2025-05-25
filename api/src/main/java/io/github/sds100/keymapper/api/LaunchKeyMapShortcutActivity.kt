@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import javax.inject.Inject
+import io.github.sds100.keymapper.base.R
 
 // DON'T MOVE THIS CLASS TO A DIFFERENT PACKAGE BECAUSE IT BREAKS THE API
 /**

@@ -99,8 +99,6 @@ class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
         dragSelectTouchListener = DragSelectTouchListener()
             .withSelectListener(dragSelectionProcessor)
 
-        binding.epoxyRecyclerView.addOnItemTouchListener(dragSelectTouchListener)
-
         binding.epoxyRecyclerView.setController(recyclerViewController)
     }
 

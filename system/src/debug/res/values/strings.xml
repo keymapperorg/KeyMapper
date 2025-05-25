@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Key Mapper Debug</string>
     <string name="ime_service_label" translatable="false">Key Mapper Debug Basic Input Method</string>
 </resources>

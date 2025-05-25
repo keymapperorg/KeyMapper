@@ -52,20 +52,6 @@
             </intent-filter>
         </receiver>
 
-        <service
-            android:name=".accessibility.MyAccessibilityService"
-            android:configChanges="orientation|screenSize"
-            android:exported="true"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.accessibilityservice"
-                android:resource="@xml/config_accessibility_service" />
-        </service>
-
         <!--  IMPORTANT! Must be direct boot aware so it can automatically choose a proper keyboard when the user wants to unlock their phone.  -->
         <service
             android:name="io.github.sds100.keymapper.system.inputmethod.KeyMapperImeService"
@@ -81,29 +67,13 @@
                 android:resource="@xml/input_method" />
         </service>
 
-        <service
-            android:name="io.github.sds100.keymapper.base.tiles.ToggleMappingsTile"
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:enabled="true"
             android:exported="true"
-            android:icon="@drawable/ic_tile_pause"
-            android:label="@string/tile_pause_title"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
-            tools:targetApi="24">
-            <intent-filter>
-                <action android:name="android.service.quicksettings.action.QS_TILE" />
-            </intent-filter>
-        </service>
-
-        <service
-            android:name="io.github.sds100.keymapper.base.tiles.ToggleKeyMapperKeyboardTile"
-            android:exported="true"
-            android:icon="@drawable/ic_tile_keyboard"
-            android:label="@string/tile_toggle_keymapper_keyboard"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
-            tools:targetApi="24">
-            <intent-filter>
-                <action android:name="android.service.quicksettings.action.QS_TILE" />
-            </intent-filter>
-        </service>
+            android:multiprocess="false"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
 
         <service
             android:name=".notifications.NotificationReceiver"

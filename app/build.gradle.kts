@@ -36,12 +36,6 @@ android {
 
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments["room.schemaLocation"] = "$projectDir/schemas"
-            }
-        }
     }
 
     signingConfigs {
@@ -96,29 +90,8 @@ android {
         }
     }
 
-    flavorDimensions.add("pro")
-    productFlavors {
-        create("free") {
-            dimension = "pro"
-        }
-        create("pro") {
-            dimension = "pro"
-            val localPropertiesFile = rootProject.file("local.properties")
-            val keyName = "REVENUECAT_API_KEY"
-            if (localPropertiesFile.exists()) {
-                val localProperties = Properties().apply {
-                    FileInputStream(localPropertiesFile).use { fis -> load(fis) }
-                }
-                if (localProperties.containsKey(keyName)) {
-                    buildConfigField("String", keyName, "${localProperties[keyName]}")
-                }
-            }
-        }
-    }
-
     buildFeatures {
         dataBinding = true
-        viewBinding = true
         aidl = true
         buildConfig = true
         compose = true
@@ -190,8 +163,6 @@ dependencies {
     implementation(libs.github.mflisar.dragselectrecyclerview)
     implementation(libs.google.flexbox)
     implementation(libs.lsposed.hiddenapibypass)
-    "proImplementation"(libs.revenuecat.purchases)
-    "proImplementation"(libs.airbnb.lottie.compose)
     implementation(libs.squareup.okhttp)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.canopas.introshowcaseview)
@@ -217,7 +188,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.extensions) // Note: Deprecated
     implementation(libs.androidx.viewpager2)
     implementation(libs.androidx.core.splashscreen)
-    implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.androidx.room.compiler)
 
     // Compose
@@ -229,6 +199,7 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.material3.adaptive)
     implementation(libs.androidx.compose.material3.adaptive.navigation)
+    implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.google.accompanist.drawablepainter)
     implementation(libs.androidx.compose.ui.tooling)
 }
