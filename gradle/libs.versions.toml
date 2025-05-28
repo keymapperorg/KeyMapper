@@ -30,7 +30,7 @@ androidx-viewpager2 = "1.1.0"
 
 dagger-hilt-android = "2.56.2"
 
-compose-bom = "2025.04.01"
+compose-bom = "2025.05.01"
 compose-compiler = "1.5.10" # kotlinCompilerExtensionVersion
 
 desugar-jdk-libs = "2.1.5"
