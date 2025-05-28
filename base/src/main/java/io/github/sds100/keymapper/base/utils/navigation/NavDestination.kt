@@ -12,7 +12,7 @@ import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class NavDestination<R>(val isCompose: Boolean = false) {
+abstract class NavDestination<R>(val isCompose: Boolean = false) {
     abstract val id: String
 
     companion object {
@@ -34,7 +34,6 @@ sealed class NavDestination<R>(val isCompose: Boolean = false) {
         const val ID_ABOUT = "about"
         const val ID_CONFIG_KEY_MAP = "config_key_map"
         const val ID_SHIZUKU_SETTINGS = "shizuku_settings"
-        const val ID_CONFIG_FLOATING_BUTTON = "config_floating_button"
         const val ID_INTERACT_UI_ELEMENT_ACTION = "interact_ui_element_action"
     }
 
@@ -134,18 +133,8 @@ sealed class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data object ChooseFloatingLayout : NavDestination<Unit>() {
-        override val id: String = "choose_floating_layout"
-    }
-
-    @Serializable
     data object ShizukuSettings : NavDestination<Unit>() {
         override val id: String = ID_SHIZUKU_SETTINGS
-    }
-
-    @Serializable
-    data class ConfigFloatingButton(val buttonUid: String?) : NavDestination<Unit>() {
-        override val id: String = ID_CONFIG_FLOATING_BUTTON
     }
 
     @Serializable

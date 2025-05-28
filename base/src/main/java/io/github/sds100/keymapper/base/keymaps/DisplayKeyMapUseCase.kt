@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.base.keymaps
 
 import android.graphics.drawable.Drawable
-import dagger.hilt.android.scopes.ActivityScoped
 import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.base.actions.DisplayActionUseCase
 import io.github.sds100.keymapper.base.actions.GetActionErrorUseCase
@@ -81,12 +80,12 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
                     .first()
             }
 
-            send(value)
-        } catch (_: TimeoutCancellationException) {
-        }
+                send(value)
+            } catch (_: TimeoutCancellationException) {
+            }
 
-        purchasingManager.purchases.collect(this::send)
-    }
+            purchasingManager.purchases.collect(this::send)
+        }
 
     /**
      * Cache the data required for checking errors to reduce the latency of repeatedly checking
@@ -163,7 +162,8 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
 
     override fun getAppIcon(packageName: String): Result<Drawable> = packageManagerAdapter.getAppIcon(packageName)
 
-    override fun getInputMethodLabel(imeId: String): Result<String> = inputMethodAdapter.getInfoById(imeId).then { Success(it.label) }
+    override fun getInputMethodLabel(imeId: String): Result<String> =
+        inputMethodAdapter.getInfoById(imeId).then { Success(it.label) }
 
     override suspend fun fixError(error: Error) {
         when (error) {

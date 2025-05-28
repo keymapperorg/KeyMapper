@@ -38,7 +38,6 @@ abstract class BaseHomeViewModel(
     private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     private val sortKeyMaps: SortKeyMapsUseCase,
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
-    private val buildConfigProvider: BuildConfigProvider,
     navigationProvider: NavigationProvider,
     popupViewModel: PopupViewModel,
 ) : ViewModel(),
@@ -91,38 +90,6 @@ abstract class BaseHomeViewModel(
         }
     }
 
-    private fun buildNavBarItems(
-        showFloatingLayouts: Boolean,
-        viewedAdvancedTriggers: Boolean,
-    ): List<HomeNavBarItem> {
-        val items = mutableListOf<HomeNavBarItem>()
-        items.add(
-            HomeNavBarItem(
-                HomeDestination.KeyMaps,
-                getString(R.string.home_nav_bar_key_maps),
-                icon = Icons.Outlined.Keyboard,
-                badge = null,
-            ),
-        )
-
-        if (showFloatingLayouts && Build.VERSION.SDK_INT >= buildConfigProvider.minApi) {
-            items.add(
-                HomeNavBarItem(
-                    HomeDestination.FloatingButtons,
-                    getString(R.string.home_nav_bar_floating_buttons),
-                    icon = Icons.Outlined.BubbleChart,
-                    badge = if (viewedAdvancedTriggers) {
-                        null
-                    } else {
-                        getString(R.string.button_advanced_triggers_badge)
-                    },
-                ),
-            )
-        }
-
-        return items
-    }
-
     private suspend fun showWhatsNewDialog() {
         val dialog = PopupUi.Dialog(
             title = getString(R.string.whats_new),
@@ -169,11 +136,4 @@ enum class SelectedKeyMapsEnabled {
 data class HomeWarningListItem(
     val id: String,
     val text: String,
-)
-
-data class HomeNavBarItem(
-    val destination: HomeDestination,
-    val label: String,
-    val icon: ImageVector,
-    val badge: String? = null,
 )
