@@ -136,7 +136,6 @@ android {
 dependencies {
     implementation(fileTree(mapOf("include" to listOf("*.jar"), "dir" to "libs")))
 
-    // TODO is just base and common required?
     implementation(project(":common"))
     implementation(project(":base"))
     implementation(project(":api"))
@@ -144,51 +143,19 @@ dependencies {
     implementation(project(":system"))
     compileOnly(project(":systemstubs"))
 
-    // TODO delete the unused libraries and plugins
-
-    // kotlin stuff
-    implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.kotlinx.serialization.json)
-
-    // random stuff
-    implementation(libs.google.android.material)
-    implementation(libs.kotson)
-    implementation(libs.airbnb.epoxy)
-    implementation(libs.airbnb.epoxy.databinding)
-    debugImplementation(libs.androidx.ui.tooling)
-    kapt(libs.airbnb.epoxy.processor)
-    implementation(libs.jakewharton.timber)
-    implementation(libs.net.lingala.zip4j)
-    implementation(libs.anggrayudi.storage)
-    implementation(libs.github.mflisar.dragselectrecyclerview)
-    implementation(libs.google.flexbox)
-    implementation(libs.lsposed.hiddenapibypass)
-    implementation(libs.squareup.okhttp)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
-    implementation(libs.canopas.introshowcaseview)
-    implementation(libs.dagger.hilt.android)
-    ksp(libs.dagger.hilt.android.compiler)
 
-    // splitties
-    implementation(libs.bundles.splitties)
+    // Other
+    implementation(libs.jakewharton.timber)
 
-    // androidx
-    implementation(libs.androidx.legacy.support.core.ui)
+    // Androidx
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.activity.ktx)
-    implementation(libs.androidx.fragment.ktx)
-    implementation(libs.bundles.androidx.lifecycle)
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.bundles.androidx.navigation)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.multidex)
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.recyclerview)
-    implementation(libs.androidx.preference.ktx)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.lifecycle.extensions) // Note: Deprecated
-    implementation(libs.androidx.viewpager2)
-    implementation(libs.androidx.core.splashscreen)
-    ksp(libs.androidx.room.compiler)
+    implementation(libs.bundles.androidx.navigation)
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
@@ -202,4 +169,12 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.google.accompanist.drawablepainter)
     implementation(libs.androidx.compose.ui.tooling)
+
+    // Dagger
+    implementation(libs.dagger.hilt.android)
+    ksp(libs.dagger.hilt.android.compiler)
+
+    debugImplementation(libs.androidx.ui.tooling)
+
+    testImplementation(libs.junit)
 }
