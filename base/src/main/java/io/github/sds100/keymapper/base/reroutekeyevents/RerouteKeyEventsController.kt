@@ -27,6 +27,7 @@ class RerouteKeyEventsController @AssistedInject constructor(
     private val coroutineScope: CoroutineScope,
     @Assisted
     private val keyMapperImeMessenger: ImeInputEventInjector,
+    private val useCaseFactory: RerouteKeyEventsUseCaseImpl.Factory
 ) {
     @AssistedFactory
     interface Factory {
@@ -35,9 +36,6 @@ class RerouteKeyEventsController @AssistedInject constructor(
             keyMapperImeMessenger: ImeInputEventInjector,
         ): RerouteKeyEventsController
     }
-
-    @Inject
-    lateinit var useCaseFactory: RerouteKeyEventsUseCaseImpl.Factory
 
     private val useCase = useCaseFactory.create(keyMapperImeMessenger)
 
