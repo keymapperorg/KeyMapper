@@ -128,7 +128,7 @@ android {
     applicationVariants.all {
         outputs.all {
             val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
-            output.outputFileName = "keymapper-${'$'}{variant.versionName}.apk"
+            output.outputFileName = "keymapper-foss-${'$'}{variant.versionName}.apk"
         }
     }
 }

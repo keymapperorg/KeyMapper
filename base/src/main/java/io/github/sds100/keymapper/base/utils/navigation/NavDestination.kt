@@ -63,7 +63,8 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data class ConfigKeyEventAction(val action: ActionData.InputKeyEvent? = null) : NavDestination<ActionData.InputKeyEvent>() {
+    data class ConfigKeyEventAction(val action: ActionData.InputKeyEvent? = null) :
+        NavDestination<ActionData.InputKeyEvent>() {
         override val id: String = ID_KEY_EVENT
     }
 
@@ -73,12 +74,14 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data class PickSwipeCoordinate(val result: SwipePickCoordinateResult? = null) : NavDestination<SwipePickCoordinateResult>() {
+    data class PickSwipeCoordinate(val result: SwipePickCoordinateResult? = null) :
+        NavDestination<SwipePickCoordinateResult>() {
         override val id: String = ID_PICK_SWIPE_COORDINATE
     }
 
     @Serializable
-    data class PickPinchCoordinate(val result: PinchPickCoordinateResult? = null) : NavDestination<PinchPickCoordinateResult>() {
+    data class PickPinchCoordinate(val result: PinchPickCoordinateResult? = null) :
+        NavDestination<PinchPickCoordinateResult>() {
         override val id: String = ID_PICK_PINCH_COORDINATE
     }
 
@@ -123,12 +126,17 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data class OpenKeyMap(val keyMapUid: String, val showAdvancedTriggers: Boolean = false) : NavDestination<Unit>(isCompose = true) {
+    data class OpenKeyMap(val keyMapUid: String, val showAdvancedTriggers: Boolean = false) :
+        NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_CONFIG_KEY_MAP
     }
 
     @Serializable
-    data class NewKeyMap(val groupUid: String?, val showAdvancedTriggers: Boolean = false) : NavDestination<Unit>(isCompose = true) {
+    data class NewKeyMap(
+        val groupUid: String?,
+        val showAdvancedTriggers: Boolean = false,
+        val floatingButtonToUse: String? = null
+    ) : NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_CONFIG_KEY_MAP
     }
 
@@ -138,7 +146,8 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data class InteractUiElement(val actionJson: String?) : NavDestination<ActionData.InteractUiElement>(isCompose = true) {
+    data class InteractUiElement(val actionJson: String?) :
+        NavDestination<ActionData.InteractUiElement>(isCompose = true) {
         override val id: String = ID_INTERACT_UI_ELEMENT_ACTION
     }
 }

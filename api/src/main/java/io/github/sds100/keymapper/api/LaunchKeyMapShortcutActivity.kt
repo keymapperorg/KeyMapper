@@ -4,10 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import dagger.hilt.android.AndroidEntryPoint
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import javax.inject.Inject
-import io.github.sds100.keymapper.base.R
 
 // DON'T MOVE THIS CLASS TO A DIFFERENT PACKAGE BECAUSE IT BREAKS THE API
 /**
@@ -16,6 +17,7 @@ import io.github.sds100.keymapper.base.R
  */
 
 // TODO test this still works.
+@AndroidEntryPoint
 class LaunchKeyMapShortcutActivity : ComponentActivity() {
 
     @Inject
@@ -23,6 +25,7 @@ class LaunchKeyMapShortcutActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val accessibilityServiceState = accessibilityServiceAdapter.state.value
 
         when (accessibilityServiceState) {

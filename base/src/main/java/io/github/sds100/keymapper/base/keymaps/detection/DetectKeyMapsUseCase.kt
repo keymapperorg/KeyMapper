@@ -7,6 +7,7 @@ import android.view.KeyEvent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.hilt.android.scopes.ServiceScoped
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.constraints.ConstraintState
 import io.github.sds100.keymapper.base.groups.Group
@@ -46,6 +47,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
+@ServiceScoped
 class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
     private val keyMapRepository: KeyMapRepository,
     private val floatingButtonRepository: FloatingButtonRepository,

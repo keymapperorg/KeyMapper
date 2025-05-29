@@ -8,6 +8,7 @@ import android.view.accessibility.AccessibilityNodeInfo
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.hilt.android.scopes.ServiceScoped
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeAction
@@ -77,6 +78,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import timber.log.Timber
 
+@ServiceScoped
 class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val appCoroutineScope: CoroutineScope,
     @Assisted

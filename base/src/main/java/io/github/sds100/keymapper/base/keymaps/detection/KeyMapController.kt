@@ -4,6 +4,9 @@ import android.view.KeyEvent
 import androidx.collection.SparseArrayCompat
 import androidx.collection.keyIterator
 import androidx.collection.valueIterator
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.scopes.ServiceScoped
 import io.github.sds100.keymapper.base.actions.Action
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
@@ -42,7 +45,9 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class KeyMapController(
+@ServiceScoped
+class KeyMapController @AssistedInject constructor(
+    @Assisted
     private val coroutineScope: CoroutineScope,
     private val useCase: DetectKeyMapsUseCase,
     private val performActionsUseCase: PerformActionsUseCase,

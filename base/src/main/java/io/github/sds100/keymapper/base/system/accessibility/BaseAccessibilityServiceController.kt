@@ -9,7 +9,6 @@ import android.view.accessibility.AccessibilityNodeInfo
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.base.actions.TestActionEvent
-import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.TriggerKeyMapEvent
@@ -19,7 +18,6 @@ import io.github.sds100.keymapper.base.keymaps.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.base.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.base.keymaps.detection.TriggerKeyMapFromOtherAppsController
 import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsController
-import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsUseCase
 import io.github.sds100.keymapper.base.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.base.trigger.RecordTriggerEvent
 import io.github.sds100.keymapper.common.utils.firstBlocking
@@ -28,14 +26,12 @@ import io.github.sds100.keymapper.common.utils.minusFlag
 import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
-import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
-import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -62,21 +58,21 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 abstract class BaseAccessibilityServiceController(
-    private val coroutineScope: CoroutineScope,
-    private val service: BaseAccessibilityService,
+    val coroutineScope: CoroutineScope,
+    private val service: IAccessibilityService,
     private val inputEvents: SharedFlow<AccessibilityServiceEvent>,
     private val outputEvents: MutableSharedFlow<AccessibilityServiceEvent>,
-    private val detectConstraintsUseCase: DetectConstraintsUseCase,
     private val performActionsUseCase: PerformActionsUseCase,
     private val detectKeyMapsUseCase: DetectKeyMapsUseCase,
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
-    rerouteKeyEventsUseCase: RerouteKeyEventsUseCase,
     private val pauseKeyMapsUseCase: PauseKeyMapsUseCase,
     private val devicesAdapter: DevicesAdapter,
     private val suAdapter: SuAdapter,
-    private val inputMethodAdapter: InputMethodAdapter,
     private val settingsRepository: PreferenceRepository,
-    private val nodeRepository: AccessibilityNodeRepository,
+    private val keyMapController: KeyMapController,
+    private val rerouteKeyEventsController: RerouteKeyEventsController,
+    private val accessibilityNodeRecorder: AccessibilityNodeRecorder,
+    private val triggerKeyMapFromOtherAppsController: TriggerKeyMapFromOtherAppsController
 ) {
 
     companion object {
@@ -87,28 +83,6 @@ abstract class BaseAccessibilityServiceController(
 
         private const val DEFAULT_NOTIFICATION_TIMEOUT = 200L
     }
-
-    private val triggerKeyMapFromOtherAppsController = TriggerKeyMapFromOtherAppsController(
-        coroutineScope,
-        detectKeyMapsUseCase,
-        performActionsUseCase,
-        detectConstraintsUseCase,
-    )
-
-    val keyMapController = KeyMapController(
-        coroutineScope,
-        detectKeyMapsUseCase,
-        performActionsUseCase,
-        detectConstraintsUseCase,
-    )
-
-    private val rerouteKeyEventsController = RerouteKeyEventsController(
-        coroutineScope,
-        rerouteKeyEventsUseCase,
-    )
-
-    private val accessibilityNodeRecorder: AccessibilityNodeRecorder =
-        AccessibilityNodeRecorder(nodeRepository, service)
 
     private var recordingTriggerJob: Job? = null
     private val recordingTrigger: Boolean

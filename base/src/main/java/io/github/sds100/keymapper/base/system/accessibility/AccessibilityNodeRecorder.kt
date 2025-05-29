@@ -5,16 +5,21 @@ import android.os.Build
 import android.os.CountDownTimer
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.scopes.ServiceScoped
+import io.github.sds100.keymapper.common.utils.NodeInteractionType
 import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
 import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
-import io.github.sds100.keymapper.common.utils.NodeInteractionType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class AccessibilityNodeRecorder(
-    private val nodeRepository: AccessibilityNodeRepository,
+@ServiceScoped
+class AccessibilityNodeRecorder @AssistedInject constructor(
+    @Assisted
     private val service: AccessibilityService,
+    private val nodeRepository: AccessibilityNodeRepository,
 ) {
     companion object {
         private const val RECORD_DURATION = 60000L
