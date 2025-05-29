@@ -5,6 +5,7 @@ import androidx.collection.SparseArrayCompat
 import androidx.collection.keyIterator
 import androidx.collection.valueIterator
 import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.scopes.ServiceScoped
 import io.github.sds100.keymapper.base.actions.Action
@@ -45,7 +46,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-@ServiceScoped
 class KeyMapController @AssistedInject constructor(
     @Assisted
     private val coroutineScope: CoroutineScope,
@@ -53,6 +53,11 @@ class KeyMapController @AssistedInject constructor(
     private val performActionsUseCase: PerformActionsUseCase,
     private val detectConstraints: DetectConstraintsUseCase,
 ) {
+    @AssistedFactory
+    interface Factory {
+        fun create(coroutineScope: CoroutineScope): KeyMapController
+    }
+
     companion object {
 
         // the states for keys awaiting a double press

@@ -1,11 +1,14 @@
 package io.github.sds100.keymapper.base.system.accessibility
 
+import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.res.Configuration
 import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.scopes.ServiceScoped
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.base.actions.TestActionEvent
@@ -56,24 +59,55 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import javax.inject.Inject
 
+@ServiceScoped
 abstract class BaseAccessibilityServiceController(
-    val coroutineScope: CoroutineScope,
-    private val service: IAccessibilityService,
-    private val inputEvents: SharedFlow<AccessibilityServiceEvent>,
-    private val outputEvents: MutableSharedFlow<AccessibilityServiceEvent>,
-    private val performActionsUseCase: PerformActionsUseCase,
-    private val detectKeyMapsUseCase: DetectKeyMapsUseCase,
-    private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
-    private val pauseKeyMapsUseCase: PauseKeyMapsUseCase,
-    private val devicesAdapter: DevicesAdapter,
-    private val suAdapter: SuAdapter,
-    private val settingsRepository: PreferenceRepository,
-    private val keyMapController: KeyMapController,
-    private val rerouteKeyEventsController: RerouteKeyEventsController,
-    private val accessibilityNodeRecorder: AccessibilityNodeRecorder,
-    private val triggerKeyMapFromOtherAppsController: TriggerKeyMapFromOtherAppsController
+    private val service: BaseAccessibilityService
 ) {
+    @Inject
+    lateinit var keyMapControllerFactory: KeyMapController.Factory
+
+    @Inject
+    lateinit var rerouteKeyEventsControllerFactory: RerouteKeyEventsController.Factory
+
+    @Inject
+    lateinit var accessibilityNodeRecorderFactory: AccessibilityNodeRecorder.Factory
+
+    @Inject
+    lateinit var triggerKeyMapFromOtherAppsControllerFactory: TriggerKeyMapFromOtherAppsController.Factory
+
+    @Inject
+    lateinit var performActionsUseCase: PerformActionsUseCase
+
+    @Inject
+    lateinit var detectKeyMapsUseCase: DetectKeyMapsUseCase
+
+    @Inject
+    lateinit var fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase
+
+    @Inject
+    lateinit var pauseKeyMapsUseCase: PauseKeyMapsUseCase
+
+    @Inject
+    lateinit var devicesAdapter: DevicesAdapter
+
+    @Inject
+    lateinit var suAdapter: SuAdapter
+
+    @Inject
+    lateinit var settingsRepository: PreferenceRepository
+
+    val keyMapController: KeyMapController = keyMapControllerFactory.create(service.lifecycleScope)
+    val rerouteKeyEventsController: RerouteKeyEventsController =
+        rerouteKeyEventsControllerFactory.create(
+            service.lifecycleScope,
+            service.imeInputEventInjector
+        )
+    val accessibilityNodeRecorder: AccessibilityNodeRecorder =
+        accessibilityNodeRecorderFactory.create(service)
+    val triggerKeyMapFromOtherAppsController: TriggerKeyMapFromOtherAppsController =
+        triggerKeyMapFromOtherAppsControllerFactory.create(service.lifecycleScope)
 
     companion object {
         /**
@@ -91,18 +125,18 @@ abstract class BaseAccessibilityServiceController(
         DpadMotionEventTracker()
 
     val isPaused: StateFlow<Boolean> = pauseKeyMapsUseCase.isPaused
-        .stateIn(coroutineScope, SharingStarted.Eagerly, false)
+        .stateIn(service.lifecycleScope, SharingStarted.Eagerly, false)
 
     private val screenOffTriggersEnabled: StateFlow<Boolean> =
         detectKeyMapsUseCase.detectScreenOffTriggers
-            .stateIn(coroutineScope, SharingStarted.Eagerly, false)
+            .stateIn(service.lifecycleScope, SharingStarted.Eagerly, false)
 
     private val changeImeOnInputFocusFlow: StateFlow<Boolean> =
         settingsRepository
             .get(Keys.changeImeOnInputFocus)
             .map { it ?: PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS }
             .stateIn(
-                coroutineScope,
+                service.lifecycleScope,
                 SharingStarted.Lazily,
                 PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS,
             )
@@ -157,35 +191,39 @@ abstract class BaseAccessibilityServiceController(
     private val serviceNotificationTimeout: MutableStateFlow<Long> =
         MutableStateFlow(DEFAULT_NOTIFICATION_TIMEOUT)
 
-    init {
+    private val inputEvents: SharedFlow<AccessibilityServiceEvent> =
+        service.accessibilityServiceAdapter.eventsToService
+    private val outputEvents: MutableSharedFlow<AccessibilityServiceEvent> =
+        service.accessibilityServiceAdapter.eventReceiver
 
+    init {
         serviceFlags.onEach { flags ->
             // check that it isn't null because this can only be called once the service is bound
             if (service.serviceFlags != null) {
                 service.serviceFlags = flags
             }
-        }.launchIn(coroutineScope)
+        }.launchIn(service.lifecycleScope)
 
         serviceFeedbackType.onEach { feedbackType ->
             // check that it isn't null because this can only be called once the service is bound
             if (service.serviceFeedbackType != null) {
                 service.serviceFeedbackType = feedbackType
             }
-        }.launchIn(coroutineScope)
+        }.launchIn(service.lifecycleScope)
 
         serviceEventTypes.onEach { eventTypes ->
             // check that it isn't null because this can only be called once the service is bound
             if (service.serviceEventTypes != null) {
                 service.serviceEventTypes = eventTypes
             }
-        }.launchIn(coroutineScope)
+        }.launchIn(service.lifecycleScope)
 
         serviceNotificationTimeout.onEach { timeout ->
             // check that it isn't null because this can only be called once the service is bound
             if (service.notificationTimeout != null) {
                 service.notificationTimeout = timeout
             }
-        }.launchIn(coroutineScope)
+        }.launchIn(service.lifecycleScope)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             combine(
@@ -197,27 +235,27 @@ abstract class BaseAccessibilityServiceController(
                 } else {
                     denyFingerprintGestureDetection()
                 }
-            }.launchIn(coroutineScope)
+            }.launchIn(service.lifecycleScope)
         }
 
         pauseKeyMapsUseCase.isPaused.distinctUntilChanged().onEach {
             keyMapController.reset()
             triggerKeyMapFromOtherAppsController.reset()
-        }.launchIn(coroutineScope)
+        }.launchIn(service.lifecycleScope)
 
         detectKeyMapsUseCase.isScreenOn.onEach { isScreenOn ->
             if (!isScreenOn) {
                 if (screenOffTriggersEnabled.value) {
-                    detectScreenOffKeyEventsController.startListening(coroutineScope)
+                    detectScreenOffKeyEventsController.startListening(service.lifecycleScope)
                 }
             } else {
                 detectScreenOffKeyEventsController.stopListening()
             }
-        }.launchIn(coroutineScope)
+        }.launchIn(service.lifecycleScope)
 
         inputEvents.onEach {
             onEventFromUi(it)
-        }.launchIn(coroutineScope)
+        }.launchIn(service.lifecycleScope)
 
         service.isKeyboardHidden
             .drop(1) // Don't send it when collecting initially
@@ -227,7 +265,7 @@ abstract class BaseAccessibilityServiceController(
                 } else {
                     outputEvents.emit(AccessibilityServiceEvent.OnShowKeyboardEvent)
                 }
-            }.launchIn(coroutineScope)
+            }.launchIn(service.lifecycleScope)
 
         combine(
             pauseKeyMapsUseCase.isPaused,
@@ -248,9 +286,9 @@ abstract class BaseAccessibilityServiceController(
             } else {
                 disableAccessibilityVolumeStream()
             }
-        }.launchIn(coroutineScope)
+        }.launchIn(service.lifecycleScope)
 
-        coroutineScope.launch {
+        service.lifecycleScope.launch {
             accessibilityNodeRecorder.recordState.collectLatest { state ->
                 outputEvents.emit(RecordAccessibilityNodeEvent.OnRecordNodeStateChanged(state))
             }
@@ -262,7 +300,7 @@ abstract class BaseAccessibilityServiceController(
         val recordNodeEvents =
             AccessibilityEvent.TYPE_VIEW_FOCUSED or AccessibilityEvent.TYPE_VIEW_CLICKED
 
-        coroutineScope.launch {
+        service.lifecycleScope.launch {
             combine(
                 changeImeOnInputFocusFlow,
                 accessibilityNodeRecorder.recordState,
@@ -367,7 +405,7 @@ abstract class BaseAccessibilityServiceController(
 
                 val uniqueEvent: MyKeyEvent = getUniqueEvent(event)
 
-                coroutineScope.launch {
+                service.lifecycleScope.launch {
                     outputEvents.emit(
                         RecordTriggerEvent.RecordedTriggerKey(
                             uniqueEvent.keyCode,
@@ -446,7 +484,7 @@ abstract class BaseAccessibilityServiceController(
                 if (keyEvent.action == KeyEvent.ACTION_DOWN) {
                     Timber.d("Recorded motion event ${KeyEvent.keyCodeToString(keyEvent.keyCode)}")
 
-                    coroutineScope.launch {
+                    service.lifecycleScope.launch {
                         outputEvents.emit(
                             RecordTriggerEvent.RecordedTriggerKey(
                                 keyEvent.keyCode,
@@ -485,12 +523,12 @@ abstract class BaseAccessibilityServiceController(
 
             if (focussedNode?.isEditable == true && focussedNode.isFocused) {
                 Timber.d("Got input focus")
-                coroutineScope.launch {
+                service.lifecycleScope.launch {
                     outputEvents.emit(AccessibilityServiceEvent.OnInputFocusChange(isFocussed = true))
                 }
             } else {
                 Timber.d("Lost input focus")
-                coroutineScope.launch {
+                service.lifecycleScope.launch {
                     outputEvents.emit(AccessibilityServiceEvent.OnInputFocusChange(isFocussed = false))
                 }
             }
@@ -522,19 +560,19 @@ abstract class BaseAccessibilityServiceController(
                 recordDpadMotionEventTracker.reset()
 
                 if (wasRecordingTrigger) {
-                    coroutineScope.launch {
+                    service.lifecycleScope.launch {
                         outputEvents.emit(RecordTriggerEvent.OnStoppedRecordingTrigger)
                     }
                 }
             }
 
-            is TestActionEvent -> coroutineScope.launch {
+            is TestActionEvent -> service.lifecycleScope.launch {
                 performActionsUseCase.perform(
                     event.action,
                 )
             }
 
-            is AccessibilityServiceEvent.Ping -> coroutineScope.launch {
+            is AccessibilityServiceEvent.Ping -> service.lifecycleScope.launch {
                 outputEvents.emit(AccessibilityServiceEvent.Pong(event.key))
             }
 
@@ -563,7 +601,7 @@ abstract class BaseAccessibilityServiceController(
         }
     }
 
-    private fun recordTriggerJob() = coroutineScope.launch {
+    private fun recordTriggerJob() = service.lifecycleScope.launch {
         repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
             if (isActive) {
                 val timeLeft = RECORD_TRIGGER_TIMER_LENGTH - iteration

@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.keymaps.detection
 
 import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.scopes.ServiceScoped
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
@@ -12,7 +13,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-@ServiceScoped
 class TriggerKeyMapFromOtherAppsController @AssistedInject constructor(
     @Assisted
     coroutineScope: CoroutineScope,
@@ -25,6 +25,10 @@ class TriggerKeyMapFromOtherAppsController @AssistedInject constructor(
     performActionsUseCase,
     detectConstraintsUseCase,
 ) {
+    @AssistedFactory
+    interface Factory {
+        fun create(coroutineScope: CoroutineScope): TriggerKeyMapFromOtherAppsController
+    }
 
     private var keyMapList = emptyList<KeyMap>()
 

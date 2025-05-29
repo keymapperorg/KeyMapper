@@ -47,8 +47,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
-@ServiceScoped
+// TODO test that only one instance is created.
 class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
+    @Assisted
+    private val imeInputEventInjector: ImeInputEventInjector,
+    @Assisted
+    private val accessibilityService: IAccessibilityService,
     private val keyMapRepository: KeyMapRepository,
     private val floatingButtonRepository: FloatingButtonRepository,
     private val groupRepository: GroupRepository,
@@ -56,10 +60,6 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
     private val suAdapter: SuAdapter,
     private val displayAdapter: DisplayAdapter,
     private val volumeAdapter: VolumeAdapter,
-    @Assisted
-    private val imeInputEventInjector: ImeInputEventInjector,
-    @Assisted
-    private val accessibilityService: IAccessibilityService,
     private val toastAdapter: ToastAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val resourceProvider: ResourceProvider,
@@ -67,6 +67,15 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
     @Assisted
     private val coroutineScope: CoroutineScope,
 ) : DetectKeyMapsUseCase {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            accessibilityService: IAccessibilityService,
+            coroutineScope: CoroutineScope,
+            imeInputEventInjector: ImeInputEventInjector,
+        ): DetectKeyMapsUseCaseImpl
+    }
 
     companion object {
         fun processKeyMapsAndGroups(
@@ -270,13 +279,4 @@ interface DetectKeyMapsUseCase {
     )
 
     val isScreenOn: Flow<Boolean>
-}
-
-@AssistedFactory
-interface DetectKeyMapsUseCaseFactory {
-    fun create(
-        accessibilityService: IAccessibilityService,
-        coroutineScope: CoroutineScope,
-        imeInputEventInjector: ImeInputEventInjector,
-    ): DetectKeyMapsUseCaseImpl
 }

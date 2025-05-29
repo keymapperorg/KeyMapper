@@ -78,7 +78,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import timber.log.Timber
 
-@ServiceScoped
 class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val appCoroutineScope: CoroutineScope,
     @Assisted
@@ -113,6 +112,14 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val ringtoneAdapter: RingtoneAdapter,
     private val settingsRepository: PreferenceRepository,
 ) : PerformActionsUseCase {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            accessibilityService: IAccessibilityService,
+            imeInputEventInjector: ImeInputEventInjector,
+        ): PerformActionsUseCaseImpl
+    }
 
     private val shizukuInputEventInjector: ShizukuInputEventInjector = ShizukuInputEventInjector()
 
@@ -1011,12 +1018,4 @@ interface PerformActionsUseCase {
     )
 
     fun getErrorSnapshot(): ActionErrorSnapshot
-}
-
-@AssistedFactory
-interface PerformActionsUseCaseFactory {
-    fun create(
-        accessibilityService: IAccessibilityService,
-        imeInputEventInjector: ImeInputEventInjector,
-    ): PerformActionsUseCaseImpl
 }

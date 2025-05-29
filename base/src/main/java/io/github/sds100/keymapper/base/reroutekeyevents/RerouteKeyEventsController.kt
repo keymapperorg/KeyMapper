@@ -2,29 +2,45 @@ package io.github.sds100.keymapper.base.reroutekeyevents
 
 import android.view.KeyEvent
 import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.scopes.ServiceScoped
 import io.github.sds100.keymapper.common.utils.InputEventType
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
+import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * This is used for the feature created in issue #618 to fix the device IDs of key events
  * on Android 11. There was a bug in the system where enabling an accessibility service
  * would reset the device ID of key events to -1.
  */
-@ServiceScoped
 class RerouteKeyEventsController @AssistedInject constructor(
     @Assisted
     private val coroutineScope: CoroutineScope,
-    private val useCase: RerouteKeyEventsUseCase,
+    @Assisted
+    private val keyMapperImeMessenger: ImeInputEventInjector,
 ) {
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            coroutineScope: CoroutineScope,
+            keyMapperImeMessenger: ImeInputEventInjector,
+        ): RerouteKeyEventsController
+    }
+
+    @Inject
+    lateinit var useCaseFactory: RerouteKeyEventsUseCaseImpl.Factory
+
+    private val useCase = useCaseFactory.create(keyMapperImeMessenger)
+
     /**
      * The job of the key that should be repeating. This should be a down key event for the last
      * key that has been pressed down.

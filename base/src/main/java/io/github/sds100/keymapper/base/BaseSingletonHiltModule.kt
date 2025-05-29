@@ -91,10 +91,6 @@ abstract class BaseSingletonHiltModule {
 
     @Binds
     @Singleton
-    abstract fun bindRerouteKeyEventsUseCase(impl: RerouteKeyEventsUseCaseImpl): RerouteKeyEventsUseCase
-
-    @Binds
-    @Singleton
     abstract fun bindShowHideInputMethodUseCase(impl: ShowHideInputMethodUseCaseImpl): ShowHideInputMethodUseCase
 
     @Binds

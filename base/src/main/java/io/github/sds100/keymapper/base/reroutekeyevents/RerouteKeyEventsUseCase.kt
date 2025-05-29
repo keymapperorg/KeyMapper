@@ -1,6 +1,10 @@
 package io.github.sds100.keymapper.base.reroutekeyevents
 
 import android.os.Build
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.scopes.ServiceScoped
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.firstBlocking
@@ -19,12 +23,20 @@ import javax.inject.Singleton
  * on Android 11. There was a bug in the system where enabling an accessibility service
  * would reset the device ID of key events to -1.
  */
-class RerouteKeyEventsUseCaseImpl (
-    private val inputMethodAdapter: InputMethodAdapter,
+class RerouteKeyEventsUseCaseImpl @AssistedInject constructor(
+    @Assisted
     private val keyMapperImeMessenger: ImeInputEventInjector,
+    private val inputMethodAdapter: InputMethodAdapter,
     private val preferenceRepository: PreferenceRepository,
-    private val packageName: String,
+    private val buildConfigProvider: BuildConfigProvider
 ) : RerouteKeyEventsUseCase {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            keyMapperImeMessenger: ImeInputEventInjector,
+        ): RerouteKeyEventsUseCaseImpl
+    }
 
     private val rerouteKeyEvents =
         preferenceRepository.get(Keys.rerouteKeyEvents).map { it ?: false }
@@ -35,7 +47,7 @@ class RerouteKeyEventsUseCaseImpl (
     private val imeHelper by lazy {
         KeyMapperImeHelper(
             inputMethodAdapter,
-            packageName,
+            buildConfigProvider.packageName,
         )
     }
 

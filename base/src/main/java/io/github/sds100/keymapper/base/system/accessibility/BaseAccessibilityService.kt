@@ -21,8 +21,10 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjectorImpl
 import io.github.sds100.keymapper.base.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.InputEventType
@@ -33,12 +35,15 @@ import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
+import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapperImpl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import timber.log.Timber
+import javax.inject.Inject
 
+@AndroidEntryPoint
 abstract class BaseAccessibilityService :
     AccessibilityService(),
     LifecycleOwner,
@@ -49,6 +54,12 @@ abstract class BaseAccessibilityService :
 
         private const val CALLBACK_ID_ACCESSIBILITY_SERVICE = "accessibility_service"
     }
+
+    @Inject
+    lateinit var accessibilityServiceAdapter: AccessibilityServiceAdapterImpl
+
+    @Inject
+    lateinit var inputMethodAdapter: InputMethodAdapter
 
     private var lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
     private var savedStateRegistryController: SavedStateRegistryController? =
@@ -169,6 +180,12 @@ abstract class BaseAccessibilityService :
             callback = relayServiceCallback,
         )
     }
+
+    val imeInputEventInjector = ImeInputEventInjectorImpl(
+        this,
+        keyEventRelayService = keyEventRelayServiceWrapper,
+        inputMethodAdapter = inputMethodAdapter,
+    )
 
     override val lifecycle: Lifecycle
         get() = lifecycleRegistry

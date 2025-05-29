@@ -6,6 +6,7 @@ import android.os.CountDownTimer
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.scopes.ServiceScoped
 import io.github.sds100.keymapper.common.utils.NodeInteractionType
@@ -15,12 +16,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-@ServiceScoped
 class AccessibilityNodeRecorder @AssistedInject constructor(
     @Assisted
-    private val service: AccessibilityService,
+    private val service: BaseAccessibilityService,
     private val nodeRepository: AccessibilityNodeRepository,
 ) {
+    @AssistedFactory
+    interface Factory {
+        fun create(service: BaseAccessibilityService): AccessibilityNodeRecorder
+    }
+
     companion object {
         private const val RECORD_DURATION = 60000L
     }
