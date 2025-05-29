@@ -22,7 +22,7 @@ android {
     buildToolsVersion = libs.versions.build.tools.get()
 
     val versionProperties = Properties().apply {
-        rootProject.file("base/version.properties").inputStream().use { load(it) }
+        project.file("version.properties").inputStream().use { load(it) }
     }
 
     defaultConfig {

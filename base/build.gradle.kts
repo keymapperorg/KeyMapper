@@ -18,7 +18,7 @@ android {
     compileSdk = libs.versions.compile.sdk.get().toInt()
 
     val versionProperties = Properties().apply {
-        project.file("version.properties").inputStream().use { load(it) }
+        project.file("../app/version.properties").inputStream().use { load(it) }
     }
 
     defaultConfig {

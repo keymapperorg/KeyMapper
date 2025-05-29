@@ -27,7 +27,6 @@ class HomeViewModel @Inject constructor(
     private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     private val sortKeyMaps: SortKeyMapsUseCase,
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
-    private val buildConfigProvider: BuildConfigProvider,
     navigationProvider: NavigationProvider,
     popupViewModel: PopupViewModel
 ) : BaseHomeViewModel(
@@ -40,7 +39,6 @@ class HomeViewModel @Inject constructor(
     setupGuiKeyboard,
     sortKeyMaps,
     showInputMethodPickerUseCase,
-    buildConfigProvider,
     navigationProvider,
     popupViewModel
 )
