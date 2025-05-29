@@ -46,18 +46,12 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class KeyMapController @AssistedInject constructor(
-    @Assisted
+class KeyMapController (
     private val coroutineScope: CoroutineScope,
     private val useCase: DetectKeyMapsUseCase,
     private val performActionsUseCase: PerformActionsUseCase,
     private val detectConstraints: DetectConstraintsUseCase,
 ) {
-    @AssistedFactory
-    interface Factory {
-        fun create(coroutineScope: CoroutineScope): KeyMapController
-    }
-
     companion object {
 
         // the states for keys awaiting a double press

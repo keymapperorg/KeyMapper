@@ -25,56 +25,10 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MyAccessibilityService : BaseAccessibilityService() {
 
+    @Inject
+    lateinit var controllerFactory: AccessibilityServiceController.Factory
+
     private var controller: AccessibilityServiceController? = null
-
-    @Inject
-    lateinit var coroutineScope: CoroutineScope
-
-    @Inject
-    lateinit var accessibilityServiceAdapter: AccessibilityServiceAdapterImpl
-
-    @Inject
-    lateinit var detectConstraintsUseCaseFactory: DetectConstraintsUseCaseFactory
-
-    @Inject
-    lateinit var performActionsUseCaseFactory: PerformActionsUseCaseFactory
-
-    @Inject
-    lateinit var detectKeyMapsUseCaseFactory: DetectKeyMapsUseCaseFactory
-
-    @Inject
-    lateinit var fingerprintGesturesSupportedUseCase: FingerprintGesturesSupportedUseCase
-
-    @Inject
-    lateinit var pauseKeyMapsUseCase: PauseKeyMapsUseCase
-
-    @Inject
-    lateinit var devicesAdapter: DevicesAdapter
-
-    @Inject
-    lateinit var suAdapter: SuAdapter
-
-    @Inject
-    lateinit var inputMethodAdapter: InputMethodAdapter
-
-    @Inject
-    lateinit var preferenceRepository: PreferenceRepository
-
-    @Inject
-    lateinit var nodeRepository: AccessibilityNodeRepository
-
-    private val rerouteKeyEventsUseCase: RerouteKeyEventsUseCaseImpl by lazy {
-        RerouteKeyEventsUseCaseImpl(
-            inputMethodAdapter = inputMethodAdapter,
-            keyMapperImeMessenger = ImeInputEventInjectorImpl(
-                this,
-                keyEventRelayService = keyEventRelayServiceWrapper,
-                inputMethodAdapter = inputMethodAdapter,
-            ),
-            preferenceRepository = preferenceRepository,
-            packageName = packageName,
-        )
-    }
 
     override fun getController(): BaseAccessibilityServiceController? {
         return controller
@@ -88,36 +42,7 @@ class MyAccessibilityService : BaseAccessibilityService() {
         context would return null
          */
         if (controller == null) {
-            val imeInputEventInjector = ImeInputEventInjectorImpl(
-                this,
-                keyEventRelayService = keyEventRelayServiceWrapper,
-                inputMethodAdapter = inputMethodAdapter,
-            )
-
-            controller = AccessibilityServiceController(
-                coroutineScope = coroutineScope,
-                accessibilityService = this,
-                inputEvents = accessibilityServiceAdapter.eventsToService,
-                outputEvents = accessibilityServiceAdapter.eventReceiver,
-                detectConstraintsUseCase = detectConstraintsUseCaseFactory.create(this),
-                performActionsUseCase = performActionsUseCaseFactory.create(
-                    accessibilityService = this,
-                    imeInputEventInjector = imeInputEventInjector,
-                ),
-                detectKeyMapsUseCase = detectKeyMapsUseCaseFactory.create(
-                    accessibilityService = this,
-                    coroutineScope = lifecycleScope,
-                    imeInputEventInjector = imeInputEventInjector,
-                ),
-                fingerprintGesturesSupportedUseCase = fingerprintGesturesSupportedUseCase,
-                rerouteKeyEventsUseCase = rerouteKeyEventsUseCase,
-                pauseKeyMapsUseCase = pauseKeyMapsUseCase,
-                devicesAdapter = devicesAdapter,
-                suAdapter = suAdapter,
-                inputMethodAdapter = inputMethodAdapter,
-                settingsRepository = preferenceRepository,
-                nodeRepository = nodeRepository,
-            )
+            controller = controllerFactory.create(this)
         }
 
         controller?.onServiceConnected()

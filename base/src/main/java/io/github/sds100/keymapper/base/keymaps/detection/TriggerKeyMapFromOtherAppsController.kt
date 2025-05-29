@@ -13,8 +13,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class TriggerKeyMapFromOtherAppsController @AssistedInject constructor(
-    @Assisted
+class TriggerKeyMapFromOtherAppsController(
     coroutineScope: CoroutineScope,
     detectKeyMapsUseCase: DetectKeyMapsUseCase,
     performActionsUseCase: PerformActionsUseCase,
@@ -25,11 +24,6 @@ class TriggerKeyMapFromOtherAppsController @AssistedInject constructor(
     performActionsUseCase,
     detectConstraintsUseCase,
 ) {
-    @AssistedFactory
-    interface Factory {
-        fun create(coroutineScope: CoroutineScope): TriggerKeyMapFromOtherAppsController
-    }
-
     private var keyMapList = emptyList<KeyMap>()
 
     init {

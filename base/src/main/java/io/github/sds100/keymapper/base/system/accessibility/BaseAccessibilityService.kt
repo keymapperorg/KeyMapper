@@ -172,7 +172,7 @@ abstract class BaseAccessibilityService :
             }
         }
 
-     val keyEventRelayServiceWrapper: KeyEventRelayServiceWrapperImpl by lazy {
+    val keyEventRelayServiceWrapper: KeyEventRelayServiceWrapperImpl by lazy {
         KeyEventRelayServiceWrapperImpl(
             ctx = this,
             id = CALLBACK_ID_ACCESSIBILITY_SERVICE,
@@ -181,11 +181,13 @@ abstract class BaseAccessibilityService :
         )
     }
 
-    val imeInputEventInjector = ImeInputEventInjectorImpl(
-        this,
-        keyEventRelayService = keyEventRelayServiceWrapper,
-        inputMethodAdapter = inputMethodAdapter,
-    )
+    val imeInputEventInjector by lazy {
+        ImeInputEventInjectorImpl(
+            this,
+            keyEventRelayService = keyEventRelayServiceWrapper,
+            inputMethodAdapter = inputMethodAdapter,
+        )
+    }
 
     override val lifecycle: Lifecycle
         get() = lifecycleRegistry

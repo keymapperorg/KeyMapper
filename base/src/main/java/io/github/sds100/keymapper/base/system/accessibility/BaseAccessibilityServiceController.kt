@@ -11,11 +11,15 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.scopes.ServiceScoped
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
+import io.github.sds100.keymapper.base.actions.PerformActionsUseCaseImpl
 import io.github.sds100.keymapper.base.actions.TestActionEvent
+import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
+import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCaseImpl
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.TriggerKeyMapEvent
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCase
+import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.keymaps.detection.DetectScreenOffKeyEventsController
 import io.github.sds100.keymapper.base.keymaps.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.base.keymaps.detection.KeyMapController
@@ -61,12 +65,17 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
-@ServiceScoped
 abstract class BaseAccessibilityServiceController(
     private val service: BaseAccessibilityService
 ) {
-    @Inject
-    lateinit var keyMapControllerFactory: KeyMapController.Factory
+    companion object {
+
+        /**
+         * How long should the accessibility service record a trigger in seconds.
+         */
+        private const val RECORD_TRIGGER_TIMER_LENGTH = 5
+        private const val DEFAULT_NOTIFICATION_TIMEOUT = 200L
+    }
 
     @Inject
     lateinit var rerouteKeyEventsControllerFactory: RerouteKeyEventsController.Factory
@@ -75,13 +84,13 @@ abstract class BaseAccessibilityServiceController(
     lateinit var accessibilityNodeRecorderFactory: AccessibilityNodeRecorder.Factory
 
     @Inject
-    lateinit var triggerKeyMapFromOtherAppsControllerFactory: TriggerKeyMapFromOtherAppsController.Factory
+    lateinit var performActionsUseCaseFactory: PerformActionsUseCaseImpl.Factory
 
     @Inject
-    lateinit var performActionsUseCase: PerformActionsUseCase
+    lateinit var detectKeyMapsUseCaseFactory: DetectKeyMapsUseCaseImpl.Factory
 
     @Inject
-    lateinit var detectKeyMapsUseCase: DetectKeyMapsUseCase
+    lateinit var detectConstraintsUseCaseFactory: DetectConstraintsUseCaseImpl.Factory
 
     @Inject
     lateinit var fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase
@@ -98,50 +107,56 @@ abstract class BaseAccessibilityServiceController(
     @Inject
     lateinit var settingsRepository: PreferenceRepository
 
-    val keyMapController: KeyMapController = keyMapControllerFactory.create(service.lifecycleScope)
-    val rerouteKeyEventsController: RerouteKeyEventsController =
+    private val performActionsUseCase: PerformActionsUseCase by lazy {
+        performActionsUseCaseFactory.create(
+            accessibilityService = service,
+            imeInputEventInjector = service.imeInputEventInjector
+        )
+    }
+
+    private val detectKeyMapsUseCase: DetectKeyMapsUseCase by lazy {
+        detectKeyMapsUseCaseFactory.create(
+            accessibilityService = service,
+            coroutineScope = service.lifecycleScope,
+            imeInputEventInjector = service.imeInputEventInjector
+        )
+    }
+
+    val detectConstraintsUseCase: DetectConstraintsUseCase by lazy {
+        detectConstraintsUseCaseFactory.create(service)
+    }
+
+    val keyMapController: KeyMapController by lazy {
+        KeyMapController(
+            service.lifecycleScope,
+            detectKeyMapsUseCase,
+            performActionsUseCase,
+            detectConstraintsUseCase
+        )
+    }
+
+
+    val triggerKeyMapFromOtherAppsController: TriggerKeyMapFromOtherAppsController by lazy {
+        TriggerKeyMapFromOtherAppsController(
+            service.lifecycleScope,
+            detectKeyMapsUseCase,
+            performActionsUseCase,
+            detectConstraintsUseCase
+        )
+    }
+
+    val rerouteKeyEventsController: RerouteKeyEventsController by lazy {
         rerouteKeyEventsControllerFactory.create(
             service.lifecycleScope,
             service.imeInputEventInjector
         )
-    val accessibilityNodeRecorder: AccessibilityNodeRecorder =
-        accessibilityNodeRecorderFactory.create(service)
-    val triggerKeyMapFromOtherAppsController: TriggerKeyMapFromOtherAppsController =
-        triggerKeyMapFromOtherAppsControllerFactory.create(service.lifecycleScope)
-
-    companion object {
-        /**
-         * How long should the accessibility service record a trigger in seconds.
-         */
-        private const val RECORD_TRIGGER_TIMER_LENGTH = 5
-
-        private const val DEFAULT_NOTIFICATION_TIMEOUT = 200L
     }
 
-    private var recordingTriggerJob: Job? = null
-    private val recordingTrigger: Boolean
-        get() = recordingTriggerJob != null && recordingTriggerJob?.isActive == true
-    private val recordDpadMotionEventTracker: DpadMotionEventTracker =
-        DpadMotionEventTracker()
+    val accessibilityNodeRecorder: AccessibilityNodeRecorder by lazy {
+        accessibilityNodeRecorderFactory.create(service)
+    }
 
-    val isPaused: StateFlow<Boolean> = pauseKeyMapsUseCase.isPaused
-        .stateIn(service.lifecycleScope, SharingStarted.Eagerly, false)
-
-    private val screenOffTriggersEnabled: StateFlow<Boolean> =
-        detectKeyMapsUseCase.detectScreenOffTriggers
-            .stateIn(service.lifecycleScope, SharingStarted.Eagerly, false)
-
-    private val changeImeOnInputFocusFlow: StateFlow<Boolean> =
-        settingsRepository
-            .get(Keys.changeImeOnInputFocus)
-            .map { it ?: PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS }
-            .stateIn(
-                service.lifecycleScope,
-                SharingStarted.Lazily,
-                PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS,
-            )
-
-    private val detectScreenOffKeyEventsController =
+    private val detectScreenOffKeyEventsController by lazy {
         DetectScreenOffKeyEventsController(
             suAdapter,
             devicesAdapter,
@@ -153,6 +168,36 @@ abstract class BaseAccessibilityServiceController(
                 }
             }
         }
+    }
+
+    private var recordingTriggerJob: Job? = null
+
+    private val recordingTrigger: Boolean
+        get() = recordingTriggerJob != null && recordingTriggerJob?.isActive == true
+
+    private val recordDpadMotionEventTracker: DpadMotionEventTracker =
+        DpadMotionEventTracker()
+
+    val isPaused: StateFlow<Boolean> by lazy {
+        pauseKeyMapsUseCase.isPaused
+            .stateIn(service.lifecycleScope, SharingStarted.Eagerly, false)
+    }
+
+    private val screenOffTriggersEnabled: StateFlow<Boolean> by lazy {
+        detectKeyMapsUseCase.detectScreenOffTriggers
+            .stateIn(service.lifecycleScope, SharingStarted.Eagerly, false)
+    }
+
+    private val changeImeOnInputFocusFlow: StateFlow<Boolean> by lazy {
+        settingsRepository
+            .get(Keys.changeImeOnInputFocus)
+            .map { it ?: PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS }
+            .stateIn(
+                service.lifecycleScope,
+                SharingStarted.Lazily,
+                PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS,
+            )
+    }
 
     private val initialServiceFlags: Int by lazy {
         var flags = AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
