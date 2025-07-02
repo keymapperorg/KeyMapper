@@ -31,9 +31,10 @@ import javax.inject.Inject
 @HiltViewModel
 class ChooseAppShortcutViewModel @Inject constructor(
     private val useCase: DisplayAppShortcutsUseCase,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    dialogProvider: DialogProvider
 ) : ViewModel(),
-    DialogProvider by DialogProviderImpl(),
+    DialogProvider by dialogProvider,
     ResourceProvider by resourceProvider {
 
     val searchQuery = MutableStateFlow<String?>(null)

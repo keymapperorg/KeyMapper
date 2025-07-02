@@ -61,8 +61,6 @@ class ChooseAppShortcutFragment : SimpleRecyclerViewFragment<AppShortcutListItem
                 returnResult(EXTRA_RESULT to Json.encodeToString(it))
             }
         }
-
-        viewModel.showDialogs(this, binding)
     }
 
     override fun populateList(

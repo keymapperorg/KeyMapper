@@ -35,9 +35,10 @@ enum class ScreenshotTouchType {
 @HiltViewModel
 class SwipePickDisplayCoordinateViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
+    dialogProvider: DialogProvider
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
-    DialogProvider by DialogProviderImpl() {
+    DialogProvider by dialogProvider {
 
     val screenshotTouchTypeStart = ScreenshotTouchType.START
     val screenshotTouchTypeEnd = ScreenshotTouchType.END
@@ -274,13 +275,5 @@ class SwipePickDisplayCoordinateViewModel @Inject constructor(
         _bitmap.value = null
 
         super.onCleared()
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val resourceProvider: ResourceProvider,
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = SwipePickDisplayCoordinateViewModel(resourceProvider) as T
     }
 }

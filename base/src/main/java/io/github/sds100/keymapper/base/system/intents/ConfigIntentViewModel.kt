@@ -63,10 +63,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ConfigIntentViewModel @Inject constructor(
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    dialogProvider: DialogProvider
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
-    DialogProvider by DialogProviderImpl(),
+    DialogProvider by dialogProvider,
     NavigationProvider by NavigationProviderImpl() {
 
     companion object {

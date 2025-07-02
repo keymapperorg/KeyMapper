@@ -93,7 +93,6 @@ class ChooseSoundFileFragment : Fragment() {
         }
 
         binding.viewModel = viewModel
-        viewModel.showDialogs(this, binding)
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.chooseSoundFile.collectLatest {

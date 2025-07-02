@@ -133,5 +133,5 @@ abstract class BaseSingletonHiltModule {
 
     @Binds
     @Singleton
-    abstract fun bindPopupViewModel(impl: DialogProviderImpl): DialogProvider
+    abstract fun bindDialogProvider(impl: DialogProviderImpl): DialogProvider
 }

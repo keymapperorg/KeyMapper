@@ -56,8 +56,6 @@ class LogFragment : SimpleRecyclerViewFragment<LogEntryListItem>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.showDialogs(this, binding)
-
         getBottomAppBar(binding)?.setOnMenuItemClickListener { menuItem ->
             viewModel.onMenuItemClick(menuItem.itemId)
             true

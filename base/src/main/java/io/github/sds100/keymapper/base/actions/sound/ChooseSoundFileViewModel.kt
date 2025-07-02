@@ -29,9 +29,10 @@ import javax.inject.Inject
 @HiltViewModel
 class ChooseSoundFileViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
+    dialogProvider: DialogProvider,
     private val useCase: ChooseSoundFileUseCase,
 ) : ViewModel(),
-    DialogProvider by DialogProviderImpl(),
+    DialogProvider by dialogProvider,
     ResourceProvider by resourceProvider {
 
     private val _chooseSoundFile = MutableSharedFlow<Unit>()

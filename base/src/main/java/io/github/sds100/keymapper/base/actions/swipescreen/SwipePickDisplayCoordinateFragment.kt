@@ -97,8 +97,6 @@ class SwipePickDisplayCoordinateFragment : Fragment() {
 
         binding.viewModel = viewModel
 
-        viewModel.showDialogs(this, binding)
-
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             findNavController().navigateUp()
         }

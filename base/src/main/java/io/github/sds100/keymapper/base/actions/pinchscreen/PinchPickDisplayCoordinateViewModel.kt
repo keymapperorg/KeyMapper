@@ -33,9 +33,10 @@ import kotlin.math.roundToInt
 @HiltViewModel
 class PinchPickDisplayCoordinateViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
+    dialogProvider: DialogProvider
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
-    DialogProvider by DialogProviderImpl() {
+    DialogProvider by dialogProvider {
 
     private val pinchTypes = arrayOf(PinchScreenType.PINCH_IN.name, PinchScreenType.PINCH_OUT.name)
 
@@ -272,14 +273,5 @@ class PinchPickDisplayCoordinateViewModel @Inject constructor(
         _bitmap.value = null
 
         super.onCleared()
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val resourceProvider: ResourceProvider,
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            PinchPickDisplayCoordinateViewModel(resourceProvider) as T
     }
 }

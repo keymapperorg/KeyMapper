@@ -111,7 +111,6 @@ class PinchPickDisplayCoordinateFragment : Fragment() {
                 android.R.layout.simple_spinner_dropdown_item,
                 pinchTypesDisplayValues,
             )
-        viewModel.showDialogs(this, binding)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             findNavController().navigateUp()

@@ -37,8 +37,9 @@ import javax.inject.Inject
 class LogViewModel @Inject constructor(
     private val useCase: DisplayLogUseCase,
     resourceProvider: ResourceProvider,
+    dialogProvider: DialogProvider
 ) : ViewModel(),
-    DialogProvider by DialogProviderImpl(),
+    DialogProvider by dialogProvider,
     ResourceProvider by resourceProvider {
     private val multiSelectProvider: MultiSelectProvider = MultiSelectProvider()
 

@@ -24,9 +24,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class ChooseKeyCodeViewModel @Inject constructor() :
-    ViewModel(),
-    DialogProvider by DialogProviderImpl() {
+class ChooseKeyCodeViewModel @Inject constructor() : ViewModel() {
 
     val searchQuery = MutableStateFlow<String?>(null)
 

@@ -88,6 +88,7 @@ abstract class BaseConfigTriggerViewModel(
         config,
         displayKeyMap,
         createKeyMapShortcut,
+        dialogProvider,
         resourceProvider,
     )
 

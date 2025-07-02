@@ -48,7 +48,7 @@ class MainFragment : Fragment() {
     lateinit var navigationProvider: NavigationProviderImpl
 
     @Inject
-    lateinit var popupViewModel: DialogProviderImpl
+    lateinit var dialogProvider: DialogProviderImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,7 +92,7 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        popupViewModel.showDialogs(this, view)
+        dialogProvider.showDialogs(this, view)
     }
 
     private fun NavGraphBuilder.composableDestinations() {

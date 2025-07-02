@@ -16,9 +16,10 @@ import javax.inject.Inject
 @HiltViewModel
 class ActivityViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
+    dialogProvider: DialogProvider
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
-    DialogProvider by DialogProviderImpl(),
+    DialogProvider by dialogProvider,
     NavigationProvider by NavigationProviderImpl() {
 
     var handledActivityLaunchIntent: Boolean = false
@@ -31,13 +32,5 @@ class ActivityViewModel @Inject constructor(
                 dialogProvider = this@ActivityViewModel,
             )
         }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val resourceProvider: ResourceProvider,
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = ActivityViewModel(resourceProvider) as T
     }
 }

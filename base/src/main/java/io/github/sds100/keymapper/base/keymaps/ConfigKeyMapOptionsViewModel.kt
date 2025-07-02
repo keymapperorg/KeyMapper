@@ -29,9 +29,10 @@ class ConfigKeyMapOptionsViewModel(
     private val config: ConfigKeyMapUseCase,
     private val displayUseCase: DisplayKeyMapUseCase,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
+    private val dialogProvider: DialogProvider,
     resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
-    DialogProvider by DialogProviderImpl(),
+    DialogProvider by dialogProvider,
     KeyMapOptionsCallback {
 
     private val actionUiHelper = ActionUiHelper(displayUseCase, resourceProvider)

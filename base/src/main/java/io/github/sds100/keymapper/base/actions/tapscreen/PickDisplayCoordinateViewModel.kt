@@ -29,9 +29,10 @@ import kotlin.math.roundToInt
 @HiltViewModel
 class PickDisplayCoordinateViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
+    dialogProvider: DialogProvider
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
-    DialogProvider by DialogProviderImpl() {
+    DialogProvider by dialogProvider {
 
     private val x = MutableStateFlow<Int?>(null)
     private val y = MutableStateFlow<Int?>(null)
@@ -135,14 +136,5 @@ class PickDisplayCoordinateViewModel @Inject constructor(
         _bitmap.value = null
 
         super.onCleared()
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    class Factory(
-        private val resourceProvider: ResourceProvider,
-    ) : ViewModelProvider.NewInstanceFactory() {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            PickDisplayCoordinateViewModel(resourceProvider) as T
     }
 }

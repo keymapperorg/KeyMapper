@@ -30,9 +30,10 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val useCase: ConfigSettingsUseCase,
     private val resourceProvider: ResourceProvider,
+    dialogProvider: DialogProvider,
     val sharedPrefsDataStoreWrapper: SharedPrefsDataStoreWrapper,
 ) : ViewModel(),
-    DialogProvider by DialogProviderImpl(),
+    DialogProvider by dialogProvider,
     ResourceProvider by resourceProvider {
 
     val automaticBackupLocation = useCase.automaticBackupLocation

@@ -25,10 +25,11 @@ import javax.inject.Inject
 @HiltViewModel
 class ChooseBluetoothDeviceViewModel @Inject constructor(
     private val useCase: ChooseBluetoothDeviceUseCase,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    dialogProvider: DialogProvider
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
-    DialogProvider by DialogProviderImpl() {
+    DialogProvider by dialogProvider {
 
     private val _caption = MutableStateFlow<String?>(null)
     val caption: StateFlow<String?> = _caption
