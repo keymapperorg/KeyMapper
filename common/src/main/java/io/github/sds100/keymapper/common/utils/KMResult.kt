@@ -8,8 +8,6 @@ sealed class KMResult<out T>
 
 data class Success<T>(val value: T) : KMResult<T>()
 
-// TODO move all these errors to their respective packages
-
 abstract class KMError : KMResult<Nothing>() {
     data class Exception(val exception: java.lang.Exception) : KMError()
     data class SystemFeatureNotSupported(val feature: String) : KMError()
