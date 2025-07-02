@@ -31,10 +31,10 @@ import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
-import io.github.sds100.keymapper.base.utils.ui.DialogResponse
-import io.github.sds100.keymapper.base.utils.ui.MultiSelectProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
+import io.github.sds100.keymapper.base.utils.ui.DialogResponse
+import io.github.sds100.keymapper.base.utils.ui.MultiSelectProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.SelectionState
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
@@ -85,7 +85,7 @@ class KeyMapListViewModel(
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
     private val onboarding: OnboardingUseCase,
     private val navigationProvider: NavigationProvider,
-    private val dialogProvider: DialogProvider
+    private val dialogProvider: DialogProvider,
 ) : DialogProvider by dialogProvider,
     ResourceProvider by resourceProvider,
     NavigationProvider by navigationProvider {

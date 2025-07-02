@@ -8,8 +8,6 @@ import com.github.salomonbrys.kotson.set
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 
-
-
 /**
  * move keymap flags to trigger flags
  */

@@ -1,21 +1,21 @@
 package io.github.sds100.keymapper.base.actions
 
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
+import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
-import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
-import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
+import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 
 class LazyActionErrorSnapshot(
     private val packageManager: PackageManagerAdapter,
@@ -26,7 +26,7 @@ class LazyActionErrorSnapshot(
     private val soundsManager: SoundsManager,
     shizukuAdapter: ShizukuAdapter,
     private val ringtoneAdapter: RingtoneAdapter,
-    buildConfigProvider: BuildConfigProvider
+    buildConfigProvider: BuildConfigProvider,
 ) : ActionErrorSnapshot,
     IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(
         systemFeatureAdapter,

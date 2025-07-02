@@ -4,18 +4,16 @@ import android.view.KeyEvent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.scopes.ServiceScoped
+import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.common.utils.InputEventType
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
-import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * This is used for the feature created in issue #618 to fix the device IDs of key events
@@ -27,7 +25,7 @@ class RerouteKeyEventsController @AssistedInject constructor(
     private val coroutineScope: CoroutineScope,
     @Assisted
     private val keyMapperImeMessenger: ImeInputEventInjector,
-    private val useCaseFactory: RerouteKeyEventsUseCaseImpl.Factory
+    private val useCaseFactory: RerouteKeyEventsUseCaseImpl.Factory,
 ) {
     @AssistedFactory
     interface Factory {

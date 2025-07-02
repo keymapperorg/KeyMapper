@@ -1,20 +1,18 @@
 package io.github.sds100.keymapper.base.constraints
 
-import android.content.Context
-import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class GetConstraintErrorUseCaseImpl @Inject constructor(
@@ -22,7 +20,7 @@ class GetConstraintErrorUseCaseImpl @Inject constructor(
     private val permissionAdapter: PermissionAdapter,
     private val systemFeatureAdapter: SystemFeatureAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
-    private val cameraAdapter: CameraAdapter
+    private val cameraAdapter: CameraAdapter,
 ) : GetConstraintErrorUseCase {
     private val invalidateConstraintErrors = merge(
         permissionAdapter.onPermissionsUpdate,

@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.data.repositories
 
-import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
 import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
 import kotlinx.coroutines.flow.Flow
 
 interface AccessibilityNodeRepository {
@@ -10,4 +10,3 @@ interface AccessibilityNodeRepository {
     fun insert(vararg node: AccessibilityNodeEntity)
     suspend fun deleteAll()
 }
-

@@ -5,13 +5,11 @@ import android.graphics.Bitmap
 import android.graphics.Point
 import android.os.Build
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
-import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showDialog
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -35,7 +33,7 @@ enum class ScreenshotTouchType {
 @HiltViewModel
 class SwipePickDisplayCoordinateViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
-    dialogProvider: DialogProvider
+    dialogProvider: DialogProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider {

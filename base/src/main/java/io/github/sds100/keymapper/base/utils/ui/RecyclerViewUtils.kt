@@ -7,8 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import io.github.sds100.keymapper.base.R
 import kotlin.math.floor
 
-
-
 object RecyclerViewUtils {
     fun applySimpleListItemDecorations(recyclerView: RecyclerView) {
         val itemPadding = recyclerView.resources.getDimensionPixelSize(R.dimen.grid_padding)

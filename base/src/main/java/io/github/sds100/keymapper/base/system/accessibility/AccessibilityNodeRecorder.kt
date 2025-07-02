@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.base.system.accessibility
 
-import android.accessibilityservice.AccessibilityService
 import android.os.Build
 import android.os.CountDownTimer
 import android.view.accessibility.AccessibilityEvent
@@ -8,7 +7,6 @@ import android.view.accessibility.AccessibilityNodeInfo
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.scopes.ServiceScoped
 import io.github.sds100.keymapper.common.utils.NodeInteractionType
 import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
 import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository

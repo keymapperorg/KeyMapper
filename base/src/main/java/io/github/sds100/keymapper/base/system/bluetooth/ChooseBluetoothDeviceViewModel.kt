@@ -4,14 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.base.utils.ui.DefaultSimpleListItem
-import io.github.sds100.keymapper.base.utils.ui.ListItem
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
-import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
+import io.github.sds100.keymapper.base.utils.ui.ListItem
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.TextListItem
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +25,7 @@ import javax.inject.Inject
 class ChooseBluetoothDeviceViewModel @Inject constructor(
     private val useCase: ChooseBluetoothDeviceUseCase,
     private val resourceProvider: ResourceProvider,
-    dialogProvider: DialogProvider
+    dialogProvider: DialogProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider {

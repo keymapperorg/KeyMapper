@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.base.trigger
 
+import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.data.entities.AssistantTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
-import io.github.sds100.keymapper.base.keymaps.ClickType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.util.UUID

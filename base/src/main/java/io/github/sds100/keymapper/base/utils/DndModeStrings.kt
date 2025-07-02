@@ -9,4 +9,4 @@ object DndModeStrings {
         DndMode.PRIORITY -> R.string.dnd_mode_priority
         DndMode.NONE -> R.string.dnd_mode_none
     }
-} 
+}

@@ -14,7 +14,7 @@ import javax.inject.Singleton
 class PauseKeyMapsUseCaseImpl @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
     private val mediaAdapter: MediaAdapter,
-    private val ringtoneAdapter: RingtoneAdapter
+    private val ringtoneAdapter: RingtoneAdapter,
 ) : PauseKeyMapsUseCase {
 
     override val isPaused: Flow<Boolean> =

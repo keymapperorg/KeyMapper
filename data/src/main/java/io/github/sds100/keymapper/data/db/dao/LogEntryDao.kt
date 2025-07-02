@@ -6,8 +6,6 @@ import androidx.room.Query
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import kotlinx.coroutines.flow.Flow
 
-
-
 @Dao
 interface LogEntryDao {
     companion object {

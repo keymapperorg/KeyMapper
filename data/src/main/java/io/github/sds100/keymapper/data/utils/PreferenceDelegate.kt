@@ -7,8 +7,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlin.reflect.KProperty
 
-
-
 class FlowPrefDelegate<T>(
     private val key: Preferences.Key<T>,
     private val defaultValue: T,

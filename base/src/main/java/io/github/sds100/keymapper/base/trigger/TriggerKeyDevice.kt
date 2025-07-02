@@ -3,8 +3,6 @@ package io.github.sds100.keymapper.base.trigger
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import kotlinx.serialization.Serializable
 
-
-
 @Serializable
 sealed class TriggerKeyDevice : Comparable<TriggerKeyDevice> {
     override fun compareTo(other: TriggerKeyDevice) = this.javaClass.name.compareTo(other.javaClass.name)

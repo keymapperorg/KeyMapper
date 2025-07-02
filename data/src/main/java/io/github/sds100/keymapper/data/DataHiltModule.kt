@@ -4,7 +4,20 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.sds100.keymapper.data.repositories.*
+import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
+import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
+import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
+import io.github.sds100.keymapper.data.repositories.GroupRepository
+import io.github.sds100.keymapper.data.repositories.KeyMapRepository
+import io.github.sds100.keymapper.data.repositories.LogRepository
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.data.repositories.RoomAccessibilityNodeRepository
+import io.github.sds100.keymapper.data.repositories.RoomFloatingButtonRepository
+import io.github.sds100.keymapper.data.repositories.RoomFloatingLayoutRepository
+import io.github.sds100.keymapper.data.repositories.RoomGroupRepository
+import io.github.sds100.keymapper.data.repositories.RoomKeyMapRepository
+import io.github.sds100.keymapper.data.repositories.RoomLogRepository
+import io.github.sds100.keymapper.data.repositories.SettingsPreferenceRepository
 import javax.inject.Singleton
 
 @Module
@@ -37,4 +50,4 @@ abstract class DataHiltModule {
     @Singleton
     @Binds
     abstract fun provideFloatingLayoutRepository(impl: RoomFloatingLayoutRepository): FloatingLayoutRepository
-} 
+}

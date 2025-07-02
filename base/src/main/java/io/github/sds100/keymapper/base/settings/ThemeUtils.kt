@@ -1,7 +1,5 @@
 package io.github.sds100.keymapper.base.settings
 
-
-
 object ThemeUtils {
     const val DARK = 0
     const val LIGHT = 1

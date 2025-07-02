@@ -73,7 +73,6 @@ import androidx.compose.material.icons.rounded.WifiOff
 import androidx.compose.ui.graphics.vector.ImageVector
 import io.github.sds100.keymapper.base.Constants
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.HomeIotDevice
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.InstantMix
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.JumpToElement
@@ -83,6 +82,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.icons.NfcOff
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.TextSelectEnd
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.TopPanelClose
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.TopPanelOpen
+import io.github.sds100.keymapper.system.permissions.Permission
 
 object ActionUtils {
 

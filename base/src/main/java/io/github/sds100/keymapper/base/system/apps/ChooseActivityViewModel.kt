@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChooseActivityViewModel @Inject constructor(
-    private val useCase: DisplayAppsUseCase
+    private val useCase: DisplayAppsUseCase,
 ) : ViewModel() {
 
     val searchQuery = MutableStateFlow<String?>(null)

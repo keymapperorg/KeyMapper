@@ -38,7 +38,7 @@ class CreateKeyMapShortcutViewModel @Inject constructor(
     private val config: ConfigKeyMapUseCase,
     private val listKeyMaps: ListKeyMapsUseCase,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
     private val actionUiHelper = ActionUiHelper(listKeyMaps, resourceProvider)
     private val constraintUiHelper = ConstraintUiHelper(

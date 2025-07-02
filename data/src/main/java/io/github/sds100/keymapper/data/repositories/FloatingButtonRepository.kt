@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.data.repositories
 
+import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntity
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
-import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.flow.Flow
 
 interface FloatingButtonRepository {
@@ -13,4 +13,3 @@ interface FloatingButtonRepository {
     suspend fun get(uid: String): FloatingButtonEntityWithLayout?
     fun delete(vararg uid: String)
 }
-

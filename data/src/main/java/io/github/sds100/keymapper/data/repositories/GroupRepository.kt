@@ -19,4 +19,3 @@ interface GroupRepository {
     fun delete(uid: String)
     suspend fun setLastOpenedDate(groupUid: String, timestamp: Long)
 }
-

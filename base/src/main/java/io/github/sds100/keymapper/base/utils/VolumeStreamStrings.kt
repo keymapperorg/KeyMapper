@@ -14,4 +14,4 @@ object VolumeStreamStrings {
         VolumeStream.VOICE_CALL -> R.string.stream_voice_call
         VolumeStream.ACCESSIBILITY -> R.string.stream_accessibility
     }
-} 
+}

@@ -10,7 +10,6 @@ import io.github.sds100.keymapper.system.network.HttpMethod
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
-import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.serialization.Serializable
 
 @Serializable

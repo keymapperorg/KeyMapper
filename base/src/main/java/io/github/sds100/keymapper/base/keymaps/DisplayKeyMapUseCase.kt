@@ -80,12 +80,12 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
                     .first()
             }
 
-                send(value)
-            } catch (_: TimeoutCancellationException) {
-            }
-
-            purchasingManager.purchases.collect(this::send)
+            send(value)
+        } catch (_: TimeoutCancellationException) {
         }
+
+        purchasingManager.purchases.collect(this::send)
+    }
 
     /**
      * Cache the data required for checking errors to reduce the latency of repeatedly checking

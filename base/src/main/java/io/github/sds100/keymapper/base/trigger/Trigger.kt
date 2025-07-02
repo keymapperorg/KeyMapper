@@ -16,7 +16,6 @@ import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 data class Trigger(
     val keys: List<TriggerKey> = emptyList(),

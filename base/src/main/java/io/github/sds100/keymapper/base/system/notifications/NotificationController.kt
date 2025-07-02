@@ -8,6 +8,9 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.system.accessibility.ControlAccessibilityServiceUseCase
+import io.github.sds100.keymapper.base.system.inputmethod.ShowHideInputMethodUseCase
+import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
+import io.github.sds100.keymapper.base.system.inputmethod.ToggleCompatibleImeUseCase
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.BuildConfigProvider
@@ -16,9 +19,6 @@ import io.github.sds100.keymapper.common.utils.DispatcherProvider
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
-import io.github.sds100.keymapper.base.system.inputmethod.ShowHideInputMethodUseCase
-import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
-import io.github.sds100.keymapper.base.system.inputmethod.ToggleCompatibleImeUseCase
 import io.github.sds100.keymapper.system.notifications.NotificationChannelModel
 import io.github.sds100.keymapper.system.notifications.NotificationIntentType
 import io.github.sds100.keymapper.system.notifications.NotificationModel
@@ -72,28 +72,29 @@ class NotificationController @Inject constructor(
         private const val CHANNEL_ID_PERSISTENT = "channel_persistent"
     }
 
-    private val ACTION_RESUME_MAPPINGS =
+    private val actionResumeMappings =
         "${buildConfigProvider.packageName}.ACTION_RESUME_MAPPINGS"
 
-    private val ACTION_PAUSE_MAPPINGS = "${buildConfigProvider.packageName}.ACTION_PAUSE_MAPPINGS"
+    private val actionPauseMappings = "${buildConfigProvider.packageName}.ACTION_PAUSE_MAPPINGS"
 
-    private val ACTION_START_SERVICE =
+    private val actionStartService =
         "${buildConfigProvider.packageName}.ACTION_START_ACCESSIBILITY_SERVICE"
 
-    private val ACTION_RESTART_SERVICE =
+    private val actionRestartService =
         "${buildConfigProvider.packageName}.ACTION_RESTART_ACCESSIBILITY_SERVICE"
 
-    private val ACTION_STOP_SERVICE =
+    private val actionStopService =
         "${buildConfigProvider.packageName}.ACTION_STOP_ACCESSIBILITY_SERVICE"
 
-    private val ACTION_DISMISS_TOGGLE_MAPPINGS =
+    private val actionDismissToggleMappings =
         "${buildConfigProvider.packageName}.ACTION_DISMISS_TOGGLE_MAPPINGS"
 
-    private val ACTION_SHOW_IME_PICKER =
+    private val actionShowImePicker =
         "${buildConfigProvider.packageName}.ACTION_SHOW_IME_PICKER"
-    private val ACTION_SHOW_KEYBOARD = "${buildConfigProvider.packageName}.ACTION_SHOW_KEYBOARD"
 
-    private val ACTION_TOGGLE_KEYBOARD =
+    private val actionShowKeyboard = "${buildConfigProvider.packageName}.ACTION_SHOW_KEYBOARD"
+
+    private val actionToggleKeyboard =
         "${buildConfigProvider.packageName}.ACTION_TOGGLE_KEYBOARD"
 
     /**
@@ -191,16 +192,16 @@ class NotificationController @Inject constructor(
 
         manageNotifications.onActionClick.onEach { actionId ->
             when (actionId) {
-                ACTION_RESUME_MAPPINGS -> pauseMappings.resume()
-                ACTION_PAUSE_MAPPINGS -> pauseMappings.pause()
-                ACTION_START_SERVICE -> attemptStartAccessibilityService()
-                ACTION_RESTART_SERVICE -> attemptRestartAccessibilityService()
-                ACTION_STOP_SERVICE -> controlAccessibilityService.stopService()
+                actionResumeMappings -> pauseMappings.resume()
+                actionPauseMappings -> pauseMappings.pause()
+                actionStartService -> attemptStartAccessibilityService()
+                actionRestartService -> attemptRestartAccessibilityService()
+                actionStopService -> controlAccessibilityService.stopService()
 
-                ACTION_DISMISS_TOGGLE_MAPPINGS -> manageNotifications.dismiss(ID_TOGGLE_MAPPINGS)
-                ACTION_SHOW_IME_PICKER -> showImePicker.show(fromForeground = false)
-                ACTION_SHOW_KEYBOARD -> hideInputMethod.show()
-                ACTION_TOGGLE_KEYBOARD -> toggleCompatibleIme.toggle().onSuccess {
+                actionDismissToggleMappings -> manageNotifications.dismiss(ID_TOGGLE_MAPPINGS)
+                actionShowImePicker -> showImePicker.show(fromForeground = false)
+                actionShowKeyboard -> hideInputMethod.show()
+                actionToggleKeyboard -> toggleCompatibleIme.toggle().onSuccess {
                     _showToast.emit(getString(R.string.toast_chose_keyboard, it.label))
                 }.onFailure {
                     _showToast.emit(it.getFullMessage(this))
@@ -276,7 +277,7 @@ class NotificationController @Inject constructor(
         val stopServiceAction = if (controlAccessibilityService.isUserInteractionRequired()) {
             NotificationIntentType.Activity(Settings.ACTION_ACCESSIBILITY_SETTINGS)
         } else {
-            NotificationIntentType.Broadcast(ACTION_STOP_SERVICE)
+            NotificationIntentType.Broadcast(actionStopService)
         }
 
         return NotificationModel(
@@ -292,11 +293,11 @@ class NotificationController @Inject constructor(
             actions = listOf(
                 NotificationModel.Action(
                     getString(R.string.notification_action_resume),
-                    NotificationIntentType.Broadcast(ACTION_RESUME_MAPPINGS),
+                    NotificationIntentType.Broadcast(actionResumeMappings),
                 ),
                 NotificationModel.Action(
                     getString(R.string.notification_action_dismiss),
-                    NotificationIntentType.Broadcast(ACTION_DISMISS_TOGGLE_MAPPINGS),
+                    NotificationIntentType.Broadcast(actionDismissToggleMappings),
                 ),
                 NotificationModel.Action(
                     getString(R.string.notification_action_stop_acc_service),
@@ -313,7 +314,7 @@ class NotificationController @Inject constructor(
         val stopServiceAction = if (controlAccessibilityService.isUserInteractionRequired()) {
             NotificationIntentType.Activity(Settings.ACTION_ACCESSIBILITY_SETTINGS)
         } else {
-            NotificationIntentType.Broadcast(ACTION_STOP_SERVICE)
+            NotificationIntentType.Broadcast(actionStopService)
         }
 
         return NotificationModel(
@@ -329,11 +330,11 @@ class NotificationController @Inject constructor(
             actions = listOf(
                 NotificationModel.Action(
                     getString(R.string.notification_action_pause),
-                    NotificationIntentType.Broadcast(ACTION_PAUSE_MAPPINGS),
+                    NotificationIntentType.Broadcast(actionPauseMappings),
                 ),
                 NotificationModel.Action(
                     getString(R.string.notification_action_dismiss),
-                    NotificationIntentType.Broadcast(ACTION_DISMISS_TOGGLE_MAPPINGS),
+                    NotificationIntentType.Broadcast(actionDismissToggleMappings),
                 ),
                 NotificationModel.Action(
                     getString(R.string.notification_action_stop_acc_service),
@@ -350,7 +351,7 @@ class NotificationController @Inject constructor(
         val onClickAction = if (controlAccessibilityService.isUserInteractionRequired()) {
             NotificationIntentType.Activity(Settings.ACTION_ACCESSIBILITY_SETTINGS)
         } else {
-            NotificationIntentType.Broadcast(ACTION_START_SERVICE)
+            NotificationIntentType.Broadcast(actionStartService)
         }
 
         return NotificationModel(
@@ -366,7 +367,7 @@ class NotificationController @Inject constructor(
             actions = listOf(
                 NotificationModel.Action(
                     getString(R.string.notification_action_dismiss),
-                    NotificationIntentType.Broadcast(ACTION_DISMISS_TOGGLE_MAPPINGS),
+                    NotificationIntentType.Broadcast(actionDismissToggleMappings),
                 ),
             ),
         )
@@ -379,7 +380,7 @@ class NotificationController @Inject constructor(
         val onClickAction = if (controlAccessibilityService.isUserInteractionRequired()) {
             NotificationIntentType.Activity(Settings.ACTION_ACCESSIBILITY_SETTINGS)
         } else {
-            NotificationIntentType.Broadcast(ACTION_RESTART_SERVICE)
+            NotificationIntentType.Broadcast(actionRestartService)
         }
 
         return NotificationModel(
@@ -408,7 +409,7 @@ class NotificationController @Inject constructor(
         title = getString(R.string.notification_ime_persistent_title),
         text = getString(R.string.notification_ime_persistent_text),
         icon = R.drawable.ic_notification_keyboard,
-        onClickAction = NotificationIntentType.Broadcast(ACTION_SHOW_IME_PICKER),
+        onClickAction = NotificationIntentType.Broadcast(actionShowImePicker),
         showOnLockscreen = false,
         onGoing = true,
         priority = NotificationCompat.PRIORITY_MIN,
@@ -426,7 +427,7 @@ class NotificationController @Inject constructor(
         actions = listOf(
             NotificationModel.Action(
                 getString(R.string.notification_toggle_keyboard_action),
-                intentType = NotificationIntentType.Broadcast(ACTION_TOGGLE_KEYBOARD),
+                intentType = NotificationIntentType.Broadcast(actionToggleKeyboard),
             ),
         ),
     )
@@ -437,7 +438,7 @@ class NotificationController @Inject constructor(
         title = getString(R.string.notification_keyboard_hidden_title),
         text = getString(R.string.notification_keyboard_hidden_text),
         icon = R.drawable.ic_notification_keyboard_hide,
-        onClickAction = NotificationIntentType.Broadcast(ACTION_SHOW_KEYBOARD),
+        onClickAction = NotificationIntentType.Broadcast(actionShowKeyboard),
         showOnLockscreen = false,
         onGoing = true,
         priority = NotificationCompat.PRIORITY_LOW,

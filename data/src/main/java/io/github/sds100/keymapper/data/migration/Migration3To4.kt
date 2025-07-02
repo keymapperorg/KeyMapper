@@ -7,9 +7,6 @@ import androidx.sqlite.db.SupportSQLiteQueryBuilder
 import com.github.salomonbrys.kotson.set
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import kotlin.collections.set
-
-
 
 /**
  * #376 make trigger mode settings always visible.

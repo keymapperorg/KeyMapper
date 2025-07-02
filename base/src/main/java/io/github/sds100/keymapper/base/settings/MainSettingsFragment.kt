@@ -17,23 +17,22 @@ import androidx.preference.SwitchPreferenceCompat
 import androidx.preference.isEmpty
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.backup.BackupUtils
-import io.github.sds100.keymapper.data.Keys
-import io.github.sds100.keymapper.data.PreferenceDefaults
-import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
-import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
-import io.github.sds100.keymapper.system.notifications.NotificationUtils
-import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.str
 import io.github.sds100.keymapper.base.utils.ui.strArray
 import io.github.sds100.keymapper.base.utils.ui.viewLifecycleScope
+import io.github.sds100.keymapper.common.utils.firstBlocking
+import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.PreferenceDefaults
+import io.github.sds100.keymapper.system.files.FileUtils
+import io.github.sds100.keymapper.system.notifications.NotificationUtils
+import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
 import kotlinx.coroutines.flow.collectLatest
 import splitties.alertdialog.appcompat.alertDialog
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.negativeButton
 import splitties.alertdialog.appcompat.positiveButton
-
 
 class MainSettingsFragment : BaseSettingsFragment() {
 

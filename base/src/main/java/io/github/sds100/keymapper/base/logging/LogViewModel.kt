@@ -5,17 +5,16 @@ import androidx.lifecycle.viewModelScope
 import com.michaelflisar.dragselectrecyclerview.DragSelectionProcessor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.common.utils.ifIsData
-import io.github.sds100.keymapper.common.utils.mapData
-import io.github.sds100.keymapper.base.utils.ui.MultiSelectProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
-import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
+import io.github.sds100.keymapper.base.utils.ui.MultiSelectProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.SelectionState
 import io.github.sds100.keymapper.base.utils.ui.TintType
 import io.github.sds100.keymapper.base.utils.ui.showDialog
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.ifIsData
+import io.github.sds100.keymapper.common.utils.mapData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,7 +36,7 @@ import javax.inject.Inject
 class LogViewModel @Inject constructor(
     private val useCase: DisplayLogUseCase,
     resourceProvider: ResourceProvider,
-    dialogProvider: DialogProvider
+    dialogProvider: DialogProvider,
 ) : ViewModel(),
     DialogProvider by dialogProvider,
     ResourceProvider by resourceProvider {

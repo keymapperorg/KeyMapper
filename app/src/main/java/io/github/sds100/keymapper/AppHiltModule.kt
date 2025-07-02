@@ -57,5 +57,4 @@ class AppHiltModule {
     @Provides
     @Singleton
     fun providePurchasingManager(): PurchasingManager = PurchasingManagerImpl()
-
 }

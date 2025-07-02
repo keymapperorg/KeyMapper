@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.base.utils.ui
 
-
 object SliderMinimums {
     const val ACTION_MULTIPLIER = 1
     const val DELAY_BEFORE_NEXT_ACTION = 0

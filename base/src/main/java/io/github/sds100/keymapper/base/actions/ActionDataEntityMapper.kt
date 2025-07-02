@@ -1,10 +1,13 @@
 package io.github.sds100.keymapper.base.actions
 
 import androidx.core.net.toUri
-import io.github.sds100.keymapper.common.utils.NodeInteractionType
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.NodeInteractionType
+import io.github.sds100.keymapper.common.utils.PinchScreenType
 import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.getKey
+import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.common.utils.valueOrNull
@@ -20,10 +23,7 @@ import io.github.sds100.keymapper.system.network.HttpMethod
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
-import io.github.sds100.keymapper.common.utils.getKey
-import io.github.sds100.keymapper.common.utils.PinchScreenType
 import kotlinx.serialization.json.Json
-import io.github.sds100.keymapper.common.utils.hasFlag
 
 object ActionDataEntityMapper {
 

@@ -7,12 +7,12 @@ import androidx.preference.Preference
 import androidx.preference.SeekBarPreference
 import androidx.preference.isEmpty
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.data.Keys
-import io.github.sds100.keymapper.data.PreferenceDefaults
-import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.SliderMaximums
 import io.github.sds100.keymapper.base.utils.ui.SliderMinimums
+import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.viewLifecycleScope
+import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.PreferenceDefaults
 import kotlinx.coroutines.flow.collectLatest
 
 class DefaultOptionsSettingsFragment : BaseSettingsFragment() {

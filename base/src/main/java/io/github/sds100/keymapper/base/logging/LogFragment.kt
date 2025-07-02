@@ -20,7 +20,6 @@ import io.github.sds100.keymapper.base.databinding.FragmentSimpleRecyclerviewBin
 import io.github.sds100.keymapper.base.logEntry
 import io.github.sds100.keymapper.base.utils.ui.SimpleRecyclerViewFragment
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.utils.ui.showDialogs
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.files.FileUtils
 import kotlinx.coroutines.flow.Flow

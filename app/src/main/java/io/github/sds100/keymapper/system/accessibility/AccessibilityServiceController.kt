@@ -3,27 +3,17 @@ package io.github.sds100.keymapper.system.accessibility
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCaseImpl
-import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCaseImpl
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
-import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsController
-import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsUseCase
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeRecorder
 import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilityServiceController
-import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
-import io.github.sds100.keymapper.system.display.DisplayAdapter
-import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 
 class AccessibilityServiceController @AssistedInject constructor(
     @Assisted
@@ -37,7 +27,7 @@ class AccessibilityServiceController @AssistedInject constructor(
     pauseKeyMapsUseCase: PauseKeyMapsUseCase,
     devicesAdapter: DevicesAdapter,
     suAdapter: SuAdapter,
-    settingsRepository: PreferenceRepository
+    settingsRepository: PreferenceRepository,
 ) : BaseAccessibilityServiceController(
     service = service,
     rerouteKeyEventsControllerFactory = rerouteKeyEventsControllerFactory,
@@ -49,8 +39,8 @@ class AccessibilityServiceController @AssistedInject constructor(
     pauseKeyMapsUseCase = pauseKeyMapsUseCase,
     devicesAdapter = devicesAdapter,
     suAdapter = suAdapter,
-    settingsRepository = settingsRepository
-){
+    settingsRepository = settingsRepository,
+) {
     @AssistedFactory
     interface Factory {
         fun create(service: MyAccessibilityService): AccessibilityServiceController

@@ -25,7 +25,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.databinding.FragmentPinchPickCoordinatesBinding
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.utils.ui.showDialogs
 import io.github.sds100.keymapper.base.utils.ui.str
 import io.github.sds100.keymapper.system.files.FileUtils
 import kotlinx.coroutines.flow.collectLatest

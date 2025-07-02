@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.common.utils
 
-
 sealed class State<out T> {
     data class Data<T>(val data: T) : State<T>()
     data object Loading : State<Nothing>()

@@ -15,11 +15,10 @@ import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProviderImpl
 import io.github.sds100.keymapper.base.utils.navigation.navigate
-import io.github.sds100.keymapper.base.utils.ui.DialogResponse
-import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
 import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
-import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
+import io.github.sds100.keymapper.base.utils.ui.DialogResponse
+import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.hasFlag
@@ -64,7 +63,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ConfigIntentViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
-    dialogProvider: DialogProvider
+    dialogProvider: DialogProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,

@@ -44,7 +44,6 @@ import io.github.sds100.keymapper.data.migration.Migration5To6
 import io.github.sds100.keymapper.data.migration.Migration6To7
 import io.github.sds100.keymapper.data.migration.Migration8To9
 import io.github.sds100.keymapper.data.migration.Migration9To10
-import javax.inject.Singleton
 
 @Database(
     entities = [KeyMapEntity::class, FingerprintMapEntity::class, LogEntryEntity::class, FloatingLayoutEntity::class, FloatingButtonEntity::class, GroupEntity::class, AccessibilityNodeEntity::class],

@@ -25,7 +25,6 @@ import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 
-
 abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
 
     companion object {

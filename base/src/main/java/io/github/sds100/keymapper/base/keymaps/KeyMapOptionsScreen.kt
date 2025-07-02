@@ -43,13 +43,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
-import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.base.utils.ui.SliderMaximums
 import io.github.sds100.keymapper.base.utils.ui.SliderMinimums
 import io.github.sds100.keymapper.base.utils.ui.SliderStepSizes
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.base.utils.ui.compose.SliderOptionText
 import io.github.sds100.keymapper.base.utils.ui.compose.openUriSafe
+import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.launch
 
 @Composable
@@ -276,7 +276,9 @@ private fun TriggerFromOtherAppsSection(
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
-                        modifier = Modifier.padding(horizontal = 16.dp).weight(1f),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .weight(1f),
                         text = keyMapUid,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,

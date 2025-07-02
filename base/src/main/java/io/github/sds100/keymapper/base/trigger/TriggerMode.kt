@@ -3,8 +3,6 @@ package io.github.sds100.keymapper.base.trigger
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import kotlinx.serialization.Serializable
 
-
-
 @Serializable
 sealed class TriggerMode : Comparable<TriggerMode> {
     override fun compareTo(other: TriggerMode) = this.javaClass.name.compareTo(other.javaClass.name)

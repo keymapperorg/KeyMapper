@@ -12,12 +12,10 @@ import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
-import io.github.sds100.keymapper.common.utils.hasFlag
 import timber.log.Timber
-
-
 
 /**
  * Mahoosive update/overhaul from 1.0 to 2.0

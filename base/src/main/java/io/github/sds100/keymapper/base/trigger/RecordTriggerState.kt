@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.base.trigger
 
-
 sealed class RecordTriggerState {
     data object Idle : RecordTriggerState()
 

@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.base.system.accessibility
 
-import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.res.Configuration
 import android.os.Build
@@ -8,17 +7,13 @@ import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.lifecycle.lifecycleScope
-import dagger.hilt.android.scopes.ServiceScoped
 import io.github.sds100.keymapper.base.actions.ActionData
-import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCaseImpl
 import io.github.sds100.keymapper.base.actions.TestActionEvent
-import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCaseImpl
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.TriggerKeyMapEvent
-import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.keymaps.detection.DetectScreenOffKeyEventsController
 import io.github.sds100.keymapper.base.keymaps.detection.DpadMotionEventTracker
@@ -40,7 +35,6 @@ import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.system.root.SuAdapter
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -63,7 +57,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import javax.inject.Inject
 
 abstract class BaseAccessibilityServiceController(
     private val service: BaseAccessibilityService,
@@ -76,7 +69,7 @@ abstract class BaseAccessibilityServiceController(
     private val pauseKeyMapsUseCase: PauseKeyMapsUseCase,
     private val devicesAdapter: DevicesAdapter,
     private val suAdapter: SuAdapter,
-    private val settingsRepository: PreferenceRepository
+    private val settingsRepository: PreferenceRepository,
 ) {
     companion object {
 
@@ -89,13 +82,13 @@ abstract class BaseAccessibilityServiceController(
 
     private val performActionsUseCase = performActionsUseCaseFactory.create(
         accessibilityService = service,
-        imeInputEventInjector = service.imeInputEventInjector
+        imeInputEventInjector = service.imeInputEventInjector,
     )
 
     private val detectKeyMapsUseCase = detectKeyMapsUseCaseFactory.create(
         accessibilityService = service,
         coroutineScope = service.lifecycleScope,
-        imeInputEventInjector = service.imeInputEventInjector
+        imeInputEventInjector = service.imeInputEventInjector,
     )
 
     val detectConstraintsUseCase = detectConstraintsUseCaseFactory.create(service)
@@ -104,19 +97,19 @@ abstract class BaseAccessibilityServiceController(
         service.lifecycleScope,
         detectKeyMapsUseCase,
         performActionsUseCase,
-        detectConstraintsUseCase
+        detectConstraintsUseCase,
     )
 
     val triggerKeyMapFromOtherAppsController = TriggerKeyMapFromOtherAppsController(
         service.lifecycleScope,
         detectKeyMapsUseCase,
         performActionsUseCase,
-        detectConstraintsUseCase
+        detectConstraintsUseCase,
     )
 
     val rerouteKeyEventsController = rerouteKeyEventsControllerFactory.create(
         service.lifecycleScope,
-        service.imeInputEventInjector
+        service.imeInputEventInjector,
     )
 
     val accessibilityNodeRecorder = accessibilityNodeRecorderFactory.create(service)

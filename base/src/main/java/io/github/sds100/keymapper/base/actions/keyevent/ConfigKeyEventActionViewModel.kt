@@ -42,7 +42,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ConfigKeyEventActionViewModel @Inject constructor(
     private val useCase: ConfigKeyEventUseCase,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     NavigationProvider by NavigationProviderImpl() {

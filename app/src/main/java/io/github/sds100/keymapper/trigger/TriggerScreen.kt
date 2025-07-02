@@ -10,7 +10,6 @@ import io.github.sds100.keymapper.base.trigger.BaseTriggerScreen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewModel) {
-
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     if (viewModel.showAdvancedTriggersBottomSheet) {

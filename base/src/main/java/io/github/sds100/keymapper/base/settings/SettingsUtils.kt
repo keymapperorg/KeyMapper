@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.preference.Preference
 import io.github.sds100.keymapper.base.R
 
-
 object SettingsUtils {
 
     fun createChooseDevicesPreference(

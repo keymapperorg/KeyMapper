@@ -12,7 +12,6 @@ import io.github.sds100.keymapper.base.utils.ui.color
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.math.roundToInt
 
-
 class PickCoordinateImageView(
     context: Context,
     attrs: AttributeSet?,

@@ -12,13 +12,13 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.system.inputmethod.ToggleCompatibleImeUseCase
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.str
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
-import io.github.sds100.keymapper.base.system.inputmethod.ToggleCompatibleImeUseCase
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 

@@ -1,11 +1,11 @@
 package io.github.sds100.keymapper.base.trigger
 
-import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
-import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 import io.github.sds100.keymapper.base.keymaps.ClickType
-import kotlinx.serialization.Serializable
 import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.withFlag
+import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
+import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
+import kotlinx.serialization.Serializable
 import java.util.UUID
 
 @Serializable

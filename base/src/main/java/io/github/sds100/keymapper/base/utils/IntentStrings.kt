@@ -61,4 +61,4 @@ fun IntentExtraType.getExampleStringRes(): Int = when (this) {
     is FloatArrayExtraType -> R.string.intent_type_float_array_example
     is ShortExtraType -> R.string.intent_type_short_example
     is ShortArrayExtraType -> R.string.intent_type_short_array_example
-} 
+}

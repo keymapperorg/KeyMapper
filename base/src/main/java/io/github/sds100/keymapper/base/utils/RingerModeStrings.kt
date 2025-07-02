@@ -9,4 +9,4 @@ object RingerModeStrings {
         RingerMode.VIBRATE -> R.string.ringer_mode_vibrate
         RingerMode.SILENT -> R.string.ringer_mode_silent
     }
-} 
+}

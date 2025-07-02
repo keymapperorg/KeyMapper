@@ -27,8 +27,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 
-
-
 @ExperimentalCoroutinesApi
 @RunWith(JUnitParamsRunner::class)
 class TriggerKeyMapFromOtherAppsControllerTest {

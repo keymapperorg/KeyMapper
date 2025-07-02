@@ -6,15 +6,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.preference.Preference
 import androidx.preference.isEmpty
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.system.url.UrlUtils
 import io.github.sds100.keymapper.base.utils.ui.drawable
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.str
 import io.github.sds100.keymapper.base.utils.ui.viewLifecycleScope
+import io.github.sds100.keymapper.system.url.UrlUtils
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-
 
 class ShizukuSettingsFragment : BaseSettingsFragment() {
 

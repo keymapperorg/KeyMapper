@@ -5,7 +5,6 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.toRoute
 
-
 fun <T> NavBackStackEntry.observeLiveData(
     lifecycleOwner: LifecycleOwner,
     key: String,

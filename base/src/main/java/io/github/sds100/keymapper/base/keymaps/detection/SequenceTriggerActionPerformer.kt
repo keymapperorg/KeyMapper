@@ -8,7 +8,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
 class SequenceTriggerActionPerformer(
     private val coroutineScope: CoroutineScope,
     private val useCase: PerformActionsUseCase,

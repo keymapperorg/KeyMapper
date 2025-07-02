@@ -135,7 +135,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     data class NewKeyMap(
         val groupUid: String?,
         val showAdvancedTriggers: Boolean = false,
-        val floatingButtonToUse: String? = null
+        val floatingButtonToUse: String? = null,
     ) : NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_CONFIG_KEY_MAP
     }

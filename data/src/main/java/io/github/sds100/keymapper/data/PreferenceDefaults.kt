@@ -1,7 +1,5 @@
 package io.github.sds100.keymapper.data
 
-
-
 object PreferenceDefaults {
     const val DARK_THEME = "2"
 

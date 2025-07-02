@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
 import javax.inject.Inject
 
 @AndroidEntryPoint

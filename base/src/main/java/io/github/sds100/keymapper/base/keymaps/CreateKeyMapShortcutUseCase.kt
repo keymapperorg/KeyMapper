@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 class CreateKeyMapShortcutUseCaseImpl @Inject constructor(
     private val appShortcutAdapter: AppShortcutAdapter,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
 ) : CreateKeyMapShortcutUseCase {
 
     companion object {

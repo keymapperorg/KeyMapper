@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
-import javax.inject.Singleton
 
 class SortKeyMapsUseCaseImpl @Inject constructor(
     private val preferenceRepository: PreferenceRepository,

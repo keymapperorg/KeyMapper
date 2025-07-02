@@ -1,7 +1,5 @@
 package io.github.sds100.keymapper.common.utils
 
-
-
 /**
  * Not for high speed stuff.
  */

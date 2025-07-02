@@ -3,13 +3,11 @@ package io.github.sds100.keymapper.base.actions.tapscreen
 import android.graphics.Bitmap
 import android.graphics.Point
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
-import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showDialog
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,11 +23,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
-
 @HiltViewModel
 class PickDisplayCoordinateViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
-    dialogProvider: DialogProvider
+    dialogProvider: DialogProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider {

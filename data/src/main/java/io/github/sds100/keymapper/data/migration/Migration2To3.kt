@@ -10,8 +10,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import io.github.sds100.keymapper.common.utils.withFlag
 
-
-
 /**
  * #379 feat: add option to repeat for all types of actions
  */

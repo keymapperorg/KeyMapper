@@ -3,8 +3,8 @@ package io.github.sds100.keymapper.base.system.accessibility
 import android.os.Build
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.common.utils.InputEventType
-import io.github.sds100.keymapper.common.utils.PinchScreenType
 import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.PinchScreenType
 import kotlinx.coroutines.flow.Flow
 
 interface IAccessibilityService {

@@ -27,7 +27,7 @@ class HomeViewModel @Inject constructor(
     private val sortKeyMaps: SortKeyMapsUseCase,
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
     navigationProvider: NavigationProvider,
-    dialogProvider: DialogProvider
+    dialogProvider: DialogProvider,
 ) : BaseHomeViewModel(
     listKeyMaps,
     pauseKeyMaps,
@@ -39,5 +39,5 @@ class HomeViewModel @Inject constructor(
     sortKeyMaps,
     showInputMethodPickerUseCase,
     navigationProvider,
-    dialogProvider
+    dialogProvider,
 )

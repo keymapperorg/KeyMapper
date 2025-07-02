@@ -8,14 +8,12 @@ import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
-import io.github.sds100.keymapper.data.entities.TriggerEntity
-import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.minusFlag
 import io.github.sds100.keymapper.common.utils.withFlag
-
-
+import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
+import io.github.sds100.keymapper.data.entities.TriggerEntity
+import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 
 object Migration6To7 {
 

@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.base.utils.ui
 
-
 object SliderMaximums {
     const val ACTION_MULTIPLIER = 20
     const val DELAY_BEFORE_NEXT_ACTION = 2000

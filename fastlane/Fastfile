@@ -19,11 +19,11 @@ default_platform(:android)
 
 desc "Create testing release"
 lane :testing do
-    gradle(task: "clean assembleFreeCi")
+    gradle(task: "clean assembleCi")
 end
 
 desc "Create and deploy production release"
-lane :prod do
+lane :production do
     prompt(text: "Did you write whats new?")
 
     version_code = get_properties_value(key: "VERSION_CODE", path: "./app/version.properties")
@@ -32,7 +32,9 @@ lane :prod do
 #   Don't create changelog for f-droid because not committing it
 #   File.write("metadata/android/en-US/changelogs/" + version_code + ".txt", whats_new)
 
-    gradle(task: "testProDebugUnitTest")
+    Dir.chdir("..") do
+      gradle(task: "testDebugUnitTest")
+    end
 
     github_token = prompt(
                     text: "Github token: ",
@@ -53,32 +55,35 @@ lane :prod do
 #   gradle(task: "assembleDebug")
 
 #   Release the free build to GitHub because billing only works if signed by Google Play
-    gradle(task: "assembleFreeRelease")
-    gradle(task: "bundleProRelease")
+    gradle(task: "assembleRelease")
+
+    Dir.chdir("..") do
+      gradle(task: "bundleRelease")
+    end
 
     apk_path_release="app/build/outputs/apk/free/release/keymapper-" + version_name + ".apk"
 
     # First release to google play so any errors with the descriptions are resolved before
     # creating the git tag.
-    supply(
-        aab: "app/build/outputs/bundle/proRelease/app-pro-release.aab",
-        track: "internal",
-        skip_upload_apk: true
-    )
-
-    whats_new = File.read("../app/src/main/assets/whats-new.txt")
-
-    github_release = set_github_release(
-      repository_name: "keymapperorg/KeyMapper",
-      api_bearer: github_token,
-      name: version_name,
-      tag_name: "v" + version_name,
-      description: whats_new,
-      commitish: "master",
-      upload_assets: [apk_path_release],
-      is_draft: false,
-      is_prerelease: false
-    )
+#     supply(
+#         aab: "../app/build/outputs/bundle/release/app-pro-release.aab",
+#         track: "internal",
+#         skip_upload_apk: true
+#     )
+#
+#     whats_new = File.read("../app/src/main/assets/whats-new.txt")
+#
+#     github_release = set_github_release(
+#       repository_name: "keymapperorg/KeyMapper",
+#       api_bearer: github_token,
+#       name: version_name,
+#       tag_name: "v" + version_name,
+#       description: whats_new,
+#       commitish: "master",
+#       upload_assets: [apk_path_release],
+#       is_draft: false,
+#       is_prerelease: false
+#     )
 end
 
 desc "Create and deploy internal testing release"

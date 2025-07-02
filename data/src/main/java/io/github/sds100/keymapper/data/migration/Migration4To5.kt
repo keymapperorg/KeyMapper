@@ -11,11 +11,9 @@ import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.withFlag
-
-
+import io.github.sds100.keymapper.data.entities.ActionEntity
 
 /**
  * #382 feat: unique repeat behaviour for each action

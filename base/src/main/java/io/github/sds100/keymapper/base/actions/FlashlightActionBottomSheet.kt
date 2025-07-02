@@ -48,11 +48,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
-import io.github.sds100.keymapper.system.camera.CameraFlashInfo
-import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSliderThumb
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
+import io.github.sds100.keymapper.system.camera.CameraFlashInfo
+import io.github.sds100.keymapper.system.camera.CameraLens
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 

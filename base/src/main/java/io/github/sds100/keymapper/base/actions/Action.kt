@@ -1,15 +1,15 @@
 package io.github.sds100.keymapper.base.actions
 
+import io.github.sds100.keymapper.base.keymaps.KeyMap
+import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.common.utils.valueOrNull
+import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData
-import io.github.sds100.keymapper.base.keymaps.KeyMap
 import kotlinx.serialization.Serializable
-import io.github.sds100.keymapper.common.utils.hasFlag
-import io.github.sds100.keymapper.common.utils.withFlag
 import java.util.UUID
 
 @Serializable

@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.data.repositories
 
+import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.data.entities.FloatingLayoutEntity
 import io.github.sds100.keymapper.data.entities.FloatingLayoutEntityWithButtons
-import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.flow.Flow
 
 interface FloatingLayoutRepository {
@@ -18,4 +18,3 @@ interface FloatingLayoutRepository {
     fun delete(vararg uid: String)
     suspend fun count(): Int
 }
-

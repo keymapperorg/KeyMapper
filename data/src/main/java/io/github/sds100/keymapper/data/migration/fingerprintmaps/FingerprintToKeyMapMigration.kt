@@ -1,12 +1,12 @@
 package io.github.sds100.keymapper.data.migration.fingerprintmaps
 
+import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.data.entities.FingerprintTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
-import io.github.sds100.keymapper.common.utils.hasFlag
 
 object FingerprintToKeyMapMigration {
     fun migrate(entity: FingerprintMapEntity): KeyMapEntity? {

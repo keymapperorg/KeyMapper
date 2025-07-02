@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-
 object LogUtils {
     val DATE_FORMAT
         get() = SimpleDateFormat("MM/dd HH:mm:ss.SSS", Locale.getDefault())

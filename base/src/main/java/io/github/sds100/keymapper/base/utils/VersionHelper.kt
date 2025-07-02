@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.base.utils
 
-
 object VersionHelper {
     const val VERSION_2_3_0 = 43
 

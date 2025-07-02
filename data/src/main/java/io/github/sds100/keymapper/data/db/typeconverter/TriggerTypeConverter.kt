@@ -8,8 +8,6 @@ import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 
-
-
 class TriggerTypeConverter {
     private val gson = GsonBuilder()
         .registerTypeAdapter(TriggerEntity.DESERIALIZER)

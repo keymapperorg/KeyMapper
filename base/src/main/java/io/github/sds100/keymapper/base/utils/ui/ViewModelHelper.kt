@@ -7,7 +7,6 @@ import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
 
-
 object ViewModelHelper {
     suspend fun handleKeyMapperCrashedDialog(
         resourceProvider: ResourceProvider,

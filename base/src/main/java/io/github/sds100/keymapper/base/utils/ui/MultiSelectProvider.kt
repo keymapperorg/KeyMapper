@@ -3,8 +3,6 @@ package io.github.sds100.keymapper.base.utils.ui
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
-
-
 class MultiSelectProvider {
     private val lock = Any()
     val state = MutableStateFlow<SelectionState>(SelectionState.NotSelecting)
