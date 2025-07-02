@@ -55,11 +55,12 @@ android {
                 "proguard-rules.pro",
             )
             signingConfig = signingConfigs.getByName("release")
+            versionNameSuffix = "-foss"
         }
 
         debug {
             applicationIdSuffix = ".debug"
-            versionNameSuffix = "-debug"
+            versionNameSuffix = "-foss-debug"
         }
 
         create("debug_release") {
@@ -81,7 +82,7 @@ android {
 
             matchingFallbacks.add("debug")
             applicationIdSuffix = ".ci"
-            versionNameSuffix = "-ci.${versionProperties.getProperty("VERSION_NUM")}"
+            versionNameSuffix = "-foss-ci.${versionProperties.getProperty("VERSION_NUM")}"
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
