@@ -110,12 +110,13 @@ lane :internal do
 
     Dir.chdir("..") do
   #   Release the free build to GitHub because billing only works if signed by Google Play
-      gradle(task: "bundleProRelease")
+      gradle(task: "app:bundleRelease")
+    end
 
       # First release to google play so any errors with the descriptions are resolved before
       # creating the git tag.
       supply(
-          aab: "app/build/outputs/bundle/release/app-pro-release.aab",
+          aab: "../app/build/outputs/bundle/release/app-release.aab",
           track: "internal",
           skip_upload_apk: true,
           skip_upload_metadata: true,
@@ -123,6 +124,5 @@ lane :internal do
           skip_upload_images: true,
           skip_upload_screenshots: true
       )
-    end
 end
 
