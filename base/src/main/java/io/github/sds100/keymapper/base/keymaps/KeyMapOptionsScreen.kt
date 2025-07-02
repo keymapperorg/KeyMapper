@@ -276,7 +276,7 @@ private fun TriggerFromOtherAppsSection(
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier.padding(horizontal = 16.dp).weight(1f),
                         text = keyMapUid,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -390,7 +390,7 @@ private fun Preview() {
                         screenOffTrigger = false,
 
                         triggerFromOtherApps = true,
-                        keyMapUid = "00000-00000-00000",
+                        keyMapUid = "00000-00000-00000-0000000000000000000000000000000000",
                         isLauncherShortcutButtonEnabled = false,
 
                         showToast = true,
