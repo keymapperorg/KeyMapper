@@ -17,11 +17,11 @@ import io.github.sds100.keymapper.base.constraints.ConstraintUiHelper
 import io.github.sds100.keymapper.base.groups.GroupListItemModel
 import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
-import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.TintType
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.mapData
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -165,7 +165,7 @@ class CreateKeyMapShortcutViewModel @Inject constructor(
 
             val keyMap = keyMapState.data
 
-            val key = "create_launcher_shortcut"
+            "create_launcher_shortcut"
             val defaultShortcutName: String
             val icon: Drawable?
 

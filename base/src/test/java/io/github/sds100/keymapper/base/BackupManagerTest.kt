@@ -146,7 +146,7 @@ class BackupManagerTest {
             lastOpenedDate = 0L,
         )
 
-        val parentGroup2 = GroupEntity(
+        GroupEntity(
             uid = "parent_group_2_uid",
             name = "parent_group_2_name",
             parentUid = null,

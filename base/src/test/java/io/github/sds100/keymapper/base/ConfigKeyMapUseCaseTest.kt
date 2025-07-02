@@ -233,7 +233,7 @@ class ConfigKeyMapUseCaseTest {
         assertThat(trigger.keys, hasSize(2))
         assertThat(
             trigger.keys[0],
-            instanceOf(_root_ide_package_.io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey::class.java),
+            instanceOf(io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey::class.java),
         )
         assertThat(trigger.keys[1], instanceOf(AssistantTriggerKey::class.java))
     }
@@ -255,7 +255,7 @@ class ConfigKeyMapUseCaseTest {
         assertThat(trigger.keys, hasSize(2))
         assertThat(
             trigger.keys[0],
-            instanceOf(_root_ide_package_.io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey::class.java),
+            instanceOf(io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey::class.java),
         )
         assertThat(trigger.keys[1], instanceOf(AssistantTriggerKey::class.java))
     }

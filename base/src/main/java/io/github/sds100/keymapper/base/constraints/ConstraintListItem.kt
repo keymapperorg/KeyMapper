@@ -35,13 +35,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.base.utils.ui.drawable
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.utils.ui.drawable
 
 @Composable
 fun ConstraintListItem(
     modifier: Modifier = Modifier,
-    model: io.github.sds100.keymapper.base.constraints.ConstraintListItemModel,
+    model: ConstraintListItemModel,
     onRemoveClick: () -> Unit = {},
     onFixClick: () -> Unit = {},
 ) {
@@ -178,7 +178,7 @@ private fun TextColumn(
 @Composable
 private fun VectorPreview() {
     ConstraintListItem(
-        model = io.github.sds100.keymapper.base.constraints.ConstraintListItemModel(
+        model = ConstraintListItemModel(
             id = "id",
             icon = ComposeIconInfo.Vector(Icons.Outlined.ClearAll),
             constraintModeLink = ConstraintMode.AND,
@@ -195,7 +195,7 @@ private fun DrawablePreview() {
     val drawable = LocalContext.current.drawable(R.mipmap.ic_launcher_round)
 
     ConstraintListItem(
-        model = io.github.sds100.keymapper.base.constraints.ConstraintListItemModel(
+        model = ConstraintListItemModel(
             id = "id",
             text = "Dismiss most recent notification",
             error = null,

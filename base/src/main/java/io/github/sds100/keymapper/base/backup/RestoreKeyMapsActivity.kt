@@ -59,7 +59,7 @@ class RestoreKeyMapsActivity : ComponentActivity() {
                     else -> ""
                 }
 
-                val text = when (val state = state) {
+                val text = when (state) {
                     is ImportExportState.ConfirmImport -> stringResource(R.string.home_importing_dialog_text)
                     else -> null
                 }

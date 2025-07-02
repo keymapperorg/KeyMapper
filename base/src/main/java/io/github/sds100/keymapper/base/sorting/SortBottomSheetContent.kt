@@ -180,7 +180,7 @@ private fun SortBottomSheetContent(
         ) {
             // Use fully qualified name due to quirky overload resolution. The compiler will
             // otherwise tell you to use it in a column or row scope.
-            androidx.compose.animation.AnimatedVisibility(
+            AnimatedVisibility(
                 modifier = Modifier.align(Alignment.CenterStart),
                 visible = !showHelp,
                 enter = fadeIn(),

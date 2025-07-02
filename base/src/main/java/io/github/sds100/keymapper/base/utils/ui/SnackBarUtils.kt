@@ -21,7 +21,7 @@ object SnackBarUtils {
             Snackbar.LENGTH_SHORT
         }
 
-        val snackBar = Snackbar.make(view, text, duration)
+        Snackbar.make(view, text, duration)
             .setAnchorView(R.id.fab)
             .setAction(actionText, {
                 if (!continuation.isCompleted) {

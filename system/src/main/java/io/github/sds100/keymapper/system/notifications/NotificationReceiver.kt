@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.system.notifications
 
 import android.content.ComponentName
-import android.content.Intent
 import android.media.session.MediaSessionManager
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
@@ -78,9 +77,6 @@ class NotificationReceiver : NotificationListenerService(), LifecycleOwner {
             lastNotificationKey = null
         }
     }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int =
-        super.onStartCommand(intent, flags, startId)
 
     override fun onListenerConnected() {
         super.onListenerConnected()
