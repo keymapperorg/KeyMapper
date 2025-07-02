@@ -61,7 +61,7 @@ lane :production do
       gradle(task: "bundleRelease")
     end
 
-    apk_path_release="app/build/outputs/apk/free/release/keymapper-" + version_name + ".apk"
+    apk_path_release="app/build/outputs/apk/release/keymapper-foss-" + version_name + ".apk"
 
     # First release to google play so any errors with the descriptions are resolved before
     # creating the git tag.
@@ -107,19 +107,22 @@ lane :internal do
 #   Do not release a debug build for pro version.
 #   gradle(task: "assembleDebug")
 
-#   Release the free build to GitHub because billing only works if signed by Google Play
-    gradle(task: "bundleProRelease")
 
-    # First release to google play so any errors with the descriptions are resolved before
-    # creating the git tag.
-    supply(
-        aab: "app/build/outputs/bundle/proRelease/app-pro-release.aab",
-        track: "internal",
-        skip_upload_apk: true,
-        skip_upload_metadata: true,
-        skip_upload_changelogs: true,
-        skip_upload_images: true,
-        skip_upload_screenshots: true
-    )
+    Dir.chdir("..") do
+  #   Release the free build to GitHub because billing only works if signed by Google Play
+      gradle(task: "bundleProRelease")
+
+      # First release to google play so any errors with the descriptions are resolved before
+      # creating the git tag.
+      supply(
+          aab: "app/build/outputs/bundle/release/app-pro-release.aab",
+          track: "internal",
+          skip_upload_apk: true,
+          skip_upload_metadata: true,
+          skip_upload_changelogs: true,
+          skip_upload_images: true,
+          skip_upload_screenshots: true
+      )
+    end
 end
 
