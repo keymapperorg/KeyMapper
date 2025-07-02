@@ -47,7 +47,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
-// TODO test that only one instance is created.
 class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
     @Assisted
     private val imeInputEventInjector: ImeInputEventInjector,
