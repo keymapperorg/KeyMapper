@@ -1,4 +1,4 @@
-## [3.1.2](https://github.com/sds100/KeyMapper/releases/tag/v3.1.2)
+## [3.2.0](https://github.com/sds100/KeyMapper/releases/tag/v3.2.0)
 
 #### TO BE RELEASED
 
@@ -15,6 +15,7 @@
 - #1686 (more fixes) do not show some screens behind system bars on the left/right side of the device.
 - #1701 optimize the trigger screen for smaller screens so elements are less cut off.
 - #1699 Do not highlight a floating button as if it is pressed after triggering a key event action from it.
+- Button to copy the key map UID to the clipboard is invisible on small screens.
 
 ## [3.1.1](https://github.com/sds100/KeyMapper/releases/tag/v3.1.1)
 

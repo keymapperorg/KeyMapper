@@ -27,7 +27,7 @@ jobs:
         uses: android-actions/setup-android@v2
 
       - name: Unit tests
-        run: bash ./gradlew testFreeDebugUnitTest
+        run: bash ./gradlew testDebugUnitTest
 
   style:
     name: Code style check

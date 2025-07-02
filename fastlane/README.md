@@ -21,10 +21,10 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 Create testing release
 
-### prod
+### production
 
 ```sh
-[bundle exec] fastlane prod
+[bundle exec] fastlane production
 ```
 
 Create and deploy production release
