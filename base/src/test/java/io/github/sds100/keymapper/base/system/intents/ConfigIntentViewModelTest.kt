@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.github.sds100.keymapper.base.utils.ui.FakeResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
 import io.github.sds100.keymapper.base.utils.ui.DialogModel
+import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.ShowDialogEvent
 import io.github.sds100.keymapper.base.utils.ui.onUserResponse
 import io.github.sds100.keymapper.common.utils.firstBlocking
@@ -34,7 +35,10 @@ internal class ConfigIntentViewModelTest {
         Dispatchers.setMain(testDispatcher)
 
         fakeResourceProvider = FakeResourceProvider()
-        viewModel = ConfigIntentViewModel(fakeResourceProvider)
+        viewModel = ConfigIntentViewModel(
+            fakeResourceProvider,
+            dialogProvider = DialogProviderImpl()
+        )
     }
 
     @Test
