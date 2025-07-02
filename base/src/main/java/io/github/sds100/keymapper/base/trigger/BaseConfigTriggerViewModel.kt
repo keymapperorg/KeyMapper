@@ -27,12 +27,12 @@ import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
 import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.LinkType
-import io.github.sds100.keymapper.base.utils.ui.PopupUi
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
+import io.github.sds100.keymapper.base.utils.ui.DialogModel
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.State
@@ -73,9 +73,9 @@ abstract class BaseConfigTriggerViewModel(
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
-    popupViewModel: PopupViewModel,
+    dialogProvider: DialogProvider,
 ) : ResourceProvider by resourceProvider,
-    PopupViewModel by popupViewModel,
+    DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider {
 
     companion object {
@@ -248,7 +248,7 @@ abstract class BaseConfigTriggerViewModel(
                     FingerprintGestureType.SWIPE_RIGHT to getString(R.string.fingerprint_gesture_right),
                 )
 
-                val selectedType = showPopup("pick_assistant_type", PopupUi.SingleChoice(listItems))
+                val selectedType = showDialog("pick_assistant_type", DialogModel.SingleChoice(listItems))
                     ?: return@launch
 
                 config.addFingerprintGesture(type = selectedType)
@@ -441,11 +441,11 @@ abstract class BaseConfigTriggerViewModel(
                 return
             }
 
-            val dialog = PopupUi.Ok(
+            val dialog = DialogModel.Ok(
                 message = getString(R.string.dialog_message_parallel_trigger_order),
             )
 
-            showPopup("parallel_trigger_order", dialog) ?: return
+            showDialog("parallel_trigger_order", dialog) ?: return
 
             onboarding.shownParallelTriggerOrderExplanation = true
         }
@@ -455,11 +455,11 @@ abstract class BaseConfigTriggerViewModel(
                 return
             }
 
-            val dialog = PopupUi.Ok(
+            val dialog = DialogModel.Ok(
                 message = getString(R.string.dialog_message_sequence_trigger_explanation),
             )
 
-            showPopup("sequence_trigger_explanation", dialog)
+            showDialog("sequence_trigger_explanation", dialog)
                 ?: return
 
             onboarding.shownSequenceTriggerExplanation = true
@@ -476,13 +476,13 @@ abstract class BaseConfigTriggerViewModel(
                 return
             }
 
-            val dialog = PopupUi.Dialog(
+            val dialog = DialogModel.Alert(
                 title = getString(R.string.dialog_title_keycode_to_scancode_trigger_explanation),
                 message = getString(R.string.dialog_message_keycode_to_scancode_trigger_explanation),
                 positiveButtonText = getString(R.string.pos_understood),
             )
 
-            val response = showPopup("keycode_to_scancode_message", dialog)
+            val response = showDialog("keycode_to_scancode_message", dialog)
 
             if (response == DialogResponse.POSITIVE) {
                 onboarding.shownKeyCodeToScanCodeTriggerExplanation = true
@@ -490,33 +490,33 @@ abstract class BaseConfigTriggerViewModel(
         }
 
         if (key.keyCode == KeyEvent.KEYCODE_CAPS_LOCK) {
-            val dialog = PopupUi.Ok(
+            val dialog = DialogModel.Ok(
                 message = getString(R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout),
             )
 
-            showPopup("caps_lock_message", dialog)
+            showDialog("caps_lock_message", dialog)
         }
 
         if (key.keyCode == KeyEvent.KEYCODE_BACK) {
-            val dialog = PopupUi.Ok(
+            val dialog = DialogModel.Ok(
                 message = getString(R.string.dialog_message_screen_pinning_warning),
             )
 
-            showPopup("screen_pinning_message", dialog)
+            showDialog("screen_pinning_message", dialog)
         }
 
         // Issue #491. Some key codes can only be detected through an input method. This will
         // be shown to the user by showing a keyboard icon next to the trigger key name so
         // explain this to the user.
         if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD && displayKeyMap.showTriggerKeyboardIconExplanation.first()) {
-            val dialog = PopupUi.Dialog(
+            val dialog = DialogModel.Alert(
                 title = getString(R.string.dialog_title_keyboard_icon_means_ime_detection),
                 message = getString(R.string.dialog_message_keyboard_icon_means_ime_detection),
                 negativeButtonText = getString(R.string.neg_dont_show_again),
                 positiveButtonText = getString(R.string.pos_ok),
             )
 
-            val response = showPopup("keyboard_icon_explanation", dialog)
+            val response = showDialog("keyboard_icon_explanation", dialog)
 
             if (response == DialogResponse.NEGATIVE) {
                 displayKeyMap.neverShowTriggerKeyboardIconExplanation()
@@ -620,7 +620,7 @@ abstract class BaseConfigTriggerViewModel(
         if (result is Error.AccessibilityServiceDisabled) {
             ViewModelHelper.handleAccessibilityServiceStoppedDialog(
                 resourceProvider = this@BaseConfigTriggerViewModel,
-                popupViewModel = this@BaseConfigTriggerViewModel,
+                dialogProvider = this@BaseConfigTriggerViewModel,
                 startService = displayKeyMap::startAccessibilityService,
             )
         }
@@ -628,7 +628,7 @@ abstract class BaseConfigTriggerViewModel(
         if (result is Error.AccessibilityServiceCrashed) {
             ViewModelHelper.handleAccessibilityServiceCrashedDialog(
                 resourceProvider = this@BaseConfigTriggerViewModel,
-                popupViewModel = this@BaseConfigTriggerViewModel,
+                dialogProvider = this@BaseConfigTriggerViewModel,
                 restartService = displayKeyMap::restartAccessibilityService,
             )
         }
@@ -640,7 +640,7 @@ abstract class BaseConfigTriggerViewModel(
                 TriggerError.DND_ACCESS_DENIED ->
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@BaseConfigTriggerViewModel,
-                        popupViewModel = this@BaseConfigTriggerViewModel,
+                        dialogProvider = this@BaseConfigTriggerViewModel,
                         neverShowDndTriggerErrorAgain = { displayKeyMap.neverShowDndTriggerError() },
                         fixError = { displayKeyMap.fixTriggerError(error) },
                     )

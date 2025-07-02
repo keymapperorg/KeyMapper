@@ -1,10 +1,5 @@
 package io.github.sds100.keymapper.base.home
 
-import android.os.Build
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.BubbleChart
-import androidx.compose.material.icons.outlined.Keyboard
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.base.R
@@ -20,11 +15,10 @@ import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogResponse
-import io.github.sds100.keymapper.base.utils.ui.PopupUi
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
+import io.github.sds100.keymapper.base.utils.ui.DialogModel
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.base.utils.ui.showPopup
-import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.base.utils.ui.showDialog
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -39,10 +33,10 @@ abstract class BaseHomeViewModel(
     private val sortKeyMaps: SortKeyMapsUseCase,
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
     navigationProvider: NavigationProvider,
-    popupViewModel: PopupViewModel,
+    dialogProvider: DialogProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
-    PopupViewModel by popupViewModel,
+    DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider {
 
     val keyMapListViewModel by lazy {
@@ -58,7 +52,7 @@ abstract class BaseHomeViewModel(
             showInputMethodPickerUseCase,
             onboarding,
             navigationProvider,
-            popupViewModel,
+            dialogProvider,
         )
     }
 
@@ -91,7 +85,7 @@ abstract class BaseHomeViewModel(
     }
 
     private suspend fun showWhatsNewDialog() {
-        val dialog = PopupUi.Dialog(
+        val dialog = DialogModel.Alert(
             title = getString(R.string.whats_new),
             message = onboarding.getWhatsNewText(),
             positiveButtonText = getString(R.string.pos_ok),
@@ -99,29 +93,29 @@ abstract class BaseHomeViewModel(
         )
 
         // don't return if they dismiss the dialog because this is common behaviour.
-        val response = showPopup("whats-new", dialog)
+        val response = showDialog("whats-new", dialog)
 
         if (response == DialogResponse.NEUTRAL) {
-            showPopup("url_changelog", PopupUi.OpenUrl(getString(R.string.url_changelog)))
+            showDialog("url_changelog", DialogModel.OpenUrl(getString(R.string.url_changelog)))
         }
 
         onboarding.showedWhatsNew()
     }
 
     private suspend fun showUpgradeGuiKeyboardDialog() {
-        val dialog = PopupUi.Dialog(
+        val dialog = DialogModel.Alert(
             title = getString(R.string.dialog_upgrade_gui_keyboard_title),
             message = getString(R.string.dialog_upgrade_gui_keyboard_message),
             positiveButtonText = getString(R.string.dialog_upgrade_gui_keyboard_positive),
             negativeButtonText = getString(R.string.dialog_upgrade_gui_keyboard_neutral),
         )
 
-        val response = showPopup("upgrade_gui_keyboard", dialog)
+        val response = showDialog("upgrade_gui_keyboard", dialog)
 
         if (response == DialogResponse.POSITIVE) {
-            showPopup(
+            showDialog(
                 "gui_keyboard_play_store",
-                PopupUi.OpenUrl(getString(R.string.url_play_store_keymapper_gui_keyboard)),
+                DialogModel.OpenUrl(getString(R.string.url_play_store_keymapper_gui_keyboard)),
             )
         }
     }

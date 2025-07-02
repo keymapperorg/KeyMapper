@@ -9,13 +9,13 @@ import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.ifIsData
 import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.base.utils.ui.MultiSelectProvider
-import io.github.sds100.keymapper.base.utils.ui.PopupUi
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.base.utils.ui.DialogModel
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
+import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.SelectionState
 import io.github.sds100.keymapper.base.utils.ui.TintType
-import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.base.utils.ui.showDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,7 +38,7 @@ class LogViewModel @Inject constructor(
     private val useCase: DisplayLogUseCase,
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
-    PopupViewModel by PopupViewModelImpl(),
+    DialogProvider by DialogProviderImpl(),
     ResourceProvider by resourceProvider {
     private val multiSelectProvider: MultiSelectProvider = MultiSelectProvider()
 
@@ -126,7 +126,7 @@ class LogViewModel @Inject constructor(
                 R.id.action_clear -> useCase.clearLog()
                 R.id.action_copy -> {
                     useCase.copyToClipboard(getSelectedLogEntries())
-                    showPopup("copied", PopupUi.Toast(getString(R.string.toast_copied_log)))
+                    showDialog("copied", DialogModel.Toast(getString(R.string.toast_copied_log)))
                 }
 
                 R.id.action_short_messages -> {

@@ -28,7 +28,7 @@ import kotlin.coroutines.resume
 
 suspend fun Context.materialAlertDialog(
     lifecycleOwner: LifecycleOwner,
-    model: PopupUi.Dialog,
+    model: DialogModel.Alert,
 ) = suspendCancellableCoroutine<DialogResponse?> { continuation ->
 
     materialAlertDialog {

@@ -25,7 +25,7 @@ import io.github.sds100.keymapper.base.intentExtraBool
 import io.github.sds100.keymapper.base.intentExtraGeneric
 import io.github.sds100.keymapper.base.utils.navigation.setupFragmentNavigation
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.utils.ui.showPopups
+import io.github.sds100.keymapper.base.utils.ui.showDialogs
 import io.github.sds100.keymapper.system.intents.BoolIntentExtraListItem
 import io.github.sds100.keymapper.system.intents.GenericIntentExtraListItem
 import io.github.sds100.keymapper.system.intents.IntentExtraListItem
@@ -85,7 +85,7 @@ class ConfigIntentFragment : Fragment() {
 
         binding.viewModel = viewModel
 
-        viewModel.showPopups(this, binding)
+        viewModel.showDialogs(this, binding)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             findNavController().navigateUp()

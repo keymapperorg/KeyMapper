@@ -10,7 +10,7 @@ import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.system.accessibility.RecordAccessibilityNodeState
 import io.github.sds100.keymapper.base.utils.containsQuery
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
@@ -48,11 +48,11 @@ import javax.inject.Inject
 class InteractUiElementViewModel @Inject constructor(
     private val useCase: InteractUiElementUseCase,
     resourceProvider: ResourceProvider,
-    popupViewModel: PopupViewModel,
+    dialogProvider: DialogProvider,
     navigationProvider: NavigationProvider,
 ) : ViewModel(),
     NavigationProvider by navigationProvider,
-    PopupViewModel by popupViewModel,
+    DialogProvider by dialogProvider,
     ResourceProvider by resourceProvider {
 
     val recordState: StateFlow<State<RecordUiElementState>> = combine(

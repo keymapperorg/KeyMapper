@@ -16,7 +16,7 @@ import io.github.sds100.keymapper.base.purchasing.PurchasingManager
 import io.github.sds100.keymapper.base.trigger.RecordTriggerUseCase
 import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.trigger.ConfigTriggerViewModel
 import javax.inject.Inject
@@ -35,12 +35,12 @@ class ConfigKeyMapViewModel @Inject constructor(
     fingerprintGesturesSupportedUseCase: FingerprintGesturesSupportedUseCase,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
-    popupViewModel: PopupViewModel,
+    dialogProvider: DialogProvider,
 ) : BaseConfigKeyMapViewModel(
     config = config,
     onboarding = onboarding,
     navigationProvider = navigationProvider,
-    popupViewModel = popupViewModel,
+    dialogProvider = dialogProvider,
 ) {
     override val configActionsViewModel: ConfigActionsViewModel = ConfigActionsViewModel(
         coroutineScope = viewModelScope,
@@ -51,7 +51,7 @@ class ConfigKeyMapViewModel @Inject constructor(
         onboarding = onboarding,
         resourceProvider = resourceProvider,
         navigationProvider = navigationProvider,
-        popupViewModel = popupViewModel,
+        dialogProvider = dialogProvider,
     )
 
     override val configTriggerViewModel: ConfigTriggerViewModel = ConfigTriggerViewModel(
@@ -66,7 +66,7 @@ class ConfigKeyMapViewModel @Inject constructor(
         fingerprintGesturesSupported = fingerprintGesturesSupportedUseCase,
         resourceProvider = resourceProvider,
         navigationProvider = navigationProvider,
-        popupViewModel = popupViewModel,
+        dialogProvider = dialogProvider,
     )
 
     override val configConstraintsViewModel: ConfigConstraintsViewModel =
@@ -76,6 +76,6 @@ class ConfigKeyMapViewModel @Inject constructor(
             displayConstraint = display,
             resourceProvider = resourceProvider,
             navigationProvider = navigationProvider,
-            popupViewModel = popupViewModel,
+            dialogProvider = dialogProvider,
         )
 }

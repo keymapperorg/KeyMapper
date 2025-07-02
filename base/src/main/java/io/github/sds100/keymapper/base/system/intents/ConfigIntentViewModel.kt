@@ -17,11 +17,11 @@ import io.github.sds100.keymapper.base.utils.navigation.NavigationProviderImpl
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
-import io.github.sds100.keymapper.base.utils.ui.PopupUi
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.base.utils.ui.DialogModel
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
+import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.system.apps.ActivityInfo
@@ -66,7 +66,7 @@ class ConfigIntentViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
-    PopupViewModel by PopupViewModelImpl(),
+    DialogProvider by DialogProviderImpl(),
     NavigationProvider by NavigationProviderImpl() {
 
     companion object {
@@ -322,9 +322,9 @@ class ConfigIntentViewModel @Inject constructor(
         viewModelScope.launch {
             val items = EXTRA_TYPES.map { it to getString(it.getLabelStringRes()) }
 
-            val dialog = PopupUi.SingleChoice(items)
+            val dialog = DialogModel.SingleChoice(items)
 
-            val extraType = showPopup("add_extra", dialog) ?: return@launch
+            val extraType = showDialog("add_extra", dialog) ?: return@launch
 
             val modelValue = when (extraType) {
                 BoolExtraType -> "true"
@@ -340,16 +340,16 @@ class ConfigIntentViewModel @Inject constructor(
     fun onShowExtraExampleClick(listItem: IntentExtraListItem) {
         viewModelScope.launch {
             if (listItem is GenericIntentExtraListItem) {
-                val dialog = PopupUi.Ok(message = listItem.exampleString)
-                showPopup("extra_example", dialog)
+                val dialog = DialogModel.Ok(message = listItem.exampleString)
+                showDialog("extra_example", dialog)
             }
         }
     }
 
     fun onShowCategoriesExampleClick() {
         viewModelScope.launch {
-            val dialog = PopupUi.Ok(message = getString(R.string.intent_categories_example))
-            showPopup("categories_example", dialog)
+            val dialog = DialogModel.Ok(message = getString(R.string.intent_categories_example))
+            showDialog("categories_example", dialog)
         }
     }
 
@@ -366,9 +366,9 @@ class ConfigIntentViewModel @Inject constructor(
                 MultiChoiceItem(intentFlagInt, intentFlagText, isChecked)
             }
 
-            val dialog = PopupUi.MultiChoice(items = dialogItems)
+            val dialog = DialogModel.MultiChoice(items = dialogItems)
 
-            val selectedFlags = showPopup("set_flags", dialog) ?: return@launch
+            val selectedFlags = showDialog("set_flags", dialog) ?: return@launch
 
             var newFlags = 0
 
@@ -455,18 +455,18 @@ class ConfigIntentViewModel @Inject constructor(
 
     fun onShowFlagsExampleClick() {
         viewModelScope.launch {
-            val dialog = PopupUi.Dialog(
+            val dialog = DialogModel.Alert(
                 message = getString(R.string.intent_flags_example),
                 positiveButtonText = getString(R.string.pos_ok),
                 neutralButtonText = getString(R.string.neutral_intent_docs),
             )
 
-            val response = showPopup("flags_example", dialog) ?: return@launch
+            val response = showDialog("flags_example", dialog) ?: return@launch
 
             if (response == DialogResponse.NEUTRAL) {
-                showPopup(
+                showDialog(
                     "url_intent_flags",
-                    PopupUi.OpenUrl(getString(R.string.url_intent_set_flags_help)),
+                    DialogModel.OpenUrl(getString(R.string.url_intent_set_flags_help)),
                 )
             }
         }

@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.utils.filterByQuery
 import io.github.sds100.keymapper.base.utils.ui.DefaultSimpleListItem
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
+import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.SimpleListItemOld
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
@@ -26,7 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ChooseKeyCodeViewModel @Inject constructor() :
     ViewModel(),
-    PopupViewModel by PopupViewModelImpl() {
+    DialogProvider by DialogProviderImpl() {
 
     val searchQuery = MutableStateFlow<String?>(null)
 

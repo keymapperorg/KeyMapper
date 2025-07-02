@@ -9,10 +9,10 @@ import androidx.preference.isEmpty
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.ui.ChooseAppStoreModel
-import io.github.sds100.keymapper.base.utils.ui.PopupUi
+import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.drawable
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.base.utils.ui.str
 import io.github.sds100.keymapper.base.utils.ui.viewLifecycleScope
 import io.github.sds100.keymapper.data.Keys
@@ -83,7 +83,7 @@ class Android11BugWorkaroundSettingsFragment : BaseSettingsFragment() {
             setOnPreferenceClickListener {
                 viewLifecycleScope.launchWhenResumed {
                     if (isTvDevice) {
-                        val chooseAppStoreDialog = PopupUi.ChooseAppStore(
+                        val chooseAppStoreDialog = DialogModel.ChooseAppStore(
                             title = getString(R.string.dialog_title_choose_download_leanback_keyboard),
                             message = getString(R.string.dialog_message_choose_download_leanback_keyboard),
                             model = ChooseAppStoreModel(
@@ -92,9 +92,9 @@ class Android11BugWorkaroundSettingsFragment : BaseSettingsFragment() {
                             negativeButtonText = str(R.string.neg_cancel),
                         )
 
-                        viewModel.showPopup("download_leanback_ime", chooseAppStoreDialog)
+                        viewModel.showDialog("download_leanback_ime", chooseAppStoreDialog)
                     } else {
-                        val chooseAppStoreDialog = PopupUi.ChooseAppStore(
+                        val chooseAppStoreDialog = DialogModel.ChooseAppStore(
                             title = getString(R.string.dialog_title_choose_download_gui_keyboard),
                             message = getString(R.string.dialog_message_choose_download_gui_keyboard),
                             model = ChooseAppStoreModel(
@@ -105,7 +105,7 @@ class Android11BugWorkaroundSettingsFragment : BaseSettingsFragment() {
                             negativeButtonText = str(R.string.neg_cancel),
                         )
 
-                        viewModel.showPopup("download_gui_keyboard", chooseAppStoreDialog)
+                        viewModel.showDialog("download_gui_keyboard", chooseAppStoreDialog)
                     }
                 }
 

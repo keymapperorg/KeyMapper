@@ -10,11 +10,11 @@ import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.base.utils.filterByQuery
 import io.github.sds100.keymapper.base.utils.ui.IconInfo
-import io.github.sds100.keymapper.base.utils.ui.PopupUi
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.base.utils.ui.DialogModel
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
+import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.base.utils.ui.showDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,7 +33,7 @@ class ChooseAppShortcutViewModel @Inject constructor(
     private val useCase: DisplayAppShortcutsUseCase,
     private val resourceProvider: ResourceProvider
 ) : ViewModel(),
-    PopupViewModel by PopupViewModelImpl(),
+    DialogProvider by DialogProviderImpl(),
     ResourceProvider by resourceProvider {
 
     val searchQuery = MutableStateFlow<String?>(null)
@@ -105,9 +105,9 @@ class ChooseAppShortcutViewModel @Inject constructor(
             if (intentShortcutName != null) {
                 shortcutName = intentShortcutName
             } else {
-                shortcutName = showPopup(
+                shortcutName = showDialog(
                     "create_shortcut_name",
-                    PopupUi.Text(
+                    DialogModel.Text(
                         hint = getString(R.string.hint_shortcut_name),
                         allowEmpty = false,
                     ),

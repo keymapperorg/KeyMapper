@@ -34,8 +34,8 @@ import io.github.sds100.keymapper.base.utils.navigation.NavigationProviderImpl
 import io.github.sds100.keymapper.base.utils.navigation.SetupNavigation
 import io.github.sds100.keymapper.base.utils.navigation.handleRouteArgs
 import io.github.sds100.keymapper.base.utils.navigation.setupFragmentNavigation
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
-import io.github.sds100.keymapper.base.utils.ui.showPopups
+import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
+import io.github.sds100.keymapper.base.utils.ui.showDialogs
 import io.github.sds100.keymapper.home.HomeViewModel
 import io.github.sds100.keymapper.keymaps.ConfigKeyMapScreen
 import io.github.sds100.keymapper.keymaps.ConfigKeyMapViewModel
@@ -48,7 +48,7 @@ class MainFragment : Fragment() {
     lateinit var navigationProvider: NavigationProviderImpl
 
     @Inject
-    lateinit var popupViewModel: PopupViewModelImpl
+    lateinit var popupViewModel: DialogProviderImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,7 +92,7 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        popupViewModel.showPopups(this, view)
+        popupViewModel.showDialogs(this, view)
     }
 
     private fun NavGraphBuilder.composableDestinations() {

@@ -23,7 +23,7 @@ import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.databinding.FragmentSwipePickCoordinatesBinding
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.utils.ui.showPopups
+import io.github.sds100.keymapper.base.utils.ui.showDialogs
 import io.github.sds100.keymapper.system.files.FileUtils
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.json.Json
@@ -97,7 +97,7 @@ class SwipePickDisplayCoordinateFragment : Fragment() {
 
         binding.viewModel = viewModel
 
-        viewModel.showPopups(this, binding)
+        viewModel.showDialogs(this, binding)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             findNavController().navigateUp()

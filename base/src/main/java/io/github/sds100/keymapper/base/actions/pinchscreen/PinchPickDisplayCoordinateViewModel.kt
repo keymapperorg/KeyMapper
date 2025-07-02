@@ -11,11 +11,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.base.utils.ui.PopupUi
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.base.utils.ui.DialogModel
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
+import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.PinchScreenType
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +35,7 @@ class PinchPickDisplayCoordinateViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
-    PopupViewModel by PopupViewModelImpl() {
+    DialogProvider by DialogProviderImpl() {
 
     private val pinchTypes = arrayOf(PinchScreenType.PINCH_IN.name, PinchScreenType.PINCH_OUT.name)
 
@@ -164,11 +164,11 @@ class PinchPickDisplayCoordinateViewModel @Inject constructor(
             (displaySize.y != newBitmap.width && displaySize.x != newBitmap.height)
         ) {
             viewModelScope.launch {
-                val snackBar = PopupUi.SnackBar(
+                val snackBar = DialogModel.SnackBar(
                     message = getString(R.string.toast_incorrect_screenshot_resolution),
                 )
 
-                showPopup("incorrect_resolution", snackBar)
+                showDialog("incorrect_resolution", snackBar)
             }
 
             return
@@ -228,9 +228,9 @@ class PinchPickDisplayCoordinateViewModel @Inject constructor(
             val fingerCount = fingerCount.value ?: return@launch
             val duration = duration.value ?: return@launch
 
-            val description = showPopup(
+            val description = showDialog(
                 "coordinate_description",
-                PopupUi.Text(
+                DialogModel.Text(
                     getString(R.string.hint_tap_coordinate_title),
                     allowEmpty = true,
                     text = description.value ?: "",

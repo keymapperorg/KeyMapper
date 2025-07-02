@@ -16,7 +16,7 @@ import io.github.sds100.keymapper.base.simple
 import io.github.sds100.keymapper.base.utils.ui.RecyclerViewUtils
 import io.github.sds100.keymapper.base.utils.ui.SimpleRecyclerViewFragment
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.utils.ui.showPopups
+import io.github.sds100.keymapper.base.utils.ui.showDialogs
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.apps.AppShortcutInfo
 import kotlinx.coroutines.flow.Flow
@@ -62,7 +62,7 @@ class ChooseAppShortcutFragment : SimpleRecyclerViewFragment<AppShortcutListItem
             }
         }
 
-        viewModel.showPopups(this, binding)
+        viewModel.showDialogs(this, binding)
     }
 
     override fun populateList(

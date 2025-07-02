@@ -8,11 +8,11 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
-import io.github.sds100.keymapper.base.utils.ui.PopupUi
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.base.utils.ui.DialogModel
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
+import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
@@ -32,7 +32,7 @@ class SettingsViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     val sharedPrefsDataStoreWrapper: SharedPrefsDataStoreWrapper,
 ) : ViewModel(),
-    PopupViewModel by PopupViewModelImpl(),
+    DialogProvider by DialogProviderImpl(),
     ResourceProvider by resourceProvider {
 
     val automaticBackupLocation = useCase.automaticBackupLocation
@@ -78,21 +78,21 @@ class SettingsViewModel @Inject constructor(
                 .chooseCompatibleIme()
                 .onSuccess { ime ->
                     val snackBar =
-                        PopupUi.SnackBar(
+                        DialogModel.SnackBar(
                             message = getString(
                                 R.string.toast_chose_keyboard,
                                 ime.label,
                             ),
                         )
-                    showPopup("chose_ime_success", snackBar)
+                    showDialog("chose_ime_success", snackBar)
                 }
                 .otherwise {
                     useCase.showImePicker()
                 }
                 .onFailure { error ->
                     val snackBar =
-                        PopupUi.SnackBar(message = error.getFullMessage(this@SettingsViewModel))
-                    showPopup("chose_ime_error", snackBar)
+                        DialogModel.SnackBar(message = error.getFullMessage(this@SettingsViewModel))
+                    showDialog("chose_ime_error", snackBar)
                 }
         }
     }
@@ -102,15 +102,15 @@ class SettingsViewModel @Inject constructor(
             val soundFiles = useCase.getSoundFiles()
 
             if (soundFiles.isEmpty()) {
-                showPopup("no sound files", PopupUi.Toast(getString(R.string.toast_no_sound_files)))
+                showDialog("no sound files", DialogModel.Toast(getString(R.string.toast_no_sound_files)))
                 return@launch
             }
 
-            val dialog = PopupUi.MultiChoice(
+            val dialog = DialogModel.MultiChoice(
                 items = soundFiles.map { MultiChoiceItem(it.uid, it.name) },
             )
 
-            val selectedFiles = showPopup("select_sound_files_to_delete", dialog) ?: return@launch
+            val selectedFiles = showDialog("select_sound_files_to_delete", dialog) ?: return@launch
 
             useCase.deleteSoundFiles(selectedFiles)
         }
@@ -156,16 +156,16 @@ class SettingsViewModel @Inject constructor(
                 .filter { it.isExternal }
 
             if (externalDevices.isEmpty()) {
-                val dialog = PopupUi.Dialog(
+                val dialog = DialogModel.Alert(
                     message = getString(R.string.dialog_message_settings_no_external_devices_connected),
                     positiveButtonText = getString(R.string.pos_ok),
                 )
 
-                showPopup("no_external_devices", dialog)
+                showDialog("no_external_devices", dialog)
             } else {
                 val checkedDevices = useCase.getPreference(prefKey).first() ?: emptySet()
 
-                val dialog = PopupUi.MultiChoice(
+                val dialog = DialogModel.MultiChoice(
                     items = externalDevices.map { device ->
                         MultiChoiceItem(
                             id = device.descriptor,
@@ -175,7 +175,7 @@ class SettingsViewModel @Inject constructor(
                     },
                 )
 
-                val newCheckedDevices = showPopup("choose_device", dialog) ?: return@launch
+                val newCheckedDevices = showDialog("choose_device", dialog) ?: return@launch
 
                 useCase.setPreference(prefKey, newCheckedDevices.toSet())
             }
@@ -183,18 +183,18 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun onCreateBackupFileActivityNotFound() {
-        val dialog = PopupUi.Dialog(
+        val dialog = DialogModel.Alert(
             message = getString(R.string.dialog_message_no_app_found_to_create_file),
             positiveButtonText = getString(R.string.pos_ok),
         )
 
         viewModelScope.launch {
-            showPopup("create_document_activity_not_found", dialog)
+            showDialog("create_document_activity_not_found", dialog)
         }
     }
 
     fun onResetAllSettingsClick() {
-        val dialog = PopupUi.Dialog(
+        val dialog = DialogModel.Alert(
             title = getString(R.string.dialog_title_reset_settings),
             message = getString(R.string.dialog_message_reset_settings),
             positiveButtonText = getString(R.string.pos_button_reset_settings),
@@ -202,7 +202,7 @@ class SettingsViewModel @Inject constructor(
         )
 
         viewModelScope.launch {
-            val response = showPopup("reset_settings_dialog", dialog)
+            val response = showDialog("reset_settings_dialog", dialog)
 
             if (response == DialogResponse.POSITIVE) {
                 useCase.resetAllSettings()

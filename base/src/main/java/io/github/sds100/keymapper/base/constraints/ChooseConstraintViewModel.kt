@@ -12,11 +12,11 @@ import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
-import io.github.sds100.keymapper.base.utils.ui.PopupUi
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
+import io.github.sds100.keymapper.base.utils.ui.DialogModel
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
-import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.camera.CameraLens
@@ -36,12 +36,12 @@ import javax.inject.Inject
 @HiltViewModel
 class ChooseConstraintViewModel @Inject constructor(
     private val useCase: CreateConstraintUseCase,
-    popupViewModel: PopupViewModel,
+    dialogProvider: DialogProvider,
     navigationProvider: NavigationProvider,
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
-    PopupViewModel by popupViewModel,
+    DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider {
 
     companion object {
@@ -244,9 +244,9 @@ class ChooseConstraintViewModel @Inject constructor(
             return items.first().first
         }
 
-        val dialog = PopupUi.SingleChoice(items)
+        val dialog = DialogModel.SingleChoice(items)
 
-        val cameraLens = showPopup("choose_flashlight_lens", dialog)
+        val cameraLens = showDialog("choose_flashlight_lens", dialog)
 
         return cameraLens
     }
@@ -278,14 +278,14 @@ class ChooseConstraintViewModel @Inject constructor(
         if (knownSSIDs == null) {
             val savedWifiSSIDs = useCase.getSavedWifiSSIDs().first()
 
-            val dialog = PopupUi.Text(
+            val dialog = DialogModel.Text(
                 hint = getString(R.string.hint_wifi_ssid),
                 allowEmpty = true,
                 message = getString(R.string.constraint_wifi_message_cant_list_networks),
                 autoCompleteEntries = savedWifiSSIDs,
             )
 
-            val ssidText = showPopup("type_ssid", dialog) ?: return
+            val ssidText = showDialog("type_ssid", dialog) ?: return
 
             if (ssidText.isBlank()) {
                 chosenSSID = null
@@ -303,7 +303,7 @@ class ChooseConstraintViewModel @Inject constructor(
             val items = listOf(anySSIDItem).plus(ssidItems)
 
             val chosenItem =
-                showPopup("choose_ssid", PopupUi.SingleChoice(items)) ?: return
+                showDialog("choose_ssid", DialogModel.SingleChoice(items)) ?: return
 
             if (chosenItem == anySSIDItem.first) {
                 chosenSSID = null
@@ -326,9 +326,9 @@ class ChooseConstraintViewModel @Inject constructor(
     private suspend fun onSelectImeChosenConstraint(type: ConstraintId) {
         val inputMethods = useCase.getEnabledInputMethods()
         val items = inputMethods.map { it.id to it.label }
-        val dialog = PopupUi.SingleChoice(items = items)
+        val dialog = DialogModel.SingleChoice(items = items)
 
-        val result = showPopup("choose_input_method", dialog) ?: return
+        val result = showDialog("choose_input_method", dialog) ?: return
 
         val imeInfo = inputMethods.single { it.id == result }
 
@@ -354,9 +354,9 @@ class ChooseConstraintViewModel @Inject constructor(
     }
 
     private suspend fun onSelectScreenOnConstraint() {
-        val response = showPopup(
+        val response = showDialog(
             "screen_on_constraint_limitation",
-            PopupUi.Ok(getString(R.string.dialog_message_screen_constraints_limitation)),
+            DialogModel.Ok(getString(R.string.dialog_message_screen_constraints_limitation)),
         )
 
         response ?: return
@@ -365,9 +365,9 @@ class ChooseConstraintViewModel @Inject constructor(
     }
 
     private suspend fun onSelectScreenOffConstraint() {
-        val response = showPopup(
+        val response = showDialog(
             "screen_on_constraint_limitation",
-            PopupUi.Ok(getString(R.string.dialog_message_screen_constraints_limitation)),
+            DialogModel.Ok(getString(R.string.dialog_message_screen_constraints_limitation)),
         )
 
         response ?: return
@@ -376,9 +376,9 @@ class ChooseConstraintViewModel @Inject constructor(
     }
 
     private suspend fun onSelectBluetoothConstraint(type: ConstraintId) {
-        val response = showPopup(
+        val response = showDialog(
             "bluetooth_device_constraint_limitation",
-            PopupUi.Ok(getString(R.string.dialog_message_bt_constraint_limitation)),
+            DialogModel.Ok(getString(R.string.dialog_message_bt_constraint_limitation)),
         )
 
         response ?: return

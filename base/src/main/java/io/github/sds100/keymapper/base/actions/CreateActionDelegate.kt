@@ -16,10 +16,10 @@ import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
-import io.github.sds100.keymapper.base.utils.ui.PopupUi
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
+import io.github.sds100.keymapper.base.utils.ui.DialogModel
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.network.HttpMethod
@@ -37,11 +37,11 @@ import kotlinx.serialization.json.Json
 class CreateActionDelegate(
     private val coroutineScope: CoroutineScope,
     private val useCase: CreateActionUseCase,
-    popupViewModel: PopupViewModel,
+    dialogProvider: DialogProvider,
     navigationProvider: NavigationProvider,
     resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
-    PopupViewModel by popupViewModel,
+    DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider {
 
     val actionResult: MutableStateFlow<ActionData?> = MutableStateFlow(null)
@@ -163,7 +163,7 @@ class CreateActionDelegate(
                 }
 
                 val imeId =
-                    showPopup("choose_ime", PopupUi.SingleChoice(items)) ?: return null
+                    showDialog("choose_ime", DialogModel.SingleChoice(items)) ?: return null
                 val imeName = inputMethods.single { it.id == imeId }.label
 
                 return ActionData.SwitchKeyboard(imeId, imeName)
@@ -249,9 +249,9 @@ class CreateActionDelegate(
                     ),
                 )
 
-                val showVolumeUiDialog = PopupUi.MultiChoice(items = dialogItems)
+                val showVolumeUiDialog = DialogModel.MultiChoice(items = dialogItems)
 
-                val chosenFlags = showPopup("show_volume_ui", showVolumeUiDialog) ?: return null
+                val chosenFlags = showDialog("show_volume_ui", showVolumeUiDialog) ?: return null
 
                 val showVolumeUi = chosenFlags.contains(showVolumeUiId)
 
@@ -288,17 +288,17 @@ class CreateActionDelegate(
                     ),
                 )
 
-                val showVolumeUiDialog = PopupUi.MultiChoice(items = dialogItems)
+                val showVolumeUiDialog = DialogModel.MultiChoice(items = dialogItems)
 
                 val chosenFlags =
-                    showPopup("show_volume_ui", showVolumeUiDialog) ?: return null
+                    showDialog("show_volume_ui", showVolumeUiDialog) ?: return null
 
                 val showVolumeUi = chosenFlags.contains(showVolumeUiId)
 
                 val items = VolumeStream.entries
                     .map { it to getString(VolumeStreamStrings.getLabel(it)) }
 
-                val stream = showPopup("pick_volume_stream", PopupUi.SingleChoice(items))
+                val stream = showDialog("pick_volume_stream", DialogModel.SingleChoice(items))
                     ?: return null
 
                 val action = when (actionId) {
@@ -319,7 +319,7 @@ class CreateActionDelegate(
                     .map { it to getString(RingerModeStrings.getLabel(it)) }
 
                 val ringerMode =
-                    showPopup("pick_ringer_mode", PopupUi.SingleChoice(items))
+                    showDialog("pick_ringer_mode", DialogModel.SingleChoice(items))
                         ?: return null
 
                 return ActionData.Volume.SetRingerMode(ringerMode)
@@ -333,7 +333,7 @@ class CreateActionDelegate(
                     .map { it to getString(DndModeStrings.getLabel(it)) }
 
                 val dndMode =
-                    showPopup("pick_dnd_mode", PopupUi.SingleChoice(items))
+                    showDialog("pick_dnd_mode", DialogModel.SingleChoice(items))
                         ?: return null
 
                 val action = when (actionId) {
@@ -370,7 +370,7 @@ class CreateActionDelegate(
                 }
 
                 val orientations =
-                    showPopup("pick_orientations", PopupUi.MultiChoice(items)) ?: return null
+                    showDialog("pick_orientations", DialogModel.MultiChoice(items)) ?: return null
 
                 return ActionData.Rotation.CycleRotations(orientations)
             }
@@ -457,7 +457,7 @@ class CreateActionDelegate(
                 if (items.size == 1) {
                     return ActionData.Flashlight.Disable(items.first().first)
                 } else {
-                    val lens = showPopup("pick_lens", PopupUi.SingleChoice(items))
+                    val lens = showDialog("pick_lens", DialogModel.SingleChoice(items))
                         ?: return null
 
                     return ActionData.Flashlight.Disable(lens)
@@ -614,9 +614,9 @@ class CreateActionDelegate(
                     ""
                 }
 
-                val text = showPopup(
+                val text = showDialog(
                     "create_text_action",
-                    PopupUi.Text(
+                    DialogModel.Text(
                         hint = getString(R.string.hint_create_text_action),
                         allowEmpty = false,
                         text = oldText,
@@ -633,9 +633,9 @@ class CreateActionDelegate(
                     ""
                 }
 
-                val text = showPopup(
+                val text = showDialog(
                     "create_url_action",
-                    PopupUi.Text(
+                    DialogModel.Text(
                         hint = getString(R.string.hint_create_url_action),
                         allowEmpty = false,
                         inputType = InputType.TYPE_TEXT_VARIATION_URI,
@@ -678,9 +678,9 @@ class CreateActionDelegate(
                     ""
                 }
 
-                val text = showPopup(
+                val text = showDialog(
                     "create_phone_call_action",
-                    PopupUi.Text(
+                    DialogModel.Text(
                         hint = getString(R.string.hint_create_phone_call_action),
                         allowEmpty = false,
                         inputType = InputType.TYPE_CLASS_PHONE,

@@ -6,7 +6,7 @@ import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.NavHostFragment
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.BaseMainActivity
-import io.github.sds100.keymapper.base.utils.ui.showPopups
+import io.github.sds100.keymapper.base.utils.ui.showDialogs
 import io.github.sds100.keymapper.base.databinding.ActivityMainBinding
 import io.github.sds100.keymapper.base.R
 
@@ -33,6 +33,6 @@ class MainActivity : BaseMainActivity() {
             setStartDestination(R.id.home_fragment)
         }
 
-        viewModel.showPopups(this, binding.coordinatorLayout)
+        viewModel.showDialogs(this, binding.coordinatorLayout)
     }
 }

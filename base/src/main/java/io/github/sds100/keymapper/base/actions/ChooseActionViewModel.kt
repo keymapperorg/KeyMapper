@@ -8,13 +8,13 @@ import io.github.sds100.keymapper.base.utils.containsQuery
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogResponse
-import io.github.sds100.keymapper.base.utils.ui.PopupUi
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
+import io.github.sds100.keymapper.base.utils.ui.DialogModel
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemGroup
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
-import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
@@ -35,10 +35,10 @@ class ChooseActionViewModel @Inject constructor(
     private val useCase: CreateActionUseCase,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
-    popupViewModel: PopupViewModel,
+    dialogProvider: DialogProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
-    PopupViewModel by popupViewModel,
+    DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider {
 
     companion object {
@@ -176,9 +176,9 @@ class ChooseActionViewModel @Inject constructor(
     private suspend fun showMessageForAction(id: ActionId): Boolean {
         // See issue #1379
         if (id == ActionId.APP) {
-            val response = showPopup(
+            val response = showDialog(
                 "show_app_action_warning_dialog",
-                PopupUi.Dialog(
+                DialogModel.Alert(
                     message = getString(R.string.action_open_app_dialog_message),
                     title = getString(R.string.action_open_app_dialog_title),
                     positiveButtonText = getString(R.string.action_open_app_dialog_read_more_button),
@@ -187,9 +187,9 @@ class ChooseActionViewModel @Inject constructor(
             )
 
             if (response == DialogResponse.POSITIVE) {
-                showPopup(
+                showDialog(
                     "app_action_permission_info",
-                    PopupUi.OpenUrl(getString(R.string.url_action_guide)),
+                    DialogModel.OpenUrl(getString(R.string.url_action_guide)),
                 )
                 return false
             } else {
@@ -220,9 +220,9 @@ class ChooseActionViewModel @Inject constructor(
         }
 
         if (messageToShow != null) {
-            val response = showPopup(
+            val response = showDialog(
                 "show_action_message",
-                PopupUi.Ok(message = getString(messageToShow)),
+                DialogModel.Ok(message = getString(messageToShow)),
             )
 
             return response != null

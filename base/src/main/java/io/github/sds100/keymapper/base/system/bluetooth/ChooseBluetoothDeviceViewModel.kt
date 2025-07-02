@@ -8,8 +8,8 @@ import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.base.utils.ui.DefaultSimpleListItem
 import io.github.sds100.keymapper.base.utils.ui.ListItem
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
+import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.TextListItem
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,7 +28,7 @@ class ChooseBluetoothDeviceViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
-    PopupViewModel by PopupViewModelImpl() {
+    DialogProvider by DialogProviderImpl() {
 
     private val _caption = MutableStateFlow<String?>(null)
     val caption: StateFlow<String?> = _caption

@@ -27,85 +27,84 @@ import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton
 
-// TODO Rename DialogProvider
 @Singleton
-class PopupViewModelImpl @Inject constructor() : PopupViewModel {
+class DialogProviderImpl @Inject constructor() : DialogProvider {
 
-    private val _onUserResponse by lazy { MutableSharedFlow<OnPopupResponseEvent>() }
+    private val _onUserResponse by lazy { MutableSharedFlow<OnDialogResponseEvent>() }
     override val onUserResponse by lazy { _onUserResponse.asSharedFlow() }
 
-    private val getUserResponse by lazy { MutableSharedFlow<ShowPopupEvent>() }
-    override val showPopup by lazy { getUserResponse.asSharedFlow() }
+    private val getUserResponse by lazy { MutableSharedFlow<ShowDialogEvent>() }
+    override val showDialog by lazy { getUserResponse.asSharedFlow() }
 
-    override suspend fun showPopup(event: ShowPopupEvent) {
+    override suspend fun showDialog(event: ShowDialogEvent) {
         // wait for the view to collect so no dialogs are missed
         getUserResponse.subscriptionCount.first { it > 0 }
 
         getUserResponse.emit(event)
     }
 
-    override fun onUserResponse(event: OnPopupResponseEvent) {
+    override fun onUserResponse(event: OnDialogResponseEvent) {
         runBlocking { _onUserResponse.emit(event) }
     }
 }
 
-interface PopupViewModel {
-    val showPopup: SharedFlow<ShowPopupEvent>
-    val onUserResponse: SharedFlow<OnPopupResponseEvent>
+interface DialogProvider {
+    val showDialog: SharedFlow<ShowDialogEvent>
+    val onUserResponse: SharedFlow<OnDialogResponseEvent>
 
-    suspend fun showPopup(event: ShowPopupEvent)
-    fun onUserResponse(event: OnPopupResponseEvent)
+    suspend fun showDialog(event: ShowDialogEvent)
+    fun onUserResponse(event: OnDialogResponseEvent)
 }
 
-fun PopupViewModel.onUserResponse(key: String, response: Any?) {
-    onUserResponse(OnPopupResponseEvent(key, response))
+fun DialogProvider.onUserResponse(key: String, response: Any?) {
+    onUserResponse(OnDialogResponseEvent(key, response))
 }
 
-suspend inline fun <reified R> PopupViewModel.showPopup(
+suspend inline fun <reified R> DialogProvider.showDialog(
     key: String,
-    ui: PopupUi<R>,
+    ui: DialogModel<R>,
 ): R? {
-    showPopup(ShowPopupEvent(key, ui))
+    showDialog(ShowDialogEvent(key, ui))
 
     /*
     This ensures only one job for a dialog is active at once by cancelling previous jobs when a new
     dialog is shown with the same key
      */
     return merge(
-        showPopup.dropWhile { it.key != key }.map { null },
+        showDialog.dropWhile { it.key != key }.map { null },
         onUserResponse.dropWhile { it.response !is R? && it.key != key }.map { it.response },
     ).first() as R?
 }
 
-fun PopupViewModel.showPopups(
+fun DialogProvider.showDialogs(
     fragment: Fragment,
     binding: ViewDataBinding,
 ) {
-    showPopups(fragment.requireContext(), fragment.viewLifecycleOwner, binding.root)
+    showDialogs(fragment.requireContext(), fragment.viewLifecycleOwner, binding.root)
 }
 
-fun PopupViewModel.showPopups(
+fun DialogProvider.showDialogs(
     fragment: Fragment,
     rootView: View,
 ) {
-    showPopups(fragment.requireContext(), fragment.viewLifecycleOwner, rootView)
+    showDialogs(fragment.requireContext(), fragment.viewLifecycleOwner, rootView)
 }
 
-fun PopupViewModel.showPopups(
+fun DialogProvider.showDialogs(
     activity: FragmentActivity,
     rootView: View,
 ) {
-    showPopups(activity, activity, rootView)
+    showDialogs(activity, activity, rootView)
 }
 
-fun PopupViewModel.showPopups(
+fun DialogProvider.showDialogs(
     ctx: Context,
     lifecycleOwner: LifecycleOwner,
     rootView: View,
 ) {
     // must be onCreate because dismissing in onDestroy
     lifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.CREATED) {
-        showPopup.onEach { event ->
+        showDialog.onEach { event ->
             var responded = false
 
             val observer = object : LifecycleObserver {
@@ -124,16 +123,16 @@ fun PopupViewModel.showPopups(
             val response: Any?
 
             when (event.ui) {
-                is PopupUi.Ok ->
+                is DialogModel.Ok ->
                     response = ctx.okDialog(lifecycleOwner, event.ui.message, event.ui.title)
 
-                is PopupUi.MultiChoice<*> ->
+                is DialogModel.MultiChoice<*> ->
                     response = ctx.multiChoiceDialog(lifecycleOwner, event.ui.items)
 
-                is PopupUi.SingleChoice<*> ->
+                is DialogModel.SingleChoice<*> ->
                     response = ctx.singleChoiceDialog(lifecycleOwner, event.ui.items)
 
-                is PopupUi.SnackBar ->
+                is DialogModel.SnackBar ->
                     response = SnackBarUtils.show(
                         rootView.findViewById(R.id.coordinatorLayout),
                         event.ui.message,
@@ -141,7 +140,7 @@ fun PopupViewModel.showPopups(
                         event.ui.long,
                     )
 
-                is PopupUi.Text ->
+                is DialogModel.Text ->
                     response = ctx.editTextStringAlertDialog(
                         lifecycleOwner,
                         event.ui.hint,
@@ -152,15 +151,15 @@ fun PopupViewModel.showPopups(
                         event.ui.autoCompleteEntries,
                     )
 
-                is PopupUi.Dialog ->
+                is DialogModel.Alert ->
                     response = ctx.materialAlertDialog(lifecycleOwner, event.ui)
 
-                is PopupUi.Toast -> {
+                is DialogModel.Toast -> {
                     Toast.makeText(ctx, event.ui.text, Toast.LENGTH_SHORT).show()
                     response = Unit
                 }
 
-                is PopupUi.ChooseAppStore -> {
+                is DialogModel.ChooseAppStore -> {
                     val view = DialogChooseAppStoreBinding.inflate(LayoutInflater.from(ctx)).apply {
                         model = event.ui.model
                     }.root
@@ -175,7 +174,7 @@ fun PopupViewModel.showPopups(
                     )
                 }
 
-                is PopupUi.OpenUrl -> {
+                is DialogModel.OpenUrl -> {
                     UrlUtils.openUrl(ctx, event.ui.url)
                     response = Unit
                 }

@@ -10,7 +10,7 @@ import io.github.sds100.keymapper.base.trigger.BaseConfigTriggerViewModel
 import io.github.sds100.keymapper.base.trigger.RecordTriggerUseCase
 import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
@@ -27,7 +27,7 @@ class ConfigTriggerViewModel @Inject constructor(
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
-    popupViewModel: PopupViewModel,
+    dialogProvider: DialogProvider,
 ) : BaseConfigTriggerViewModel(
     coroutineScope = coroutineScope,
     onboarding = onboarding,
@@ -40,7 +40,7 @@ class ConfigTriggerViewModel @Inject constructor(
     fingerprintGesturesSupported = fingerprintGesturesSupported,
     resourceProvider = resourceProvider,
     navigationProvider = navigationProvider,
-    popupViewModel = popupViewModel,
+    dialogProvider = dialogProvider,
 ) {
     override fun onEditFloatingButtonClick() {}
 

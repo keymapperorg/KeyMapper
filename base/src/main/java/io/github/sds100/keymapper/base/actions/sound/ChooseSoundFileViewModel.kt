@@ -10,11 +10,11 @@ import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.DefaultSimpleListItem
-import io.github.sds100.keymapper.base.utils.ui.PopupUi
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.base.utils.ui.DialogModel
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
+import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.base.utils.ui.showDialog
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,7 +31,7 @@ class ChooseSoundFileViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
     private val useCase: ChooseSoundFileUseCase,
 ) : ViewModel(),
-    PopupViewModel by PopupViewModelImpl(),
+    DialogProvider by DialogProviderImpl(),
     ResourceProvider by resourceProvider {
 
     private val _chooseSoundFile = MutableSharedFlow<Unit>()
@@ -66,13 +66,13 @@ class ChooseSoundFileViewModel @Inject constructor(
         viewModelScope.launch {
             val soundFileInfo = useCase.soundFiles.value.find { it.uid == id } ?: return@launch
 
-            val dialog = PopupUi.Text(
+            val dialog = DialogModel.Text(
                 hint = getString(R.string.hint_sound_file_description),
                 allowEmpty = false,
                 text = soundFileInfo.name,
             )
 
-            val soundDescription = showPopup("file_description", dialog) ?: return@launch
+            val soundDescription = showDialog("file_description", dialog) ?: return@launch
 
             returnResult.update {
                 ActionData.Sound.SoundFile(
@@ -87,13 +87,13 @@ class ChooseSoundFileViewModel @Inject constructor(
         viewModelScope.launch {
             val fileName = useCase.getSoundFileName(uri).valueOrNull() ?: return@launch
 
-            val dialog = PopupUi.Text(
+            val dialog = DialogModel.Text(
                 hint = getString(R.string.hint_sound_file_description),
                 allowEmpty = false,
                 text = fileName,
             )
 
-            val soundDescription = showPopup("file_description", dialog)
+            val soundDescription = showDialog("file_description", dialog)
 
             soundDescription ?: return@launch
 
@@ -106,8 +106,8 @@ class ChooseSoundFileViewModel @Inject constructor(
                         )
                     }
                 }.onFailure { error ->
-                    val toast = PopupUi.Toast(error.getFullMessage(this@ChooseSoundFileViewModel))
-                    showPopup("failed_toast", toast)
+                    val toast = DialogModel.Toast(error.getFullMessage(this@ChooseSoundFileViewModel))
+                    showDialog("failed_toast", toast)
                 }
         }
     }

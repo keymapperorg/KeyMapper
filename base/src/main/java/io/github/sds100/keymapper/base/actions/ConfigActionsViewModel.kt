@@ -13,12 +13,12 @@ import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.ChooseAppStoreModel
 import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.LinkType
-import io.github.sds100.keymapper.base.utils.ui.PopupUi
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
+import io.github.sds100.keymapper.base.utils.ui.DialogModel
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
@@ -49,10 +49,10 @@ class ConfigActionsViewModel(
     private val onboarding: OnboardingUseCase,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
-    popupViewModel: PopupViewModel,
+    dialogProvider: DialogProvider,
 ) : ActionOptionsBottomSheetCallback,
     ResourceProvider by resourceProvider,
-    PopupViewModel by popupViewModel,
+    DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider {
 
     val createActionDelegate =
@@ -116,7 +116,7 @@ class ConfigActionsViewModel(
                 coroutineScope.launch {
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@ConfigActionsViewModel,
-                        popupViewModel = this@ConfigActionsViewModel,
+                        dialogProvider = this@ConfigActionsViewModel,
                         neverShowDndTriggerErrorAgain = { displayAction.neverShowDndTriggerError() },
                         fixError = { displayAction.fixError(error) },
                     )
@@ -124,7 +124,7 @@ class ConfigActionsViewModel(
             } else {
                 ViewModelHelper.showFixErrorDialog(
                     resourceProvider = this@ConfigActionsViewModel,
-                    popupViewModel = this@ConfigActionsViewModel,
+                    dialogProvider = this@ConfigActionsViewModel,
                     error,
                 ) {
                     displayAction.fixError(error)
@@ -254,7 +254,7 @@ class ConfigActionsViewModel(
             if (error is Error.AccessibilityServiceDisabled) {
                 ViewModelHelper.handleAccessibilityServiceStoppedDialog(
                     resourceProvider = this,
-                    popupViewModel = this,
+                    dialogProvider = this,
                     startService = displayAction::startAccessibilityService,
                 )
             }
@@ -262,7 +262,7 @@ class ConfigActionsViewModel(
             if (error is Error.AccessibilityServiceCrashed) {
                 ViewModelHelper.handleAccessibilityServiceCrashedDialog(
                     resourceProvider = this,
-                    popupViewModel = this,
+                    dialogProvider = this,
                     restartService = displayAction::restartAccessibilityService,
                 )
             }
@@ -275,7 +275,7 @@ class ConfigActionsViewModel(
                 githubLink = getString(R.string.url_github_keymapper_leanback_keyboard),
             )
 
-            val dialog = PopupUi.ChooseAppStore(
+            val dialog = DialogModel.ChooseAppStore(
                 title = getString(R.string.dialog_title_install_leanback_keyboard),
                 message = getString(R.string.dialog_message_install_leanback_keyboard),
                 appStoreModel,
@@ -283,7 +283,7 @@ class ConfigActionsViewModel(
                 negativeButtonText = getString(R.string.neg_cancel),
             )
 
-            val response = showPopup("download_leanback_ime", dialog) ?: return
+            val response = showDialog("download_leanback_ime", dialog) ?: return
 
             if (response == DialogResponse.POSITIVE) {
                 onboarding.neverShowGuiKeyboardPromptsAgain()
@@ -295,7 +295,7 @@ class ConfigActionsViewModel(
                 githubLink = getString(R.string.url_github_keymapper_gui_keyboard),
             )
 
-            val dialog = PopupUi.ChooseAppStore(
+            val dialog = DialogModel.ChooseAppStore(
                 title = getString(R.string.dialog_title_install_gui_keyboard),
                 message = getString(R.string.dialog_message_install_gui_keyboard),
                 appStoreModel,
@@ -303,7 +303,7 @@ class ConfigActionsViewModel(
                 negativeButtonText = getString(R.string.neg_cancel),
             )
 
-            val response = showPopup("download_gui_keyboard", dialog) ?: return
+            val response = showDialog("download_gui_keyboard", dialog) ?: return
 
             if (response == DialogResponse.POSITIVE) {
                 onboarding.neverShowGuiKeyboardPromptsAgain()
@@ -313,7 +313,7 @@ class ConfigActionsViewModel(
 
     private suspend fun promptToInstallShizukuOrGuiKeyboard() {
         if (onboarding.isTvDevice()) {
-            val chooseSolutionDialog = PopupUi.Dialog(
+            val chooseSolutionDialog = DialogModel.Alert(
                 title = getText(R.string.dialog_title_install_shizuku_or_leanback_keyboard),
                 message = getText(R.string.dialog_message_install_shizuku_or_leanback_keyboard),
                 positiveButtonText = getString(R.string.dialog_button_install_shizuku),
@@ -322,7 +322,7 @@ class ConfigActionsViewModel(
             )
 
             val chooseSolutionResponse =
-                showPopup("choose_solution", chooseSolutionDialog) ?: return
+                showDialog("choose_solution", chooseSolutionDialog) ?: return
 
             when (chooseSolutionResponse) {
                 // install shizuku
@@ -340,7 +340,7 @@ class ConfigActionsViewModel(
 
                 // download leanback keyboard
                 DialogResponse.NEGATIVE -> {
-                    val chooseAppStoreDialog = PopupUi.ChooseAppStore(
+                    val chooseAppStoreDialog = DialogModel.ChooseAppStore(
                         title = getString(R.string.dialog_title_choose_download_leanback_keyboard),
                         message = getString(R.string.dialog_message_choose_download_leanback_keyboard),
                         model = ChooseAppStoreModel(
@@ -350,7 +350,7 @@ class ConfigActionsViewModel(
                         negativeButtonText = getString(R.string.neg_cancel),
                     )
 
-                    val response = showPopup("install_leanback_keyboard", chooseAppStoreDialog)
+                    val response = showDialog("install_leanback_keyboard", chooseAppStoreDialog)
 
                     if (response == DialogResponse.POSITIVE) {
                         onboarding.neverShowGuiKeyboardPromptsAgain()
@@ -358,7 +358,7 @@ class ConfigActionsViewModel(
                 }
             }
         } else {
-            val chooseSolutionDialog = PopupUi.Dialog(
+            val chooseSolutionDialog = DialogModel.Alert(
                 title = getText(R.string.dialog_title_install_shizuku_or_gui_keyboard),
                 message = getText(R.string.dialog_message_install_shizuku_or_gui_keyboard),
                 positiveButtonText = getString(R.string.dialog_button_install_shizuku),
@@ -367,7 +367,7 @@ class ConfigActionsViewModel(
             )
 
             val chooseSolutionResponse =
-                showPopup("choose_solution", chooseSolutionDialog) ?: return
+                showDialog("choose_solution", chooseSolutionDialog) ?: return
 
             when (chooseSolutionResponse) {
                 // install shizuku
@@ -385,7 +385,7 @@ class ConfigActionsViewModel(
 
                 // download gui keyboard
                 DialogResponse.NEGATIVE -> {
-                    val chooseAppStoreDialog = PopupUi.ChooseAppStore(
+                    val chooseAppStoreDialog = DialogModel.ChooseAppStore(
                         title = getString(R.string.dialog_title_choose_download_gui_keyboard),
                         message = getString(R.string.dialog_message_choose_download_gui_keyboard),
                         model = ChooseAppStoreModel(
@@ -397,7 +397,7 @@ class ConfigActionsViewModel(
                         negativeButtonText = getString(R.string.neg_cancel),
                     )
 
-                    val response = showPopup("install_gui_keyboard", chooseAppStoreDialog)
+                    val response = showDialog("install_gui_keyboard", chooseAppStoreDialog)
 
                     if (response == DialogResponse.POSITIVE) {
                         onboarding.neverShowGuiKeyboardPromptsAgain()

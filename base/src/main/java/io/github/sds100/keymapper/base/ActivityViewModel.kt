@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProviderImpl
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
+import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import kotlinx.coroutines.launch
@@ -18,7 +18,7 @@ class ActivityViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
-    PopupViewModel by PopupViewModelImpl(),
+    DialogProvider by DialogProviderImpl(),
     NavigationProvider by NavigationProviderImpl() {
 
     var handledActivityLaunchIntent: Boolean = false
@@ -28,7 +28,7 @@ class ActivityViewModel @Inject constructor(
         viewModelScope.launch {
             ViewModelHelper.handleCantFindAccessibilitySettings(
                 resourceProvider = this@ActivityViewModel,
-                popupViewModel = this@ActivityViewModel,
+                dialogProvider = this@ActivityViewModel,
             )
         }
     }

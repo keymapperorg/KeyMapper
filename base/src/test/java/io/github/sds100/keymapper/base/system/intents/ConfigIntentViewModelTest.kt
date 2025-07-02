@@ -4,8 +4,8 @@ import android.content.Intent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.github.sds100.keymapper.base.utils.ui.FakeResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
-import io.github.sds100.keymapper.base.utils.ui.PopupUi
-import io.github.sds100.keymapper.base.utils.ui.ShowPopupEvent
+import io.github.sds100.keymapper.base.utils.ui.DialogModel
+import io.github.sds100.keymapper.base.utils.ui.ShowDialogEvent
 import io.github.sds100.keymapper.base.utils.ui.onUserResponse
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import kotlinx.coroutines.Dispatchers
@@ -40,8 +40,8 @@ internal class ConfigIntentViewModelTest {
     @Test
     fun showFlagsDialog_whenNoFlags_checkNoFlags() {
         viewModel.showFlagsDialog()
-        val popupEvent: ShowPopupEvent = viewModel.showPopup.firstBlocking()
-        val multipleChoiceDialog = popupEvent.ui as PopupUi.MultiChoice<*>
+        val popupEvent: ShowDialogEvent = viewModel.showDialog.firstBlocking()
+        val multipleChoiceDialog = popupEvent.ui as DialogModel.MultiChoice<*>
 
         assertThat(multipleChoiceDialog.items.none { it.isChecked }, `is`(true))
     }
@@ -49,12 +49,12 @@ internal class ConfigIntentViewModelTest {
     @Test
     fun showFlagsDialog_whenFlags_checkFlags() {
         viewModel.showFlagsDialog()
-        val addFlagPopupEvent: ShowPopupEvent = viewModel.showPopup.firstBlocking()
+        val addFlagPopupEvent: ShowDialogEvent = viewModel.showDialog.firstBlocking()
         viewModel.onUserResponse(addFlagPopupEvent.key, listOf(Intent.FLAG_ACTIVITY_NEW_TASK))
 
         viewModel.showFlagsDialog()
-        val popupEvent: ShowPopupEvent = viewModel.showPopup.firstBlocking()
-        val multipleChoiceDialog = popupEvent.ui as PopupUi.MultiChoice<*>
+        val popupEvent: ShowDialogEvent = viewModel.showDialog.firstBlocking()
+        val multipleChoiceDialog = popupEvent.ui as DialogModel.MultiChoice<*>
         val expectedCheckedItem =
             MultiChoiceItem(Intent.FLAG_ACTIVITY_NEW_TASK, "FLAG_ACTIVITY_NEW_TASK", true)
 

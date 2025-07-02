@@ -33,13 +33,13 @@ import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.MultiSelectProvider
-import io.github.sds100.keymapper.base.utils.ui.PopupUi
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
+import io.github.sds100.keymapper.base.utils.ui.DialogModel
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.SelectionState
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.Error
 import io.github.sds100.keymapper.common.utils.Result
 import io.github.sds100.keymapper.common.utils.State
@@ -85,8 +85,8 @@ class KeyMapListViewModel(
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
     private val onboarding: OnboardingUseCase,
     private val navigationProvider: NavigationProvider,
-    private val popupViewModel: PopupViewModel
-) : PopupViewModel by popupViewModel,
+    private val dialogProvider: DialogProvider
+) : DialogProvider by dialogProvider,
     ResourceProvider by resourceProvider,
     NavigationProvider by navigationProvider {
 
@@ -519,7 +519,7 @@ class KeyMapListViewModel(
                 TriggerError.DND_ACCESS_DENIED -> {
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@KeyMapListViewModel,
-                        popupViewModel = this@KeyMapListViewModel,
+                        dialogProvider = this@KeyMapListViewModel,
                         neverShowDndTriggerErrorAgain = { listKeyMaps.neverShowDndTriggerError() },
                         fixError = { listKeyMaps.fixTriggerError(error) },
                     )
@@ -552,7 +552,7 @@ class KeyMapListViewModel(
                 SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY) -> {
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@KeyMapListViewModel,
-                        popupViewModel = this@KeyMapListViewModel,
+                        dialogProvider = this@KeyMapListViewModel,
                         neverShowDndTriggerErrorAgain = { listKeyMaps.neverShowDndTriggerError() },
                         fixError = { listKeyMaps.fixError(error) },
                     )
@@ -561,7 +561,7 @@ class KeyMapListViewModel(
                 else -> {
                     ViewModelHelper.showFixErrorDialog(
                         resourceProvider = this@KeyMapListViewModel,
-                        popupViewModel = this@KeyMapListViewModel,
+                        dialogProvider = this@KeyMapListViewModel,
                         error,
                     ) {
                         listKeyMaps.fixError(error)
@@ -678,7 +678,7 @@ class KeyMapListViewModel(
                     val explanationResponse =
                         ViewModelHelper.showAccessibilityServiceExplanationDialog(
                             resourceProvider = this@KeyMapListViewModel,
-                            popupViewModel = this@KeyMapListViewModel,
+                            dialogProvider = this@KeyMapListViewModel,
                         )
 
                     if (explanationResponse != DialogResponse.POSITIVE) {
@@ -688,7 +688,7 @@ class KeyMapListViewModel(
                     if (!showAlertsUseCase.startAccessibilityService()) {
                         ViewModelHelper.handleCantFindAccessibilitySettings(
                             resourceProvider = this@KeyMapListViewModel,
-                            popupViewModel = this@KeyMapListViewModel,
+                            dialogProvider = this@KeyMapListViewModel,
                         )
                     }
                 }
@@ -696,7 +696,7 @@ class KeyMapListViewModel(
                 ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM ->
                     ViewModelHelper.handleKeyMapperCrashedDialog(
                         resourceProvider = this@KeyMapListViewModel,
-                        popupViewModel = this@KeyMapListViewModel,
+                        dialogProvider = this@KeyMapListViewModel,
                         restartService = showAlertsUseCase::restartAccessibilityService,
                         ignoreCrashed = showAlertsUseCase::acknowledgeCrashed,
                     )
@@ -709,7 +709,7 @@ class KeyMapListViewModel(
     }
 
     private suspend fun showNotificationPermissionAlertDialog() {
-        val dialog = PopupUi.Dialog(
+        val dialog = DialogModel.Alert(
             title = getString(R.string.dialog_title_request_notification_permission),
             message = getText(R.string.dialog_message_request_notification_permission),
             positiveButtonText = getString(R.string.pos_turn_on),
@@ -717,7 +717,7 @@ class KeyMapListViewModel(
             neutralButtonText = getString(R.string.pos_never_show_again),
         )
 
-        val dialogResponse = showPopup("notification_permission_alert", dialog)
+        val dialogResponse = showDialog("notification_permission_alert", dialog)
 
         if (dialogResponse == DialogResponse.POSITIVE) {
             showAlertsUseCase.requestNotificationPermission()
@@ -904,9 +904,9 @@ class KeyMapListViewModel(
             is Success -> {}
 
             is Error -> {
-                val response = showPopup(
+                val response = showDialog(
                     "automatic_backup_error",
-                    PopupUi.Dialog(
+                    DialogModel.Alert(
                         title = getString(R.string.toast_automatic_backup_failed),
                         message = result.getFullMessage(this),
                         positiveButtonText = getString(R.string.pos_ok),

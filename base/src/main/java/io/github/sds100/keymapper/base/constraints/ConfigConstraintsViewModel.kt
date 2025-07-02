@@ -10,7 +10,7 @@ import io.github.sds100.keymapper.base.utils.isFixable
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
@@ -40,9 +40,9 @@ class ConfigConstraintsViewModel(
     private val displayConstraint: DisplayConstraintUseCase,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
-    popupViewModel: PopupViewModel,
+    dialogProvider: DialogProvider,
 ) : ResourceProvider by resourceProvider,
-    PopupViewModel by popupViewModel,
+    DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider {
 
     private val uiHelper = ConstraintUiHelper(displayConstraint, resourceProvider)
@@ -109,7 +109,7 @@ class ConfigConstraintsViewModel(
                 coroutineScope.launch {
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@ConfigConstraintsViewModel,
-                        popupViewModel = this@ConfigConstraintsViewModel,
+                        dialogProvider = this@ConfigConstraintsViewModel,
                         neverShowDndTriggerErrorAgain = { displayConstraint.neverShowDndTriggerError() },
                         fixError = { displayConstraint.fixError(error) },
                     )
@@ -117,7 +117,7 @@ class ConfigConstraintsViewModel(
             } else {
                 ViewModelHelper.showFixErrorDialog(
                     resourceProvider = this@ConfigConstraintsViewModel,
-                    popupViewModel = this@ConfigConstraintsViewModel,
+                    dialogProvider = this@ConfigConstraintsViewModel,
                     error,
                 ) {
                     displayConstraint.fixError(error)

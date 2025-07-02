@@ -9,12 +9,12 @@ import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.common.utils.mapData
-import io.github.sds100.keymapper.base.utils.ui.PopupUi
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModel
-import io.github.sds100.keymapper.base.utils.ui.PopupViewModelImpl
+import io.github.sds100.keymapper.base.utils.ui.DialogModel
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
+import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.TintType
-import io.github.sds100.keymapper.base.utils.ui.showPopup
+import io.github.sds100.keymapper.base.utils.ui.showDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -31,7 +31,7 @@ class ConfigKeyMapOptionsViewModel(
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider,
-    PopupViewModel by PopupViewModelImpl(),
+    DialogProvider by DialogProviderImpl(),
     KeyMapOptionsCallback {
 
     private val actionUiHelper = ActionUiHelper(displayUseCase, resourceProvider)
@@ -113,9 +113,9 @@ class ConfigKeyMapOptionsViewModel(
                 icon = null
             }
 
-            val shortcutName = showPopup(
+            val shortcutName = showDialog(
                 key,
-                PopupUi.Text(
+                DialogModel.Text(
                     getString(R.string.hint_shortcut_name),
                     allowEmpty = false,
                     text = defaultShortcutName,
@@ -125,11 +125,11 @@ class ConfigKeyMapOptionsViewModel(
             val result = createKeyMapShortcut.pinShortcut(keyMapUid, shortcutName, icon)
 
             result.onFailure { error ->
-                val snackBar = PopupUi.SnackBar(
+                val snackBar = DialogModel.SnackBar(
                     message = error.getFullMessage(this@ConfigKeyMapOptionsViewModel),
                 )
 
-                showPopup("create_shortcut_result", snackBar)
+                showDialog("create_shortcut_result", snackBar)
             }
         }
     }

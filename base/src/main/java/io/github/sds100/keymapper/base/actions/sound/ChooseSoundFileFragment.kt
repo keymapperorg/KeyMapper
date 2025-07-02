@@ -25,7 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.databinding.FragmentChooseSoundFileBinding
 import io.github.sds100.keymapper.base.simple
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.utils.ui.showPopups
+import io.github.sds100.keymapper.base.utils.ui.showDialogs
 import io.github.sds100.keymapper.system.files.FileUtils
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
@@ -93,7 +93,7 @@ class ChooseSoundFileFragment : Fragment() {
         }
 
         binding.viewModel = viewModel
-        viewModel.showPopups(this, binding)
+        viewModel.showDialogs(this, binding)
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.chooseSoundFile.collectLatest {
