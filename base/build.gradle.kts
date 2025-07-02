@@ -77,8 +77,6 @@ dependencies {
     implementation(project(":system"))
     implementation(project(":systemstubs"))
 
-    // TODO delete the unused libraries and plugins
-
     // kotlin stuff
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
@@ -91,8 +89,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     kapt(libs.airbnb.epoxy.processor)
     implementation(libs.jakewharton.timber)
+    implementation(libs.anggrayudi.storage)
     implementation(libs.github.mflisar.dragselectrecyclerview)
     implementation(libs.google.flexbox)
+    implementation(libs.squareup.okhttp)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.canopas.introshowcaseview)
     implementation(libs.dagger.hilt.android)
@@ -106,6 +106,7 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.bundles.androidx.lifecycle)
     implementation(libs.bundles.androidx.navigation)
+    implementation(libs.androidx.multidex)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.preference.ktx)
