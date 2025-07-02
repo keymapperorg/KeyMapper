@@ -51,7 +51,7 @@ data class ActionEntity(
     @SerializedName(NAME_UID)
     val uid: String = UUID.randomUUID().toString(),
 
-    ) : Parcelable {
+) : Parcelable {
     companion object {
 
         // DON'T CHANGE THESE IDs!!!!

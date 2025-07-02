@@ -54,7 +54,7 @@ data class GroupEntity(
     @SerializedName(NAME_LAST_OPENED_DATE)
     val lastOpenedDate: Long?,
 
-    ) : Parcelable {
+) : Parcelable {
     companion object {
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_UID = "uid"
