@@ -8,6 +8,7 @@
 
 ## Changed
 
+- #1711 major refactoring of the entire codebase into separate Gradle modules.
 - #1701 improve the order of the actions and categories
 
 ## Bug fixes
