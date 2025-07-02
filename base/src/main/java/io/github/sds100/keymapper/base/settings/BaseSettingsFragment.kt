@@ -12,7 +12,6 @@ import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.bottomappbar.BottomAppBar
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.base.utils.ui.showDialogs
 import io.github.sds100.keymapper.base.utils.ui.str
 import io.github.sds100.keymapper.system.url.UrlUtils
 
@@ -53,8 +52,6 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                 }
             }
         }
-
-        viewModel.showDialogs(this, view)
     }
 
     private fun onBackPressed() {

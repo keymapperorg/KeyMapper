@@ -6,12 +6,17 @@ import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.NavHostFragment
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.BaseMainActivity
-import io.github.sds100.keymapper.base.utils.ui.showDialogs
-import io.github.sds100.keymapper.base.databinding.ActivityMainBinding
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.databinding.ActivityMainBinding
+import io.github.sds100.keymapper.base.utils.ui.DialogProvider
+import io.github.sds100.keymapper.base.utils.ui.showDialogs
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : BaseMainActivity() {
+
+    @Inject
+    lateinit var dialogProvider: DialogProvider
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +38,6 @@ class MainActivity : BaseMainActivity() {
             setStartDestination(R.id.home_fragment)
         }
 
-        viewModel.showDialogs(this, binding.coordinatorLayout)
+        dialogProvider.showDialogs(this, binding.coordinatorLayout)
     }
 }

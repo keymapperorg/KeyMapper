@@ -35,7 +35,6 @@ import io.github.sds100.keymapper.base.utils.navigation.SetupNavigation
 import io.github.sds100.keymapper.base.utils.navigation.handleRouteArgs
 import io.github.sds100.keymapper.base.utils.navigation.setupFragmentNavigation
 import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
-import io.github.sds100.keymapper.base.utils.ui.showDialogs
 import io.github.sds100.keymapper.home.HomeViewModel
 import io.github.sds100.keymapper.keymaps.ConfigKeyMapScreen
 import io.github.sds100.keymapper.keymaps.ConfigKeyMapViewModel
@@ -87,12 +86,6 @@ class MainFragment : Fragment() {
             }
             return this.root
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        dialogProvider.showDialogs(this, view)
     }
 
     private fun NavGraphBuilder.composableDestinations() {
