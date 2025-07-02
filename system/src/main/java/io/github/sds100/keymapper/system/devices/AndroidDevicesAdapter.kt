@@ -8,8 +8,8 @@ import android.os.Handler
 import android.os.Looper
 import android.view.InputDevice
 import androidx.core.content.getSystemService
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.permissions.Permission
@@ -125,7 +125,7 @@ class AndroidDevicesAdapter @Inject constructor(
         return device.hasKeys(keyCode)[0]
     }
 
-    override fun getInputDeviceName(descriptor: String): Result<String> {
+    override fun getInputDeviceName(descriptor: String): KMResult<String> {
         for (id in InputDevice.getDeviceIds()) {
             val device = InputDevice.getDevice(id) ?: continue
 
@@ -134,7 +134,7 @@ class AndroidDevicesAdapter @Inject constructor(
             }
         }
 
-        return Error.DeviceNotFound(descriptor)
+        return KMError.DeviceNotFound(descriptor)
     }
 
     private fun updateInputDevices() {

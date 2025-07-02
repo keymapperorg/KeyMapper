@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.base.system.files
 
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.IFile
@@ -23,7 +23,7 @@ class FakeFileAdapter(
         throw Exception()
     }
 
-    override fun openDownloadsFile(fileName: String, mimeType: String): Result<IFile> {
+    override fun openDownloadsFile(fileName: String, mimeType: String): KMResult<IFile> {
         throw Exception()
     }
 
@@ -45,7 +45,7 @@ class FakeFileAdapter(
         return ""
     }
 
-    override fun createZipFile(destination: IFile, files: Set<IFile>): Result<*> {
+    override fun createZipFile(destination: IFile, files: Set<IFile>): KMResult<*> {
         runBlocking {
             files.forEach { file ->
                 file.copyTo(destination)
@@ -55,7 +55,7 @@ class FakeFileAdapter(
         return Success(Unit)
     }
 
-    override suspend fun extractZipFile(zipFile: IFile, destination: IFile): Result<*> {
+    override suspend fun extractZipFile(zipFile: IFile, destination: IFile): KMResult<*> {
         zipFile.listFiles()!!.forEach { file ->
             file.copyTo(destination)
         }

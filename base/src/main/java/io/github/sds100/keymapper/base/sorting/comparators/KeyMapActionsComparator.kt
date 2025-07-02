@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.sorting.comparators
 
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.DisplayActionUseCase
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.base.keymaps.KeyMap
@@ -63,7 +63,7 @@ class KeyMapActionsComparator(
         result
     }
 
-    private fun getSecondarySortField(action: ActionData): Result<String> {
+    private fun getSecondarySortField(action: ActionData): KMResult<String> {
         return when (action) {
             is ActionData.App -> displayActions.getAppName(action.packageName)
             is ActionData.AppShortcut -> Success(action.shortcutTitle)

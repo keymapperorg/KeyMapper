@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.system.bluetooth
 
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import kotlinx.coroutines.flow.Flow
 
 interface BluetoothAdapter {
@@ -10,6 +10,6 @@ interface BluetoothAdapter {
 
     val isBluetoothEnabled: Flow<Boolean>
 
-    fun enable(): Result<*>
-    fun disable(): Result<*>
+    fun enable(): KMResult<*>
+    fun disable(): KMResult<*>
 }

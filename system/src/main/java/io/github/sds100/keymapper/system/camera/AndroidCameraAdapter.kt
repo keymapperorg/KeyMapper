@@ -7,8 +7,8 @@ import android.hardware.camera2.CameraManager
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -138,11 +138,11 @@ class AndroidCameraAdapter @Inject constructor(
         return null
     }
 
-    override fun enableFlashlight(lens: CameraLens, strengthPercent: Float?): Result<*> = setFlashlightMode(true, lens, strengthPercent)
+    override fun enableFlashlight(lens: CameraLens, strengthPercent: Float?): KMResult<*> = setFlashlightMode(true, lens, strengthPercent)
 
-    override fun disableFlashlight(lens: CameraLens): Result<*> = setFlashlightMode(false, lens)
+    override fun disableFlashlight(lens: CameraLens): KMResult<*> = setFlashlightMode(false, lens)
 
-    override fun toggleFlashlight(lens: CameraLens, strengthPercent: Float?): Result<*> = setFlashlightMode(!isFlashEnabledMap.value[lens]!!, lens, strengthPercent)
+    override fun toggleFlashlight(lens: CameraLens, strengthPercent: Float?): KMResult<*> = setFlashlightMode(!isFlashEnabledMap.value[lens]!!, lens, strengthPercent)
 
     override fun isFlashlightOn(lens: CameraLens): Boolean = isFlashEnabledMap.value[lens] ?: false
 
@@ -150,9 +150,9 @@ class AndroidCameraAdapter @Inject constructor(
         return isFlashEnabledMap.map { it[lens] ?: false }
     }
 
-    override fun changeFlashlightStrength(lens: CameraLens, percent: Float): Result<*> {
+    override fun changeFlashlightStrength(lens: CameraLens, percent: Float): KMResult<*> {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            return Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.TIRAMISU)
+            return KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.TIRAMISU)
         }
 
         // If the flash is disabled and it should be decreased then do nothing.
@@ -165,8 +165,8 @@ class AndroidCameraAdapter @Inject constructor(
 
             if (cameraId == null) {
                 return when (lens) {
-                    CameraLens.FRONT -> Error.FrontFlashNotFound
-                    CameraLens.BACK -> Error.BackFlashNotFound
+                    CameraLens.FRONT -> KMError.FrontFlashNotFound
+                    CameraLens.BACK -> KMError.BackFlashNotFound
                 }
             }
 
@@ -205,9 +205,9 @@ class AndroidCameraAdapter @Inject constructor(
         enabled: Boolean,
         lens: CameraLens,
         strengthPercent: Float? = null,
-    ): Result<*> {
+    ): KMResult<*> {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
+            return KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
         }
 
         try {
@@ -216,8 +216,8 @@ class AndroidCameraAdapter @Inject constructor(
 
             if (cameraId == null || flashInfo == null) {
                 return when (lens) {
-                    CameraLens.FRONT -> Error.FrontFlashNotFound
-                    CameraLens.BACK -> Error.BackFlashNotFound
+                    CameraLens.FRONT -> KMError.FrontFlashNotFound
+                    CameraLens.BACK -> KMError.BackFlashNotFound
                 }
             }
 
@@ -237,17 +237,17 @@ class AndroidCameraAdapter @Inject constructor(
         } catch (e: CameraAccessException) {
             return convertCameraException(e)
         } catch (e: Exception) {
-            return Error.Exception(e)
+            return KMError.Exception(e)
         }
     }
 
     private fun convertCameraException(e: CameraAccessException) = when (e.reason) {
-        CameraAccessException.CAMERA_IN_USE -> Error.CameraInUse
-        CameraAccessException.CAMERA_DISCONNECTED -> Error.CameraDisconnected
-        CameraAccessException.CAMERA_DISABLED -> Error.CameraDisabled
-        CameraAccessException.CAMERA_ERROR -> Error.CameraError
-        CameraAccessException.MAX_CAMERAS_IN_USE -> Error.MaxCamerasInUse
-        else -> Error.Exception(e)
+        CameraAccessException.CAMERA_IN_USE -> KMError.CameraInUse
+        CameraAccessException.CAMERA_DISCONNECTED -> KMError.CameraDisconnected
+        CameraAccessException.CAMERA_DISABLED -> KMError.CameraDisabled
+        CameraAccessException.CAMERA_ERROR -> KMError.CameraError
+        CameraAccessException.MAX_CAMERAS_IN_USE -> KMError.MaxCamerasInUse
+        else -> KMError.Exception(e)
     }
 
     private fun updateState(lens: CameraLens, enabled: Boolean) {

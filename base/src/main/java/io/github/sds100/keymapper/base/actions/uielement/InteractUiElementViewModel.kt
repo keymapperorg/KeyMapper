@@ -15,7 +15,7 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.NodeInteractionType
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.Success
@@ -345,13 +345,13 @@ class InteractUiElementViewModel @Inject constructor(
 
     private suspend fun startRecording() {
         useCase.startRecording().onFailure { error ->
-            if (error == Error.AccessibilityServiceDisabled) {
+            if (error == KMError.AccessibilityServiceDisabled) {
                 ViewModelHelper.handleAccessibilityServiceStoppedDialog(
                     this,
                     this,
                     startService = { useCase.startService() },
                 )
-            } else if (error == Error.AccessibilityServiceCrashed) {
+            } else if (error == KMError.AccessibilityServiceCrashed) {
                 ViewModelHelper.handleAccessibilityServiceCrashedDialog(
                     this,
                     this,

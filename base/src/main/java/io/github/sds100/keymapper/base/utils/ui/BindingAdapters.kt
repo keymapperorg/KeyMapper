@@ -107,7 +107,6 @@ fun View.enabled(isEnabled: Boolean) {
     }
 }
 
-// TODO check this is correct
 fun TintType.toColor(ctx: Context): Int? = when (this) {
     TintType.None -> null
     TintType.OnSurface -> ctx.color(R.color.md_theme_onSurface)

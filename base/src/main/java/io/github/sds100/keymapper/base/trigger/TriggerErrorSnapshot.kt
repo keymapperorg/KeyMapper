@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.trigger
 
 import android.os.Build
 import android.view.KeyEvent
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.base.keymaps.KeyMap
@@ -19,7 +19,7 @@ data class TriggerErrorSnapshot(
     val isKeyMapperImeChosen: Boolean,
     val isDndAccessGranted: Boolean,
     val isRootGranted: Boolean,
-    val purchases: Result<Set<ProductId>>,
+    val purchases: KMResult<Set<ProductId>>,
     val showDpadImeSetupError: Boolean,
 ) {
     companion object {

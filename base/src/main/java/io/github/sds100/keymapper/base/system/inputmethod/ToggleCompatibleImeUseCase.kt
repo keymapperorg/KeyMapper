@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.base.system.inputmethod
 
 import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import kotlinx.coroutines.flow.Flow
@@ -19,11 +19,11 @@ class ToggleCompatibleImeUseCaseImpl @Inject constructor(
     override val sufficientPermissions: Flow<Boolean> =
         inputMethodAdapter.isUserInputRequiredToChangeIme
 
-    override suspend fun toggle(): Result<ImeInfo> = keyMapperImeHelper.toggleCompatibleInputMethod()
+    override suspend fun toggle(): KMResult<ImeInfo> = keyMapperImeHelper.toggleCompatibleInputMethod()
 }
 
 interface ToggleCompatibleImeUseCase {
     val sufficientPermissions: Flow<Boolean>
 
-    suspend fun toggle(): Result<ImeInfo>
+    suspend fun toggle(): KMResult<ImeInfo>
 }

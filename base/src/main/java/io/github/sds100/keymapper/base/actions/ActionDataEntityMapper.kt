@@ -2,8 +2,8 @@ package io.github.sds100.keymapper.base.actions
 
 import androidx.core.net.toUri
 import io.github.sds100.keymapper.common.utils.NodeInteractionType
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.common.utils.then
@@ -609,10 +609,10 @@ object ActionDataEntityMapper {
         }
     }
 
-    private fun convertNodeInteractionType(string: String): Result<NodeInteractionType> = try {
+    private fun convertNodeInteractionType(string: String): KMResult<NodeInteractionType> = try {
         Success(NodeInteractionType.valueOf(string))
     } catch (e: IllegalArgumentException) {
-        Error.Exception(e)
+        KMError.Exception(e)
     }
 
     fun toEntity(data: ActionData): ActionEntity {

@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.constraints
 
 import android.content.pm.PackageManager
 import android.os.Build
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.camera.CameraAdapter
@@ -22,23 +22,23 @@ class CreateConstraintUseCaseImpl @Inject constructor(
     private val cameraAdapter: CameraAdapter,
 ) : CreateConstraintUseCase {
 
-    override fun isSupported(constraint: ConstraintId): Error? {
+    override fun isSupported(constraint: ConstraintId): KMError? {
         when (constraint) {
             ConstraintId.FLASHLIGHT_ON, ConstraintId.FLASHLIGHT_OFF -> {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    return Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
+                    return KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
                 }
 
                 if (cameraAdapter.getFlashInfo(CameraLens.BACK) == null &&
                     cameraAdapter.getFlashInfo(CameraLens.FRONT) == null
                 ) {
-                    return Error.SystemFeatureNotSupported(PackageManager.FEATURE_CAMERA_FLASH)
+                    return KMError.SystemFeatureNotSupported(PackageManager.FEATURE_CAMERA_FLASH)
                 }
             }
 
             ConstraintId.DEVICE_IS_LOCKED, ConstraintId.DEVICE_IS_UNLOCKED ->
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
-                    return Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.LOLLIPOP_MR1)
+                    return KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.LOLLIPOP_MR1)
                 }
 
             else -> Unit
@@ -81,7 +81,7 @@ class CreateConstraintUseCaseImpl @Inject constructor(
 }
 
 interface CreateConstraintUseCase {
-    fun isSupported(constraint: ConstraintId): Error?
+    fun isSupported(constraint: ConstraintId): KMError?
     fun getKnownWiFiSSIDs(): List<String>?
     fun getEnabledInputMethods(): List<ImeInfo>
 

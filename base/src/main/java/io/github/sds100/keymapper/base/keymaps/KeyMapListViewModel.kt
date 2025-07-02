@@ -40,8 +40,8 @@ import io.github.sds100.keymapper.base.utils.ui.SelectionState
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.showDialog
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.dataOrNull
@@ -546,7 +546,7 @@ class KeyMapListViewModel(
         }
     }
 
-    fun onFixClick(error: Error) {
+    fun onFixClick(error: KMError) {
         coroutineScope.launch {
             when (error) {
                 SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY) -> {
@@ -899,11 +899,11 @@ class KeyMapListViewModel(
         showInputMethodPickerUseCase.show(fromForeground = true)
     }
 
-    private suspend fun onAutomaticBackupResult(result: Result<*>) {
+    private suspend fun onAutomaticBackupResult(result: KMResult<*>) {
         when (result) {
             is Success -> {}
 
-            is Error -> {
+            is KMError -> {
                 val response = showDialog(
                     "automatic_backup_error",
                     DialogModel.Alert(

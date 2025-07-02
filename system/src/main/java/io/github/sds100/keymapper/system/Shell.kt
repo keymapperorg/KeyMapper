@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.system
 
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.shell.ShellAdapter
 import java.io.IOException
@@ -38,13 +38,13 @@ class Shell @Inject constructor() : ShellAdapter {
     @Throws(IOException::class)
     fun getShellCommandStdErr(vararg command: String): InputStream = Runtime.getRuntime().exec(command).errorStream
 
-    override fun execute(command: String): Result<*> {
+    override fun execute(command: String): KMResult<*> {
         try {
             Runtime.getRuntime().exec(command)
 
             return Success(Unit)
         } catch (e: IOException) {
-            return Error.Exception(e)
+            return KMError.Exception(e)
         }
     }
 }

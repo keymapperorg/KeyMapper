@@ -14,8 +14,8 @@ import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.graphics.drawable.toBitmap
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.success
@@ -96,11 +96,11 @@ class AndroidAppShortcutAdapter @Inject constructor(
         return builder.build()
     }
 
-    override fun pinShortcut(shortcut: ShortcutInfoCompat): Result<*> {
+    override fun pinShortcut(shortcut: ShortcutInfoCompat): KMResult<*> {
         val supported = ShortcutManagerCompat.requestPinShortcut(ctx, shortcut, null)
 
         if (!supported) {
-            return Error.LauncherShortcutsNotSupported
+            return KMError.LauncherShortcutsNotSupported
         } else {
             return Success(Unit)
         }
@@ -108,7 +108,7 @@ class AndroidAppShortcutAdapter @Inject constructor(
 
     override fun createShortcutResultIntent(shortcut: ShortcutInfoCompat): Intent = ShortcutManagerCompat.createShortcutResultIntent(ctx, shortcut)
 
-    override fun getShortcutName(info: AppShortcutInfo): Result<String> {
+    override fun getShortcutName(info: AppShortcutInfo): KMResult<String> {
         try {
             return ctx.packageManager
                 .getActivityInfo(ComponentName(info.packageName, info.activityName), 0)
@@ -116,22 +116,22 @@ class AndroidAppShortcutAdapter @Inject constructor(
                 .toString()
                 .success()
         } catch (e: PackageManager.NameNotFoundException) {
-            return Error.AppNotFound(info.packageName)
+            return KMError.AppNotFound(info.packageName)
         }
     }
 
-    override fun getShortcutIcon(info: AppShortcutInfo): Result<Drawable> {
+    override fun getShortcutIcon(info: AppShortcutInfo): KMResult<Drawable> {
         try {
             return ctx.packageManager
                 .getActivityInfo(ComponentName(info.packageName, info.activityName), 0)
                 .loadIcon(ctx.packageManager)
                 .success()
         } catch (e: PackageManager.NameNotFoundException) {
-            return Error.AppNotFound(info.packageName)
+            return KMError.AppNotFound(info.packageName)
         }
     }
 
-    override fun launchShortcut(uri: String): Result<*> {
+    override fun launchShortcut(uri: String): KMResult<*> {
         val intent = Intent.parseUri(uri, 0)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
@@ -157,9 +157,9 @@ class AndroidAppShortcutAdapter @Inject constructor(
 
             return Success(Unit)
         } catch (e: SecurityException) {
-            return Error.InsufficientPermissionsToOpenAppShortcut
+            return KMError.InsufficientPermissionsToOpenAppShortcut
         } catch (e: Exception) {
-            return Error.AppShortcutCantBeOpened
+            return KMError.AppShortcutCantBeOpened
         }
     }
 }

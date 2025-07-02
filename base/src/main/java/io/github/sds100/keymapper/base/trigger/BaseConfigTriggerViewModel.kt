@@ -33,8 +33,8 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.showDialog
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.ifIsData
@@ -616,8 +616,8 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    suspend fun handleServiceEventResult(result: Result<*>) {
-        if (result is Error.AccessibilityServiceDisabled) {
+    suspend fun handleServiceEventResult(result: KMResult<*>) {
+        if (result is KMError.AccessibilityServiceDisabled) {
             ViewModelHelper.handleAccessibilityServiceStoppedDialog(
                 resourceProvider = this@BaseConfigTriggerViewModel,
                 dialogProvider = this@BaseConfigTriggerViewModel,
@@ -625,7 +625,7 @@ abstract class BaseConfigTriggerViewModel(
             )
         }
 
-        if (result is Error.AccessibilityServiceCrashed) {
+        if (result is KMError.AccessibilityServiceCrashed) {
             ViewModelHelper.handleAccessibilityServiceCrashedDialog(
                 resourceProvider = this@BaseConfigTriggerViewModel,
                 dialogProvider = this@BaseConfigTriggerViewModel,

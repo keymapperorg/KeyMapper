@@ -1,17 +1,17 @@
 package io.github.sds100.keymapper.base.actions
 
 import android.graphics.drawable.Drawable
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import kotlinx.coroutines.flow.Flow
 
 interface DisplayActionUseCase : GetActionErrorUseCase {
     val showDeviceDescriptors: Flow<Boolean>
-    fun getAppName(packageName: String): Result<String>
-    fun getAppIcon(packageName: String): Result<Drawable>
-    fun getInputMethodLabel(imeId: String): Result<String>
-    fun getRingtoneLabel(uri: String): Result<String>
-    suspend fun fixError(error: Error)
+    fun getAppName(packageName: String): KMResult<String>
+    fun getAppIcon(packageName: String): KMResult<Drawable>
+    fun getInputMethodLabel(imeId: String): KMResult<String>
+    fun getRingtoneLabel(uri: String): KMResult<String>
+    suspend fun fixError(error: KMError)
     fun neverShowDndTriggerError()
     fun startAccessibilityService(): Boolean
     fun restartAccessibilityService(): Boolean

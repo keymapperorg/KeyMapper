@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.system.accessibility
 
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -29,7 +29,7 @@ interface AccessibilityServiceAdapter {
     /**
      * Send an event to the service.
      */
-    suspend fun send(event: AccessibilityServiceEvent): Result<*>
+    suspend fun send(event: AccessibilityServiceEvent): KMResult<*>
 
     /**
      * Send an event to the service asynchronously. This method

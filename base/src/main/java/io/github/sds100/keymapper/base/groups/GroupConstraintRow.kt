@@ -39,7 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.utils.ui.drawable
@@ -54,7 +54,7 @@ fun GroupConstraintRow(
     parentConstraintCount: Int,
     onNewConstraintClick: () -> Unit = {},
     onRemoveConstraintClick: (String) -> Unit = {},
-    onFixConstraintClick: (Error) -> Unit = {},
+    onFixConstraintClick: (KMError) -> Unit = {},
     enabled: Boolean = true,
 ) {
     BoxWithConstraints(modifier = modifier) {
@@ -358,7 +358,7 @@ private fun PreviewMultipleItems() {
                     ComposeChipModel.Error(
                         id = "2",
                         text = "Key Mapper not found",
-                        error = Error.AppNotFound("io.github.sds100.keymapper"),
+                        error = KMError.AppNotFound("io.github.sds100.keymapper"),
                     ),
                 ),
                 mode = ConstraintMode.AND,

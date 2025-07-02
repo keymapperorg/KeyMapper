@@ -10,8 +10,8 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.file.toDocumentFile
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -54,7 +54,7 @@ class AndroidFileAdapter @Inject constructor(
 
     override fun openAsset(fileName: String): InputStream = ctx.assets.open(fileName)
 
-    override fun openDownloadsFile(fileName: String, mimeType: String): Result<IFile> {
+    override fun openDownloadsFile(fileName: String, mimeType: String): KMResult<IFile> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val contentValues = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
@@ -65,15 +65,15 @@ class AndroidFileAdapter @Inject constructor(
 
             val uri =
                 contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
-                    ?: return Error.UnknownIOError
+                    ?: return KMError.UnknownIOError
 
-            val file = DocumentFile.fromSingleUri(ctx, uri) ?: return Error.UnknownIOError
+            val file = DocumentFile.fromSingleUri(ctx, uri) ?: return KMError.UnknownIOError
 
             return Success(DocumentFileWrapper(file, ctx))
         } else {
             val downloadsFile =
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            val documentFile = downloadsFile.toDocumentFile(ctx) ?: return Error.UnknownIOError
+            val documentFile = downloadsFile.toDocumentFile(ctx) ?: return KMError.UnknownIOError
 
             val file = DocumentFileWrapper(documentFile, ctx)
             return Success(file)
@@ -82,7 +82,7 @@ class AndroidFileAdapter @Inject constructor(
 
     override fun getPicturesFolder(): String = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).path
 
-    override fun createZipFile(destination: IFile, files: Set<IFile>): Result<*> {
+    override fun createZipFile(destination: IFile, files: Set<IFile>): KMResult<*> {
         val zipUid = UUID.randomUUID().toString()
 
         val tempZipFile = File(ctx.filesDir, "$zipUid.zip")
@@ -111,7 +111,7 @@ class AndroidFileAdapter @Inject constructor(
         return Success(Unit)
     }
 
-    override suspend fun extractZipFile(zipFile: IFile, destination: IFile): Result<*> {
+    override suspend fun extractZipFile(zipFile: IFile, destination: IFile): KMResult<*> {
         withContext(Dispatchers.IO) {
             val zipUid = UUID.randomUUID().toString()
             val tempZipFileCopy = File(ctx.filesDir, "$zipUid.zip")

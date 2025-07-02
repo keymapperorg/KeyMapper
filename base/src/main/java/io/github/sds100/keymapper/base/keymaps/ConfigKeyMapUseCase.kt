@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.base.keymaps
 
 import android.database.sqlite.SQLiteConstraintException
-import dagger.hilt.android.scopes.ActivityScoped
 import io.github.sds100.keymapper.base.actions.Action
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.RepeatMode
@@ -20,7 +19,7 @@ import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerKey
 import io.github.sds100.keymapper.base.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.base.trigger.TriggerMode
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.firstBlocking
@@ -874,7 +873,7 @@ class ConfigKeyMapUseCaseController @Inject constructor(
         return floatingLayoutRepository.count()
     }
 
-    override suspend fun sendServiceEvent(event: AccessibilityServiceEvent): Result<*> {
+    override suspend fun sendServiceEvent(event: AccessibilityServiceEvent): KMResult<*> {
         return serviceAdapter.send(event)
     }
 
@@ -991,7 +990,7 @@ interface ConfigKeyMapUseCase : GetDefaultKeyMapOptionsUseCase {
     fun removeConstraint(id: String)
     fun setAndMode()
     fun setOrMode()
-    suspend fun sendServiceEvent(event: AccessibilityServiceEvent): Result<*>
+    suspend fun sendServiceEvent(event: AccessibilityServiceEvent): KMResult<*>
 
     // trigger
     fun addKeyCodeTriggerKey(

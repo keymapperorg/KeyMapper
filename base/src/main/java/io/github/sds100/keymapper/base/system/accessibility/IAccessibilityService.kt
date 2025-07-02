@@ -4,13 +4,13 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.common.utils.InputEventType
 import io.github.sds100.keymapper.common.utils.PinchScreenType
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import kotlinx.coroutines.flow.Flow
 
 interface IAccessibilityService {
-    fun doGlobalAction(action: Int): Result<*>
+    fun doGlobalAction(action: Int): KMResult<*>
 
-    fun tapScreen(x: Int, y: Int, inputEventType: InputEventType): Result<*>
+    fun tapScreen(x: Int, y: Int, inputEventType: InputEventType): KMResult<*>
 
     fun swipeScreen(
         xStart: Int,
@@ -20,7 +20,7 @@ interface IAccessibilityService {
         fingerCount: Int,
         duration: Int,
         inputEventType: InputEventType,
-    ): Result<*>
+    ): KMResult<*>
 
     fun pinchScreen(
         x: Int,
@@ -30,7 +30,7 @@ interface IAccessibilityService {
         fingerCount: Int,
         duration: Int,
         inputEventType: InputEventType,
-    ): Result<*>
+    ): KMResult<*>
 
     val isFingerprintGestureDetectionAvailable: Boolean
 
@@ -42,7 +42,7 @@ interface IAccessibilityService {
     fun performActionOnNode(
         findNode: (node: AccessibilityNodeModel) -> Boolean,
         performAction: (node: AccessibilityNodeModel) -> AccessibilityNodeAction?,
-    ): Result<*>
+    ): KMResult<*>
 
     val rootNode: AccessibilityNodeModel?
     val activeWindowPackage: Flow<String?>

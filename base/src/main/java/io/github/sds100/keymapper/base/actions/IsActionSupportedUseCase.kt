@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.actions
 
 import android.content.pm.PackageManager
 import android.os.Build
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.camera.CameraLens
@@ -16,24 +16,24 @@ class IsActionSupportedUseCaseImpl(
     private val permissionAdapter: PermissionAdapter,
 ) : IsActionSupportedUseCase {
 
-    override fun isSupported(id: ActionId): Error? {
+    override fun isSupported(id: ActionId): KMError? {
         if (Build.VERSION.SDK_INT != 0) {
             val minApi = ActionUtils.getMinApi(id)
 
             if (Build.VERSION.SDK_INT < minApi) {
-                return Error.SdkVersionTooLow(minApi)
+                return KMError.SdkVersionTooLow(minApi)
             }
 
             val maxApi = ActionUtils.getMaxApi(id)
 
             if (Build.VERSION.SDK_INT > maxApi) {
-                return Error.SdkVersionTooHigh(maxApi)
+                return KMError.SdkVersionTooHigh(maxApi)
             }
         }
 
         ActionUtils.getRequiredSystemFeatures(id).forEach { feature ->
             if (!adapter.hasSystemFeature(feature)) {
-                return Error.SystemFeatureNotSupported(feature)
+                return KMError.SystemFeatureNotSupported(feature)
             }
         }
 
@@ -41,7 +41,7 @@ class IsActionSupportedUseCaseImpl(
             if (cameraAdapter.getFlashInfo(CameraLens.BACK) == null &&
                 cameraAdapter.getFlashInfo(CameraLens.FRONT) == null
             ) {
-                return Error.SystemFeatureNotSupported(PackageManager.FEATURE_CAMERA_FLASH)
+                return KMError.SystemFeatureNotSupported(PackageManager.FEATURE_CAMERA_FLASH)
             }
         }
 
@@ -49,7 +49,7 @@ class IsActionSupportedUseCaseImpl(
             if (cameraAdapter.getFlashInfo(CameraLens.BACK)?.supportsVariableStrength != true &&
                 cameraAdapter.getFlashInfo(CameraLens.FRONT)?.supportsVariableStrength != true
             ) {
-                return Error.CameraVariableFlashlightStrengthUnsupported
+                return KMError.CameraVariableFlashlightStrengthUnsupported
             }
         }
 
@@ -65,5 +65,5 @@ class IsActionSupportedUseCaseImpl(
 }
 
 interface IsActionSupportedUseCase {
-    fun isSupported(id: ActionId): Error?
+    fun isSupported(id: ActionId): KMError?
 }

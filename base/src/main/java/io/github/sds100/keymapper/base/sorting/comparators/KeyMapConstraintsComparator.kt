@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.base.sorting.comparators
 
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.common.utils.valueOrNull
@@ -85,7 +85,7 @@ class KeyMapConstraintsComparator(
         return constraint.id.ordinal.compareTo(otherConstraint.id.ordinal)
     }
 
-    private fun getSecondarySortField(constraint: Constraint): Result<String> {
+    private fun getSecondarySortField(constraint: Constraint): KMResult<String> {
         return when (constraint) {
             is Constraint.AppInForeground -> displayConstraints.getAppName(constraint.packageName)
             is Constraint.AppNotInForeground -> displayConstraints.getAppName(constraint.packageName)

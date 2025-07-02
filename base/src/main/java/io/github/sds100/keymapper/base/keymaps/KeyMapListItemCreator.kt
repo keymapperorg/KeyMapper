@@ -25,7 +25,7 @@ import io.github.sds100.keymapper.base.utils.isFixable
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 
 class KeyMapListItemCreator(
@@ -148,7 +148,7 @@ class KeyMapListItemCreator(
             }
 
             val icon: ComposeIconInfo = actionUiHelper.getIcon(action.data)
-            val error: Error? = errorSnapshot.getError(action.data)
+            val error: KMError? = errorSnapshot.getError(action.data)
 
             val chip = if (error == null) {
                 ComposeChipModel.Normal(id = action.uid, text = chipText, icon = icon)
@@ -167,7 +167,7 @@ class KeyMapListItemCreator(
         for (constraint in constraintState.constraints) {
             val text: String = constraintUiHelper.getTitle(constraint)
             val icon: ComposeIconInfo = constraintUiHelper.getIcon(constraint)
-            val error: Error? = errorSnapshot.getError(constraint)
+            val error: KMError? = errorSnapshot.getError(constraint)
 
             val chip: ComposeChipModel = if (error == null) {
                 ComposeChipModel.Normal(

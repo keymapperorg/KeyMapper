@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.base.actions.sound
 
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.files.FileAdapter
 import kotlinx.coroutines.flow.StateFlow
@@ -13,13 +13,13 @@ class ChooseSoundFileUseCaseImpl @Inject constructor(
 ) : ChooseSoundFileUseCase {
     override val soundFiles = soundsManager.soundFiles
 
-    override suspend fun saveSound(uri: String): Result<String> = soundsManager.saveNewSound(uri)
+    override suspend fun saveSound(uri: String): KMResult<String> = soundsManager.saveNewSound(uri)
 
-    override fun getSoundFileName(uri: String): Result<String> {
+    override fun getSoundFileName(uri: String): KMResult<String> {
         val name = fileAdapter.getFileFromUri(uri).name
 
         return if (name == null) {
-            Error.NoFileName
+            KMError.NoFileName
         } else {
             Success(name)
         }
@@ -31,7 +31,7 @@ interface ChooseSoundFileUseCase {
     /**
      * @return the sound file uid
      */
-    suspend fun saveSound(uri: String): Result<String>
+    suspend fun saveSound(uri: String): KMResult<String>
     val soundFiles: StateFlow<List<SoundFileInfo>>
-    fun getSoundFileName(uri: String): Result<String>
+    fun getSoundFileName(uri: String): KMResult<String>
 }

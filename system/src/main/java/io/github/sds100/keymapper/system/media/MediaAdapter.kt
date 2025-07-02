@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.system.media
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import kotlinx.coroutines.flow.Flow
 
@@ -26,17 +26,17 @@ interface MediaAdapter {
     fun getActiveAudioVolumeStreams(): Set<Int>
     fun getActiveAudioVolumeStreamsFlow(): Flow<Set<Int>>
 
-    fun fastForward(packageName: String? = null): Result<*>
-    fun rewind(packageName: String? = null): Result<*>
-    fun play(packageName: String? = null): Result<*>
-    fun pause(packageName: String? = null): Result<*>
-    fun playPause(packageName: String? = null): Result<*>
-    fun previousTrack(packageName: String? = null): Result<*>
-    fun nextTrack(packageName: String? = null): Result<*>
-    fun stop(packageName: String? = null): Result<*>
-    fun stepForward(packageName: String? = null): Result<*>
-    fun stepBackward(packageName: String? = null): Result<*>
+    fun fastForward(packageName: String? = null): KMResult<*>
+    fun rewind(packageName: String? = null): KMResult<*>
+    fun play(packageName: String? = null): KMResult<*>
+    fun pause(packageName: String? = null): KMResult<*>
+    fun playPause(packageName: String? = null): KMResult<*>
+    fun previousTrack(packageName: String? = null): KMResult<*>
+    fun nextTrack(packageName: String? = null): KMResult<*>
+    fun stop(packageName: String? = null): KMResult<*>
+    fun stepForward(packageName: String? = null): KMResult<*>
+    fun stepBackward(packageName: String? = null): KMResult<*>
 
-    fun playFile(uri: String, stream: VolumeStream): Result<*>
-    fun stopFileMedia(): Result<*>
+    fun playFile(uri: String, stream: VolumeStream): KMResult<*>
+    fun stopFileMedia(): KMResult<*>
 }

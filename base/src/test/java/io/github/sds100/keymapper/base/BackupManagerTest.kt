@@ -12,7 +12,7 @@ import io.github.sds100.keymapper.base.repositories.FakePreferenceRepository
 import io.github.sds100.keymapper.base.system.files.FakeFileAdapter
 import io.github.sds100.keymapper.base.system.files.JavaFile
 import io.github.sds100.keymapper.base.utils.TestBuildConfigProvider
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.UuidGenerator
@@ -315,7 +315,7 @@ class BackupManagerTest {
         advanceUntilIdle()
 
         // THEN
-        assertThat(result, `is`(Error.BackupVersionTooNew))
+        assertThat(result, `is`(KMError.BackupVersionTooNew))
     }
 
     /**
@@ -539,7 +539,7 @@ class BackupManagerTest {
         val result =
             backupManager.restore(copyFileToPrivateFolder(fileName), RestoreType.REPLACE)
 
-        assertThat(result, `is`(Error.BackupVersionTooNew))
+        assertThat(result, `is`(KMError.BackupVersionTooNew))
         verify(mockKeyMapRepository, never()).insert(anyVararg())
     }
 
@@ -550,7 +550,7 @@ class BackupManagerTest {
         val result =
             backupManager.restore(copyFileToPrivateFolder(fileName), RestoreType.REPLACE)
 
-        assertThat(result, `is`(Error.BackupVersionTooNew))
+        assertThat(result, `is`(KMError.BackupVersionTooNew))
     }
 
     @Test
@@ -559,7 +559,7 @@ class BackupManagerTest {
 
         val result = backupManager.restore(copyFileToPrivateFolder(fileName), RestoreType.REPLACE)
 
-        assertThat(result, `is`(Error.EmptyJson))
+        assertThat(result, `is`(KMError.EmptyJson))
     }
 
     @Test
@@ -568,7 +568,7 @@ class BackupManagerTest {
 
         val result = backupManager.restore(copyFileToPrivateFolder(fileName), RestoreType.REPLACE)
 
-        assertThat(result, IsInstanceOf(Error.CorruptJsonFile::class.java))
+        assertThat(result, IsInstanceOf(KMError.CorruptJsonFile::class.java))
     }
 
     @Test

@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.base.purchasing
 
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 
-sealed class PurchasingError : Error() {
+sealed class PurchasingError : KMError() {
     data object PurchasingNotImplemented : PurchasingError()
 
     data class ProductNotPurchased(val product: ProductId) : PurchasingError()

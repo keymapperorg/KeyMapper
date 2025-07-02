@@ -5,7 +5,7 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeAction
 import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.common.utils.InputEventType
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.system.inputevents.InputEventInjector
@@ -28,7 +28,7 @@ class OpenMenuHelper(
         private const val OVERFLOW_MENU_CONTENT_DESCRIPTION = "More options"
     }
 
-    fun openMenu(): Result<*> {
+    fun openMenu(): KMResult<*> {
         when {
             permissionAdapter.isGranted(Permission.SHIZUKU) -> {
                 val inputKeyModel = InputKeyModel(

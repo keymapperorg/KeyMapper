@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.system.display
 
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.common.utils.Orientation
 import kotlinx.coroutines.flow.Flow
@@ -13,9 +13,9 @@ interface DisplayAdapter {
     val isAmbientDisplayEnabled: Flow<Boolean>
 
     fun isAutoRotateEnabled(): Boolean
-    fun enableAutoRotate(): Result<*>
-    fun disableAutoRotate(): Result<*>
-    fun setOrientation(orientation: Orientation): Result<*>
+    fun enableAutoRotate(): KMResult<*>
+    fun disableAutoRotate(): KMResult<*>
+    fun setOrientation(orientation: Orientation): KMResult<*>
 
     /**
      * Fetch the orientation and bypass the cached value that updates when the listener changes.
@@ -23,8 +23,8 @@ interface DisplayAdapter {
     fun fetchOrientation(): Orientation
 
     fun isAutoBrightnessEnabled(): Boolean
-    fun increaseBrightness(): Result<*>
-    fun decreaseBrightness(): Result<*>
-    fun enableAutoBrightness(): Result<*>
-    fun disableAutoBrightness(): Result<*>
+    fun increaseBrightness(): KMResult<*>
+    fun decreaseBrightness(): KMResult<*>
+    fun enableAutoBrightness(): KMResult<*>
+    fun disableAutoBrightness(): KMResult<*>
 }

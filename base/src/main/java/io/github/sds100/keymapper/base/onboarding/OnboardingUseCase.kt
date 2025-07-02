@@ -10,7 +10,7 @@ import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.base.utils.VersionHelper
 import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.handle
 import io.github.sds100.keymapper.data.Keys
@@ -156,7 +156,7 @@ class OnboardingUseCaseImpl @Inject constructor(
         if (tapTarget == OnboardingTapTarget.ADVANCED_TRIGGERS) {
             return combine(
                 settingsRepository.get(shownKey).map { it ?: false },
-                purchasingManager.purchases.filterIsInstance<State.Data<Result<Set<ProductId>>>>(),
+                purchasingManager.purchases.filterIsInstance<State.Data<KMResult<Set<ProductId>>>>(),
                 keyMapRepository.keyMapList.filterIsInstance<State.Data<List<KeyMapEntity>>>(),
             ) { isShown, purchases, keyMapList ->
                 // Only show the tap target for advanced triggers if it has not already been shown

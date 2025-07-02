@@ -6,8 +6,8 @@ import android.media.RingtoneManager
 import android.os.Build
 import androidx.core.net.toUri
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -25,11 +25,11 @@ class AndroidRingtoneAdapter @Inject constructor(@ApplicationContext private val
     private val lock = Any()
     private var playingRingtone: Ringtone? = null
 
-    override fun getLabel(uri: String): Result<String> {
+    override fun getLabel(uri: String): KMResult<String> {
         val ringtone = getRingtone(uri)
 
         if (ringtone == null) {
-            return Error.CantFindSoundFile
+            return KMError.CantFindSoundFile
         }
 
         return Success(ringtone.getTitle(ctx))
@@ -39,11 +39,11 @@ class AndroidRingtoneAdapter @Inject constructor(@ApplicationContext private val
         return getRingtone(uri) != null
     }
 
-    override fun play(uri: String): Result<Unit> {
+    override fun play(uri: String): KMResult<Unit> {
         val ringtone = getRingtone(uri)
 
         if (ringtone == null) {
-            return Error.CantFindSoundFile
+            return KMError.CantFindSoundFile
         } else {
             ringtoneManager.stopPreviousRingtone()
 
@@ -76,8 +76,8 @@ class AndroidRingtoneAdapter @Inject constructor(@ApplicationContext private val
 }
 
 interface RingtoneAdapter {
-    fun getLabel(uri: String): Result<String>
+    fun getLabel(uri: String): KMResult<String>
     fun exists(uri: String): Boolean
-    fun play(uri: String): Result<Unit>
+    fun play(uri: String): KMResult<Unit>
     fun stopPlaying()
 }

@@ -1,15 +1,15 @@
 package io.github.sds100.keymapper.base.purchasing
 
 import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 interface PurchasingManager {
     val onCompleteProductPurchase: MutableSharedFlow<ProductId>
-    val purchases: Flow<State<Result<Set<ProductId>>>>
-    suspend fun launchPurchasingFlow(product: ProductId): Result<Unit>
-    suspend fun getProductPrice(product: ProductId): Result<String>
-    suspend fun isPurchased(product: ProductId): Result<Boolean>
+    val purchases: Flow<State<KMResult<Set<ProductId>>>>
+    suspend fun launchPurchasingFlow(product: ProductId): KMResult<Unit>
+    suspend fun getProductPrice(product: ProductId): KMResult<String>
+    suspend fun isPurchased(product: ProductId): KMResult<Boolean>
     fun refresh()
 }

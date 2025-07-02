@@ -4,7 +4,7 @@ import androidx.datastore.preferences.core.Preferences
 import io.github.sds100.keymapper.base.actions.sound.SoundFileInfo
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
@@ -90,9 +90,9 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
         imeHelper.enableCompatibleInputMethods()
     }
 
-    override suspend fun chooseCompatibleIme(): Result<ImeInfo> = imeHelper.chooseCompatibleInputMethod()
+    override suspend fun chooseCompatibleIme(): KMResult<ImeInfo> = imeHelper.chooseCompatibleInputMethod()
 
-    override suspend fun showImePicker(): Result<*> = inputMethodAdapter.showImePicker(fromForeground = true)
+    override suspend fun showImePicker(): KMResult<*> = inputMethodAdapter.showImePicker(fromForeground = true)
 
     override fun <T> getPreference(key: Preferences.Key<T>) = preferences.get(key)
 
@@ -196,8 +196,8 @@ interface ConfigSettingsUseCase {
     val isCompatibleImeChosen: Flow<Boolean>
     val isCompatibleImeEnabled: Flow<Boolean>
     suspend fun enableCompatibleIme()
-    suspend fun chooseCompatibleIme(): Result<ImeInfo>
-    suspend fun showImePicker(): Result<*>
+    suspend fun chooseCompatibleIme(): KMResult<ImeInfo>
+    suspend fun showImePicker(): KMResult<*>
 
     val defaultLongPressDelay: Flow<Int>
     val defaultDoublePressDelay: Flow<Int>

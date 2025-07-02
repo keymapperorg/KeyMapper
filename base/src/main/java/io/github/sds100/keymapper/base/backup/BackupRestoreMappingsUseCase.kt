@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.base.backup
 
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.then
@@ -14,9 +14,9 @@ class BackupRestoreMappingsUseCaseImpl @Inject constructor(
     private val backupManager: BackupManager,
 ) : BackupRestoreMappingsUseCase {
 
-    override val onAutomaticBackupResult: Flow<Result<*>> = backupManager.onAutomaticBackupResult
+    override val onAutomaticBackupResult: Flow<KMResult<*>> = backupManager.onAutomaticBackupResult
 
-    override suspend fun backupEverything(): Result<String> {
+    override suspend fun backupEverything(): KMResult<String> {
         val fileName = BackupUtils.createBackupFileName()
 
         // Share in private files so the share sheet can show the file name. This is some quirk
@@ -30,13 +30,13 @@ class BackupRestoreMappingsUseCaseImpl @Inject constructor(
         }
     }
 
-    override suspend fun restoreKeyMaps(uri: String, restoreType: RestoreType): Result<*> {
+    override suspend fun restoreKeyMaps(uri: String, restoreType: RestoreType): KMResult<*> {
         val file = fileAdapter.getFileFromUri(uri)
         return backupManager.restore(file, restoreType = restoreType)
             .onFailure { Timber.e(it.toString()) }
     }
 
-    override suspend fun getKeyMapCountInBackup(uri: String): Result<Int> {
+    override suspend fun getKeyMapCountInBackup(uri: String): KMResult<Int> {
         val file = fileAdapter.getFileFromUri(uri)
         return backupManager.getBackupContent(file)
             .then { Success(it.keyMapList?.size ?: 0) }
@@ -45,9 +45,9 @@ class BackupRestoreMappingsUseCaseImpl @Inject constructor(
 }
 
 interface BackupRestoreMappingsUseCase {
-    val onAutomaticBackupResult: Flow<Result<*>>
-    suspend fun backupEverything(): Result<String>
-    suspend fun restoreKeyMaps(uri: String, restoreType: RestoreType): Result<*>
+    val onAutomaticBackupResult: Flow<KMResult<*>>
+    suspend fun backupEverything(): KMResult<String>
+    suspend fun restoreKeyMaps(uri: String, restoreType: RestoreType): KMResult<*>
 
-    suspend fun getKeyMapCountInBackup(uri: String): Result<Int>
+    suspend fun getKeyMapCountInBackup(uri: String): KMResult<Int>
 }

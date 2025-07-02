@@ -13,7 +13,7 @@ import io.github.sds100.keymapper.base.groups.Group
 import io.github.sds100.keymapper.base.groups.GroupEntityMapper
 import io.github.sds100.keymapper.base.groups.GroupFamily
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.dataOrNull
@@ -342,7 +342,7 @@ class ListKeyMapsUseCaseImpl @Inject constructor(
         keyMapRepository.duplicate(*uid)
     }
 
-    override suspend fun backupKeyMaps(vararg uid: String): Result<String> {
+    override suspend fun backupKeyMaps(vararg uid: String): KMResult<String> {
         val fileName = BackupUtils.createBackupFileName()
 
         // Share in private files so the share sheet can show the file name. This is some quirk
@@ -380,5 +380,5 @@ interface ListKeyMapsUseCase : DisplayKeyMapUseCase {
     fun enableKeyMap(vararg uid: String)
     fun disableKeyMap(vararg uid: String)
     fun duplicateKeyMap(vararg uid: String)
-    suspend fun backupKeyMaps(vararg uid: String): Result<String>
+    suspend fun backupKeyMaps(vararg uid: String): KMResult<String>
 }

@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.system.airplanemode
 
 import android.content.Context
 import android.provider.Settings
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.system.SettingsUtils
 import io.github.sds100.keymapper.system.root.SuAdapter
@@ -17,12 +17,12 @@ class AndroidAirplaneModeAdapter @Inject constructor(
 ) : AirplaneModeAdapter {
     private val ctx = context.applicationContext
 
-    override fun enable(): Result<*> =
+    override fun enable(): KMResult<*> =
         suAdapter.execute("settings put global airplane_mode_on 1").onSuccess {
             broadcastAirplaneModeChanged(false)
         }
 
-    override fun disable(): Result<*> =
+    override fun disable(): KMResult<*> =
         suAdapter.execute("settings put global airplane_mode_on 0").onSuccess {
             broadcastAirplaneModeChanged(false)
         }

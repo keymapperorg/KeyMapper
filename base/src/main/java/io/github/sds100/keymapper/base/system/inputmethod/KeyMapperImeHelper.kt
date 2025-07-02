@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.base.system.inputmethod
 
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.onSuccess
@@ -11,7 +11,6 @@ import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
 class KeyMapperImeHelper(
     private val imeAdapter: InputMethodAdapter,
@@ -49,15 +48,15 @@ class KeyMapperImeHelper(
         }
     }
 
-    suspend fun chooseCompatibleInputMethod(): Result<ImeInfo> = getLastUsedCompatibleImeId().suspendThen {
+    suspend fun chooseCompatibleInputMethod(): KMResult<ImeInfo> = getLastUsedCompatibleImeId().suspendThen {
         imeAdapter.chooseImeWithoutUserInput(it)
     }
 
-    suspend fun chooseLastUsedIncompatibleInputMethod(): Result<ImeInfo> = getLastUsedIncompatibleImeId().then {
+    suspend fun chooseLastUsedIncompatibleInputMethod(): KMResult<ImeInfo> = getLastUsedIncompatibleImeId().then {
         imeAdapter.chooseImeWithoutUserInput(it)
     }
 
-    suspend fun toggleCompatibleInputMethod(): Result<ImeInfo> = if (isCompatibleImeChosen()) {
+    suspend fun toggleCompatibleInputMethod(): KMResult<ImeInfo> = if (isCompatibleImeChosen()) {
         chooseLastUsedIncompatibleInputMethod()
     } else {
         chooseCompatibleInputMethod()
@@ -73,7 +72,7 @@ class KeyMapperImeHelper(
         .filter { it.isEnabled }
         .any { it.packageName in keyMapperImePackageList }
 
-    private fun getLastUsedCompatibleImeId(): Result<String> {
+    private fun getLastUsedCompatibleImeId(): KMResult<String> {
         for (ime in imeAdapter.inputMethodHistory.firstBlocking()) {
             if (ime.packageName in keyMapperImePackageList && ime.isEnabled) {
                 return Success(ime.id)
@@ -90,18 +89,18 @@ class KeyMapperImeHelper(
             if (ime.isEnabled) {
                 Success(ime.id)
             } else {
-                Error.NoCompatibleImeEnabled
+                KMError.NoCompatibleImeEnabled
             }
         }
     }
 
-    private fun getLastUsedIncompatibleImeId(): Result<String> {
+    private fun getLastUsedIncompatibleImeId(): KMResult<String> {
         for (ime in imeAdapter.inputMethodHistory.firstBlocking()) {
             if (ime.packageName !in keyMapperImePackageList) {
                 return Success(ime.id)
             }
         }
 
-        return Error.NoIncompatibleKeyboardsInstalled
+        return KMError.NoIncompatibleKeyboardsInstalled
     }
 }

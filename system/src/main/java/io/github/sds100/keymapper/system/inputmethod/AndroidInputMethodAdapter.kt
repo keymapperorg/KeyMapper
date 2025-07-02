@@ -15,8 +15,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
@@ -165,7 +165,7 @@ class AndroidInputMethodAdapter @Inject constructor(
         )
     }
 
-    override fun showImePicker(fromForeground: Boolean): Result<*> {
+    override fun showImePicker(fromForeground: Boolean): KMResult<*> {
         when {
             fromForeground || Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1 -> {
                 inputMethodManager.showInputMethodPicker()
@@ -178,11 +178,11 @@ class AndroidInputMethodAdapter @Inject constructor(
                 return suAdapter.execute(command)
             }
 
-            else -> return Error.CantShowImePickerInBackground
+            else -> return KMError.CantShowImePickerInBackground
         }
     }
 
-    override suspend fun enableIme(imeId: String): Result<*> = enableImeWithoutUserInput(imeId).otherwise {
+    override suspend fun enableIme(imeId: String): KMResult<*> = enableImeWithoutUserInput(imeId).otherwise {
         try {
             val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
             intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_NEW_TASK
@@ -190,11 +190,11 @@ class AndroidInputMethodAdapter @Inject constructor(
             ctx.startActivity(intent)
             Success(Unit)
         } catch (e: Exception) {
-            Error.CantFindImeSettings
+            KMError.CantFindImeSettings
         }
     }
 
-    private suspend fun enableImeWithoutUserInput(imeId: String): Result<*> {
+    private suspend fun enableImeWithoutUserInput(imeId: String): KMResult<*> {
         return getInfoByPackageName(buildConfigProvider.packageName).then { keyMapperImeInfo ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && imeId == keyMapperImeInfo.id) {
                 serviceAdapter.send(AccessibilityServiceEvent.EnableInputMethod(keyMapperImeInfo.id))
@@ -204,7 +204,7 @@ class AndroidInputMethodAdapter @Inject constructor(
         }
     }
 
-    override suspend fun chooseImeWithoutUserInput(imeId: String): Result<ImeInfo> {
+    override suspend fun chooseImeWithoutUserInput(imeId: String): KMResult<ImeInfo> {
         getInfoById(imeId).onSuccess {
             if (!it.isEnabled) {
                 return SystemError.ImeDisabled(it)
@@ -232,7 +232,7 @@ class AndroidInputMethodAdapter @Inject constructor(
         }
 
         if (failed) {
-            return Error.FailedToChangeIme
+            return KMError.FailedToChangeIme
         }
 
         // wait for the ime to change and then return the info of the ime
@@ -243,18 +243,18 @@ class AndroidInputMethodAdapter @Inject constructor(
         if (didImeChange != null) {
             return Success(didImeChange)
         } else {
-            return Error.FailedToChangeIme
+            return KMError.FailedToChangeIme
         }
     }
 
-    override fun getInfoById(imeId: String): Result<ImeInfo> {
+    override fun getInfoById(imeId: String): KMResult<ImeInfo> {
         val info =
-            getInputMethods().find { it.id == imeId } ?: return Error.InputMethodNotFound(imeId)
+            getInputMethods().find { it.id == imeId } ?: return KMError.InputMethodNotFound(imeId)
 
         return Success(info)
     }
 
-    override fun getInfoByPackageName(packageName: String): Result<ImeInfo> = getImeId(packageName).then { getInfoById(it) }
+    override fun getInfoByPackageName(packageName: String): KMResult<ImeInfo> = getImeId(packageName).then { getInfoById(it) }
 
     /**
      * Example:
@@ -304,12 +304,12 @@ class AndroidInputMethodAdapter @Inject constructor(
 
     private fun getChosenImeId(): String = Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
 
-    private fun getImeId(packageName: String): Result<String> {
+    private fun getImeId(packageName: String): KMResult<String> {
         val imeId =
             inputMethodManager.inputMethodList.find { it.packageName == packageName }?.id
 
         return if (imeId == null) {
-            Error.InputMethodNotFound(packageName)
+            KMError.InputMethodNotFound(packageName)
         } else {
             Success(imeId)
         }

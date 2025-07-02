@@ -28,7 +28,7 @@ import io.github.sds100.keymapper.base.utils.parallelTrigger
 import io.github.sds100.keymapper.base.utils.sequenceTrigger
 import io.github.sds100.keymapper.base.utils.singleKeyTrigger
 import io.github.sds100.keymapper.base.utils.triggerKey
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.InputEventType
 import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.system.camera.CameraLens
@@ -180,7 +180,7 @@ class KeyMapControllerTest {
             }
 
             on { getErrorSnapshot() } doReturn object : ActionErrorSnapshot {
-                override fun getError(action: ActionData): Error? = null
+                override fun getError(action: ActionData): KMError? = null
             }
         }
 
@@ -1320,8 +1320,8 @@ class KeyMapControllerTest {
         // WHEN
         whenever(performActionsUseCase.getErrorSnapshot()).thenReturn(object :
             ActionErrorSnapshot {
-            override fun getError(action: ActionData): Error {
-                return Error.NoCompatibleImeChosen
+            override fun getError(action: ActionData): KMError {
+                return KMError.NoCompatibleImeChosen
             }
         })
 

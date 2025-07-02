@@ -26,11 +26,11 @@ import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjectorImpl
 import io.github.sds100.keymapper.base.trigger.KeyEventDetectionSource
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.InputEventType
 import io.github.sds100.keymapper.common.utils.MathUtils
 import io.github.sds100.keymapper.common.utils.PinchScreenType
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
@@ -348,17 +348,17 @@ abstract class BaseAccessibilityService :
         }
     }
 
-    override fun doGlobalAction(action: Int): Result<*> {
+    override fun doGlobalAction(action: Int): KMResult<*> {
         val success = performGlobalAction(action)
 
         if (success) {
             return Success(Unit)
         } else {
-            return Error.FailedToPerformAccessibilityGlobalAction(action)
+            return KMError.FailedToPerformAccessibilityGlobalAction(action)
         }
     }
 
-    override fun tapScreen(x: Int, y: Int, inputEventType: InputEventType): Result<*> {
+    override fun tapScreen(x: Int, y: Int, inputEventType: InputEventType): KMResult<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val duration = 1L // ms
 
@@ -397,12 +397,12 @@ abstract class BaseAccessibilityService :
                 return if (success) {
                     Success(Unit)
                 } else {
-                    Error.FailedToDispatchGesture
+                    KMError.FailedToDispatchGesture
                 }
             }
         }
 
-        return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
+        return KMError.SdkVersionTooLow(Build.VERSION_CODES.N)
     }
 
     override fun swipeScreen(
@@ -413,16 +413,16 @@ abstract class BaseAccessibilityService :
         fingerCount: Int,
         duration: Int,
         inputEventType: InputEventType,
-    ): Result<*> {
+    ): KMResult<*> {
         // virtual distance between fingers on multitouch gestures
         val fingerGestureDistance = 10L
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (fingerCount >= GestureDescription.getMaxStrokeCount()) {
-                return Error.GestureStrokeCountTooHigh
+                return KMError.GestureStrokeCountTooHigh
             }
             if (duration >= GestureDescription.getMaxGestureDuration()) {
-                return Error.GestureDurationTooHigh
+                return KMError.GestureDurationTooHigh
             }
 
             val pStart = Point(xStart, yStart)
@@ -500,11 +500,11 @@ abstract class BaseAccessibilityService :
             return if (success) {
                 Success(Unit)
             } else {
-                Error.FailedToDispatchGesture
+                KMError.FailedToDispatchGesture
             }
         }
 
-        return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
+        return KMError.SdkVersionTooLow(Build.VERSION_CODES.N)
     }
 
     override fun pinchScreen(
@@ -515,13 +515,13 @@ abstract class BaseAccessibilityService :
         fingerCount: Int,
         duration: Int,
         inputEventType: InputEventType,
-    ): Result<*> {
+    ): KMResult<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (fingerCount >= GestureDescription.getMaxStrokeCount()) {
-                return Error.GestureStrokeCountTooHigh
+                return KMError.GestureStrokeCountTooHigh
             }
             if (duration >= GestureDescription.getMaxGestureDuration()) {
-                return Error.GestureDurationTooHigh
+                return KMError.GestureDurationTooHigh
             }
 
             val gestureBuilder = GestureDescription.Builder()
@@ -552,23 +552,23 @@ abstract class BaseAccessibilityService :
             return if (success) {
                 Success(Unit)
             } else {
-                Error.FailedToDispatchGesture
+                KMError.FailedToDispatchGesture
             }
         }
 
-        return Error.SdkVersionTooLow(Build.VERSION_CODES.N)
+        return KMError.SdkVersionTooLow(Build.VERSION_CODES.N)
     }
 
     override fun performActionOnNode(
         findNode: (node: AccessibilityNodeModel) -> Boolean,
         performAction: (node: AccessibilityNodeModel) -> AccessibilityNodeAction?,
-    ): Result<*> {
+    ): KMResult<*> {
         val node = rootInActiveWindow.findNodeRecursively {
             findNode(it.toModel())
         }
 
         if (node == null) {
-            return Error.FailedToFindAccessibilityNode
+            return KMError.FailedToFindAccessibilityNode
         }
 
         val (action, extras) = performAction(node.toModel()) ?: return Success(Unit)

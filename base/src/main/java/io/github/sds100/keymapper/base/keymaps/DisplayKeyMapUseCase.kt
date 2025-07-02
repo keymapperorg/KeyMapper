@@ -13,8 +13,8 @@ import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.base.trigger.TriggerError
 import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.dataOrNull
@@ -73,10 +73,10 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
      * This waits for the purchases to be processed with a timeout so the UI doesn't
      * say there are no purchases while it is loading.
      */
-    private val purchasesFlow: Flow<State<Result<Set<ProductId>>>> = callbackFlow {
+    private val purchasesFlow: Flow<State<KMResult<Set<ProductId>>>> = callbackFlow {
         try {
             val value = withTimeout(5000L) {
-                purchasingManager.purchases.filterIsInstance<State.Data<Result<Set<ProductId>>>>()
+                purchasingManager.purchases.filterIsInstance<State.Data<KMResult<Set<ProductId>>>>()
                     .first()
             }
 
@@ -139,14 +139,14 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
                 ),
             )
 
-            TriggerError.CANT_DETECT_IN_PHONE_CALL -> fixError(Error.CantDetectKeyEventsInPhoneCall)
+            TriggerError.CANT_DETECT_IN_PHONE_CALL -> fixError(KMError.CantDetectKeyEventsInPhoneCall)
             TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> fixError(
                 PurchasingError.ProductNotPurchased(
                     ProductId.ASSISTANT_TRIGGER,
                 ),
             )
 
-            TriggerError.DPAD_IME_NOT_SELECTED -> fixError(Error.DpadTriggerImeNotSelected)
+            TriggerError.DPAD_IME_NOT_SELECTED -> fixError(KMError.DpadTriggerImeNotSelected)
             TriggerError.FLOATING_BUTTON_DELETED -> {}
             TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> fixError(
                 PurchasingError.ProductNotPurchased(
@@ -158,27 +158,27 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
         }
     }
 
-    override fun getAppName(packageName: String): Result<String> = packageManagerAdapter.getAppName(packageName)
+    override fun getAppName(packageName: String): KMResult<String> = packageManagerAdapter.getAppName(packageName)
 
-    override fun getAppIcon(packageName: String): Result<Drawable> = packageManagerAdapter.getAppIcon(packageName)
+    override fun getAppIcon(packageName: String): KMResult<Drawable> = packageManagerAdapter.getAppIcon(packageName)
 
-    override fun getInputMethodLabel(imeId: String): Result<String> =
+    override fun getInputMethodLabel(imeId: String): KMResult<String> =
         inputMethodAdapter.getInfoById(imeId).then { Success(it.label) }
 
-    override suspend fun fixError(error: Error) {
+    override suspend fun fixError(error: KMError) {
         when (error) {
-            is Error.AppDisabled -> packageManagerAdapter.enableApp(error.packageName)
-            is Error.AppNotFound -> packageManagerAdapter.downloadApp(error.packageName)
-            Error.NoCompatibleImeChosen ->
+            is KMError.AppDisabled -> packageManagerAdapter.enableApp(error.packageName)
+            is KMError.AppNotFound -> packageManagerAdapter.downloadApp(error.packageName)
+            KMError.NoCompatibleImeChosen ->
                 keyMapperImeHelper.chooseCompatibleInputMethod().otherwise {
                     inputMethodAdapter.showImePicker(fromForeground = true)
                 }
 
-            Error.NoCompatibleImeEnabled -> keyMapperImeHelper.enableCompatibleInputMethods()
+            KMError.NoCompatibleImeEnabled -> keyMapperImeHelper.enableCompatibleInputMethods()
             is SystemError.ImeDisabled -> inputMethodAdapter.enableIme(error.ime.id)
             is SystemError.PermissionDenied -> permissionAdapter.request(error.permission)
-            is Error.ShizukuNotStarted -> packageManagerAdapter.openApp(ShizukuUtils.SHIZUKU_PACKAGE)
-            is Error.CantDetectKeyEventsInPhoneCall -> {
+            is KMError.ShizukuNotStarted -> packageManagerAdapter.openApp(ShizukuUtils.SHIZUKU_PACKAGE)
+            is KMError.CantDetectKeyEventsInPhoneCall -> {
                 if (!keyMapperImeHelper.isCompatibleImeEnabled()) {
                     keyMapperImeHelper.enableCompatibleInputMethods()
                 }
@@ -203,7 +203,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
         settingsRepository.set(Keys.neverShowDndAccessError, true)
     }
 
-    override fun getRingtoneLabel(uri: String): Result<String> {
+    override fun getRingtoneLabel(uri: String): KMResult<String> {
         return ringtoneAdapter.getLabel(uri)
     }
 }

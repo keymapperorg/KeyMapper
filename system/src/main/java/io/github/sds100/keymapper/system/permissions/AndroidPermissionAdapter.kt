@@ -17,8 +17,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.getIdentifier
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
@@ -133,8 +133,8 @@ class AndroidPermissionAdapter @Inject constructor(
         coroutineScope.launch { _request.emit(permission) }
     }
 
-    override fun grant(permissionName: String): Result<*> {
-        val result: Result<*>
+    override fun grant(permissionName: String): KMResult<*> {
+        val result: KMResult<*>
 
         if (ContextCompat.checkSelfPermission(
                 ctx,
@@ -152,10 +152,10 @@ class AndroidPermissionAdapter @Inject constructor(
                 if (ContextCompat.checkSelfPermission(ctx, permissionName) == PERMISSION_GRANTED) {
                     success()
                 } else {
-                    Error.Exception(Exception("Failed to grant permission with Shizuku."))
+                    KMError.Exception(Exception("Failed to grant permission with Shizuku."))
                 }
             } catch (e: Exception) {
-                Error.Exception(e)
+                KMError.Exception(e)
             }
         } else if (isGranted(Permission.ROOT)) {
             suAdapter.execute(
@@ -166,7 +166,7 @@ class AndroidPermissionAdapter @Inject constructor(
                 result = success()
             } else {
                 result =
-                    Error.Exception(Exception("Failed to grant permission with root. Key Mapper may not actually have root permission."))
+                    KMError.Exception(Exception("Failed to grant permission with root. Key Mapper may not actually have root permission."))
             }
         } else {
             result = SystemError.PermissionDenied(Permission.SHIZUKU)

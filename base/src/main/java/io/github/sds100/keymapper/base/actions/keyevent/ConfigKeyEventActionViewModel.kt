@@ -15,8 +15,8 @@ import io.github.sds100.keymapper.base.utils.navigation.NavigationProviderImpl
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.errorOrNull
 import io.github.sds100.keymapper.common.utils.handle
@@ -113,8 +113,8 @@ class ConfigKeyEventActionViewModel @Inject constructor(
 
     fun onKeyCodeTextChanged(text: String) {
         val keyCodeState = when {
-            text.isBlank() -> Error.EmptyText
-            text.toIntOrNull() == null -> Error.InvalidNumber
+            text.isBlank() -> KMError.EmptyText
+            text.toIntOrNull() == null -> KMError.InvalidNumber
             else -> text.toInt().success()
         }
 
@@ -237,7 +237,7 @@ class ConfigKeyEventActionViewModel @Inject constructor(
     }
 
     private data class KeyEventState(
-        val keyCode: Result<Int> = Error.EmptyText,
+        val keyCode: KMResult<Int> = KMError.EmptyText,
         val chosenDevice: InputDeviceInfo? = null,
         val useShell: Boolean = false,
         val metaState: Int = 0,

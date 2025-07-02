@@ -14,7 +14,7 @@ import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.mapData
@@ -160,7 +160,7 @@ class ConfigConstraintsViewModel(
         val constraintList = state.constraints.mapIndexed { index, constraint ->
             val title: String = uiHelper.getTitle(constraint)
             val icon: ComposeIconInfo = uiHelper.getIcon(constraint)
-            val error: Error? = errorSnapshot.getError(constraint)
+            val error: KMError? = errorSnapshot.getError(constraint)
 
             ConstraintListItemModel(
                 id = constraint.uid,

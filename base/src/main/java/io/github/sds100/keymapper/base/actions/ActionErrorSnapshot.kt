@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.actions
 
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
@@ -53,7 +53,7 @@ class LazyActionErrorSnapshot(
         }
     }
 
-    override fun getError(action: ActionData): Error? {
+    override fun getError(action: ActionData): KMError? {
         val isSupportedError = isSupported(action.id)
 
         if (isSupportedError != null) {
@@ -63,7 +63,7 @@ class LazyActionErrorSnapshot(
         if (action.canUseShizukuToPerform() && isShizukuInstalled) {
             if (!(action.canUseImeToPerform() && isCompatibleImeChosen)) {
                 when {
-                    !isShizukuStarted -> return Error.ShizukuNotStarted
+                    !isShizukuStarted -> return KMError.ShizukuNotStarted
 
                     !isPermissionGranted(Permission.SHIZUKU) -> return SystemError.PermissionDenied(
                         Permission.SHIZUKU,
@@ -72,11 +72,11 @@ class LazyActionErrorSnapshot(
             }
         } else if (action.canUseImeToPerform()) {
             if (!isCompatibleImeEnabled) {
-                return Error.NoCompatibleImeEnabled
+                return KMError.NoCompatibleImeEnabled
             }
 
             if (!isCompatibleImeChosen) {
-                return Error.NoCompatibleImeChosen
+                return KMError.NoCompatibleImeChosen
             }
         }
 
@@ -112,21 +112,21 @@ class LazyActionErrorSnapshot(
 
             is ActionData.Sound.Ringtone -> {
                 if (!ringtoneAdapter.exists(action.uri)) {
-                    return Error.CantFindSoundFile
+                    return KMError.CantFindSoundFile
                 }
             }
 
             is ActionData.VoiceAssistant -> {
                 if (!isVoiceAssistantInstalled) {
-                    return Error.NoVoiceAssistant
+                    return KMError.NoVoiceAssistant
                 }
             }
 
             is ActionData.Flashlight ->
                 if (!flashLenses.contains(action.lens)) {
                     return when (action.lens) {
-                        CameraLens.FRONT -> Error.FrontFlashNotFound
-                        CameraLens.BACK -> Error.BackFlashNotFound
+                        CameraLens.FRONT -> KMError.FrontFlashNotFound
+                        CameraLens.BACK -> KMError.BackFlashNotFound
                     }
                 }
 
@@ -141,15 +141,15 @@ class LazyActionErrorSnapshot(
         return null
     }
 
-    private fun getAppError(packageName: String): Error? {
+    private fun getAppError(packageName: String): KMError? {
         packageManager.isAppEnabled(packageName).onSuccess { isEnabled ->
             if (!isEnabled) {
-                return Error.AppDisabled(packageName)
+                return KMError.AppDisabled(packageName)
             }
         }
 
         if (!packageManager.isAppInstalled(packageName)) {
-            return Error.AppNotFound(packageName)
+            return KMError.AppNotFound(packageName)
         }
 
         return null
@@ -167,5 +167,5 @@ class LazyActionErrorSnapshot(
 }
 
 interface ActionErrorSnapshot {
-    fun getError(action: ActionData): Error?
+    fun getError(action: ActionData): KMError?
 }

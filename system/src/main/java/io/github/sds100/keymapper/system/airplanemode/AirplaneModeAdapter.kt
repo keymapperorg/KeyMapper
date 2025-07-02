@@ -1,9 +1,9 @@
 package io.github.sds100.keymapper.system.airplanemode
 
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 
 interface AirplaneModeAdapter {
     fun isEnabled(): Boolean
-    fun enable(): Result<*>
-    fun disable(): Result<*>
+    fun enable(): KMResult<*>
+    fun disable(): KMResult<*>
 }

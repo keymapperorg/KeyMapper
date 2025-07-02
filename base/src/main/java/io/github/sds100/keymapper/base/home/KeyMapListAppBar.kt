@@ -91,7 +91,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
@@ -134,7 +134,7 @@ fun KeyMapListAppBar(
     onNewConstraintClick: () -> Unit = {},
     onRemoveConstraintClick: (String) -> Unit = {},
     onConstraintModeChanged: (ConstraintMode) -> Unit = {},
-    onFixConstraintClick: (Error) -> Unit = {},
+    onFixConstraintClick: (KMError) -> Unit = {},
 ) {
     BackHandler(onBack = onBackClick)
 
@@ -426,7 +426,7 @@ private fun ChildGroupAppBar(
     onNewConstraintClick: () -> Unit = {},
     onRemoveConstraintClick: (String) -> Unit = {},
     onConstraintModeChanged: (ConstraintMode) -> Unit = {},
-    onFixConstraintClick: (Error) -> Unit = {},
+    onFixConstraintClick: (KMError) -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     // Make custom top app bar because the height can not be set to fix the text field error in.
@@ -922,7 +922,7 @@ private fun constraintsSampleList(): List<ComposeChipModel> {
         ComposeChipModel.Error(
             id = "2",
             text = "Key Mapper not found",
-            error = Error.AppNotFound("io.github.sds100.keymapper"),
+            error = KMError.AppNotFound("io.github.sds100.keymapper"),
         ),
     )
 }

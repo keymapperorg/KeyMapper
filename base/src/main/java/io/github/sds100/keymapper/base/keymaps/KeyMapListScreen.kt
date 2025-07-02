@@ -63,7 +63,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.ErrorCompactChip
 import io.github.sds100.keymapper.base.utils.ui.drawable
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.State
 
 @Composable
@@ -76,7 +76,7 @@ fun KeyMapList(
     onClickKeyMap: (String) -> Unit = {},
     onLongClickKeyMap: (String) -> Unit = {},
     onSelectedChange: (String, Boolean) -> Unit = { _, _ -> },
-    onFixClick: (Error) -> Unit = {},
+    onFixClick: (KMError) -> Unit = {},
     onTriggerErrorClick: (TriggerError) -> Unit = {},
     bottomListPadding: Dp = 100.dp,
 ) {
@@ -154,7 +154,7 @@ private fun LoadedKeyMapList(
     onClickKeyMap: (String) -> Unit,
     onLongClickKeyMap: (String) -> Unit,
     onSelectedChange: (String, Boolean) -> Unit,
-    onFixClick: (Error) -> Unit,
+    onFixClick: (KMError) -> Unit,
     onTriggerErrorClick: (TriggerError) -> Unit,
     bottomListPadding: Dp,
 ) {
@@ -210,7 +210,7 @@ private fun KeyMapListItem(
     onClickKeyMap: () -> Unit,
     onLongClickKeyMap: () -> Unit,
     onSelectedChange: (Boolean) -> Unit,
-    onFixClick: (Error) -> Unit,
+    onFixClick: (KMError) -> Unit,
     onTriggerErrorClick: (TriggerError) -> Unit,
 ) {
     OutlinedCard(
@@ -443,7 +443,7 @@ private fun OptionsDescription(
 @Composable
 private fun ActionConstraintChip(
     model: ComposeChipModel,
-    onFixClick: (Error) -> Unit,
+    onFixClick: (KMError) -> Unit,
 ) {
     when (model) {
         is ComposeChipModel.Normal -> {
@@ -513,7 +513,7 @@ private fun sampleList(): List<KeyMapListItemModel> {
                     ComposeChipModel.Error(
                         id = "1",
                         text = "Input KEYCODE_0 • Repeat until released",
-                        error = Error.NoCompatibleImeChosen,
+                        error = KMError.NoCompatibleImeChosen,
                     ),
                     ComposeChipModel.Normal(
                         id = "2",
@@ -536,7 +536,7 @@ private fun sampleList(): List<KeyMapListItemModel> {
                     ComposeChipModel.Error(
                         id = "1",
                         "Key Mapper is playing media",
-                        error = Error.AppNotFound(""),
+                        error = KMError.AppNotFound(""),
                     ),
                 ),
                 options = listOf("Vibrate"),

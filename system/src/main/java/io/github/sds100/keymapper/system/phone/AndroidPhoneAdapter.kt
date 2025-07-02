@@ -9,8 +9,8 @@ import android.telecom.TelecomManager
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import androidx.core.content.getSystemService
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -57,7 +57,7 @@ class AndroidPhoneAdapter @Inject constructor(
 
     override fun getCallState(): CallState = callStateConverter(telephonyManager.callState)
 
-    override fun startCall(number: String): Result<*> {
+    override fun startCall(number: String): KMResult<*> {
         try {
             Intent(Intent.ACTION_CALL).apply {
                 data = Uri.parse("tel:$number")
@@ -67,7 +67,7 @@ class AndroidPhoneAdapter @Inject constructor(
 
             return Success(Unit)
         } catch (e: ActivityNotFoundException) {
-            return Error.NoAppToPhoneCall
+            return KMError.NoAppToPhoneCall
         }
     }
 

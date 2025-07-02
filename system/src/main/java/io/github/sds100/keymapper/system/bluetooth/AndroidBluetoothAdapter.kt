@@ -10,8 +10,8 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -129,9 +129,9 @@ class AndroidBluetoothAdapter @Inject constructor(
         }
     }
 
-    override fun enable(): Result<*> {
+    override fun enable(): KMResult<*> {
         if (adapter == null) {
-            return Error.SystemFeatureNotSupported(PackageManager.FEATURE_BLUETOOTH)
+            return KMError.SystemFeatureNotSupported(PackageManager.FEATURE_BLUETOOTH)
         }
 
         adapter.enable()
@@ -139,9 +139,9 @@ class AndroidBluetoothAdapter @Inject constructor(
         return Success(Unit)
     }
 
-    override fun disable(): Result<*> {
+    override fun disable(): KMResult<*> {
         if (adapter == null) {
-            return Error.SystemFeatureNotSupported(PackageManager.FEATURE_BLUETOOTH)
+            return KMError.SystemFeatureNotSupported(PackageManager.FEATURE_BLUETOOTH)
         }
 
         adapter.disable()

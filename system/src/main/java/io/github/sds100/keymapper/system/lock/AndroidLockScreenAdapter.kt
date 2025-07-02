@@ -11,7 +11,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -75,7 +75,7 @@ class AndroidLockScreenAdapter @Inject constructor(@ApplicationContext private v
 
     override fun isLockedFlow(): Flow<Boolean> = isLockedFlow
 
-    override fun secureLockDevice(): Result<*> {
+    override fun secureLockDevice(): KMResult<*> {
         devicePolicyManager.lockNow()
         return Success(Unit)
     }

@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.base.actions.sound
 
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
@@ -34,7 +34,7 @@ class SoundsManagerImpl @Inject constructor(
         }
     }
 
-    override suspend fun saveNewSound(uri: String): Result<String> {
+    override suspend fun saveNewSound(uri: String): KMResult<String> {
         val uid = UUID.randomUUID().toString()
 
         val soundFile = fileAdapter.getFileFromUri(uri)
@@ -47,13 +47,13 @@ class SoundsManagerImpl @Inject constructor(
             .then { Success(uid) }
             .onSuccess { updateSoundFilesFlow() }
             .onFailure {
-                if (it is Error.Exception) {
+                if (it is KMError.Exception) {
                     Timber.d(it.exception)
                 }
             }
     }
 
-    override suspend fun restoreSound(file: IFile): Result<*> {
+    override suspend fun restoreSound(file: IFile): KMResult<*> {
         val soundsDir = fileAdapter.getPrivateFile(SOUNDS_DIR_NAME)
         soundsDir.createDirectory()
 
@@ -68,20 +68,20 @@ class SoundsManagerImpl @Inject constructor(
         }
     }
 
-    override fun getSound(uid: String): Result<IFile> {
+    override fun getSound(uid: String): KMResult<IFile> {
         val soundsDir = fileAdapter.getPrivateFile(SOUNDS_DIR_NAME)
         soundsDir.createDirectory()
 
         val matchingFile = soundsDir.listFiles()!!.find { it.name?.contains(uid) == true }
 
         if (matchingFile == null) {
-            return Error.CantFindSoundFile
+            return KMError.CantFindSoundFile
         } else {
             return Success(matchingFile)
         }
     }
 
-    override fun deleteSound(uid: String): Result<*> = getSound(uid)
+    override fun deleteSound(uid: String): KMResult<*> = getSound(uid)
         .then { Success(it.delete()) }
         .onSuccess { updateSoundFilesFlow() }
 
@@ -118,8 +118,8 @@ interface SoundsManager {
     /**
      * @return the sound file uid
      */
-    suspend fun saveNewSound(uri: String): Result<String>
-    suspend fun restoreSound(file: IFile): Result<*>
-    fun getSound(uid: String): Result<IFile>
-    fun deleteSound(uid: String): Result<*>
+    suspend fun saveNewSound(uri: String): KMResult<String>
+    suspend fun restoreSound(file: IFile): KMResult<*>
+    fun getSound(uid: String): KMResult<IFile>
+    fun deleteSound(uid: String): KMResult<*>
 }

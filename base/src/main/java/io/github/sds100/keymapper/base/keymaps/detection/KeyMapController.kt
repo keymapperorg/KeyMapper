@@ -4,10 +4,6 @@ import android.view.KeyEvent
 import androidx.collection.SparseArrayCompat
 import androidx.collection.keyIterator
 import androidx.collection.valueIterator
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-import dagger.hilt.android.scopes.ServiceScoped
 import io.github.sds100.keymapper.base.actions.Action
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
@@ -27,9 +23,9 @@ import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerKey
 import io.github.sds100.keymapper.base.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.base.trigger.TriggerMode
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.InputEventType
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.minusFlag
 import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.PreferenceDefaults
@@ -783,7 +779,7 @@ class KeyMapController (
 
         /* cache whether an action can be performed to avoid repeatedly checking when multiple triggers have the
         same action */
-        val canActionBePerformed = SparseArrayCompat<Result<ActionEntity>>()
+        val canActionBePerformed = SparseArrayCompat<KMResult<ActionEntity>>()
 
         /*
         loop through triggers in a different loop first to increment the last matched index.
@@ -814,7 +810,7 @@ class KeyMapController (
                         canActionBePerformed.put(actionKey, result)
                         continue@triggerLoop
                     }
-                } else if (canActionBePerformed[actionKey] is Error) {
+                } else if (canActionBePerformed[actionKey] is KMError) {
                     continue@triggerLoop
                 }
             }

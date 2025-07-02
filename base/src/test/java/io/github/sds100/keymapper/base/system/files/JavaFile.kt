@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.base.system.files
 
 import com.anggrayudi.storage.file.recreateFile
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.files.IFile
 import timber.log.Timber
@@ -72,7 +72,7 @@ class JavaFile(val file: File) : IFile {
         file.mkdirs()
     }
 
-    override suspend fun copyTo(directory: IFile, fileName: String?): Result<*> {
+    override suspend fun copyTo(directory: IFile, fileName: String?): KMResult<*> {
         val targetFile = File((directory as JavaFile).file, fileName ?: this.name)
 
         if (this.isDirectory) {

@@ -10,9 +10,9 @@ import android.view.Surface
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.Orientation
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.getRealDisplaySize
@@ -114,27 +114,27 @@ class AndroidDisplayAdapter @Inject constructor(
 
     override fun isAutoRotateEnabled(): Boolean = SettingsUtils.getSystemSetting<Int>(ctx, Settings.System.ACCELEROMETER_ROTATION) == 1
 
-    override fun enableAutoRotate(): Result<*> {
+    override fun enableAutoRotate(): KMResult<*> {
         val success = SettingsUtils.putSystemSetting(ctx, Settings.System.ACCELEROMETER_ROTATION, 1)
 
         if (success) {
             return Success(Unit)
         } else {
-            return Error.FailedToModifySystemSetting(Settings.System.ACCELEROMETER_ROTATION)
+            return KMError.FailedToModifySystemSetting(Settings.System.ACCELEROMETER_ROTATION)
         }
     }
 
-    override fun disableAutoRotate(): Result<*> {
+    override fun disableAutoRotate(): KMResult<*> {
         val success = SettingsUtils.putSystemSetting(ctx, Settings.System.ACCELEROMETER_ROTATION, 0)
 
         if (success) {
             return Success(Unit)
         } else {
-            return Error.FailedToModifySystemSetting(Settings.System.ACCELEROMETER_ROTATION)
+            return KMError.FailedToModifySystemSetting(Settings.System.ACCELEROMETER_ROTATION)
         }
     }
 
-    override fun setOrientation(orientation: Orientation): Result<*> {
+    override fun setOrientation(orientation: Orientation): KMResult<*> {
         val sdkRotationValue = when (orientation) {
             Orientation.ORIENTATION_0 -> Surface.ROTATION_0
             Orientation.ORIENTATION_90 -> Surface.ROTATION_90
@@ -148,7 +148,7 @@ class AndroidDisplayAdapter @Inject constructor(
         if (success) {
             return Success(Unit)
         } else {
-            return Error.FailedToModifySystemSetting(Settings.System.USER_ROTATION)
+            return KMError.FailedToModifySystemSetting(Settings.System.USER_ROTATION)
         }
     }
 
@@ -157,7 +157,7 @@ class AndroidDisplayAdapter @Inject constructor(
         Settings.System.SCREEN_BRIGHTNESS_MODE,
     ) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC
 
-    override fun increaseBrightness(): Result<*> {
+    override fun increaseBrightness(): KMResult<*> {
         // auto-brightness must be disabled
         disableAutoBrightness()
 
@@ -181,11 +181,11 @@ class AndroidDisplayAdapter @Inject constructor(
         return if (success) {
             Success(Unit)
         } else {
-            Error.FailedToModifySystemSetting(Settings.System.SCREEN_BRIGHTNESS)
+            KMError.FailedToModifySystemSetting(Settings.System.SCREEN_BRIGHTNESS)
         }
     }
 
-    override fun decreaseBrightness(): Result<*> {
+    override fun decreaseBrightness(): KMResult<*> {
         // auto-brightness must be disabled
         disableAutoBrightness()
 
@@ -209,22 +209,22 @@ class AndroidDisplayAdapter @Inject constructor(
         return if (success) {
             Success(Unit)
         } else {
-            Error.FailedToModifySystemSetting(Settings.System.SCREEN_BRIGHTNESS)
+            KMError.FailedToModifySystemSetting(Settings.System.SCREEN_BRIGHTNESS)
         }
     }
 
-    override fun enableAutoBrightness(): Result<*> = setBrightnessMode(Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
+    override fun enableAutoBrightness(): KMResult<*> = setBrightnessMode(Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
 
-    override fun disableAutoBrightness(): Result<*> = setBrightnessMode(Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL)
+    override fun disableAutoBrightness(): KMResult<*> = setBrightnessMode(Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL)
 
-    private fun setBrightnessMode(mode: Int): Result<*> {
+    private fun setBrightnessMode(mode: Int): KMResult<*> {
         val success =
             SettingsUtils.putSystemSetting(ctx, Settings.System.SCREEN_BRIGHTNESS_MODE, mode)
 
         return if (success) {
             Success(Unit)
         } else {
-            Error.FailedToModifySystemSetting(Settings.System.SCREEN_BRIGHTNESS_MODE)
+            KMError.FailedToModifySystemSetting(Settings.System.SCREEN_BRIGHTNESS_MODE)
         }
     }
 

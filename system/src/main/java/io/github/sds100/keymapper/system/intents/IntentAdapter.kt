@@ -3,8 +3,8 @@ package io.github.sds100.keymapper.system.intents
 import android.content.Context
 import android.content.Intent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -17,7 +17,7 @@ class IntentAdapterImpl @Inject constructor(@ApplicationContext private val cont
         target: IntentTarget,
         uri: String,
         extras: List<IntentExtraModel>,
-    ): Result<*> {
+    ): KMResult<*> {
         val intent = Intent.parseUri(uri, 0)
 
         extras.forEach { e ->
@@ -39,11 +39,11 @@ class IntentAdapterImpl @Inject constructor(@ApplicationContext private val cont
             }
             return Success(Unit)
         } catch (e: Exception) {
-            return Error.Exception(e)
+            return KMError.Exception(e)
         }
     }
 }
 
 interface IntentAdapter {
-    fun send(target: IntentTarget, uri: String, extras: List<IntentExtraModel>): Result<*>
+    fun send(target: IntentTarget, uri: String, extras: List<IntentExtraModel>): KMResult<*>
 }

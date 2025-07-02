@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.base.utils.ui
 
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.base.utils.getFullMessage
@@ -122,7 +122,7 @@ object ViewModelHelper {
     suspend fun showFixErrorDialog(
         resourceProvider: ResourceProvider,
         dialogProvider: DialogProvider,
-        error: Error,
+        error: KMError,
         fixError: suspend () -> Unit,
     ) {
         if (error.isFixable) {

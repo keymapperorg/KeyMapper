@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.constraints
 
 import android.content.pm.PackageManager
 import android.os.Build
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
@@ -35,7 +35,7 @@ class LazyConstraintErrorSnapshot(
         }
     }
 
-    override fun getError(constraint: Constraint): Error? {
+    override fun getError(constraint: Constraint): KMError? {
         when (constraint) {
             is Constraint.AppInForeground -> return getAppError(constraint.packageName)
             is Constraint.AppNotInForeground -> return getAppError(constraint.packageName)
@@ -66,7 +66,7 @@ class LazyConstraintErrorSnapshot(
             is Constraint.BtDeviceDisconnected,
             -> {
                 if (!systemFeatureAdapter.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
-                    return Error.SystemFeatureNotSupported(PackageManager.FEATURE_BLUETOOTH)
+                    return KMError.SystemFeatureNotSupported(PackageManager.FEATURE_BLUETOOTH)
                 }
 
                 if (!isPermissionGranted(Permission.FIND_NEARBY_DEVICES)) {
@@ -84,26 +84,26 @@ class LazyConstraintErrorSnapshot(
 
             is Constraint.FlashlightOn -> {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    return Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
+                    return KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
                 }
 
                 if (!flashLenses.contains(constraint.lens)) {
                     return when (constraint.lens) {
-                        CameraLens.FRONT -> Error.FrontFlashNotFound
-                        CameraLens.BACK -> Error.BackFlashNotFound
+                        CameraLens.FRONT -> KMError.FrontFlashNotFound
+                        CameraLens.BACK -> KMError.BackFlashNotFound
                     }
                 }
             }
 
             is Constraint.FlashlightOff -> {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    return Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
+                    return KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
                 }
 
                 if (!flashLenses.contains(constraint.lens)) {
                     return when (constraint.lens) {
-                        CameraLens.FRONT -> Error.FrontFlashNotFound
-                        CameraLens.BACK -> Error.BackFlashNotFound
+                        CameraLens.FRONT -> KMError.FrontFlashNotFound
+                        CameraLens.BACK -> KMError.BackFlashNotFound
                     }
                 }
             }
@@ -116,7 +116,7 @@ class LazyConstraintErrorSnapshot(
 
             is Constraint.ImeChosen -> {
                 if (inputMethods.none { it.id == constraint.imeId }) {
-                    return Error.InputMethodNotFound(constraint.imeLabel)
+                    return KMError.InputMethodNotFound(constraint.imeLabel)
                 }
             }
 
@@ -132,15 +132,15 @@ class LazyConstraintErrorSnapshot(
         return null
     }
 
-    private fun getAppError(packageName: String): Error? {
+    private fun getAppError(packageName: String): KMError? {
         packageManager.isAppEnabled(packageName).onSuccess { isEnabled ->
             if (!isEnabled) {
-                return Error.AppDisabled(packageName)
+                return KMError.AppDisabled(packageName)
             }
         }
 
         if (!packageManager.isAppInstalled(packageName)) {
-            return Error.AppNotFound(packageName)
+            return KMError.AppNotFound(packageName)
         }
 
         return null
@@ -158,5 +158,5 @@ class LazyConstraintErrorSnapshot(
 }
 
 interface ConstraintErrorSnapshot {
-    fun getError(constraint: Constraint): Error?
+    fun getError(constraint: Constraint): KMError?
 }

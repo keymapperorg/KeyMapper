@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.base.system.devices
 
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
@@ -28,7 +28,7 @@ class FakeDevicesAdapter : DevicesAdapter {
         return deviceHasKey.invoke(id, keyCode)
     }
 
-    override fun getInputDeviceName(descriptor: String): Result<String> {
+    override fun getInputDeviceName(descriptor: String): KMResult<String> {
         throw Exception()
     }
 }

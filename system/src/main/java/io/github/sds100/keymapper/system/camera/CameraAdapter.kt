@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.system.camera
 
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import kotlinx.coroutines.flow.Flow
 
 interface CameraAdapter {
@@ -13,14 +13,14 @@ interface CameraAdapter {
      * @param strengthPercent is a percentage of the brightness from 0 to 1.0. Null if the default
      * brightness should be used.
      */
-    fun enableFlashlight(lens: CameraLens, strengthPercent: Float?): Result<*>
+    fun enableFlashlight(lens: CameraLens, strengthPercent: Float?): KMResult<*>
 
     /**
      * @param strengthPercent is a percentage of the brightness from 0 to 1.0. Null if the default
      * brightness should be used.
      */
-    fun toggleFlashlight(lens: CameraLens, strengthPercent: Float?): Result<*>
-    fun disableFlashlight(lens: CameraLens): Result<*>
+    fun toggleFlashlight(lens: CameraLens, strengthPercent: Float?): KMResult<*>
+    fun disableFlashlight(lens: CameraLens): KMResult<*>
     fun isFlashlightOn(lens: CameraLens): Boolean
     fun isFlashlightOnFlow(lens: CameraLens): Flow<Boolean>
 
@@ -28,5 +28,5 @@ interface CameraAdapter {
      * @param percent This is the percentage of the max strength to increase/decrease by. Set it
      * negative to decrease the strength.
      */
-    fun changeFlashlightStrength(lens: CameraLens, percent: Float): Result<*>
+    fun changeFlashlightStrength(lens: CameraLens, percent: Float): KMResult<*>
 }

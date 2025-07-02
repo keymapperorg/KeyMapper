@@ -49,7 +49,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.CustomDialog
 import io.github.sds100.keymapper.base.utils.ui.drawable
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.State
 
 @Composable
@@ -268,7 +268,7 @@ private fun keyMapSampleList(): List<KeyMapListItemModel> {
                     ComposeChipModel.Error(
                         id = "1",
                         text = "Input KEYCODE_0 • Repeat until released",
-                        error = Error.NoCompatibleImeChosen,
+                        error = KMError.NoCompatibleImeChosen,
                     ),
                     ComposeChipModel.Normal(
                         id = "2",
@@ -291,7 +291,7 @@ private fun keyMapSampleList(): List<KeyMapListItemModel> {
                     ComposeChipModel.Error(
                         id = "1",
                         "Key Mapper is playing media",
-                        error = Error.AppNotFound("io.github.sds100.keymapper"),
+                        error = KMError.AppNotFound("io.github.sds100.keymapper"),
                     ),
                 ),
                 options = listOf("Vibrate"),
@@ -334,7 +334,7 @@ private fun constraintsSampleList(): List<ComposeChipModel> {
         ComposeChipModel.Error(
             id = "2",
             text = "Key Mapper not found",
-            error = Error.AppNotFound("io.github.sds100.keymapper"),
+            error = KMError.AppNotFound("io.github.sds100.keymapper"),
         ),
     )
 }

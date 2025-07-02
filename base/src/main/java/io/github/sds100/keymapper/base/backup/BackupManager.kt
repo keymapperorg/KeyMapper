@@ -19,8 +19,8 @@ import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.DefaultDispatcherProvider
 import io.github.sds100.keymapper.common.utils.DefaultUuidGenerator
 import io.github.sds100.keymapper.common.utils.DispatcherProvider
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.TreeNode
@@ -107,7 +107,7 @@ class BackupManagerImpl @Inject constructor(
         private const val TEMP_RESTORE_ROOT_DIR = "restore_temp"
     }
 
-    override val onAutomaticBackupResult = MutableSharedFlow<Result<*>>()
+    override val onAutomaticBackupResult = MutableSharedFlow<KMResult<*>>()
 
     private val gson: Gson by lazy {
         GsonBuilder()
@@ -150,7 +150,7 @@ class BackupManagerImpl @Inject constructor(
         }
     }
 
-    override suspend fun backupKeyMaps(output: IFile, keyMapIds: List<String>): Result<Unit> {
+    override suspend fun backupKeyMaps(output: IFile, keyMapIds: List<String>): KMResult<Unit> {
         return withContext(dispatchers.default()) {
             val allKeyMaps = keyMapRepository.keyMapList
                 .filterIsInstance<State.Data<List<KeyMapEntity>>>()
@@ -164,7 +164,7 @@ class BackupManagerImpl @Inject constructor(
         }
     }
 
-    override suspend fun backupEverything(output: IFile): Result<Unit> {
+    override suspend fun backupEverything(output: IFile): KMResult<Unit> {
         return withContext(dispatchers.io()) {
             val keyMaps =
                 keyMapRepository.keyMapList
@@ -183,7 +183,7 @@ class BackupManagerImpl @Inject constructor(
         }
     }
 
-    override suspend fun getBackupContent(file: IFile): Result<BackupContent> {
+    override suspend fun getBackupContent(file: IFile): KMResult<BackupContent> {
         return extractFile(file).then { extractedDir ->
 
             val dataJsonFile = fileAdapter.getFile(extractedDir, DATA_JSON_FILE_NAME)
@@ -191,20 +191,20 @@ class BackupManagerImpl @Inject constructor(
             val inputStream = dataJsonFile.inputStream()
 
             if (inputStream == null) {
-                return Error.UnknownIOError
+                return KMError.UnknownIOError
             }
 
             return parseBackupContent(inputStream)
         }
     }
 
-    private suspend fun parseBackupContent(jsonFile: InputStream): Result<BackupContent> = withContext(dispatchers.io()) {
+    private suspend fun parseBackupContent(jsonFile: InputStream): KMResult<BackupContent> = withContext(dispatchers.io()) {
         try {
             val rootElement = jsonFile.bufferedReader().use {
                 val element = JsonParser().parse(it)
 
                 if (element.isJsonNull) {
-                    return@withContext Error.EmptyJson
+                    return@withContext KMError.EmptyJson
                 }
 
                 element.asJsonObject
@@ -214,11 +214,11 @@ class BackupManagerImpl @Inject constructor(
             val backupAppVersion = rootElement.get(BackupContent.NAME_APP_VERSION).nullInt
 
             if (backupAppVersion != null && backupAppVersion > buildConfigProvider.versionCode) {
-                return@withContext Error.BackupVersionTooNew
+                return@withContext KMError.BackupVersionTooNew
             }
 
             if (backupDbVersion > AppDatabase.DATABASE_VERSION) {
-                return@withContext Error.BackupVersionTooNew
+                return@withContext KMError.BackupVersionTooNew
             }
 
             val keyMapListJsonArray by rootElement.byNullableArray(BackupContent.NAME_KEYMAP_LIST)
@@ -343,7 +343,7 @@ class BackupManagerImpl @Inject constructor(
                 }
 
                 if (backupVersionTooNew) {
-                    return@withContext Error.BackupVersionTooNew
+                    return@withContext KMError.BackupVersionTooNew
                 }
             }
 
@@ -387,19 +387,19 @@ class BackupManagerImpl @Inject constructor(
 
             return@withContext Success(content)
         } catch (e: MalformedJsonException) {
-            return@withContext Error.CorruptJsonFile(e.message ?: "")
+            return@withContext KMError.CorruptJsonFile(e.message ?: "")
         } catch (e: JsonSyntaxException) {
-            return@withContext Error.CorruptJsonFile(e.message ?: "")
+            return@withContext KMError.CorruptJsonFile(e.message ?: "")
         } catch (e: NoSuchElementException) {
-            return@withContext Error.CorruptJsonFile(e.message ?: "")
+            return@withContext KMError.CorruptJsonFile(e.message ?: "")
         } catch (e: Exception) {
             Timber.e(e)
 
-            return@withContext Error.Exception(e)
+            return@withContext KMError.Exception(e)
         }
     }
 
-    override suspend fun restore(file: IFile, restoreType: RestoreType): Result<*> {
+    override suspend fun restore(file: IFile, restoreType: RestoreType): KMResult<*> {
         return extractFile(file).then { extractedDir ->
 
             val dataJsonFile = fileAdapter.getFile(extractedDir, DATA_JSON_FILE_NAME)
@@ -407,7 +407,7 @@ class BackupManagerImpl @Inject constructor(
             val inputStream = dataJsonFile.inputStream()
 
             if (inputStream == null) {
-                return@then Error.UnknownIOError
+                return@then KMError.UnknownIOError
             }
 
             val soundDir = fileAdapter.getFile(extractedDir, SOUNDS_DIR_NAME)
@@ -427,7 +427,7 @@ class BackupManagerImpl @Inject constructor(
     /**
      * @return the directory with the extracted contents.
      */
-    private suspend fun extractFile(file: IFile): Result<IFile> {
+    private suspend fun extractFile(file: IFile): KMResult<IFile> {
         val restoreUuid = uuidGenerator.random()
 
         val zipDestination =
@@ -446,7 +446,7 @@ class BackupManagerImpl @Inject constructor(
 
             return Success(zipDestination)
         } catch (e: IOException) {
-            return Error.UnknownIOError
+            return KMError.UnknownIOError
         }
     }
 
@@ -455,7 +455,7 @@ class BackupManagerImpl @Inject constructor(
         backupContent: BackupContent,
         soundFiles: List<IFile>,
         currentTime: Long,
-    ): Result<*> {
+    ): KMResult<*> {
         try {
             // MUST come before restoring key maps so it is possible to
             // validate that each key map's group exists in the repository.
@@ -552,15 +552,15 @@ class BackupManagerImpl @Inject constructor(
 
             return Success(Unit)
         } catch (e: MalformedJsonException) {
-            return Error.CorruptJsonFile(e.message ?: "")
+            return KMError.CorruptJsonFile(e.message ?: "")
         } catch (e: JsonSyntaxException) {
-            return Error.CorruptJsonFile(e.message ?: "")
+            return KMError.CorruptJsonFile(e.message ?: "")
         } catch (e: NoSuchElementException) {
-            return Error.CorruptJsonFile(e.message ?: "")
+            return KMError.CorruptJsonFile(e.message ?: "")
         } catch (e: Exception) {
             Timber.e(e)
 
-            return Error.Exception(e)
+            return KMError.Exception(e)
         }
     }
 
@@ -683,7 +683,7 @@ class BackupManagerImpl @Inject constructor(
         keyMapList: List<KeyMapEntity> = emptyList(),
         extraGroups: List<GroupEntity> = emptyList(),
         extraLayouts: List<FloatingLayoutEntityWithButtons> = emptyList(),
-    ): Result<IFile> {
+    ): KMResult<IFile> {
         return withContext(dispatchers.io()) {
             val backupUid = uuidGenerator.random()
 
@@ -733,7 +733,7 @@ class BackupManagerImpl @Inject constructor(
             } catch (e: Exception) {
                 Timber.e(e)
 
-                return@withContext Error.Exception(e)
+                return@withContext KMError.Exception(e)
             }
         }
     }
@@ -835,18 +835,18 @@ class BackupManagerImpl @Inject constructor(
 }
 
 interface BackupManager {
-    val onAutomaticBackupResult: Flow<Result<*>>
+    val onAutomaticBackupResult: Flow<KMResult<*>>
 
-    suspend fun getBackupContent(file: IFile): Result<BackupContent>
+    suspend fun getBackupContent(file: IFile): KMResult<BackupContent>
 
     /**
      * @return the URI to the back up
      */
-    suspend fun backupKeyMaps(output: IFile, keyMapIds: List<String>): Result<Unit>
+    suspend fun backupKeyMaps(output: IFile, keyMapIds: List<String>): KMResult<Unit>
 
     /**
      * @return the URI to the back up file which can then be used for sharing.
      */
-    suspend fun backupEverything(output: IFile): Result<Unit>
-    suspend fun restore(file: IFile, restoreType: RestoreType): Result<*>
+    suspend fun backupEverything(output: IFile): KMResult<Unit>
+    suspend fun restore(file: IFile, restoreType: RestoreType): KMResult<*>
 }

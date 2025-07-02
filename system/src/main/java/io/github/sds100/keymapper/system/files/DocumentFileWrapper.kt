@@ -12,8 +12,8 @@ import com.anggrayudi.storage.file.openInputStream
 import com.anggrayudi.storage.file.openOutputStream
 import com.anggrayudi.storage.file.recreateFile
 import com.anggrayudi.storage.media.FileDescription
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -90,7 +90,7 @@ class DocumentFileWrapper(val file: DocumentFile, context: Context) : IFile {
         }
     }
 
-    override suspend fun copyTo(directory: IFile, fileName: String?): Result<*> = withContext(Dispatchers.Default) {
+    override suspend fun copyTo(directory: IFile, fileName: String?): KMResult<*> = withContext(Dispatchers.Default) {
         suspendCoroutine { continuation ->
             val callback = object : FileCallback() {
                 override fun onCompleted(result: Any) {
@@ -103,21 +103,21 @@ class DocumentFileWrapper(val file: DocumentFile, context: Context) : IFile {
                     super.onFailed(errorCode)
 
                     val error = when (errorCode) {
-                        ErrorCode.STORAGE_PERMISSION_DENIED -> Error.StoragePermissionDenied
-                        ErrorCode.CANNOT_CREATE_FILE_IN_TARGET -> Error.CannotCreateFileInTarget(
+                        ErrorCode.STORAGE_PERMISSION_DENIED -> KMError.StoragePermissionDenied
+                        ErrorCode.CANNOT_CREATE_FILE_IN_TARGET -> KMError.CannotCreateFileInTarget(
                             directory.uri,
                         )
 
-                        ErrorCode.SOURCE_FILE_NOT_FOUND -> Error.SourceFileNotFound(this@DocumentFileWrapper.uri)
-                        ErrorCode.TARGET_FILE_NOT_FOUND -> Error.TargetFileNotFound(directory.uri)
-                        ErrorCode.TARGET_FOLDER_NOT_FOUND -> Error.TargetDirectoryNotFound(
+                        ErrorCode.SOURCE_FILE_NOT_FOUND -> KMError.SourceFileNotFound(this@DocumentFileWrapper.uri)
+                        ErrorCode.TARGET_FILE_NOT_FOUND -> KMError.TargetFileNotFound(directory.uri)
+                        ErrorCode.TARGET_FOLDER_NOT_FOUND -> KMError.TargetDirectoryNotFound(
                             directory.uri,
                         )
 
-                        ErrorCode.UNKNOWN_IO_ERROR -> Error.UnknownIOError
-                        ErrorCode.CANCELED -> Error.FileOperationCancelled
-                        ErrorCode.TARGET_FOLDER_CANNOT_HAVE_SAME_PATH_WITH_SOURCE_FOLDER -> Error.TargetDirectoryMatchesSourceDirectory
-                        ErrorCode.NO_SPACE_LEFT_ON_TARGET_PATH -> Error.NoSpaceLeftOnTarget(
+                        ErrorCode.UNKNOWN_IO_ERROR -> KMError.UnknownIOError
+                        ErrorCode.CANCELED -> KMError.FileOperationCancelled
+                        ErrorCode.TARGET_FOLDER_CANNOT_HAVE_SAME_PATH_WITH_SOURCE_FOLDER -> KMError.TargetDirectoryMatchesSourceDirectory
+                        ErrorCode.NO_SPACE_LEFT_ON_TARGET_PATH -> KMError.NoSpaceLeftOnTarget(
                             directory.uri,
                         )
                     }

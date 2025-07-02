@@ -5,10 +5,9 @@ import android.graphics.drawable.Drawable
 import androidx.core.os.bundleOf
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import javax.inject.Inject
-import javax.inject.Singleton
 
 class CreateKeyMapShortcutUseCaseImpl @Inject constructor(
     private val appShortcutAdapter: AppShortcutAdapter,
@@ -28,7 +27,7 @@ class CreateKeyMapShortcutUseCaseImpl @Inject constructor(
         keyMapUid: String,
         shortcutLabel: String,
         icon: Drawable?,
-    ): Result<*> {
+    ): KMResult<*> {
         val shortcut = if (icon == null) {
             appShortcutAdapter.createLauncherShortcut(
                 iconResId = R.mipmap.ic_launcher_round,
@@ -78,7 +77,7 @@ interface CreateKeyMapShortcutUseCase {
         keyMapUid: String,
         shortcutLabel: String,
         icon: Drawable?,
-    ): Result<*>
+    ): KMResult<*>
 
     fun createIntent(
         keyMapUid: String,

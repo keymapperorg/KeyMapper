@@ -1,12 +1,11 @@
 package io.github.sds100.keymapper.system.root
 
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.system.Shell
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.shell.ShellAdapter
@@ -41,7 +40,7 @@ class SuAdapterImpl @Inject constructor(
         return true
     }
 
-    override fun execute(command: String, block: Boolean): Result<*> {
+    override fun execute(command: String, block: Boolean): KMResult<*> {
         if (!isGranted.firstBlocking()) {
             return SystemError.PermissionDenied(Permission.ROOT)
         }
@@ -63,11 +62,11 @@ class SuAdapterImpl @Inject constructor(
 
             return Success(Unit)
         } catch (e: Exception) {
-            return Error.Exception(e)
+            return KMError.Exception(e)
         }
     }
 
-    override fun getCommandOutput(command: String): Result<InputStream> {
+    override fun getCommandOutput(command: String): KMResult<InputStream> {
         if (!isGranted.firstBlocking()) {
             return SystemError.PermissionDenied(Permission.ROOT)
         }
@@ -76,7 +75,7 @@ class SuAdapterImpl @Inject constructor(
             val inputStream = shell.getShellCommandStdOut("su", "-c", command)
             return Success(inputStream)
         } catch (e: IOException) {
-            return Error.UnknownIOError
+            return KMError.UnknownIOError
         }
     }
 }
@@ -88,6 +87,6 @@ interface SuAdapter {
      * @return whether root permission was granted successfully
      */
     fun requestPermission(): Boolean
-    fun execute(command: String, block: Boolean = false): Result<*>
-    fun getCommandOutput(command: String): Result<InputStream>
+    fun execute(command: String, block: Boolean = false): KMResult<*>
+    fun getCommandOutput(command: String): KMResult<InputStream>
 }

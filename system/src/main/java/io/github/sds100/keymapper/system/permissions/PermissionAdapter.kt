@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.system.permissions
 
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import kotlinx.coroutines.flow.Flow
 
 
@@ -18,5 +18,5 @@ interface PermissionAdapter {
      * Grant a permission automatically without requiring the user.
      * Requires root access or Shizuku.
      */
-    fun grant(permissionName: String): Result<*>
+    fun grant(permissionName: String): KMResult<*>
 }

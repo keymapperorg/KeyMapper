@@ -12,8 +12,8 @@ import android.os.Build
 import android.view.KeyEvent
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import kotlinx.coroutines.CoroutineScope
@@ -72,23 +72,23 @@ class AndroidMediaAdapter @Inject constructor(
         }
     }
 
-    override fun fastForward(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, packageName)
+    override fun fastForward(packageName: String?): KMResult<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, packageName)
 
-    override fun rewind(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_REWIND, packageName)
+    override fun rewind(packageName: String?): KMResult<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_REWIND, packageName)
 
-    override fun play(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY, packageName)
+    override fun play(packageName: String?): KMResult<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY, packageName)
 
-    override fun pause(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PAUSE, packageName)
+    override fun pause(packageName: String?): KMResult<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PAUSE, packageName)
 
-    override fun playPause(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, packageName)
+    override fun playPause(packageName: String?): KMResult<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, packageName)
 
-    override fun previousTrack(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PREVIOUS, packageName)
+    override fun previousTrack(packageName: String?): KMResult<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PREVIOUS, packageName)
 
-    override fun nextTrack(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_NEXT, packageName)
+    override fun nextTrack(packageName: String?): KMResult<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_NEXT, packageName)
 
-    override fun stop(packageName: String?): Result<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_STOP, packageName)
+    override fun stop(packageName: String?): KMResult<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_STOP, packageName)
 
-    override fun stopFileMedia(): Result<*> {
+    override fun stopFileMedia(): KMResult<*> {
         synchronized(mediaPlayerLock) {
             mediaPlayer?.stop()
             mediaPlayer?.release()
@@ -98,19 +98,19 @@ class AndroidMediaAdapter @Inject constructor(
         return Success(Unit)
     }
 
-    override fun stepForward(packageName: String?): Result<*> {
+    override fun stepForward(packageName: String?): KMResult<*> {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_STEP_FORWARD, packageName)
         } else {
-            return Error.SdkVersionTooLow(Build.VERSION_CODES.M)
+            return KMError.SdkVersionTooLow(Build.VERSION_CODES.M)
         }
     }
 
-    override fun stepBackward(packageName: String?): Result<*> {
+    override fun stepBackward(packageName: String?): KMResult<*> {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_STEP_BACKWARD, packageName)
         } else {
-            return Error.SdkVersionTooLow(Build.VERSION_CODES.M)
+            return KMError.SdkVersionTooLow(Build.VERSION_CODES.M)
         }
     }
 
@@ -137,7 +137,7 @@ class AndroidMediaAdapter @Inject constructor(
         return audioVolumeControlStreams
     }
 
-    override fun playFile(uri: String, stream: VolumeStream): Result<*> {
+    override fun playFile(uri: String, stream: VolumeStream): KMResult<*> {
         try {
             synchronized(mediaPlayerLock) {
                 mediaPlayer?.stop()
@@ -173,9 +173,9 @@ class AndroidMediaAdapter @Inject constructor(
 
             return Success(Unit)
         } catch (e: FileNotFoundException) {
-            return Error.SourceFileNotFound(uri)
+            return KMError.SourceFileNotFound(uri)
         } catch (e: Exception) {
-            return Error.Exception(e)
+            return KMError.Exception(e)
         }
     }
 
@@ -183,7 +183,7 @@ class AndroidMediaAdapter @Inject constructor(
         activeMediaSessions.update { mediaSessions }
     }
 
-    private fun sendMediaKeyEvent(keyCode: Int, packageName: String?): Result<*> {
+    private fun sendMediaKeyEvent(keyCode: Int, packageName: String?): KMResult<*> {
         if (packageName == null) {
             audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
             audioManager.dispatchMediaKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))

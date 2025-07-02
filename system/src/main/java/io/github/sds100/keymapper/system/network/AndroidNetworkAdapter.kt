@@ -9,8 +9,8 @@ import android.os.Build
 import android.telephony.TelephonyManager
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.root.SuAdapter
 import kotlinx.coroutines.Dispatchers
@@ -87,7 +87,7 @@ class AndroidNetworkAdapter @Inject constructor(
 
     override fun isWifiEnabledFlow(): Flow<Boolean> = isWifiEnabled
 
-    override fun enableWifi(): Result<*> {
+    override fun enableWifi(): KMResult<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return suAdapter.execute("svc wifi enable")
         } else {
@@ -96,7 +96,7 @@ class AndroidNetworkAdapter @Inject constructor(
         }
     }
 
-    override fun disableWifi(): Result<*> {
+    override fun disableWifi(): KMResult<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return suAdapter.execute("svc wifi disable")
         } else {
@@ -113,9 +113,9 @@ class AndroidNetworkAdapter @Inject constructor(
         }
     }
 
-    override fun enableMobileData(): Result<*> = suAdapter.execute("svc data enable")
+    override fun enableMobileData(): KMResult<*> = suAdapter.execute("svc data enable")
 
-    override fun disableMobileData(): Result<*> = suAdapter.execute("svc data disable")
+    override fun disableMobileData(): KMResult<*> = suAdapter.execute("svc data disable")
 
     /**
      * @return Null on Android 10+ because there is no API to do this anymore.
@@ -135,7 +135,7 @@ class AndroidNetworkAdapter @Inject constructor(
         url: String,
         body: String,
         authorizationHeader: String,
-    ): Result<*> {
+    ): KMResult<*> {
         try {
             val requestBody = when (method) {
                 HttpMethod.HEAD -> Request.Builder().head()
@@ -163,16 +163,16 @@ class AndroidNetworkAdapter @Inject constructor(
                     Timber.d(response.toString())
 
                     if (!response.isSuccessful) {
-                        return Error.UnknownIOError
+                        return KMError.UnknownIOError
                     }
 
                     return Success(Unit)
                 }
         } catch (e: IOException) {
             Timber.e(e)
-            return Error.UnknownIOError
+            return KMError.UnknownIOError
         } catch (e: IllegalArgumentException) {
-            return Error.MalformedUrl
+            return KMError.MalformedUrl
         }
     }
 }

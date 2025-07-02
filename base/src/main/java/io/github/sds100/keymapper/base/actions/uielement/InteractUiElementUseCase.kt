@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.base.actions.uielement
 import android.graphics.drawable.Drawable
 import io.github.sds100.keymapper.base.system.accessibility.RecordAccessibilityNodeEvent
 import io.github.sds100.keymapper.base.system.accessibility.RecordAccessibilityNodeState
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.common.utils.onFailure
@@ -61,11 +61,11 @@ class InteractUiElementController @Inject constructor(
         return nodeRepository.get(id)
     }
 
-    override fun getAppName(packageName: String): Result<String> = packageManagerAdapter.getAppName(packageName)
+    override fun getAppName(packageName: String): KMResult<String> = packageManagerAdapter.getAppName(packageName)
 
-    override fun getAppIcon(packageName: String): Result<Drawable> = packageManagerAdapter.getAppIcon(packageName)
+    override fun getAppIcon(packageName: String): KMResult<Drawable> = packageManagerAdapter.getAppIcon(packageName)
 
-    override suspend fun startRecording(): Result<*> {
+    override suspend fun startRecording(): KMResult<*> {
         nodeRepository.deleteAll()
         return serviceAdapter.send(RecordAccessibilityNodeEvent.StartRecordingNodes)
     }
@@ -89,10 +89,10 @@ interface InteractUiElementUseCase {
     fun getInteractionsByPackage(packageName: String): Flow<State<List<AccessibilityNodeEntity>>>
     suspend fun getInteractionById(id: Long): AccessibilityNodeEntity?
 
-    fun getAppName(packageName: String): Result<String>
-    fun getAppIcon(packageName: String): Result<Drawable>
+    fun getAppName(packageName: String): KMResult<String>
+    fun getAppIcon(packageName: String): KMResult<Drawable>
 
-    suspend fun startRecording(): Result<*>
+    suspend fun startRecording(): KMResult<*>
     suspend fun stopRecording()
 
     fun startService(): Boolean

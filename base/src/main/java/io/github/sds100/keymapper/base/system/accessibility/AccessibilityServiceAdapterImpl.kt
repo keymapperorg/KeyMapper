@@ -12,8 +12,8 @@ import android.provider.Settings
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.KeyMapperClassProvider
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
@@ -88,17 +88,17 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
         }
     }
 
-    override suspend fun send(event: AccessibilityServiceEvent): Result<*> {
+    override suspend fun send(event: AccessibilityServiceEvent): KMResult<*> {
         state.value = getState()
 
         if (state.value == AccessibilityServiceState.DISABLED) {
             Timber.e("Failed to send event to accessibility service because disabled: $event")
-            return Error.AccessibilityServiceDisabled
+            return KMError.AccessibilityServiceDisabled
         }
 
         if (state.value == AccessibilityServiceState.CRASHED) {
             Timber.e("Failed to send event to accessibility service because crashed: $event")
-            return Error.AccessibilityServiceCrashed
+            return KMError.AccessibilityServiceCrashed
         }
 
         coroutineScope.launch {

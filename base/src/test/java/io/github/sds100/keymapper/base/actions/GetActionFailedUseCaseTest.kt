@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.actions
 
 import android.view.KeyEvent
 import io.github.sds100.keymapper.base.utils.TestBuildConfigProvider
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
@@ -109,6 +109,6 @@ class GetActionFailedUseCaseTest {
         val error = useCase.actionErrorSnapshot.first().getError(action)
 
         // THEN
-        assertThat(error, `is`(Error.ShizukuNotStarted))
+        assertThat(error, `is`(KMError.ShizukuNotStarted))
     }
 }

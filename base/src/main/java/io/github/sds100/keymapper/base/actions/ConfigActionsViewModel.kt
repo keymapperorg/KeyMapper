@@ -19,7 +19,7 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.showDialog
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.mapData
@@ -251,7 +251,7 @@ class ConfigActionsViewModel(
     private suspend fun attemptTestAction(actionData: ActionData) {
         testAction.invoke(actionData).onFailure { error ->
 
-            if (error is Error.AccessibilityServiceDisabled) {
+            if (error is KMError.AccessibilityServiceDisabled) {
                 ViewModelHelper.handleAccessibilityServiceStoppedDialog(
                     resourceProvider = this,
                     dialogProvider = this,
@@ -259,7 +259,7 @@ class ConfigActionsViewModel(
                 )
             }
 
-            if (error is Error.AccessibilityServiceCrashed) {
+            if (error is KMError.AccessibilityServiceCrashed) {
                 ViewModelHelper.handleAccessibilityServiceCrashedDialog(
                     resourceProvider = this,
                     dialogProvider = this,
@@ -451,7 +451,7 @@ class ConfigActionsViewModel(
             }
 
             val icon: ComposeIconInfo = uiHelper.getIcon(action.data)
-            val error: Error? = errorSnapshot.getError(action.data)
+            val error: KMError? = errorSnapshot.getError(action.data)
 
             val extraInfo = buildString {
                 val midDot = getString(R.string.middot)

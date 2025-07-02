@@ -8,7 +8,6 @@ import android.view.accessibility.AccessibilityNodeInfo
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.scopes.ServiceScoped
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeAction
@@ -18,10 +17,10 @@ import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.common.utils.Error
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.InputEventType
 import io.github.sds100.keymapper.common.utils.Orientation
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.firstBlocking
@@ -148,7 +147,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
         /**
          * Is null if the action is being performed asynchronously
          */
-        val result: Result<*>
+        val result: KMResult<*>
 
         when (action) {
             is ActionData.App -> {
@@ -619,7 +618,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     service.doGlobalAction(AccessibilityService.GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN)
                 } else {
-                    Error.SdkVersionTooLow(minSdk = Build.VERSION_CODES.N)
+                    KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.N)
                 }
             }
 
@@ -859,21 +858,21 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
             is ActionData.InteractUiElement -> {
                 if (service.activeWindowPackage.first() != action.packageName) {
-                    result = Error.UiElementNotFound
+                    result = KMError.UiElementNotFound
                 } else {
                     result = service.performActionOnNode(
                         findNode = { node ->
                             matchAccessibilityNode(node, action)
                         },
                         performAction = { AccessibilityNodeAction(action = action.nodeAction.accessibilityActionId) },
-                    ).otherwise { Error.UiElementNotFound }
+                    ).otherwise { KMError.UiElementNotFound }
                 }
             }
         }
 
         when (result) {
             is Success -> Timber.d("Performed action $action, input event type: $inputEventType, key meta state: $keyMetaState")
-            is Error -> Timber.d(
+            is KMError -> Timber.d(
                 "Failed to perform action $action, reason: ${result.getFullMessage(resourceProvider)}, action: $action, input event type: $inputEventType, key meta state: $keyMetaState",
             )
         }
@@ -947,7 +946,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
         return device.id
     }
 
-    private fun closeStatusBarShade(): Result<*> {
+    private fun closeStatusBarShade(): KMResult<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             return service
                 .doGlobalAction(AccessibilityService.GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE)
@@ -956,7 +955,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
         }
     }
 
-    private fun Result<*>.showErrorMessageOnFail() {
+    private fun KMResult<*>.showErrorMessageOnFail() {
         onFailure {
             toastAdapter.show(it.getFullMessage(resourceProvider))
         }

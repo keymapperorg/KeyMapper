@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.trigger
 
 import android.view.KeyEvent
 import io.github.sds100.keymapper.base.keymaps.detection.DpadMotionEventTracker
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
@@ -61,13 +61,13 @@ class RecordTriggerController @Inject constructor(
             .launchIn(coroutineScope)
     }
 
-    override suspend fun startRecording(): Result<*> {
+    override suspend fun startRecording(): KMResult<*> {
         recordedKeys.clear()
         dpadMotionEventTracker.reset()
         return serviceAdapter.send(RecordTriggerEvent.StartRecordingTrigger)
     }
 
-    override suspend fun stopRecording(): Result<*> {
+    override suspend fun stopRecording(): KMResult<*> {
         return serviceAdapter.send(RecordTriggerEvent.StopRecordingTrigger)
     }
 
@@ -127,6 +127,6 @@ interface RecordTriggerUseCase {
     /**
      * @return Success if started and an Error if failed to start.
      */
-    suspend fun startRecording(): Result<*>
-    suspend fun stopRecording(): Result<*>
+    suspend fun startRecording(): KMResult<*>
+    suspend fun stopRecording(): KMResult<*>
 }

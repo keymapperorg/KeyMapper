@@ -12,7 +12,7 @@ import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.system.JobSchedulerHelper
@@ -62,7 +62,7 @@ class NotificationReceiverAdapterImpl @Inject constructor(
         }
     }
 
-    override suspend fun send(event: NotificationServiceEvent): Result<*> {
+    override suspend fun send(event: NotificationServiceEvent): KMResult<*> {
         if (isEnabled.value) {
             return SystemError.PermissionDenied(Permission.NOTIFICATION_LISTENER)
         }

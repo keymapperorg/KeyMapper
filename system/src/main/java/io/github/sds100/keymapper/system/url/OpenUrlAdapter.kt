@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.system.url
 
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMResult
 
 
 interface OpenUrlAdapter {
-    fun openUrl(url: String): Result<*>
+    fun openUrl(url: String): KMResult<*>
 }

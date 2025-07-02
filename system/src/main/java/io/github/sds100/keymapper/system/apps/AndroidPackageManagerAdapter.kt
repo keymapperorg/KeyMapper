@@ -22,8 +22,8 @@ import android.provider.Settings
 import androidx.core.content.ContextCompat
 import androidx.core.content.pm.PackageInfoCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.sds100.keymapper.common.utils.Error
-import io.github.sds100.keymapper.common.utils.Result
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.success
@@ -141,7 +141,7 @@ class AndroidPackageManagerAdapter @Inject constructor(
         }
     }
 
-    override fun launchVoiceAssistant(): Result<*> {
+    override fun launchVoiceAssistant(): KMResult<*> {
         try {
             Intent(Intent.ACTION_VOICE_COMMAND).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -150,11 +150,11 @@ class AndroidPackageManagerAdapter @Inject constructor(
 
             return Success(Unit)
         } catch (e: ActivityNotFoundException) {
-            return Error.NoVoiceAssistant
+            return KMError.NoVoiceAssistant
         }
     }
 
-    override fun launchDeviceAssistant(): Result<*> {
+    override fun launchDeviceAssistant(): KMResult<*> {
         try {
             Intent(Intent.ACTION_ASSIST).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -163,15 +163,15 @@ class AndroidPackageManagerAdapter @Inject constructor(
 
             return Success(Unit)
         } catch (e: ActivityNotFoundException) {
-            return Error.NoDeviceAssistant
+            return KMError.NoDeviceAssistant
         }
     }
 
-    override fun getDeviceAssistantPackage(): Result<String> {
+    override fun getDeviceAssistantPackage(): KMResult<String> {
         val settingValue = Settings.Secure.getString(ctx.contentResolver, "assistant")
 
         if (settingValue.isNullOrEmpty()) {
-            return Error.NoDeviceAssistant
+            return KMError.NoDeviceAssistant
         }
 
         val packageName = settingValue.split("/").first()
@@ -187,7 +187,7 @@ class AndroidPackageManagerAdapter @Inject constructor(
         }
     }
 
-    override fun isAppEnabled(packageName: String): Result<Boolean> {
+    override fun isAppEnabled(packageName: String): KMResult<Boolean> {
         when (val packagesState = installedPackages.value) {
             is State.Data -> {
                 val packages = packagesState.data
@@ -195,7 +195,7 @@ class AndroidPackageManagerAdapter @Inject constructor(
                 val appPackage = packages.find { it.packageName == packageName }
 
                 if (appPackage == null) {
-                    return Error.AppNotFound(packageName)
+                    return KMError.AppNotFound(packageName)
                 } else {
                     return Success(appPackage.isEnabled)
                 }
@@ -204,7 +204,7 @@ class AndroidPackageManagerAdapter @Inject constructor(
             State.Loading -> return try {
                 Success(packageManager.getApplicationInfo(packageName, 0).enabled)
             } catch (e: PackageManager.NameNotFoundException) {
-                Error.AppNotFound(packageName)
+                KMError.AppNotFound(packageName)
             }
         }
     }
@@ -229,7 +229,7 @@ class AndroidPackageManagerAdapter @Inject constructor(
     }
 
     @SuppressLint("UnspecifiedImmutableFlag") // only specify the flag on SDK 23+. SDK 31 is first to enforce it.
-    override fun openApp(packageName: String): Result<*> {
+    override fun openApp(packageName: String): KMResult<*> {
         val leanbackIntent = packageManager.getLeanbackLaunchIntentForPackage(packageName)
         val normalIntent = packageManager.getLaunchIntentForPackage(packageName)
 
@@ -242,12 +242,12 @@ class AndroidPackageManagerAdapter @Inject constructor(
 
                 // if the app is disabled, show an error message because it won't open
                 if (!appInfo.enabled) {
-                    return Error.AppDisabled(packageName)
+                    return KMError.AppDisabled(packageName)
                 }
 
                 return Success(Unit)
             } catch (e: Exception) {
-                return Error.AppNotFound(packageName)
+                return KMError.AppNotFound(packageName)
             }
         } else {
             val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -279,7 +279,7 @@ class AndroidPackageManagerAdapter @Inject constructor(
         return activityExists
     }
 
-    override fun launchCameraApp(): Result<*> {
+    override fun launchCameraApp(): KMResult<*> {
         try {
             /**
              * See this guide on how the camera is launched with double press power button in
@@ -304,12 +304,12 @@ class AndroidPackageManagerAdapter @Inject constructor(
 
                 return Success(Unit)
             } catch (e: ActivityNotFoundException) {
-                return Error.NoCameraApp
+                return KMError.NoCameraApp
             }
         }
     }
 
-    override fun launchSettingsApp(): Result<*> {
+    override fun launchSettingsApp(): KMResult<*> {
         try {
             Intent(Settings.ACTION_SETTINGS).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -318,7 +318,7 @@ class AndroidPackageManagerAdapter @Inject constructor(
 
             return Success(Unit)
         } catch (e: ActivityNotFoundException) {
-            return Error.NoSettingsApp
+            return KMError.NoSettingsApp
         }
     }
 
@@ -333,7 +333,7 @@ class AndroidPackageManagerAdapter @Inject constructor(
         }
     }
 
-    override fun getAppName(packageName: String): Result<String> {
+    override fun getAppName(packageName: String): KMResult<String> {
         try {
             return packageManager
                 .getApplicationInfo(packageName, 0)
@@ -341,26 +341,26 @@ class AndroidPackageManagerAdapter @Inject constructor(
                 .toString()
                 .success()
         } catch (e: PackageManager.NameNotFoundException) {
-            return Error.AppNotFound(packageName)
+            return KMError.AppNotFound(packageName)
         } catch (e: IOException) {
-            return Error.AppNotFound(packageName)
+            return KMError.AppNotFound(packageName)
         }
     }
 
-    override fun getAppIcon(packageName: String): Result<Drawable> {
+    override fun getAppIcon(packageName: String): KMResult<Drawable> {
         try {
             return packageManager
                 .getApplicationInfo(packageName, 0)
                 .loadIcon(packageManager)
                 .success()
         } catch (e: PackageManager.NameNotFoundException) {
-            return Error.AppNotFound(packageName)
+            return KMError.AppNotFound(packageName)
         } catch (e: IOException) {
-            return Error.AppNotFound(packageName)
+            return KMError.AppNotFound(packageName)
         }
     }
 
-    override fun getActivityLabel(packageName: String, activityClass: String): Result<String> {
+    override fun getActivityLabel(packageName: String, activityClass: String): KMResult<String> {
         try {
             val component = ComponentName(packageName, activityClass)
 
@@ -370,11 +370,11 @@ class AndroidPackageManagerAdapter @Inject constructor(
                 .toString()
                 .success()
         } catch (e: PackageManager.NameNotFoundException) {
-            return Error.AppNotFound(packageName)
+            return KMError.AppNotFound(packageName)
         }
     }
 
-    override fun getActivityIcon(packageName: String, activityClass: String): Result<Drawable?> {
+    override fun getActivityIcon(packageName: String, activityClass: String): KMResult<Drawable?> {
         try {
             val component = ComponentName(packageName, activityClass)
 
@@ -383,7 +383,7 @@ class AndroidPackageManagerAdapter @Inject constructor(
                 .loadIcon(packageManager)
                 .success()
         } catch (e: PackageManager.NameNotFoundException) {
-            return Error.AppNotFound(packageName)
+            return KMError.AppNotFound(packageName)
         }
     }
 
