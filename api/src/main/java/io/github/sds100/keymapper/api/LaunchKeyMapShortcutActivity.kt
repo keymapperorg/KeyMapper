@@ -16,7 +16,6 @@ import javax.inject.Inject
  * exception may be thrown because the theme doesn't extend AppCompat.
  */
 
-// TODO test this still works.
 @AndroidEntryPoint
 class LaunchKeyMapShortcutActivity : ComponentActivity() {
 

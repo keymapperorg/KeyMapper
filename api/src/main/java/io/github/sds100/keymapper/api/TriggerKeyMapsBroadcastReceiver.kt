@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 // DON'T MOVE THIS CLASS TO A DIFFERENT PACKAGE BECAUSE IT BREAKS THE API
-// TODO test this
 @AndroidEntryPoint
 class TriggerKeyMapsBroadcastReceiver : BroadcastReceiver() {
 
