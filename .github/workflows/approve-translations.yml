@@ -1,0 +1,62 @@
+name: Auto Approve Crowdin Translations
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  approve-crowdin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Crowdin CLI
+        run: npm install -g @crowdin/cli
+
+      - name: Approve top-voted translations for all languages
+        env:
+          CROWDIN_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+        run: |
+          set -e
+          echo "Start automatic approval Crowdin Translation..."
+          language_ids=$(crowdin api \
+            --method GET \
+            --path /projects/$CROWDIN_PROJECT_ID/languages \
+            --plain \
+            | jq -r '.data[].data.languageId')
+
+          string_ids=$(crowdin api \
+            --method GET \
+            --path /projects/$CROWDIN_PROJECT_ID/strings \
+            --plain \
+            | jq -r '.data[].data.id')
+
+          for lang in $language_ids; do
+            echo "Processing language $lang"
+            for sid in $string_ids; do
+              best=$(crowdin api \
+                --method GET \
+                --path /projects/$CROWDIN_PROJECT_ID/strings/$sid/translations \
+                --plain \
+                | jq -r "
+                  .data
+                  | map(select(.data.languageId==\"$lang\"))
+                  | sort_by(-.data.votes)[-1]
+                  | select(.data.votes > 0)
+                  | .data.id
+                ")
+              if [ -n "$best" ]; then
+                echo "  → Approved translation $best"
+                crowdin api \
+                  --method PATCH \
+                  --path /projects/$CROWDIN_PROJECT_ID/translations/$best \
+                  --body '{\"approved\": true}'
+              fi
+            done
+          done
