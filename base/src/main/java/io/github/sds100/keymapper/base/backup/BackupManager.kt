@@ -811,36 +811,30 @@ class BackupManagerImpl @Inject constructor(
             AppDatabase.DATABASE_VERSION,
             buildConfigProvider.versionCode,
             keyMapList,
-            defaultLongPressDelay =
-                preferenceRepository
-                    .get(Keys.defaultLongPressDelay)
-                    .first()
-                    .takeIf { it != PreferenceDefaults.LONG_PRESS_DELAY },
-            defaultDoublePressDelay =
-                preferenceRepository
-                    .get(Keys.defaultDoublePressDelay)
-                    .first()
-                    .takeIf { it != PreferenceDefaults.DOUBLE_PRESS_DELAY },
-            defaultRepeatDelay =
-                preferenceRepository
-                    .get(Keys.defaultRepeatDelay)
-                    .first()
-                    .takeIf { it != PreferenceDefaults.REPEAT_DELAY },
-            defaultRepeatRate =
-                preferenceRepository
-                    .get(Keys.defaultRepeatRate)
-                    .first()
-                    .takeIf { it != PreferenceDefaults.REPEAT_RATE },
-            defaultSequenceTriggerTimeout =
-                preferenceRepository
-                    .get(Keys.defaultSequenceTriggerTimeout)
-                    .first()
-                    .takeIf { it != PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT },
-            defaultVibrationDuration =
-                preferenceRepository
-                    .get(Keys.defaultVibrateDuration)
-                    .first()
-                    .takeIf { it != PreferenceDefaults.VIBRATION_DURATION },
+            defaultLongPressDelay = preferenceRepository
+                .get(Keys.defaultLongPressDelay)
+                .first()
+                .takeIf { it != PreferenceDefaults.LONG_PRESS_DELAY },
+            defaultDoublePressDelay = preferenceRepository
+                .get(Keys.defaultDoublePressDelay)
+                .first()
+                .takeIf { it != PreferenceDefaults.DOUBLE_PRESS_DELAY },
+            defaultRepeatDelay = preferenceRepository
+                .get(Keys.defaultRepeatDelay)
+                .first()
+                .takeIf { it != PreferenceDefaults.REPEAT_DELAY },
+            defaultRepeatRate = preferenceRepository
+                .get(Keys.defaultRepeatRate)
+                .first()
+                .takeIf { it != PreferenceDefaults.REPEAT_RATE },
+            defaultSequenceTriggerTimeout = preferenceRepository
+                .get(Keys.defaultSequenceTriggerTimeout)
+                .first()
+                .takeIf { it != PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT },
+            defaultVibrationDuration = preferenceRepository
+                .get(Keys.defaultVibrateDuration)
+                .first()
+                .takeIf { it != PreferenceDefaults.VIBRATION_DURATION },
             floatingLayouts = floatingLayoutsMap.values.toList().takeIf { it.isNotEmpty() },
             floatingButtons = floatingButtonsMap.values.toList().takeIf { it.isNotEmpty() },
             groups = groupMap.values.toList().takeIf { it.isNotEmpty() },
