@@ -5,6 +5,7 @@
 ## Added
 
 - #1466 show onboarding when creating a key map for the first time
+- #1729 target Android 16.
 
 ## Changed
 
