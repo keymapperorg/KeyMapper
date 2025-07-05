@@ -851,7 +851,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.PhoneCall,
     is ActionData.HttpRequest,
     is ActionData.InteractUiElement,
-    is ActionData.MoveCursor
+    is ActionData.MoveCursor,
         -> true
 
     else -> false

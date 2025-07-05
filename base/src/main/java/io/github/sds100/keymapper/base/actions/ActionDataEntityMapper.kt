@@ -611,7 +611,7 @@ object ActionDataEntityMapper {
                 if (entity.extras.isEmpty()) {
                     return ActionData.MoveCursor(
                         moveType = ActionData.MoveCursor.Type.PAGE,
-                        ActionData.MoveCursor.Direction.END
+                        ActionData.MoveCursor.Direction.END,
                     )
                 }
 
@@ -966,7 +966,6 @@ object ActionDataEntityMapper {
             }
             add(EntityExtra(ActionEntity.EXTRA_MOVE_CURSOR_DIRECTION, directionString))
         }
-
 
         else -> emptyList()
     }

@@ -75,7 +75,7 @@ class LazyActionErrorSnapshot(
                 val isCurrentImeCompatible =
                     KeyMapperImeHelper.isKeyMapperInputMethod(
                         currentImeFromActions.packageName,
-                        buildConfigProvider.packageName
+                        buildConfigProvider.packageName,
                     )
 
                 if (isCurrentImeCompatible) {
@@ -200,7 +200,6 @@ class LazyActionErrorSnapshot(
             return isGranted
         }
     }
-
 }
 
 interface ActionErrorSnapshot {

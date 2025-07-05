@@ -668,8 +668,8 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                         actionType,
                         mapOf(
                             AccessibilityNodeInfo.ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT to granularity,
-                            AccessibilityNodeInfo.ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN to false
-                        )
+                            AccessibilityNodeInfo.ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN to false,
+                        ),
                     )
                 }
             }

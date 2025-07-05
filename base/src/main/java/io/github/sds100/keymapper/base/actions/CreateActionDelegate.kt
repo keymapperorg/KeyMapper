@@ -817,52 +817,52 @@ class CreateActionDelegate(
         val choices = listOf(
             ActionData.MoveCursor(
                 ActionData.MoveCursor.Type.CHAR,
-                ActionData.MoveCursor.Direction.START
+                ActionData.MoveCursor.Direction.START,
             ) to getString(R.string.action_move_cursor_prev_character),
 
             ActionData.MoveCursor(
                 ActionData.MoveCursor.Type.CHAR,
-                ActionData.MoveCursor.Direction.END
+                ActionData.MoveCursor.Direction.END,
             ) to getString(R.string.action_move_cursor_next_character),
 
             ActionData.MoveCursor(
                 ActionData.MoveCursor.Type.WORD,
-                ActionData.MoveCursor.Direction.START
+                ActionData.MoveCursor.Direction.START,
             ) to getString(R.string.action_move_cursor_start_word),
 
             ActionData.MoveCursor(
                 ActionData.MoveCursor.Type.WORD,
-                ActionData.MoveCursor.Direction.END
+                ActionData.MoveCursor.Direction.END,
             ) to getString(R.string.action_move_cursor_end_word),
 
             ActionData.MoveCursor(
                 ActionData.MoveCursor.Type.LINE,
-                ActionData.MoveCursor.Direction.START
+                ActionData.MoveCursor.Direction.START,
             ) to getString(R.string.action_move_cursor_start_line),
 
             ActionData.MoveCursor(
                 ActionData.MoveCursor.Type.LINE,
-                ActionData.MoveCursor.Direction.END
+                ActionData.MoveCursor.Direction.END,
             ) to getString(R.string.action_move_cursor_end_line),
 
             ActionData.MoveCursor(
                 ActionData.MoveCursor.Type.PARAGRAPH,
-                ActionData.MoveCursor.Direction.START
+                ActionData.MoveCursor.Direction.START,
             ) to getString(R.string.action_move_cursor_start_paragraph),
 
             ActionData.MoveCursor(
                 ActionData.MoveCursor.Type.PARAGRAPH,
-                ActionData.MoveCursor.Direction.END
+                ActionData.MoveCursor.Direction.END,
             ) to getString(R.string.action_move_cursor_end_paragraph),
 
             ActionData.MoveCursor(
                 ActionData.MoveCursor.Type.PAGE,
-                ActionData.MoveCursor.Direction.START
+                ActionData.MoveCursor.Direction.START,
             ) to getString(R.string.action_move_cursor_start_page),
 
             ActionData.MoveCursor(
                 ActionData.MoveCursor.Type.PAGE,
-                ActionData.MoveCursor.Direction.END
+                ActionData.MoveCursor.Direction.END,
             ) to getString(R.string.action_move_cursor_end_page),
         )
 

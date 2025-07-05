@@ -768,11 +768,16 @@ sealed class ActionData : Comparable<ActionData> {
         override val id = ActionId.MOVE_CURSOR
 
         enum class Type {
-            CHAR, WORD, LINE, PARAGRAPH, PAGE
+            CHAR,
+            WORD,
+            LINE,
+            PARAGRAPH,
+            PAGE,
         }
 
         enum class Direction {
-            START, END
+            START,
+            END,
         }
     }
 
