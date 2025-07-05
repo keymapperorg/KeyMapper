@@ -764,8 +764,16 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
-    data object MoveCursorToEnd : ActionData() {
-        override val id = ActionId.MOVE_CURSOR_TO_END
+    data class MoveCursor(val moveType: Type, val direction: Direction) : ActionData() {
+        override val id = ActionId.MOVE_CURSOR
+
+        enum class Type {
+            CHAR, WORD, LINE, PARAGRAPH, PAGE
+        }
+
+        enum class Direction {
+            START, END
+        }
     }
 
     @Serializable

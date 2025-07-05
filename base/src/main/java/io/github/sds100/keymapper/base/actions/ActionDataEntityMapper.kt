@@ -258,7 +258,7 @@ object ActionDataEntityMapper {
 
             ActionId.VOLUME_INCREASE_STREAM,
             ActionId.VOLUME_DECREASE_STREAM,
-            -> {
+                -> {
                 val stream =
                     entity.extras.getData(ActionEntity.EXTRA_STREAM_TYPE).then {
                         VOLUME_STREAM_MAP.getKey(it)!!.success()
@@ -283,7 +283,7 @@ object ActionDataEntityMapper {
             ActionId.VOLUME_TOGGLE_MUTE,
             ActionId.VOLUME_UNMUTE,
             ActionId.VOLUME_MUTE,
-            -> {
+                -> {
                 val showVolumeUi =
                     entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI)
 
@@ -304,7 +304,7 @@ object ActionDataEntityMapper {
             ActionId.TOGGLE_FLASHLIGHT,
             ActionId.ENABLE_FLASHLIGHT,
             ActionId.CHANGE_FLASHLIGHT_STRENGTH,
-            -> {
+                -> {
                 val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
                     LENS_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -330,7 +330,7 @@ object ActionDataEntityMapper {
             }
 
             ActionId.DISABLE_FLASHLIGHT,
-            -> {
+                -> {
                 val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
                     LENS_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -339,7 +339,7 @@ object ActionDataEntityMapper {
 
             ActionId.TOGGLE_DND_MODE,
             ActionId.ENABLE_DND_MODE,
-            -> {
+                -> {
                 val dndMode = entity.extras.getData(ActionEntity.EXTRA_DND_MODE).then {
                     DND_MODE_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -369,7 +369,7 @@ object ActionDataEntityMapper {
             ActionId.STOP_MEDIA_PACKAGE,
             ActionId.STEP_FORWARD_PACKAGE,
             ActionId.STEP_BACKWARD_PACKAGE,
-            -> {
+                -> {
                 val packageName =
                     entity.extras.getData(ActionEntity.EXTRA_PACKAGE_NAME).valueOrNull()
                         ?: return null
@@ -498,7 +498,6 @@ object ActionDataEntityMapper {
             ActionId.DISABLE_NFC -> ActionData.Nfc.Disable
             ActionId.TOGGLE_NFC -> ActionData.Nfc.Toggle
 
-            ActionId.MOVE_CURSOR_TO_END -> ActionData.MoveCursorToEnd
             ActionId.TOGGLE_KEYBOARD -> ActionData.ToggleKeyboard
             ActionId.SHOW_KEYBOARD -> ActionData.ShowKeyboard
             ActionId.HIDE_KEYBOARD -> ActionData.HideKeyboard
@@ -605,6 +604,39 @@ object ActionDataEntityMapper {
                     uniqueId = uniqueId,
                     nodeActions = actions,
                 )
+            }
+
+            ActionId.MOVE_CURSOR -> {
+                // For compatibility with the old "Move cursor to the end" action.
+                if (entity.extras.isEmpty()) {
+                    return ActionData.MoveCursor(
+                        moveType = ActionData.MoveCursor.Type.PAGE,
+                        ActionData.MoveCursor.Direction.END
+                    )
+                }
+
+                val type =
+                    entity.extras.getData(ActionEntity.EXTRA_MOVE_CURSOR_TYPE).then { value ->
+                        when (value) {
+                            ActionEntity.CURSOR_TYPE_CHAR -> Success(ActionData.MoveCursor.Type.CHAR)
+                            ActionEntity.CURSOR_TYPE_WORD -> Success(ActionData.MoveCursor.Type.WORD)
+                            ActionEntity.CURSOR_TYPE_LINE -> Success(ActionData.MoveCursor.Type.LINE)
+                            ActionEntity.CURSOR_TYPE_PARAGRAPH -> Success(ActionData.MoveCursor.Type.PARAGRAPH)
+                            ActionEntity.CURSOR_TYPE_PAGE -> Success(ActionData.MoveCursor.Type.PAGE)
+                            else -> KMError.Exception(IllegalArgumentException("Unknown move cursor type: $value"))
+                        }
+                    }.valueOrNull() ?: return null
+
+                val direction =
+                    entity.extras.getData(ActionEntity.EXTRA_MOVE_CURSOR_DIRECTION).then { value ->
+                        when (value) {
+                            ActionEntity.CURSOR_DIRECTION_START -> Success(ActionData.MoveCursor.Direction.START)
+                            ActionEntity.CURSOR_DIRECTION_END -> Success(ActionData.MoveCursor.Direction.END)
+                            else -> KMError.Exception(IllegalArgumentException("Unknown move cursor direction: $value"))
+                        }
+                    }.valueOrNull() ?: return null
+
+                ActionData.MoveCursor(moveType = type, direction = direction)
             }
         }
     }
@@ -918,6 +950,24 @@ object ActionDataEntityMapper {
             }
         }
 
+        is ActionData.MoveCursor -> buildList {
+            val typeString = when (data.moveType) {
+                ActionData.MoveCursor.Type.CHAR -> ActionEntity.CURSOR_TYPE_CHAR
+                ActionData.MoveCursor.Type.WORD -> ActionEntity.CURSOR_TYPE_WORD
+                ActionData.MoveCursor.Type.LINE -> ActionEntity.CURSOR_TYPE_LINE
+                ActionData.MoveCursor.Type.PARAGRAPH -> ActionEntity.CURSOR_TYPE_PARAGRAPH
+                ActionData.MoveCursor.Type.PAGE -> ActionEntity.CURSOR_TYPE_PAGE
+            }
+            add(EntityExtra(ActionEntity.EXTRA_MOVE_CURSOR_TYPE, typeString))
+
+            val directionString = when (data.direction) {
+                ActionData.MoveCursor.Direction.START -> ActionEntity.CURSOR_DIRECTION_START
+                ActionData.MoveCursor.Direction.END -> ActionEntity.CURSOR_DIRECTION_END
+            }
+            add(EntityExtra(ActionEntity.EXTRA_MOVE_CURSOR_DIRECTION, directionString))
+        }
+
+
         else -> emptyList()
     }
 
@@ -1051,7 +1101,9 @@ object ActionDataEntityMapper {
         ActionId.DISABLE_NFC to "nfc_disable",
         ActionId.TOGGLE_NFC to "nfc_toggle",
 
-        ActionId.MOVE_CURSOR_TO_END to "move_cursor_to_end",
+        // This action used to just move the cursor to the end. Do not change the
+        // id for compatibility reasons.
+        ActionId.MOVE_CURSOR to "move_cursor_to_end",
         ActionId.TOGGLE_KEYBOARD to "toggle_keyboard",
         ActionId.SHOW_KEYBOARD to "show_keyboard",
         ActionId.HIDE_KEYBOARD to "hide_keyboard",

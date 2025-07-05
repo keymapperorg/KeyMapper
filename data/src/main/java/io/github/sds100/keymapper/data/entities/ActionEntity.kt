@@ -7,7 +7,6 @@ import com.github.salomonbrys.kotson.byNullableString
 import com.github.salomonbrys.kotson.byString
 import com.github.salomonbrys.kotson.jsonDeserializer
 import com.google.gson.annotations.SerializedName
-import io.github.sds100.keymapper.data.entities.ActionEntity.Type
 import kotlinx.parcelize.Parcelize
 import java.util.UUID
 
@@ -51,7 +50,7 @@ data class ActionEntity(
     @SerializedName(NAME_UID)
     val uid: String = UUID.randomUUID().toString(),
 
-) : Parcelable {
+    ) : Parcelable {
     companion object {
 
         // DON'T CHANGE THESE IDs!!!!
@@ -98,6 +97,17 @@ data class ActionEntity(
         const val EXTRA_ACCESSIBILITY_UNIQUE_ID = "extra_accessibility_unique_id"
         const val EXTRA_ACCESSIBILITY_ACTIONS = "extra_accessibility_actions"
         const val EXTRA_ACCESSIBILITY_NODE_ACTION = "extra_accessibility_node_action"
+
+        const val EXTRA_MOVE_CURSOR_TYPE = "extra_move_cursor_type"
+        const val CURSOR_TYPE_CHAR = "char"
+        const val CURSOR_TYPE_WORD = "word"
+        const val CURSOR_TYPE_LINE = "line"
+        const val CURSOR_TYPE_PARAGRAPH = "paragraph"
+        const val CURSOR_TYPE_PAGE = "page"
+        const val CURSOR_DIRECTION_START = "start"
+        const val CURSOR_DIRECTION_END = "end"
+
+        const val EXTRA_MOVE_CURSOR_DIRECTION = "extra_move_cursor_direction"
 
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_ACTION_TYPE = "type"

@@ -649,12 +649,26 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 }
             }
 
-            is ActionData.MoveCursorToEnd -> {
+            is ActionData.MoveCursor -> {
                 result = service.performActionOnNode({ it.isFocused }) {
+                    val actionType = when (action.direction) {
+                        ActionData.MoveCursor.Direction.START -> AccessibilityNodeInfo.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY
+                        ActionData.MoveCursor.Direction.END -> AccessibilityNodeInfo.ACTION_NEXT_AT_MOVEMENT_GRANULARITY
+                    }
+
+                    val granularity = when (action.moveType) {
+                        ActionData.MoveCursor.Type.CHAR -> AccessibilityNodeInfo.MOVEMENT_GRANULARITY_CHARACTER
+                        ActionData.MoveCursor.Type.WORD -> AccessibilityNodeInfo.MOVEMENT_GRANULARITY_WORD
+                        ActionData.MoveCursor.Type.LINE -> AccessibilityNodeInfo.MOVEMENT_GRANULARITY_LINE
+                        ActionData.MoveCursor.Type.PARAGRAPH -> AccessibilityNodeInfo.MOVEMENT_GRANULARITY_PARAGRAPH
+                        ActionData.MoveCursor.Type.PAGE -> AccessibilityNodeInfo.MOVEMENT_GRANULARITY_PAGE
+                    }
+
                     AccessibilityNodeAction(
-                        AccessibilityNodeInfo.ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                        actionType,
                         mapOf(
-                            AccessibilityNodeInfo.ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT to AccessibilityNodeInfo.MOVEMENT_GRANULARITY_PAGE
+                            AccessibilityNodeInfo.ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT to granularity,
+                            AccessibilityNodeInfo.ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN to false
                         )
                     )
                 }

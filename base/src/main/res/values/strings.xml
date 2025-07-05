@@ -1065,8 +1065,19 @@
 
     <string name="action_consume_keyevent">Do nothing</string>
 
-    <string name="action_move_to_end_of_text">Move cursor to the end</string>
-    <string name="action_move_to_end_of_text_message">This action may not work as intended in some apps.</string>
+    <string name="action_move_cursor">Move cursor</string>
+    <string name="action_move_cursor_prev_character">Move to previous character</string>
+    <string name="action_move_cursor_next_character">Move to next character</string>
+    <string name="action_move_cursor_start_word">Move to previous word</string>
+    <string name="action_move_cursor_end_word">Move to next word</string>
+    <string name="action_move_cursor_start_line">Move to previous line</string>
+    <string name="action_move_cursor_end_line">Move to next line</string>
+    <string name="action_move_cursor_start_paragraph">Move to start of paragraph</string>
+    <string name="action_move_cursor_end_paragraph">Move to end of paragraph</string>
+    <string name="action_move_cursor_start_page">Move to start of page</string>
+    <string name="action_move_cursor_end_page">Move to end of page</string>
+
+
     <string name="action_toggle_keyboard">Toggle keyboard</string>
     <string name="action_toggle_keyboard_message">This action will only work if you have tapped on an input field where the keyboard is supposed to be shown.</string>
     <string name="action_show_keyboard">Show keyboard</string>
