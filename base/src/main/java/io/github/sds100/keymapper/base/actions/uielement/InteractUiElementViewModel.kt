@@ -226,9 +226,8 @@ class InteractUiElementViewModel @Inject constructor(
 
     fun onDoneClick() {
         val selectedElementState = _selectedElementState.value
-        val selectedElementEntity = selectedElementEntity.value
 
-        if (selectedElementState == null || selectedElementEntity == null) {
+        if (selectedElementState == null) {
             return
         }
 
@@ -236,19 +235,37 @@ class InteractUiElementViewModel @Inject constructor(
             return
         }
 
-        val action = ActionData.InteractUiElement(
-            description = selectedElementState.description,
-            nodeAction = selectedElementState.selectedInteraction,
-            packageName = selectedElementEntity.packageName,
-            text = selectedElementEntity.text,
-            contentDescription = selectedElementEntity.contentDescription,
-            tooltip = selectedElementEntity.tooltip,
-            hint = selectedElementEntity.hint,
-            className = selectedElementEntity.className,
-            viewResourceId = selectedElementEntity.viewResourceId,
-            uniqueId = selectedElementEntity.uniqueId,
-            nodeActions = selectedElementEntity.actions,
-        )
+        val selectedNodeEntity = selectedElementEntity.value
+
+        val action = if (selectedNodeEntity == null) {
+            ActionData.InteractUiElement(
+                description = selectedElementState.description,
+                nodeAction = selectedElementState.selectedInteraction,
+                packageName = selectedElementState.packageName,
+                text = selectedElementState.nodeText,
+                contentDescription = null, // Not available in this state
+                tooltip = selectedElementState.nodeToolTipHint,
+                hint = null, // Not available in this state
+                className = selectedElementState.nodeClassName,
+                viewResourceId = selectedElementState.nodeViewResourceId,
+                uniqueId = selectedElementState.nodeUniqueId,
+                nodeActions = selectedElementState.interactionTypes.map { it.first }.toSet(),
+            )
+        } else {
+            ActionData.InteractUiElement(
+                description = selectedElementState.description,
+                nodeAction = selectedElementState.selectedInteraction,
+                packageName = selectedNodeEntity.packageName,
+                text = selectedNodeEntity.text,
+                contentDescription = selectedNodeEntity.contentDescription,
+                tooltip = selectedNodeEntity.tooltip,
+                hint = selectedNodeEntity.hint,
+                className = selectedNodeEntity.className,
+                viewResourceId = selectedNodeEntity.viewResourceId,
+                uniqueId = selectedNodeEntity.uniqueId,
+                nodeActions = selectedNodeEntity.actions,
+            )
+        }
 
         viewModelScope.launch {
             popBackStackWithResult(Json.encodeToString(action))
@@ -296,7 +313,7 @@ class InteractUiElementViewModel @Inject constructor(
             val interactionText = getInteractionTypeString(selectedInteraction)
             val descriptionElement =
                 interaction.text ?: interaction.contentDescription ?: interaction.tooltip
-                    ?: interaction.hint ?: interaction.viewResourceId
+                ?: interaction.hint ?: interaction.viewResourceId
 
             val description = if (descriptionElement == null) {
                 ""
