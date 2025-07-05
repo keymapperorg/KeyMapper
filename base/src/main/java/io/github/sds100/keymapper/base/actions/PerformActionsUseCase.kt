@@ -650,18 +650,14 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.MoveCursorToEnd -> {
-                val keyModel = InputKeyModel(
-                    keyCode = KeyEvent.KEYCODE_MOVE_END,
-                    metaState = KeyEvent.META_CTRL_ON,
-                )
-
-                if (inputKeyEventsWithShizuku.value) {
-                    shizukuInputEventInjector.inputKeyEvent(keyModel)
-                } else {
-                    keyMapperImeMessenger.inputKeyEvent(keyModel)
+                result = service.performActionOnNode({ it.isFocused }) {
+                    AccessibilityNodeAction(
+                        AccessibilityNodeInfo.ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                        mapOf(
+                            AccessibilityNodeInfo.ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT to AccessibilityNodeInfo.MOVEMENT_GRANULARITY_PAGE
+                        )
+                    )
                 }
-
-                result = Success(Unit)
             }
 
             is ActionData.ToggleKeyboard -> {
