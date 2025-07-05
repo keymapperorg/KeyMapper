@@ -426,7 +426,7 @@ class ConfigActionsViewModel(
         }
 
         val actions =
-            createListItems(keyMap, showDeviceDescriptors, errorSnapshot, shortcuts.size)
+            createListItems(keyMap, showDeviceDescriptors, errorSnapshot)
 
         return ConfigActionsState.Loaded(
             actions = actions,
@@ -439,8 +439,9 @@ class ConfigActionsViewModel(
         keyMap: KeyMap,
         showDeviceDescriptors: Boolean,
         errorSnapshot: ActionErrorSnapshot,
-        shortcutCount: Int,
     ): List<ActionListItemModel> {
+        val actionErrors = errorSnapshot.getErrors(keyMap.actionList.map { it.data })
+
         return keyMap.actionList.mapIndexed { index, action ->
 
             val title: String = if (action.multiplier != null && action.multiplier > 1) {
@@ -451,7 +452,7 @@ class ConfigActionsViewModel(
             }
 
             val icon: ComposeIconInfo = uiHelper.getIcon(action.data)
-            val error: KMError? = errorSnapshot.getError(action.data)
+            val error: KMError? = actionErrors[action.data]
 
             val extraInfo = buildString {
                 val midDot = getString(R.string.middot)

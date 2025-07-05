@@ -206,28 +206,46 @@ class InteractUiElementViewModel @Inject constructor(
             val appName = useCase.getAppName(action.packageName).valueOrNull() ?: action.packageName
             val appIcon = getAppIcon(action.packageName)
 
-            val newState = SelectedUiElementState(
-                description = action.description,
-                packageName = action.packageName,
-                appName = appName,
-                appIcon = appIcon,
-                nodeText = action.text ?: action.contentDescription,
-                nodeToolTipHint = action.tooltip ?: action.hint,
-                nodeClassName = action.className,
-                nodeViewResourceId = action.viewResourceId,
-                nodeUniqueId = action.uniqueId,
-                interactionTypes = buildInteractionTypeFilterItems(action.nodeActions),
-                selectedInteraction = action.nodeAction,
-            )
+            _selectedElementState.update {
+                SelectedUiElementState(
+                    description = action.description,
+                    packageName = action.packageName,
+                    appName = appName,
+                    appIcon = appIcon,
+                    nodeText = action.text ?: action.contentDescription,
+                    nodeToolTipHint = action.tooltip ?: action.hint,
+                    nodeClassName = action.className,
+                    nodeViewResourceId = action.viewResourceId,
+                    nodeUniqueId = action.uniqueId,
+                    interactionTypes = buildInteractionTypeFilterItems(action.nodeActions),
+                    selectedInteraction = action.nodeAction,
+                )
+            }
 
-            _selectedElementState.update { newState }
+            selectedElementEntity.update {
+                AccessibilityNodeEntity(
+                    id = -1L,
+                    packageName = action.packageName,
+                    text = action.text,
+                    contentDescription = action.contentDescription,
+                    tooltip = action.tooltip,
+                    hint = action.hint,
+                    className = action.className,
+                    viewResourceId = action.viewResourceId,
+                    uniqueId = action.uniqueId,
+                    actions = action.nodeActions,
+                    // This is not known when loading an action
+                    interacted = false,
+                )
+            }
         }
     }
 
     fun onDoneClick() {
         val selectedElementState = _selectedElementState.value
+        val selectedNodeEntity = selectedElementEntity.value
 
-        if (selectedElementState == null) {
+        if (selectedElementState == null || selectedNodeEntity == null) {
             return
         }
 
@@ -235,37 +253,19 @@ class InteractUiElementViewModel @Inject constructor(
             return
         }
 
-        val selectedNodeEntity = selectedElementEntity.value
-
-        val action = if (selectedNodeEntity == null) {
-            ActionData.InteractUiElement(
-                description = selectedElementState.description,
-                nodeAction = selectedElementState.selectedInteraction,
-                packageName = selectedElementState.packageName,
-                text = selectedElementState.nodeText,
-                contentDescription = null, // Not available in this state
-                tooltip = selectedElementState.nodeToolTipHint,
-                hint = null, // Not available in this state
-                className = selectedElementState.nodeClassName,
-                viewResourceId = selectedElementState.nodeViewResourceId,
-                uniqueId = selectedElementState.nodeUniqueId,
-                nodeActions = selectedElementState.interactionTypes.map { it.first }.toSet(),
-            )
-        } else {
-            ActionData.InteractUiElement(
-                description = selectedElementState.description,
-                nodeAction = selectedElementState.selectedInteraction,
-                packageName = selectedNodeEntity.packageName,
-                text = selectedNodeEntity.text,
-                contentDescription = selectedNodeEntity.contentDescription,
-                tooltip = selectedNodeEntity.tooltip,
-                hint = selectedNodeEntity.hint,
-                className = selectedNodeEntity.className,
-                viewResourceId = selectedNodeEntity.viewResourceId,
-                uniqueId = selectedNodeEntity.uniqueId,
-                nodeActions = selectedNodeEntity.actions,
-            )
-        }
+        val action = ActionData.InteractUiElement(
+            description = selectedElementState.description,
+            nodeAction = selectedElementState.selectedInteraction,
+            packageName = selectedNodeEntity.packageName,
+            text = selectedNodeEntity.text,
+            contentDescription = selectedNodeEntity.contentDescription,
+            tooltip = selectedNodeEntity.tooltip,
+            hint = selectedNodeEntity.hint,
+            className = selectedNodeEntity.className,
+            viewResourceId = selectedNodeEntity.viewResourceId,
+            uniqueId = selectedNodeEntity.uniqueId,
+            nodeActions = selectedNodeEntity.actions,
+        )
 
         viewModelScope.launch {
             popBackStackWithResult(Json.encodeToString(action))

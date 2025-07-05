@@ -112,7 +112,9 @@ class KeyMapListItemCreator(
     ): List<ComposeChipModel> = sequence {
         val midDot = getString(R.string.middot)
 
-        keyMap.actionList.forEach { action ->
+        val actionErrors = errorSnapshot.getErrors(keyMap.actionList.map { it.data })
+
+        for (action in keyMap.actionList) {
             val actionTitle: String = if (action.multiplier != null) {
                 "${action.multiplier}x ${
                     actionUiHelper.getTitle(
@@ -148,7 +150,7 @@ class KeyMapListItemCreator(
             }
 
             val icon: ComposeIconInfo = actionUiHelper.getIcon(action.data)
-            val error: KMError? = errorSnapshot.getError(action.data)
+            val error: KMError? = actionErrors[action.data]
 
             val chip = if (error == null) {
                 ComposeChipModel.Normal(id = action.uid, text = chipText, icon = icon)

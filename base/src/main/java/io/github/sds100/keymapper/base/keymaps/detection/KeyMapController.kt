@@ -24,12 +24,9 @@ import io.github.sds100.keymapper.base.trigger.TriggerKey
 import io.github.sds100.keymapper.base.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.base.trigger.TriggerMode
 import io.github.sds100.keymapper.common.utils.InputEventType
-import io.github.sds100.keymapper.common.utils.KMError
-import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.minusFlag
 import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.PreferenceDefaults
-import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
@@ -777,10 +774,6 @@ class KeyMapController(
         val detectedShortPressTriggers = mutableSetOf<Int>()
         val vibrateDurations = mutableListOf<Long>()
 
-        /* cache whether an action can be performed to avoid repeatedly checking when multiple triggers have the
-        same action */
-        val canActionBePerformed = SparseArrayCompat<KMResult<ActionEntity>>()
-
         /*
         loop through triggers in a different loop first to increment the last matched index.
         Otherwise the order of the key maps affects the logic.
@@ -796,23 +789,14 @@ class KeyMapController(
 
             val errorSnapshot = performActionsUseCase.getErrorSnapshot()
 
-            for (actionKey in triggerActions[triggerIndex]) {
-                if (canActionBePerformed[actionKey] == null) {
-                    val action = actionMap[actionKey] ?: continue
+            val actionList = triggerActions[triggerIndex]
+                .map { actionKey -> actionMap[actionKey]?.data }
+                .filterNotNull()
 
-                    val result = errorSnapshot.getError(action.data)
+            val actionErrors = errorSnapshot.getErrors(actionList)
 
-                    if (result == null) {
-                        canActionBePerformed.remove(actionKey)
-                    } else {
-                        // if there is an error when trying to perform an action then stop handling
-                        // this trigger.
-                        canActionBePerformed.put(actionKey, result)
-                        continue@triggerLoop
-                    }
-                } else if (canActionBePerformed[actionKey] is KMError) {
-                    continue@triggerLoop
-                }
+            if (actionErrors.values.any { it != null }) {
+                continue@triggerLoop
             }
 
             val nextIndex = lastMatchedIndex + 1
@@ -1577,7 +1561,8 @@ class KeyMapController(
         return detectedTriggerIndexes.isNotEmpty()
     }
 
-    private fun encodeActionList(actions: List<Action>): IntArray = actions.map { getActionKey(it) }.toIntArray()
+    private fun encodeActionList(actions: List<Action>): IntArray =
+        actions.map { getActionKey(it) }.toIntArray()
 
     /**
      * @return the key for the action in [actionMap]. Returns -1 if the [action] can't be found.
@@ -1735,13 +1720,17 @@ class KeyMapController(
         }
     }
 
-    private fun longPressDelay(trigger: Trigger): Long = trigger.longPressDelay?.toLong() ?: defaultLongPressDelay.value
+    private fun longPressDelay(trigger: Trigger): Long =
+        trigger.longPressDelay?.toLong() ?: defaultLongPressDelay.value
 
-    private fun doublePressTimeout(trigger: Trigger): Long = trigger.doublePressDelay?.toLong() ?: defaultDoublePressDelay.value
+    private fun doublePressTimeout(trigger: Trigger): Long =
+        trigger.doublePressDelay?.toLong() ?: defaultDoublePressDelay.value
 
-    private fun vibrateDuration(trigger: Trigger): Long = trigger.vibrateDuration?.toLong() ?: defaultVibrateDuration.value
+    private fun vibrateDuration(trigger: Trigger): Long =
+        trigger.vibrateDuration?.toLong() ?: defaultVibrateDuration.value
 
-    private fun sequenceTriggerTimeout(trigger: Trigger): Long = trigger.sequenceTriggerTimeout?.toLong() ?: defaultSequenceTriggerTimeout.value
+    private fun sequenceTriggerTimeout(trigger: Trigger): Long =
+        trigger.sequenceTriggerTimeout?.toLong() ?: defaultSequenceTriggerTimeout.value
 
     private fun setActionMapAndOptions(actions: Set<Action>) {
         var key = 0
@@ -1769,7 +1758,7 @@ class KeyMapController(
         KeyEvent.KEYCODE_SYM,
         KeyEvent.KEYCODE_NUM,
         KeyEvent.KEYCODE_FUNCTION,
-        -> true
+            -> true
 
         else -> false
     }

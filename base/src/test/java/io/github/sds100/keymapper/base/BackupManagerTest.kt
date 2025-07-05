@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.base
 import com.github.salomonbrys.kotson.get
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import io.github.sds100.keymapper.base.actions.sound.SoundFileInfo
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.base.backup.BackupContent
 import io.github.sds100.keymapper.base.backup.BackupManagerImpl
@@ -102,9 +101,7 @@ class BackupManagerTest {
 
         fakeFileAdapter = FakeFileAdapter(temporaryFolder)
 
-        mockSoundsManager = mock {
-            on { soundFiles }.then { MutableStateFlow(emptyList<SoundFileInfo>()) }
-        }
+        mockSoundsManager = mock()
 
         mockUuidGenerator = mock()
 
@@ -374,59 +371,11 @@ class BackupManagerTest {
         verify(mockSoundsManager, times(1)).restoreSound(any())
     }
 
-    /**
-     * #652. always back up sound files.
-     */
-    @Test
-    fun `backup sound file even if there is not a key map with a sound action`() = runTest(testDispatcher) {
-        // GIVEN
-        val backupDirUuid = "backup_uid"
-        val soundFileName = "sound.ogg"
-        val soundFileUid = "sound_file_uid"
-
-        val soundFile = fakeFileAdapter.getPrivateFile("sounds/sound.ogg")
-        soundFile.createFile()
-
-        whenever(mockKeyMapRepository.keyMapList).then {
-            MutableStateFlow(State.Data(emptyList<KeyMapEntity>()))
-        }
-
-        whenever(mockUuidGenerator.random()).then {
-            backupDirUuid
-        }
-
-        whenever(mockSoundsManager.soundFiles).then {
-            MutableStateFlow(listOf(SoundFileInfo(uid = soundFileUid, name = soundFileName)))
-        }
-
-        whenever(mockSoundsManager.getSound(any())).then {
-            Success(fakeFileAdapter.getPrivateFile("sounds/$soundFileName"))
-        }
-
-        // WHEN
-        val backupZip = File(temporaryFolder.root, "backup.zip")
-        backupZip.mkdirs()
-
-        val result = backupManager.backupEverything(JavaFile(backupZip))
-
-        // THEN
-        assertThat(result, `is`(Success(Unit)))
-
-        // only 2 files have been backed up
-        assertThat(backupZip.listFiles()?.size, `is`(2))
-
-        // only 1 sound file has been backed up
-        val soundsDir = File(backupZip, "sounds")
-        assertThat(soundsDir.listFiles()?.size, `is`(1))
-        assert(File(soundsDir, "sound.ogg").exists())
-    }
-
     @Test
     fun `backup sound file if there is a key map with a sound action`() = runTest(testDispatcher) {
         // GIVEN
         val backupDirUuid = "backup_uuid"
         val soundFileUid = "uid"
-        val soundFileName = "sound.ogg"
 
         val action = ActionEntity(
             type = ActionEntity.Type.SOUND,
@@ -437,15 +386,11 @@ class BackupManagerTest {
         val keyMapList = listOf(KeyMapEntity(id = 0, actionList = listOf(action)))
 
         whenever(mockKeyMapRepository.keyMapList).then {
-            MutableStateFlow(State.Data(emptyList<KeyMapEntity>()))
+            MutableStateFlow(State.Data(keyMapList))
         }
 
         whenever(mockUuidGenerator.random()).then {
             backupDirUuid
-        }
-
-        whenever(mockSoundsManager.soundFiles).then {
-            MutableStateFlow(listOf(SoundFileInfo(uid = soundFileUid, name = soundFileName)))
         }
 
         whenever(mockSoundsManager.getSound(any())).then {
@@ -474,6 +419,84 @@ class BackupManagerTest {
         assertThat(soundsDir.listFiles()?.size, `is`(1))
         assert(File(soundsDir, "sound.ogg").exists())
     }
+
+    @Test
+    fun `do not backup sound files if no sounds are used in the key maps to back up`() =
+        runTest(testDispatcher) {
+            // GIVEN
+            val backupDirUuid = "backup_uuid"
+
+            val action = ActionEntity(
+                type = ActionEntity.Type.APP,
+                data = "io.github.sds100.keymapper",
+            )
+
+            val keyMapList = listOf(KeyMapEntity(id = 0, actionList = listOf(action)))
+
+            whenever(mockKeyMapRepository.keyMapList).then {
+                MutableStateFlow(State.Data(keyMapList))
+            }
+
+            whenever(mockUuidGenerator.random()).then {
+                backupDirUuid
+            }
+
+            val soundFile = fakeFileAdapter.getPrivateFile("sounds/sound.ogg")
+            soundFile.createFile()
+
+            // WHEN
+            val backupZip = File(temporaryFolder.root, "backup.zip")
+            backupZip.mkdirs()
+
+            val result = backupManager.backupKeyMaps(JavaFile(backupZip), keyMapList.map { it.uid })
+
+            // THEN
+
+            assertThat(result, `is`(Success(Unit)))
+
+            // only 1 sound file has been backed up
+            val soundsDir = File(backupZip, "sounds")
+            assertThat(soundsDir.exists(), `is`(false))
+        }
+
+    @Test
+    fun `do not backup sound files if a ringtone is used for the action`() =
+        runTest(testDispatcher) {
+            // GIVEN
+            val backupDirUuid = "backup_uuid"
+
+            val action = ActionEntity(
+                type = ActionEntity.Type.SOUND,
+                data = "com.android/systemringtone",
+            )
+
+            val keyMapList = listOf(KeyMapEntity(id = 0, actionList = listOf(action)))
+
+            whenever(mockKeyMapRepository.keyMapList).then {
+                MutableStateFlow(State.Data(keyMapList))
+            }
+
+            whenever(mockUuidGenerator.random()).then {
+                backupDirUuid
+            }
+
+            val soundFile = fakeFileAdapter.getPrivateFile("sounds/sound.ogg")
+            soundFile.createFile()
+
+            // WHEN
+            val backupZip = File(temporaryFolder.root, "backup.zip")
+            backupZip.mkdirs()
+
+            val result = backupManager.backupKeyMaps(JavaFile(backupZip), keyMapList.map { it.uid })
+
+            // THEN
+
+            assertThat(result, `is`(Success(Unit)))
+
+            // only 1 sound file has been backed up
+            val soundsDir = File(backupZip, "sounds")
+            assertThat(soundsDir.exists(), `is`(false))
+        }
 
     @Test
     fun `restore legacy backup with device info, success`() = runTest(testDispatcher) {

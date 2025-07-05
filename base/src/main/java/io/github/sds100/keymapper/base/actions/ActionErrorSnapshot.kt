@@ -6,10 +6,12 @@ import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
+import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.camera.CameraLens
+import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
@@ -26,14 +28,15 @@ class LazyActionErrorSnapshot(
     private val soundsManager: SoundsManager,
     shizukuAdapter: ShizukuAdapter,
     private val ringtoneAdapter: RingtoneAdapter,
-    buildConfigProvider: BuildConfigProvider,
+    private val buildConfigProvider: BuildConfigProvider,
 ) : ActionErrorSnapshot,
     IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(
         systemFeatureAdapter,
         cameraAdapter,
         permissionAdapter,
     ) {
-    private val keyMapperImeHelper = KeyMapperImeHelper(inputMethodAdapter, buildConfigProvider.packageName)
+    private val keyMapperImeHelper =
+        KeyMapperImeHelper(inputMethodAdapter, buildConfigProvider.packageName)
 
     private val isCompatibleImeEnabled by lazy { keyMapperImeHelper.isCompatibleImeEnabled() }
     private val isCompatibleImeChosen by lazy { keyMapperImeHelper.isCompatibleImeChosen() }
@@ -51,6 +54,39 @@ class LazyActionErrorSnapshot(
                 add(CameraLens.BACK)
             }
         }
+    }
+
+    override fun getErrors(actions: List<ActionData>): Map<ActionData, KMError?> {
+        // Fixes #797 and #1719
+        // Store which input method would be selected if the actions run successfully.
+        // Errors should not be thrown for actions that will be fixed by previous ones.
+        var currentImeFromActions: ImeInfo? = null
+
+        val errorMap = mutableMapOf<ActionData, KMError?>()
+
+        for (action in actions) {
+            if (action is ActionData.SwitchKeyboard) {
+                currentImeFromActions = inputMethodAdapter.getInfoById(action.imeId).valueOrNull()
+            }
+
+            var error = getError(action)
+
+            if (error == KMError.NoCompatibleImeChosen && currentImeFromActions != null) {
+                val isCurrentImeCompatible =
+                    KeyMapperImeHelper.isKeyMapperInputMethod(
+                        currentImeFromActions.packageName,
+                        buildConfigProvider.packageName
+                    )
+
+                if (isCurrentImeCompatible) {
+                    error = null
+                }
+            }
+
+            errorMap[action] = error
+        }
+
+        return errorMap
     }
 
     override fun getError(action: ActionData): KMError? {
@@ -164,8 +200,10 @@ class LazyActionErrorSnapshot(
             return isGranted
         }
     }
+
 }
 
 interface ActionErrorSnapshot {
     fun getError(action: ActionData): KMError?
+    fun getErrors(actions: List<ActionData>): Map<ActionData, KMError?>
 }
