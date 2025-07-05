@@ -71,9 +71,10 @@ abstract class SimpleMappingController(
             val errorSnapshot = performActionsUseCase.getErrorSnapshot()
 
             val repeatJobs = mutableListOf<RepeatJob>()
+            val actionErrors = errorSnapshot.getErrors(keyMap.actionList.map { it.data })
 
-            keyMap.actionList.forEach { action ->
-                if (errorSnapshot.getError(action.data) != null) return@forEach
+            for (action in keyMap.actionList) {
+                if (actionErrors[action.data] != null) continue
 
                 if (action.repeat && action.repeatMode != RepeatMode.TRIGGER_RELEASED) {
                     var alreadyRepeating = false

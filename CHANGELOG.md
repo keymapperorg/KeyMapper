@@ -21,6 +21,8 @@
 - #1709 Quick settings tiles were causing crashes on Android 15
 - #1714 Editing "interact with app element" actions works.
 - #1707 do not back up sound files if no key maps are using them
+- #797 #1719 execute key maps that can fix themselves. E.g having an action to select the Key Mapper
+  Keyboard before a key code action.
 
 ## [3.1.1](https://github.com/sds100/KeyMapper/releases/tag/v3.1.1)
 

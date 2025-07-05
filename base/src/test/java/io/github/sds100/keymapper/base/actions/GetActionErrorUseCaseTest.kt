@@ -233,10 +233,10 @@ class GetActionErrorUseCaseTest {
         val action = ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)
 
         // WHEN
-        val error = useCase.actionErrorSnapshot.first().getError(action)
+        val errorMap = useCase.actionErrorSnapshot.first().getErrors(listOf(action))
 
         // THEN
-        assertThat(error, nullValue())
+        assertThat(errorMap[action], nullValue())
     }
 
     /**
@@ -251,10 +251,11 @@ class GetActionErrorUseCaseTest {
             fakeInputMethodAdapter.chosenIme.update { GBOARD_IME_INFO }
 
             val action = ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)
+
             // WHEN
-            val error = useCase.actionErrorSnapshot.first().getError(action)
+            val errorMap = useCase.actionErrorSnapshot.first().getErrors(listOf(action))
 
             // THEN
-            assertThat(error, `is`(KMError.ShizukuNotStarted))
+            assertThat(errorMap[action], `is`(KMError.ShizukuNotStarted))
         }
 }
