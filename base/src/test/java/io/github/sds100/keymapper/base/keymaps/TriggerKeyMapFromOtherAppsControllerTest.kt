@@ -78,6 +78,9 @@ class TriggerKeyMapFromOtherAppsControllerTest {
 
             on { getErrorSnapshot() } doReturn object : ActionErrorSnapshot {
                 override fun getError(action: ActionData): KMError? = null
+                override fun getErrors(actions: List<ActionData>): Map<ActionData, KMError?> {
+                    return emptyMap()
+                }
             }
         }
 
