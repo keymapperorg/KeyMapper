@@ -19,7 +19,8 @@
 - #1699 Do not highlight a floating button as if it is pressed after triggering a key event action from it.
 - Button to copy the key map UID to the clipboard is invisible on small screens.
 - #1709 Quick settings tiles were causing crashes on Android 15
-- #1714 Editing "interact with app element" actions works
+- #1714 Editing "interact with app element" actions works.
+- #1707 do not back up sound files if no key maps are using them
 
 ## [3.1.1](https://github.com/sds100/KeyMapper/releases/tag/v3.1.1)
 

@@ -198,206 +198,207 @@ class BackupManagerImpl @Inject constructor(
         }
     }
 
-    private suspend fun parseBackupContent(jsonFile: InputStream): KMResult<BackupContent> = withContext(dispatchers.io()) {
-        try {
-            val rootElement = jsonFile.bufferedReader().use {
-                val element = JsonParser().parse(it)
+    private suspend fun parseBackupContent(jsonFile: InputStream): KMResult<BackupContent> =
+        withContext(dispatchers.io()) {
+            try {
+                val rootElement = jsonFile.bufferedReader().use {
+                    val element = JsonParser().parse(it)
 
-                if (element.isJsonNull) {
-                    return@withContext KMError.EmptyJson
-                }
-
-                element.asJsonObject
-            }
-
-            val backupDbVersion = rootElement.get(BackupContent.NAME_DB_VERSION).nullInt ?: 9
-            val backupAppVersion = rootElement.get(BackupContent.NAME_APP_VERSION).nullInt
-
-            if (backupAppVersion != null && backupAppVersion > buildConfigProvider.versionCode) {
-                return@withContext KMError.BackupVersionTooNew
-            }
-
-            if (backupDbVersion > AppDatabase.DATABASE_VERSION) {
-                return@withContext KMError.BackupVersionTooNew
-            }
-
-            val keyMapListJsonArray by rootElement.byNullableArray(BackupContent.NAME_KEYMAP_LIST)
-
-            val deviceInfoList by rootElement.byNullableArray(BackupContent.NAME_DEVICE_INFO)
-
-            val migratedKeyMapList = mutableListOf<KeyMapEntity>()
-
-            val keyMapMigrations = listOf(
-                JsonMigration(9, 10) { json -> Migration9To10.migrateJson(json) },
-                JsonMigration(10, 11) { json -> Migration10To11.migrateJson(json) },
-                JsonMigration(11, 12) { json ->
-                    Migration11To12.migrateKeyMap(json, deviceInfoList ?: JsonArray())
-                },
-                // do nothing because this added the log table
-                JsonMigration(12, 13) { json -> json },
-
-                // Do nothing because this just add the floating layouts table and indexes.
-                JsonMigration(13, 14) { json -> json },
-
-                // Do nothing just added floating button entity columns
-                JsonMigration(14, 15) { json -> json },
-
-                // Do nothing just added nullable group uid column
-                JsonMigration(15, 16) { json -> json },
-
-                // Do nothing just added nullable column for when a group was last opened
-                JsonMigration(16, 17) { json -> json },
-
-                // Do nothing. It just removed the group name index.
-                JsonMigration(17, 18) { json -> json },
-
-                // Do nothing. Just added the accessibility node table.
-                JsonMigration(18, 19) { json -> json },
-
-                // Do nothing. Just added columns to the accessibility node table.
-                JsonMigration(19, 20) { json -> json },
-            )
-
-            if (keyMapListJsonArray != null) {
-                for (keyMap in keyMapListJsonArray!!) {
-                    val migratedKeyMap = MigrationUtils.migrate(
-                        keyMapMigrations,
-                        inputVersion = backupDbVersion,
-                        inputJson = keyMap.asJsonObject,
-                        outputVersion = AppDatabase.DATABASE_VERSION,
-                    )
-
-                    val keyMapEntity: KeyMapEntity = gson.fromJson(migratedKeyMap)
-                    val keyMapWithNewId = keyMapEntity.copy(id = 0)
-
-                    migratedKeyMapList.add(keyMapWithNewId)
-                }
-            }
-
-            val migratedFingerprintMaps = mutableListOf<FingerprintMapEntity>()
-
-            // do nothing because this added the log table
-            val newFingerprintMapMigrations = listOf(
-                JsonMigration(12, 13) { json -> json },
-            )
-
-            if (rootElement.contains(BackupContent.NAME_FINGERPRINT_MAP_LIST) && backupDbVersion >= 12) {
-                rootElement.get(BackupContent.NAME_FINGERPRINT_MAP_LIST).asJsonArray.forEach { fingerprintMap ->
-                    val migratedFingerprintMapJson = MigrationUtils.migrate(
-                        newFingerprintMapMigrations,
-                        inputVersion = backupDbVersion,
-                        inputJson = fingerprintMap.asJsonObject,
-                        outputVersion = 13,
-                    )
-
-                    migratedFingerprintMaps.add(gson.fromJson(migratedFingerprintMapJson))
-                }
-            } else {
-                val elementNameToGestureIdMap = mapOf(
-                    "fingerprint_swipe_down" to "swipe_down",
-                    "fingerprint_swipe_up" to "swipe_up",
-                    "fingerprint_swipe_left" to "swipe_left",
-                    "fingerprint_swipe_right" to "swipe_right",
-                )
-
-                var backupVersionTooNew = false
-
-                elementNameToGestureIdMap.forEach { (elementName, gestureId) ->
-                    val fingerprintMap by rootElement.byNullableObject(elementName)
-
-                    fingerprintMap ?: return@forEach
-
-                    val version by fingerprintMap!!.byInt("db_version") { 0 }
-                    val isIncompatible = version > 2
-
-                    if (isIncompatible) {
-                        backupVersionTooNew = true
+                    if (element.isJsonNull) {
+                        return@withContext KMError.EmptyJson
                     }
 
-                    val legacyMigrations = listOf(
-                        JsonMigration(
-                            0,
-                            1,
-                        ) { json -> FingerprintMapMigration0To1.migrate(json) },
-                        JsonMigration(
-                            1,
-                            2,
-                        ) { json -> FingerprintMapMigration1To2.migrate(json) },
-                        JsonMigration(2, 12) { json ->
-                            Migration11To12.migrateFingerprintMap(
-                                gestureId,
-                                json,
-                                deviceInfoList ?: JsonArray(),
-                            )
-                        },
-                    )
-
-                    val migratedFingerprintMapJson = MigrationUtils.migrate(
-                        legacyMigrations.plus(newFingerprintMapMigrations),
-                        inputVersion = version,
-                        inputJson = fingerprintMap!!.asJsonObject,
-                        outputVersion = 13,
-                    )
-
-                    migratedFingerprintMaps.add(gson.fromJson(migratedFingerprintMapJson))
+                    element.asJsonObject
                 }
 
-                if (backupVersionTooNew) {
+                val backupDbVersion = rootElement.get(BackupContent.NAME_DB_VERSION).nullInt ?: 9
+                val backupAppVersion = rootElement.get(BackupContent.NAME_APP_VERSION).nullInt
+
+                if (backupAppVersion != null && backupAppVersion > buildConfigProvider.versionCode) {
                     return@withContext KMError.BackupVersionTooNew
                 }
+
+                if (backupDbVersion > AppDatabase.DATABASE_VERSION) {
+                    return@withContext KMError.BackupVersionTooNew
+                }
+
+                val keyMapListJsonArray by rootElement.byNullableArray(BackupContent.NAME_KEYMAP_LIST)
+
+                val deviceInfoList by rootElement.byNullableArray(BackupContent.NAME_DEVICE_INFO)
+
+                val migratedKeyMapList = mutableListOf<KeyMapEntity>()
+
+                val keyMapMigrations = listOf(
+                    JsonMigration(9, 10) { json -> Migration9To10.migrateJson(json) },
+                    JsonMigration(10, 11) { json -> Migration10To11.migrateJson(json) },
+                    JsonMigration(11, 12) { json ->
+                        Migration11To12.migrateKeyMap(json, deviceInfoList ?: JsonArray())
+                    },
+                    // do nothing because this added the log table
+                    JsonMigration(12, 13) { json -> json },
+
+                    // Do nothing because this just add the floating layouts table and indexes.
+                    JsonMigration(13, 14) { json -> json },
+
+                    // Do nothing just added floating button entity columns
+                    JsonMigration(14, 15) { json -> json },
+
+                    // Do nothing just added nullable group uid column
+                    JsonMigration(15, 16) { json -> json },
+
+                    // Do nothing just added nullable column for when a group was last opened
+                    JsonMigration(16, 17) { json -> json },
+
+                    // Do nothing. It just removed the group name index.
+                    JsonMigration(17, 18) { json -> json },
+
+                    // Do nothing. Just added the accessibility node table.
+                    JsonMigration(18, 19) { json -> json },
+
+                    // Do nothing. Just added columns to the accessibility node table.
+                    JsonMigration(19, 20) { json -> json },
+                )
+
+                if (keyMapListJsonArray != null) {
+                    for (keyMap in keyMapListJsonArray!!) {
+                        val migratedKeyMap = MigrationUtils.migrate(
+                            keyMapMigrations,
+                            inputVersion = backupDbVersion,
+                            inputJson = keyMap.asJsonObject,
+                            outputVersion = AppDatabase.DATABASE_VERSION,
+                        )
+
+                        val keyMapEntity: KeyMapEntity = gson.fromJson(migratedKeyMap)
+                        val keyMapWithNewId = keyMapEntity.copy(id = 0)
+
+                        migratedKeyMapList.add(keyMapWithNewId)
+                    }
+                }
+
+                val migratedFingerprintMaps = mutableListOf<FingerprintMapEntity>()
+
+                // do nothing because this added the log table
+                val newFingerprintMapMigrations = listOf(
+                    JsonMigration(12, 13) { json -> json },
+                )
+
+                if (rootElement.contains(BackupContent.NAME_FINGERPRINT_MAP_LIST) && backupDbVersion >= 12) {
+                    rootElement.get(BackupContent.NAME_FINGERPRINT_MAP_LIST).asJsonArray.forEach { fingerprintMap ->
+                        val migratedFingerprintMapJson = MigrationUtils.migrate(
+                            newFingerprintMapMigrations,
+                            inputVersion = backupDbVersion,
+                            inputJson = fingerprintMap.asJsonObject,
+                            outputVersion = 13,
+                        )
+
+                        migratedFingerprintMaps.add(gson.fromJson(migratedFingerprintMapJson))
+                    }
+                } else {
+                    val elementNameToGestureIdMap = mapOf(
+                        "fingerprint_swipe_down" to "swipe_down",
+                        "fingerprint_swipe_up" to "swipe_up",
+                        "fingerprint_swipe_left" to "swipe_left",
+                        "fingerprint_swipe_right" to "swipe_right",
+                    )
+
+                    var backupVersionTooNew = false
+
+                    elementNameToGestureIdMap.forEach { (elementName, gestureId) ->
+                        val fingerprintMap by rootElement.byNullableObject(elementName)
+
+                        fingerprintMap ?: return@forEach
+
+                        val version by fingerprintMap!!.byInt("db_version") { 0 }
+                        val isIncompatible = version > 2
+
+                        if (isIncompatible) {
+                            backupVersionTooNew = true
+                        }
+
+                        val legacyMigrations = listOf(
+                            JsonMigration(
+                                0,
+                                1,
+                            ) { json -> FingerprintMapMigration0To1.migrate(json) },
+                            JsonMigration(
+                                1,
+                                2,
+                            ) { json -> FingerprintMapMigration1To2.migrate(json) },
+                            JsonMigration(2, 12) { json ->
+                                Migration11To12.migrateFingerprintMap(
+                                    gestureId,
+                                    json,
+                                    deviceInfoList ?: JsonArray(),
+                                )
+                            },
+                        )
+
+                        val migratedFingerprintMapJson = MigrationUtils.migrate(
+                            legacyMigrations.plus(newFingerprintMapMigrations),
+                            inputVersion = version,
+                            inputJson = fingerprintMap!!.asJsonObject,
+                            outputVersion = 13,
+                        )
+
+                        migratedFingerprintMaps.add(gson.fromJson(migratedFingerprintMapJson))
+                    }
+
+                    if (backupVersionTooNew) {
+                        return@withContext KMError.BackupVersionTooNew
+                    }
+                }
+
+                for (entity in migratedFingerprintMaps) {
+                    FingerprintToKeyMapMigration.migrate(entity)?.let { migratedKeyMapList.add(it) }
+                }
+
+                val defaultLongPressDelay by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_LONG_PRESS_DELAY)
+                val defaultDoublePressDelay by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_DOUBLE_PRESS_DELAY)
+                val defaultVibrationDuration by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_VIBRATION_DURATION)
+                val defaultRepeatDelay by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_REPEAT_DELAY)
+                val defaultRepeatRate by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_REPEAT_RATE)
+                val defaultSequenceTriggerTimeout by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_SEQUENCE_TRIGGER_TIMEOUT)
+
+                val floatingLayoutsJson by rootElement.byNullableArray(BackupContent.NAME_FLOATING_LAYOUTS)
+                val floatingLayouts: List<FloatingLayoutEntity>? =
+                    floatingLayoutsJson?.map { json -> gson.fromJson(json) }
+
+                val floatingButtonsJson by rootElement.byNullableArray(BackupContent.NAME_FLOATING_BUTTONS)
+                val floatingButtons: List<FloatingButtonEntity>? =
+                    floatingButtonsJson?.map { json -> gson.fromJson(json) }
+
+                val groupsJson by rootElement.byNullableArray(BackupContent.NAME_GROUPS)
+                val groups: List<GroupEntity> =
+                    groupsJson?.map { json -> gson.fromJson(json) } ?: emptyList()
+
+                val content = BackupContent(
+                    dbVersion = backupDbVersion,
+                    appVersion = backupAppVersion,
+                    keyMapList = migratedKeyMapList,
+                    defaultLongPressDelay = defaultLongPressDelay,
+                    defaultDoublePressDelay = defaultDoublePressDelay,
+                    defaultVibrationDuration = defaultVibrationDuration,
+                    defaultRepeatDelay = defaultRepeatDelay,
+                    defaultRepeatRate = defaultRepeatRate,
+                    defaultSequenceTriggerTimeout = defaultSequenceTriggerTimeout,
+                    floatingLayouts = floatingLayouts,
+                    floatingButtons = floatingButtons,
+                    groups = groups,
+                )
+
+                return@withContext Success(content)
+            } catch (e: MalformedJsonException) {
+                return@withContext KMError.CorruptJsonFile(e.message ?: "")
+            } catch (e: JsonSyntaxException) {
+                return@withContext KMError.CorruptJsonFile(e.message ?: "")
+            } catch (e: NoSuchElementException) {
+                return@withContext KMError.CorruptJsonFile(e.message ?: "")
+            } catch (e: Exception) {
+                Timber.e(e)
+
+                return@withContext KMError.Exception(e)
             }
-
-            for (entity in migratedFingerprintMaps) {
-                FingerprintToKeyMapMigration.migrate(entity)?.let { migratedKeyMapList.add(it) }
-            }
-
-            val defaultLongPressDelay by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_LONG_PRESS_DELAY)
-            val defaultDoublePressDelay by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_DOUBLE_PRESS_DELAY)
-            val defaultVibrationDuration by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_VIBRATION_DURATION)
-            val defaultRepeatDelay by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_REPEAT_DELAY)
-            val defaultRepeatRate by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_REPEAT_RATE)
-            val defaultSequenceTriggerTimeout by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_SEQUENCE_TRIGGER_TIMEOUT)
-
-            val floatingLayoutsJson by rootElement.byNullableArray(BackupContent.NAME_FLOATING_LAYOUTS)
-            val floatingLayouts: List<FloatingLayoutEntity>? =
-                floatingLayoutsJson?.map { json -> gson.fromJson(json) }
-
-            val floatingButtonsJson by rootElement.byNullableArray(BackupContent.NAME_FLOATING_BUTTONS)
-            val floatingButtons: List<FloatingButtonEntity>? =
-                floatingButtonsJson?.map { json -> gson.fromJson(json) }
-
-            val groupsJson by rootElement.byNullableArray(BackupContent.NAME_GROUPS)
-            val groups: List<GroupEntity> =
-                groupsJson?.map { json -> gson.fromJson(json) } ?: emptyList()
-
-            val content = BackupContent(
-                dbVersion = backupDbVersion,
-                appVersion = backupAppVersion,
-                keyMapList = migratedKeyMapList,
-                defaultLongPressDelay = defaultLongPressDelay,
-                defaultDoublePressDelay = defaultDoublePressDelay,
-                defaultVibrationDuration = defaultVibrationDuration,
-                defaultRepeatDelay = defaultRepeatDelay,
-                defaultRepeatRate = defaultRepeatRate,
-                defaultSequenceTriggerTimeout = defaultSequenceTriggerTimeout,
-                floatingLayouts = floatingLayouts,
-                floatingButtons = floatingButtons,
-                groups = groups,
-            )
-
-            return@withContext Success(content)
-        } catch (e: MalformedJsonException) {
-            return@withContext KMError.CorruptJsonFile(e.message ?: "")
-        } catch (e: JsonSyntaxException) {
-            return@withContext KMError.CorruptJsonFile(e.message ?: "")
-        } catch (e: NoSuchElementException) {
-            return@withContext KMError.CorruptJsonFile(e.message ?: "")
-        } catch (e: Exception) {
-            Timber.e(e)
-
-            return@withContext KMError.Exception(e)
         }
-    }
 
     override suspend fun restore(file: IFile, restoreType: RestoreType): KMResult<*> {
         return extractFile(file).then { extractedDir ->
@@ -649,15 +650,17 @@ class BackupManagerImpl @Inject constructor(
         return rootNodes
     }
 
-    private suspend fun appendKeyMapsInRepository(keyMaps: List<KeyMapEntity>) = withContext(dispatchers.default()) {
-        val randomUids = keyMaps.map { it.copy(uid = UUID.randomUUID().toString()) }
-        keyMapRepository.insert(*randomUids.toTypedArray())
-    }
+    private suspend fun appendKeyMapsInRepository(keyMaps: List<KeyMapEntity>) =
+        withContext(dispatchers.default()) {
+            val randomUids = keyMaps.map { it.copy(uid = UUID.randomUUID().toString()) }
+            keyMapRepository.insert(*randomUids.toTypedArray())
+        }
 
-    private suspend fun replaceKeyMapsInRepository(keyMaps: List<KeyMapEntity>) = withContext(dispatchers.default()) {
-        keyMapRepository.deleteAll()
-        keyMapRepository.insert(*keyMaps.toTypedArray())
-    }
+    private suspend fun replaceKeyMapsInRepository(keyMaps: List<KeyMapEntity>) =
+        withContext(dispatchers.default()) {
+            keyMapRepository.deleteAll()
+            keyMapRepository.insert(*keyMaps.toTypedArray())
+        }
 
     /**
      * Check whether the group each key map is assigned to actually exists. If it does not
@@ -709,14 +712,13 @@ class BackupManagerImpl @Inject constructor(
 
                 filesToBackup.add(dataJsonFile)
 
-                // backup all sounds
-                val soundsToBackup = soundsManager.soundFiles.value.map { it.uid }
+                val soundsToBackup = getSoundUidsToBackup(keyMapList)
 
                 if (soundsToBackup.isNotEmpty()) {
                     val soundsBackupDirectory = fileAdapter.getFile(tempBackupDir, SOUNDS_DIR_NAME)
                     soundsBackupDirectory.createDirectory()
 
-                    soundsToBackup.forEach { soundUid ->
+                    for (soundUid in soundsToBackup) {
                         soundsManager.getSound(soundUid)
                             .then { soundFile ->
                                 soundFile.copyTo(soundsBackupDirectory)
@@ -736,6 +738,19 @@ class BackupManagerImpl @Inject constructor(
                 return@withContext KMError.Exception(e)
             }
         }
+    }
+
+    private fun getSoundUidsToBackup(keyMapList: List<KeyMapEntity>): Set<String> {
+        val soundActions = keyMapList
+            .flatMap { it.actionList }
+            .filter { it.type == ActionEntity.Type.SOUND }
+
+        return soundActions
+            // Sound actions that are file-based rather than system ringtones will contain this Extra.
+            .filter { action -> action.extras.any { it.id == ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION } }
+            // The action data is the sound UID
+            .map { it.data }
+            .toSet()
     }
 
     suspend fun createBackupContent(
@@ -797,35 +812,35 @@ class BackupManagerImpl @Inject constructor(
             buildConfigProvider.versionCode,
             keyMapList,
             defaultLongPressDelay =
-            preferenceRepository
-                .get(Keys.defaultLongPressDelay)
-                .first()
-                .takeIf { it != PreferenceDefaults.LONG_PRESS_DELAY },
+                preferenceRepository
+                    .get(Keys.defaultLongPressDelay)
+                    .first()
+                    .takeIf { it != PreferenceDefaults.LONG_PRESS_DELAY },
             defaultDoublePressDelay =
-            preferenceRepository
-                .get(Keys.defaultDoublePressDelay)
-                .first()
-                .takeIf { it != PreferenceDefaults.DOUBLE_PRESS_DELAY },
+                preferenceRepository
+                    .get(Keys.defaultDoublePressDelay)
+                    .first()
+                    .takeIf { it != PreferenceDefaults.DOUBLE_PRESS_DELAY },
             defaultRepeatDelay =
-            preferenceRepository
-                .get(Keys.defaultRepeatDelay)
-                .first()
-                .takeIf { it != PreferenceDefaults.REPEAT_DELAY },
+                preferenceRepository
+                    .get(Keys.defaultRepeatDelay)
+                    .first()
+                    .takeIf { it != PreferenceDefaults.REPEAT_DELAY },
             defaultRepeatRate =
-            preferenceRepository
-                .get(Keys.defaultRepeatRate)
-                .first()
-                .takeIf { it != PreferenceDefaults.REPEAT_RATE },
+                preferenceRepository
+                    .get(Keys.defaultRepeatRate)
+                    .first()
+                    .takeIf { it != PreferenceDefaults.REPEAT_RATE },
             defaultSequenceTriggerTimeout =
-            preferenceRepository
-                .get(Keys.defaultSequenceTriggerTimeout)
-                .first()
-                .takeIf { it != PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT },
+                preferenceRepository
+                    .get(Keys.defaultSequenceTriggerTimeout)
+                    .first()
+                    .takeIf { it != PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT },
             defaultVibrationDuration =
-            preferenceRepository
-                .get(Keys.defaultVibrateDuration)
-                .first()
-                .takeIf { it != PreferenceDefaults.VIBRATION_DURATION },
+                preferenceRepository
+                    .get(Keys.defaultVibrateDuration)
+                    .first()
+                    .takeIf { it != PreferenceDefaults.VIBRATION_DURATION },
             floatingLayouts = floatingLayoutsMap.values.toList().takeIf { it.isNotEmpty() },
             floatingButtons = floatingButtonsMap.values.toList().takeIf { it.isNotEmpty() },
             groups = groupMap.values.toList().takeIf { it.isNotEmpty() },
