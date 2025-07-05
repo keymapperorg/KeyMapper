@@ -64,11 +64,6 @@ class ToggleKeyMapperKeyboardTile :
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
     }
 
-    override fun onStopListening() {
-        lifecycleRegistry.currentState = Lifecycle.State.CREATED
-        super.onStopListening()
-    }
-
     override fun onDestroy() {
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
 

@@ -130,11 +130,6 @@ class ToggleMappingsTile :
         super.onStartListening()
     }
 
-    override fun onStopListening() {
-        lifecycleRegistry.currentState = Lifecycle.State.CREATED
-        super.onStopListening()
-    }
-
     override fun onDestroy() {
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         super.onDestroy()
