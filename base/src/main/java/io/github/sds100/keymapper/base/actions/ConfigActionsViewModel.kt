@@ -426,7 +426,7 @@ class ConfigActionsViewModel(
         }
 
         val actions =
-            createListItems(keyMap, showDeviceDescriptors, errorSnapshot, shortcuts.size)
+            createListItems(keyMap, showDeviceDescriptors, errorSnapshot)
 
         return ConfigActionsState.Loaded(
             actions = actions,
@@ -439,7 +439,6 @@ class ConfigActionsViewModel(
         keyMap: KeyMap,
         showDeviceDescriptors: Boolean,
         errorSnapshot: ActionErrorSnapshot,
-        shortcutCount: Int,
     ): List<ActionListItemModel> {
         return keyMap.actionList.mapIndexed { index, action ->
 

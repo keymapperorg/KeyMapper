@@ -27,6 +27,13 @@ class KeyMapperImeHelper(
             "io.github.sds100.keymapper.inputmethod.hackers"
 
         const val MIN_SUPPORTED_GUI_KEYBOARD_VERSION_CODE: Int = 20
+
+        fun isKeyMapperInputMethod(imePackage: String, keyMapperPackageName: String): Boolean {
+            return imePackage == keyMapperPackageName ||
+                imePackage == KEY_MAPPER_GUI_IME_PACKAGE ||
+                imePackage == KEY_MAPPER_LEANBACK_IME_PACKAGE ||
+                imePackage == KEY_MAPPER_HACKERS_KEYBOARD_PACKAGE
+        }
     }
 
     private val keyMapperImePackageList = arrayOf(
@@ -48,13 +55,15 @@ class KeyMapperImeHelper(
         }
     }
 
-    suspend fun chooseCompatibleInputMethod(): KMResult<ImeInfo> = getLastUsedCompatibleImeId().suspendThen {
-        imeAdapter.chooseImeWithoutUserInput(it)
-    }
+    suspend fun chooseCompatibleInputMethod(): KMResult<ImeInfo> =
+        getLastUsedCompatibleImeId().suspendThen {
+            imeAdapter.chooseImeWithoutUserInput(it)
+        }
 
-    suspend fun chooseLastUsedIncompatibleInputMethod(): KMResult<ImeInfo> = getLastUsedIncompatibleImeId().then {
-        imeAdapter.chooseImeWithoutUserInput(it)
-    }
+    suspend fun chooseLastUsedIncompatibleInputMethod(): KMResult<ImeInfo> =
+        getLastUsedIncompatibleImeId().then {
+            imeAdapter.chooseImeWithoutUserInput(it)
+        }
 
     suspend fun toggleCompatibleInputMethod(): KMResult<ImeInfo> = if (isCompatibleImeChosen()) {
         chooseLastUsedIncompatibleInputMethod()
@@ -62,7 +71,11 @@ class KeyMapperImeHelper(
         chooseCompatibleInputMethod()
     }
 
-    fun isCompatibleImeChosen(): Boolean = imeAdapter.chosenIme.value?.packageName in keyMapperImePackageList
+    fun isCompatibleImeChosen(): Boolean {
+        val chosenIme = imeAdapter.chosenIme.value ?: return false
+
+        return isKeyMapperInputMethod(chosenIme.packageName, packageName)
+    }
 
     fun isCompatibleImeEnabled(): Boolean = imeAdapter.inputMethods
         .map { containsCompatibleIme(it) }
