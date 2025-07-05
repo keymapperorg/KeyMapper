@@ -262,7 +262,7 @@ class ActionUiHelper(
                                 R.string.action_toggle_front_flashlight_with_strength,
                                 action.strengthPercent.toPercentString(),
 
-                                )
+                            )
                         } else {
                             getString(
                                 R.string.action_toggle_flashlight_with_strength,

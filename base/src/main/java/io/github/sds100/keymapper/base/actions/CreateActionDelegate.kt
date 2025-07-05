@@ -179,7 +179,7 @@ class CreateActionDelegate(
             ActionId.STOP_MEDIA_PACKAGE,
             ActionId.STEP_FORWARD_PACKAGE,
             ActionId.STEP_BACKWARD_PACKAGE,
-                -> {
+            -> {
                 val packageName =
                     navigate(
                         "choose_app_for_media_action",
@@ -229,7 +229,7 @@ class CreateActionDelegate(
             ActionId.VOLUME_MUTE,
             ActionId.VOLUME_UNMUTE,
             ActionId.VOLUME_TOGGLE_MUTE,
-                -> {
+            -> {
                 val showVolumeUiId = 0
                 val isVolumeUiChecked =
                     when (oldData) {
@@ -272,7 +272,7 @@ class CreateActionDelegate(
 
             ActionId.VOLUME_INCREASE_STREAM,
             ActionId.VOLUME_DECREASE_STREAM,
-                -> {
+            -> {
                 val showVolumeUiId = 0
                 val isVolumeUiChecked = if (oldData is ActionData.Volume.Stream) {
                     oldData.showVolumeUi
@@ -328,7 +328,7 @@ class CreateActionDelegate(
             // don't need to show options for disabling do not disturb
             ActionId.TOGGLE_DND_MODE,
             ActionId.ENABLE_DND_MODE,
-                -> {
+            -> {
                 val items = DndMode.entries
                     .map { it to getString(DndModeStrings.getLabel(it)) }
 
@@ -446,7 +446,7 @@ class CreateActionDelegate(
             }
 
             ActionId.DISABLE_FLASHLIGHT,
-                -> {
+            -> {
                 val items = useCase.getFlashlightLenses().map { lens ->
                     when (lens) {
                         CameraLens.FRONT -> lens to getString(R.string.lens_front)

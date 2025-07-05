@@ -313,7 +313,7 @@ class InteractUiElementViewModel @Inject constructor(
             val interactionText = getInteractionTypeString(selectedInteraction)
             val descriptionElement =
                 interaction.text ?: interaction.contentDescription ?: interaction.tooltip
-                ?: interaction.hint ?: interaction.viewResourceId
+                    ?: interaction.hint ?: interaction.viewResourceId
 
             val description = if (descriptionElement == null) {
                 ""
