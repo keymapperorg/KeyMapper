@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.MotionEvent
 import androidx.activity.SystemBarStyle
@@ -184,10 +183,6 @@ abstract class BaseMainActivity : AppCompatActivity() {
                 this,
                 ContextCompat.RECEIVER_EXPORTED,
             )
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            privServiceSetup.pairWirelessAdb(34413, "158394")
         }
     }
 

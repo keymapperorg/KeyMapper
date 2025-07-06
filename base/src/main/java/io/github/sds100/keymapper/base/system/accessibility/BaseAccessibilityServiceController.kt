@@ -29,6 +29,7 @@ import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.priv.service.PrivServiceSetupController
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
@@ -70,6 +71,7 @@ abstract class BaseAccessibilityServiceController(
     private val devicesAdapter: DevicesAdapter,
     private val suAdapter: SuAdapter,
     private val settingsRepository: PreferenceRepository,
+    private val privServiceSetupController: PrivServiceSetupController
 ) {
     companion object {
 
@@ -537,9 +539,7 @@ abstract class BaseAccessibilityServiceController(
             val portRegex = Regex(".*:([0-9]{1,5})")
             val pairingCodeNode =
                 service.rootInActiveWindow.findNodeRecursively {
-                    it.text != null && pairingCodeRegex.matches(
-                        it.text
-                    )
+                    it.text != null && pairingCodeRegex.matches(it.text)
                 }
 
             val portNode = service.rootInActiveWindow.findNodeRecursively {
@@ -547,8 +547,16 @@ abstract class BaseAccessibilityServiceController(
             }
 
             if (pairingCodeNode != null && portNode != null) {
-                Timber.e("PAIRING CODE = ${pairingCodeNode.text}")
-                Timber.e("PORT = ${portNode.text.split(":").last()}")
+                val pairingCode = pairingCodeNode.text?.toString()?.toIntOrNull()
+                val port = portNode.text?.split(":")?.last()?.toIntOrNull()
+                Timber.e("PAIRING CODE = $pairingCode")
+                Timber.e("PORT = $port")
+
+                if (pairingCode != null && port != null) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        privServiceSetupController.pairWirelessAdb(port, pairingCode)
+                    }
+                }
             }
         }
     }

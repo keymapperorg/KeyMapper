@@ -1,30 +1,20 @@
 package io.github.sds100.keymapper.priv.service
 
-import android.app.AppOpsManager
-import android.app.ForegroundServiceStartNotAllowedException
 import android.content.Context
-import android.graphics.Typeface
 import android.os.Build
 import android.preference.PreferenceManager
 import android.util.Log
-import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.priv.adb.AdbClient
 import io.github.sds100.keymapper.priv.adb.AdbKey
 import io.github.sds100.keymapper.priv.adb.AdbKeyException
 import io.github.sds100.keymapper.priv.adb.AdbPairingClient
-import io.github.sds100.keymapper.priv.adb.AdbPairingService
 import io.github.sds100.keymapper.priv.adb.PreferenceAdbKeyStore
 import io.github.sds100.keymapper.priv.starter.Starter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -125,7 +115,7 @@ class PrivServiceSetupControllerImpl @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
-    override fun pairWirelessAdb(port: Int, code: String) {
+    override fun pairWirelessAdb(port: Int, code: Int) {
         coroutineScope.launch(Dispatchers.IO) {
             val host = "127.0.0.1"
 
@@ -139,7 +129,7 @@ class PrivServiceSetupControllerImpl @Inject constructor(
                 return@launch
             }
 
-            AdbPairingClient(host, port, code, key).runCatching {
+            AdbPairingClient(host, port, code.toString(), key).runCatching {
                 start()
             }.onFailure {
                 Timber.d("Pairing failed: $it")
@@ -182,7 +172,7 @@ class PrivServiceSetupControllerImpl @Inject constructor(
 
 interface PrivServiceSetupController {
     @RequiresApi(Build.VERSION_CODES.R)
-    fun pairWirelessAdb(port: Int, code: String)
+    fun pairWirelessAdb(port: Int, code: Int)
 
     @RequiresApi(Build.VERSION_CODES.R)
     fun startWithAdb(host: String, port: Int)
