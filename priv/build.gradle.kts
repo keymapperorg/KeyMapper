@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.devtools.ksp)
+    alias(libs.plugins.dagger.hilt.android)
 }
 
 android {
@@ -71,6 +73,8 @@ dependencies {
     implementation("org.conscrypt:conscrypt-android:2.5.3")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
+    implementation(libs.dagger.hilt.android)
+    ksp(libs.dagger.hilt.android.compiler)
 
     // From Shizuku :manager module build.gradle file.
     implementation("io.github.vvb2060.ndk:boringssl:20250114")

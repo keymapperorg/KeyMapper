@@ -13,7 +13,7 @@ import java.net.NetworkInterface
 import java.net.ServerSocket
 
 @RequiresApi(Build.VERSION_CODES.R)
-class AdbMdns(
+internal class AdbMdns(
     context: Context, private val serviceType: String,
     private val port: MutableLiveData<Int>
 ) {

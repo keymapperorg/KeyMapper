@@ -47,7 +47,7 @@ import javax.net.ssl.X509ExtendedTrustManager
 private const val TAG = "AdbKey"
 
 @RequiresApi(Build.VERSION_CODES.M)
-class AdbKey(private val adbKeyStore: AdbKeyStore, name: String) {
+internal class AdbKey(private val adbKeyStore: AdbKeyStore, name: String) {
 
     companion object {
 

@@ -1,7 +1,5 @@
 package io.github.sds100.keymapper.priv.adb
 
-import android.annotation.TargetApi
-import android.app.ForegroundServiceStartNotAllowedException
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -16,18 +14,19 @@ import android.os.IBinder
 import android.os.Looper
 import android.preference.PreferenceManager
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import io.github.sds100.keymapper.priv.R
+import io.github.sds100.keymapper.priv.ktx.TAG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import io.github.sds100.keymapper.priv.ktx.TAG
 import rikka.core.ktx.unsafeLazy
 import java.net.ConnectException
 
-@TargetApi(Build.VERSION_CODES.R)
-class AdbPairingService : Service() {
+@RequiresApi(Build.VERSION_CODES.R)
+internal class AdbPairingService : Service() {
 
     companion object {
 
@@ -94,48 +93,7 @@ class AdbPairingService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val notification = when (intent?.action) {
-            startAction -> {
-                onStart()
-            }
 
-            replyAction -> {
-                val code =
-                    RemoteInput.getResultsFromIntent(intent)?.getCharSequence(remoteInputResultKey)
-                        ?: ""
-                val port = intent.getIntExtra(portKey, -1)
-                if (port != -1) {
-                    onInput(code.toString(), port)
-                } else {
-                    onStart()
-                }
-            }
-
-            stopAction -> {
-                stopForeground(STOP_FOREGROUND_REMOVE)
-                null
-            }
-
-            else -> {
-                return START_NOT_STICKY
-            }
-        }
-        if (notification != null) {
-            try {
-                startForeground(notificationId, notification)
-            } catch (e: Throwable) {
-                Log.e(tag, "startForeground failed", e)
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-                    e is ForegroundServiceStartNotAllowedException
-                ) {
-                    getSystemService(NotificationManager::class.java).notify(
-                        notificationId,
-                        notification,
-                    )
-                }
-            }
-        }
         return START_REDELIVER_INTENT
     }
 

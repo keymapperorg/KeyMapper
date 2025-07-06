@@ -167,7 +167,7 @@ private class PairingContext private constructor(private val nativePtr: Long) {
 }
 
 @RequiresApi(Build.VERSION_CODES.R)
-class AdbPairingClient(
+internal class AdbPairingClient(
     private val host: String,
     private val port: Int,
     private val pairCode: String,

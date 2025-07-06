@@ -530,6 +530,10 @@ abstract class BaseAccessibilityServiceController(
                 }
             }
         }
+
+        if (event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED) {
+            Timber.e(service.rootInActiveWindow.toString())
+        }
     }
 
     fun onFingerprintGesture(type: FingerprintGestureType) {

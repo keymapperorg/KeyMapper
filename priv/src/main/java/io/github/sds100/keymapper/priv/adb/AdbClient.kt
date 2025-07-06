@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.priv.adb
 
 import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.priv.adb.AdbProtocol.ADB_AUTH_RSAPUBLICKEY
 import io.github.sds100.keymapper.priv.adb.AdbProtocol.ADB_AUTH_SIGNATURE
 import io.github.sds100.keymapper.priv.adb.AdbProtocol.ADB_AUTH_TOKEN
@@ -25,7 +26,9 @@ import javax.net.ssl.SSLSocket
 
 private const val TAG = "AdbClient"
 
-class AdbClient(private val host: String, private val port: Int, private val key: AdbKey) : Closeable {
+@RequiresApi(Build.VERSION_CODES.M)
+internal class AdbClient(private val host: String, private val port: Int, private val key: AdbKey) :
+    Closeable {
 
     private lateinit var socket: Socket
     private lateinit var plainInputStream: DataInputStream

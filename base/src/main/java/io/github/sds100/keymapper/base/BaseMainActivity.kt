@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.MotionEvent
 import androidx.activity.SystemBarStyle
@@ -33,6 +34,7 @@ import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.priv.service.PrivServiceSetupController
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
@@ -81,6 +83,9 @@ abstract class BaseMainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var buildConfigProvider: BuildConfigProvider
+
+    @Inject
+    lateinit var privServiceSetup: PrivServiceSetupController
 
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
 
@@ -179,6 +184,10 @@ abstract class BaseMainActivity : AppCompatActivity() {
                 this,
                 ContextCompat.RECEIVER_EXPORTED,
             )
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            privServiceSetup.pairWirelessAdb(34413, "158394")
         }
     }
 

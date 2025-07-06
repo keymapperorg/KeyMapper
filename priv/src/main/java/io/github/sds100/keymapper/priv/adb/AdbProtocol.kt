@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.priv.adb
 
-object AdbProtocol {
+internal object AdbProtocol {
 
     const val A_SYNC = 0x434e5953
     const val A_CNXN = 0x4e584e43

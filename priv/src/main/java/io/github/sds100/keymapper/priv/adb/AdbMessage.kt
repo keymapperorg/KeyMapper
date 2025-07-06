@@ -11,7 +11,7 @@ import io.github.sds100.keymapper.priv.adb.AdbProtocol.A_WRTE
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-class AdbMessage(
+internal class AdbMessage(
         val command: Int,
         val arg0: Int,
         val arg1: Int,
