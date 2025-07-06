@@ -46,7 +46,6 @@ class ChooseActionViewModel @Inject constructor(
             ActionCategory.INPUT,
             ActionCategory.APPS,
             ActionCategory.FLASHLIGHT,
-            ActionCategory.CONTENT,
             ActionCategory.NAVIGATION,
             ActionCategory.VOLUME,
             ActionCategory.DISPLAY,

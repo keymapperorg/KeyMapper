@@ -96,7 +96,6 @@ object ActionUtils {
         ActionCategory.INPUT -> R.string.action_cat_input
         ActionCategory.FLASHLIGHT -> R.string.action_cat_flashlight
         ActionCategory.CONNECTIVITY -> R.string.action_cat_connectivity
-        ActionCategory.CONTENT -> R.string.action_cat_content
         ActionCategory.INTERFACE -> R.string.action_cat_interface
         ActionCategory.TELEPHONY -> R.string.action_cat_telephony
         ActionCategory.DISPLAY -> R.string.action_cat_display
@@ -119,6 +118,8 @@ object ActionUtils {
         ActionId.APP -> ActionCategory.APPS
         ActionId.APP_SHORTCUT -> ActionCategory.APPS
         ActionId.INTENT -> ActionCategory.APPS
+        ActionId.URL -> ActionCategory.APPS
+        ActionId.HTTP_REQUEST -> ActionCategory.APPS
 
         ActionId.TOGGLE_WIFI -> ActionCategory.CONNECTIVITY
         ActionId.ENABLE_WIFI -> ActionCategory.CONNECTIVITY
@@ -137,6 +138,7 @@ object ActionUtils {
         ActionId.ENABLE_AUTO_BRIGHTNESS -> ActionCategory.DISPLAY
         ActionId.INCREASE_BRIGHTNESS -> ActionCategory.DISPLAY
         ActionId.DECREASE_BRIGHTNESS -> ActionCategory.DISPLAY
+        ActionId.SCREENSHOT -> ActionCategory.DISPLAY
 
         ActionId.TOGGLE_AUTO_ROTATE -> ActionCategory.INTERFACE
         ActionId.ENABLE_AUTO_ROTATE -> ActionCategory.INTERFACE
@@ -209,6 +211,9 @@ object ActionUtils {
         ActionId.ENABLE_AIRPLANE_MODE -> ActionCategory.CONNECTIVITY
         ActionId.DISABLE_AIRPLANE_MODE -> ActionCategory.CONNECTIVITY
 
+        ActionId.TEXT_CUT -> ActionCategory.KEYBOARD
+        ActionId.TEXT_COPY -> ActionCategory.KEYBOARD
+        ActionId.TEXT_PASTE -> ActionCategory.KEYBOARD
         ActionId.MOVE_CURSOR -> ActionCategory.KEYBOARD
         ActionId.TOGGLE_KEYBOARD -> ActionCategory.KEYBOARD
         ActionId.SHOW_KEYBOARD -> ActionCategory.KEYBOARD
@@ -221,13 +226,6 @@ object ActionUtils {
         ActionId.POWER_ON_OFF_DEVICE -> ActionCategory.INTERFACE
         ActionId.SECURE_LOCK_DEVICE -> ActionCategory.INTERFACE
         ActionId.SHOW_POWER_MENU -> ActionCategory.INTERFACE
-
-        ActionId.TEXT_CUT -> ActionCategory.CONTENT
-        ActionId.TEXT_COPY -> ActionCategory.CONTENT
-        ActionId.TEXT_PASTE -> ActionCategory.CONTENT
-        ActionId.SCREENSHOT -> ActionCategory.CONTENT
-        ActionId.URL -> ActionCategory.CONTENT
-        ActionId.HTTP_REQUEST -> ActionCategory.CONTENT
 
         ActionId.PHONE_CALL -> ActionCategory.TELEPHONY
         ActionId.ANSWER_PHONE_CALL -> ActionCategory.TELEPHONY

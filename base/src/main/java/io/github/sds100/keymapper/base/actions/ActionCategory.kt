@@ -5,7 +5,6 @@ enum class ActionCategory {
     INPUT,
     FLASHLIGHT,
     CONNECTIVITY,
-    CONTENT,
     NAVIGATION,
     VOLUME,
     DISPLAY,
