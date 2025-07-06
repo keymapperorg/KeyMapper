@@ -30,6 +30,7 @@
 - #1735 Floating buttons no longer flash on screen when the accessibility service restarts if they
   are not supposed to be visible.
 - #1717 do not show floating buttons if quick settings is expanded on the lockscreen.
+- Correctly show error that Airplane mode actions require root
 
 ## [3.1.1](https://github.com/sds100/KeyMapper/releases/tag/v3.1.1)
 

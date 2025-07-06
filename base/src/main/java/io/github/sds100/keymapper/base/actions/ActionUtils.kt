@@ -648,7 +648,7 @@ object ActionUtils {
             ActionId.TOGGLE_AIRPLANE_MODE,
             ActionId.ENABLE_AIRPLANE_MODE,
             ActionId.DISABLE_AIRPLANE_MODE,
-            -> Permission.ROOT
+            -> return listOf(Permission.ROOT)
 
             ActionId.SCREENSHOT -> if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
                 return listOf(Permission.ROOT)
@@ -663,8 +663,7 @@ object ActionUtils {
 
             ActionId.DISMISS_ALL_NOTIFICATIONS,
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION,
-            ->
-                return listOf(Permission.NOTIFICATION_LISTENER)
+            -> return listOf(Permission.NOTIFICATION_LISTENER)
 
             ActionId.ANSWER_PHONE_CALL,
             ActionId.END_PHONE_CALL,
@@ -677,7 +676,7 @@ object ActionUtils {
                     return listOf(Permission.FIND_NEARBY_DEVICES)
                 }
 
-            else -> Unit
+            else -> return emptyList()
         }
 
         return emptyList()

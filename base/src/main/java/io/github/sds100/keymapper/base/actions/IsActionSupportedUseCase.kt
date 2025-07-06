@@ -53,8 +53,7 @@ class IsActionSupportedUseCaseImpl(
             }
         }
 
-        if (ActionUtils.getRequiredPermissions(id)
-                .contains(Permission.ROOT) &&
+        if (ActionUtils.getRequiredPermissions(id).contains(Permission.ROOT) &&
             !permissionAdapter.isGranted(Permission.ROOT)
         ) {
             return SystemError.PermissionDenied(Permission.ROOT)

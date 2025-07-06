@@ -116,7 +116,7 @@ class LazyActionErrorSnapshot(
             }
         }
 
-        ActionUtils.getRequiredPermissions(action.id).forEach { permission ->
+        for (permission in ActionUtils.getRequiredPermissions(action.id)) {
             if (!isPermissionGranted(permission)) {
                 return SystemError.PermissionDenied(permission)
             }
