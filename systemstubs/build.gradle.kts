@@ -36,4 +36,6 @@ android {
 }
 
 dependencies {
+    // TODO use version catalogs
+    implementation("androidx.annotation:annotation-jvm:1.9.1")
 }

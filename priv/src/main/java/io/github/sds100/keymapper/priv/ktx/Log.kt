@@ -4,6 +4,8 @@ package io.github.sds100.keymapper.priv.ktx
 
 import android.util.Log
 
+// TODO replace with Timber usage.
+
 inline val <reified T> T.TAG: String
     get() =
         T::class.java.simpleName.let {

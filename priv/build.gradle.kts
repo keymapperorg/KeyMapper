@@ -31,7 +31,15 @@ android {
         }
     }
 
+    externalNativeBuild {
+        cmake {
+            path("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
+    }
+
     buildFeatures {
+        aidl = true
         prefab = true
     }
 
@@ -55,10 +63,14 @@ android {
 }
 
 dependencies {
+    implementation(project(":systemstubs"))
 
+    implementation(libs.jakewharton.timber)
+
+    // TODO use version catalog
     implementation("org.conscrypt:conscrypt-android:2.5.3")
-    implementation("androidx.core:core-ktx:1.16.0")
-    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
 
     // From Shizuku :manager module build.gradle file.
     implementation("io.github.vvb2060.ndk:boringssl:20250114")

@@ -30,6 +30,7 @@
 #define EXIT_FATAL_KILL 9
 #define EXIT_FATAL_BINDER_BLOCKED_BY_SELINUX 10
 
+// TODO take package name as argument
 #define PACKAGE_NAME "io.github.sds100.keymapper.debug"
 #define SERVER_NAME "shizuku_server"
 #define SERVER_CLASS_PATH "io.github.sds100.keymapper.nativelib.EvdevService"
