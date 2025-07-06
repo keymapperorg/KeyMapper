@@ -80,3 +80,42 @@ dependencies {
     implementation("me.zhanghai.android.appiconloader:appiconloader:1.5.0")
     implementation("dev.rikka.rikkax.core:core-ktx:1.4.1")
 }
+
+tasks.named("preBuild") {
+    dependsOn(generateLibEvDevEventNames)
+}
+
+// The list of event names needs to be parsed from the input.h file in the NDK.
+// input.h can be found in the Android/sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include/linux/input.h
+// folder on macOS.
+val generateLibEvDevEventNames by tasks.registering(Exec::class) {
+    group = "build"
+    description = "Generates event names header from input.h"
+
+    val prebuiltDir = File(android.ndkDirectory, "toolchains/llvm/prebuilt")
+
+    // The "darwin-x86_64" part of the path is different on each operating system but it seems like
+    // the SDK Manager only downloads the NDK specific to the local operating system. So, just
+    // go into the only directory that the "prebuilt" directory contains.
+    val hostDirs = prebuiltDir.listFiles { file -> file.isDirectory }
+        ?: throw GradleException("No prebuilt toolchain directories found in $prebuiltDir")
+
+    if (hostDirs.size != 1) {
+        throw GradleException("Expected exactly one prebuilt toolchain directory in $prebuiltDir, found ${hostDirs.size}")
+    }
+    val toolchainDir = hostDirs[0].absolutePath
+
+    val inputHeader = "$toolchainDir/sysroot/usr/include/linux/input.h"
+    val inputEventCodesHeader = "$toolchainDir/sysroot/usr/include/linux/input-event-codes.h"
+    val outputHeader = "$projectDir/src/main/cpp/libevdev/event-names.h"
+    val pythonScript = "$projectDir/src/main/cpp/libevdev/make-event-names.py"
+
+    commandLine("python3", pythonScript, inputHeader, inputEventCodesHeader)
+
+    standardOutput = File(outputHeader).outputStream()
+
+    inputs.file(pythonScript)
+    inputs.file(inputHeader)
+    inputs.file(inputEventCodesHeader)
+    outputs.file(outputHeader)
+}

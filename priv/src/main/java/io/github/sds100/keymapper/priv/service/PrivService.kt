@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.priv.service
 
 import android.annotation.SuppressLint
 import android.ddm.DdmHandleAppName
+import android.system.Os
 import io.github.sds100.keymapper.priv.IPrivService
 import timber.log.Timber
 import kotlin.system.exitProcess
@@ -26,6 +27,7 @@ class PrivService : IPrivService.Stub() {
 
     init {
         @SuppressLint("UnsafeDynamicallyLoadedCode")
+        // TODO can we change "shizuku.library.path" property?
         System.load("${System.getProperty("shizuku.library.path")}/libevdev.so")
         stringFromJNI()
     }
@@ -36,6 +38,7 @@ class PrivService : IPrivService.Stub() {
     }
 
     override fun sendEvent(): String? {
-        TODO("Not yet implemented")
+        Timber.e("UID = ${Os.getuid()}")
+        return stringFromJNI()
     }
 }
