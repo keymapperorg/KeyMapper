@@ -4,56 +4,97 @@ import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import timber.log.Timber
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.NetworkInterface
 import java.net.ServerSocket
 
+/**
+ * This uses mDNS to scan for the ADB pairing and connection ports.
+ */
 @RequiresApi(Build.VERSION_CODES.R)
 internal class AdbMdns(
-    context: Context, private val serviceType: String,
-    private val port: MutableLiveData<Int>
+    ctx: Context,
+    private val serviceType: AdbServiceType,
 ) {
 
     private var registered = false
     private var running = false
     private var serviceName: String? = null
-    private val listener: DiscoveryListener
-    private val nsdManager: NsdManager = context.getSystemService(NsdManager::class.java)
+    private val nsdManager: NsdManager = ctx.getSystemService(NsdManager::class.java)
+
+    private val _port: MutableStateFlow<Int?> = MutableStateFlow<Int?>(null)
+    val port: StateFlow<Int?> = _port.asStateFlow()
+
+    private val discoveryListener: NsdManager.DiscoveryListener =
+        object : NsdManager.DiscoveryListener {
+            override fun onDiscoveryStarted(serviceType: String) {
+                Timber.d("onDiscoveryStarted: $serviceType")
+
+                registered = true
+            }
+
+            override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
+                Timber.d("onStartDiscoveryFailed: $serviceType, $errorCode")
+            }
+
+            override fun onDiscoveryStopped(serviceType: String) {
+                Timber.d("onDiscoveryStopped: $serviceType")
+
+                registered = false
+            }
+
+            override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) {
+                Timber.d("onStopDiscoveryFailed: $serviceType, $errorCode")
+            }
+
+            override fun onServiceFound(serviceInfo: NsdServiceInfo) {
+                Timber.d("onServiceFound: ${serviceInfo.serviceName}")
+
+                nsdManager.resolveService(serviceInfo, ResolveListener(this@AdbMdns))
+            }
+
+            override fun onServiceLost(serviceInfo: NsdServiceInfo) {
+                Timber.d("onServiceLost: ${serviceInfo.serviceName}")
+
+                if (serviceInfo.serviceName == serviceName) {
+                    _port.update { null }
+                }
+            }
+        }
 
     fun start() {
-        if (running) return
+        if (running) {
+            return
+        }
+
         running = true
+
         if (!registered) {
-            nsdManager.discoverServices(serviceType, NsdManager.PROTOCOL_DNS_SD, listener)
+            nsdManager.discoverServices(
+                serviceType.id,
+                NsdManager.PROTOCOL_DNS_SD,
+                discoveryListener
+            )
         }
     }
 
     fun stop() {
-        if (!running) return
-        running = false
-        if (registered) {
-            nsdManager.stopServiceDiscovery(listener)
+        if (!running) {
+            return
         }
-    }
 
-    private fun onDiscoveryStart() {
-        registered = true
-    }
+        running = false
 
-    private fun onDiscoveryStop() {
-        registered = false
-    }
-
-    private fun onServiceFound(info: NsdServiceInfo) {
-        nsdManager.resolveService(info, ResolveListener(this))
-    }
-
-    private fun onServiceLost(info: NsdServiceInfo) {
-        if (info.serviceName == serviceName) port.postValue(-1)
+        if (registered) {
+            nsdManager.stopServiceDiscovery(discoveryListener)
+        }
     }
 
     private fun onServiceResolved(resolvedService: NsdServiceInfo) {
@@ -67,7 +108,7 @@ internal class AdbMdns(
             && isPortAvailable(resolvedService.port)
         ) {
             serviceName = resolvedService.serviceName
-            port.postValue(resolvedService.port)
+            _port.update { resolvedService.port }
         }
     }
 
@@ -80,56 +121,11 @@ internal class AdbMdns(
         true
     }
 
-    internal class DiscoveryListener(private val adbMdns: AdbMdns) : NsdManager.DiscoveryListener {
-        override fun onDiscoveryStarted(serviceType: String) {
-            Log.v(TAG, "onDiscoveryStarted: $serviceType")
-
-            adbMdns.onDiscoveryStart()
-        }
-
-        override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
-            Log.v(TAG, "onStartDiscoveryFailed: $serviceType, $errorCode")
-        }
-
-        override fun onDiscoveryStopped(serviceType: String) {
-            Log.v(TAG, "onDiscoveryStopped: $serviceType")
-
-            adbMdns.onDiscoveryStop()
-        }
-
-        override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) {
-            Log.v(TAG, "onStopDiscoveryFailed: $serviceType, $errorCode")
-        }
-
-        override fun onServiceFound(serviceInfo: NsdServiceInfo) {
-            Log.v(TAG, "onServiceFound: ${serviceInfo.serviceName}")
-
-            adbMdns.onServiceFound(serviceInfo)
-        }
-
-        override fun onServiceLost(serviceInfo: NsdServiceInfo) {
-            Log.v(TAG, "onServiceLost: ${serviceInfo.serviceName}")
-
-            adbMdns.onServiceLost(serviceInfo)
-        }
-    }
-
     internal class ResolveListener(private val adbMdns: AdbMdns) : NsdManager.ResolveListener {
         override fun onResolveFailed(nsdServiceInfo: NsdServiceInfo, i: Int) {}
 
         override fun onServiceResolved(nsdServiceInfo: NsdServiceInfo) {
             adbMdns.onServiceResolved(nsdServiceInfo)
         }
-
-    }
-
-    companion object {
-        const val TLS_CONNECT = "_adb-tls-connect._tcp"
-        const val TLS_PAIRING = "_adb-tls-pairing._tcp"
-        const val TAG = "AdbMdns"
-    }
-
-    init {
-        listener = DiscoveryListener(this)
     }
 }

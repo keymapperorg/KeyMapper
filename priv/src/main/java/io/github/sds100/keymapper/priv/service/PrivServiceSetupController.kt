@@ -9,12 +9,16 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.priv.adb.AdbClient
 import io.github.sds100.keymapper.priv.adb.AdbKey
 import io.github.sds100.keymapper.priv.adb.AdbKeyException
+import io.github.sds100.keymapper.priv.adb.AdbMdns
 import io.github.sds100.keymapper.priv.adb.AdbPairingClient
+import io.github.sds100.keymapper.priv.adb.AdbServiceType
 import io.github.sds100.keymapper.priv.adb.PreferenceAdbKeyStore
 import io.github.sds100.keymapper.priv.starter.Starter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -31,18 +35,33 @@ class PrivServiceSetupControllerImpl @Inject constructor(
     private val sb = StringBuilder()
 
     @RequiresApi(Build.VERSION_CODES.R)
-    override fun startWithAdb(host: String, port: Int) {
-        writeStarterFiles()
+    private var adbConnectMdns: AdbMdns = AdbMdns(ctx, AdbServiceType.TLS_CONNECT)
 
-        sb.append("Starting with wireless adb...").append('\n').append('\n')
-        postResult()
-
+    // TODO clean up
+    // TODO have lock so can only launch one start job at a time
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun startWithAdb() {
         coroutineScope.launch(Dispatchers.IO) {
+            adbConnectMdns.start()
+
+            val host = "127.0.0.1"
+            val port = withTimeout(1000L) { adbConnectMdns.port.first { it != null } }
+
+            if (port == null) {
+                return@launch
+            }
+
+            writeStarterFiles()
+
+            sb.append("Starting with wireless adb...").append('\n').append('\n')
+            postResult()
+
             val key = try {
-                AdbKey(
+                val adbKey = AdbKey(
                     PreferenceAdbKeyStore(PreferenceManager.getDefaultSharedPreferences(ctx)),
-                    "shizuku",
+                    "keymapper",
                 )
+                adbKey
             } catch (e: Throwable) {
                 e.printStackTrace()
                 sb.append('\n').append(Log.getStackTraceString(e))
@@ -175,5 +194,5 @@ interface PrivServiceSetupController {
     fun pairWirelessAdb(port: Int, code: Int)
 
     @RequiresApi(Build.VERSION_CODES.R)
-    fun startWithAdb(host: String, port: Int)
+    fun startWithAdb()
 }

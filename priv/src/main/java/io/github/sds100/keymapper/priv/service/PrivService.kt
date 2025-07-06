@@ -28,7 +28,7 @@ class PrivService : IPrivService.Stub() {
     init {
         @SuppressLint("UnsafeDynamicallyLoadedCode")
         // TODO can we change "shizuku.library.path" property?
-        System.load("${System.getProperty("shizuku.library.path")}/libevdev.so")
+        System.load("${System.getProperty("shizuku.library.path")}/libpriv.so")
         stringFromJNI()
     }
 

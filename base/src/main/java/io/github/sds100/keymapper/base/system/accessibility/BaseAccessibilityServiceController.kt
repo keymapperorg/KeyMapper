@@ -396,6 +396,13 @@ abstract class BaseAccessibilityServiceController(
         event: MyKeyEvent,
         detectionSource: KeyEventDetectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
     ): Boolean {
+        //TODO remove
+        if (event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && event.action == KeyEvent.ACTION_DOWN) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                privServiceSetupController.startWithAdb()
+            }
+        }
+
         val detailedLogInfo = event.toString()
 
         if (recordingTrigger) {
@@ -554,7 +561,11 @@ abstract class BaseAccessibilityServiceController(
 
                 if (pairingCode != null && port != null) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        privServiceSetupController.pairWirelessAdb(port, pairingCode)
+                        service.lifecycleScope.launch {
+                            privServiceSetupController.pairWirelessAdb(port, pairingCode)
+                            delay(1000)
+                            privServiceSetupController.startWithAdb()
+                        }
                     }
                 }
             }
