@@ -531,8 +531,25 @@ abstract class BaseAccessibilityServiceController(
             }
         }
 
+        // TODO only run this code, and listen for these events if searching for a pairing code. Check that package name is settings app.
         if (event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED) {
-            Timber.e(service.rootInActiveWindow.toString())
+            val pairingCodeRegex = Regex("^\\d{6}$")
+            val portRegex = Regex(".*:([0-9]{1,5})")
+            val pairingCodeNode =
+                service.rootInActiveWindow.findNodeRecursively {
+                    it.text != null && pairingCodeRegex.matches(
+                        it.text
+                    )
+                }
+
+            val portNode = service.rootInActiveWindow.findNodeRecursively {
+                it.text != null && portRegex.matches(it.text)
+            }
+
+            if (pairingCodeNode != null && portNode != null) {
+                Timber.e("PAIRING CODE = ${pairingCodeNode.text}")
+                Timber.e("PORT = ${portNode.text.split(":").last()}")
+            }
         }
     }
 
