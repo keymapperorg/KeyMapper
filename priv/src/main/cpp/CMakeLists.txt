@@ -9,7 +9,7 @@ cmake_minimum_required(VERSION 3.22.1)
 # Since this is the top level CMakeLists.txt, the project name is also accessible
 # with ${CMAKE_PROJECT_NAME} (both CMake variables are in-sync within the top level
 # build script scope).
-project("privstarter")
+project("priv")
 
 # FROM SHIZUKU
 set(CMAKE_CXX_STANDARD 17)
@@ -74,7 +74,6 @@ endif ()
 # used in the AndroidManifest.xml file.
 add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
-        privstarter.cpp
         privservice.cpp
         libevdev/libevdev.c
         libevdev/libevdev-names.c

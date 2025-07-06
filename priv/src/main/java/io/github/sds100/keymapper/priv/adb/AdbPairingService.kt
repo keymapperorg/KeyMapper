@@ -138,7 +138,7 @@ internal class AdbPairingService : Service() {
             val key = try {
                 AdbKey(
                     PreferenceAdbKeyStore(PreferenceManager.getDefaultSharedPreferences(this@AdbPairingService)),
-                    "shizuku",
+                    "keymapper",
                 )
             } catch (e: Throwable) {
                 e.printStackTrace()

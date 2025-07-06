@@ -122,7 +122,7 @@ class PrivServiceSetupControllerImpl @Inject constructor(
             val key = try {
                 AdbKey(
                     PreferenceAdbKeyStore(PreferenceManager.getDefaultSharedPreferences(ctx)),
-                    "shizuku",
+                    "keymapper",
                 )
             } catch (e: Throwable) {
                 e.printStackTrace()

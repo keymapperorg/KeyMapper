@@ -32,8 +32,8 @@
 
 // TODO take package name as argument
 #define PACKAGE_NAME "io.github.sds100.keymapper.debug"
-#define SERVER_NAME "shizuku_server"
-#define SERVER_CLASS_PATH "io.github.sds100.keymapper.nativelib.EvdevService"
+#define SERVER_NAME "keymapper_priv"
+#define SERVER_CLASS_PATH "io.github.sds100.keymapper.priv.service.PrivService"
 
 #if defined(__arm__)
 #define ABI "armeabi-v7a"
