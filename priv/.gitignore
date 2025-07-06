@@ -1,2 +1,3 @@
 /build
 .cxx
+/src/main/cpp/libevdev/event-names.h
