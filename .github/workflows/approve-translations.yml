@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  approve-crowdin:
+  approve-translations:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,7 +16,8 @@ jobs:
           node-version: '18'
 
       - name: Install Crowdin CLI
-        run: npm install -g @crowdin/cli
+        run: |
+          npm install -g @crowdin/cli@3
 
       - name: Approve top-voted translations for all languages
         env:
@@ -24,39 +25,45 @@ jobs:
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
         run: |
           set -e
-          echo "Start automatic approval Crowdin Translation..."
-          language_ids=$(crowdin api \
-            --method GET \
-            --path /projects/$CROWDIN_PROJECT_ID/languages \
-            --plain \
-            | jq -r '.data[].data.languageId')
 
-          string_ids=$(crowdin api \
-            --method GET \
-            --path /projects/$CROWDIN_PROJECT_ID/strings \
-            --plain \
-            | jq -r '.data[].data.id')
+          if [ -z "$CROWDIN_TOKEN" ] || [ -z "$CROWDIN_PROJECT_ID" ]; then
+            echo "Crowdin token or project id is missing!"
+            exit 1
+          fi
+
+          echo "Start automatic approval Crowdin Translation..."
+
+          language_ids=$(crowdin api list-languages --project-id=$CROWDIN_PROJECT_ID --plain | jq -r '.data[].data.id' || true)
+          if [ -z "$language_ids" ]; then
+            echo "No language ids found, check Crowdin project or CLI output."
+            exit 1
+          fi
+
+          string_ids=$(crowdin api list-strings --project-id=$CROWDIN_PROJECT_ID --plain | jq -r '.data[].data.id' || true)
+          if [ -z "$string_ids" ]; then
+            echo "No string ids found, check Crowdin project or CLI output."
+            exit 1
+          fi
 
           for lang in $language_ids; do
             echo "Processing language $lang"
+
+            translations=$(crowdin api list-string-translations --project-id=$CROWDIN_PROJECT_ID --language-id=$lang --plain)
+
             for sid in $string_ids; do
-              best=$(crowdin api \
-                --method GET \
-                --path /projects/$CROWDIN_PROJECT_ID/strings/$sid/translations \
-                --plain \
-                | jq -r "
-                  .data
-                  | map(select(.data.languageId==\"$lang\"))
-                  | sort_by(-.data.votes)[-1]
-                  | select(.data.votes > 0)
-                  | .data.id
-                ")
-              if [ -n "$best" ]; then
-                echo "  → Approved translation $best"
-                crowdin api \
-                  --method PATCH \
-                  --path /projects/$CROWDIN_PROJECT_ID/translations/$best \
-                  --body '{\"approved\": true}'
+              best=$(echo "$translations" | jq -r "
+                .data[]
+                | .data
+                | select(.stringId == \"$sid\" and .votes > 0)
+                | {\"id\": .id, \"votes\": .votes}
+                " | jq -s 'sort_by(-.votes) | .[0] | .id')
+
+              if [ -n "$best" ] && [ "$best" != "null" ]; then
+                echo "  → Approved translation $best for string $sid"
+                crowdin api edit-translation \
+                  --project-id=$CROWDIN_PROJECT_ID \
+                  --translation-id=$best \
+                  --approved=true
               fi
             done
           done
