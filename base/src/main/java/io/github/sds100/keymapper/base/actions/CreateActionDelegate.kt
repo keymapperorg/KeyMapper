@@ -755,7 +755,6 @@ class CreateActionDelegate(
             ActionId.DISABLE_NFC -> return ActionData.Nfc.Disable
             ActionId.TOGGLE_NFC -> return ActionData.Nfc.Toggle
 
-            ActionId.MOVE_CURSOR_TO_END -> return ActionData.MoveCursorToEnd
             ActionId.TOGGLE_KEYBOARD -> return ActionData.ToggleKeyboard
             ActionId.SHOW_KEYBOARD -> return ActionData.ShowKeyboard
             ActionId.HIDE_KEYBOARD -> return ActionData.HideKeyboard
@@ -809,6 +808,65 @@ class CreateActionDelegate(
                     NavDestination.InteractUiElement(oldAction?.let { Json.encodeToString(it) }),
                 )
             }
+
+            ActionId.MOVE_CURSOR -> return createMoverCursorAction()
         }
+    }
+
+    private suspend fun createMoverCursorAction(): ActionData.MoveCursor? {
+        val choices = listOf(
+            ActionData.MoveCursor(
+                ActionData.MoveCursor.Type.CHAR,
+                ActionData.MoveCursor.Direction.START,
+            ) to getString(R.string.action_move_cursor_prev_character),
+
+            ActionData.MoveCursor(
+                ActionData.MoveCursor.Type.CHAR,
+                ActionData.MoveCursor.Direction.END,
+            ) to getString(R.string.action_move_cursor_next_character),
+
+            ActionData.MoveCursor(
+                ActionData.MoveCursor.Type.WORD,
+                ActionData.MoveCursor.Direction.START,
+            ) to getString(R.string.action_move_cursor_start_word),
+
+            ActionData.MoveCursor(
+                ActionData.MoveCursor.Type.WORD,
+                ActionData.MoveCursor.Direction.END,
+            ) to getString(R.string.action_move_cursor_end_word),
+
+            ActionData.MoveCursor(
+                ActionData.MoveCursor.Type.LINE,
+                ActionData.MoveCursor.Direction.START,
+            ) to getString(R.string.action_move_cursor_start_line),
+
+            ActionData.MoveCursor(
+                ActionData.MoveCursor.Type.LINE,
+                ActionData.MoveCursor.Direction.END,
+            ) to getString(R.string.action_move_cursor_end_line),
+
+            ActionData.MoveCursor(
+                ActionData.MoveCursor.Type.PARAGRAPH,
+                ActionData.MoveCursor.Direction.START,
+            ) to getString(R.string.action_move_cursor_start_paragraph),
+
+            ActionData.MoveCursor(
+                ActionData.MoveCursor.Type.PARAGRAPH,
+                ActionData.MoveCursor.Direction.END,
+            ) to getString(R.string.action_move_cursor_end_paragraph),
+
+            ActionData.MoveCursor(
+                ActionData.MoveCursor.Type.PAGE,
+                ActionData.MoveCursor.Direction.START,
+            ) to getString(R.string.action_move_cursor_start_page),
+
+            ActionData.MoveCursor(
+                ActionData.MoveCursor.Type.PAGE,
+                ActionData.MoveCursor.Direction.END,
+            ) to getString(R.string.action_move_cursor_end_page),
+        )
+
+        val dialog = DialogModel.SingleChoice(choices)
+        return showDialog("create_move_cursor_action", dialog)
     }
 }

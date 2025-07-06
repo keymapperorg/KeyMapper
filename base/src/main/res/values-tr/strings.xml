@@ -828,7 +828,7 @@ Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="action_power_on_off_device">Cihazı uyut/uyandır</string>
     <string name="action_power_on_off_device_message">Ekran kapalıyken tetikleyiciyi algılama seçeneğini açmanız gerekiyor!</string>
     <string name="action_consume_keyevent">Hiçbir şey yapma</string>
-    <string name="action_move_to_end_of_text">İmleci sona taşı</string>
+    <string name="action_move_cursor">İmleci sona taşı</string>
     <string name="action_move_to_end_of_text_message">Bu eylem bazı uygulamalarda beklendiği gibi çalışmayabilir.</string>
     <string name="action_toggle_keyboard">Klavyeyi aç/kapat</string>
     <string name="action_toggle_keyboard_message">Bu eylem yalnızca klavyenin gösterilmesi gereken bir giriş alanına dokunduğunuzda çalışır.</string>

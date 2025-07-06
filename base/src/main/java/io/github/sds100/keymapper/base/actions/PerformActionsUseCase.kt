@@ -649,19 +649,29 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 }
             }
 
-            is ActionData.MoveCursorToEnd -> {
-                val keyModel = InputKeyModel(
-                    keyCode = KeyEvent.KEYCODE_MOVE_END,
-                    metaState = KeyEvent.META_CTRL_ON,
-                )
+            is ActionData.MoveCursor -> {
+                result = service.performActionOnNode({ it.isFocused }) {
+                    val actionType = when (action.direction) {
+                        ActionData.MoveCursor.Direction.START -> AccessibilityNodeInfo.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY
+                        ActionData.MoveCursor.Direction.END -> AccessibilityNodeInfo.ACTION_NEXT_AT_MOVEMENT_GRANULARITY
+                    }
 
-                if (inputKeyEventsWithShizuku.value) {
-                    shizukuInputEventInjector.inputKeyEvent(keyModel)
-                } else {
-                    keyMapperImeMessenger.inputKeyEvent(keyModel)
+                    val granularity = when (action.moveType) {
+                        ActionData.MoveCursor.Type.CHAR -> AccessibilityNodeInfo.MOVEMENT_GRANULARITY_CHARACTER
+                        ActionData.MoveCursor.Type.WORD -> AccessibilityNodeInfo.MOVEMENT_GRANULARITY_WORD
+                        ActionData.MoveCursor.Type.LINE -> AccessibilityNodeInfo.MOVEMENT_GRANULARITY_LINE
+                        ActionData.MoveCursor.Type.PARAGRAPH -> AccessibilityNodeInfo.MOVEMENT_GRANULARITY_PARAGRAPH
+                        ActionData.MoveCursor.Type.PAGE -> AccessibilityNodeInfo.MOVEMENT_GRANULARITY_PAGE
+                    }
+
+                    AccessibilityNodeAction(
+                        actionType,
+                        mapOf(
+                            AccessibilityNodeInfo.ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT to granularity,
+                            AccessibilityNodeInfo.ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN to false,
+                        ),
+                    )
                 }
-
-                result = Success(Unit)
             }
 
             is ActionData.ToggleKeyboard -> {

@@ -34,6 +34,7 @@ lane :production do
 
     Dir.chdir("..") do
       gradle(task: "testDebugUnitTest")
+      gradle(task: "testDebugUnitTest")
     end
 
     github_token = prompt(
@@ -110,6 +111,9 @@ lane :internal do
 
     Dir.chdir("..") do
   #   Release the free build to GitHub because billing only works if signed by Google Play
+      gradle(task: "ktlintFormat")
+      gradle(task: "ktlintCheck")
+      gradle(task: "testDebugUnitTest")
       gradle(task: "app:bundleRelease")
     end
 

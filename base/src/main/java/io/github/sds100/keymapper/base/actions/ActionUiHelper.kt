@@ -492,7 +492,29 @@ class ActionUiHelper(
         ActionData.MobileData.Enable -> getString(R.string.action_enable_mobile_data)
         ActionData.MobileData.Toggle -> getString(R.string.action_toggle_mobile_data)
 
-        ActionData.MoveCursorToEnd -> getString(R.string.action_move_to_end_of_text)
+        is ActionData.MoveCursor -> {
+            when (action.direction) {
+                ActionData.MoveCursor.Direction.START -> {
+                    when (action.moveType) {
+                        ActionData.MoveCursor.Type.CHAR -> getString(R.string.action_move_cursor_prev_character)
+                        ActionData.MoveCursor.Type.WORD -> getString(R.string.action_move_cursor_start_word)
+                        ActionData.MoveCursor.Type.LINE -> getString(R.string.action_move_cursor_start_line)
+                        ActionData.MoveCursor.Type.PARAGRAPH -> getString(R.string.action_move_cursor_start_paragraph)
+                        ActionData.MoveCursor.Type.PAGE -> getString(R.string.action_move_cursor_start_page)
+                    }
+                }
+
+                ActionData.MoveCursor.Direction.END -> {
+                    when (action.moveType) {
+                        ActionData.MoveCursor.Type.CHAR -> getString(R.string.action_move_cursor_next_character)
+                        ActionData.MoveCursor.Type.WORD -> getString(R.string.action_move_cursor_end_word)
+                        ActionData.MoveCursor.Type.LINE -> getString(R.string.action_move_cursor_end_line)
+                        ActionData.MoveCursor.Type.PARAGRAPH -> getString(R.string.action_move_cursor_end_paragraph)
+                        ActionData.MoveCursor.Type.PAGE -> getString(R.string.action_move_cursor_end_page)
+                    }
+                }
+            }
+        }
 
         ActionData.Nfc.Disable -> getString(R.string.action_nfc_disable)
         ActionData.Nfc.Enable -> getString(R.string.action_nfc_enable)

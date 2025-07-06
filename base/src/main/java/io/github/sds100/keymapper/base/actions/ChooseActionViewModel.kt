@@ -206,8 +206,6 @@ class ChooseActionViewModel @Inject constructor(
             ActionId.REWIND,
             -> R.string.action_rewind_message
 
-            ActionId.MOVE_CURSOR_TO_END -> R.string.action_move_to_end_of_text_message
-
             ActionId.TOGGLE_KEYBOARD,
             ActionId.SHOW_KEYBOARD,
             ActionId.HIDE_KEYBOARD,

@@ -6,11 +6,13 @@
 
 - #1466 show onboarding when creating a key map for the first time
 - #1729 target Android 16.
+- #1725 action to move cursor to previous/next character, word, line, paragraph, or page.
 
 ## Changed
 
 - #1711 major refactoring of the entire codebase into separate Gradle modules.
 - #1701 improve the order of the actions and categories
+- Key Mapper keyboard or Shizuku are no longer required for the action to move the cursor to the end
 
 ## Bug fixes
 

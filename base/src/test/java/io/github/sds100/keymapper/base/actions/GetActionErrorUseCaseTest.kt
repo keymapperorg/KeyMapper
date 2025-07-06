@@ -93,7 +93,7 @@ class GetActionErrorUseCaseTest {
             val actions = listOf(
                 ActionData.SwitchKeyboard(
                     imeId = GUI_KEYBOARD_IME_INFO.id,
-                    GUI_KEYBOARD_IME_INFO.label
+                    GUI_KEYBOARD_IME_INFO.label,
                 ),
                 ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),
             )
@@ -112,7 +112,7 @@ class GetActionErrorUseCaseTest {
             val actions = listOf(
                 ActionData.SwitchKeyboard(
                     imeId = GUI_KEYBOARD_IME_INFO.id,
-                    GUI_KEYBOARD_IME_INFO.label
+                    GUI_KEYBOARD_IME_INFO.label,
                 ),
                 ActionData.Text("hello"),
             )
@@ -131,7 +131,7 @@ class GetActionErrorUseCaseTest {
             val actions = listOf(
                 ActionData.SwitchKeyboard(
                     imeId = GUI_KEYBOARD_IME_INFO.id,
-                    GUI_KEYBOARD_IME_INFO.label
+                    GUI_KEYBOARD_IME_INFO.label,
                 ),
                 ActionData.OpenCamera,
                 ActionData.OpenSettings,
@@ -208,7 +208,7 @@ class GetActionErrorUseCaseTest {
             val actions = listOf(
                 ActionData.SwitchKeyboard(
                     imeId = GUI_KEYBOARD_IME_INFO.id,
-                    GUI_KEYBOARD_IME_INFO.label
+                    GUI_KEYBOARD_IME_INFO.label,
                 ),
                 ActionData.SwitchKeyboard(imeId = GBOARD_IME_INFO.id, GBOARD_IME_INFO.label),
                 ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),

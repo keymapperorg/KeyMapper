@@ -209,7 +209,7 @@ object ActionUtils {
         ActionId.ENABLE_AIRPLANE_MODE -> ActionCategory.CONNECTIVITY
         ActionId.DISABLE_AIRPLANE_MODE -> ActionCategory.CONNECTIVITY
 
-        ActionId.MOVE_CURSOR_TO_END -> ActionCategory.KEYBOARD
+        ActionId.MOVE_CURSOR -> ActionCategory.KEYBOARD
         ActionId.TOGGLE_KEYBOARD -> ActionCategory.KEYBOARD
         ActionId.SHOW_KEYBOARD -> ActionCategory.KEYBOARD
         ActionId.HIDE_KEYBOARD -> ActionCategory.KEYBOARD
@@ -317,7 +317,7 @@ object ActionUtils {
         ActionId.ENABLE_NFC -> R.string.action_nfc_enable
         ActionId.DISABLE_NFC -> R.string.action_nfc_disable
         ActionId.TOGGLE_NFC -> R.string.action_nfc_toggle
-        ActionId.MOVE_CURSOR_TO_END -> R.string.action_move_to_end_of_text
+        ActionId.MOVE_CURSOR -> R.string.action_move_cursor
         ActionId.TOGGLE_KEYBOARD -> R.string.action_toggle_keyboard
         ActionId.SHOW_KEYBOARD -> R.string.action_show_keyboard
         ActionId.HIDE_KEYBOARD -> R.string.action_hide_keyboard
@@ -436,7 +436,7 @@ object ActionUtils {
         ActionId.ENABLE_NFC -> R.drawable.ic_outline_nfc_24
         ActionId.DISABLE_NFC -> R.drawable.ic_nfc_off
         ActionId.TOGGLE_NFC -> R.drawable.ic_outline_nfc_24
-        ActionId.MOVE_CURSOR_TO_END -> R.drawable.ic_cursor
+        ActionId.MOVE_CURSOR -> R.drawable.ic_cursor
         ActionId.TOGGLE_KEYBOARD -> R.drawable.ic_outline_keyboard_24
         ActionId.SHOW_KEYBOARD -> R.drawable.ic_outline_keyboard_24
         ActionId.HIDE_KEYBOARD -> R.drawable.ic_outline_keyboard_hide_24
@@ -759,7 +759,7 @@ object ActionUtils {
         ActionId.ENABLE_NFC -> Icons.Outlined.Nfc
         ActionId.DISABLE_NFC -> KeyMapperIcons.NfcOff
         ActionId.TOGGLE_NFC -> Icons.Outlined.Nfc
-        ActionId.MOVE_CURSOR_TO_END -> KeyMapperIcons.TextSelectEnd
+        ActionId.MOVE_CURSOR -> KeyMapperIcons.TextSelectEnd
         ActionId.TOGGLE_KEYBOARD -> Icons.Outlined.Keyboard
         ActionId.SHOW_KEYBOARD -> Icons.Outlined.Keyboard
         ActionId.HIDE_KEYBOARD -> Icons.Outlined.KeyboardHide
@@ -813,13 +813,11 @@ fun ActionData.canBeHeldDown(): Boolean = when (this) {
 fun ActionData.canUseImeToPerform(): Boolean = when (this) {
     is ActionData.InputKeyEvent -> !useShell
     is ActionData.Text -> true
-    is ActionData.MoveCursorToEnd -> true
     else -> false
 }
 
 fun ActionData.canUseShizukuToPerform(): Boolean = when (this) {
     is ActionData.InputKeyEvent -> true
-    is ActionData.MoveCursorToEnd -> true
     else -> false
 }
 
@@ -853,6 +851,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.PhoneCall,
     is ActionData.HttpRequest,
     is ActionData.InteractUiElement,
+    is ActionData.MoveCursor,
     -> true
 
     else -> false
