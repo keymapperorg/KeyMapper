@@ -1,5 +1,5 @@
 ⌨️ Action to move cursor to previous/next character, word, line, paragraph, or page.
 
-Man other bug fixes and optimisations.
+Many other bug fixes and optimisations.
 
 See all the changes at http://changelog.keymapper.club.
