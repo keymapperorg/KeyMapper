@@ -1,4 +1,6 @@
-package io.github.sds100.keymapper.base.tiles
+// MUST BE IN THIS PACKAGE FOR COMPATIBILITY REASONS WITH PRE-3.2.0 versions of Key Mapper.
+// If the package name changes then the user's tiles will be removed upon upgrading.
+package io.github.sds100.keymapper.tiles
 
 import android.graphics.drawable.Icon
 import android.os.Build

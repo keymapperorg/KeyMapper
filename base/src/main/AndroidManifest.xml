@@ -84,7 +84,7 @@
         </activity>
 
         <service
-            android:name="io.github.sds100.keymapper.base.tiles.ToggleMappingsTile"
+            android:name="io.github.sds100.keymapper.tiles.ToggleMappingsTile"
             android:exported="true"
             android:icon="@drawable/ic_tile_pause"
             android:label="@string/tile_pause_title"
@@ -96,7 +96,7 @@
         </service>
 
         <service
-            android:name="io.github.sds100.keymapper.base.tiles.ToggleKeyMapperKeyboardTile"
+            android:name="io.github.sds100.keymapper.tiles.ToggleKeyMapperKeyboardTile"
             android:exported="true"
             android:icon="@drawable/ic_tile_keyboard"
             android:label="@string/tile_toggle_keymapper_keyboard"
