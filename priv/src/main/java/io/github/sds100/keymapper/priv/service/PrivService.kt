@@ -3,16 +3,15 @@ package io.github.sds100.keymapper.priv.service
 import android.annotation.SuppressLint
 import android.ddm.DdmHandleAppName
 import android.system.Os
+import android.util.Log
 import io.github.sds100.keymapper.priv.IPrivService
-import timber.log.Timber
 import kotlin.system.exitProcess
 
+@SuppressLint("LogNotTimber")
 class PrivService : IPrivService.Stub() {
 
-    /**
-     * A native method that is implemented by the 'nativelib' native library,
-     * which is packaged with this application.
-     */
+    // TODO observe if Key Mapper is uninstalled and stop the process. Look at ApkChangedObservers in Shizuku code.
+
     external fun stringFromJNI(): String
 
     companion object {
@@ -20,7 +19,7 @@ class PrivService : IPrivService.Stub() {
 
         @JvmStatic
         fun main(args: Array<String>) {
-            DdmHandleAppName.setAppName("keymapper_evdev", 0)
+            DdmHandleAppName.setAppName("keymapper_priv", 0)
             PrivService()
         }
     }
@@ -29,16 +28,18 @@ class PrivService : IPrivService.Stub() {
         @SuppressLint("UnsafeDynamicallyLoadedCode")
         // TODO can we change "shizuku.library.path" property?
         System.load("${System.getProperty("shizuku.library.path")}/libpriv.so")
-        stringFromJNI()
+        Log.d(TAG, "PrivService started")
     }
 
+    // TODO ungrab all evdev devices
+    // TODO ungrab all evdev devices if no key mapper app is bound to the service
     override fun destroy() {
-        Timber.d("Destroy PrivService")
+        Log.d(TAG, "PrivService destroyed")
         exitProcess(0)
     }
 
     override fun sendEvent(): String? {
-        Timber.e("UID = ${Os.getuid()}")
+        Log.d(TAG, "UID = ${Os.getuid()}")
         return stringFromJNI()
     }
 }

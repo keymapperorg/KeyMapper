@@ -1,11 +1,16 @@
 package io.github.sds100.keymapper.priv.service
 
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Build
+import android.os.IBinder
 import android.preference.PreferenceManager
 import android.util.Log
 import androidx.annotation.RequiresApi
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.sds100.keymapper.priv.IPrivService
 import io.github.sds100.keymapper.priv.adb.AdbClient
 import io.github.sds100.keymapper.priv.adb.AdbKey
 import io.github.sds100.keymapper.priv.adb.AdbKeyException
@@ -35,7 +40,21 @@ class PrivServiceSetupControllerImpl @Inject constructor(
     private val sb = StringBuilder()
 
     @RequiresApi(Build.VERSION_CODES.R)
-    private var adbConnectMdns: AdbMdns = AdbMdns(ctx, AdbServiceType.TLS_CONNECT)
+    private val adbConnectMdns: AdbMdns = AdbMdns(ctx, AdbServiceType.TLS_CONNECT)
+
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(
+            name: ComponentName?,
+            service: IBinder?
+        ) {
+            Timber.d("priv service connected")
+            IPrivService.Stub.asInterface(service).sendEvent()
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            Timber.d("priv service disconnected")
+        }
+    }
 
     // TODO clean up
     // TODO have lock so can only launch one start job at a time
@@ -111,6 +130,13 @@ class PrivServiceSetupControllerImpl @Inject constructor(
                     postResult(it)
                 }
             }
+
+            adbConnectMdns.stop()
+
+            val serviceIntent = Intent(ctx, PrivService::class.java)
+
+            Timber.d("BINDING TO SERVICE")
+            ctx.bindService(serviceIntent, serviceConnection, 0)
         }
     }
 
