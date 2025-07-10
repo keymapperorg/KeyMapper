@@ -27,6 +27,8 @@ import io.github.sds100.keymapper.base.keymaps.ListKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.ListKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.logging.DisplayLogUseCase
 import io.github.sds100.keymapper.base.logging.DisplayLogUseCaseImpl
+import io.github.sds100.keymapper.base.promode.ProModeSetupUseCase
+import io.github.sds100.keymapper.base.promode.ProModeSetupUseCaseImpl
 import io.github.sds100.keymapper.base.settings.ConfigSettingsUseCase
 import io.github.sds100.keymapper.base.settings.ConfigSettingsUseCaseImpl
 import io.github.sds100.keymapper.base.sorting.SortKeyMapsUseCase
@@ -110,4 +112,8 @@ abstract class BaseViewModelHiltModule {
     @Binds
     @ViewModelScoped
     abstract fun bindCreateConstraintUseCase(impl: CreateConstraintUseCaseImpl): CreateConstraintUseCase
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindProModeSetupUseCase(impl: ProModeSetupUseCaseImpl): ProModeSetupUseCase
 }

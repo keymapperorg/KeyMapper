@@ -109,4 +109,7 @@ object Keys {
 
     val skipTapTargetTutorial =
         booleanPreferencesKey("key_skip_tap_target_tutorial")
+
+    val isProModeWarningUnderstood =
+        booleanPreferencesKey("key_is_pro_mode_warning_understood")
 }

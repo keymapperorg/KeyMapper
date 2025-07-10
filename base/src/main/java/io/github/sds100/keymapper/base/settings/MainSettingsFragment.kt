@@ -124,6 +124,21 @@ class MainSettingsFragment : BaseSettingsFragment() {
     }
 
     private fun populatePreferenceScreen() = preferenceScreen.apply {
+        // Pro mode
+        Preference(requireContext()).apply {
+            isSingleLineTitle = false
+
+            setTitle(R.string.title_pref_pro_mode)
+            setSummary(R.string.summary_pref_pro_mode)
+
+            setOnPreferenceClickListener {
+                viewModel.onProModeClick()
+                true
+            }
+
+            addPreference(this)
+        }
+
         // dark theme
         DropDownPreference(requireContext()).apply {
             key = Keys.darkTheme.name

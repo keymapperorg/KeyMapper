@@ -35,6 +35,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
         const val ID_CONFIG_KEY_MAP = "config_key_map"
         const val ID_SHIZUKU_SETTINGS = "shizuku_settings"
         const val ID_INTERACT_UI_ELEMENT_ACTION = "interact_ui_element_action"
+        const val ID_PRO_MODE = "pro_mode"
     }
 
     @Serializable
@@ -69,7 +70,8 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data class PickCoordinate(val result: PickCoordinateResult? = null) : NavDestination<PickCoordinateResult>() {
+    data class PickCoordinate(val result: PickCoordinateResult? = null) :
+        NavDestination<PickCoordinateResult>() {
         override val id: String = ID_PICK_COORDINATE
     }
 
@@ -86,7 +88,8 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data class ConfigIntent(val result: ConfigIntentResult? = null) : NavDestination<ConfigIntentResult>() {
+    data class ConfigIntent(val result: ConfigIntentResult? = null) :
+        NavDestination<ConfigIntentResult>() {
         override val id: String = ID_CONFIG_INTENT
     }
 
@@ -149,5 +152,9 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     data class InteractUiElement(val actionJson: String?) :
         NavDestination<ActionData.InteractUiElement>(isCompose = true) {
         override val id: String = ID_INTERACT_UI_ELEMENT_ACTION
+    }
+
+    data object ProMode : NavDestination<Unit>(isCompose = false) {
+        override val id: String = ID_PRO_MODE
     }
 }

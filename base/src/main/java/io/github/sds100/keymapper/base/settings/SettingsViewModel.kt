@@ -6,6 +6,9 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.getFullMessage
+import io.github.sds100.keymapper.base.utils.navigation.NavDestination
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
+import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogResponse
@@ -29,11 +32,13 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val useCase: ConfigSettingsUseCase,
     private val resourceProvider: ResourceProvider,
-    dialogProvider: DialogProvider,
     val sharedPrefsDataStoreWrapper: SharedPrefsDataStoreWrapper,
+    dialogProvider: DialogProvider,
+    navigationProvider: NavigationProvider
 ) : ViewModel(),
     DialogProvider by dialogProvider,
-    ResourceProvider by resourceProvider {
+    ResourceProvider by resourceProvider,
+    NavigationProvider by navigationProvider {
 
     val automaticBackupLocation = useCase.automaticBackupLocation
 
@@ -207,6 +212,12 @@ class SettingsViewModel @Inject constructor(
             if (response == DialogResponse.POSITIVE) {
                 useCase.resetAllSettings()
             }
+        }
+    }
+
+    fun onProModeClick() {
+        viewModelScope.launch {
+            navigate("pro_mode_settings", NavDestination.ProMode)
         }
     }
 }
