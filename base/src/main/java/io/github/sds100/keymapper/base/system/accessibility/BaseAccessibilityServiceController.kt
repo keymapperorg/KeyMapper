@@ -29,7 +29,7 @@ import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.priv.service.PrivServiceSetupController
+import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
@@ -71,7 +71,7 @@ abstract class BaseAccessibilityServiceController(
     private val devicesAdapter: DevicesAdapter,
     private val suAdapter: SuAdapter,
     private val settingsRepository: PreferenceRepository,
-    private val privServiceSetupController: PrivServiceSetupController
+    private val systemBridgeSetupController: SystemBridgeSetupController
 ) {
     companion object {
 
@@ -399,7 +399,7 @@ abstract class BaseAccessibilityServiceController(
         //TODO remove
         if (event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && event.action == KeyEvent.ACTION_DOWN) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                privServiceSetupController.startWithAdb()
+                systemBridgeSetupController.startWithAdb()
             }
         }
 
@@ -562,9 +562,9 @@ abstract class BaseAccessibilityServiceController(
                 if (pairingCode != null && port != null) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         service.lifecycleScope.launch {
-                            privServiceSetupController.pairWirelessAdb(port, pairingCode)
+                            systemBridgeSetupController.pairWirelessAdb(port, pairingCode)
                             delay(1000)
-                            privServiceSetupController.startWithAdb()
+                            systemBridgeSetupController.startWithAdb()
                         }
                     }
                 }

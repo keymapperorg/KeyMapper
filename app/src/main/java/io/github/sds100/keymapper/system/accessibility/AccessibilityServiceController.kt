@@ -12,7 +12,7 @@ import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsControll
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeRecorder
 import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilityServiceController
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.priv.service.PrivServiceSetupController
+import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 
@@ -29,7 +29,7 @@ class AccessibilityServiceController @AssistedInject constructor(
     devicesAdapter: DevicesAdapter,
     suAdapter: SuAdapter,
     settingsRepository: PreferenceRepository,
-    privServiceSetupController: PrivServiceSetupController
+    systemBridgeSetupController: SystemBridgeSetupController
 ) : BaseAccessibilityServiceController(
     service = service,
     rerouteKeyEventsControllerFactory = rerouteKeyEventsControllerFactory,
@@ -42,7 +42,7 @@ class AccessibilityServiceController @AssistedInject constructor(
     devicesAdapter = devicesAdapter,
     suAdapter = suAdapter,
     settingsRepository = settingsRepository,
-    privServiceSetupController = privServiceSetupController
+    systemBridgeSetupController = systemBridgeSetupController
 
 ) {
     @AssistedFactory

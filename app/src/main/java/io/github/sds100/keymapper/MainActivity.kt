@@ -10,7 +10,6 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.databinding.ActivityMainBinding
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.showDialogs
-import io.github.sds100.keymapper.priv.service.PrivServiceSetupController
 import javax.inject.Inject
 
 @AndroidEntryPoint

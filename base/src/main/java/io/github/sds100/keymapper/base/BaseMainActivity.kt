@@ -33,7 +33,7 @@ import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.priv.service.PrivServiceSetupController
+import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
@@ -85,7 +85,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
     lateinit var buildConfigProvider: BuildConfigProvider
 
     @Inject
-    lateinit var privServiceSetup: PrivServiceSetupController
+    lateinit var privServiceSetup: SystemBridgeSetupController
 
     @Inject
     lateinit var suAdapter: SuAdapterImpl

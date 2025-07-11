@@ -73,7 +73,7 @@ android {
 dependencies {
     implementation(project(":common"))
     implementation(project(":data"))
-    implementation(project(":priv"))
+    implementation(project(":sysbridge"))
     implementation(project(":system"))
     implementation(project(":systemstubs"))
 
