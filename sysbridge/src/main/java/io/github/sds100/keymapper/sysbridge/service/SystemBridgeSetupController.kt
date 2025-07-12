@@ -1,16 +1,11 @@
 package io.github.sds100.keymapper.sysbridge.service
 
-import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Build
-import android.os.IBinder
 import android.preference.PreferenceManager
 import android.util.Log
 import androidx.annotation.RequiresApi
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.sds100.keymapper.sysbridge.ISystemBridge
 import io.github.sds100.keymapper.sysbridge.adb.AdbClient
 import io.github.sds100.keymapper.sysbridge.adb.AdbKey
 import io.github.sds100.keymapper.sysbridge.adb.AdbKeyException
@@ -41,20 +36,6 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.R)
     private val adbConnectMdns: AdbMdns = AdbMdns(ctx, AdbServiceType.TLS_CONNECT)
-
-    private val serviceConnection = object : ServiceConnection {
-        override fun onServiceConnected(
-            name: ComponentName?,
-            service: IBinder?
-        ) {
-            Timber.d("sysbridge service connected")
-            ISystemBridge.Stub.asInterface(service).sendEvent()
-        }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-            Timber.d("sysbridge service disconnected")
-        }
-    }
 
     // TODO clean up
     // TODO have lock so can only launch one start job at a time
@@ -133,10 +114,6 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
             adbConnectMdns.stop()
 
-            val serviceIntent = Intent(ctx, SystemBridge::class.java)
-
-            Timber.d("BINDING TO SERVICE")
-            ctx.bindService(serviceIntent, serviceConnection, 0)
         }
     }
 

@@ -70,6 +70,7 @@ espresso-core = "3.6.1"
 ui-tooling = "1.8.1" # android.arch.persistence.room:testing
 
 libsu-core = "6.0.0"
+rikka-hidden = "4.3.3"
 
 [libraries]
 # Kotlin
@@ -151,6 +152,8 @@ splitties-toast = { group = "com.louiscad.splitties", name = "splitties-toast", 
 # Rikka Shizuku
 rikka-shizuku-api = { group = "dev.rikka.shizuku", name = "api", version.ref = "shizuku" }
 rikka-shizuku-provider = { group = "dev.rikka.shizuku", name = "provider", version.ref = "shizuku" }
+rikka-hidden-compat = { group = "dev.rikka.hidden", name = "compat", version.ref = "rikka-hidden" }
+rikka-hidden-stub = { group = "dev.rikka.hidden", name = "stub", version.ref = "rikka-hidden" }
 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -172,6 +175,7 @@ kotson = { group = "com.github.salomonbrys.kotson", name = "kotson", version.ref
 lsposed-hiddenapibypass = { group = "org.lsposed.hiddenapibypass", name = "hiddenapibypass", version.ref = "hiddenapibypass" }
 net-lingala-zip4j = { group = "net.lingala.zip4j", name = "zip4j", version.ref = "lingala-zip4j" }
 github-topjohnwu-libsu = { group = "com.github.topjohnwu.libsu", name = "core", version.ref = "libsu-core" }
+
 
 # Gradle Plugins - Aliases for buildscript dependencies / plugins block
 # These are referenced in build.gradle.kts files' plugins blocks by their ID.

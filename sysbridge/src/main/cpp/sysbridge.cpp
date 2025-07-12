@@ -4,13 +4,13 @@
 #include <android/log.h>
 #include "libevdev/libevdev.h"
 
-#define LOG_TAG "KeyMapperPrivService"
+#define LOG_TAG "KeyMapperSystemBridge"
 
 #include "logging.h"
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_io_github_sds100_keymapper_priv_service_PrivService_stringFromJNI(JNIEnv *env,
+Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNIEnv *env,
                                                                        jobject /* this */) {
     char *input_file_path = "/dev/input/event12";
     struct libevdev *dev = NULL;

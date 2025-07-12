@@ -76,6 +76,9 @@ dependencies {
     implementation(libs.dagger.hilt.android)
     ksp(libs.dagger.hilt.android.compiler)
 
+    implementation(libs.rikka.hidden.compat)
+    implementation(libs.rikka.hidden.stub)
+
     // From Shizuku :manager module build.gradle file.
     implementation("io.github.vvb2060.ndk:boringssl:20250114")
     implementation("dev.rikka.ndk.thirdparty:cxx:1.2.0")

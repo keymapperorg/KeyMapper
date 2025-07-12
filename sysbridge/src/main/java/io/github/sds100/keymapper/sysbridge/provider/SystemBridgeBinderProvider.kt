@@ -24,7 +24,7 @@ class SystemBridgeBinderProvider : ContentProvider() {
         // For receive Binder from Shizuku
         const val METHOD_SEND_BINDER: String = "sendBinder"
 
-        private const val EXTRA_BINDER = "moe.shizuku.privileged.api.intent.extra.BINDER"
+        const val EXTRA_BINDER = "io.github.sds100.keymapper.sysbridge.EXTRA_BINDER"
     }
 
     private val systemBridgeManager: SystemBridgeManagerImpl by lazy {

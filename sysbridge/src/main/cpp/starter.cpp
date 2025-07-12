@@ -33,7 +33,7 @@
 // TODO take package name as argument
 #define PACKAGE_NAME "io.github.sds100.keymapper.debug"
 #define SERVER_NAME "keymapper_priv"
-#define SERVER_CLASS_PATH "io.github.sds100.keymapper.sysbridge.service.PrivService"
+#define SERVER_CLASS_PATH "io.github.sds100.keymapper.sysbridge.service.SystemBridge"
 
 #if defined(__arm__)
 #define ABI "armeabi-v7a"
