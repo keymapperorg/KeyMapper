@@ -1,7 +1,7 @@
 #!/system/bin/sh
 
 SOURCE_PATH="%%%STARTER_PATH%%%"
-STARTER_PATH="/data/local/tmp/shizuku_starter"
+STARTER_PATH="/data/local/tmp/keymapper_sysbridge_starter"
 
 echo "info: start.sh begin"
 
@@ -42,10 +42,10 @@ if [ -f $STARTER_PATH ]; then
     $STARTER_PATH "$1" "$2"
     result=$?
     if [ ${result} -ne 0 ]; then
-        echo "info: shizuku_starter exit with non-zero value $result"
+        echo "info: keymapper_sysbridge_starter exit with non-zero value $result"
     else
-        echo "info: shizuku_starter exit with 0"
+        echo "info: keymapper_sysbridge_starter exit with 0"
     fi
 else
-    echo "Starter file not exist, please open Shizuku and try again."
+    echo "Starter file not exist, please open Key Mapper and try again."
 fi

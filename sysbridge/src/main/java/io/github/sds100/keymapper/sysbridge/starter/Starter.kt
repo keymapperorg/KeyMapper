@@ -31,9 +31,6 @@ object Starter {
 
     val sdcardCommand get() = commandInternal[1]!!
 
-    val adbCommand: String
-        get() = "adb shell $sdcardCommand"
-
     fun writeSdcardFiles(context: Context) {
         if (commandInternal[1] != null) {
             logd("already written")
@@ -102,7 +99,7 @@ object Starter {
     }
 
     private fun copyStarter(context: Context, out: File): String {
-        val so = "lib/${Build.SUPPORTED_ABIS[0]}/libshizuku.so"
+        val so = "lib/${Build.SUPPORTED_ABIS[0]}/libsysbridge.so"
         val ai = context.applicationInfo
 
         val fos = FileOutputStream(out)

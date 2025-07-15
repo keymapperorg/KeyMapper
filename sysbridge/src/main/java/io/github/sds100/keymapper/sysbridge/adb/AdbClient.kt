@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.sysbridge.adb
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.ADB_AUTH_RSAPUBLICKEY
 import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.ADB_AUTH_SIGNATURE
@@ -16,6 +15,7 @@ import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.A_STLS
 import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.A_STLS_VERSION
 import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.A_VERSION
 import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.A_WRTE
+import timber.log.Timber
 import java.io.Closeable
 import java.io.DataInputStream
 import java.io.DataOutputStream
@@ -61,7 +61,7 @@ internal class AdbClient(private val host: String, private val port: Int, privat
             val sslContext = key.sslContext
             tlsSocket = sslContext.socketFactory.createSocket(socket, host, port, true) as SSLSocket
             tlsSocket.startHandshake()
-            Log.d(TAG, "Handshake succeeded.")
+            Timber.d("Handshake succeeded.")
 
             tlsInputStream = DataInputStream(tlsSocket.inputStream)
             tlsOutputStream = DataOutputStream(tlsSocket.outputStream)
@@ -133,7 +133,7 @@ internal class AdbClient(private val host: String, private val port: Int, privat
     private fun write(message: AdbMessage) {
         outputStream.write(message.toByteArray())
         outputStream.flush()
-        Log.d(TAG, "write ${message.toStringShort()}")
+        Timber.d("write ${message.toStringShort()}")
     }
 
     private fun read(): AdbMessage {
@@ -156,7 +156,7 @@ internal class AdbClient(private val host: String, private val port: Int, privat
         }
         val message = AdbMessage(command, arg0, arg1, dataLength, checksum, magic, data)
         message.validateOrThrow()
-        Log.d(TAG, "read ${message.toStringShort()}")
+        Timber.d("read ${message.toStringShort()}")
         return message
     }
 

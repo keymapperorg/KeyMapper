@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.sysbridge.utils.IContentProviderUtils
 import rikka.hidden.compat.ActivityManagerApis
 import rikka.hidden.compat.DeviceIdleControllerApis
 import rikka.hidden.compat.UserManagerApis
+import rikka.hidden.compat.adapter.ProcessObserverAdapter
 import timber.log.Timber
 import kotlin.system.exitProcess
 
@@ -123,10 +124,19 @@ class SystemBridge : ISystemBridge.Stub() {
         }
     }
 
+    private val processObserver = object : ProcessObserverAdapter() {
+        override fun onProcessStateChanged(pid: Int, uid: Int, procState: Int) {
+
+        }
+
+        override fun onProcessDied(pid: Int, uid: Int) {
+
+        }
+    }
+
     init {
         @SuppressLint("UnsafeDynamicallyLoadedCode")
-        // TODO can we change "shizuku.library.path" property?
-        System.load("${System.getProperty("shizuku.library.path")}/libsysbridge.so")
+        System.load("${System.getProperty("keymapper_sysbridge.library.path")}/libevdev.so")
         Log.d(TAG, "SystemBridge started")
 
         waitSystemService("package")
@@ -147,6 +157,8 @@ class SystemBridge : ISystemBridge.Stub() {
 //                System.exit(ServerConstants.MANAGER_APP_NOT_FOUND)
 //            }
 //        })
+
+        // TODO use the process observer to rebind when key mapper starts
 
         for (userId in UserManagerApis.getUserIdsNoThrow()) {
             // TODO use correct package name

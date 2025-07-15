@@ -38,14 +38,14 @@ find_library(log-lib log)
 find_package(boringssl REQUIRED CONFIG)
 find_package(cxx REQUIRED CONFIG)
 
-add_executable(libshizuku.so
+add_executable(libsysbridge.so
         starter.cpp misc.cpp selinux.cpp cgroup.cpp android.cpp)
 
-target_link_libraries(libshizuku.so ${log-lib} cxx::cxx)
+target_link_libraries(libsysbridge.so ${log-lib} cxx::cxx)
 
 if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_custom_command(TARGET libshizuku.so POST_BUILD
-            COMMAND ${CMAKE_STRIP} --remove-section=.comment "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libshizuku.so")
+    add_custom_command(TARGET libsysbridge.so POST_BUILD
+            COMMAND ${CMAKE_STRIP} --remove-section=.comment "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libsysbridge.so")
 endif ()
 
 add_library(adb SHARED
@@ -72,9 +72,9 @@ endif ()
 # System.loadLibrary() and pass the name of the library defined here;
 # for GameActivity/NativeActivity derived applications, the same library name must be
 # used in the AndroidManifest.xml file.
-add_library(${CMAKE_PROJECT_NAME} SHARED
+add_library(evdev SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
-        sysbridge.cpp
+        libevdev_jni.cpp
         libevdev/libevdev.c
         libevdev/libevdev-names.c
         libevdev/libevdev-uinput.c)
@@ -82,7 +82,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this
 # build script, prebuilt third-party libraries, or Android system libraries.
-target_link_libraries(${CMAKE_PROJECT_NAME}
+target_link_libraries(evdev
         # List libraries link to the target library
         android
         log)

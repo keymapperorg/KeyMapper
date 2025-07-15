@@ -32,7 +32,7 @@
 
 // TODO take package name as argument
 #define PACKAGE_NAME "io.github.sds100.keymapper.debug"
-#define SERVER_NAME "keymapper_priv"
+#define SERVER_NAME "keymapper_sysbridge"
 #define SERVER_CLASS_PATH "io.github.sds100.keymapper.sysbridge.service.SystemBridge"
 
 #if defined(__arm__)
@@ -96,7 +96,7 @@ v_current = (uintptr_t) v + v_size - sizeof(char *); \
     ARG(argv)
     ARG_PUSH(argv, "/system/bin/app_process")
     ARG_PUSH_FMT(argv, "-Djava.class.path=%s", apk_path)
-    ARG_PUSH_FMT(argv, "-Dshizuku.library.path=%s", lib_path)
+    ARG_PUSH_FMT(argv, "-Dkeymapper_sysbridge.library.path=%s", lib_path)
     ARG_PUSH_DEBUG_VM_PARAMS(argv)
     ARG_PUSH(argv, "/system/bin")
     ARG_PUSH_FMT(argv, "--nice-name=%s", process_name)
@@ -186,15 +186,16 @@ int starter_main(int argc, char *argv[]) {
 
     int uid = getuid();
     if (uid != 0 && uid != 2000) {
-        perrorf("fatal: run Shizuku from non root nor adb user (uid=%d).\n", uid);
+        perrorf("fatal: run system bridge from non root nor adb user (uid=%d).\n", uid);
         exit(EXIT_FATAL_UID);
     }
 
     se::init();
 
     if (uid == 0) {
-        chown("/data/local/tmp/shizuku_starter", 2000, 2000);
-        se::setfilecon("/data/local/tmp/shizuku_starter", "u:object_r:shell_data_file:s0");
+        chown("/data/local/tmp/keymapper_sysbridge_starter", 2000, 2000);
+        se::setfilecon("/data/local/tmp/keymapper_sysbridge_starter",
+                       "u:object_r:shell_data_file:s0");
         switch_cgroup();
 
         int sdkLevel = 0;
@@ -224,11 +225,11 @@ int starter_main(int argc, char *argv[]) {
         }
     }
 
-    mkdir("/data/local/tmp/shizuku", 0707);
-    chmod("/data/local/tmp/shizuku", 0707);
+    mkdir("/data/local/tmp/keymapper_sysbridge", 0707);
+    chmod("/data/local/tmp/keymapper_sysbridge", 0707);
     if (uid == 0) {
-        chown("/data/local/tmp/shizuku", 2000, 2000);
-        se::setfilecon("/data/local/tmp/shizuku", "u:object_r:shell_data_file:s0");
+        chown("/data/local/tmp/keymapper_sysbridge", 2000, 2000);
+        se::setfilecon("/data/local/tmp/keymapper_sysbridge", "u:object_r:shell_data_file:s0");
     }
 
     printf("info: starter begin\n");
@@ -244,14 +245,12 @@ int starter_main(int argc, char *argv[]) {
         char name[1024];
         if (get_proc_name(pid, name, 1024) != 0) return;
 
-        if (strcmp(SERVER_NAME, name) != 0
-            && strcmp("shizuku_server_legacy", name) != 0)
-            return;
+        if (strcmp(SERVER_NAME, name) != 0) return;
 
         if (kill(pid, SIGKILL) == 0)
             printf("info: killed %d (%s)\n", pid, name);
         else if (errno == EPERM) {
-            perrorf("fatal: can't kill %d, please try to stop existing Shizuku from app first.\n",
+            perrorf("fatal: can't kill %d, please try to stop existing sysbridge from app first.\n",
                     pid);
             exit(EXIT_FATAL_KILL);
         } else {
@@ -315,7 +314,7 @@ int main(int argc, char **argv) {
 
     LOGD("applet %s", base.data());
 
-    constexpr const char *applet_names[] = {"shizuku_starter", nullptr};
+    constexpr const char *applet_names[] = {"keymapper_sysbridge_starter", nullptr};
 
     for (int i = 0; applet_names[i]; ++i) {
         if (base == applet_names[i]) {

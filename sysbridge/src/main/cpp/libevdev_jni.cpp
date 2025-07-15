@@ -11,7 +11,7 @@
 extern "C"
 JNIEXPORT jstring JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNIEnv *env,
-                                                                       jobject /* this */) {
+                                                                             jobject /* this */) {
     char *input_file_path = "/dev/input/event12";
     struct libevdev *dev = NULL;
     int fd;
