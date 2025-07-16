@@ -50,10 +50,11 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNI
         struct input_event ev;
         rc = libevdev_next_event(dev, LIBEVDEV_READ_FLAG_NORMAL, &ev);
         if (rc == 0)
-            __android_log_print(ANDROID_LOG_ERROR, "Key Mapper", "Event: %s %s %d\n",
+            __android_log_print(ANDROID_LOG_ERROR, "Key Mapper", "Event: %s %s %d, Event code: %d\n",
                                 libevdev_event_type_get_name(ev.type),
                                 libevdev_event_code_get_name(ev.type, ev.code),
-                                ev.value);
+                                ev.value,
+                                ev.code);
     } while (rc == 1 || rc == 0 || rc == -EAGAIN);
 
     return env->NewStringUTF("Hello!");
