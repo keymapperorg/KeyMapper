@@ -333,6 +333,9 @@ object InputEventUtils {
         "02bf" to KeyEvent.KEYCODE_MENU,
         "02bf" to KeyEvent.KEYCODE_ASSIST,
 
+        // Xperia 5 III assistant button
+        "01c9" to KeyEvent.KEYCODE_ASSIST,
+
         "KEY_SEARCH" to KeyEvent.KEYCODE_SEARCH,
     )
 
