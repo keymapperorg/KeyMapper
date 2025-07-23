@@ -98,7 +98,7 @@
 #include <sstream>
 #include <string>
 #include <type_traits>
-#include <format>
+#include <sstream>
 
 #include "errors.h"
 #include "expected.h"
@@ -304,14 +304,43 @@ __attribute__((noinline)) ResultError<Errno> MakeResultErrorWithCode(std::string
 
 template <typename... Args>
 inline ResultError<Errno> ErrorfImpl(const std::string &fmt, const Args &... args) {
-    return ResultError(std::vformat(fmt, std::make_format_args(args...)),
-                     ErrorCode(Errno{}, args...));
+    std::ostringstream oss;
+    formatHelper(oss, fmt, args...);
+    return ResultError(oss.str(), ErrorCode(Errno{}, args...));
+}
+
+    template<typename T>
+    void formatHelper(std::ostringstream &oss, const std::string &fmt, const T &arg) {
+        size_t pos = fmt.find("{}");
+        if (pos != std::string::npos) {
+            oss << fmt.substr(0, pos) << arg << fmt.substr(pos + 2);
+        } else {
+            oss << fmt;
+        }
+    }
+
+    template<typename T, typename... Args>
+    void formatHelper(std::ostringstream &oss, const std::string &fmt, const T &arg,
+                      const Args &... args) {
+        size_t pos = fmt.find("{}");
+        if (pos != std::string::npos) {
+            oss << fmt.substr(0, pos) << arg;
+            formatHelper(oss, fmt.substr(pos + 2), args...);
+        } else {
+            oss << fmt;
+        }
+    }
+
+    void formatHelper(std::ostringstream &oss, const std::string &fmt) {
+        oss << fmt;
 }
 
 template <typename... Args>
 inline ResultError<Errno> ErrnoErrorfImpl(const std::string &fmt, const Args &... args) {
-  Errno code{errno};
-    return MakeResultErrorWithCode(std::vformat(fmt, std::make_format_args(args...)), code);
+    Errno code{errno};
+    std::ostringstream oss;
+    formatHelper(oss, fmt, args...);
+    return MakeResultErrorWithCode(oss.str(), code);
 }
 
 #define Errorf(fmt, ...) android::base::ErrorfImpl(fmt, ##__VA_ARGS__)
