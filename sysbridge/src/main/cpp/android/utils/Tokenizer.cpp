@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-#define LOG_TAG "Tokenizer"
-
+#include "logging.h"
 #include "Tokenizer.h"
 #include "Errors.h"
 #include "FileMap.h"
 #include "String8.h"
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <android/log.h>
 #include <cstring>
 #include <unistd.h>
 
@@ -58,13 +56,12 @@ namespace android {
         int fd = ::open(filename.c_str(), O_RDONLY);
         if (fd < 0) {
             result = -errno;
-            __android_log_print(ANDROID_LOG_ERROR, "Error opening file '%s': %s", filename.c_str(),
-                                strerror(errno));
+            LOGE("Error opening file '%s': %s", filename.c_str(), strerror(errno));
         } else {
             struct stat stat;
             if (fstat(fd, &stat)) {
                 result = -errno;
-                __android_log_print(ANDROID_LOG_ERROR, "Error getting size of file '%s': %s", filename.c_str(), strerror(errno));
+                LOGE("Error getting size of file '%s': %s", filename.c_str(), strerror(errno));
             } else {
                 size_t length = size_t(stat.st_size);
 
@@ -86,8 +83,7 @@ namespace android {
                     ssize_t nrd = read(fd, buffer, length);
                     if (nrd < 0) {
                         result = -errno;
-                        __android_log_print(ANDROID_LOG_ERROR, "Error reading file '%s': %s",
-                                            filename.c_str(), strerror(errno));
+                        LOGE("Error reading file '%s': %s", filename.c_str(), strerror(errno));
                         delete[] buffer;
                         buffer = nullptr;
                     } else {

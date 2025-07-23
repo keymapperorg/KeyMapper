@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-#define LOG_TAG "KeyLayoutMap"
-
-#include <android/log.h>
+#include "../logging.h"
 #include <android/keycodes.h>
 #include "../utils/String8.h"
 #include "KeyLayoutMap.h"
@@ -29,22 +27,8 @@
 #include <unordered_map>
 #include "../libbase/result.h"
 
-/**
- * Log debug output for the parser.
- * Enable this via "adb shell setprop log.tag.KeyLayoutMapParser DEBUG" (requires restart)
- */
-const bool DEBUG_PARSER =
-        __android_log_is_loggable(ANDROID_LOG_DEBUG, LOG_TAG "Parser", ANDROID_LOG_INFO);
-
 // Enables debug output for parser performance.
 #define DEBUG_PARSER_PERFORMANCE 0
-
-/**
- * Log debug output for mapping.
- * Enable this via "adb shell setprop log.tag.KeyLayoutMapMapping DEBUG" (requires restart)
- */
-const bool DEBUG_MAPPING =
-        __android_log_is_loggable(ANDROID_LOG_DEBUG, LOG_TAG "Mapping", ANDROID_LOG_INFO);
 
 namespace android {
     namespace {
@@ -88,8 +72,7 @@ namespace android {
             status = Tokenizer::fromContents(String8(filename.c_str()), contents, &tokenizer);
         }
         if (status) {
-            __android_log_print(ANDROID_LOG_ERROR, "Error %d opening key layout map file %s.",
-                                status, filename.c_str());
+            LOGE("Error %d opening key layout map file %s.", status, filename.c_str());
             return Errorf("Error {} opening key layout map file {}.", status, filename.c_str());
         }
         std::unique_ptr<Tokenizer> t(tokenizer);
@@ -108,7 +91,7 @@ namespace android {
         std::shared_ptr<KeyLayoutMap> map = std::shared_ptr<KeyLayoutMap>(new KeyLayoutMap());
         status_t status = OK;
         if (!map.get()) {
-            __android_log_print(ANDROID_LOG_ERROR, "Error allocating key layout map.");
+            LOGE("Error allocating key layout map.");
             return Errorf("Error allocating key layout map.");
         } else {
 #if DEBUG_PARSER_PERFORMANCE
@@ -241,18 +224,16 @@ namespace android {
                     status_t status = parseRequiredKernelConfig();
                     if (status) return status;
                 } else {
-                    __android_log_print(ANDROID_LOG_ERROR, "%s: Expected keyword, got '%s'.",
-                                        mTokenizer->getLocation().c_str(),
-                                        keywordToken.c_str());
+                    LOGE("%s: Expected keyword, got '%s'.", mTokenizer->getLocation().c_str(),
+                         keywordToken.c_str());
                     return BAD_VALUE;
                 }
 
                 mTokenizer->skipDelimiters(WHITESPACE);
                 if (!mTokenizer->isEol() && mTokenizer->peekChar() != '#') {
-                    __android_log_print(ANDROID_LOG_ERROR,
-                                        "%s: Expected end of line or trailing comment, got '%s'.",
-                                        mTokenizer->getLocation().c_str(),
-                                        mTokenizer->peekRemainderOfLine().c_str());
+                    LOGE("%s: Expected end of line or trailing comment, got '%s'.",
+                         mTokenizer->getLocation().c_str(),
+                         mTokenizer->peekRemainderOfLine().c_str());
                     return BAD_VALUE;
                 }
             }
@@ -273,17 +254,15 @@ namespace android {
 
         std::optional<int> code = parseInt(codeToken.c_str());
         if (!code) {
-            __android_log_print(ANDROID_LOG_ERROR, "%s: Expected key %s number, got '%s'.",
-                                mTokenizer->getLocation().c_str(),
-                                mapUsage ? "usage" : "scan code", codeToken.c_str());
+            LOGE("%s: Expected key %s number, got '%s'.", mTokenizer->getLocation().c_str(),
+                 mapUsage ? "usage" : "scan code", codeToken.c_str());
             return BAD_VALUE;
         }
         std::unordered_map<int32_t, Key> &map =
                 mapUsage ? mMap->mKeysByUsageCode : mMap->mKeysByScanCode;
         if (map.find(*code) != map.end()) {
-            __android_log_print(ANDROID_LOG_ERROR, "%s: Duplicate entry for key %s '%s'.",
-                                mTokenizer->getLocation().c_str(),
-                                mapUsage ? "usage" : "scan code", codeToken.c_str());
+            LOGE("%s: Duplicate entry for key %s '%s'.", mTokenizer->getLocation().c_str(),
+                 mapUsage ? "usage" : "scan code", codeToken.c_str());
             return BAD_VALUE;
         }
 
@@ -291,9 +270,8 @@ namespace android {
         String8 keyCodeToken = mTokenizer->nextToken(WHITESPACE);
         std::optional<int> keyCode = InputEventLookup::getKeyCodeByLabel(keyCodeToken.c_str());
         if (!keyCode) {
-            __android_log_print(ANDROID_LOG_ERROR, "%s: Expected key code label, got '%s'.",
-                                mTokenizer->getLocation().c_str(),
-                                keyCodeToken.c_str());
+            LOGE("%s: Expected key code label, got '%s'.", mTokenizer->getLocation().c_str(),
+                 keyCodeToken.c_str());
             return BAD_VALUE;
         }
 
@@ -305,15 +283,13 @@ namespace android {
             String8 flagToken = mTokenizer->nextToken(WHITESPACE);
             std::optional<int> flag = InputEventLookup::getKeyFlagByLabel(flagToken.c_str());
             if (!flag) {
-                __android_log_print(ANDROID_LOG_ERROR, "%s: Expected key flag label, got '%s'.",
-                                    mTokenizer->getLocation().c_str(),
-                                    flagToken.c_str());
+                LOGE("%s: Expected key flag label, got '%s'.", mTokenizer->getLocation().c_str(),
+                     flagToken.c_str());
                 return BAD_VALUE;
             }
             if (flags & *flag) {
-                __android_log_print(ANDROID_LOG_ERROR, "%s: Duplicate key flag '%s'.",
-                                    mTokenizer->getLocation().c_str(),
-                                    flagToken.c_str());
+                LOGE("%s: Duplicate key flag '%s'.", mTokenizer->getLocation().c_str(),
+                     flagToken.c_str());
                 return BAD_VALUE;
             }
             flags |= *flag;
@@ -333,15 +309,13 @@ namespace android {
         String8 scanCodeToken = mTokenizer->nextToken(WHITESPACE);
         std::optional<int> scanCode = parseInt(scanCodeToken.c_str());
         if (!scanCode) {
-            __android_log_print(ANDROID_LOG_ERROR, "%s: Expected axis scan code number, got '%s'.",
-                                mTokenizer->getLocation().c_str(),
-                                scanCodeToken.c_str());
+            LOGE("%s: Expected axis scan code number, got '%s'.", mTokenizer->getLocation().c_str(),
+                 scanCodeToken.c_str());
             return BAD_VALUE;
         }
         if (mMap->mAxes.find(*scanCode) != mMap->mAxes.end()) {
-            __android_log_print(ANDROID_LOG_ERROR, "%s: Duplicate entry for axis scan code '%s'.",
-                                mTokenizer->getLocation().c_str(),
-                                scanCodeToken.c_str());
+            LOGE("%s: Duplicate entry for axis scan code '%s'.", mTokenizer->getLocation().c_str(),
+                 scanCodeToken.c_str());
             return BAD_VALUE;
         }
 
@@ -356,9 +330,9 @@ namespace android {
             String8 axisToken = mTokenizer->nextToken(WHITESPACE);
             std::optional<int> axis = InputEventLookup::getAxisByLabel(axisToken.c_str());
             if (!axis) {
-                __android_log_print(ANDROID_LOG_ERROR,
-                                    "%s: Expected inverted axis label, got '%s'.",
-                                    mTokenizer->getLocation().c_str(), axisToken.c_str());
+                LOGE("%s: Expected inverted axis label, got '%s'.",
+                     mTokenizer->getLocation().c_str(),
+                     axisToken.c_str());
                 return BAD_VALUE;
             }
             axisInfo.axis = *axis;
@@ -369,8 +343,8 @@ namespace android {
             String8 splitToken = mTokenizer->nextToken(WHITESPACE);
             std::optional<int> splitValue = parseInt(splitToken.c_str());
             if (!splitValue) {
-                __android_log_print(ANDROID_LOG_ERROR, "%s: Expected split value, got '%s'.",
-                                    mTokenizer->getLocation().c_str(), splitToken.c_str());
+                LOGE("%s: Expected split value, got '%s'.", mTokenizer->getLocation().c_str(),
+                     splitToken.c_str());
                 return BAD_VALUE;
             }
             axisInfo.splitValue = *splitValue;
@@ -379,8 +353,8 @@ namespace android {
             String8 lowAxisToken = mTokenizer->nextToken(WHITESPACE);
             std::optional<int> axis = InputEventLookup::getAxisByLabel(lowAxisToken.c_str());
             if (!axis) {
-                __android_log_print(ANDROID_LOG_ERROR, "%s: Expected low axis label, got '%s'.",
-                                    mTokenizer->getLocation().c_str(), lowAxisToken.c_str());
+                LOGE("%s: Expected low axis label, got '%s'.", mTokenizer->getLocation().c_str(),
+                     lowAxisToken.c_str());
                 return BAD_VALUE;
             }
             axisInfo.axis = *axis;
@@ -389,17 +363,16 @@ namespace android {
             String8 highAxisToken = mTokenizer->nextToken(WHITESPACE);
             std::optional<int> highAxis = InputEventLookup::getAxisByLabel(highAxisToken.c_str());
             if (!highAxis) {
-                __android_log_print(ANDROID_LOG_ERROR, "%s: Expected high axis label, got '%s'.",
-                                    mTokenizer->getLocation().c_str(), highAxisToken.c_str());
+                LOGE("%s: Expected high axis label, got '%s'.", mTokenizer->getLocation().c_str(),
+                     highAxisToken.c_str());
                 return BAD_VALUE;
             }
             axisInfo.highAxis = *highAxis;
         } else {
             std::optional<int> axis = InputEventLookup::getAxisByLabel(token.c_str());
             if (!axis) {
-                __android_log_print(ANDROID_LOG_ERROR,
-                                    "%s: Expected axis label, 'split' or 'invert', got '%s'.",
-                                    mTokenizer->getLocation().c_str(), token.c_str());
+                LOGE("%s: Expected axis label, 'split' or 'invert', got '%s'.",
+                     mTokenizer->getLocation().c_str(), token.c_str());
                 return BAD_VALUE;
             }
             axisInfo.axis = *axis;
@@ -416,15 +389,14 @@ namespace android {
                 String8 flatToken = mTokenizer->nextToken(WHITESPACE);
                 std::optional<int> flatOverride = parseInt(flatToken.c_str());
                 if (!flatOverride) {
-                    __android_log_print(ANDROID_LOG_ERROR, "%s: Expected flat value, got '%s'.",
-                                        mTokenizer->getLocation().c_str(), flatToken.c_str());
+                    LOGE("%s: Expected flat value, got '%s'.", mTokenizer->getLocation().c_str(),
+                         flatToken.c_str());
                     return BAD_VALUE;
                 }
                 axisInfo.flatOverride = *flatOverride;
             } else {
-                __android_log_print(ANDROID_LOG_ERROR, "%s: Expected keyword 'flat', got '%s'.",
-                                    mTokenizer->getLocation().c_str(),
-                                    keywordToken.c_str());
+                LOGE("%s: Expected keyword 'flat', got '%s'.", mTokenizer->getLocation().c_str(),
+                     keywordToken.c_str());
                 return BAD_VALUE;
             }
         }
