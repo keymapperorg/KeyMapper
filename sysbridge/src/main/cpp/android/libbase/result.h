@@ -98,10 +98,10 @@
 #include <sstream>
 #include <string>
 #include <type_traits>
+#include <format>
 
 #include "errors.h"
 #include "expected.h"
-#include "format.h"
 
 namespace android {
 namespace base {
@@ -265,10 +265,10 @@ class Error {
   Error& operator=(Error&&) = delete;
 
   template <typename... Args>
-  friend Error ErrorfImpl(fmt::format_string<Args...> fmt, const Args&... args);
+  friend Error ErrorfImpl(const std::string &fmt, const Args &... args);
 
   template <typename... Args>
-  friend Error ErrnoErrorfImpl(fmt::format_string<Args...> fmt, const Args&... args);
+  friend Error ErrnoErrorfImpl(const std::string &fmt, const Args &... args);
 
  private:
   Error(bool has_code, E code, const std::string& message) : code_(code), has_code_(has_code) {
@@ -303,19 +303,19 @@ __attribute__((noinline)) ResultError<Errno> MakeResultErrorWithCode(std::string
                                                                      Errno code);
 
 template <typename... Args>
-inline ResultError<Errno> ErrorfImpl(fmt::format_string<Args...> fmt, const Args&... args) {
-  return ResultError(fmt::vformat(fmt.get(), fmt::make_format_args(args...)),
+inline ResultError<Errno> ErrorfImpl(const std::string &fmt, const Args &... args) {
+    return ResultError(std::vformat(fmt, std::make_format_args(args...)),
                      ErrorCode(Errno{}, args...));
 }
 
 template <typename... Args>
-inline ResultError<Errno> ErrnoErrorfImpl(fmt::format_string<Args...> fmt, const Args&... args) {
+inline ResultError<Errno> ErrnoErrorfImpl(const std::string &fmt, const Args &... args) {
   Errno code{errno};
-  return MakeResultErrorWithCode(fmt::vformat(fmt.get(), fmt::make_format_args(args...)), code);
+    return MakeResultErrorWithCode(std::vformat(fmt, std::make_format_args(args...)), code);
 }
 
-#define Errorf(fmt, ...) android::base::ErrorfImpl(FMT_STRING(fmt), ##__VA_ARGS__)
-#define ErrnoErrorf(fmt, ...) android::base::ErrnoErrorfImpl(FMT_STRING(fmt), ##__VA_ARGS__)
+#define Errorf(fmt, ...) android::base::ErrorfImpl(fmt, ##__VA_ARGS__)
+#define ErrnoErrorf(fmt, ...) android::base::ErrnoErrorfImpl(fmt, ##__VA_ARGS__)
 
 template <typename T, typename E = Errno, bool include_message = true>
 using Result = android::base::expected<T, ResultError<E, include_message>>;
