@@ -14,7 +14,7 @@
 extern "C"
 JNIEXPORT jstring JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNIEnv *env, jobject) {
-    char *input_file_path = "/dev/input/event12";
+    char *input_file_path = "/dev/input/event6";
     struct libevdev *dev = NULL;
     int fd;
     int rc = 1;
@@ -53,6 +53,7 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNI
     deviceId.vendor = libevdev_get_id_vendor(dev);
     deviceId.product = libevdev_get_id_product(dev);
     deviceId.version = libevdev_get_id_version(dev);
+    deviceId.name = libevdev_get_name(dev);
 
     std::string keyLayoutMapPath = android::getInputDeviceConfigurationFilePathByDeviceIdentifier(
             deviceId, android::InputDeviceConfigurationFileType::KEY_LAYOUT);
