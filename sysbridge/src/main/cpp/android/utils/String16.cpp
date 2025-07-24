@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-#include <utils/String16.h>
+#include "String16.h"
 
-#include <log/log.h>
-
-#include <ctype.h>
+#include <cctype>
 
 #include "SharedBuffer.h"
 
@@ -81,12 +79,10 @@ char16_t* String16::allocFromUTF8(const char* u8str, size_t u8len)
 
 char16_t* String16::allocFromUTF16(const char16_t* u16str, size_t u16len) {
     if (u16len >= SIZE_MAX / sizeof(char16_t)) {
-        android_errorWriteLog(0x534e4554, "73826242");
         abort();
     }
 
     SharedBuffer* buf = static_cast<SharedBuffer*>(alloc((u16len + 1) * sizeof(char16_t)));
-    ALOG_ASSERT(buf, "Unable to allocate shared buffer");
     if (buf) {
         char16_t* str = (char16_t*)buf->data();
         memcpy(str, u16str, u16len * sizeof(char16_t));
@@ -179,10 +175,6 @@ status_t String16::setTo(const String16& other, size_t len, size_t begin)
         return OK;
     }
 
-    if (&other == this) {
-        LOG_ALWAYS_FATAL("Not implemented");
-    }
-
     return setTo(other.c_str() + begin, len);
 }
 
@@ -194,7 +186,6 @@ status_t String16::setTo(const char16_t* other)
 status_t String16::setTo(const char16_t* other, size_t len)
 {
     if (len >= SIZE_MAX / sizeof(char16_t)) {
-        android_errorWriteLog(0x534e4554, "73826242");
         abort();
     }
 

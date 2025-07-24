@@ -20,9 +20,10 @@
 #include <new>
 #include <type_traits>
 
-#include <stdint.h>
-#include <string.h>
+#include <cstdint>
+#include <cstring>
 #include <sys/types.h>
+#include <cstddef>
 
 // ---------------------------------------------------------------------------
 

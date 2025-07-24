@@ -1,7 +1,7 @@
-#include <cstring>
 #include <fcntl.h>
 #include <unistd.h>
 #include <cstdio>
+#include <cstring>
 
 namespace cgroup {
 
@@ -23,7 +23,7 @@ namespace cgroup {
         return len;
     }
 
-    int get_cgroup(int pid, int* cuid, int *cpid) {
+    int get_cgroup(int pid, int *cuid, int *cpid) {
         char buf[PATH_MAX];
         snprintf(buf, PATH_MAX, "/proc/%d/cgroup", pid);
 

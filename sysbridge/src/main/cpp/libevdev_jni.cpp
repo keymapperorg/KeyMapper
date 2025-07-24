@@ -7,6 +7,7 @@
 #define LOG_TAG "KeyMapperSystemBridge"
 
 #include "logging.h"
+#include "android/input/KeyLayoutMap.h"
 
 extern "C"
 JNIEXPORT jstring JNICALL

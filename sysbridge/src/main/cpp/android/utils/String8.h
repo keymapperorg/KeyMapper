@@ -21,8 +21,8 @@
 #include <string>
 #include <string_view>
 
-#include <string.h> // for strcmp
-#include <stdarg.h>
+#include <cstring> // for strcmp
+#include <cstdarg>
 #include "Errors.h"
 #include "Unicode.h"
 #include "TypeHelpers.h"

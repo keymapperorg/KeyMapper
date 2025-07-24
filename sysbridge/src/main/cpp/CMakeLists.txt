@@ -11,19 +11,18 @@ cmake_minimum_required(VERSION 3.22.1)
 # build script scope).
 project("sysbridge")
 
-# FROM SHIZUKU
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 set(C_FLAGS "-Werror=format -fdata-sections -ffunction-sections -fno-exceptions -fno-rtti -fno-threadsafe-statics")
 set(LINKER_FLAGS "-Wl,--hash-style=both")
 
 if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-    message("Builing Release...")
+    message("Building Release...")
 
     set(C_FLAGS "${C_FLAGS} -O2 -fvisibility=hidden -fvisibility-inlines-hidden")
     set(LINKER_FLAGS "${LINKER_FLAGS} -Wl,-exclude-libs,ALL -Wl,--gc-sections")
 else()
-    message("Builing Debug...")
+    message("Building Debug...")
 
     add_definitions(-DDEBUG)
 endif ()
@@ -36,12 +35,21 @@ set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${LINKER_FLAGS}")
 
 find_library(log-lib log)
 find_package(boringssl REQUIRED CONFIG)
-find_package(cxx REQUIRED CONFIG)
 
 add_executable(libsysbridge.so
-        starter.cpp misc.cpp selinux.cpp cgroup.cpp android.cpp)
+        starter.cpp
+        misc.cpp
+        selinux.cpp
+        cgroup.cpp
+        android.cpp
+        adb_pairing.cpp
+        android/input/KeyLayoutMap.cpp
+        android/input/InputEventLabels.cpp
+        android/libbase/result.cpp
+        android/utils/Tokenizer.cpp
+        android/utils/String16.cpp)
 
-target_link_libraries(libsysbridge.so ${log-lib} cxx::cxx)
+target_link_libraries(libsysbridge.so ${log-lib} boringssl::crypto_static)
 
 if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_custom_command(TARGET libsysbridge.so POST_BUILD
@@ -51,7 +59,7 @@ endif ()
 add_library(adb SHARED
         adb_pairing.cpp misc.cpp)
 
-target_link_libraries(adb ${log-lib} boringssl::crypto_static cxx::cxx)
+target_link_libraries(adb ${log-lib} boringssl::crypto_static)
 
 if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_custom_command(TARGET adb POST_BUILD
@@ -86,4 +94,13 @@ target_link_libraries(evdev
         # List libraries link to the target library
         android
         log)
+
+# Add include directories for header files
+target_include_directories(evdev PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/android
+        ${CMAKE_CURRENT_SOURCE_DIR}/android/input
+        ${CMAKE_CURRENT_SOURCE_DIR}/android/libbase
+        ${CMAKE_CURRENT_SOURCE_DIR}/android/utils
+        ${CMAKE_CURRENT_SOURCE_DIR}/libevdev)
 

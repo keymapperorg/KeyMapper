@@ -17,9 +17,8 @@ android {
 
         externalNativeBuild {
             cmake {
-                // -DANDROID_STL=none is required by Rikka's library: https://github.com/RikkaW/libcxx-prefab
                 // -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON is required to get the app running on the Android 15. This is related to the new 16kB page size support.
-                arguments("-DANDROID_STL=none", "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
+                arguments("-DANDROID_STL=c++_static", "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
             }
         }
     }
@@ -81,7 +80,7 @@ dependencies {
 
     // From Shizuku :manager module build.gradle file.
     implementation("io.github.vvb2060.ndk:boringssl:20250114")
-    implementation("dev.rikka.ndk.thirdparty:cxx:1.2.0")
+//    implementation("dev.rikka.ndk.thirdparty:cxx:1.2.0")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation("org.bouncycastle:bcpkix-jdk15on:1.70")
     implementation("me.zhanghai.android.appiconloader:appiconloader:1.5.0")

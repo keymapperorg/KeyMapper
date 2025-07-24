@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "logging.h"
+#include "../../logging.h"
 #include "Tokenizer.h"
 #include "Errors.h"
 #include "FileMap.h"

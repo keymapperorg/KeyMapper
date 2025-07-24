@@ -93,12 +93,12 @@
 
 #include <assert.h>
 #include <errno.h>
-#include <string.h>
 
 #include <sstream>
-#include <string>
+#include <cstring>
 #include <type_traits>
 #include <sstream>
+#include <cstdlib>
 
 #include "errors.h"
 #include "expected.h"

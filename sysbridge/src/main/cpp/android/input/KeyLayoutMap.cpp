@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "../logging.h"
+#include "../../logging.h"
 #include <android/keycodes.h>
 #include "../utils/String8.h"
 #include "KeyLayoutMap.h"
@@ -71,6 +71,7 @@ namespace android {
         } else {
             status = Tokenizer::fromContents(String8(filename.c_str()), contents, &tokenizer);
         }
+        std::format("sfd")
         if (status) {
             LOGE("Error %d opening key layout map file %s.", status, filename.c_str());
             return Errorf("Error {} opening key layout map file {}.", status, filename.c_str());
