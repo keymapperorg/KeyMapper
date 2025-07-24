@@ -26,11 +26,17 @@
 #include <string_view>
 #include <unordered_map>
 #include "../libbase/result.h"
+#include "../liblog/log_main.h"
+#include "Input.h"
+
+#define DEBUG_MAPPING false
+#define DEBUG_PARSER false
 
 // Enables debug output for parser performance.
 #define DEBUG_PARSER_PERFORMANCE 0
 
 namespace android {
+
     namespace {
 
         std::optional<int> parseInt(const char *str) {
@@ -38,11 +44,11 @@ namespace android {
             errno = 0;
             const int value = strtol(str, &end, 0);
             if (end == str) {
-                LOG(ERROR) << "Could not parse " << str;
+                LOGE("Could not parse %s", str);
                 return {};
             }
             if (errno == ERANGE) {
-                LOG(ERROR) << "Out of bounds: " << str;
+                LOGE("Out of bounds: %s", str);
                 return {};
             }
             return value;
@@ -71,7 +77,7 @@ namespace android {
         } else {
             status = Tokenizer::fromContents(String8(filename.c_str()), contents, &tokenizer);
         }
-        std::format("sfd")
+
         if (status) {
             LOGE("Error %d opening key layout map file %s.", status, filename.c_str());
             return Errorf("Error {} opening key layout map file {}.", status, filename.c_str());
@@ -411,4 +417,22 @@ namespace android {
         return NO_ERROR;
     }
 
+// Parse the name of a required kernel config.
+// The layout won't be used if the specified kernel config is not present
+// Examples:
+// requires_kernel_config CONFIG_HID_PLAYSTATION
+    status_t KeyLayoutMap::Parser::parseRequiredKernelConfig() {
+        String8 codeToken = mTokenizer->nextToken(WHITESPACE);
+        std::string configName = codeToken.c_str();
+
+        const auto result = mMap->mRequiredKernelConfigs.emplace(configName);
+        if (!result.second) {
+            LOGE("%s: Duplicate entry for required kernel config %s.",
+                 mTokenizer->getLocation().c_str(), configName.c_str());
+            return BAD_VALUE;
+        }
+
+//        ALOGD_IF(DEBUG_PARSER, "Parsed required kernel config: name=%s", configName.c_str());
+        return NO_ERROR;
+    }
 } // namespace android

@@ -42,12 +42,7 @@ add_executable(libsysbridge.so
         selinux.cpp
         cgroup.cpp
         android.cpp
-        adb_pairing.cpp
-        android/input/KeyLayoutMap.cpp
-        android/input/InputEventLabels.cpp
-        android/libbase/result.cpp
-        android/utils/Tokenizer.cpp
-        android/utils/String16.cpp)
+        adb_pairing.cpp)
 
 target_link_libraries(libsysbridge.so ${log-lib} boringssl::crypto_static)
 
@@ -66,7 +61,6 @@ if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
             COMMAND ${CMAKE_STRIP} --remove-section=.comment "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libadb.so")
 endif ()
 
-# END FROM SHIZUKU
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
@@ -85,7 +79,16 @@ add_library(evdev SHARED
         libevdev_jni.cpp
         libevdev/libevdev.c
         libevdev/libevdev-names.c
-        libevdev/libevdev-uinput.c)
+        libevdev/libevdev-uinput.c
+        android/input/KeyLayoutMap.cpp
+        android/input/InputEventLabels.cpp
+        android/libbase/result.cpp
+        android/utils/Tokenizer.cpp
+        android/utils/String16.cpp
+        android/utils/String8.cpp
+        android/utils/SharedBuffer.cpp
+        android/utils/FileMap.cpp
+        android/utils/Unicode.cpp)
 
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this

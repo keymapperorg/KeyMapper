@@ -17,6 +17,7 @@
 #include "String16.h"
 
 #include <cctype>
+#include <compare>
 
 #include "SharedBuffer.h"
 

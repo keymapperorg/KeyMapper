@@ -128,7 +128,7 @@ namespace android {
 
     String8 Tokenizer::nextToken(const char *delimiters) {
 #if DEBUG_TOKENIZER
-        ALOGD("nextToken");
+        LOGD("nextToken");
 #endif
         const char *end = getEnd();
         const char *tokenStart = mCurrent;
@@ -144,7 +144,7 @@ namespace android {
 
     void Tokenizer::nextLine() {
 #if DEBUG_TOKENIZER
-        ALOGD("nextLine");
+        LOGD("nextLine");
 #endif
         const char *end = getEnd();
         while (mCurrent != end) {
@@ -158,7 +158,7 @@ namespace android {
 
     void Tokenizer::skipDelimiters(const char *delimiters) {
 #if DEBUG_TOKENIZER
-        ALOGD("skipDelimiters");
+        LOGD("skipDelimiters");
 #endif
         const char *end = getEnd();
         while (mCurrent != end) {

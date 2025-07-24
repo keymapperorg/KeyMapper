@@ -21,7 +21,6 @@
 #include "../utils/Tokenizer.h"
 #include "../libbase/result.h"
 #include <unordered_map>
-#include <cstdint>
 
 namespace android {
 

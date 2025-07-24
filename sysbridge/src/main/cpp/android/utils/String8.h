@@ -18,18 +18,13 @@
 #define ANDROID_STRING8_H
 
 #include <iostream>
-#include <string>
 #include <string_view>
-
 #include <cstring> // for strcmp
 #include <cstdarg>
+#include <compare>
 #include "Errors.h"
 #include "Unicode.h"
 #include "TypeHelpers.h"
-
-#if __cplusplus >= 202002L
-#include <compare>
-#endif
 
 // ---------------------------------------------------------------------------
 

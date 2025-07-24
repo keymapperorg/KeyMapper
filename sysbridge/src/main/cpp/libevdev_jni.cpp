@@ -8,11 +8,19 @@
 
 #include "logging.h"
 #include "android/input/KeyLayoutMap.h"
+#include "android/libbase/result.h"
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNIEnv *env,
-                                                                             jobject /* this */) {
+Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNIEnv *env, jobject) {
+    auto result = android::KeyLayoutMap::load("/system/usr/keylayout/Generic.kl", nullptr);
+
+    if (result.ok()) {
+        LOGE("RESULT OKAY");
+    } else {
+        LOGE("RESULT FAILED");
+    }
+
     char *input_file_path = "/dev/input/event12";
     struct libevdev *dev = NULL;
     int fd;
@@ -51,7 +59,8 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNI
         struct input_event ev;
         rc = libevdev_next_event(dev, LIBEVDEV_READ_FLAG_NORMAL, &ev);
         if (rc == 0)
-            __android_log_print(ANDROID_LOG_ERROR, "Key Mapper", "Event: %s %s %d, Event code: %d\n",
+            __android_log_print(ANDROID_LOG_ERROR, "Key Mapper",
+                                "Event: %s %s %d, Event code: %d\n",
                                 libevdev_event_type_get_name(ev.type),
                                 libevdev_event_code_get_name(ev.type, ev.code),
                                 ev.value,
