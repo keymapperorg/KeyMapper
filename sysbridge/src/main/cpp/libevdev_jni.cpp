@@ -14,14 +14,6 @@
 extern "C"
 JNIEXPORT jstring JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNIEnv *env, jobject) {
-    auto result = android::KeyLayoutMap::load("/system/usr/keylayout/Generic.kl", nullptr);
-
-    if (result.ok()) {
-        LOGE("RESULT OKAY");
-    } else {
-        LOGE("RESULT FAILED");
-    }
-
     char *input_file_path = "/dev/input/event12";
     struct libevdev *dev = NULL;
     int fd;
@@ -67,6 +59,14 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNI
 
     LOGE("Key layout path = %s", keyLayoutMapPath.c_str());
 
+    auto keyLayoutResult = android::KeyLayoutMap::load("/system/usr/keylayout/Generic.kl", nullptr);
+
+    if (keyLayoutResult.ok()) {
+        LOGE("KEY LAYOUT RESULT OKAY");
+    } else {
+        LOGE("KEY LAYOUT RESULT FAILED");
+    }
+
     do {
         struct input_event ev;
         rc = libevdev_next_event(dev, LIBEVDEV_READ_FLAG_NORMAL, &ev);
@@ -78,7 +78,11 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNI
                                 ev.value,
                                 ev.code);
 
-        result.value();
+        int32_t outKeycode = -1;
+        uint32_t outFlags = -1;
+        keyLayoutResult.value()->mapKey(ev.code, 0, &outKeycode, &outFlags);
+
+        LOGE("Key code = %d Flags = %d", outKeycode, outFlags);
 
     } while (rc == 1 || rc == 0 || rc == -EAGAIN);
 
