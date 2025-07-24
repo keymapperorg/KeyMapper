@@ -65,3 +65,7 @@ enum {
     // input events received include those that it will not deliver.
     POLICY_FLAG_PASS_TO_USER = 0x40000000,
 };
+
+namespace android {
+    bool isFromSource(uint32_t source, uint32_t test);
+}

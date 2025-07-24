@@ -65,6 +65,8 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNI
                                 libevdev_event_code_get_name(ev.type, ev.code),
                                 ev.value,
                                 ev.code);
+
+        result.value();
     } while (rc == 1 || rc == 0 || rc == -EAGAIN);
 
     return env->NewStringUTF("Hello!");

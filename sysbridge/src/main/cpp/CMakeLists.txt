@@ -88,7 +88,10 @@ add_library(evdev SHARED
         android/utils/String8.cpp
         android/utils/SharedBuffer.cpp
         android/utils/FileMap.cpp
-        android/utils/Unicode.cpp)
+        android/utils/Unicode.cpp
+        android/input/InputDevice.cpp
+        android/input/Input.cpp
+        android/libbase/stringprintf.cpp)
 
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this
