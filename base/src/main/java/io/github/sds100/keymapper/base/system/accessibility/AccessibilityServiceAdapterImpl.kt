@@ -244,7 +244,6 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
     }
 
     override suspend fun isCrashed(): Boolean {
-        Timber.i("Accessibility service: checking if it is crashed")
         val key = "check_is_crashed"
 
         val pingJob = coroutineScope.launch {
