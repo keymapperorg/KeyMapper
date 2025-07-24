@@ -92,9 +92,16 @@ namespace android {
         }
 
         // Try device name.
-        return getInputDeviceConfigurationFilePathByName(
+        std::string namePath = getInputDeviceConfigurationFilePathByName(
                 deviceIdentifier.getCanonicalName() + suffix,
                 type);
+
+        if (!namePath.empty()) {
+            return namePath;
+        }
+
+        // As a last resort, just use the Generic file.
+        return getInputDeviceConfigurationFilePathByName("Generic", type);
     }
 
     std::string getInputDeviceConfigurationFilePathByName(
@@ -109,6 +116,7 @@ namespace android {
                 "/system_ext/usr/",
                 "/odm/usr/",
                 "/vendor/usr/",
+                "/system/usr",
         };
         // These files may also be in the APEX pointed by input_device.config_file.apex sysprop.
 //        if (auto apex = GetProperty("input_device.config_file.apex", ""); !apex.empty()) {
@@ -167,6 +175,8 @@ namespace android {
             LOGI("Probe failed to find input device configuration file with name '%s' and type %s",
                  name.c_str(), ftl::enum_string(type).c_str());
         }
+
+
         return "";
     }
 

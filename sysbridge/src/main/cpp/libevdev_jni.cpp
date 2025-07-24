@@ -9,6 +9,7 @@
 #include "logging.h"
 #include "android/input/KeyLayoutMap.h"
 #include "android/libbase/result.h"
+#include "android/input/InputDevice.h"
 
 extern "C"
 JNIEXPORT jstring JNICALL
@@ -55,6 +56,17 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNI
 //    }
     libevdev_grab(dev, LIBEVDEV_GRAB);
 
+    android::InputDeviceIdentifier deviceId = android::InputDeviceIdentifier();
+    deviceId.bus = libevdev_get_id_bustype(dev);
+    deviceId.vendor = libevdev_get_id_vendor(dev);
+    deviceId.product = libevdev_get_id_product(dev);
+    deviceId.version = libevdev_get_id_version(dev);
+
+    std::string keyLayoutMapPath = android::getInputDeviceConfigurationFilePathByDeviceIdentifier(
+            deviceId, android::InputDeviceConfigurationFileType::KEY_LAYOUT);
+
+    LOGE("Key layout path = %s", keyLayoutMapPath.c_str());
+
     do {
         struct input_event ev;
         rc = libevdev_next_event(dev, LIBEVDEV_READ_FLAG_NORMAL, &ev);
@@ -67,6 +79,7 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNI
                                 ev.code);
 
         result.value();
+
     } while (rc == 1 || rc == 0 || rc == -EAGAIN);
 
     return env->NewStringUTF("Hello!");
