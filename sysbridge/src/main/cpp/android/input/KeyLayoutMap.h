@@ -80,8 +80,6 @@ namespace android {
 
         std::optional<AxisInfo> mapAxis(int32_t scanCode) const;
 
-        const std::string getLoadFileName() const;
-
         virtual ~KeyLayoutMap();
 
     private:

@@ -37,6 +37,13 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.R)
     private val adbConnectMdns: AdbMdns = AdbMdns(ctx, AdbServiceType.TLS_CONNECT)
 
+    init {
+        // TODO remove
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            startWithAdb()
+        }
+    }
+
     // TODO clean up
     // TODO have lock so can only launch one start job at a time
     @RequiresApi(Build.VERSION_CODES.R)

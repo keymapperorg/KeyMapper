@@ -396,13 +396,6 @@ abstract class BaseAccessibilityServiceController(
         event: MyKeyEvent,
         detectionSource: KeyEventDetectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
     ): Boolean {
-        //TODO remove
-        if (event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && event.action == KeyEvent.ACTION_DOWN) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                systemBridgeSetupController.startWithAdb()
-            }
-        }
-
         val detailedLogInfo = event.toString()
 
         if (recordingTrigger) {

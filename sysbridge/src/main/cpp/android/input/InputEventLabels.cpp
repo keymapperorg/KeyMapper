@@ -19,10 +19,10 @@
 #include <linux/input-event-codes.h>
 #include <linux/input.h>
 #include <strings.h>
+#include "Input.h"
 
 #define DEFINE_KEYCODE(key) { #key, AKEYCODE_##key }
 #define DEFINE_AXIS(axis) { #axis, AMOTION_EVENT_AXIS_##axis }
-#define DEFINE_LED(led) { #led, ALED_##led }
 #define DEFINE_FLAG(flag) { #flag, POLICY_FLAG_##flag }
 
 namespace android {
@@ -348,7 +348,7 @@ namespace android {
     DEFINE_KEYCODE(MACRO_1), \
     DEFINE_KEYCODE(MACRO_2), \
     DEFINE_KEYCODE(MACRO_3), \
-    DEFINE_KEYCODE(MACRO_4), \
+    DEFINE_KEYCODE(MACRO_4)
 //    DEFINE_KEYCODE(EMOJI_PICKER), \
 //    DEFINE_KEYCODE(SCREENSHOT), \
 //    DEFINE_KEYCODE(DICTATE), \
@@ -429,6 +429,13 @@ namespace android {
     DEFINE_AXIS(GESTURE_PINCH_SCALE_FACTOR), \
     DEFINE_AXIS(GESTURE_SWIPE_FINGER_COUNT)
 
+#define FLAGS_SEQUENCE \
+    DEFINE_FLAG(VIRTUAL), \
+    DEFINE_FLAG(FUNCTION), \
+    DEFINE_FLAG(GESTURE), \
+    DEFINE_FLAG(WAKE), \
+    DEFINE_FLAG(FALLBACK_USAGE_MAPPING)
+
 // clang-format on
 
 // --- InputEventLookup ---
@@ -437,7 +444,8 @@ namespace android {
             : KEYCODES({KEYCODES_SEQUENCE}),
               KEY_NAMES({KEYCODES_SEQUENCE}),
               AXES({AXES_SEQUENCE}),
-              AXES_NAMES({AXES_SEQUENCE}) {}
+              AXES_NAMES({AXES_SEQUENCE}),
+              FLAGS({FLAGS_SEQUENCE}) {}
 
     std::optional<int> InputEventLookup::lookupValueByLabel(
             const std::unordered_map<std::string, int> &map, const char *literal) {

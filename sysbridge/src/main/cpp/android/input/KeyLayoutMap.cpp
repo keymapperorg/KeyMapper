@@ -29,8 +29,8 @@
 #include "../liblog/log_main.h"
 #include "Input.h"
 
-#define DEBUG_MAPPING false
-#define DEBUG_PARSER false
+#define DEBUG_MAPPING true
+#define DEBUG_PARSER true
 
 // Enables debug output for parser performance.
 #define DEBUG_PARSER_PERFORMANCE 0
@@ -108,10 +108,11 @@ namespace android {
             status = parser.parse();
 #if DEBUG_PARSER_PERFORMANCE
             nsecs_t elapsedTime = systemTime(SYSTEM_TIME_MONOTONIC) - startTime;
-            ALOGD("Parsed key layout map file '%s' %d lines in %0.3fms.",
+            LOGD("Parsed key layout map file '%s' %d lines in %0.3fms.",
                   tokenizer->getFilename().c_str(), tokenizer->getLineNumber(),
                   elapsedTime / 1000000.0);
 #endif
+            LOGE("PARSE STATUS = %d", status);
             if (!status) {
                 return std::move(map);
             }
@@ -218,14 +219,14 @@ namespace android {
                     mTokenizer->skipDelimiters(WHITESPACE);
                     status_t status = parseAxis();
                     if (status) return status;
-//            } else if (keywordToken == "led") {
-//                mTokenizer->skipDelimiters(WHITESPACE);
-//                status_t status = parseLed();
-//                if (status) return status;
-//            } else if (keywordToken == "sensor") {
-//                mTokenizer->skipDelimiters(WHITESPACE);
-//                status_t status = parseSensor();
-//                if (status) return status;
+                } else if (keywordToken == "led") {
+                    // Skip LEDs, we don't need them for Key Mapper
+                    mTokenizer->nextLine();
+                    continue;
+                } else if (keywordToken == "sensor") {
+                    // Skip Sensors, we don't need them for Key Mapper
+                    mTokenizer->nextLine();
+                    continue;
                 } else if (keywordToken == "requires_kernel_config") {
                     mTokenizer->skipDelimiters(WHITESPACE);
                     status_t status = parseRequiredKernelConfig();
@@ -237,8 +238,9 @@ namespace android {
                 }
 
                 mTokenizer->skipDelimiters(WHITESPACE);
+
                 if (!mTokenizer->isEol() && mTokenizer->peekChar() != '#') {
-                    LOGE("%s: Expected end of line or trailing comment, got '%s'.",
+                    LOGW("%s: Expected end of line or trailing comment, got '%s'.",
                          mTokenizer->getLocation().c_str(),
                          mTokenizer->peekRemainderOfLine().c_str());
                     return BAD_VALUE;
@@ -276,10 +278,11 @@ namespace android {
         mTokenizer->skipDelimiters(WHITESPACE);
         String8 keyCodeToken = mTokenizer->nextToken(WHITESPACE);
         std::optional<int> keyCode = InputEventLookup::getKeyCodeByLabel(keyCodeToken.c_str());
+
         if (!keyCode) {
-            LOGE("%s: Expected key code label, got '%s'.", mTokenizer->getLocation().c_str(),
+            LOGW("%s: Unknown key code label %s", mTokenizer->getLocation().c_str(),
                  keyCodeToken.c_str());
-            return BAD_VALUE;
+            // Do not crash at this point because there may be more flags afterwards that need parsing.
         }
 
         uint32_t flags = 0;
@@ -305,10 +308,14 @@ namespace android {
         ALOGD_IF(DEBUG_PARSER, "Parsed key %s: code=%d, keyCode=%d, flags=0x%08x.",
                  mapUsage ? "usage" : "scan code", *code, *keyCode, flags);
 
-        Key key;
-        key.keyCode = *keyCode;
-        key.flags = flags;
-        map.insert({*code, key});
+        // The key code may be unknown so only insert a key if it is.
+        if (keyCode) {
+            Key key;
+            key.keyCode = *keyCode;
+            key.flags = flags;
+            map.insert({*code, key});
+        }
+
         return NO_ERROR;
     }
 
