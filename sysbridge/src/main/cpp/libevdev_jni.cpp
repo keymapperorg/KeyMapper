@@ -14,7 +14,7 @@
 extern "C"
 JNIEXPORT jstring JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNIEnv *env, jobject) {
-    char *input_file_path = "/dev/input/event6";
+    char *input_file_path = "/dev/input/event12";
     struct libevdev *dev = NULL;
     int fd;
     int rc = 1;
@@ -73,11 +73,13 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNI
         rc = libevdev_next_event(dev, LIBEVDEV_READ_FLAG_NORMAL, &ev);
         if (rc == 0)
             __android_log_print(ANDROID_LOG_ERROR, "Key Mapper",
-                                "Event: %s %s %d, Event code: %d\n",
+                                "Event: %s %s %d, Event code: %d, Time: %ld.%ld\n",
                                 libevdev_event_type_get_name(ev.type),
                                 libevdev_event_code_get_name(ev.type, ev.code),
                                 ev.value,
-                                ev.code);
+                                ev.code,
+                                ev.time.tv_sec,
+                                ev.time.tv_usec);
 
         int32_t outKeycode = -1;
         uint32_t outFlags = -1;
