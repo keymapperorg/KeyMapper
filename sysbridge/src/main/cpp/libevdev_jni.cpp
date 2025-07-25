@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <android/log.h>
 #include "libevdev/libevdev.h"
+#include "libevdev/libevdev-uinput.h"
 
 #define LOG_TAG "KeyMapperSystemBridge"
 
@@ -15,7 +16,7 @@ extern "C"
 JNIEXPORT jstring JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNIEnv *env, jobject) {
     char *input_file_path = "/dev/input/event12";
-    struct libevdev *dev = NULL;
+    struct libevdev *dev = nullptr;
     int fd;
     int rc = 1;
 
@@ -60,13 +61,20 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNI
 
     LOGE("Key layout path = %s", keyLayoutMapPath.c_str());
 
-    auto keyLayoutResult = android::KeyLayoutMap::load("/system/usr/keylayout/Generic.kl", nullptr);
+    auto keyLayoutResult = android::KeyLayoutMap::load(keyLayoutMapPath, nullptr);
 
     if (keyLayoutResult.ok()) {
         LOGE("KEY LAYOUT RESULT OKAY");
     } else {
         LOGE("KEY LAYOUT RESULT FAILED");
     }
+
+    // Create a virtual device that is a duplicate of the existing one.
+//    struct libevdev_uinput *virtual_dev_uninput = nullptr;
+//    int uinput_fd = open("/dev/uinput", O_RDWR);
+//    libevdev_uinput_create_from_device(dev, uinput_fd, &virtual_dev_uninput);
+//    const char *virtual_dev_path = libevdev_uinput_get_devnode(virtual_dev_uninput);
+//    LOGE("Virtual keyboard device: %s", virtual_dev_path);
 
     do {
         struct input_event ev;
@@ -86,6 +94,7 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNI
         keyLayoutResult.value()->mapKey(ev.code, 0, &outKeycode, &outFlags);
 
         LOGE("Key code = %d Flags = %d", outKeycode, outFlags);
+//        libevdev_uinput_write_event(virtual_dev_uninput, ev.type, ev.code, ev.value);
 
     } while (rc == 1 || rc == 0 || rc == -EAGAIN);
 
