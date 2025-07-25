@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.base.keymaps.detection
 
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
-import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
+import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import io.github.sds100.keymapper.system.root.SuAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -10,7 +10,7 @@ import kotlinx.coroutines.Job
 class DetectScreenOffKeyEventsController(
     private val suAdapter: SuAdapter,
     private val devicesAdapter: DevicesAdapter,
-    private val onKeyEvent: suspend (event: MyKeyEvent) -> Unit,
+    private val onKeyEvent: suspend (event: KMKeyEvent) -> Unit,
 ) {
 
     companion object {

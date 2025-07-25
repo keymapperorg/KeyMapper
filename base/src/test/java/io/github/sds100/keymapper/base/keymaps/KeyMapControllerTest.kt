@@ -33,8 +33,8 @@ import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
-import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
-import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
+import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
+import io.github.sds100.keymapper.system.inputevents.KMMotionEvent
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import junitparams.JUnitParamsRunner
 import junitparams.Parameters
@@ -4180,8 +4180,8 @@ class KeyMapControllerTest {
         axisHatY: Float = 0.0f,
         device: InputDeviceInfo = FAKE_CONTROLLER_INPUT_DEVICE,
         isDpad: Boolean = true,
-    ): MyMotionEvent {
-        return MyMotionEvent(
+    ): KMMotionEvent {
+        return KMMotionEvent(
             metaState = 0,
             device = device,
             axisHatX = axisHatX,
@@ -4195,7 +4195,7 @@ class KeyMapControllerTest {
         axisHatY: Float = 0.0f,
         device: InputDeviceInfo = FAKE_CONTROLLER_INPUT_DEVICE,
     ): Boolean = controller.onMotionEvent(
-        MyMotionEvent(
+        KMMotionEvent(
             metaState = 0,
             device = device,
             axisHatX = axisHatX,
@@ -4212,7 +4212,7 @@ class KeyMapControllerTest {
         scanCode: Int = 0,
         repeatCount: Int = 0,
     ): Boolean = controller.onKeyEvent(
-        MyKeyEvent(
+        KMKeyEvent(
             keyCode = keyCode,
             action = action,
             metaState = metaState ?: 0,

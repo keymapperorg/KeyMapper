@@ -8,6 +8,7 @@ import android.view.KeyCharacterMap
 import android.view.KeyEvent
 import io.github.sds100.keymapper.common.utils.InputEventType
 import io.github.sds100.keymapper.system.inputevents.InputEventInjector
+import io.github.sds100.keymapper.system.inputevents.createKeyEvent
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
@@ -79,7 +80,7 @@ class ImeInputEventInjectorImpl(
 
             val eventTime = SystemClock.uptimeMillis()
 
-            val keyEvent = createInjectedKeyEvent(eventTime, action, model)
+            val keyEvent = createKeyEvent(eventTime, action, model)
 
             putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT, keyEvent)
 
@@ -92,14 +93,14 @@ class ImeInputEventInjectorImpl(
 
         when (model.inputType) {
             InputEventType.DOWN_UP -> {
-                val downKeyEvent = createInjectedKeyEvent(eventTime, KeyEvent.ACTION_DOWN, model)
+                val downKeyEvent = createKeyEvent(eventTime, KeyEvent.ACTION_DOWN, model)
                 keyEventRelayService.sendKeyEvent(
                     downKeyEvent,
                     imePackageName,
                     CALLBACK_ID_INPUT_METHOD,
                 )
 
-                val upKeyEvent = createInjectedKeyEvent(eventTime, KeyEvent.ACTION_UP, model)
+                val upKeyEvent = createKeyEvent(eventTime, KeyEvent.ACTION_UP, model)
                 keyEventRelayService.sendKeyEvent(
                     upKeyEvent,
                     imePackageName,
@@ -108,7 +109,7 @@ class ImeInputEventInjectorImpl(
             }
 
             InputEventType.DOWN -> {
-                val downKeyEvent = createInjectedKeyEvent(eventTime, KeyEvent.ACTION_DOWN, model)
+                val downKeyEvent = createKeyEvent(eventTime, KeyEvent.ACTION_DOWN, model)
                 keyEventRelayService.sendKeyEvent(
                     downKeyEvent,
                     imePackageName,
@@ -117,7 +118,7 @@ class ImeInputEventInjectorImpl(
             }
 
             InputEventType.UP -> {
-                val upKeyEvent = createInjectedKeyEvent(eventTime, KeyEvent.ACTION_UP, model)
+                val upKeyEvent = createKeyEvent(eventTime, KeyEvent.ACTION_UP, model)
                 keyEventRelayService.sendKeyEvent(
                     upKeyEvent,
                     imePackageName,

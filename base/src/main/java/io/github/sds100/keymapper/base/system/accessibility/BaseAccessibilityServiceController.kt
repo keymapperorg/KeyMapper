@@ -33,8 +33,8 @@ import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
-import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
-import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
+import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
+import io.github.sds100.keymapper.system.inputevents.KMMotionEvent
 import io.github.sds100.keymapper.system.root.SuAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -372,7 +372,7 @@ abstract class BaseAccessibilityServiceController(
     /**
      * Returns an MyKeyEvent which is either the same or more unique
      */
-    private fun getUniqueEvent(event: MyKeyEvent): MyKeyEvent {
+    private fun getUniqueEvent(event: KMKeyEvent): KMKeyEvent {
         // Guard to ignore processing when not applicable
         if (event.keyCode != KeyEvent.KEYCODE_UNKNOWN) return event
 
@@ -393,7 +393,7 @@ abstract class BaseAccessibilityServiceController(
     }
 
     fun onKeyEvent(
-        event: MyKeyEvent,
+        event: KMKeyEvent,
         detectionSource: KeyEventDetectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
     ): Boolean {
         val detailedLogInfo = event.toString()
@@ -402,7 +402,7 @@ abstract class BaseAccessibilityServiceController(
             if (event.action == KeyEvent.ACTION_DOWN) {
                 Timber.d("Recorded key ${KeyEvent.keyCodeToString(event.keyCode)}, $detailedLogInfo")
 
-                val uniqueEvent: MyKeyEvent = getUniqueEvent(event)
+                val uniqueEvent: KMKeyEvent = getUniqueEvent(event)
 
                 service.lifecycleScope.launch {
                     outputEvents.emit(
@@ -426,7 +426,7 @@ abstract class BaseAccessibilityServiceController(
         } else {
             try {
                 var consume: Boolean
-                val uniqueEvent: MyKeyEvent = getUniqueEvent(event)
+                val uniqueEvent: KMKeyEvent = getUniqueEvent(event)
 
                 consume = keyMapController.onKeyEvent(uniqueEvent)
 
@@ -448,7 +448,7 @@ abstract class BaseAccessibilityServiceController(
         return false
     }
 
-    fun onKeyEventFromIme(event: MyKeyEvent): Boolean {
+    fun onKeyEventFromIme(event: KMKeyEvent): Boolean {
         /*
         Issue #850
         If a volume key is sent while the phone is ringing or in a call
@@ -469,7 +469,7 @@ abstract class BaseAccessibilityServiceController(
         )
     }
 
-    fun onMotionEventFromIme(event: MyMotionEvent): Boolean {
+    fun onMotionEventFromIme(event: KMMotionEvent): Boolean {
         if (isPaused.value) {
             return false
         }

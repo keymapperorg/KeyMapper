@@ -33,8 +33,8 @@ import io.github.sds100.keymapper.common.utils.MathUtils
 import io.github.sds100.keymapper.common.utils.PinchScreenType
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.devices.InputDeviceUtils
-import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
-import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
+import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
+import io.github.sds100.keymapper.system.inputevents.KMMotionEvent
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapperImpl
 import kotlinx.coroutines.flow.Flow
@@ -151,7 +151,7 @@ abstract class BaseAccessibilityService :
 
                 return getController()
                     ?.onKeyEventFromIme(
-                        MyKeyEvent(
+                        KMKeyEvent(
                             keyCode = event.keyCode,
                             action = event.action,
                             metaState = event.metaState,
@@ -167,7 +167,7 @@ abstract class BaseAccessibilityService :
                 event ?: return false
 
                 return getController()
-                    ?.onMotionEventFromIme(MyMotionEvent.fromMotionEvent(event))
+                    ?.onMotionEventFromIme(KMMotionEvent.fromMotionEvent(event))
                     ?: return false
             }
         }
@@ -313,7 +313,7 @@ abstract class BaseAccessibilityService :
         }
 
         return getController()?.onKeyEvent(
-            MyKeyEvent(
+            KMKeyEvent(
                 keyCode = event.keyCode,
                 action = event.action,
                 metaState = event.metaState,

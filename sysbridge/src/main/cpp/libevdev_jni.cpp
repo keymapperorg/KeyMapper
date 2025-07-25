@@ -94,6 +94,7 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNI
         keyLayoutResult.value()->mapKey(ev.code, 0, &outKeycode, &outFlags);
 
         LOGE("Key code = %d Flags = %d", outKeycode, outFlags);
+
 //        libevdev_uinput_write_event(virtual_dev_uninput, ev.type, ev.code, ev.value);
 
     } while (rc == 1 || rc == 0 || rc == -EAGAIN);

@@ -7,6 +7,7 @@ import android.os.SystemClock
 import android.view.KeyEvent
 import io.github.sds100.keymapper.common.utils.InputEventType
 import io.github.sds100.keymapper.system.inputevents.InputEventInjector
+import io.github.sds100.keymapper.system.inputevents.createKeyEvent
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -39,7 +40,7 @@ class ShizukuInputEventInjector : InputEventInjector {
 
         val eventTime = SystemClock.uptimeMillis()
 
-        val keyEvent = createInjectedKeyEvent(eventTime, action, model)
+        val keyEvent = createKeyEvent(eventTime, action, model)
 
         withContext(Dispatchers.IO) {
             // MUST wait for the application to finish processing the event before sending the next one.

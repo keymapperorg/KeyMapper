@@ -8,7 +8,7 @@ import io.github.sds100.keymapper.system.devices.InputDeviceUtils
  * This is our own abstraction over MotionEvent so that it is easier to write tests and read
  * values without relying on the Android SDK.
  */
-data class MyMotionEvent(
+data class KMMotionEvent(
     val metaState: Int,
     val device: InputDeviceInfo?,
     val axisHatX: Float,
@@ -16,8 +16,8 @@ data class MyMotionEvent(
     val isDpad: Boolean,
 ) {
     companion object {
-        fun fromMotionEvent(event: MotionEvent): MyMotionEvent {
-            return MyMotionEvent(
+        fun fromMotionEvent(event: MotionEvent): KMMotionEvent {
+            return KMMotionEvent(
                 metaState = event.metaState,
                 device = event.device?.let { InputDeviceUtils.createInputDeviceInfo(it) },
                 axisHatX = event.getAxisValue(MotionEvent.AXIS_HAT_X),

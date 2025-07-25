@@ -4,8 +4,8 @@ import android.view.InputDevice
 import android.view.KeyEvent
 import io.github.sds100.keymapper.base.keymaps.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
-import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
-import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
+import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
+import io.github.sds100.keymapper.system.inputevents.KMMotionEvent
 import junitparams.JUnitParamsRunner
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.MatcherAssert.assertThat
@@ -60,7 +60,7 @@ class DpadMotionEventTrackerTest {
         assertThat(
             keyEvents,
             hasItem(
-                MyKeyEvent(
+                KMKeyEvent(
                     KeyEvent.KEYCODE_DPAD_LEFT,
                     KeyEvent.ACTION_UP,
                     metaState = 0,
@@ -74,7 +74,7 @@ class DpadMotionEventTrackerTest {
         assertThat(
             keyEvents,
             hasItem(
-                MyKeyEvent(
+                KMKeyEvent(
                     KeyEvent.KEYCODE_DPAD_UP,
                     KeyEvent.ACTION_UP,
                     metaState = 0,
@@ -258,8 +258,8 @@ class DpadMotionEventTrackerTest {
         axisHatY: Float = 0.0f,
         device: InputDeviceInfo = CONTROLLER_1_DEVICE,
         isDpad: Boolean = true,
-    ): MyMotionEvent {
-        return MyMotionEvent(
+    ): KMMotionEvent {
+        return KMMotionEvent(
             metaState = 0,
             device = device,
             axisHatX = axisHatX,
@@ -268,8 +268,8 @@ class DpadMotionEventTrackerTest {
         )
     }
 
-    private fun createDownKeyEvent(keyCode: Int, device: InputDeviceInfo): MyKeyEvent {
-        return MyKeyEvent(
+    private fun createDownKeyEvent(keyCode: Int, device: InputDeviceInfo): KMKeyEvent {
+        return KMKeyEvent(
             keyCode = keyCode,
             action = KeyEvent.ACTION_DOWN,
             metaState = 0,
@@ -280,8 +280,8 @@ class DpadMotionEventTrackerTest {
         )
     }
 
-    private fun createUpKeyEvent(keyCode: Int, device: InputDeviceInfo): MyKeyEvent {
-        return MyKeyEvent(
+    private fun createUpKeyEvent(keyCode: Int, device: InputDeviceInfo): KMKeyEvent {
+        return KMKeyEvent(
             keyCode = keyCode,
             action = KeyEvent.ACTION_UP,
             metaState = 0,

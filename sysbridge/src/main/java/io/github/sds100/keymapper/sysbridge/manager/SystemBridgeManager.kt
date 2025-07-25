@@ -26,6 +26,7 @@ class SystemBridgeManagerImpl @Inject constructor(
         synchronized(lock) {
             this.systemBridge = ISystemBridge.Stub.asInterface(binder)
 
+            // TODO remove
             this.systemBridge?.sendEvent()
         }
     }

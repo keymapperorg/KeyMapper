@@ -7,7 +7,7 @@ import dagger.assisted.AssistedInject
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.common.utils.InputEventType
 import io.github.sds100.keymapper.system.devices.InputDeviceInfo
-import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
+import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -45,7 +45,7 @@ class RerouteKeyEventsController @AssistedInject constructor(
      */
     private var repeatJob: Job? = null
 
-    fun onKeyEvent(event: MyKeyEvent): Boolean {
+    fun onKeyEvent(event: KMKeyEvent): Boolean {
         if (!useCase.shouldRerouteKeyEvent(event.device?.descriptor)) {
             return false
         }

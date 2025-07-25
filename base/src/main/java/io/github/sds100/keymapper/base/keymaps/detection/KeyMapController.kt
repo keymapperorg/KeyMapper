@@ -28,8 +28,8 @@ import io.github.sds100.keymapper.common.utils.minusFlag
 import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
-import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
-import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
+import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
+import io.github.sds100.keymapper.system.inputevents.KMMotionEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -569,7 +569,7 @@ class KeyMapController(
         }
     }
 
-    fun onMotionEvent(event: MyMotionEvent): Boolean {
+    fun onMotionEvent(event: KMMotionEvent): Boolean {
         if (!detectKeyMaps) return false
 
         // See https://developer.android.com/develop/ui/views/touch-and-input/game-controllers/controller-input#dpad
@@ -594,7 +594,7 @@ class KeyMapController(
     /**
      * @return whether to consume the [KeyEvent].
      */
-    fun onKeyEvent(keyEvent: MyKeyEvent): Boolean {
+    fun onKeyEvent(keyEvent: KMKeyEvent): Boolean {
         if (!detectKeyMaps) return false
 
         if (dpadMotionEventTracker.onKeyEvent(keyEvent)) {
@@ -612,7 +612,7 @@ class KeyMapController(
         return onKeyEventPostFilter(keyEvent)
     }
 
-    private fun onKeyEventPostFilter(keyEvent: MyKeyEvent): Boolean {
+    private fun onKeyEventPostFilter(keyEvent: KMKeyEvent): Boolean {
         metaStateFromKeyEvent = keyEvent.metaState
 
         // remove the metastate from any modifier keys that remapped and are pressed down
