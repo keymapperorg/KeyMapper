@@ -14,4 +14,4 @@ data class KMKeyEvent(
     val device: InputDeviceInfo?,
     val repeatCount: Int,
     val source: Int,
-)
+) : KMInputEvent

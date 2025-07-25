@@ -14,7 +14,7 @@ data class KMMotionEvent(
     val axisHatX: Float,
     val axisHatY: Float,
     val isDpad: Boolean,
-) {
+) : KMInputEvent {
     companion object {
         fun fromMotionEvent(event: MotionEvent): KMMotionEvent {
             return KMMotionEvent(
