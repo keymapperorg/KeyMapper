@@ -23,7 +23,7 @@ import timber.log.Timber
 import kotlin.system.exitProcess
 
 @SuppressLint("LogNotTimber")
-class SystemBridge : ISystemBridge.Stub() {
+internal class SystemBridge : ISystemBridge.Stub() {
 
     // TODO observe if Key Mapper is uninstalled and stop the process. Look at ApkChangedObservers in Shizuku code.
 

@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.sysbridge.service
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.preference.PreferenceManager
@@ -26,6 +27,7 @@ import javax.inject.Singleton
 /**
  * This starter code is taken from the Shizuku project.
  */
+
 @Singleton
 class SystemBridgeSetupControllerImpl @Inject constructor(
     @ApplicationContext private val ctx: Context,
@@ -127,7 +129,6 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun writeStarterFiles() {
         coroutineScope.launch(Dispatchers.IO) {
             try {
@@ -202,6 +203,8 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     }
 }
 
+@SuppressLint("ObsoleteSdkInt")
+@RequiresApi(Build.VERSION_CODES.Q)
 interface SystemBridgeSetupController {
     @RequiresApi(Build.VERSION_CODES.R)
     fun pairWirelessAdb(port: Int, code: Int)

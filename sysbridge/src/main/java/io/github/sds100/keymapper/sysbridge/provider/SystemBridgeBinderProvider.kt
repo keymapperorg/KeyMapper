@@ -19,7 +19,7 @@ import timber.log.Timber
  * This provider receives the Binder from the system bridge. When app process starts,
  * the system bridge (it runs under adb/root) will send the binder to client apps with this provider.
  */
-class SystemBridgeBinderProvider : ContentProvider() {
+internal class SystemBridgeBinderProvider : ContentProvider() {
     companion object {
         // For receive Binder from Shizuku
         const val METHOD_SEND_BINDER: String = "sendBinder"

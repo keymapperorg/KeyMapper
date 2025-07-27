@@ -5,7 +5,7 @@ import android.content.IContentProvider
 import android.os.Build
 import android.os.Bundle
 
-object IContentProviderUtils {
+internal object IContentProviderUtils {
 
     @Throws(android.os.RemoteException::class)
     fun callCompat(

@@ -5,7 +5,6 @@ import android.os.Build
 import android.os.UserManager
 import android.system.ErrnoException
 import android.system.Os
-import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.sysbridge.R
 import io.github.sds100.keymapper.sysbridge.ktx.createDeviceProtectedStorageContextCompat
 import io.github.sds100.keymapper.sysbridge.ktx.logd
@@ -22,8 +21,7 @@ import java.io.InputStreamReader
 import java.io.PrintWriter
 import java.util.zip.ZipFile
 
-@RequiresApi(Build.VERSION_CODES.M)
-object Starter {
+internal object Starter {
 
     private var commandInternal = arrayOfNulls<String>(2)
 

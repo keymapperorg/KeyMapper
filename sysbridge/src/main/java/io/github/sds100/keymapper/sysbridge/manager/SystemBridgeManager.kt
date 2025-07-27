@@ -1,9 +1,12 @@
 package io.github.sds100.keymapper.sysbridge.manager
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.hardware.input.InputManager
+import android.os.Build
 import android.os.IBinder
 import android.view.InputDevice
+import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.getBluetoothAddress
@@ -59,4 +62,6 @@ class SystemBridgeManagerImpl @Inject constructor(
     }
 }
 
+@SuppressLint("ObsoleteSdkInt")
+@RequiresApi(Build.VERSION_CODES.Q)
 interface SystemBridgeManager
