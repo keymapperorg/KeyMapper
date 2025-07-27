@@ -10,63 +10,45 @@
 #include <string>
 #include <vector>
 #include <android/binder_interface_utils.h>
-
 #ifdef BINDER_STABILITY_SUPPORT
 #include <android/binder_stability.h>
 #endif  // BINDER_STABILITY_SUPPORT
 
 namespace aidl {
-    namespace io {
-        namespace github {
-            namespace sds100 {
-                namespace keymapper {
-                    namespace sysbridge {
-                        class IEvdevCallbackDelegator;
+namespace io {
+namespace github {
+namespace sds100 {
+namespace keymapper {
+namespace sysbridge {
+class IEvdevCallbackDelegator;
 
-                        class IEvdevCallback : public ::ndk::ICInterface {
-                        public:
-                            typedef IEvdevCallbackDelegator DefaultDelegator;
-                            static const char *descriptor;
+class IEvdevCallback : public ::ndk::ICInterface {
+public:
+  typedef IEvdevCallbackDelegator DefaultDelegator;
+  static const char* descriptor;
+  IEvdevCallback();
+  virtual ~IEvdevCallback();
 
-                            IEvdevCallback();
+  static constexpr uint32_t TRANSACTION_onEvdevEvent = FIRST_CALL_TRANSACTION + 0;
 
-                            virtual ~IEvdevCallback();
-
-                            static constexpr uint32_t TRANSACTION_onEvdevEvent =
-                                    FIRST_CALL_TRANSACTION + 0;
-
-                            static std::shared_ptr<IEvdevCallback>
-                            fromBinder(const ::ndk::SpAIBinder &binder);
-
-                            static binder_status_t writeToParcel(AParcel *parcel,
-                                                                 const std::shared_ptr<IEvdevCallback> &instance);
-
-                            static binder_status_t readFromParcel(const AParcel *parcel,
-                                                                  std::shared_ptr<IEvdevCallback> *instance);
-
-                            static bool setDefaultImpl(const std::shared_ptr<IEvdevCallback> &impl);
-
-                            static const std::shared_ptr<IEvdevCallback> &getDefaultImpl();
-
-                            virtual ::ndk::ScopedAStatus
-                            onEvdevEvent(int32_t in_type, int32_t in_code, int32_t in_value) = 0;
-
-                        private:
-                            static std::shared_ptr<IEvdevCallback> default_impl;
-                        };
-
-                        class IEvdevCallbackDefault : public IEvdevCallback {
-                        public:
-                            ::ndk::ScopedAStatus onEvdevEvent(int32_t in_type, int32_t in_code,
-                                                              int32_t in_value) override;
-
-                            ::ndk::SpAIBinder asBinder() override;
-
-                            bool isRemote() override;
-                        };
-                    }  // namespace sysbridge
-                }  // namespace keymapper
-            }  // namespace sds100
-        }  // namespace github
-    }  // namespace io
+  static std::shared_ptr<IEvdevCallback> fromBinder(const ::ndk::SpAIBinder& binder);
+  static binder_status_t writeToParcel(AParcel* parcel, const std::shared_ptr<IEvdevCallback>& instance);
+  static binder_status_t readFromParcel(const AParcel* parcel, std::shared_ptr<IEvdevCallback>* instance);
+  static bool setDefaultImpl(const std::shared_ptr<IEvdevCallback>& impl);
+  static const std::shared_ptr<IEvdevCallback>& getDefaultImpl();
+  virtual ::ndk::ScopedAStatus onEvdevEvent(int32_t in_type, int32_t in_code, int32_t in_value) = 0;
+private:
+  static std::shared_ptr<IEvdevCallback> default_impl;
+};
+class IEvdevCallbackDefault : public IEvdevCallback {
+public:
+  ::ndk::ScopedAStatus onEvdevEvent(int32_t in_type, int32_t in_code, int32_t in_value) override;
+  ::ndk::SpAIBinder asBinder() override;
+  bool isRemote() override;
+};
+}  // namespace sysbridge
+}  // namespace keymapper
+}  // namespace sds100
+}  // namespace github
+}  // namespace io
 }  // namespace aidl

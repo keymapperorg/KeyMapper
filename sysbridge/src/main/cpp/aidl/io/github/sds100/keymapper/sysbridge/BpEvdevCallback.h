@@ -9,23 +9,21 @@
 #include <android/binder_ibinder.h>
 
 namespace aidl {
-    namespace io {
-        namespace github {
-            namespace sds100 {
-                namespace keymapper {
-                    namespace sysbridge {
-                        class BpEvdevCallback : public ::ndk::BpCInterface<IEvdevCallback> {
-                        public:
-                            explicit BpEvdevCallback(const ::ndk::SpAIBinder &binder);
+namespace io {
+namespace github {
+namespace sds100 {
+namespace keymapper {
+namespace sysbridge {
+class BpEvdevCallback : public ::ndk::BpCInterface<IEvdevCallback> {
+public:
+  explicit BpEvdevCallback(const ::ndk::SpAIBinder& binder);
+  virtual ~BpEvdevCallback();
 
-                            virtual ~BpEvdevCallback();
-
-                            ::ndk::ScopedAStatus onEvdevEvent(int32_t in_type, int32_t in_code,
-                                                              int32_t in_value) override;
-                        };
-                    }  // namespace sysbridge
-                }  // namespace keymapper
-            }  // namespace sds100
-        }  // namespace github
-    }  // namespace io
+  ::ndk::ScopedAStatus onEvdevEvent(int32_t in_type, int32_t in_code, int32_t in_value) override;
+};
+}  // namespace sysbridge
+}  // namespace keymapper
+}  // namespace sds100
+}  // namespace github
+}  // namespace io
 }  // namespace aidl

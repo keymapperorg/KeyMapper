@@ -16,42 +16,35 @@
 #endif
 
 namespace aidl {
-    namespace io {
-        namespace github {
-            namespace sds100 {
-                namespace keymapper {
-                    namespace sysbridge {
-                        class BnEvdevCallback : public ::ndk::BnCInterface<IEvdevCallback> {
-                        public:
-                            BnEvdevCallback();
+namespace io {
+namespace github {
+namespace sds100 {
+namespace keymapper {
+namespace sysbridge {
+class BnEvdevCallback : public ::ndk::BnCInterface<IEvdevCallback> {
+public:
+  BnEvdevCallback();
+  virtual ~BnEvdevCallback();
+protected:
+  ::ndk::SpAIBinder createBinder() override;
+private:
+};
+class IEvdevCallbackDelegator : public BnEvdevCallback {
+public:
+  explicit IEvdevCallbackDelegator(const std::shared_ptr<IEvdevCallback> &impl) : _impl(impl) {
+  }
 
-                            virtual ~BnEvdevCallback();
+  ::ndk::ScopedAStatus onEvdevEvent(int32_t in_type, int32_t in_code, int32_t in_value) override {
+    return _impl->onEvdevEvent(in_type, in_code, in_value);
+  }
+protected:
+private:
+  std::shared_ptr<IEvdevCallback> _impl;
+};
 
-                        protected:
-                            ::ndk::SpAIBinder createBinder() override;
-
-                        private:
-                        };
-
-                        class IEvdevCallbackDelegator : public BnEvdevCallback {
-                        public:
-                            explicit IEvdevCallbackDelegator(
-                                    const std::shared_ptr<IEvdevCallback> &impl) : _impl(impl) {
-                            }
-
-                            ::ndk::ScopedAStatus onEvdevEvent(int32_t in_type, int32_t in_code,
-                                                              int32_t in_value) override {
-                                return _impl->onEvdevEvent(in_type, in_code, in_value);
-                            }
-
-                        protected:
-                        private:
-                            std::shared_ptr<IEvdevCallback> _impl;
-                        };
-
-                    }  // namespace sysbridge
-                }  // namespace keymapper
-            }  // namespace sds100
-        }  // namespace github
-    }  // namespace io
+}  // namespace sysbridge
+}  // namespace keymapper
+}  // namespace sds100
+}  // namespace github
+}  // namespace io
 }  // namespace aidl
