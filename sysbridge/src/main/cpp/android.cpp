@@ -3,6 +3,7 @@
 #include <climits>
 #include <fcntl.h>
 #include <unistd.h>
+#include <cstdlib>
 
 namespace android {
 

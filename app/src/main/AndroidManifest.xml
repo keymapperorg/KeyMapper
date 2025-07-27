@@ -5,9 +5,15 @@
     <uses-feature
         android:name="android.software.leanback"
         android:required="false" />
+
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
+
+    <!--  This is required because sysbridge has a min sdk of 29 since it depends
+      on the binder-ndk library. Building will fail without this because the min sdk
+      of the app is 21.-->
+    <uses-sdk tools:overrideLibrary="io.github.sds100.keymapper.sysbridge" />
 
     <application
         android:name="io.github.sds100.keymapper.KeyMapperApp"

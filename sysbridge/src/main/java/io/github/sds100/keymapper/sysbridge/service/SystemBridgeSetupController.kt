@@ -42,6 +42,9 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             startWithAdb()
         }
+
+        Timber.e("NATIVE LIB = ${ctx.applicationInfo.nativeLibraryDir}")
+        System.loadLibrary("evdev")
     }
 
     // TODO clean up

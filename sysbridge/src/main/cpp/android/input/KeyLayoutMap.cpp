@@ -29,8 +29,8 @@
 #include "../liblog/log_main.h"
 #include "Input.h"
 
-#define DEBUG_MAPPING true
-#define DEBUG_PARSER true
+#define DEBUG_MAPPING false
+#define DEBUG_PARSER false
 
 // Enables debug output for parser performance.
 #define DEBUG_PARSER_PERFORMANCE 0
@@ -308,7 +308,7 @@ namespace android {
         ALOGD_IF(DEBUG_PARSER, "Parsed key %s: code=%d, keyCode=%d, flags=0x%08x.",
                  mapUsage ? "usage" : "scan code", *code, *keyCode, flags);
 
-        // The key code may be unknown so only insert a key if it is.
+        // The key code may be unknown so only insert a key if it is known.
         if (keyCode) {
             Key key;
             key.keyCode = *keyCode;

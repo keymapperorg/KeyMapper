@@ -26,13 +26,13 @@ import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjectorImpl
 import io.github.sds100.keymapper.base.trigger.KeyEventDetectionSource
+import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.InputEventType
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.MathUtils
 import io.github.sds100.keymapper.common.utils.PinchScreenType
 import io.github.sds100.keymapper.common.utils.Success
-import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import io.github.sds100.keymapper.system.inputevents.KMMotionEvent
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter

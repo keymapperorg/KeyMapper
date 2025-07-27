@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.base.actions.sound.SoundFileInfo
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.data.Keys
@@ -12,7 +13,6 @@ import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
-import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.permissions.Permission

@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.system.devices
+package io.github.sds100.keymapper.common.utils
 
 import android.os.Build
 import android.view.InputDevice
@@ -36,3 +36,29 @@ val InputDevice.isExternalCompat: Boolean
             false
         }
     }
+
+fun InputDevice.getBluetoothAddress(): String? {
+    return try {
+        val m: Method = InputDevice::class.java.getMethod("getBluetoothAddress")
+        (m.invoke(this) as String?)
+    } catch (e: NoSuchMethodException) {
+        null
+    } catch (e: IllegalAccessException) {
+        null
+    } catch (e: InvocationTargetException) {
+        null
+    }
+}
+
+fun InputDevice.getDeviceBus(): Int {
+    return try {
+        val m: Method = InputDevice::class.java.getMethod("getDeviceBus")
+        (m.invoke(this) as Int)
+    } catch (e: NoSuchMethodException) {
+        -1
+    } catch (e: IllegalAccessException) {
+        -1
+    } catch (e: InvocationTargetException) {
+        -1
+    }
+}

@@ -21,7 +21,7 @@ if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
 
     set(C_FLAGS "${C_FLAGS} -O2 -fvisibility=hidden -fvisibility-inlines-hidden")
     set(LINKER_FLAGS "${LINKER_FLAGS} -Wl,-exclude-libs,ALL -Wl,--gc-sections")
-else()
+else ()
     message("Building Debug...")
 
     add_definitions(-DDEBUG)
@@ -93,13 +93,19 @@ add_library(evdev SHARED
         android/input/Input.cpp
         android/libbase/stringprintf.cpp)
 
+find_library(
+        binder_ndk-lib
+        binder_ndk
+)
+
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this
 # build script, prebuilt third-party libraries, or Android system libraries.
 target_link_libraries(evdev
         # List libraries link to the target library
         android
-        log)
+        log
+        ${binder_ndk-lib})
 
 # Add include directories for header files
 target_include_directories(evdev PRIVATE

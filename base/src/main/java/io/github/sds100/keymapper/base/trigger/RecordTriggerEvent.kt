@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.base.trigger
 
 import android.os.Parcelable
+import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
-import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 

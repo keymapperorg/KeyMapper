@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.system.inputevents
 
-import io.github.sds100.keymapper.system.devices.InputDeviceInfo
+import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 
 /**
  * This is our own abstraction over KeyEvent so that it is easier to write tests and read

@@ -25,8 +25,8 @@ import io.github.sds100.keymapper.base.utils.isFixable
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.KMError
-import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 
 class KeyMapListItemCreator(
     private val displayMapping: DisplayKeyMapUseCase,

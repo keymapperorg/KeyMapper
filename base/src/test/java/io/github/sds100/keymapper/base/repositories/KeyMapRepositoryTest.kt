@@ -2,11 +2,11 @@ package io.github.sds100.keymapper.base.repositories
 
 import io.github.sds100.keymapper.base.TestDispatcherProvider
 import io.github.sds100.keymapper.base.system.devices.FakeDevicesAdapter
+import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.repositories.RoomKeyMapRepository
-import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

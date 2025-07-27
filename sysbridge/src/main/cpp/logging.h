@@ -5,7 +5,7 @@
 #include "android/log.h"
 
 #ifndef LOG_TAG
-#define LOG_TAG    "Key Mapper"
+#define LOG_TAG    "KeyMapperSystemBridge"
 #endif
 
 #ifndef NO_LOG

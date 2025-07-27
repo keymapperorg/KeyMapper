@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -10,7 +11,8 @@ android {
     compileSdk = libs.versions.compile.sdk.get().toInt()
 
     defaultConfig {
-        minSdk = libs.versions.min.sdk.get().toInt()
+        // Must be API 29 so that the binder-ndk library can be found.
+        minSdk = 29
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -18,7 +20,12 @@ android {
         externalNativeBuild {
             cmake {
                 // -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON is required to get the app running on the Android 15. This is related to the new 16kB page size support.
-                arguments("-DANDROID_STL=c++_static", "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
+                // -DANDROID_WEAK_API_DEFS=ON is required so the libevdev_jni file can run code depending on the SDK. https://developer.android.com/ndk/guides/using-newer-apis
+                arguments(
+                    "-DANDROID_STL=c++_static",
+                    "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
+                    "-DANDROID_WEAK_API_DEFS=ON",
+                )
             }
         }
     }
@@ -46,7 +53,10 @@ android {
 
     packaging {
         jniLibs {
-            useLegacyPackaging = false
+            // This replaces extractNativeLibs option in the manifest. This is needed so the
+            // libraries are extracted to a location on disk where the system bridge process
+            // can access them. Start in Android 6.0, they are no longer extracted by default.
+            useLegacyPackaging = true
 
             // This is required on Android 15. Otherwise a java.lang.UnsatisfiedLinkError: dlopen failed: empty/missing DT_HASH/DT_GNU_HASH error is thrown.
             keepDebugSymbols.add("**/*.so")
@@ -65,6 +75,7 @@ android {
 
 dependencies {
     compileOnly(project(":systemstubs"))
+    compileOnly(project(":common"))
 
     implementation(libs.jakewharton.timber)
 
@@ -76,12 +87,11 @@ dependencies {
     ksp(libs.dagger.hilt.android.compiler)
 
     implementation(libs.rikka.hidden.compat)
-    implementation(libs.rikka.hidden.stub)
+    compileOnly(libs.rikka.hidden.stub)
 
     // From Shizuku :manager module build.gradle file.
     implementation("io.github.vvb2060.ndk:boringssl:20250114")
-//    implementation("dev.rikka.ndk.thirdparty:cxx:1.2.0")
-    implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
+    implementation("org.lsposed.hiddenapibypass:hiddenapibypass:6.1")
     implementation("org.bouncycastle:bcpkix-jdk15on:1.70")
     implementation("me.zhanghai.android.appiconloader:appiconloader:1.5.0")
     implementation("dev.rikka.rikkax.core:core-ktx:1.4.1")

@@ -5,8 +5,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
+import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.common.utils.InputEventType
-import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import kotlinx.coroutines.CoroutineScope

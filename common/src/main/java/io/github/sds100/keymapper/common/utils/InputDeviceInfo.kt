@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.system.devices
+package io.github.sds100.keymapper.common.utils
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

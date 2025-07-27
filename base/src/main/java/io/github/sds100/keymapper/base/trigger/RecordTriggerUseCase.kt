@@ -2,9 +2,9 @@ package io.github.sds100.keymapper.base.trigger
 
 import android.view.KeyEvent
 import io.github.sds100.keymapper.base.keymaps.detection.DpadMotionEventTracker
+import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
-import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputevents.KMMotionEvent
 import kotlinx.coroutines.CoroutineScope

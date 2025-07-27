@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.base.actions.keyevents
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.github.sds100.keymapper.base.actions.keyevent.ConfigKeyEventActionViewModel
 import io.github.sds100.keymapper.base.actions.keyevent.ConfigKeyEventUseCase
-import io.github.sds100.keymapper.system.devices.InputDeviceInfo
+import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

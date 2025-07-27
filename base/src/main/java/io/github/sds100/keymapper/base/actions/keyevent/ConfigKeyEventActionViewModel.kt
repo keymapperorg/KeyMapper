@@ -15,6 +15,8 @@ import io.github.sds100.keymapper.base.utils.navigation.NavigationProviderImpl
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.common.utils.InputDeviceInfo
+import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
@@ -26,8 +28,6 @@ import io.github.sds100.keymapper.common.utils.minusFlag
 import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.common.utils.withFlag
-import io.github.sds100.keymapper.system.devices.InputDeviceInfo
-import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

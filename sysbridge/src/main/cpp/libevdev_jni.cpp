@@ -11,11 +11,23 @@
 #include "android/input/KeyLayoutMap.h"
 #include "android/libbase/result.h"
 #include "android/input/InputDevice.h"
+#include <android/binder_ibinder_jni.h>
 
 extern "C"
-JNIEXPORT jstring JNICALL
-Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNIEnv *env, jobject) {
+JNIEXPORT jboolean JNICALL
+Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDevice(JNIEnv *env,
+                                                                               jobject thiz,
+                                                                               jobject deviceId,
+                                                                               jobject jcallbackBinder) {
+
+    if (__builtin_available(android 29, *)) {
+        LOGE("PRE BINDER");
+        AIBinder *callback = AIBinder_fromJavaBinder(env, jcallbackBinder);
+        LOGE("POST BINDER");
+    }
+
     char *input_file_path = "/dev/input/event12";
+    // TODO call libevdev_free when done with the object.
     struct libevdev *dev = nullptr;
     int fd;
     int rc = 1;
@@ -25,13 +37,10 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNI
     if (fd == -1) {
         LOGE("Failed to open input file (%s)",
              input_file_path);
-        return env->NewStringUTF("Failed");
     }
-
     rc = libevdev_new_from_fd(fd, &dev);
     if (rc < 0) {
         LOGE("Failed to init libevdev");
-        return env->NewStringUTF("Failed to init");
     }
 
     __android_log_print(ANDROID_LOG_ERROR, "Key Mapper", "Input device name: \"%s\"\n",
@@ -49,15 +58,15 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNI
 //    }
     libevdev_grab(dev, LIBEVDEV_GRAB);
 
-    android::InputDeviceIdentifier deviceId = android::InputDeviceIdentifier();
-    deviceId.bus = libevdev_get_id_bustype(dev);
-    deviceId.vendor = libevdev_get_id_vendor(dev);
-    deviceId.product = libevdev_get_id_product(dev);
-    deviceId.version = libevdev_get_id_version(dev);
-    deviceId.name = libevdev_get_name(dev);
+    android::InputDeviceIdentifier deviceIdentifier = android::InputDeviceIdentifier();
+    deviceIdentifier.bus = libevdev_get_id_bustype(dev);
+    deviceIdentifier.vendor = libevdev_get_id_vendor(dev);
+    deviceIdentifier.product = libevdev_get_id_product(dev);
+    deviceIdentifier.version = libevdev_get_id_version(dev);
+    deviceIdentifier.name = libevdev_get_name(dev);
 
     std::string keyLayoutMapPath = android::getInputDeviceConfigurationFilePathByDeviceIdentifier(
-            deviceId, android::InputDeviceConfigurationFileType::KEY_LAYOUT);
+            deviceIdentifier, android::InputDeviceConfigurationFileType::KEY_LAYOUT);
 
     LOGE("Key layout path = %s", keyLayoutMapPath.c_str());
 
@@ -99,5 +108,7 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stringFromJNI(JNI
 
     } while (rc == 1 || rc == 0 || rc == -EAGAIN);
 
-    return env->NewStringUTF("Hello!");
+    return true;
+
+
 }

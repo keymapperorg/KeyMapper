@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.system.inputevents
 
 import android.view.MotionEvent
-import io.github.sds100.keymapper.system.devices.InputDeviceInfo
-import io.github.sds100.keymapper.system.devices.InputDeviceUtils
+import io.github.sds100.keymapper.common.utils.InputDeviceInfo
+import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 
 /**
  * This is our own abstraction over MotionEvent so that it is easier to write tests and read

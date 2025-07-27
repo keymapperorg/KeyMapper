@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.base.trigger
 
-import io.github.sds100.keymapper.system.devices.InputDeviceInfo
+import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import kotlinx.serialization.Serializable
 
 @Serializable

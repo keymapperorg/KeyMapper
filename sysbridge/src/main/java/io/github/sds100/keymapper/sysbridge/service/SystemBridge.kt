@@ -8,12 +8,13 @@ import android.os.Binder
 import android.os.Bundle
 import android.os.IBinder
 import android.os.ServiceManager
-import android.system.Os
 import android.util.Log
+import io.github.sds100.keymapper.sysbridge.IEvdevCallback
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
 import io.github.sds100.keymapper.sysbridge.provider.BinderContainer
 import io.github.sds100.keymapper.sysbridge.provider.SystemBridgeBinderProvider
 import io.github.sds100.keymapper.sysbridge.utils.IContentProviderUtils
+import io.github.sds100.keymapper.sysbridge.utils.InputDeviceIdentifier
 import rikka.hidden.compat.ActivityManagerApis
 import rikka.hidden.compat.DeviceIdleControllerApis
 import rikka.hidden.compat.UserManagerApis
@@ -26,7 +27,10 @@ class SystemBridge : ISystemBridge.Stub() {
 
     // TODO observe if Key Mapper is uninstalled and stop the process. Look at ApkChangedObservers in Shizuku code.
 
-    external fun stringFromJNI(): String
+    external fun grabEvdevDevice(
+        deviceIdentifier: InputDeviceIdentifier,
+        binder: IBinder
+    ): Boolean
 
     companion object {
         private const val TAG: String = "SystemBridge"
@@ -160,6 +164,7 @@ class SystemBridge : ISystemBridge.Stub() {
 
         // TODO use the process observer to rebind when key mapper starts
 
+
         for (userId in UserManagerApis.getUserIdsNoThrow()) {
             // TODO use correct package name
             sendBinderToApp(this, "io.github.sds100.keymapper.debug", userId)
@@ -173,8 +178,11 @@ class SystemBridge : ISystemBridge.Stub() {
         exitProcess(0)
     }
 
-    override fun sendEvent(): String? {
-        Log.d(TAG, "UID = ${Os.getuid()}")
-        return stringFromJNI()
+    override fun grabEvdevDevice(deviceId: InputDeviceIdentifier, callback: IEvdevCallback?) {
+        if (callback == null) {
+            return
+        }
+
+        grabEvdevDevice(deviceId, callback.asBinder())
     }
 }

@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.keymaps.detection
 
 import android.view.InputDevice
 import android.view.KeyEvent
-import io.github.sds100.keymapper.system.devices.InputDeviceInfo
+import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import io.github.sds100.keymapper.system.inputevents.KMMotionEvent
