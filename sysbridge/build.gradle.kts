@@ -21,12 +21,15 @@ android {
 
         externalNativeBuild {
             cmake {
+                val aidlSrcDir = project.file("src/main/cpp/aidl")
+
                 // -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON is required to get the app running on the Android 15. This is related to the new 16kB page size support.
                 // -DANDROID_WEAK_API_DEFS=ON is required so the libevdev_jni file can run code depending on the SDK. https://developer.android.com/ndk/guides/using-newer-apis
                 arguments(
                     "-DANDROID_STL=c++_static",
                     "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
                     "-DANDROID_WEAK_API_DEFS=ON",
+                    "-Daidl_src_dir=${aidlSrcDir.absolutePath}"
                 )
             }
         }

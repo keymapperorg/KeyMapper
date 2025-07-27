@@ -91,7 +91,8 @@ add_library(evdev SHARED
         android/utils/Unicode.cpp
         android/input/InputDevice.cpp
         android/input/Input.cpp
-        android/libbase/stringprintf.cpp)
+        android/libbase/stringprintf.cpp
+        ${aidl_src_dir}/io/github/sds100/keymapper/sysbridge/IEvdevCallback.cpp)
 
 find_library(
         binder_ndk-lib

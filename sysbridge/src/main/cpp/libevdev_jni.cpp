@@ -11,7 +11,10 @@
 #include "android/input/KeyLayoutMap.h"
 #include "android/libbase/result.h"
 #include "android/input/InputDevice.h"
+#include "aidl/io/github/sds100/keymapper/sysbridge/IEvdevCallback.h"
 #include <android/binder_ibinder_jni.h>
+
+using aidl::io::github::sds100::keymapper::sysbridge::IEvdevCallback;
 
 extern "C"
 JNIEXPORT jboolean JNICALL
@@ -19,12 +22,13 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDevice(J
                                                                                jobject thiz,
                                                                                jobject deviceId,
                                                                                jobject jcallbackBinder) {
+    LOGE("PRE BINDER");
+    AIBinder *callbackAIBinder = AIBinder_fromJavaBinder(env, jcallbackBinder);
 
-    if (__builtin_available(android 29, *)) {
-        LOGE("PRE BINDER");
-        AIBinder *callback = AIBinder_fromJavaBinder(env, jcallbackBinder);
-        LOGE("POST BINDER");
-    }
+    // Create a "strong pointer" to the callback binder.
+    const ::ndk::SpAIBinder spBinder(callbackAIBinder);
+    std::shared_ptr<IEvdevCallback> callback = IEvdevCallback::fromBinder(spBinder);
+    LOGE("POST BINDER");
 
     char *input_file_path = "/dev/input/event12";
     // TODO call libevdev_free when done with the object.
@@ -104,6 +108,7 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDevice(J
 
         LOGE("Key code = %d Flags = %d", outKeycode, outFlags);
 
+        callback->onEvdevEvent(ev.type, ev.code, ev.value);
 //        libevdev_uinput_write_event(virtual_dev_uninput, ev.type, ev.code, ev.value);
 
     } while (rc == 1 || rc == 0 || rc == -EAGAIN);
