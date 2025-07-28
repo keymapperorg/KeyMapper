@@ -66,8 +66,8 @@ static int findInputDevice(
         int devProduct = libevdev_get_id_product(dev);
         int devBus = libevdev_get_id_bustype(dev);
 
-        LOGD("Checking device: %s, bus: %d, vendor: %d, product: %d",
-             devName, devBus, devVendor, devProduct);
+//        LOGD("Checking device: %s, bus: %d, vendor: %d, product: %d",
+//             devName, devBus, devVendor, devProduct);
 
         if (strcmp(devName, name) != 0 ||
             devVendor != vendor ||
@@ -82,7 +82,7 @@ static int findInputDevice(
         closedir(dir);
         *outDev = dev;
 
-        LOGD("Found input device %s", name);
+//        LOGD("Found input device %s", name);
         return 0;
     }
 
@@ -127,6 +127,9 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDevice(J
                                                                                jobject jInputDeviceIdentifier,
                                                                                jobject jCallbackBinder) {
     LOGD("Start gravEvdevDevice");
+    jclass inputDeviceIdentifierClass = env->GetObjectClass(jInputDeviceIdentifier);
+    jfieldID idFieldId = env->GetFieldID(inputDeviceIdentifierClass, "id", "I");
+    int deviceId = env->GetIntField(jInputDeviceIdentifier, idFieldId);
 
     android::InputDeviceIdentifier deviceIdentifier = convertJInputDeviceIdentifier(env,
                                                                                     jInputDeviceIdentifier);
@@ -179,9 +182,9 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDevice(J
 
     LOGD("Grabbed evdev device %s", libevdev_get_name(dev));
 
-    do {
-        struct input_event ev{};
+    struct input_event ev{};
 
+    do {
         rc = libevdev_next_event(dev, LIBEVDEV_READ_FLAG_NORMAL, &ev);
 
         if (rc == 0) {
@@ -189,7 +192,9 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDevice(J
             uint32_t outFlags = -1;
             keyLayoutMap->mapKey(ev.code, 0, &outKeycode, &outFlags);
 
-            callback->onEvdevEvent(ev.type, ev.code, ev.value);
+            callback->onEvdevEvent(deviceId, ev.time.tv_sec, ev.time.tv_usec, ev.type, ev.code,
+                                   ev.value,
+                                   outKeycode);
         }
 
     } while (rc == 1 || rc == 0 || rc == -EAGAIN);

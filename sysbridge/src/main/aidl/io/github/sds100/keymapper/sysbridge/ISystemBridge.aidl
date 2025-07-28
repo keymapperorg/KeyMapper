@@ -11,6 +11,7 @@ interface ISystemBridge {
    // TODO is this used?
    void destroy() = 16777114;
 
-   boolean grabEvdevDevice(int deviceId, IEvdevCallback callback) = 1;
+   boolean grabEvdevDevice(int deviceId) = 1;
    boolean injectEvent(in InputEvent event, int mode) = 2;
+   void registerCallback(IEvdevCallback callback) = 3;
 }

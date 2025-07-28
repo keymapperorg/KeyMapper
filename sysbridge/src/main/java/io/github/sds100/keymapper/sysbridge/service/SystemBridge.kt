@@ -19,6 +19,10 @@ import io.github.sds100.keymapper.sysbridge.provider.BinderContainer
 import io.github.sds100.keymapper.sysbridge.provider.SystemBridgeBinderProvider
 import io.github.sds100.keymapper.sysbridge.utils.IContentProviderUtils
 import io.github.sds100.keymapper.sysbridge.utils.InputDeviceIdentifier
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import rikka.hidden.compat.ActivityManagerApis
 import rikka.hidden.compat.DeviceIdleControllerApis
 import rikka.hidden.compat.UserManagerApis
@@ -143,6 +147,8 @@ internal class SystemBridge : ISystemBridge.Stub() {
     }
 
     private val inputManager: IInputManager
+    private var callback: IEvdevCallback? = null
+    private val coroutineScope: CoroutineScope = MainScope()
 
     init {
         @SuppressLint("UnsafeDynamicallyLoadedCode")
@@ -188,9 +194,12 @@ internal class SystemBridge : ISystemBridge.Stub() {
         exitProcess(0)
     }
 
+    override fun registerCallback(callback: IEvdevCallback?) {
+        this.callback = callback
+    }
+
     override fun grabEvdevDevice(
         deviceId: Int,
-        callback: IEvdevCallback?
     ): Boolean {
         if (callback == null) {
             return false
@@ -199,6 +208,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
         val inputDevice = inputManager.getInputDevice(deviceId)
 
         val deviceIdentifier = InputDeviceIdentifier(
+            id = deviceId,
             name = inputDevice.name,
             vendor = inputDevice.vendorId,
             product = inputDevice.productId,
@@ -207,7 +217,12 @@ internal class SystemBridge : ISystemBridge.Stub() {
             bluetoothAddress = inputDevice.getBluetoothAddress()
         )
 
-        return grabEvdevDevice(deviceIdentifier, callback.asBinder())
+        Log.e(TAG, "THREAD = ${Thread.currentThread().name}")
+        coroutineScope.launch(Dispatchers.Unconfined) {
+            grabEvdevDevice(deviceIdentifier, callback!!.asBinder())
+        }
+
+        return true
     }
 
     override fun injectEvent(event: InputEvent?, mode: Int): Boolean {

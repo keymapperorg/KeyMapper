@@ -35,6 +35,22 @@ class SystemBridgeManagerImpl @Inject constructor(
     private val callbackLock: Any = Any()
     private var evdevConnections: ConcurrentHashMap<Int, EvdevConnection> =
         ConcurrentHashMap()
+    private val evdevCallback: IEvdevCallback = object : IEvdevCallback.Stub() {
+        override fun onEvdevEvent(
+            deviceId: Int,
+            timeSec: Long,
+            timeUsec: Long,
+            type: Int,
+            code: Int,
+            value: Int,
+            androidCode: Int
+        ) {
+            Timber.d(
+                "Evdev event: deviceId=${deviceId}, timeSec=$timeSec, timeUsec=$timeUsec, " +
+                    "type=$type, code=$code, value=$value, androidCode=$androidCode"
+            )
+        }
+    }
 
     fun pingBinder(): Boolean {
         synchronized(systemBridgeLock) {
@@ -45,6 +61,7 @@ class SystemBridgeManagerImpl @Inject constructor(
     fun onBinderReceived(binder: IBinder) {
         synchronized(systemBridgeLock) {
             this.systemBridge = ISystemBridge.Stub.asInterface(binder)
+            systemBridge?.registerCallback(evdevCallback)
         }
 
 //        coroutineScope.launch(Dispatchers.Main) {
@@ -53,45 +70,40 @@ class SystemBridgeManagerImpl @Inject constructor(
     }
 
     private fun grabAllDevices() {
+        synchronized(callbackLock) {
+            val deviceId = 1
+            if (evdevConnections.containsKey(deviceId)) {
+                removeEvdevConnection(deviceId)
+            }
+
+            val connection = EvdevConnection(deviceId, evdevCallback)
+            evdevConnections[deviceId] = connection
+            evdevCallback.asBinder().linkToDeath(connection, 0)
+
+            return@synchronized evdevCallback
+        }
+
         for (deviceId in inputManager.inputDeviceIds) {
+            if (deviceId == -1) {
+                continue
+            }
+
             val device = inputManager.getInputDevice(deviceId) ?: continue
 
-            if (device.name == "qwerty2") {
-                Timber.d("Grabbing input device: ${device.name} (${device.id})")
-
-//                coroutineScope.launch(Dispatchers.IO) {
-                grabInputDevice(device)
-//                }
-
-                // TODO remove
-                break
-            }
+            grabInputDevice(device)
         }
     }
 
     private fun grabInputDevice(inputDevice: InputDevice) {
         val deviceId = inputDevice.id
 
-        val callback: IEvdevCallback = synchronized(callbackLock) {
-            val callback = object : IEvdevCallback.Stub() {
-                override fun onEvdevEvent(type: Int, code: Int, value: Int) {
-                    Timber.e("Received evdev event from device ${inputDevice.id} ${inputDevice.name}: type=$type, code=$code, value=$value")
-                }
-            }
-
-            if (evdevConnections.containsKey(deviceId)) {
-                removeEvdevConnection(deviceId)
-            }
-
-            val connection = EvdevConnection(deviceId, callback)
-            evdevConnections[deviceId] = connection
-            callback.asBinder().linkToDeath(connection, 0)
-
-            return@synchronized callback
-        }
-
         try {
-            this.systemBridge?.grabEvdevDevice(deviceId, callback)
+            Timber.d("Grabbing input device: ${inputDevice.name} (${inputDevice.id})")
+
+            this.systemBridge?.grabEvdevDevice(deviceId)
+
+            Timber.d("Grabbed input device: ${inputDevice.name} (${inputDevice.id})")
+
 
         } catch (e: Exception) {
             Timber.e("Error grabbing input device: ${e.toString()}")

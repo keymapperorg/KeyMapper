@@ -36,13 +36,18 @@ public:
   static binder_status_t readFromParcel(const AParcel* parcel, std::shared_ptr<IEvdevCallback>* instance);
   static bool setDefaultImpl(const std::shared_ptr<IEvdevCallback>& impl);
   static const std::shared_ptr<IEvdevCallback>& getDefaultImpl();
-  virtual ::ndk::ScopedAStatus onEvdevEvent(int32_t in_type, int32_t in_code, int32_t in_value) = 0;
+
+    virtual ::ndk::ScopedAStatus
+    onEvdevEvent(int32_t in_deviceId, int64_t in_timeSec, int64_t in_timeUsec, int32_t in_type,
+                 int32_t in_code, int32_t in_value, int32_t in_androidCode) = 0;
 private:
   static std::shared_ptr<IEvdevCallback> default_impl;
 };
 class IEvdevCallbackDefault : public IEvdevCallback {
 public:
-  ::ndk::ScopedAStatus onEvdevEvent(int32_t in_type, int32_t in_code, int32_t in_value) override;
+    ::ndk::ScopedAStatus
+    onEvdevEvent(int32_t in_deviceId, int64_t in_timeSec, int64_t in_timeUsec, int32_t in_type,
+                 int32_t in_code, int32_t in_value, int32_t in_androidCode) override;
   ::ndk::SpAIBinder asBinder() override;
   bool isRemote() override;
 };

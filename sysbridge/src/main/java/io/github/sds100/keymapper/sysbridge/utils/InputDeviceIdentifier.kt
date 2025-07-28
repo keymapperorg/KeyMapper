@@ -5,6 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 internal data class InputDeviceIdentifier(
+    val id: Int,
     val name: String,
     val bus: Int,
     val vendor: Int,
