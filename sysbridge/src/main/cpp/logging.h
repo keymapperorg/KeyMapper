@@ -1,7 +1,7 @@
 #ifndef _LOGGING_H
 #define _LOGGING_H
 
-#include <errno.h>
+#include <cerrno>
 #include "android/log.h"
 
 #ifndef LOG_TAG

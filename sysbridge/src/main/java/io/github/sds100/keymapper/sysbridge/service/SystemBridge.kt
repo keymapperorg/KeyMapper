@@ -4,11 +4,15 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.IContentProvider
 import android.ddm.DdmHandleAppName
+import android.hardware.input.IInputManager
 import android.os.Binder
 import android.os.Bundle
 import android.os.IBinder
 import android.os.ServiceManager
 import android.util.Log
+import android.view.InputEvent
+import io.github.sds100.keymapper.common.utils.getBluetoothAddress
+import io.github.sds100.keymapper.common.utils.getDeviceBus
 import io.github.sds100.keymapper.sysbridge.IEvdevCallback
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
 import io.github.sds100.keymapper.sysbridge.provider.BinderContainer
@@ -29,7 +33,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
     external fun grabEvdevDevice(
         deviceIdentifier: InputDeviceIdentifier,
-        binder: IBinder
+        callbackBinder: IBinder
     ): Boolean
 
     companion object {
@@ -138,6 +142,8 @@ internal class SystemBridge : ISystemBridge.Stub() {
         }
     }
 
+    private val inputManager: IInputManager
+
     init {
         @SuppressLint("UnsafeDynamicallyLoadedCode")
         System.load("${System.getProperty("keymapper_sysbridge.library.path")}/libevdev.so")
@@ -147,6 +153,10 @@ internal class SystemBridge : ISystemBridge.Stub() {
         waitSystemService(Context.ACTIVITY_SERVICE)
         waitSystemService(Context.USER_SERVICE)
         waitSystemService(Context.APP_OPS_SERVICE)
+        waitSystemService(Context.INPUT_SERVICE)
+
+        inputManager =
+            IInputManager.Stub.asInterface(ServiceManager.getService(Context.INPUT_SERVICE))
 
         // TODO check that the key mapper app is installed, otherwise end the process.
 //        val ai: ApplicationInfo? = rikka.shizuku.server.ShizukuService.getManagerApplicationInfo()
@@ -178,11 +188,29 @@ internal class SystemBridge : ISystemBridge.Stub() {
         exitProcess(0)
     }
 
-    override fun grabEvdevDevice(deviceId: InputDeviceIdentifier, callback: IEvdevCallback?) {
+    override fun grabEvdevDevice(
+        deviceId: Int,
+        callback: IEvdevCallback?
+    ): Boolean {
         if (callback == null) {
-            return
+            return false
         }
 
-        grabEvdevDevice(deviceId, callback.asBinder())
+        val inputDevice = inputManager.getInputDevice(deviceId)
+
+        val deviceIdentifier = InputDeviceIdentifier(
+            name = inputDevice.name,
+            vendor = inputDevice.vendorId,
+            product = inputDevice.productId,
+            descriptor = inputDevice.descriptor,
+            bus = inputDevice.getDeviceBus(),
+            bluetoothAddress = inputDevice.getBluetoothAddress()
+        )
+
+        return grabEvdevDevice(deviceIdentifier, callback.asBinder())
+    }
+
+    override fun injectEvent(event: InputEvent?, mode: Int): Boolean {
+        return false
     }
 }

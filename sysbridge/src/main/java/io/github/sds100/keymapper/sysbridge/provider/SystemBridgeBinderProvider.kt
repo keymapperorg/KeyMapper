@@ -50,11 +50,13 @@ internal class SystemBridgeBinderProvider : ContentProvider() {
         extras.classLoader = BinderContainer::class.java.getClassLoader()
 
         val reply = Bundle()
+
         when (method) {
             METHOD_SEND_BINDER -> {
                 handleSendBinder(extras)
             }
         }
+
         return reply
     }
 
@@ -70,8 +72,6 @@ internal class SystemBridgeBinderProvider : ContentProvider() {
         )
 
         if (container != null && container.binder != null) {
-            Timber.d("binder received")
-
             systemBridgeManager.onBinderReceived(container.binder)
         }
     }

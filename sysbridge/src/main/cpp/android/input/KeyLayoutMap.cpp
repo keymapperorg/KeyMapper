@@ -112,7 +112,6 @@ namespace android {
                   tokenizer->getFilename().c_str(), tokenizer->getLineNumber(),
                   elapsedTime / 1000000.0);
 #endif
-            LOGE("PARSE STATUS = %d", status);
             if (!status) {
                 return std::move(map);
             }
