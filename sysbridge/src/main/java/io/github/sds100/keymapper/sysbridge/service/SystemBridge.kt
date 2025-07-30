@@ -36,9 +36,13 @@ internal class SystemBridge : ISystemBridge.Stub() {
     // TODO observe if Key Mapper is uninstalled and stop the process. Look at ApkChangedObservers in Shizuku code.
 
     external fun grabEvdevDevice(
-        deviceIdentifier: InputDeviceIdentifier,
-        callbackBinder: IBinder
+        deviceIdentifier: InputDeviceIdentifier
     ): Boolean
+
+    external fun ungrabEvdevDevice(deviceId: Int)
+
+    external fun startEvdevEventLoop(callback: IEvdevCallback)
+    external fun stopEvdevEventLoop()
 
     companion object {
         private const val TAG: String = "SystemBridge"
@@ -147,7 +151,6 @@ internal class SystemBridge : ISystemBridge.Stub() {
     }
 
     private val inputManager: IInputManager
-    private var callback: IEvdevCallback? = null
     private val coroutineScope: CoroutineScope = MainScope()
 
     init {
@@ -195,16 +198,16 @@ internal class SystemBridge : ISystemBridge.Stub() {
     }
 
     override fun registerCallback(callback: IEvdevCallback?) {
-        this.callback = callback
+        callback ?: return
+
+        coroutineScope.launch(Dispatchers.IO) {
+            startEvdevEventLoop(callback)
+        }
     }
 
     override fun grabEvdevDevice(
         deviceId: Int,
     ): Boolean {
-        if (callback == null) {
-            return false
-        }
-
         val inputDevice = inputManager.getInputDevice(deviceId)
 
         val deviceIdentifier = InputDeviceIdentifier(
@@ -217,10 +220,8 @@ internal class SystemBridge : ISystemBridge.Stub() {
             bluetoothAddress = inputDevice.getBluetoothAddress()
         )
 
-        Log.e(TAG, "THREAD = ${Thread.currentThread().name}")
-        coroutineScope.launch(Dispatchers.Unconfined) {
-            grabEvdevDevice(deviceIdentifier, callback!!.asBinder())
-        }
+        val grabResult = grabEvdevDevice(deviceIdentifier)
+        Log.e(TAG, "Grabbed $deviceId with result $grabResult")
 
         return true
     }

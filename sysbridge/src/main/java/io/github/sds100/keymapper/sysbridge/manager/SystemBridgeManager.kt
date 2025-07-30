@@ -83,7 +83,7 @@ class SystemBridgeManagerImpl @Inject constructor(
             return@synchronized evdevCallback
         }
 
-        for (deviceId in inputManager.inputDeviceIds) {
+        for (deviceId in inputManager.inputDeviceIds.take(2)) {
             if (deviceId == -1) {
                 continue
             }
