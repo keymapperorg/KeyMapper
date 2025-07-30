@@ -12,6 +12,7 @@
 #include "android/input/InputDevice.h"
 #include "aidl/io/github/sds100/keymapper/sysbridge/IEvdevCallback.h"
 #include <android/binder_ibinder_jni.h>
+#include <sys/epoll.h>
 
 using aidl::io::github::sds100::keymapper::sysbridge::IEvdevCallback;
 
@@ -182,22 +183,47 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDevice(J
 
     LOGD("Grabbed evdev device %s", libevdev_get_name(dev));
 
-    struct input_event ev{};
+    struct input_event inputEvent{};
 
-    do {
-        rc = libevdev_next_event(dev, LIBEVDEV_READ_FLAG_NORMAL, &ev);
+    int epollFd = epoll_create1(EPOLL_CLOEXEC);
+    struct epoll_event epollEvent{};
+    epollEvent.events = EPOLLIN | EPOLLET;
 
-        if (rc == 0) {
-            int32_t outKeycode = -1;
-            uint32_t outFlags = -1;
-            keyLayoutMap->mapKey(ev.code, 0, &outKeycode, &outFlags);
+    epoll_ctl(epollFd, EPOLL_CTL_ADD, libevdev_get_fd(dev), &epollEvent);
 
-            callback->onEvdevEvent(deviceId, ev.time.tv_sec, ev.time.tv_usec, ev.type, ev.code,
-                                   ev.value,
-                                   outKeycode);
+    int MAX_EVENTS = 1;
+
+    while (true) {
+        struct epoll_event events[MAX_EVENTS];
+        rc = epoll_wait(epollFd, events, MAX_EVENTS, -1);
+
+        if (rc == -1) {
+            // Error
+            LOGE("epoll_wait error %s", strerror(errno));
+            continue;
+        } else if (rc == 0) {
+            // timeout
+            continue;
+        } else {
+            // the number of ready file descriptors
+            rc = libevdev_next_event(dev, LIBEVDEV_READ_FLAG_NORMAL, &inputEvent);
+
+            if (rc == 0) {
+                int32_t outKeycode = -1;
+                uint32_t outFlags = -1;
+                keyLayoutMap->mapKey(inputEvent.code, 0, &outKeycode, &outFlags);
+
+                callback->onEvdevEvent(deviceId, inputEvent.time.tv_sec, inputEvent.time.tv_usec,
+                                       inputEvent.type, inputEvent.code,
+                                       inputEvent.value,
+                                       outKeycode);
+            }
+
+            if (rc != 1 && rc != 0 && rc != -EAGAIN) {
+                break;
+            }
         }
-
-    } while (rc == 1 || rc == 0 || rc == -EAGAIN);
+    }
 
     libevdev_grab(dev, LIBEVDEV_UNGRAB);
     libevdev_free(dev);
