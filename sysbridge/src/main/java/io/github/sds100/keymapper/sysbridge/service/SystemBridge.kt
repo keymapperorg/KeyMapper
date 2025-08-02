@@ -7,7 +7,9 @@ import android.ddm.DdmHandleAppName
 import android.hardware.input.IInputManager
 import android.os.Binder
 import android.os.Bundle
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.os.ServiceManager
 import android.util.Log
 import android.view.InputEvent
@@ -41,7 +43,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
     external fun ungrabEvdevDevice(deviceId: Int)
 
-    external fun startEvdevEventLoop(callback: IEvdevCallback)
+    external fun startEvdevEventLoop(callback: IBinder)
     external fun stopEvdevEventLoop()
 
     companion object {
@@ -50,7 +52,10 @@ internal class SystemBridge : ISystemBridge.Stub() {
         @JvmStatic
         fun main(args: Array<String>) {
             DdmHandleAppName.setAppName("keymapper_sysbridge", 0)
+            @Suppress("DEPRECATION")
+            Looper.prepareMainLooper()
             SystemBridge()
+            Looper.loop()
         }
 
         private fun waitSystemService(name: String?) {
@@ -152,6 +157,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
     private val inputManager: IInputManager
     private val coroutineScope: CoroutineScope = MainScope()
+    private val mainHandler = Handler(Looper.myLooper()!!)
 
     init {
         @SuppressLint("UnsafeDynamicallyLoadedCode")
@@ -184,9 +190,11 @@ internal class SystemBridge : ISystemBridge.Stub() {
         // TODO use the process observer to rebind when key mapper starts
 
 
-        for (userId in UserManagerApis.getUserIdsNoThrow()) {
-            // TODO use correct package name
-            sendBinderToApp(this, "io.github.sds100.keymapper.debug", userId)
+        mainHandler.post {
+            for (userId in UserManagerApis.getUserIdsNoThrow()) {
+                // TODO use correct package name
+                sendBinderToApp(this, "io.github.sds100.keymapper.debug", userId)
+            }
         }
     }
 
@@ -201,7 +209,9 @@ internal class SystemBridge : ISystemBridge.Stub() {
         callback ?: return
 
         coroutineScope.launch(Dispatchers.IO) {
-            startEvdevEventLoop(callback)
+            mainHandler.post {
+                startEvdevEventLoop(callback.asBinder())
+            }
         }
     }
 
@@ -220,8 +230,14 @@ internal class SystemBridge : ISystemBridge.Stub() {
             bluetoothAddress = inputDevice.getBluetoothAddress()
         )
 
-        val grabResult = grabEvdevDevice(deviceIdentifier)
-        Log.e(TAG, "Grabbed $deviceId with result $grabResult")
+        // Do heavy work on IO dispatcher
+        // Post the Binder call to main thread with Looper
+//        coroutineScope.launch(Dispatchers.IO) {
+//            mainHandler.post {
+
+        grabEvdevDevice(deviceIdentifier)
+//            }
+//        }
 
         return true
     }

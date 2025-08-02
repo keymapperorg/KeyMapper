@@ -196,7 +196,7 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDevice(J
 }
 
 
-int onEpollEvent(DeviceContext *deviceContext, std::shared_ptr<IEvdevCallback> callback) {
+int onEpollEvent(DeviceContext *deviceContext, IEvdevCallback *callback) {
     struct input_event inputEvent{};
 
     // the number of ready file descriptors
@@ -205,13 +205,17 @@ int onEpollEvent(DeviceContext *deviceContext, std::shared_ptr<IEvdevCallback> c
     if (rc == 0) {
         int32_t outKeycode = -1;
         uint32_t outFlags = -1;
+        int deviceId = deviceContext->deviceId;
         deviceContext->keyLayoutMap.mapKey(inputEvent.code, 0, &outKeycode, &outFlags);
 
-        callback->onEvdevEvent(deviceContext->deviceId, inputEvent.time.tv_sec,
+        callback->onEvdevEvent(deviceId,
+                               inputEvent.time.tv_sec,
                                inputEvent.time.tv_usec,
-                               inputEvent.type, inputEvent.code,
+                               inputEvent.type,
+                               inputEvent.code,
                                inputEvent.value,
                                outKeycode);
+        LOGE("After");
     }
 
     if (rc == 1 || rc == 0 || rc == -EAGAIN) {
@@ -324,10 +328,12 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLo
     AIBinder *callbackAIBinder = AIBinder_fromJavaBinder(env, jCallbackBinder);
     const ::ndk::SpAIBinder spBinder(callbackAIBinder);
     std::shared_ptr<IEvdevCallback> callback = IEvdevCallback::fromBinder(spBinder);
+    LOGE("IS CALLBACK REMOTE %d", callback->isRemote());
 
     struct epoll_event events[MAX_EPOLL_EVENTS];
     bool running = true;
     while (running) {
+        LOGE("EPOLL WAIT");
         int n = epoll_wait(epollFd, events, MAX_EPOLL_EVENTS, -1);
         for (int i = 0; i < n; ++i) {
             if (events[i].data.fd == commandEventFd) {
@@ -350,7 +356,7 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLo
             } else {
                 std::lock_guard<std::mutex> lock(evdevDevicesMutex);
                 DeviceContext *dc = &evdevDevices->at(events[i].data.fd);
-                onEpollEvent(dc, callback);
+                onEpollEvent(dc, callback.get());
             }
         }
     }

@@ -13,6 +13,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.sysbridge.IEvdevCallback
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
@@ -64,9 +66,10 @@ class SystemBridgeManagerImpl @Inject constructor(
             systemBridge?.registerCallback(evdevCallback)
         }
 
-//        coroutineScope.launch(Dispatchers.Main) {
-        grabAllDevices()
-//        }
+        coroutineScope.launch {
+            delay(1000)
+            grabAllDevices()
+        }
     }
 
     private fun grabAllDevices() {
@@ -83,7 +86,7 @@ class SystemBridgeManagerImpl @Inject constructor(
             return@synchronized evdevCallback
         }
 
-        for (deviceId in inputManager.inputDeviceIds.take(2)) {
+        for (deviceId in inputManager.inputDeviceIds) {
             if (deviceId == -1) {
                 continue
             }
