@@ -236,6 +236,6 @@ internal class SystemBridge : ISystemBridge.Stub() {
     }
 
     override fun injectEvent(event: InputEvent?, mode: Int): Boolean {
-        return false
+        return inputManager.injectInputEvent(event, mode)
     }
 }
