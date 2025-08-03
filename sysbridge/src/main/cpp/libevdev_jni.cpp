@@ -49,7 +49,6 @@ struct DeviceContext {
 
 static int epollFd = -1;
 static int commandEventFd = -1;
-static std::mutex epollMutex;
 
 static std::queue<Command> commandQueue;
 static std::mutex commandMutex;
@@ -108,21 +107,18 @@ static int findEvdevDevice(
         int devProduct = libevdev_get_id_product(*outDev);
         int devBus = libevdev_get_id_bustype(*outDev);
 
-//        LOGD("Checking device: %s, bus: %d, vendor: %d, product: %d",
-//             devName, devBus, devVendor, devProduct);
-
-        if (name.compare(devName) != 0 ||
+        if (name != devName ||
             devVendor != vendor ||
             devProduct != product ||
             devBus != bus) {
 
-            libevdev_free(*outDev); // libevdev_free also closes the fd
+            libevdev_free(*outDev);
+            close(fd);
             continue;
         }
 
         closedir(dir);
 
-//        LOGD("Found input device %s", name);
         return 0;
     }
 
@@ -173,20 +169,18 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDevice(J
                                                                                jobject jInputDeviceIdentifier) {
     jclass inputDeviceIdentifierClass = env->GetObjectClass(jInputDeviceIdentifier);
     jfieldID idFieldId = env->GetFieldID(inputDeviceIdentifierClass, "id", "I");
-    int deviceId = env->GetIntField(jInputDeviceIdentifier, idFieldId);
     android::InputDeviceIdentifier identifier = convertJInputDeviceIdentifier(env,
                                                                               jInputDeviceIdentifier);
+    int deviceId = env->GetIntField(jInputDeviceIdentifier, idFieldId);
 
-    Command cmd;
-    cmd.type = GRAB;
-    cmd.data = GrabData{deviceId, identifier};
+    Command cmd = {GRAB, GrabData{deviceId, identifier}};
 
     std::lock_guard<std::mutex> lock(commandMutex);
     commandQueue.push(cmd);
 
-    // Notify the event loop
     uint64_t val = 1;
     ssize_t written = write(commandEventFd, &val, sizeof(val));
+
     if (written < 0) {
         LOGE("Failed to write to commandEventFd: %s", strerror(errno));
         return false;
@@ -215,7 +209,6 @@ int onEpollEvent(DeviceContext *deviceContext, IEvdevCallback *callback) {
                                inputEvent.code,
                                inputEvent.value,
                                outKeycode);
-        LOGE("After");
     }
 
     if (rc == 1 || rc == 0 || rc == -EAGAIN) {
@@ -232,7 +225,6 @@ static int MAX_EPOLL_EVENTS = 100;
 void handleCommand(const Command &cmd) {
     if (cmd.type == GRAB) {
         const GrabData &data = std::get<GrabData>(cmd.data);
-        LOGD("Executing GRAB command for deviceId: %d", data.deviceId);
 
         struct libevdev *dev = nullptr;
         int rc = findEvdevDevice(data.identifier.name,
@@ -258,7 +250,10 @@ void handleCommand(const Command &cmd) {
                 data.identifier, android::InputDeviceConfigurationFileType::KEY_LAYOUT);
         auto klResult = android::KeyLayoutMap::load(klPath, nullptr);
 
-        // TODO check result is ok
+        if (!klResult.ok()) {
+            LOGE("key layout map not found for device %s", libevdev_get_name(dev));
+            return;
+        }
 
         DeviceContext context{
                 data.deviceId,
@@ -267,7 +262,7 @@ void handleCommand(const Command &cmd) {
                 *klResult.value()
         };
 
-        struct epoll_event event;
+        struct epoll_event event{};
         event.events = EPOLLIN;
         event.data.fd = evdevFd;
         if (epoll_ctl(epollFd, EPOLL_CTL_ADD, evdevFd, &event) == -1) {
@@ -281,7 +276,6 @@ void handleCommand(const Command &cmd) {
 
     } else if (cmd.type == UNGRAB) {
         const UngrabData &data = std::get<UngrabData>(cmd.data);
-        LOGD("Executing UNGRAB command for deviceId: %d", data.deviceId);
 
         std::lock_guard<std::mutex> lock(evdevDevicesMutex);
         for (auto it = evdevDevices->begin(); it != evdevDevices->end(); ++it) {
@@ -302,6 +296,11 @@ JNIEXPORT void JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLoop(JNIEnv *env,
                                                                                    jobject thiz,
                                                                                    jobject jCallbackBinder) {
+    if (epollFd != -1 || commandEventFd != -1) {
+        LOGE("The evdev event loop has already started.");
+        return;
+    }
+
     epollFd = epoll_create1(EPOLL_CLOEXEC);
     if (epollFd == -1) {
         LOGE("Failed to create epoll fd: %s", strerror(errno));
@@ -315,7 +314,7 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLo
         return;
     }
 
-    struct epoll_event event;
+    struct epoll_event event{};
     event.events = EPOLLIN;
     event.data.fd = commandEventFd;
     if (epoll_ctl(epollFd, EPOLL_CTL_ADD, commandEventFd, &event) == -1) {
@@ -328,13 +327,13 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLo
     AIBinder *callbackAIBinder = AIBinder_fromJavaBinder(env, jCallbackBinder);
     const ::ndk::SpAIBinder spBinder(callbackAIBinder);
     std::shared_ptr<IEvdevCallback> callback = IEvdevCallback::fromBinder(spBinder);
-    LOGE("IS CALLBACK REMOTE %d", callback->isRemote());
 
     struct epoll_event events[MAX_EPOLL_EVENTS];
     bool running = true;
+
     while (running) {
-        LOGE("EPOLL WAIT");
         int n = epoll_wait(epollFd, events, MAX_EPOLL_EVENTS, -1);
+
         for (int i = 0; i < n; ++i) {
             if (events[i].data.fd == commandEventFd) {
                 uint64_t val;
@@ -363,10 +362,12 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLo
 
     // Cleanup
     std::lock_guard<std::mutex> lock(evdevDevicesMutex);
+
     for (auto const &[fd, dc]: *evdevDevices) {
         libevdev_grab(dc.evdev, LIBEVDEV_UNGRAB);
         libevdev_free(dc.evdev);
     }
+
     evdevDevices->clear();
     close(commandEventFd);
     close(epollFd);

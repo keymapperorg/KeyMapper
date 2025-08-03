@@ -230,14 +230,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
             bluetoothAddress = inputDevice.getBluetoothAddress()
         )
 
-        // Do heavy work on IO dispatcher
-        // Post the Binder call to main thread with Looper
-//        coroutineScope.launch(Dispatchers.IO) {
-//            mainHandler.post {
-
         grabEvdevDevice(deviceIdentifier)
-//            }
-//        }
 
         return true
     }
