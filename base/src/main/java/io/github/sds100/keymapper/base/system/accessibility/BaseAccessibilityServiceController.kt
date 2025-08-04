@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCaseImpl
 import io.github.sds100.keymapper.base.actions.TestActionEvent
 import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCaseImpl
+import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.TriggerKeyMapEvent
@@ -20,7 +21,6 @@ import io.github.sds100.keymapper.base.keymaps.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.base.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.base.keymaps.detection.TriggerKeyMapFromOtherAppsController
 import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsController
-import io.github.sds100.keymapper.base.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.base.trigger.RecordTriggerEvent
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.hasFlag
@@ -394,7 +394,7 @@ abstract class BaseAccessibilityServiceController(
 
     fun onKeyEvent(
         event: KMKeyEvent,
-        detectionSource: KeyEventDetectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+        detectionSource: InputEventDetectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
     ): Boolean {
         val detailedLogInfo = event.toString()
 
@@ -459,13 +459,13 @@ abstract class BaseAccessibilityServiceController(
         if (event.action == KeyEvent.ACTION_UP && (event.keyCode == KeyEvent.KEYCODE_VOLUME_UP || event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
             onKeyEvent(
                 event.copy(action = KeyEvent.ACTION_DOWN),
-                detectionSource = KeyEventDetectionSource.INPUT_METHOD,
+                detectionSource = InputEventDetectionSource.INPUT_METHOD,
             )
         }
 
         return onKeyEvent(
             event,
-            detectionSource = KeyEventDetectionSource.INPUT_METHOD,
+            detectionSource = InputEventDetectionSource.INPUT_METHOD,
         )
     }
 
@@ -488,7 +488,7 @@ abstract class BaseAccessibilityServiceController(
                             RecordTriggerEvent.RecordedTriggerKey(
                                 keyEvent.keyCode,
                                 keyEvent.device,
-                                KeyEventDetectionSource.INPUT_METHOD,
+                                InputEventDetectionSource.INPUT_METHOD,
                             ),
                         )
                     }

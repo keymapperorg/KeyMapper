@@ -4,13 +4,13 @@ import android.view.KeyEvent
 import io.github.sds100.keymapper.base.actions.Action
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.constraints.Constraint
+import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCaseController
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.base.trigger.AssistantTriggerType
-import io.github.sds100.keymapper.base.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.base.trigger.TriggerMode
@@ -60,7 +60,7 @@ class ConfigKeyMapUseCaseTest {
         useCase.addKeyCodeTriggerKey(
             KeyEvent.KEYCODE_VOLUME_DOWN,
             TriggerKeyDevice.Any,
-            detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+            detectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         )
         useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
 
@@ -79,7 +79,7 @@ class ConfigKeyMapUseCaseTest {
         useCase.addKeyCodeTriggerKey(
             KeyEvent.KEYCODE_VOLUME_DOWN,
             TriggerKeyDevice.Any,
-            detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+            detectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         )
         useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
 
@@ -124,7 +124,7 @@ class ConfigKeyMapUseCaseTest {
         useCase.addKeyCodeTriggerKey(
             KeyEvent.KEYCODE_VOLUME_DOWN,
             TriggerKeyDevice.Any,
-            detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+            detectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         )
 
         useCase.setTriggerDoublePress()
@@ -144,7 +144,7 @@ class ConfigKeyMapUseCaseTest {
         useCase.addKeyCodeTriggerKey(
             KeyEvent.KEYCODE_VOLUME_DOWN,
             TriggerKeyDevice.Any,
-            detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+            detectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         )
 
         useCase.setTriggerDoublePress()
@@ -164,7 +164,7 @@ class ConfigKeyMapUseCaseTest {
         useCase.addKeyCodeTriggerKey(
             KeyEvent.KEYCODE_VOLUME_DOWN,
             TriggerKeyDevice.Any,
-            detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+            detectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         )
 
         useCase.setTriggerLongPress()
@@ -184,7 +184,7 @@ class ConfigKeyMapUseCaseTest {
         useCase.addKeyCodeTriggerKey(
             KeyEvent.KEYCODE_VOLUME_DOWN,
             TriggerKeyDevice.Any,
-            detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+            detectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         )
 
         useCase.setTriggerLongPress()
@@ -203,7 +203,7 @@ class ConfigKeyMapUseCaseTest {
         useCase.addKeyCodeTriggerKey(
             KeyEvent.KEYCODE_DPAD_LEFT,
             TriggerKeyDevice.Any,
-            KeyEventDetectionSource.INPUT_METHOD,
+            InputEventDetectionSource.INPUT_METHOD,
         )
 
         useCase.addAction(ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_W))
@@ -223,7 +223,7 @@ class ConfigKeyMapUseCaseTest {
         useCase.addKeyCodeTriggerKey(
             KeyEvent.KEYCODE_VOLUME_DOWN,
             TriggerKeyDevice.Any,
-            detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+            detectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         )
         useCase.addAssistantTriggerKey(AssistantTriggerType.VOICE)
         useCase.addAssistantTriggerKey(AssistantTriggerType.DEVICE)
@@ -245,7 +245,7 @@ class ConfigKeyMapUseCaseTest {
         useCase.addKeyCodeTriggerKey(
             KeyEvent.KEYCODE_VOLUME_DOWN,
             TriggerKeyDevice.Any,
-            detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+            detectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         )
         useCase.addAssistantTriggerKey(AssistantTriggerType.DEVICE)
         useCase.addAssistantTriggerKey(AssistantTriggerType.VOICE)
@@ -267,12 +267,12 @@ class ConfigKeyMapUseCaseTest {
         useCase.addKeyCodeTriggerKey(
             KeyEvent.KEYCODE_VOLUME_DOWN,
             TriggerKeyDevice.Any,
-            detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+            detectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         )
         useCase.addKeyCodeTriggerKey(
             KeyEvent.KEYCODE_VOLUME_UP,
             TriggerKeyDevice.Any,
-            detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+            detectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         )
         useCase.setTriggerLongPress()
 
@@ -289,7 +289,7 @@ class ConfigKeyMapUseCaseTest {
         useCase.addKeyCodeTriggerKey(
             KeyEvent.KEYCODE_VOLUME_DOWN,
             TriggerKeyDevice.Any,
-            detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+            detectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         )
         useCase.setTriggerDoublePress()
         useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
@@ -305,7 +305,7 @@ class ConfigKeyMapUseCaseTest {
         useCase.addKeyCodeTriggerKey(
             KeyEvent.KEYCODE_VOLUME_DOWN,
             TriggerKeyDevice.Any,
-            detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+            detectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         )
         useCase.setTriggerLongPress()
         useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
@@ -365,7 +365,7 @@ class ConfigKeyMapUseCaseTest {
             useCase.addKeyCodeTriggerKey(
                 modifierKeyCode,
                 TriggerKeyDevice.Internal,
-                detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+                detectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
             )
 
             // THEN
@@ -387,7 +387,7 @@ class ConfigKeyMapUseCaseTest {
         useCase.addKeyCodeTriggerKey(
             KeyEvent.KEYCODE_A,
             TriggerKeyDevice.Internal,
-            detectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+            detectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         )
 
         // THEN

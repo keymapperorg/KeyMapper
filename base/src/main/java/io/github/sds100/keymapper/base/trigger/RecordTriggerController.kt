@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.trigger
 
 import android.view.KeyEvent
+import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.keymaps.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -93,7 +94,7 @@ class RecordTriggerControllerImpl @Inject constructor(
             val recordedKey = createRecordedKeyEvent(
                 keyEvent.keyCode,
                 keyEvent.device,
-                KeyEventDetectionSource.INPUT_METHOD,
+                InputEventDetectionSource.INPUT_METHOD,
             )
 
             recordedKeys.add(recordedKey)
@@ -108,7 +109,7 @@ class RecordTriggerControllerImpl @Inject constructor(
     private fun createRecordedKeyEvent(
         keyCode: Int,
         device: InputDeviceInfo?,
-        detectionSource: KeyEventDetectionSource,
+        detectionSource: InputEventDetectionSource,
     ): RecordedKey {
         val triggerKeyDevice = if (device != null && device.isExternal) {
             TriggerKeyDevice.External(device.descriptor, device.name)

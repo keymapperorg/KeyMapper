@@ -24,8 +24,8 @@ import androidx.savedstate.SavedStateRegistryOwner
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjectorImpl
-import io.github.sds100.keymapper.base.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.InputEventType
 import io.github.sds100.keymapper.common.utils.KMError
@@ -322,7 +322,7 @@ abstract class BaseAccessibilityService :
                 repeatCount = event.repeatCount,
                 source = event.source,
             ),
-            KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+            InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         ) ?: false
     }
 

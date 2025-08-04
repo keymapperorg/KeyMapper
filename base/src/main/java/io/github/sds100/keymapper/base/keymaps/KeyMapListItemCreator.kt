@@ -9,12 +9,12 @@ import io.github.sds100.keymapper.base.actions.ActionUiHelper
 import io.github.sds100.keymapper.base.constraints.ConstraintErrorSnapshot
 import io.github.sds100.keymapper.base.constraints.ConstraintState
 import io.github.sds100.keymapper.base.constraints.ConstraintUiHelper
+import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.base.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
 import io.github.sds100.keymapper.base.trigger.FloatingButtonKey
-import io.github.sds100.keymapper.base.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
@@ -272,8 +272,8 @@ class KeyMapListItemCreator(
 
         val parts = mutableListOf<String>()
 
-        if (deviceName != null || key.detectionSource == KeyEventDetectionSource.INPUT_METHOD || !key.consumeEvent) {
-            if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD) {
+        if (deviceName != null || key.detectionSource == InputEventDetectionSource.INPUT_METHOD || !key.consumeEvent) {
+            if (key.detectionSource == InputEventDetectionSource.INPUT_METHOD) {
                 parts.add(getString(R.string.flag_detect_from_input_method))
             }
 

@@ -12,13 +12,13 @@ import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.base.constraints.ConstraintState
 import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
+import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapModel
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
 import io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey
-import io.github.sds100.keymapper.base.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerKey
 import io.github.sds100.keymapper.base.trigger.TriggerKeyDevice
@@ -846,7 +846,7 @@ class KeyMapControllerTest {
                 triggerKey(
                     KeyEvent.KEYCODE_DPAD_LEFT,
                     clickType = ClickType.SHORT_PRESS,
-                    detectionSource = KeyEventDetectionSource.INPUT_METHOD,
+                    detectionSource = InputEventDetectionSource.INPUT_METHOD,
                     device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
                 ),
             )
@@ -877,7 +877,7 @@ class KeyMapControllerTest {
                 triggerKey(
                     KeyEvent.KEYCODE_DPAD_LEFT,
                     clickType = ClickType.SHORT_PRESS,
-                    detectionSource = KeyEventDetectionSource.INPUT_METHOD,
+                    detectionSource = InputEventDetectionSource.INPUT_METHOD,
                     device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
                 ),
             )
@@ -912,7 +912,7 @@ class KeyMapControllerTest {
                 triggerKey(
                     KeyEvent.KEYCODE_DPAD_LEFT,
                     clickType = ClickType.SHORT_PRESS,
-                    detectionSource = KeyEventDetectionSource.INPUT_METHOD,
+                    detectionSource = InputEventDetectionSource.INPUT_METHOD,
                     device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
                 ),
             )
@@ -941,7 +941,7 @@ class KeyMapControllerTest {
             triggerKey(
                 KeyEvent.KEYCODE_DPAD_LEFT,
                 clickType = ClickType.LONG_PRESS,
-                detectionSource = KeyEventDetectionSource.INPUT_METHOD,
+                detectionSource = InputEventDetectionSource.INPUT_METHOD,
                 device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
             ),
         )
@@ -968,7 +968,7 @@ class KeyMapControllerTest {
             triggerKey(
                 KeyEvent.KEYCODE_DPAD_LEFT,
                 clickType = ClickType.SHORT_PRESS,
-                detectionSource = KeyEventDetectionSource.INPUT_METHOD,
+                detectionSource = InputEventDetectionSource.INPUT_METHOD,
                 device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
             ),
         )
@@ -998,7 +998,7 @@ class KeyMapControllerTest {
                 triggerKey(
                     KeyEvent.KEYCODE_DPAD_LEFT,
                     clickType = ClickType.SHORT_PRESS,
-                    detectionSource = KeyEventDetectionSource.INPUT_METHOD,
+                    detectionSource = InputEventDetectionSource.INPUT_METHOD,
                 ),
             )
 
@@ -1047,7 +1047,7 @@ class KeyMapControllerTest {
             triggerKey(
                 KeyEvent.KEYCODE_DPAD_LEFT,
                 clickType = ClickType.LONG_PRESS,
-                detectionSource = KeyEventDetectionSource.INPUT_METHOD,
+                detectionSource = InputEventDetectionSource.INPUT_METHOD,
             ),
         )
 

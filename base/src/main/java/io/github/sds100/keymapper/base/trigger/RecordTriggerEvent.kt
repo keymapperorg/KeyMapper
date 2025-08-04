@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.trigger
 
 import android.os.Parcelable
+import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import kotlinx.parcelize.Parcelize
@@ -12,7 +13,7 @@ sealed class RecordTriggerEvent : AccessibilityServiceEvent() {
     data class RecordedTriggerKey(
         val keyCode: Int,
         val device: InputDeviceInfo?,
-        val detectionSource: KeyEventDetectionSource,
+        val detectionSource: InputEventDetectionSource,
     ) : RecordTriggerEvent(),
         Parcelable
 

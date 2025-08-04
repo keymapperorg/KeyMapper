@@ -13,8 +13,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.sysbridge.IEvdevCallback
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
@@ -64,11 +62,6 @@ class SystemBridgeManagerImpl @Inject constructor(
         synchronized(systemBridgeLock) {
             this.systemBridge = ISystemBridge.Stub.asInterface(binder)
             systemBridge?.registerCallback(evdevCallback)
-        }
-
-        coroutineScope.launch {
-            delay(1000)
-            grabAllDevices()
         }
     }
 

@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.trigger
 
+import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.withFlag
@@ -15,7 +16,7 @@ data class KeyCodeTriggerKey(
     val device: TriggerKeyDevice,
     override val clickType: ClickType,
     override val consumeEvent: Boolean = true,
-    val detectionSource: KeyEventDetectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+    val detectionSource: InputEventDetectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
 ) : TriggerKey() {
 
     override val allowedLongPress: Boolean = true
@@ -67,9 +68,9 @@ data class KeyCodeTriggerKey(
 
             val detectionSource =
                 if (entity.flags.hasFlag(KeyCodeTriggerKeyEntity.FLAG_DETECTION_SOURCE_INPUT_METHOD)) {
-                    KeyEventDetectionSource.INPUT_METHOD
+                    InputEventDetectionSource.INPUT_METHOD
                 } else {
-                    KeyEventDetectionSource.ACCESSIBILITY_SERVICE
+                    InputEventDetectionSource.ACCESSIBILITY_SERVICE
                 }
 
             return KeyCodeTriggerKey(
@@ -108,7 +109,7 @@ data class KeyCodeTriggerKey(
                 flags = flags.withFlag(KeyCodeTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT)
             }
 
-            if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD) {
+            if (key.detectionSource == InputEventDetectionSource.INPUT_METHOD) {
                 flags = flags.withFlag(KeyCodeTriggerKeyEntity.FLAG_DETECTION_SOURCE_INPUT_METHOD)
             }
 

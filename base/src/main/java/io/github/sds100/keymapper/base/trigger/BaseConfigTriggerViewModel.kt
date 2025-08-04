@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapOptionsViewModel
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCase
@@ -509,7 +510,7 @@ abstract class BaseConfigTriggerViewModel(
         // Issue #491. Some key codes can only be detected through an input method. This will
         // be shown to the user by showing a keyboard icon next to the trigger key name so
         // explain this to the user.
-        if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD && displayKeyMap.showTriggerKeyboardIconExplanation.first()) {
+        if (key.detectionSource == InputEventDetectionSource.INPUT_METHOD && displayKeyMap.showTriggerKeyboardIconExplanation.first()) {
             val dialog = DialogModel.Alert(
                 title = getString(R.string.dialog_title_keyboard_icon_means_ime_detection),
                 message = getString(R.string.dialog_message_keyboard_icon_means_ime_detection),
@@ -747,7 +748,7 @@ abstract class BaseConfigTriggerViewModel(
         return buildString {
             append(InputEventStrings.keyCodeToString(key.keyCode))
 
-            if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD) {
+            if (key.detectionSource == InputEventDetectionSource.INPUT_METHOD) {
                 val midDot = getString(R.string.middot)
                 append(" $midDot ${getString(R.string.flag_detect_from_input_method)}")
             }

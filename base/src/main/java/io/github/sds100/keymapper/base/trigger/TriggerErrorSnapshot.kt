@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.base.trigger
 
 import android.os.Build
 import android.view.KeyEvent
+import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.requiresImeKeyEventForwardingInPhoneCall
 import io.github.sds100.keymapper.base.purchasing.ProductId
@@ -74,7 +75,7 @@ data class TriggerErrorSnapshot(
                 InputEventUtils.isDpadKeyCode(
                     key.keyCode,
                 ) &&
-                key.detectionSource == KeyEventDetectionSource.INPUT_METHOD
+                key.detectionSource == InputEventDetectionSource.INPUT_METHOD
 
         if (showDpadImeSetupError && !isKeyMapperImeChosen && containsDpadKey) {
             return TriggerError.DPAD_IME_NOT_SELECTED

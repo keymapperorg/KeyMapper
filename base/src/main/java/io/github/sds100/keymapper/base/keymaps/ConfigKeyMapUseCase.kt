@@ -8,13 +8,13 @@ import io.github.sds100.keymapper.base.constraints.Constraint
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.constraints.ConstraintState
 import io.github.sds100.keymapper.base.floating.FloatingButtonEntityMapper
+import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.base.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
 import io.github.sds100.keymapper.base.trigger.FloatingButtonKey
 import io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey
-import io.github.sds100.keymapper.base.trigger.KeyEventDetectionSource
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerKey
 import io.github.sds100.keymapper.base.trigger.TriggerKeyDevice
@@ -355,7 +355,7 @@ class ConfigKeyMapUseCaseController @Inject constructor(
     override fun addKeyCodeTriggerKey(
         keyCode: Int,
         device: TriggerKeyDevice,
-        detectionSource: KeyEventDetectionSource,
+        detectionSource: InputEventDetectionSource,
     ) = editTrigger { trigger ->
         val clickType = when (trigger.mode) {
             is TriggerMode.Parallel -> trigger.mode.clickType
@@ -996,7 +996,7 @@ interface ConfigKeyMapUseCase : GetDefaultKeyMapOptionsUseCase {
     fun addKeyCodeTriggerKey(
         keyCode: Int,
         device: TriggerKeyDevice,
-        detectionSource: KeyEventDetectionSource,
+        detectionSource: InputEventDetectionSource,
     )
 
     suspend fun addFloatingButtonTriggerKey(buttonUid: String)
