@@ -7,7 +7,7 @@ import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCa
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
 import io.github.sds100.keymapper.base.trigger.BaseConfigTriggerViewModel
-import io.github.sds100.keymapper.base.trigger.RecordTriggerUseCase
+import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
@@ -19,7 +19,7 @@ class ConfigTriggerViewModel @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val onboarding: OnboardingUseCase,
     private val config: ConfigKeyMapUseCase,
-    private val recordTrigger: RecordTriggerUseCase,
+    private val recordTrigger: RecordTriggerController,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
     private val purchasingManager: PurchasingManager,

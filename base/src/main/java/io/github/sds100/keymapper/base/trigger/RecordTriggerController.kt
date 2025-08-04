@@ -20,10 +20,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RecordTriggerController @Inject constructor(
+class RecordTriggerControllerImpl @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val serviceAdapter: AccessibilityServiceAdapter,
-) : RecordTriggerUseCase {
+) : RecordTriggerController {
     override val state = MutableStateFlow<RecordTriggerState>(RecordTriggerState.Idle)
 
     private val recordedKeys: MutableList<RecordedKey> = mutableListOf()
@@ -120,7 +120,7 @@ class RecordTriggerController @Inject constructor(
     }
 }
 
-interface RecordTriggerUseCase {
+interface RecordTriggerController {
     val state: Flow<RecordTriggerState>
     val onRecordKey: Flow<RecordedKey>
 

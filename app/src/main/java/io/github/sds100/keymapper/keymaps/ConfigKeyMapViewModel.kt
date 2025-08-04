@@ -13,7 +13,7 @@ import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
-import io.github.sds100.keymapper.base.trigger.RecordTriggerUseCase
+import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
@@ -28,7 +28,7 @@ class ConfigKeyMapViewModel @Inject constructor(
     onboarding: OnboardingUseCase,
     createActionUseCase: CreateActionUseCase,
     testActionUseCase: TestActionUseCase,
-    recordTriggerUseCase: RecordTriggerUseCase,
+    recordTriggerController: RecordTriggerController,
     createKeyMapShortcutUseCase: CreateKeyMapShortcutUseCase,
     purchasingManager: PurchasingManager,
     setupGuiKeyboardUseCase: SetupGuiKeyboardUseCase,
@@ -58,7 +58,7 @@ class ConfigKeyMapViewModel @Inject constructor(
         coroutineScope = viewModelScope,
         onboarding = onboarding,
         config = config,
-        recordTrigger = recordTriggerUseCase,
+        recordTrigger = recordTriggerController,
         createKeyMapShortcut = createKeyMapShortcutUseCase,
         displayKeyMap = display,
         purchasingManager = purchasingManager,

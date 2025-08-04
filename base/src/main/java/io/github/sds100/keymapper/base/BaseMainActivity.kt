@@ -29,7 +29,7 @@ import io.github.sds100.keymapper.base.compose.ComposeColors
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.permissions.RequestPermissionDelegate
-import io.github.sds100.keymapper.base.trigger.RecordTriggerController
+import io.github.sds100.keymapper.base.trigger.RecordTriggerControllerImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.common.BuildConfigProvider
@@ -73,7 +73,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
     lateinit var onboardingUseCase: OnboardingUseCase
 
     @Inject
-    lateinit var recordTriggerController: RecordTriggerController
+    lateinit var recordTriggerController: RecordTriggerControllerImpl
 
     @Inject
     lateinit var notificationReceiverAdapter: NotificationReceiverAdapterImpl

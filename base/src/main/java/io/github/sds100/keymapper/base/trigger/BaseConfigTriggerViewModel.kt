@@ -65,7 +65,7 @@ abstract class BaseConfigTriggerViewModel(
     private val coroutineScope: CoroutineScope,
     private val onboarding: OnboardingUseCase,
     private val config: ConfigKeyMapUseCase,
-    private val recordTrigger: RecordTriggerUseCase,
+    private val recordTrigger: RecordTriggerController,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
     private val purchasingManager: PurchasingManager,

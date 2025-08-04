@@ -35,7 +35,7 @@ import io.github.sds100.keymapper.base.system.notifications.AndroidNotificationA
 import io.github.sds100.keymapper.base.system.notifications.ManageNotificationsUseCase
 import io.github.sds100.keymapper.base.system.notifications.ManageNotificationsUseCaseImpl
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
-import io.github.sds100.keymapper.base.trigger.RecordTriggerUseCase
+import io.github.sds100.keymapper.base.trigger.RecordTriggerControllerImpl
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
@@ -105,7 +105,7 @@ abstract class BaseSingletonHiltModule {
 
     @Binds
     @Singleton
-    abstract fun bindRecordTriggerUseCase(impl: RecordTriggerController): RecordTriggerUseCase
+    abstract fun bindRecordTriggerUseCase(impl: RecordTriggerControllerImpl): RecordTriggerController
 
     @Binds
     @Singleton
