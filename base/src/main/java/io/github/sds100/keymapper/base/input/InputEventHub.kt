@@ -1,9 +1,11 @@
 package io.github.sds100.keymapper.base.input
 
 import android.os.Build
+import android.os.RemoteException
 import android.view.KeyEvent
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.common.utils.InputEventType
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.success
@@ -105,50 +107,66 @@ class InputEventHubImpl @Inject constructor(
             }
 
             is KMKeyEvent -> {
-                val systemBridge = this.systemBridge
-
-                if (systemBridge == null) {
-                    // TODO InputKeyModel will be removed
-                    val action = if (event.action == KeyEvent.ACTION_DOWN) {
-                        InputEventType.DOWN
-                    } else {
-                        InputEventType.UP
-                    }
-
-                    val model = InputKeyModel(
-                        keyCode = event.keyCode,
-                        inputType = action,
-                        metaState = event.metaState,
-                        deviceId = event.device?.id ?: -1,
-                        scanCode = event.scanCode,
-                        repeat = event.repeatCount,
-                        source = event.source
-                    )
-
-                    imeInputEventInjector.inputKeyEvent(model)
-
-                    return Success(true)
-                } else {
-                    return systemBridge.injectEvent(
-                        event.toKeyEvent(),
-                        INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH
-                    ).success()
-                }
+                return injectKeyEvent(event)
             }
 
             is KMEvdevEvent -> {
-                val systemBridge = this.systemBridge
+                return injectEvdevEvent(event)
+            }
+        }
+    }
 
-                if (systemBridge == null) {
-                    return SystemBridgeError.Disconnected
-                }
+    private fun injectEvdevEvent(event: KMEvdevEvent): KMResult<Boolean> {
+        val systemBridge = this.systemBridge
 
-                return systemBridge.writeEvdevEvent(
-                    event.deviceId,
-                    event.type,
-                    event.code,
-                    event.value
+        if (systemBridge == null) {
+            return SystemBridgeError.Disconnected
+        }
+
+        try {
+            return systemBridge.writeEvdevEvent(
+                event.deviceId,
+                event.type,
+                event.code,
+                event.value
+            ).success()
+        } catch (e: RemoteException) {
+            return KMError.Exception(e)
+        }
+    }
+
+    private suspend fun injectKeyEvent(event: KMKeyEvent): KMResult<Boolean> {
+        val systemBridge = this.systemBridge
+
+        if (systemBridge == null) {
+            // TODO InputKeyModel will be removed
+            val action = if (event.action == KeyEvent.ACTION_DOWN) {
+                InputEventType.DOWN
+            } else {
+                InputEventType.UP
+            }
+
+            val model = InputKeyModel(
+                keyCode = event.keyCode,
+                inputType = action,
+                metaState = event.metaState,
+                deviceId = event.device?.id ?: -1,
+                scanCode = event.scanCode,
+                repeat = event.repeatCount,
+                source = event.source
+            )
+
+            imeInputEventInjector.inputKeyEvent(model)
+
+            return Success(true)
+        } else {
+            try {
+                return systemBridge.injectEvent(
+                    event.toKeyEvent(),
+                    INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH
                 ).success()
+            } catch (e: RemoteException) {
+                return KMError.Exception(e)
             }
         }
     }
