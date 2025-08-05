@@ -410,3 +410,14 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stopEvdevEventLoo
         LOGE("Failed to write to commandEventFd: %s", strerror(errno));
     }
 }
+
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_writeEvdevEventNative(JNIEnv *env,
+                                                                                     jobject thiz,
+                                                                                     jint device_id,
+                                                                                     jint type,
+                                                                                     jint code,
+                                                                                     jint value) {
+    // TODO: implement writeEvdevEvent()
+}

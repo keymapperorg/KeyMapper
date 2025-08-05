@@ -1,11 +1,22 @@
 package io.github.sds100.keymapper.base.input
 
 import android.os.Build
+import android.view.KeyEvent
+import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
+import io.github.sds100.keymapper.common.utils.InputEventType
+import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.sysbridge.IEvdevCallback
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnection
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeManager
+import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
+import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
+import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
+import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
+import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import timber.log.Timber
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
@@ -13,8 +24,13 @@ import javax.inject.Singleton
 
 @Singleton
 class InputEventHubImpl @Inject constructor(
-    private val systemBridgeManager: SystemBridgeManager
+    private val systemBridgeManager: SystemBridgeManager,
+    private val imeInputEventInjector: ImeInputEventInjector
 ) : InputEventHub, IEvdevCallback.Stub() {
+
+    companion object {
+        private const val INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH = 2
+    }
 
     private val callbacks: ConcurrentHashMap<String, CallbackContext> = ConcurrentHashMap()
 
@@ -82,8 +98,59 @@ class InputEventHubImpl @Inject constructor(
         TODO()
     }
 
-    override fun injectEvent(event: KMInputEvent) {
-        TODO()
+    override suspend fun injectEvent(event: KMInputEvent): KMResult<Boolean> {
+        when (event) {
+            is KMGamePadEvent -> {
+                throw IllegalArgumentException("KMGamePadEvents can not be injected. Must use an evdev event instead.")
+            }
+
+            is KMKeyEvent -> {
+                val systemBridge = this.systemBridge
+
+                if (systemBridge == null) {
+                    // TODO InputKeyModel will be removed
+                    val action = if (event.action == KeyEvent.ACTION_DOWN) {
+                        InputEventType.DOWN
+                    } else {
+                        InputEventType.UP
+                    }
+
+                    val model = InputKeyModel(
+                        keyCode = event.keyCode,
+                        inputType = action,
+                        metaState = event.metaState,
+                        deviceId = event.device?.id ?: -1,
+                        scanCode = event.scanCode,
+                        repeat = event.repeatCount,
+                        source = event.source
+                    )
+
+                    imeInputEventInjector.inputKeyEvent(model)
+
+                    return Success(true)
+                } else {
+                    return systemBridge.injectEvent(
+                        event.toKeyEvent(),
+                        INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH
+                    ).success()
+                }
+            }
+
+            is KMEvdevEvent -> {
+                val systemBridge = this.systemBridge
+
+                if (systemBridge == null) {
+                    return SystemBridgeError.Disconnected
+                }
+
+                return systemBridge.writeEvdevEvent(
+                    event.deviceId,
+                    event.type,
+                    event.code,
+                    event.value
+                ).success()
+            }
+        }
     }
 
     private class CallbackContext(
@@ -114,5 +181,5 @@ interface InputEventHub {
      * Inject an input event. This may either use the key event relay service or the system
      * bridge depending on the permissions granted to Key Mapper.
      */
-    fun injectEvent(event: KMInputEvent)
+    suspend fun injectEvent(event: KMInputEvent): KMResult<Boolean>
 }

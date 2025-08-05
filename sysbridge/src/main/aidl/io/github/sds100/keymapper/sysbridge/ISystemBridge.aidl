@@ -14,5 +14,6 @@ interface ISystemBridge {
    boolean grabEvdevDevice(int deviceId) = 1;
    void registerEvdevCallback(IEvdevCallback callback) = 2;
    void unregisterEvdevCallback() = 3;
-   boolean injectEvent(in InputEvent event, int mode) = 4;
+   boolean writeEvdevEvent(int deviceId, int type, int code, int value) = 4;
+   boolean injectEvent(in InputEvent event, int mode) = 5;
 }

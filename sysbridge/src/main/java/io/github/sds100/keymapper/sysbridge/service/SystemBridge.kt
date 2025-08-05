@@ -43,6 +43,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
     ): Boolean
 
     external fun ungrabEvdevDevice(deviceId: Int)
+    external fun writeEvdevEventNative(deviceId: Int, type: Int, code: Int, value: Int): Boolean
 
     external fun startEvdevEventLoop(callback: IBinder)
     external fun stopEvdevEventLoop()
@@ -265,5 +266,9 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
     override fun injectEvent(event: InputEvent?, mode: Int): Boolean {
         return inputManager.injectInputEvent(event, mode)
+    }
+
+    override fun writeEvdevEvent(deviceId: Int, type: Int, code: Int, value: Int): Boolean {
+        return writeEvdevEventNative(deviceId, type, code, value)
     }
 }

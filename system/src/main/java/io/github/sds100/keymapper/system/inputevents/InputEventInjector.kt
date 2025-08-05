@@ -7,11 +7,10 @@ interface InputEventInjector {
     suspend fun inputKeyEvent(model: InputKeyModel)
 }
 
-
 /**
  * Create a KeyEvent instance that can be injected into the Android system.
  */
-fun InputEventInjector.createKeyEvent(
+fun createKeyEvent(
     eventTime: Long,
     action: Int,
     model: InputKeyModel,
