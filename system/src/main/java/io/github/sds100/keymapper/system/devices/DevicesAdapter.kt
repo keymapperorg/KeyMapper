@@ -17,4 +17,5 @@ interface DevicesAdapter {
 
     fun deviceHasKey(id: Int, keyCode: Int): Boolean
     fun getInputDeviceName(descriptor: String): KMResult<String>
+    fun getInputDevice(deviceId: Int): InputDeviceInfo?
 }

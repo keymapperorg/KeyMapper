@@ -20,11 +20,9 @@ import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.TriggerKeyMapEvent
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.keymaps.detection.DetectScreenOffKeyEventsController
-import io.github.sds100.keymapper.base.keymaps.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.base.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.base.keymaps.detection.TriggerKeyMapFromOtherAppsController
 import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsController
-import io.github.sds100.keymapper.base.trigger.RecordTriggerEvent
 import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.hasFlag
@@ -41,7 +39,6 @@ import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
 import io.github.sds100.keymapper.system.root.SuAdapter
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,7 +55,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -81,10 +77,6 @@ abstract class BaseAccessibilityServiceController(
 ) {
     companion object {
 
-        /**
-         * How long should the accessibility service record a trigger in seconds.
-         */
-        private const val RECORD_TRIGGER_TIMER_LENGTH = 5
         private const val DEFAULT_NOTIFICATION_TIMEOUT = 200L
         private const val CALLBACK_ID_ACCESSIBILITY_SERVICE = "accessibility_service"
     }
@@ -131,14 +123,6 @@ abstract class BaseAccessibilityServiceController(
             }
         }
     }
-
-    private var recordingTriggerJob: Job? = null
-
-    private val recordingTrigger: Boolean
-        get() = recordingTriggerJob != null && recordingTriggerJob?.isActive == true
-
-    private val recordDpadMotionEventTracker: DpadMotionEventTracker =
-        DpadMotionEventTracker()
 
     val isPaused: StateFlow<Boolean> =
         pauseKeyMapsUseCase.isPaused
@@ -486,47 +470,20 @@ abstract class BaseAccessibilityServiceController(
     }
 
     fun onMotionEventFromIme(event: KMGamePadEvent): Boolean {
-        if (isPaused.value) {
-            return false
-        }
-
-        if (recordingTrigger) {
-            val dpadKeyEvents = recordDpadMotionEventTracker.convertMotionEvent(event)
-
-            var consume = false
-
-            for (keyEvent in dpadKeyEvents) {
-                if (keyEvent.action == KeyEvent.ACTION_DOWN) {
-                    Timber.d("Recorded motion event ${KeyEvent.keyCodeToString(keyEvent.keyCode)}")
-
-                    service.lifecycleScope.launch {
-                        outputEvents.emit(
-                            RecordTriggerEvent.RecordedTriggerKey(
-                                keyEvent.keyCode,
-                                keyEvent.device,
-                                InputEventDetectionSource.INPUT_METHOD,
-                            ),
-                        )
-                    }
-                }
-
-                // Consume the key event if it is an DOWN or UP.
-                consume = true
-            }
-
-            if (consume) {
-                return true
-            }
-        }
-
-        try {
-            val consume = keyMapController.onMotionEvent(event)
-
-            return consume
-        } catch (e: Exception) {
-            Timber.e(e)
-            return false
-        }
+        // TODO keymapcontroller will observe inputeventhub and check if a trigger is being recorded
+//        if (isPaused.value || record) {
+//            return false
+//        }
+//
+//        try {
+//            val consume = keyMapController.onMotionEvent(event)
+//
+//            return consume
+//        } catch (e: Exception) {
+//            Timber.e(e)
+//            return false
+//        }
+        return false
     }
 
     open fun onAccessibilityEvent(event: AccessibilityEvent) {
@@ -591,27 +548,8 @@ abstract class BaseAccessibilityServiceController(
 
     open fun onEventFromUi(event: AccessibilityServiceEvent) {
         Timber.d("Service received event from UI: $event")
+
         when (event) {
-            is RecordTriggerEvent.StartRecordingTrigger ->
-                if (!recordingTrigger) {
-                    recordDpadMotionEventTracker.reset()
-                    recordingTriggerJob = recordTriggerJob()
-                }
-
-            is RecordTriggerEvent.StopRecordingTrigger -> {
-                val wasRecordingTrigger = recordingTrigger
-
-                recordingTriggerJob?.cancel()
-                recordingTriggerJob = null
-                recordDpadMotionEventTracker.reset()
-
-                if (wasRecordingTrigger) {
-                    service.lifecycleScope.launch {
-                        outputEvents.emit(RecordTriggerEvent.OnStoppedRecordingTrigger)
-                    }
-                }
-            }
-
             is TestActionEvent -> service.lifecycleScope.launch {
                 performActionsUseCase.perform(
                     event.action,
@@ -645,19 +583,6 @@ abstract class BaseAccessibilityServiceController(
 
             else -> Unit
         }
-    }
-
-    private fun recordTriggerJob() = service.lifecycleScope.launch {
-        repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
-            if (isActive) {
-                val timeLeft = RECORD_TRIGGER_TIMER_LENGTH - iteration
-                outputEvents.emit(RecordTriggerEvent.OnIncrementRecordTriggerTimer(timeLeft))
-
-                delay(1000)
-            }
-        }
-
-        outputEvents.emit(RecordTriggerEvent.OnStoppedRecordingTrigger)
     }
 
     private fun requestFingerprintGestureDetection() {

@@ -7,7 +7,19 @@ data class KMEvdevEvent(
     val value: Int,
 
     // This is only non null when receiving an event. If sending an event
-    // then the time does not need to be set.
+    // then these values do not need to be set.
+    val androidCode: Int? = null,
     val timeSec: Long? = null,
     val timeUsec: Long? = null
-) : KMInputEvent
+) : KMInputEvent {
+
+    // Look at input-event-codes.h for where these are defined.
+    // EV_SYN
+    val isSynEvent: Boolean = type == 0
+
+    // EV_KEY
+    val isKeyEvent: Boolean = type == 1
+
+    // EV_REL
+    val isRelEvent: Boolean = type == 2
+}

@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 sealed class TriggerKeyDevice : Comparable<TriggerKeyDevice> {
     override fun compareTo(other: TriggerKeyDevice) = this.javaClass.name.compareTo(other.javaClass.name)
 
+    // TODO add descriptor and device name
     @Serializable
     data object Internal : TriggerKeyDevice()
 

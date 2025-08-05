@@ -24,11 +24,7 @@ data class KMKeyEvent(
         action = keyEvent.action,
         metaState = keyEvent.metaState,
         scanCode = keyEvent.scanCode,
-        device = if (keyEvent.device == null) {
-            null
-        } else {
-            InputDeviceUtils.createInputDeviceInfo(keyEvent.device)
-        },
+        device = keyEvent.device?.let { InputDeviceUtils.createInputDeviceInfo(it) },
         repeatCount = keyEvent.repeatCount,
         source = keyEvent.source,
         eventTime = keyEvent.eventTime

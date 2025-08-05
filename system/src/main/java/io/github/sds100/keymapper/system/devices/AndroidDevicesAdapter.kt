@@ -139,6 +139,10 @@ class AndroidDevicesAdapter @Inject constructor(
         return KMError.DeviceNotFound(descriptor)
     }
 
+    override fun getInputDevice(deviceId: Int): InputDeviceInfo? {
+        return InputDevice.getDevice(deviceId)?.let { InputDeviceUtils.createInputDeviceInfo(it) }
+    }
+
     private fun updateInputDevices() {
         val devices = mutableListOf<InputDeviceInfo>()
 
