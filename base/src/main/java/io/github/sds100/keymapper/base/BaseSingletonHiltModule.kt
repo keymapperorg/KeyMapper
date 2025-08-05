@@ -14,6 +14,8 @@ import io.github.sds100.keymapper.base.backup.BackupManager
 import io.github.sds100.keymapper.base.backup.BackupManagerImpl
 import io.github.sds100.keymapper.base.constraints.GetConstraintErrorUseCase
 import io.github.sds100.keymapper.base.constraints.GetConstraintErrorUseCaseImpl
+import io.github.sds100.keymapper.base.input.InputEventHub
+import io.github.sds100.keymapper.base.input.InputEventHubImpl
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCaseController
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
@@ -25,6 +27,8 @@ import io.github.sds100.keymapper.base.onboarding.OnboardingUseCaseImpl
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.base.system.accessibility.ControlAccessibilityServiceUseCaseImpl
+import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
+import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjectorImpl
 import io.github.sds100.keymapper.base.system.inputmethod.ShowHideInputMethodUseCase
 import io.github.sds100.keymapper.base.system.inputmethod.ShowHideInputMethodUseCaseImpl
 import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
@@ -45,6 +49,8 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
 import io.github.sds100.keymapper.common.utils.DefaultUuidGenerator
 import io.github.sds100.keymapper.common.utils.UuidGenerator
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
+import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
+import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapperImpl
 import io.github.sds100.keymapper.system.notifications.NotificationAdapter
 import javax.inject.Singleton
 
@@ -134,4 +140,16 @@ abstract class BaseSingletonHiltModule {
     @Binds
     @Singleton
     abstract fun bindDialogProvider(impl: DialogProviderImpl): DialogProvider
+
+    @Binds
+    @Singleton
+    abstract fun bindInputEventHub(impl: InputEventHubImpl): InputEventHub
+
+    @Binds
+    @Singleton
+    abstract fun keyEventRelayServiceWrapper(impl: KeyEventRelayServiceWrapperImpl): KeyEventRelayServiceWrapper
+
+    @Binds
+    @Singleton
+    abstract fun imeInputEvenInjector(impl: ImeInputEventInjectorImpl): ImeInputEventInjector
 }

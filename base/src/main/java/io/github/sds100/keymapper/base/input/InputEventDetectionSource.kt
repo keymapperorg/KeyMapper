@@ -3,5 +3,6 @@ package io.github.sds100.keymapper.base.input
 enum class InputEventDetectionSource {
     ACCESSIBILITY_SERVICE,
     INPUT_METHOD,
-    SYSTEM_BRIDGE
+    SYSTEM_BRIDGE,
+    MAIN_ACTIVITY
 }

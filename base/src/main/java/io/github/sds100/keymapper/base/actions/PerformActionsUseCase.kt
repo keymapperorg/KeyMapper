@@ -87,7 +87,6 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val shell: ShellAdapter,
     private val intentAdapter: IntentAdapter,
     private val getActionErrorUseCase: GetActionErrorUseCase,
-    @Assisted
     private val keyMapperImeMessenger: ImeInputEventInjector,
     private val packageManagerAdapter: PackageManagerAdapter,
     private val appShortcutAdapter: AppShortcutAdapter,
@@ -116,7 +115,6 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     interface Factory {
         fun create(
             accessibilityService: IAccessibilityService,
-            imeInputEventInjector: ImeInputEventInjector,
         ): PerformActionsUseCaseImpl
     }
 

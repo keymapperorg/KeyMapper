@@ -5,6 +5,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCaseImpl
 import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCaseImpl
+import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCaseImpl
@@ -14,6 +15,7 @@ import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilitySer
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
+import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
 import io.github.sds100.keymapper.system.root.SuAdapter
 
 class AccessibilityServiceController @AssistedInject constructor(
@@ -29,7 +31,9 @@ class AccessibilityServiceController @AssistedInject constructor(
     devicesAdapter: DevicesAdapter,
     suAdapter: SuAdapter,
     settingsRepository: PreferenceRepository,
-    systemBridgeSetupController: SystemBridgeSetupController
+    systemBridgeSetupController: SystemBridgeSetupController,
+    keyEventRelayServiceWrapper: KeyEventRelayServiceWrapper,
+    inputEventHub: InputEventHub
 ) : BaseAccessibilityServiceController(
     service = service,
     rerouteKeyEventsControllerFactory = rerouteKeyEventsControllerFactory,
@@ -42,7 +46,9 @@ class AccessibilityServiceController @AssistedInject constructor(
     devicesAdapter = devicesAdapter,
     suAdapter = suAdapter,
     settingsRepository = settingsRepository,
-    systemBridgeSetupController = systemBridgeSetupController
+    systemBridgeSetupController = systemBridgeSetupController,
+    keyEventRelayServiceWrapper = keyEventRelayServiceWrapper,
+    inputEventHub = inputEventHub
 
 ) {
     @AssistedFactory

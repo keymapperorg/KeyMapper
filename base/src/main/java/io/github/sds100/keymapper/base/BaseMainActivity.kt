@@ -215,6 +215,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
     override fun onGenericMotionEvent(event: MotionEvent?): Boolean {
         event ?: return super.onGenericMotionEvent(event)
 
+        // TODO send this to inputeventhub
         val consume =
             recordTriggerController.onActivityMotionEvent(KMGamePadEvent(event))
 

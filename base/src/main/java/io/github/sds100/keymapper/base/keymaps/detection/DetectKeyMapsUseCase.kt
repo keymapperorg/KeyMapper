@@ -47,7 +47,6 @@ import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
 class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
-    @Assisted
     private val imeInputEventInjector: ImeInputEventInjector,
     @Assisted
     private val accessibilityService: IAccessibilityService,
@@ -71,7 +70,6 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
         fun create(
             accessibilityService: IAccessibilityService,
             coroutineScope: CoroutineScope,
-            imeInputEventInjector: ImeInputEventInjector,
         ): DetectKeyMapsUseCaseImpl
     }
 

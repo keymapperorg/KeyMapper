@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.SystemClock
 import android.view.KeyCharacterMap
 import android.view.KeyEvent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.InputEventType
 import io.github.sds100.keymapper.system.inputevents.InputEventInjector
 import io.github.sds100.keymapper.system.inputevents.createKeyEvent
@@ -13,13 +14,16 @@ import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * This class handles communicating with the Key Mapper input method services
  * so key events and text can be inputted.
  */
-class ImeInputEventInjectorImpl(
-    private val ctx: Context,
+@Singleton
+class ImeInputEventInjectorImpl @Inject constructor(
+    @ApplicationContext private val ctx: Context,
     private val keyEventRelayService: KeyEventRelayServiceWrapper,
     private val inputMethodAdapter: InputMethodAdapter,
 ) : ImeInputEventInjector {
@@ -43,7 +47,7 @@ class ImeInputEventInjectorImpl(
         private const val CALLBACK_ID_INPUT_METHOD = "input_method"
     }
 
-    // TODO delete this and InputKeyModel
+    // TODO replace with a method that accepts KMKeyEvent
     override suspend fun inputKeyEvent(model: InputKeyModel) {
         Timber.d("Inject key event with input method ${KeyEvent.keyCodeToString(model.keyCode)}, $model")
 

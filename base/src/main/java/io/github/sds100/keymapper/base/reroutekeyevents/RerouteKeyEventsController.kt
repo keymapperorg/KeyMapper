@@ -23,7 +23,6 @@ import kotlinx.coroutines.launch
 class RerouteKeyEventsController @AssistedInject constructor(
     @Assisted
     private val coroutineScope: CoroutineScope,
-    @Assisted
     private val keyMapperImeMessenger: ImeInputEventInjector,
     private val useCaseFactory: RerouteKeyEventsUseCaseImpl.Factory,
 ) {
@@ -31,7 +30,6 @@ class RerouteKeyEventsController @AssistedInject constructor(
     interface Factory {
         fun create(
             coroutineScope: CoroutineScope,
-            keyMapperImeMessenger: ImeInputEventInjector,
         ): RerouteKeyEventsController
     }
 

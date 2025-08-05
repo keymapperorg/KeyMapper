@@ -25,6 +25,7 @@ import io.github.sds100.keymapper.data.repositories.LogRepository
 import io.github.sds100.keymapper.data.repositories.SettingsPreferenceRepository
 import io.github.sds100.keymapper.system.apps.AndroidPackageManagerAdapter
 import io.github.sds100.keymapper.system.devices.AndroidDevicesAdapter
+import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapperImpl
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.root.SuAdapterImpl
@@ -78,6 +79,9 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
 
     @Inject
     lateinit var logRepository: LogRepository
+
+    @Inject
+    lateinit var keyEventRelayServiceWrapper: KeyEventRelayServiceWrapperImpl
 
     private val processLifecycleOwner by lazy { ProcessLifecycleOwner.get() }
 
@@ -184,6 +188,8 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
         }.launchIn(appCoroutineScope)
 
         autoGrantPermissionController.start()
+
+        keyEventRelayServiceWrapper.bind()
     }
 
     abstract fun getMainActivityClass(): Class<*>
