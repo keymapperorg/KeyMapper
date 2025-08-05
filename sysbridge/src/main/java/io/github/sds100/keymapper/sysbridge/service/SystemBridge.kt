@@ -37,6 +37,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
     // TODO observe if Key Mapper is uninstalled and stop the process. Look at ApkChangedObservers in Shizuku code.
 
+    // TODO return error code and map this to a SystemBridgeError in key mapper
     external fun grabEvdevDevice(
         deviceIdentifier: InputDeviceIdentifier
     ): Boolean
@@ -159,6 +160,13 @@ internal class SystemBridge : ISystemBridge.Stub() {
     private val coroutineScope: CoroutineScope = MainScope()
     private val mainHandler = Handler(Looper.myLooper()!!)
 
+    private val evdevCallbackLock: Any = Any()
+    private var evdevCallback: IEvdevCallback? = null
+    private val evdevCallbackDeathRecipient: IBinder.DeathRecipient = IBinder.DeathRecipient {
+        Log.d(TAG, "EvdevCallback binder died")
+        stopEvdevEventLoop()
+    }
+
     init {
         @SuppressLint("UnsafeDynamicallyLoadedCode")
         System.load("${System.getProperty("keymapper_sysbridge.library.path")}/libevdev.so")
@@ -202,16 +210,36 @@ internal class SystemBridge : ISystemBridge.Stub() {
     // TODO ungrab all evdev devices if no key mapper app is bound to the service
     override fun destroy() {
         Log.d(TAG, "SystemBridge destroyed")
+
+        // Must be last line in this method because it halts the JVM.
         exitProcess(0)
     }
 
-    override fun registerCallback(callback: IEvdevCallback?) {
+    override fun registerEvdevCallback(callback: IEvdevCallback?) {
         callback ?: return
+
+        val binder = callback.asBinder()
+
+        if (this.evdevCallback != null) {
+            unregisterEvdevCallback()
+        }
+
+        synchronized(evdevCallbackLock) {
+            this.evdevCallback = callback
+            binder.linkToDeath(evdevCallbackDeathRecipient, 0)
+        }
 
         coroutineScope.launch(Dispatchers.IO) {
             mainHandler.post {
-                startEvdevEventLoop(callback.asBinder())
+                startEvdevEventLoop(binder)
             }
+        }
+    }
+
+    override fun unregisterEvdevCallback() {
+        synchronized(evdevCallbackLock) {
+            evdevCallback?.asBinder()?.unlinkToDeath(evdevCallbackDeathRecipient, 0)
+            evdevCallback = null
         }
     }
 

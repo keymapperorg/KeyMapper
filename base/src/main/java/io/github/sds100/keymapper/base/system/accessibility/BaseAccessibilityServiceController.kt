@@ -33,8 +33,8 @@ import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
+import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
-import io.github.sds100.keymapper.system.inputevents.KMMotionEvent
 import io.github.sds100.keymapper.system.root.SuAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -469,7 +469,7 @@ abstract class BaseAccessibilityServiceController(
         )
     }
 
-    fun onMotionEventFromIme(event: KMMotionEvent): Boolean {
+    fun onMotionEventFromIme(event: KMGamePadEvent): Boolean {
         if (isPaused.value) {
             return false
         }

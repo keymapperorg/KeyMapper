@@ -12,6 +12,7 @@ interface ISystemBridge {
    void destroy() = 16777114;
 
    boolean grabEvdevDevice(int deviceId) = 1;
-   boolean injectEvent(in InputEvent event, int mode) = 2;
-   void registerCallback(IEvdevCallback callback) = 3;
+   void registerEvdevCallback(IEvdevCallback callback) = 2;
+   void unregisterEvdevCallback() = 3;
+   boolean injectEvent(in InputEvent event, int mode) = 4;
 }

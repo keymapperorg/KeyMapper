@@ -4,8 +4,8 @@ import android.view.InputDevice
 import android.view.KeyEvent
 import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
+import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
-import io.github.sds100.keymapper.system.inputevents.KMMotionEvent
 
 /**
  * See https://developer.android.com/develop/ui/views/touch-and-input/game-controllers/controller-input#dpad
@@ -63,7 +63,7 @@ class DpadMotionEventTracker {
      *
      * @return An array of key events. Empty if no DPAD buttons changed.
      */
-    fun convertMotionEvent(event: KMMotionEvent): List<KMKeyEvent> {
+    fun convertMotionEvent(event: KMGamePadEvent): List<KMKeyEvent> {
         val oldState = dpadState[event.device.getDescriptor()] ?: 0
         val newState = eventToDpadState(event)
         val diff = oldState xor newState
@@ -109,6 +109,7 @@ class DpadMotionEventTracker {
                 device = event.device,
                 repeatCount = 0,
                 source = InputDevice.SOURCE_DPAD,
+                eventTime = event.eventTime
             )
         }
     }
@@ -121,7 +122,7 @@ class DpadMotionEventTracker {
         return this?.descriptor ?: ""
     }
 
-    private fun eventToDpadState(event: KMMotionEvent): Int {
+    private fun eventToDpadState(event: KMGamePadEvent): Int {
         var state = 0
 
         if (event.axisHatX == -1.0f) {

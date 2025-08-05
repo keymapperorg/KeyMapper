@@ -4,8 +4,8 @@ import android.view.InputDevice
 import android.view.KeyEvent
 import io.github.sds100.keymapper.base.keymaps.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.common.utils.InputDeviceInfo
+import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
-import io.github.sds100.keymapper.system.inputevents.KMMotionEvent
 import junitparams.JUnitParamsRunner
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.MatcherAssert.assertThat
@@ -68,6 +68,7 @@ class DpadMotionEventTrackerTest {
                     device = CONTROLLER_1_DEVICE,
                     repeatCount = 0,
                     source = InputDevice.SOURCE_DPAD,
+                    eventTime = motionEvent.eventTime
                 ),
             ),
         )
@@ -82,6 +83,7 @@ class DpadMotionEventTrackerTest {
                     device = CONTROLLER_1_DEVICE,
                     repeatCount = 0,
                     source = InputDevice.SOURCE_DPAD,
+                    eventTime = motionEvent.eventTime
                 ),
             ),
         )
@@ -257,14 +259,13 @@ class DpadMotionEventTrackerTest {
         axisHatX: Float = 0.0f,
         axisHatY: Float = 0.0f,
         device: InputDeviceInfo = CONTROLLER_1_DEVICE,
-        isDpad: Boolean = true,
-    ): KMMotionEvent {
-        return KMMotionEvent(
+    ): KMGamePadEvent {
+        return KMGamePadEvent(
             metaState = 0,
             device = device,
             axisHatX = axisHatX,
             axisHatY = axisHatY,
-            isDpad = isDpad,
+            eventTime = System.currentTimeMillis()
         )
     }
 
@@ -277,6 +278,7 @@ class DpadMotionEventTrackerTest {
             device = device,
             repeatCount = 0,
             source = 0,
+            eventTime = System.currentTimeMillis()
         )
     }
 
@@ -289,6 +291,8 @@ class DpadMotionEventTrackerTest {
             device = device,
             repeatCount = 0,
             source = 0,
+            eventTime = System.currentTimeMillis()
+
         )
     }
 }

@@ -7,7 +7,7 @@ import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
-import io.github.sds100.keymapper.system.inputevents.KMMotionEvent
+import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -78,7 +78,7 @@ class RecordTriggerControllerImpl @Inject constructor(
      * these are sent from the joy sticks.
      * @return Whether the motion event is consumed.
      */
-    fun onActivityMotionEvent(event: KMMotionEvent): Boolean {
+    fun onActivityMotionEvent(event: KMGamePadEvent): Boolean {
         if (state.value !is RecordTriggerState.CountingDown) {
             return false
         }

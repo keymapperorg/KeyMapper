@@ -398,8 +398,7 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stopEvdevEventLoop(JNIEnv *env,
                                                                                   jobject thiz) {
-    Command cmd;
-    cmd.type = STOP;
+    Command cmd = {STOP};
 
     std::lock_guard<std::mutex> lock(commandMutex);
     commandQueue.push(cmd);

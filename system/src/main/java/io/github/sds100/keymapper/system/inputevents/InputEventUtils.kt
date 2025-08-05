@@ -1,8 +1,6 @@
 package io.github.sds100.keymapper.system.inputevents
 
 import android.os.Build
-import android.view.InputDevice
-import android.view.InputEvent
 import android.view.KeyEvent
 import io.github.sds100.keymapper.common.utils.withFlag
 
@@ -458,9 +456,6 @@ object InputEventUtils {
             code == KeyEvent.KEYCODE_DPAD_DOWN_LEFT ||
             code == KeyEvent.KEYCODE_DPAD_DOWN_RIGHT
     }
-
-    fun isDpadDevice(event: InputEvent): Boolean = // Check that input comes from a device with directional pads.
-        event.source and InputDevice.SOURCE_DPAD != InputDevice.SOURCE_DPAD
 
     fun isGamepadButton(keyCode: Int): Boolean {
         return when (keyCode) {

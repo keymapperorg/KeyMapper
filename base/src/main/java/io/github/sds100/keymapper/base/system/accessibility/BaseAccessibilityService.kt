@@ -33,8 +33,8 @@ import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.MathUtils
 import io.github.sds100.keymapper.common.utils.PinchScreenType
 import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
-import io.github.sds100.keymapper.system.inputevents.KMMotionEvent
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapperImpl
 import kotlinx.coroutines.flow.Flow
@@ -159,6 +159,7 @@ abstract class BaseAccessibilityService :
                             device = device,
                             repeatCount = event.repeatCount,
                             source = event.source,
+                            eventTime = event.eventTime
                         ),
                     ) ?: false
             }
@@ -167,7 +168,7 @@ abstract class BaseAccessibilityService :
                 event ?: return false
 
                 return getController()
-                    ?.onMotionEventFromIme(KMMotionEvent.fromMotionEvent(event))
+                    ?.onMotionEventFromIme(KMGamePadEvent(event))
                     ?: return false
             }
         }
@@ -306,22 +307,8 @@ abstract class BaseAccessibilityService :
     override fun onKeyEvent(event: KeyEvent?): Boolean {
         event ?: return super.onKeyEvent(event)
 
-        val device = if (event.device == null) {
-            null
-        } else {
-            InputDeviceUtils.createInputDeviceInfo(event.device)
-        }
-
         return getController()?.onKeyEvent(
-            KMKeyEvent(
-                keyCode = event.keyCode,
-                action = event.action,
-                metaState = event.metaState,
-                scanCode = event.scanCode,
-                device = device,
-                repeatCount = event.repeatCount,
-                source = event.source,
-            ),
+            KMKeyEvent(event),
             InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         ) ?: false
     }

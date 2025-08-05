@@ -33,8 +33,8 @@ import io.github.sds100.keymapper.common.utils.InputEventType
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.system.camera.CameraLens
+import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
-import io.github.sds100.keymapper.system.inputevents.KMMotionEvent
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import junitparams.JUnitParamsRunner
 import junitparams.Parameters
@@ -4179,14 +4179,13 @@ class KeyMapControllerTest {
         axisHatX: Float = 0.0f,
         axisHatY: Float = 0.0f,
         device: InputDeviceInfo = FAKE_CONTROLLER_INPUT_DEVICE,
-        isDpad: Boolean = true,
-    ): KMMotionEvent {
-        return KMMotionEvent(
+    ): KMGamePadEvent {
+        return KMGamePadEvent(
             metaState = 0,
             device = device,
             axisHatX = axisHatX,
             axisHatY = axisHatY,
-            isDpad = isDpad,
+            eventTime = System.currentTimeMillis()
         )
     }
 
@@ -4195,12 +4194,12 @@ class KeyMapControllerTest {
         axisHatY: Float = 0.0f,
         device: InputDeviceInfo = FAKE_CONTROLLER_INPUT_DEVICE,
     ): Boolean = controller.onMotionEvent(
-        KMMotionEvent(
+        KMGamePadEvent(
             metaState = 0,
             device = device,
             axisHatX = axisHatX,
             axisHatY = axisHatY,
-            isDpad = true,
+            eventTime = System.currentTimeMillis()
         ),
     )
 
@@ -4220,6 +4219,7 @@ class KeyMapControllerTest {
             device = device,
             repeatCount = repeatCount,
             source = 0,
+            eventTime = System.currentTimeMillis()
         ),
     )
 

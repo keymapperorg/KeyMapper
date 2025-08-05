@@ -35,7 +35,7 @@ import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.system.files.FileUtils
-import io.github.sds100.keymapper.system.inputevents.KMMotionEvent
+import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapterImpl
@@ -216,7 +216,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
         event ?: return super.onGenericMotionEvent(event)
 
         val consume =
-            recordTriggerController.onActivityMotionEvent(KMMotionEvent.fromMotionEvent(event))
+            recordTriggerController.onActivityMotionEvent(KMGamePadEvent(event))
 
         return if (consume) {
             true

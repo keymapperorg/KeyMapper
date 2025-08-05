@@ -28,8 +28,8 @@ import io.github.sds100.keymapper.common.utils.minusFlag
 import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
+import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
-import io.github.sds100.keymapper.system.inputevents.KMMotionEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -569,7 +569,7 @@ class KeyMapController(
         }
     }
 
-    fun onMotionEvent(event: KMMotionEvent): Boolean {
+    fun onMotionEvent(event: KMGamePadEvent): Boolean {
         if (!detectKeyMaps) return false
 
         // See https://developer.android.com/develop/ui/views/touch-and-input/game-controllers/controller-input#dpad
