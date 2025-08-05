@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.base.keymaps.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.isError
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
@@ -118,9 +119,18 @@ class RecordTriggerControllerImpl @Inject constructor(
 
         recordedKeys.clear()
         dpadMotionEventTracker.reset()
+
         recordingTriggerJob = recordTriggerJob()
 
         inputEventHub.registerClient(INPUT_EVENT_HUB_ID, this)
+
+        val inputDevices = devicesAdapter.connectedInputDevices.value.dataOrNull()
+
+        // Grab all evdev devices
+        if (inputDevices != null) {
+            val allDeviceDescriptors = inputDevices.map { it.descriptor }.toList()
+            inputEventHub.setGrabbedEvdevDevices(INPUT_EVENT_HUB_ID, allDeviceDescriptors)
+        }
 
         return Success(Unit)
     }

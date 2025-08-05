@@ -47,6 +47,8 @@ struct DeviceContext {
     struct android::KeyLayoutMap keyLayoutMap;
 };
 
+void ungrabDevice(jint device_id);
+
 static int epollFd = -1;
 static int commandEventFd = -1;
 
@@ -164,7 +166,7 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDevice(JNIEnv *env,
+Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDeviceNative(JNIEnv *env,
                                                                                jobject thiz,
                                                                                jobject jInputDeviceIdentifier) {
     jclass inputDeviceIdentifierClass = env->GetObjectClass(jInputDeviceIdentifier);
@@ -373,14 +375,10 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLo
     close(epollFd);
 }
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_ungrabEvdevDevice(JNIEnv *env,
-                                                                                 jobject thiz,
-                                                                                 jint device_id) {
+void ungrabDevice(int deviceId) {
     Command cmd;
     cmd.type = UNGRAB;
-    cmd.data = UngrabData{device_id};
+    cmd.data = UngrabData{deviceId};
 
     std::lock_guard<std::mutex> lock(commandMutex);
     commandQueue.push(cmd);
@@ -391,6 +389,14 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_ungrabEvdevDevice
     if (written < 0) {
         LOGE("Failed to write to commandEventFd: %s", strerror(errno));
     }
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_ungrabEvdevDeviceNative(JNIEnv *env,
+                                                                                 jobject thiz,
+                                                                                 jint device_id) {
+    ungrabDevice(device_id);
 }
 
 
@@ -420,4 +426,21 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_writeEvdevEventNa
                                                                                      jint code,
                                                                                      jint value) {
     // TODO: implement writeEvdevEvent()
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_ungrabAllEvdevDevicesNative(
+        JNIEnv *env,
+        jobject thiz) {
+    std::lock_guard<std::mutex> evdevLock(evdevDevicesMutex);
+    std::vector<int> deviceIds;
+
+    for (auto pair: *evdevDevices) {
+        deviceIds.push_back(pair.second.deviceId);
+    }
+
+    std::lock_guard<std::mutex> commandlock(commandMutex);
+    for (int id: deviceIds) {
+        ungrabDevice(id);
+    }
 }

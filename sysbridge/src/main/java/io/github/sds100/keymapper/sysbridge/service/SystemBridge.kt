@@ -38,11 +38,12 @@ internal class SystemBridge : ISystemBridge.Stub() {
     // TODO observe if Key Mapper is uninstalled and stop the process. Look at ApkChangedObservers in Shizuku code.
 
     // TODO return error code and map this to a SystemBridgeError in key mapper
-    external fun grabEvdevDevice(
+    external fun grabEvdevDeviceNative(
         deviceIdentifier: InputDeviceIdentifier
     ): Boolean
 
-    external fun ungrabEvdevDevice(deviceId: Int)
+    external fun ungrabEvdevDeviceNative(deviceId: Int)
+    external fun ungrabAllEvdevDevicesNative()
     external fun writeEvdevEventNative(deviceId: Int, type: Int, code: Int, value: Int): Boolean
 
     external fun startEvdevEventLoop(callback: IBinder)
@@ -247,6 +248,21 @@ internal class SystemBridge : ISystemBridge.Stub() {
     override fun grabEvdevDevice(
         deviceId: Int,
     ): Boolean {
+        grabEvdevDeviceNative(buildInputDeviceIdentifier(deviceId))
+        return true
+    }
+
+    override fun ungrabEvdevDevice(deviceId: Int): Boolean {
+        ungrabEvdevDeviceNative(deviceId)
+        return true
+    }
+
+    override fun ungrabAllEvdevDevices(): Boolean {
+        ungrabAllEvdevDevicesNative()
+        return true
+    }
+
+    private fun buildInputDeviceIdentifier(deviceId: Int): InputDeviceIdentifier {
         val inputDevice = inputManager.getInputDevice(deviceId)
 
         val deviceIdentifier = InputDeviceIdentifier(
@@ -258,13 +274,10 @@ internal class SystemBridge : ISystemBridge.Stub() {
             bus = inputDevice.getDeviceBus(),
             bluetoothAddress = inputDevice.getBluetoothAddress()
         )
-
-        grabEvdevDevice(deviceIdentifier)
-
-        return true
+        return deviceIdentifier
     }
 
-    override fun injectEvent(event: InputEvent?, mode: Int): Boolean {
+    override fun injectInputEvent(event: InputEvent?, mode: Int): Boolean {
         return inputManager.injectInputEvent(event, mode)
     }
 
