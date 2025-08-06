@@ -93,6 +93,8 @@ class AndroidInputMethodAdapter @Inject constructor(
             .onEach {
                 if (it == null) {
                     Timber.e("No input method is chosen.")
+                } else {
+                    Timber.i("On input method chosen, chosen IME = ${chosenIme.value}")
                 }
             }
             .stateIn(coroutineScope, SharingStarted.Lazily, getChosenIme())
@@ -182,17 +184,18 @@ class AndroidInputMethodAdapter @Inject constructor(
         }
     }
 
-    override suspend fun enableIme(imeId: String): KMResult<*> = enableImeWithoutUserInput(imeId).otherwise {
-        try {
-            val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
-            intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_NEW_TASK
+    override suspend fun enableIme(imeId: String): KMResult<*> =
+        enableImeWithoutUserInput(imeId).otherwise {
+            try {
+                val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
+                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_NEW_TASK
 
-            ctx.startActivity(intent)
-            Success(Unit)
-        } catch (e: Exception) {
-            KMError.CantFindImeSettings
+                ctx.startActivity(intent)
+                Success(Unit)
+            } catch (e: Exception) {
+                KMError.CantFindImeSettings
+            }
         }
-    }
 
     private suspend fun enableImeWithoutUserInput(imeId: String): KMResult<*> {
         return getInfoByPackageName(buildConfigProvider.packageName).then { keyMapperImeInfo ->
@@ -254,7 +257,8 @@ class AndroidInputMethodAdapter @Inject constructor(
         return Success(info)
     }
 
-    override fun getInfoByPackageName(packageName: String): KMResult<ImeInfo> = getImeId(packageName).then { getInfoById(it) }
+    override fun getInfoByPackageName(packageName: String): KMResult<ImeInfo> =
+        getImeId(packageName).then { getInfoById(it) }
 
     /**
      * Example:
@@ -272,7 +276,6 @@ class AndroidInputMethodAdapter @Inject constructor(
     fun onInputMethodsUpdate() {
         inputMethods.value = getInputMethods()
         inputMethodHistory.value = getImeHistory().mapNotNull { getInfoById(it).valueOrNull() }
-        Timber.i("On input method update, chosen IME = ${chosenIme.value}")
     }
 
     private fun getInputMethods(): List<ImeInfo> {
@@ -302,7 +305,8 @@ class AndroidInputMethodAdapter @Inject constructor(
         return getInfoById(chosenImeId).valueOrNull()
     }
 
-    private fun getChosenImeId(): String = Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
+    private fun getChosenImeId(): String =
+        Settings.Secure.getString(ctx.contentResolver, Settings.Secure.DEFAULT_INPUT_METHOD)
 
     private fun getImeId(packageName: String): KMResult<String> {
         val imeId =
