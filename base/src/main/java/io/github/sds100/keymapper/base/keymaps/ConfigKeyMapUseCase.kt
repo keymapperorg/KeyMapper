@@ -741,7 +741,8 @@ class ConfigKeyMapUseCaseController @Inject constructor(
         }
     }
 
-    override fun setActionHoldDownEnabled(uid: String, holdDown: Boolean) = setActionOption(uid) { it.copy(holdDown = holdDown) }
+    override fun setActionHoldDownEnabled(uid: String, holdDown: Boolean) =
+        setActionOption(uid) { it.copy(holdDown = holdDown) }
 
     override fun setActionHoldDownDuration(uid: String, holdDownDuration: Int) {
         setActionOption(uid) { action ->
@@ -753,13 +754,17 @@ class ConfigKeyMapUseCaseController @Inject constructor(
         }
     }
 
-    override fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String) = setActionOption(uid) { it.copy(repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN) }
+    override fun setActionStopRepeatingWhenTriggerPressedAgain(uid: String) =
+        setActionOption(uid) { it.copy(repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN) }
 
-    override fun setActionStopRepeatingWhenLimitReached(uid: String) = setActionOption(uid) { it.copy(repeatMode = RepeatMode.LIMIT_REACHED) }
+    override fun setActionStopRepeatingWhenLimitReached(uid: String) =
+        setActionOption(uid) { it.copy(repeatMode = RepeatMode.LIMIT_REACHED) }
 
-    override fun setActionStopRepeatingWhenTriggerReleased(uid: String) = setActionOption(uid) { it.copy(repeatMode = RepeatMode.TRIGGER_RELEASED) }
+    override fun setActionStopRepeatingWhenTriggerReleased(uid: String) =
+        setActionOption(uid) { it.copy(repeatMode = RepeatMode.TRIGGER_RELEASED) }
 
-    override fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean) = setActionOption(uid) { it.copy(stopHoldDownWhenTriggerPressedAgain = enabled) }
+    override fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean) =
+        setActionOption(uid) { it.copy(stopHoldDownWhenTriggerPressedAgain = enabled) }
 
     override fun setActionMultiplier(uid: String, multiplier: Int) {
         setActionOption(uid) { action ->

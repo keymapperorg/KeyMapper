@@ -288,12 +288,6 @@ class AndroidPermissionAdapter @Inject constructor(
                 val ignoringOptimisations =
                     powerManager?.isIgnoringBatteryOptimizations(buildConfigProvider.packageName)
 
-                when {
-                    powerManager == null -> Timber.i("Power manager is null")
-                    ignoringOptimisations == true -> Timber.i("Battery optimisation is disabled")
-                    ignoringOptimisations == false -> Timber.e("Battery optimisation is enabled")
-                }
-
                 ignoringOptimisations ?: false
             } else {
                 true
