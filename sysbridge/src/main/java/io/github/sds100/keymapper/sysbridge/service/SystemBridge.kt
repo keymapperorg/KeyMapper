@@ -165,14 +165,14 @@ internal class SystemBridge : ISystemBridge.Stub() {
     private val evdevCallbackLock: Any = Any()
     private var evdevCallback: IEvdevCallback? = null
     private val evdevCallbackDeathRecipient: IBinder.DeathRecipient = IBinder.DeathRecipient {
-        Log.d(TAG, "EvdevCallback binder died")
+        Log.i(TAG, "EvdevCallback binder died")
         stopEvdevEventLoop()
     }
 
     init {
         @SuppressLint("UnsafeDynamicallyLoadedCode")
         System.load("${System.getProperty("keymapper_sysbridge.library.path")}/libevdev.so")
-        Log.d(TAG, "SystemBridge started")
+        Log.i(TAG, "SystemBridge started")
 
         waitSystemService("package")
         waitSystemService(Context.ACTIVITY_SERVICE)
@@ -211,7 +211,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
     // TODO ungrab all evdev devices
     // TODO ungrab all evdev devices if no key mapper app is bound to the service
     override fun destroy() {
-        Log.d(TAG, "SystemBridge destroyed")
+        Log.i(TAG, "SystemBridge destroyed")
 
         // Must be last line in this method because it halts the JVM.
         exitProcess(0)
@@ -219,6 +219,8 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
     override fun registerEvdevCallback(callback: IEvdevCallback?) {
         callback ?: return
+
+        Log.i(TAG, "Register evdev callback")
 
         val binder = callback.asBinder()
 
@@ -248,8 +250,20 @@ internal class SystemBridge : ISystemBridge.Stub() {
     override fun grabEvdevDevice(
         deviceId: Int,
     ): Boolean {
-        grabEvdevDeviceNative(buildInputDeviceIdentifier(deviceId))
-        return true
+        // Can not filter touchscreens because the volume and power buttons in the emulator come through touchscreen devices.
+
+//        val inputDevice = inputManager.getInputDevice(deviceId);
+//
+//        if (inputDevice == null) {
+//            return false;
+//        }
+//
+//        if (inputDevice.supportsSource(InputDevice.SOURCE_TOUCHSCREEN)) {
+//            Log.e(TAG, "Key Mapper does not permit touchscreens to be grabbed")
+//            return false;
+//        }
+
+        return grabEvdevDeviceNative(buildInputDeviceIdentifier(deviceId))
     }
 
     override fun ungrabEvdevDevice(deviceId: Int): Boolean {

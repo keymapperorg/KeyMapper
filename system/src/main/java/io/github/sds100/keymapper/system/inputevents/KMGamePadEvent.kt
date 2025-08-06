@@ -16,6 +16,8 @@ data class KMGamePadEvent(
     val axisHatY: Float,
 ) : KMInputEvent {
 
+    override val deviceId: Int? = device?.id
+
     constructor(event: MotionEvent) : this(
         eventTime = event.eventTime,
         metaState = event.metaState,

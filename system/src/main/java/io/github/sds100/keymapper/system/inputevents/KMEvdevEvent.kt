@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.system.inputevents
 
 data class KMEvdevEvent(
-    val deviceId: Int,
+    override val deviceId: Int,
     val type: Int,
     val code: Int,
     val value: Int,

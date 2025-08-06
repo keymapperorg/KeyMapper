@@ -12,4 +12,9 @@ data class InputDeviceInfo(
     val id: Int,
     val isExternal: Boolean,
     val isGameController: Boolean,
-) : Parcelable
+    val sources: Int
+) : Parcelable {
+    fun supportsSource(source: Int): Boolean {
+        return sources and source == source
+    }
+}

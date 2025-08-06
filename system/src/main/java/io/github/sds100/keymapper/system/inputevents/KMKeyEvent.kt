@@ -16,8 +16,10 @@ data class KMKeyEvent(
     val device: InputDeviceInfo?,
     val repeatCount: Int,
     val source: Int,
-    val eventTime: Long
+    val eventTime: Long,
 ) : KMInputEvent {
+
+    override val deviceId: Int? = device?.id
 
     constructor(keyEvent: KeyEvent) : this(
         keyCode = keyEvent.keyCode,
@@ -27,7 +29,7 @@ data class KMKeyEvent(
         device = keyEvent.device?.let { InputDeviceUtils.createInputDeviceInfo(it) },
         repeatCount = keyEvent.repeatCount,
         source = keyEvent.source,
-        eventTime = keyEvent.eventTime
+        eventTime = keyEvent.eventTime,
     )
 
     fun toKeyEvent(): KeyEvent {

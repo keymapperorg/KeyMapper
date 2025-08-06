@@ -32,6 +32,7 @@ object InputDeviceUtils {
         inputDevice.id,
         inputDevice.isExternalCompat,
         isGameController = inputDevice.controllerNumber != 0,
+        sources = inputDevice.sources
     )
 }
 

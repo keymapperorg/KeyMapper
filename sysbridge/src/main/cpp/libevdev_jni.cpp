@@ -167,8 +167,8 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 extern "C"
 JNIEXPORT jboolean JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDeviceNative(JNIEnv *env,
-                                                                               jobject thiz,
-                                                                               jobject jInputDeviceIdentifier) {
+                                                                                     jobject thiz,
+                                                                                     jobject jInputDeviceIdentifier) {
     jclass inputDeviceIdentifierClass = env->GetObjectClass(jInputDeviceIdentifier);
     jfieldID idFieldId = env->GetFieldID(inputDeviceIdentifierClass, "id", "I");
     android::InputDeviceIdentifier identifier = convertJInputDeviceIdentifier(env,
@@ -333,6 +333,8 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLo
     struct epoll_event events[MAX_EPOLL_EVENTS];
     bool running = true;
 
+    LOGI("Start evdev event loop");
+
     while (running) {
         int n = epoll_wait(epollFd, events, MAX_EPOLL_EVENTS, -1);
 
@@ -376,6 +378,8 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLo
 }
 
 void ungrabDevice(int deviceId) {
+    LOGI("Ungrab device %d", deviceId);
+
     Command cmd;
     cmd.type = UNGRAB;
     cmd.data = UngrabData{deviceId};
@@ -394,8 +398,8 @@ void ungrabDevice(int deviceId) {
 extern "C"
 JNIEXPORT void JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_ungrabEvdevDeviceNative(JNIEnv *env,
-                                                                                 jobject thiz,
-                                                                                 jint device_id) {
+                                                                                       jobject thiz,
+                                                                                       jint device_id) {
     ungrabDevice(device_id);
 }
 
@@ -432,14 +436,16 @@ JNIEXPORT void JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_ungrabAllEvdevDevicesNative(
         JNIEnv *env,
         jobject thiz) {
-    std::lock_guard<std::mutex> evdevLock(evdevDevicesMutex);
     std::vector<int> deviceIds;
 
-    for (auto pair: *evdevDevices) {
-        deviceIds.push_back(pair.second.deviceId);
+    {
+        std::lock_guard<std::mutex> evdevLock(evdevDevicesMutex);
+
+        for (auto pair: *evdevDevices) {
+            deviceIds.push_back(pair.second.deviceId);
+        }
     }
 
-    std::lock_guard<std::mutex> commandlock(commandMutex);
     for (int id: deviceIds) {
         ungrabDevice(id);
     }

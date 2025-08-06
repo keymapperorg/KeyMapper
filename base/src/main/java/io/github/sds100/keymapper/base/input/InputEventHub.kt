@@ -41,7 +41,7 @@ class InputEventHubImpl @Inject constructor(
     private val systemBridgeManager: SystemBridgeManager,
     private val imeInputEventInjector: ImeInputEventInjector,
     private val preferenceRepository: PreferenceRepository,
-    private val devicesAdapter: DevicesAdapter
+    private val devicesAdapter: DevicesAdapter,
 ) : InputEventHub, IEvdevCallback.Stub() {
 
     companion object {
@@ -58,6 +58,7 @@ class InputEventHubImpl @Inject constructor(
             Timber.i("InputEventHub connected to SystemBridge")
 
             systemBridge = service
+            service.registerEvdevCallback(this@InputEventHubImpl)
         }
 
         override fun onServiceDisconnected(service: ISystemBridge) {
@@ -70,6 +71,10 @@ class InputEventHubImpl @Inject constructor(
             Timber.i("SystemBridge connection died")
         }
     }
+
+    private val inputDeviceCache: InputDeviceCache =
+        InputDeviceCache(coroutineScope, devicesAdapter)
+    private val evdevKeyEventTracker: EvdevKeyEventTracker = EvdevKeyEventTracker(inputDeviceCache)
 
     private val logInputEventsEnabled: StateFlow<Boolean> =
         preferenceRepository.get(Keys.log).map { isLogEnabled ->
@@ -95,19 +100,25 @@ class InputEventHubImpl @Inject constructor(
         value: Int,
         androidCode: Int
     ) {
-        Timber.d(
-            "Evdev event: deviceId=${deviceId}, timeSec=$timeSec, timeUsec=$timeUsec, " +
-                "type=$type, code=$code, value=$value, androidCode=$androidCode"
-        )
+        val evdevEvent = KMEvdevEvent(deviceId, type, code, value, androidCode, timeSec, timeUsec)
 
+        if (logInputEventsEnabled.value) {
+            logInputEvent(evdevEvent)
+        }
 
+        val keyEvent: KMKeyEvent? = evdevKeyEventTracker.toKeyEvent(evdevEvent)
+
+        if (keyEvent != null) {
+            onInputEvent(keyEvent, InputEventDetectionSource.EVDEV)
+        } else {
+            onInputEvent(evdevEvent, InputEventDetectionSource.EVDEV)
+        }
     }
 
     override fun onInputEvent(
         event: KMInputEvent,
         detectionSource: InputEventDetectionSource
     ): Boolean {
-
         val uniqueEvent: KMInputEvent = if (event is KMKeyEvent) {
             makeUniqueKeyEvent(event)
         } else {
@@ -118,7 +129,27 @@ class InputEventHubImpl @Inject constructor(
             logInputEvent(uniqueEvent)
         }
 
-        return false
+        if (detectionSource == InputEventDetectionSource.EVDEV && event.deviceId == null) {
+            return false
+        }
+
+        var consume = false
+
+        for (clientContext in clients.values) {
+            if (detectionSource == InputEventDetectionSource.EVDEV) {
+                val deviceDescriptor = inputDeviceCache.getById(event.deviceId!!)?.descriptor
+
+                // Only send events from evdev devices to the client if they grabbed it
+
+                if (clientContext.grabbedEvdevDevices.contains(deviceDescriptor)) {
+                    consume = consume || clientContext.callback.onInputEvent(event, detectionSource)
+                }
+            } else {
+                consume = consume || clientContext.callback.onInputEvent(event, detectionSource)
+            }
+        }
+
+        return consume
     }
 
     /**
@@ -181,9 +212,11 @@ class InputEventHubImpl @Inject constructor(
         clientId: String,
         callback: InputEventHubCallback,
     ) {
-        if (clients.contains(clientId)) {
+        if (clients.containsKey(clientId)) {
             throw IllegalArgumentException("This client already has a callback registered!")
         }
+
+        clients[clientId] = ClientContext(callback, emptySet())
     }
 
     override fun unregisterClient(clientId: String) {
@@ -192,8 +225,8 @@ class InputEventHubImpl @Inject constructor(
     }
 
     override fun setGrabbedEvdevDevices(clientId: String, deviceDescriptors: List<String>) {
-        if (!clients.contains(clientId)) {
-            throw IllegalArgumentException("This client already has a callback registered!")
+        if (!clients.containsKey(clientId)) {
+            throw IllegalArgumentException("This client is not registered!")
         }
 
         clients[clientId] =
@@ -221,14 +254,20 @@ class InputEventHubImpl @Inject constructor(
     private fun invalidateGrabbedEvdevDevices() {
         val descriptors: Set<String> = clients.values.flatMap { it.grabbedEvdevDevices }.toSet()
 
-        systemBridge?.ungrabAllEvdevDevices()
+        try {
+            systemBridge?.ungrabAllEvdevDevices()
 
-        val inputDevices = devicesAdapter.connectedInputDevices.value.dataOrNull() ?: return
+            val inputDevices = devicesAdapter.connectedInputDevices.value.dataOrNull() ?: return
 
-        for (descriptor in descriptors) {
-            val device = inputDevices.find { it.descriptor == descriptor } ?: continue
+            for (descriptor in descriptors) {
+                val device = inputDevices.find { it.descriptor == descriptor } ?: continue
 
-            systemBridge?.grabEvdevDevice(device.id)
+                val grabResult = systemBridge?.grabEvdevDevice(device.id)
+
+                Timber.i("Grabbed evdev device ${device.name}: $grabResult")
+            }
+        } catch (_: RemoteException) {
+            Timber.e("Failed to grab device. Is the system bridge dead?")
         }
     }
 

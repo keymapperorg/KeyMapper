@@ -19,13 +19,13 @@ import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
@@ -69,15 +69,9 @@ class RecordTriggerControllerImpl @Inject constructor(
 
         when (event) {
             is KMEvdevEvent -> {
-                if (!event.isKeyEvent || event.androidCode == null) {
-                    return false
-                }
-
-                val device = devicesAdapter.getInputDevice(event.deviceId)
-
-                val recordedKey = createRecordedKey(event.androidCode!!, device, detectionSource)
-
-                onRecordKey(recordedKey)
+                // Do nothing if receiving an evdev event that hasn't already been
+                // converted into a key event
+                return false
             }
 
             is KMGamePadEvent -> {
@@ -95,15 +89,18 @@ class RecordTriggerControllerImpl @Inject constructor(
                         onRecordKey(recordedKey)
                     }
                 }
+                return true
             }
 
             is KMKeyEvent -> {
-                val recordedKey = createRecordedKey(event.keyCode, event.device, detectionSource)
-                onRecordKey(recordedKey)
+                if (event.action == KeyEvent.ACTION_DOWN) {
+                    val recordedKey =
+                        createRecordedKey(event.keyCode, event.device, detectionSource)
+                    onRecordKey(recordedKey)
+                }
+                return true
             }
         }
-
-        return true
     }
 
     override suspend fun startRecording(): KMResult<*> {
@@ -117,32 +114,18 @@ class RecordTriggerControllerImpl @Inject constructor(
             return Success(Unit)
         }
 
-        recordedKeys.clear()
-        dpadMotionEventTracker.reset()
-
         recordingTriggerJob = recordTriggerJob()
-
-        inputEventHub.registerClient(INPUT_EVENT_HUB_ID, this)
-
-        val inputDevices = devicesAdapter.connectedInputDevices.value.dataOrNull()
-
-        // Grab all evdev devices
-        if (inputDevices != null) {
-            val allDeviceDescriptors = inputDevices.map { it.descriptor }.toList()
-            inputEventHub.setGrabbedEvdevDevices(INPUT_EVENT_HUB_ID, allDeviceDescriptors)
-        }
 
         return Success(Unit)
     }
 
     override suspend fun stopRecording(): KMResult<*> {
-        recordingTriggerJob?.cancel()
-        recordingTriggerJob = null
         dpadMotionEventTracker.reset()
         inputEventHub.unregisterClient(INPUT_EVENT_HUB_ID)
-
         state.update { RecordTriggerState.Completed(recordedKeys) }
 
+        recordingTriggerJob?.cancel()
+        recordingTriggerJob = null
         return Success(Unit)
     }
 
@@ -199,20 +182,34 @@ class RecordTriggerControllerImpl @Inject constructor(
         return RecordedKey(keyCode, triggerKeyDevice, detectionSource)
     }
 
-    private fun recordTriggerJob(): Job = coroutineScope.launch {
-        repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
-            if (isActive) {
-                val timeLeft = RECORD_TRIGGER_TIMER_LENGTH - iteration
+    // Run on a different thread in case the main thread is locked up while recording and
+    // the evdev devices aren't ungrabbed.
+    private fun recordTriggerJob(): Job = coroutineScope.launch(Dispatchers.Default) {
+        recordedKeys.clear()
+        dpadMotionEventTracker.reset()
 
-                state.update { RecordTriggerState.CountingDown(timeLeft) }
+        inputEventHub.registerClient(INPUT_EVENT_HUB_ID, this@RecordTriggerControllerImpl)
 
-                delay(1000)
-            }
+        val inputDevices = devicesAdapter.connectedInputDevices.value.dataOrNull()
+
+        // Grab all evdev devices
+        if (inputDevices != null) {
+            val allDeviceDescriptors = inputDevices.map { it.descriptor }.toList()
+            inputEventHub.setGrabbedEvdevDevices(INPUT_EVENT_HUB_ID, allDeviceDescriptors)
         }
 
-        stopRecording()
-    }
+        repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
+            val timeLeft = RECORD_TRIGGER_TIMER_LENGTH - iteration
 
+            state.update { RecordTriggerState.CountingDown(timeLeft) }
+
+            delay(1000)
+        }
+
+        dpadMotionEventTracker.reset()
+        inputEventHub.unregisterClient(INPUT_EVENT_HUB_ID)
+        state.update { RecordTriggerState.Completed(recordedKeys) }
+    }
 }
 
 interface RecordTriggerController {

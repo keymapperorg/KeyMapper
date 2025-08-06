@@ -250,8 +250,9 @@ abstract class BaseConfigTriggerViewModel(
                     FingerprintGestureType.SWIPE_RIGHT to getString(R.string.fingerprint_gesture_right),
                 )
 
-                val selectedType = showDialog("pick_assistant_type", DialogModel.SingleChoice(listItems))
-                    ?: return@launch
+                val selectedType =
+                    showDialog("pick_assistant_type", DialogModel.SingleChoice(listItems))
+                        ?: return@launch
 
                 config.addFingerprintGesture(type = selectedType)
             }
@@ -610,7 +611,7 @@ abstract class BaseConfigTriggerViewModel(
 
                 is RecordTriggerState.Completed,
                 RecordTriggerState.Idle,
-                -> recordTrigger.startRecording()
+                    -> recordTrigger.startRecording()
             }
 
             // Show dialog if the accessibility service is disabled or crashed
