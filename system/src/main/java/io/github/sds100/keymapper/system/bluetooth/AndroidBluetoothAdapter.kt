@@ -45,12 +45,13 @@ class AndroidBluetoothAdapter @Inject constructor(
             onReceiveIntent(intent)
         }
     }
-
     init {
         IntentFilter().apply {
             // these broadcasts can't be received from a manifest declared receiver on Android 8.0+
             addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
             addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
+            addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
+            addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
 
             ContextCompat.registerReceiver(
                 ctx,
@@ -112,9 +113,9 @@ class AndroidBluetoothAdapter @Inject constructor(
                 coroutineScope.launch {
                     val address = device.address ?: return@launch
                     val name = device.name ?: return@launch
-                    val bondState = intent.getStringExtra(BluetoothDevice.EXTRA_BOND_STATE)
+                    val bondState = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, -1)
 
-                    Timber.i("On Bluetooth device bond state changed to ${bondState.toString()}: $name")
+                    Timber.i("On Bluetooth device bond state changed to $bondState: $name")
 
                     onDevicePairedChange.emit(
                         BluetoothDeviceInfo(
