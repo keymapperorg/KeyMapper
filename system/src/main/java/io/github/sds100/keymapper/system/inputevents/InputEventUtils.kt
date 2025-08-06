@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.system.inputevents
 
-import android.os.Build
 import android.view.InputDevice
 import android.view.InputEvent
 import android.view.KeyEvent
@@ -8,8 +7,7 @@ import io.github.sds100.keymapper.common.utils.withFlag
 
 object InputEventUtils {
 
-    private val KEYCODES: Set<Int>
-        get() = setOf(
+    private val KEYCODES: IntArray = intArrayOf(
             KeyEvent.KEYCODE_SOFT_LEFT,
             KeyEvent.KEYCODE_SOFT_RIGHT,
             KeyEvent.KEYCODE_HOME,
@@ -270,47 +268,64 @@ object InputEventUtils {
             KeyEvent.KEYCODE_TV_MEDIA_CONTEXT_MENU,
             KeyEvent.KEYCODE_TV_TIMER_PROGRAMMING,
             KeyEvent.KEYCODE_HELP,
-        )
-
-    private val KEYCODES_API_23: Set<Int>
-        get() = setOf(
-            KeyEvent.KEYCODE_NAVIGATE_PREVIOUS,
-            KeyEvent.KEYCODE_NAVIGATE_NEXT,
-            KeyEvent.KEYCODE_NAVIGATE_IN,
-            KeyEvent.KEYCODE_NAVIGATE_OUT,
-            KeyEvent.KEYCODE_MEDIA_SKIP_FORWARD,
-            KeyEvent.KEYCODE_MEDIA_SKIP_BACKWARD,
-            KeyEvent.KEYCODE_MEDIA_STEP_FORWARD,
-            KeyEvent.KEYCODE_MEDIA_STEP_BACKWARD,
-        )
-
-    private val KEYCODES_API_24: Set<Int>
-        get() = setOf(
-            KeyEvent.KEYCODE_STEM_PRIMARY,
-            KeyEvent.KEYCODE_STEM_1,
-            KeyEvent.KEYCODE_STEM_2,
-            KeyEvent.KEYCODE_STEM_3,
-            KeyEvent.KEYCODE_DPAD_UP_LEFT,
-            KeyEvent.KEYCODE_DPAD_DOWN_LEFT,
-            KeyEvent.KEYCODE_DPAD_UP_RIGHT,
-            KeyEvent.KEYCODE_DPAD_DOWN_RIGHT,
-            KeyEvent.KEYCODE_SOFT_SLEEP,
-            KeyEvent.KEYCODE_CUT,
-            KeyEvent.KEYCODE_COPY,
-            KeyEvent.KEYCODE_PASTE,
-        )
-
-    private val KEYCODES_API_25: Set<Int>
-        get() = setOf(
-            KeyEvent.KEYCODE_SYSTEM_NAVIGATION_UP,
-            KeyEvent.KEYCODE_SYSTEM_NAVIGATION_DOWN,
-            KeyEvent.KEYCODE_SYSTEM_NAVIGATION_LEFT,
-            KeyEvent.KEYCODE_SYSTEM_NAVIGATION_RIGHT,
-        )
-
-    private val KEYCODES_API_28: Set<Int>
-        get() = setOf(
-            KeyEvent.KEYCODE_ALL_APPS,
+        KeyEvent.KEYCODE_NAVIGATE_PREVIOUS,
+        KeyEvent.KEYCODE_NAVIGATE_NEXT,
+        KeyEvent.KEYCODE_NAVIGATE_IN,
+        KeyEvent.KEYCODE_NAVIGATE_OUT,
+        KeyEvent.KEYCODE_MEDIA_SKIP_FORWARD,
+        KeyEvent.KEYCODE_MEDIA_SKIP_BACKWARD,
+        KeyEvent.KEYCODE_MEDIA_STEP_FORWARD,
+        KeyEvent.KEYCODE_MEDIA_STEP_BACKWARD,
+        KeyEvent.KEYCODE_STEM_PRIMARY,
+        KeyEvent.KEYCODE_STEM_1,
+        KeyEvent.KEYCODE_STEM_2,
+        KeyEvent.KEYCODE_STEM_3,
+        KeyEvent.KEYCODE_DPAD_UP_LEFT,
+        KeyEvent.KEYCODE_DPAD_DOWN_LEFT,
+        KeyEvent.KEYCODE_DPAD_UP_RIGHT,
+        KeyEvent.KEYCODE_DPAD_DOWN_RIGHT,
+        KeyEvent.KEYCODE_SOFT_SLEEP,
+        KeyEvent.KEYCODE_CUT,
+        KeyEvent.KEYCODE_COPY,
+        KeyEvent.KEYCODE_PASTE,
+        KeyEvent.KEYCODE_SYSTEM_NAVIGATION_UP,
+        KeyEvent.KEYCODE_SYSTEM_NAVIGATION_DOWN,
+        KeyEvent.KEYCODE_SYSTEM_NAVIGATION_LEFT,
+        KeyEvent.KEYCODE_SYSTEM_NAVIGATION_RIGHT,
+        KeyEvent.KEYCODE_REFRESH,
+        KeyEvent.KEYCODE_THUMBS_UP,
+        KeyEvent.KEYCODE_THUMBS_DOWN,
+        KeyEvent.KEYCODE_PROFILE_SWITCH,
+        KeyEvent.KEYCODE_VIDEO_APP_1,
+        KeyEvent.KEYCODE_VIDEO_APP_2,
+        KeyEvent.KEYCODE_VIDEO_APP_3,
+        KeyEvent.KEYCODE_VIDEO_APP_4,
+        KeyEvent.KEYCODE_VIDEO_APP_5,
+        KeyEvent.KEYCODE_VIDEO_APP_6,
+        KeyEvent.KEYCODE_VIDEO_APP_7,
+        KeyEvent.KEYCODE_VIDEO_APP_8,
+        KeyEvent.KEYCODE_FEATURED_APP_1,
+        KeyEvent.KEYCODE_FEATURED_APP_2,
+        KeyEvent.KEYCODE_FEATURED_APP_3,
+        KeyEvent.KEYCODE_FEATURED_APP_4,
+        KeyEvent.KEYCODE_DEMO_APP_1,
+        KeyEvent.KEYCODE_DEMO_APP_2,
+        KeyEvent.KEYCODE_DEMO_APP_3,
+        KeyEvent.KEYCODE_DEMO_APP_4,
+        KeyEvent.KEYCODE_KEYBOARD_BACKLIGHT_DOWN,
+        KeyEvent.KEYCODE_KEYBOARD_BACKLIGHT_UP,
+        KeyEvent.KEYCODE_KEYBOARD_BACKLIGHT_TOGGLE,
+        KeyEvent.KEYCODE_STYLUS_BUTTON_PRIMARY,
+        KeyEvent.KEYCODE_STYLUS_BUTTON_SECONDARY,
+        KeyEvent.KEYCODE_STYLUS_BUTTON_TERTIARY,
+        KeyEvent.KEYCODE_STYLUS_BUTTON_TAIL,
+        KeyEvent.KEYCODE_RECENT_APPS,
+        KeyEvent.KEYCODE_MACRO_1,
+        KeyEvent.KEYCODE_MACRO_2,
+        KeyEvent.KEYCODE_MACRO_3,
+        KeyEvent.KEYCODE_MACRO_4,
+        KeyEvent.KEYCODE_EMOJI_PICKER,
+        KeyEvent.KEYCODE_SCREENSHOT,
         )
 
     /**
@@ -402,26 +417,8 @@ object InputEventUtils {
     /**
      * Get all the valid key codes which work on the Android version for the device.
      */
-    fun getKeyCodes(): List<Int> {
-        val keyCodes = KEYCODES.toMutableList()
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            keyCodes.addAll(KEYCODES_API_23)
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            keyCodes.addAll(KEYCODES_API_24)
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            keyCodes.addAll(KEYCODES_API_25)
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            keyCodes.addAll(KEYCODES_API_28)
-        }
-
-        return keyCodes
+    fun getKeyCodes(): IntArray {
+        return KEYCODES
     }
 
     fun modifierKeycodeToMetaState(modifier: Int) = when (modifier) {
