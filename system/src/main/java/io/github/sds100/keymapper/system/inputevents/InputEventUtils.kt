@@ -334,7 +334,8 @@ object InputEventUtils {
         "KEY_SEARCH" to KeyEvent.KEYCODE_SEARCH,
     )
 
-    fun canDetectKeyWhenScreenOff(keyCode: Int): Boolean = GET_EVENT_LABEL_TO_KEYCODE.any { it.second == keyCode }
+    fun canDetectKeyWhenScreenOff(keyCode: Int): Boolean =
+        GET_EVENT_LABEL_TO_KEYCODE.any { it.second == keyCode }
 
     val MODIFIER_KEYCODES: Set<Int>
         get() = setOf(
@@ -391,7 +392,7 @@ object InputEventUtils {
             KeyEvent.KEYCODE_BUTTON_14,
             KeyEvent.KEYCODE_BUTTON_15,
             KeyEvent.KEYCODE_BUTTON_16,
-            -> return true
+                -> return true
 
             else -> return false
         }
@@ -454,7 +455,8 @@ object InputEventUtils {
             code == KeyEvent.KEYCODE_DPAD_UP_LEFT ||
             code == KeyEvent.KEYCODE_DPAD_UP_RIGHT ||
             code == KeyEvent.KEYCODE_DPAD_DOWN_LEFT ||
-            code == KeyEvent.KEYCODE_DPAD_DOWN_RIGHT
+            code == KeyEvent.KEYCODE_DPAD_DOWN_RIGHT ||
+            code == KeyEvent.KEYCODE_DPAD_CENTER
     }
 
     fun isGamepadButton(keyCode: Int): Boolean {
@@ -490,7 +492,7 @@ object InputEventUtils {
             KeyEvent.KEYCODE_BUTTON_14,
             KeyEvent.KEYCODE_BUTTON_15,
             KeyEvent.KEYCODE_BUTTON_16,
-            -> true
+                -> true
 
             else -> false
         }
