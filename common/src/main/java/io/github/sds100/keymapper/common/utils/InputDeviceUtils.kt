@@ -6,6 +6,23 @@ import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
 object InputDeviceUtils {
+    val SOURCE_NAMES: Map<Int, String> = mapOf(
+        InputDevice.SOURCE_DPAD to "DPAD",
+        InputDevice.SOURCE_GAMEPAD to "GAMEPAD",
+        InputDevice.SOURCE_JOYSTICK to "JOYSTICK",
+        InputDevice.SOURCE_KEYBOARD to "KEYBOARD",
+        InputDevice.SOURCE_MOUSE to "MOUSE",
+        InputDevice.SOURCE_TOUCHSCREEN to "TOUCHSCREEN",
+        InputDevice.SOURCE_TOUCHPAD to "TOUCHPAD",
+        InputDevice.SOURCE_TRACKBALL to "TRACKBALL",
+        InputDevice.SOURCE_CLASS_BUTTON to "BUTTON",
+        InputDevice.SOURCE_CLASS_JOYSTICK to "JOYSTICK",
+        InputDevice.SOURCE_CLASS_POINTER to "POINTER",
+        InputDevice.SOURCE_CLASS_POSITION to "POSITION",
+        InputDevice.SOURCE_CLASS_TRACKBALL to "TRACKBALL",
+
+        )
+
     fun appendDeviceDescriptorToName(descriptor: String, name: String): String =
         "$name ${descriptor.substring(0..4)}"
 

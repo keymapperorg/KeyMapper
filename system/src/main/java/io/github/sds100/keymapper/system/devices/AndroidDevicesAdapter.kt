@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -38,6 +39,7 @@ class AndroidDevicesAdapter @Inject constructor(
     private val permissionAdapter: PermissionAdapter,
     private val coroutineScope: CoroutineScope,
 ) : DevicesAdapter {
+
     private val ctx = context.applicationContext
     private val inputManager = ctx.getSystemService<InputManager>()
 
@@ -148,6 +150,13 @@ class AndroidDevicesAdapter @Inject constructor(
 
         for (id in InputDevice.getDeviceIds()) {
             val device = InputDevice.getDevice(id) ?: continue
+
+            val supportedSources: String = InputDeviceUtils.SOURCE_NAMES
+                .filter { device.supportsSource(it.key) }
+                .values
+                .joinToString()
+
+            Timber.i("Input device: $id ${device.name} Vendor=${device.vendorId} Product=${device.productId} Sources=$supportedSources")
 
             devices.add(InputDeviceUtils.createInputDeviceInfo(device))
         }
