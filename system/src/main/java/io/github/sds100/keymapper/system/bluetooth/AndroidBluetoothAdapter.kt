@@ -10,6 +10,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
@@ -17,7 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import dagger.hilt.android.qualifiers.ApplicationContext
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -63,6 +64,7 @@ class AndroidBluetoothAdapter @Inject constructor(
     fun onReceiveIntent(intent: Intent) {
         when (intent.action) {
             BluetoothDevice.ACTION_ACL_CONNECTED -> {
+
                 val device =
                     intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                         ?: return
@@ -70,6 +72,8 @@ class AndroidBluetoothAdapter @Inject constructor(
                 coroutineScope.launch {
                     val address = device.address ?: return@launch
                     val name = device.name ?: return@launch
+
+                    Timber.i("On Bluetooth device connected: $name")
 
                     onDeviceConnect.emit(
                         BluetoothDeviceInfo(
@@ -89,6 +93,8 @@ class AndroidBluetoothAdapter @Inject constructor(
                     val address = device.address ?: return@launch
                     val name = device.name ?: return@launch
 
+                    Timber.i("On Bluetooth device disconnected: $name")
+
                     onDeviceDisconnect.emit(
                         BluetoothDeviceInfo(
                             address = address,
@@ -106,6 +112,9 @@ class AndroidBluetoothAdapter @Inject constructor(
                 coroutineScope.launch {
                     val address = device.address ?: return@launch
                     val name = device.name ?: return@launch
+                    val bondState = intent.getStringExtra(BluetoothDevice.EXTRA_BOND_STATE)
+
+                    Timber.i("On Bluetooth device bond state changed to ${bondState.toString()}: $name")
 
                     onDevicePairedChange.emit(
                         BluetoothDeviceInfo(
