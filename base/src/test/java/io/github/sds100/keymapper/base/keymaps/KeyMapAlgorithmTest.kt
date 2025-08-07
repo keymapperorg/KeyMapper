@@ -15,7 +15,7 @@ import io.github.sds100.keymapper.base.constraints.ConstraintState
 import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapModel
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCase
-import io.github.sds100.keymapper.base.keymaps.detection.KeyMapController
+import io.github.sds100.keymapper.base.keymaps.detection.KeyMapAlgorithm
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
 import io.github.sds100.keymapper.base.trigger.KeyEventTriggerDevice
@@ -35,14 +35,12 @@ import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
-import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import junitparams.JUnitParamsRunner
 import junitparams.Parameters
 import junitparams.naming.TestCaseName
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
@@ -69,7 +67,7 @@ import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 @RunWith(JUnitParamsRunner::class)
-class KeyMapControllerTest {
+class KeyMapAlgorithmTest {
 
     companion object {
         private const val FAKE_KEYBOARD_DEVICE_ID = 123
@@ -78,13 +76,13 @@ class KeyMapControllerTest {
             descriptor = FAKE_KEYBOARD_DESCRIPTOR,
             name = "Fake Keyboard",
         )
-        private val FAKE_KEYBOARD_DEVICE = InputDeviceInfo(
-            descriptor = FAKE_KEYBOARD_DESCRIPTOR,
-            name = "Fake Keyboard",
-            id = FAKE_KEYBOARD_DEVICE_ID,
-            isExternal = true,
+        private val FAKE_INTERNAL_DEVICE = InputDeviceInfo(
+            descriptor = "volume_keys",
+            name = "Volume keys",
+            id = 0,
+            isExternal = false,
             isGameController = false,
-            sources = InputDevice.SOURCE_KEYBOARD
+            sources = InputDevice.SOURCE_UNKNOWN
         )
 
         private const val FAKE_HEADPHONE_DESCRIPTOR = "fake_headphone"
@@ -101,7 +99,7 @@ class KeyMapControllerTest {
         private val FAKE_CONTROLLER_INPUT_DEVICE = InputDeviceInfo(
             descriptor = FAKE_CONTROLLER_DESCRIPTOR,
             name = "Fake Controller",
-            id = 0,
+            id = 1,
             isExternal = true,
             isGameController = true,
             sources = InputDevice.SOURCE_GAMEPAD
@@ -125,30 +123,12 @@ class KeyMapControllerTest {
         private val TEST_ACTION_2: Action = Action(
             data = ActionData.App(FAKE_PACKAGE_NAME),
         )
-
-        private val GUI_KEYBOARD_IME_INFO = ImeInfo(
-            id = "ime_id",
-            packageName = "io.github.sds100.keymapper.inputmethod.latin",
-            label = "Key Mapper GUI Keyboard",
-            isEnabled = true,
-            isChosen = true,
-        )
-
-        private val GBOARD_IME_INFO = ImeInfo(
-            id = "gboard_id",
-            packageName = "com.google.android.inputmethod.latin",
-            label = "Gboard",
-            isEnabled = true,
-            isChosen = false,
-        )
     }
 
-    private lateinit var controller: KeyMapController
+    private lateinit var controller: KeyMapAlgorithm
     private lateinit var detectKeyMapsUseCase: DetectKeyMapsUseCase
     private lateinit var performActionsUseCase: PerformActionsUseCase
     private lateinit var detectConstraintsUseCase: DetectConstraintsUseCase
-    private lateinit var keyMapListFlow: MutableStateFlow<List<KeyMap>>
-    private lateinit var detectKeyMapListFlow: MutableStateFlow<List<DetectKeyMapModel>>
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
@@ -156,19 +136,17 @@ class KeyMapControllerTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testScope = TestScope(testDispatcher)
 
+    private fun loadKeyMaps(vararg keyMap: KeyMap) {
+        controller.loadKeyMaps(keyMap.map { DetectKeyMapModel(it) })
+    }
+
+    private fun loadKeyMaps(vararg keyMap: DetectKeyMapModel) {
+        controller.loadKeyMaps(keyMap.toList())
+    }
+
     @Before
     fun init() {
-        keyMapListFlow = MutableStateFlow(emptyList())
-        detectKeyMapListFlow = MutableStateFlow(emptyList())
-
         detectKeyMapsUseCase = mock {
-            on { allKeyMapList } doReturn combine(
-                keyMapListFlow,
-                detectKeyMapListFlow,
-            ) { keyMapList, detectKeyMapList ->
-                keyMapList.map { DetectKeyMapModel(keyMap = it) }.plus(detectKeyMapList)
-            }
-
             MutableStateFlow(VIBRATION_DURATION).apply {
                 on { defaultVibrateDuration } doReturn this
             }
@@ -217,20 +195,18 @@ class KeyMapControllerTest {
             on { getSnapshot() } doReturn TestConstraintSnapshot()
         }
 
-        controller = KeyMapController(
+        controller = KeyMapAlgorithm(
             testScope,
             detectKeyMapsUseCase,
             performActionsUseCase,
             detectConstraintsUseCase,
-            inputEventHub = mock(),
-            isPausedFlow = MutableStateFlow(false)
         )
     }
 
     @Test
     fun `Do not perform if one group constraint set is not satisfied`() = runTest(testDispatcher) {
         val trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN))
-        detectKeyMapListFlow.value = listOf(
+        loadKeyMaps(
             DetectKeyMapModel(
                 keyMap = KeyMap(
                     trigger = trigger,
@@ -278,7 +254,7 @@ class KeyMapControllerTest {
     fun `Perform if all group constraints and key map constraints are satisfied`() =
         runTest(testDispatcher) {
             val trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN))
-            detectKeyMapListFlow.value = listOf(
+            loadKeyMaps(
                 DetectKeyMapModel(
                     keyMap = KeyMap(
                         trigger = trigger,
@@ -359,7 +335,7 @@ class KeyMapControllerTest {
                 vibrate = true,
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
                 KeyMap(1, trigger = doublePressTrigger, actionList = listOf(TEST_ACTION_2)),
                 KeyMap(2, trigger = longPressTrigger, actionList = listOf(TEST_ACTION_2)),
@@ -400,7 +376,7 @@ class KeyMapControllerTest {
                 vibrate = true,
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
                 KeyMap(1, trigger = doublePressTrigger, actionList = listOf(TEST_ACTION_2)),
             )
@@ -439,7 +415,7 @@ class KeyMapControllerTest {
             vibrate = true,
         )
 
-        keyMapListFlow.value = listOf(
+        loadKeyMaps(
             KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
             KeyMap(1, trigger = doublePressTrigger, actionList = listOf(TEST_ACTION_2)),
         )
@@ -480,7 +456,7 @@ class KeyMapControllerTest {
                 vibrate = true,
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
                 KeyMap(1, trigger = longPressTrigger, actionList = listOf(TEST_ACTION_2)),
             )
@@ -521,7 +497,7 @@ class KeyMapControllerTest {
                 vibrate = true,
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
                 KeyMap(1, trigger = longPressTrigger, actionList = listOf(TEST_ACTION_2)),
             )
@@ -562,7 +538,7 @@ class KeyMapControllerTest {
                 vibrate = true,
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
                 KeyMap(1, trigger = longPressTrigger, actionList = listOf(TEST_ACTION_2)),
             )
@@ -601,7 +577,7 @@ class KeyMapControllerTest {
             vibrate = true,
         )
 
-        keyMapListFlow.value = listOf(
+        loadKeyMaps(
             KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
             KeyMap(1, trigger = longPressTrigger, actionList = listOf(TEST_ACTION_2)),
         )
@@ -617,7 +593,7 @@ class KeyMapControllerTest {
     @Test
     fun `Sequence trigger with fingerprint gesture and key code`() = runTest(testDispatcher) {
         // GIVEN
-        keyMapListFlow.value = listOf(
+        loadKeyMaps(
             KeyMap(
                 trigger = sequenceTrigger(
                     triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
@@ -642,7 +618,7 @@ class KeyMapControllerTest {
     @Test
     fun `Input fingerprint gesture`() = runTest(testDispatcher) {
         // GIVEN
-        keyMapListFlow.value = listOf(
+        loadKeyMaps(
             KeyMap(
                 trigger = singleKeyTrigger(
                     FingerprintTriggerKey(
@@ -675,7 +651,7 @@ class KeyMapControllerTest {
                 sequenceTrigger(triggerKey(KeyEvent.KEYCODE_J), triggerKey(KeyEvent.KEYCODE_K))
             val enterAction = Action(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = copyTrigger, actionList = listOf(copyAction)),
                 KeyMap(1, trigger = sequenceTrigger, actionList = listOf(enterAction)),
             )
@@ -726,7 +702,7 @@ class KeyMapControllerTest {
             val sequenceTriggerAction2 =
                 Action(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = copyTrigger, actionList = listOf(copyAction)),
                 KeyMap(1, trigger = sequenceTrigger1, actionList = listOf(sequenceTriggerAction1)),
                 KeyMap(2, trigger = sequenceTrigger2, actionList = listOf(sequenceTriggerAction2)),
@@ -769,7 +745,7 @@ class KeyMapControllerTest {
                 sequenceTrigger(triggerKey(KeyEvent.KEYCODE_J), triggerKey(KeyEvent.KEYCODE_K))
             val enterAction = Action(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = copyTrigger, actionList = listOf(copyAction)),
                 KeyMap(1, trigger = pasteTrigger, actionList = listOf(pasteAction)),
                 KeyMap(2, trigger = sequenceTrigger, actionList = listOf(enterAction)),
@@ -802,7 +778,7 @@ class KeyMapControllerTest {
                 sequenceTrigger(triggerKey(KeyEvent.KEYCODE_J), triggerKey(KeyEvent.KEYCODE_K))
             val enterAction = Action(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = copyTrigger, actionList = listOf(copyAction)),
                 KeyMap(1, trigger = pasteTrigger, actionList = listOf(pasteAction)),
                 KeyMap(2, trigger = sequenceTrigger, actionList = listOf(enterAction)),
@@ -834,7 +810,7 @@ class KeyMapControllerTest {
                 sequenceTrigger(triggerKey(KeyEvent.KEYCODE_J), triggerKey(KeyEvent.KEYCODE_K))
             val enterAction = Action(data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_ENTER))
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = copyTrigger, actionList = listOf(copyAction)),
                 KeyMap(1, trigger = pasteTrigger, actionList = listOf(pasteAction)),
                 KeyMap(2, trigger = sequenceTrigger, actionList = listOf(enterAction)),
@@ -867,7 +843,7 @@ class KeyMapControllerTest {
                 holdDown = true,
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = trigger, actionList = listOf(action)),
             )
 
@@ -893,7 +869,7 @@ class KeyMapControllerTest {
                 ),
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)),
             )
 
@@ -928,7 +904,7 @@ class KeyMapControllerTest {
                 ),
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)),
             )
 
@@ -957,7 +933,7 @@ class KeyMapControllerTest {
             ),
         )
 
-        keyMapListFlow.value = listOf(
+        loadKeyMaps(
             KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)),
         )
 
@@ -984,7 +960,7 @@ class KeyMapControllerTest {
             ),
         )
 
-        keyMapListFlow.value = listOf(
+        loadKeyMaps(
             KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)),
         )
 
@@ -1013,7 +989,7 @@ class KeyMapControllerTest {
                 ),
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(
                     0,
                     trigger = trigger,
@@ -1062,7 +1038,7 @@ class KeyMapControllerTest {
             ),
         )
 
-        keyMapListFlow.value = listOf(
+        loadKeyMaps(
             KeyMap(
                 0,
                 trigger = longPressTrigger,
@@ -1103,7 +1079,7 @@ class KeyMapControllerTest {
             )
             val doublePressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOff()))
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(
                     0,
                     trigger = shortPressTrigger,
@@ -1144,7 +1120,7 @@ class KeyMapControllerTest {
             )
             val doublePressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOff()))
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(
                     0,
                     trigger = shortPressTrigger,
@@ -1192,7 +1168,7 @@ class KeyMapControllerTest {
                 )
                     .copy(longPressDelay = 500)
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = longerTrigger, actionList = listOf(TEST_ACTION)),
                 KeyMap(1, trigger = shorterTrigger, actionList = listOf(TEST_ACTION_2)),
             )
@@ -1267,7 +1243,7 @@ class KeyMapControllerTest {
                 ),
             )
 
-            keyMapListFlow.value = listOf(keyMap)
+            loadKeyMaps(keyMap)
 
             var isFlashlightEnabled = false
 
@@ -1321,7 +1297,7 @@ class KeyMapControllerTest {
                 actionList = listOf(TEST_ACTION_2),
             )
 
-            keyMapListFlow.value = listOf(keyMap1, keyMap2)
+            loadKeyMaps(keyMap1, keyMap2)
 
             // WHEN
             inOrder(performActionsUseCase) {
@@ -1367,7 +1343,7 @@ class KeyMapControllerTest {
             val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
             val actionList = listOf(Action(data = ActionData.InputKeyEvent(2)))
 
-            keyMapListFlow.value = listOf(KeyMap(trigger = trigger, actionList = actionList))
+            loadKeyMaps(KeyMap(trigger = trigger, actionList = actionList))
 
             // WHEN
             whenever(performActionsUseCase.getErrorSnapshot()).thenReturn(object :
@@ -1405,7 +1381,7 @@ class KeyMapControllerTest {
             Action(data = ActionData.InputKeyEvent(2)),
         )
 
-        keyMapListFlow.value = listOf(
+        loadKeyMaps(
             KeyMap(trigger = trigger, actionList = actionList),
         )
 
@@ -1435,7 +1411,7 @@ class KeyMapControllerTest {
                 repeatLimit = 2,
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(trigger = trigger, actionList = listOf(action)),
             )
 
@@ -1472,14 +1448,12 @@ class KeyMapControllerTest {
                 data = ActionData.InputKeyEvent(keyCode = 3),
             )
 
-            val keyMaps = listOf(
+            loadKeyMaps(
                 KeyMap(
                     trigger = trigger,
                     actionList = listOf(action1, action2, action3),
                 ),
             )
-
-            keyMapListFlow.value = keyMaps
 
             // WHEN
 
@@ -1499,7 +1473,7 @@ class KeyMapControllerTest {
         // GIVEN
         val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
 
-        val keyMaps = listOf(
+        loadKeyMaps(
             KeyMap(
                 trigger = trigger,
                 actionList = listOf(TEST_ACTION),
@@ -1509,8 +1483,6 @@ class KeyMapControllerTest {
                 actionList = listOf(TEST_ACTION_2),
             ),
         )
-
-        keyMapListFlow.value = keyMaps
 
         // WHEN
 
@@ -1547,7 +1519,7 @@ class KeyMapControllerTest {
                 actionList = listOf(action),
             )
 
-            keyMapListFlow.value = listOf(keyMap)
+            loadKeyMaps(keyMap)
 
             // WHEN
             mockTriggerKeyInput(keyMap.trigger.keys[0])
@@ -1578,7 +1550,7 @@ class KeyMapControllerTest {
                 actionList = listOf(action),
             )
 
-            keyMapListFlow.value = listOf(keyMap)
+            loadKeyMaps(keyMap)
 
             // WHEN
             mockTriggerKeyInput(keyMap.trigger.keys[0])
@@ -1611,7 +1583,7 @@ class KeyMapControllerTest {
                 actionList = listOf(action),
             )
 
-            keyMapListFlow.value = listOf(keyMap)
+            loadKeyMaps(keyMap)
 
             // WHEN
             mockTriggerKeyInput(keyMap.trigger.keys[0])
@@ -1647,7 +1619,7 @@ class KeyMapControllerTest {
                 actionList = listOf(action),
             )
 
-            keyMapListFlow.value = listOf(keyMap)
+            loadKeyMaps(keyMap)
 
             // WHEN
             mockTriggerKeyInput(keyMap.trigger.keys[0], delay = 300)
@@ -1675,7 +1647,7 @@ class KeyMapControllerTest {
                 actionList = listOf(action),
             )
 
-            keyMapListFlow.value = listOf(keyMap)
+            loadKeyMaps(keyMap)
 
             // WHEN
 
@@ -1692,7 +1664,7 @@ class KeyMapControllerTest {
     @Test
     fun `overlapping triggers 3`() = runTest(testDispatcher) {
         // GIVEN
-        val keyMaps = listOf(
+        val keyMaps = arrayOf(
             KeyMap(
                 trigger = parallelTrigger(
                     triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
@@ -1708,7 +1680,7 @@ class KeyMapControllerTest {
             ),
         )
 
-        keyMapListFlow.value = keyMaps
+        loadKeyMaps(*keyMaps)
 
         inOrder(performActionsUseCase) {
             // WHEN
@@ -1760,7 +1732,7 @@ class KeyMapControllerTest {
     @Test
     fun `overlapping triggers 2`() = runTest(testDispatcher) {
         // GIVEN
-        val keyMaps = listOf(
+        val keyMaps = arrayOf(
             KeyMap(
                 trigger = parallelTrigger(
                     triggerKey(KeyEvent.KEYCODE_P),
@@ -1776,7 +1748,7 @@ class KeyMapControllerTest {
             ),
         )
 
-        keyMapListFlow.value = keyMaps
+        loadKeyMaps(*keyMaps)
 
         inOrder(performActionsUseCase) {
             // WHEN
@@ -1821,7 +1793,7 @@ class KeyMapControllerTest {
     @Test
     fun `overlapping triggers 1`() = runTest(testDispatcher) {
         // GIVEN
-        val keyMaps = listOf(
+        val keyMaps = arrayOf(
             KeyMap(
                 trigger = parallelTrigger(
                     triggerKey(KeyEvent.KEYCODE_CTRL_LEFT),
@@ -1839,7 +1811,7 @@ class KeyMapControllerTest {
             ),
         )
 
-        keyMapListFlow.value = keyMaps
+        loadKeyMaps(*keyMaps)
 
         inOrder(performActionsUseCase) {
             // WHEN
@@ -1923,7 +1895,7 @@ class KeyMapControllerTest {
                 triggerKey(keyCode = 2),
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(
                     trigger = trigger,
                     actionList = listOf(TEST_ACTION),
@@ -1983,7 +1955,7 @@ class KeyMapControllerTest {
                 triggerKey(keyCode = 2),
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(
                     trigger = trigger,
                     actionList = listOf(TEST_ACTION),
@@ -2021,7 +1993,7 @@ class KeyMapControllerTest {
                 actionList = listOf(action),
             )
 
-            keyMapListFlow.value = listOf(keyMap)
+            loadKeyMaps(keyMap)
             // WHEN
 
             mockTriggerKeyInput(triggerKey(keyCode = 2), delay = 1)
@@ -2065,7 +2037,7 @@ class KeyMapControllerTest {
                 repeat = true,
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
                 KeyMap(1, trigger = trigger2, actionList = listOf(action2)),
             )
@@ -2112,7 +2084,7 @@ class KeyMapControllerTest {
                 sequenceTrigger(triggerKey(clickType = ClickType.DOUBLE_PRESS, keyCode = 1))
             val action2 = Action(data = ActionData.InputKeyEvent(keyCode = 3))
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
                 KeyMap(1, trigger = trigger2, actionList = listOf(action2)),
             )
@@ -2168,7 +2140,7 @@ class KeyMapControllerTest {
                 sequenceTrigger(triggerKey(clickType = ClickType.DOUBLE_PRESS, keyCode = 1))
             val action3 = Action(data = ActionData.InputKeyEvent(keyCode = 4))
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
                 KeyMap(1, trigger = trigger2, actionList = listOf(action2)),
                 KeyMap(2, trigger = trigger3, actionList = listOf(action3)),
@@ -2223,7 +2195,7 @@ class KeyMapControllerTest {
                 parallelTrigger(triggerKey(clickType = ClickType.LONG_PRESS, keyCode = 1))
             val action2 = Action(data = ActionData.InputKeyEvent(keyCode = 3), repeat = true)
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
                 KeyMap(1, trigger = trigger2, actionList = listOf(action2)),
             )
@@ -2273,7 +2245,7 @@ class KeyMapControllerTest {
                 sequenceTrigger(triggerKey(clickType = ClickType.DOUBLE_PRESS, keyCode = 1))
             val action2 = Action(data = ActionData.InputKeyEvent(keyCode = 3))
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
                 KeyMap(1, trigger = trigger2, actionList = listOf(action2)),
             )
@@ -2335,7 +2307,7 @@ class KeyMapControllerTest {
                 sequenceTrigger(triggerKey(clickType = ClickType.DOUBLE_PRESS, keyCode = 1))
             val action3 = Action(data = ActionData.InputKeyEvent(keyCode = 4))
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
                 KeyMap(1, trigger = trigger2, actionList = listOf(action2)),
                 KeyMap(2, trigger = trigger3, actionList = listOf(action3)),
@@ -2382,7 +2354,7 @@ class KeyMapControllerTest {
                 triggerKey(KeyEvent.KEYCODE_A, clickType = ClickType.DOUBLE_PRESS),
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)),
             )
 
@@ -2413,7 +2385,7 @@ class KeyMapControllerTest {
             holdDown = true,
         )
 
-        keyMapListFlow.value = listOf(KeyMap(trigger = trigger, actionList = listOf(action)))
+        loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(action)))
 
         val metaState = KeyEvent.META_META_ON.withFlag(KeyEvent.META_META_LEFT_ON)
 
@@ -2572,7 +2544,7 @@ class KeyMapControllerTest {
                 triggerKey(KeyEvent.KEYCODE_A),
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = oneKeyTrigger, actionList = listOf(TEST_ACTION_2)),
                 KeyMap(1, trigger = twoKeyTrigger, actionList = listOf(TEST_ACTION)),
             )
@@ -2617,7 +2589,7 @@ class KeyMapControllerTest {
                 ),
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = triggerKeyboard, actionList = listOf(TEST_ACTION)),
                 KeyMap(1, trigger = triggerAnyDevice, actionList = listOf(TEST_ACTION_2)),
             )
@@ -2637,7 +2609,7 @@ class KeyMapControllerTest {
                 triggerKey(KeyEvent.KEYCODE_A, FAKE_HEADPHONE_TRIGGER_KEY_DEVICE),
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = triggerHeadphone, actionList = listOf(TEST_ACTION)),
             )
 
@@ -2667,7 +2639,7 @@ class KeyMapControllerTest {
                 actionList = listOf(action),
             )
 
-            keyMapListFlow.value = listOf(keymap)
+            loadKeyMaps(keymap)
 
             // WHEN
             mockTriggerKeyInput(trigger.keys[0])
@@ -2695,7 +2667,7 @@ class KeyMapControllerTest {
         runTest(testDispatcher) {
             val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_CTRL_LEFT))
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(
                     0,
                     trigger = trigger,
@@ -2775,7 +2747,7 @@ class KeyMapControllerTest {
                 triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = firstTrigger, actionList = listOf(TEST_ACTION)),
                 KeyMap(1, trigger = secondTrigger, actionList = listOf(TEST_ACTION_2)),
             )
@@ -2804,18 +2776,18 @@ class KeyMapControllerTest {
                 triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = homeTrigger, actionList = listOf(TEST_ACTION)),
             )
 
             val consumedHomeDown =
-                inputKeyEvent(KeyEvent.KEYCODE_HOME, KeyEvent.ACTION_DOWN, FAKE_KEYBOARD_DEVICE)
-            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, FAKE_KEYBOARD_DEVICE)
+                inputKeyEvent(KeyEvent.KEYCODE_HOME, KeyEvent.ACTION_DOWN, FAKE_INTERNAL_DEVICE)
+            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, FAKE_INTERNAL_DEVICE)
 
             advanceUntilIdle()
 
-            inputKeyEvent(KeyEvent.KEYCODE_HOME, KeyEvent.ACTION_UP, FAKE_KEYBOARD_DEVICE)
-            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP, FAKE_KEYBOARD_DEVICE)
+            inputKeyEvent(KeyEvent.KEYCODE_HOME, KeyEvent.ACTION_UP, FAKE_INTERNAL_DEVICE)
+            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP, FAKE_INTERNAL_DEVICE)
 
             assertThat(consumedHomeDown, `is`(true))
 
@@ -2828,7 +2800,7 @@ class KeyMapControllerTest {
                 triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = recentsTrigger, actionList = listOf(TEST_ACTION)),
             )
 
@@ -2836,14 +2808,14 @@ class KeyMapControllerTest {
                 inputKeyEvent(
                     KeyEvent.KEYCODE_APP_SWITCH,
                     KeyEvent.ACTION_DOWN,
-                    FAKE_KEYBOARD_DEVICE
+                    FAKE_INTERNAL_DEVICE
                 )
-            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, FAKE_KEYBOARD_DEVICE)
+            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, FAKE_INTERNAL_DEVICE)
 
             advanceUntilIdle()
 
-            inputKeyEvent(KeyEvent.KEYCODE_APP_SWITCH, KeyEvent.ACTION_UP, FAKE_KEYBOARD_DEVICE)
-            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP, FAKE_KEYBOARD_DEVICE)
+            inputKeyEvent(KeyEvent.KEYCODE_APP_SWITCH, KeyEvent.ACTION_UP, FAKE_INTERNAL_DEVICE)
+            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP, FAKE_INTERNAL_DEVICE)
 
             assertThat(consumedRecentsDown, `is`(true))
         }
@@ -2857,7 +2829,7 @@ class KeyMapControllerTest {
                 triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.DOUBLE_PRESS),
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
                 KeyMap(1, trigger = doublePressTrigger, actionList = listOf(TEST_ACTION_2)),
             )
@@ -2898,7 +2870,7 @@ class KeyMapControllerTest {
                 ),
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
                 KeyMap(1, trigger = longPressTrigger, actionList = listOf(TEST_ACTION_2)),
             )
@@ -2931,7 +2903,7 @@ class KeyMapControllerTest {
                 repeat = true,
             )
 
-            keyMapListFlow.value = listOf(KeyMap(0, trigger = trigger, actionList = listOf(action)))
+            loadKeyMaps(KeyMap(0, trigger = trigger, actionList = listOf(action)))
 
             when (trigger.mode) {
                 is TriggerMode.Parallel -> mockParallelTrigger(trigger, delay = 2000L)
@@ -2978,8 +2950,7 @@ class KeyMapControllerTest {
         trigger: Trigger,
     ) = runTest(testDispatcher) {
         // given
-        keyMapListFlow.value =
-            listOf(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
+        loadKeyMaps(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
 
         // when
         (trigger.keys[1] as KeyEventTriggerKey).let {
@@ -3028,8 +2999,7 @@ class KeyMapControllerTest {
             triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
         )
 
-        keyMapListFlow.value =
-            listOf(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
+        loadKeyMaps(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
 
         // when
         for (key in trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
@@ -3067,8 +3037,7 @@ class KeyMapControllerTest {
             triggerKey(KeyEvent.KEYCODE_VOLUME_UP, clickType = ClickType.LONG_PRESS),
         )
 
-        keyMapListFlow.value =
-            listOf(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
+        loadKeyMaps(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
 
         // when
         for (key in trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
@@ -3115,7 +3084,7 @@ class KeyMapControllerTest {
                 ),
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = longPressTrigger, actionList = listOf(TEST_ACTION)),
                 KeyMap(1, trigger = doublePressTrigger, actionList = listOf(TEST_ACTION_2)),
             )
@@ -3141,7 +3110,7 @@ class KeyMapControllerTest {
                 triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
                 KeyMap(1, trigger = longPressTrigger, actionList = listOf(TEST_ACTION_2)),
             )
@@ -3172,7 +3141,7 @@ class KeyMapControllerTest {
                 triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.DOUBLE_PRESS),
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
                 KeyMap(1, trigger = doublePressTrigger, actionList = listOf(TEST_ACTION_2)),
             )
@@ -3205,7 +3174,7 @@ class KeyMapControllerTest {
                 triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
             )
 
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(0, trigger = singleKeyTrigger, actionList = listOf(TEST_ACTION)),
                 KeyMap(1, trigger = parallelTrigger, actionList = listOf(TEST_ACTION_2)),
             )
@@ -3232,7 +3201,7 @@ class KeyMapControllerTest {
             triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
         )
 
-        keyMapListFlow.value = listOf(
+        loadKeyMaps(
             KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)),
         )
 
@@ -3253,7 +3222,7 @@ class KeyMapControllerTest {
         runTest(testDispatcher) {
             val actionList = listOf(TEST_ACTION, TEST_ACTION_2)
             // GIVEN
-            keyMapListFlow.value = listOf(
+            loadKeyMaps(
                 KeyMap(trigger = trigger, actionList = actionList),
             )
 
@@ -3306,7 +3275,7 @@ class KeyMapControllerTest {
     fun invalidInput_downNotConsumed(description: String, keyMap: KeyMap) =
         runTest(testDispatcher) {
             // GIVEN
-            keyMapListFlow.value = listOf(keyMap)
+            loadKeyMaps(keyMap)
 
             // WHEN
             var consumedCount = 0
@@ -3333,7 +3302,7 @@ class KeyMapControllerTest {
     @TestCaseName("{0}")
     fun validInput_downConsumed(description: String, keyMap: KeyMap) = runTest(testDispatcher) {
         // GIVEN
-        keyMapListFlow.value = listOf(keyMap)
+        loadKeyMaps(keyMap)
 
         var consumedCount = 0
 
@@ -3358,7 +3327,7 @@ class KeyMapControllerTest {
     @TestCaseName("{0}")
     fun validInput_doNotConsumeFlag_doNotConsumeDown(description: String, keyMap: KeyMap) =
         runTest(testDispatcher) {
-            keyMapListFlow.value = listOf(keyMap)
+            loadKeyMaps(keyMap)
 
             var consumedCount = 0
 
@@ -4136,7 +4105,7 @@ class KeyMapControllerTest {
     @TestCaseName("{0}")
     fun validInput_actionPerformed(description: String, keyMap: KeyMap) = runTest(testDispatcher) {
         // GIVEN
-        keyMapListFlow.value = listOf(keyMap)
+        loadKeyMaps(keyMap)
 
         if (keyMap.trigger.mode is TriggerMode.Parallel) {
             // WHEN
@@ -4222,7 +4191,7 @@ class KeyMapControllerTest {
     private fun inputKeyEvent(
         keyCode: Int,
         action: Int,
-        device: InputDeviceInfo = FAKE_KEYBOARD_DEVICE,
+        device: InputDeviceInfo = FAKE_INTERNAL_DEVICE,
         metaState: Int? = null,
         scanCode: Int = 0,
         repeatCount: Int = 0,
@@ -4259,7 +4228,7 @@ class KeyMapControllerTest {
         if (delay != null) {
             delay(delay)
         } else {
-            when ((trigger.mode as TriggerMode.Parallel).clickType) {
+            when (trigger.mode.clickType) {
                 ClickType.SHORT_PRESS -> delay(50)
                 ClickType.LONG_PRESS -> delay(LONG_PRESS_DELAY + 100L)
                 ClickType.DOUBLE_PRESS -> {}

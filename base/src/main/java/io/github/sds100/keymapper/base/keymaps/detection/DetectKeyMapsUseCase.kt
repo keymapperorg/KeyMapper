@@ -27,7 +27,6 @@ import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.GroupRepository
 import io.github.sds100.keymapper.data.repositories.KeyMapRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
@@ -55,7 +54,6 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
     private val groupRepository: GroupRepository,
     private val preferenceRepository: PreferenceRepository,
     private val suAdapter: SuAdapter,
-    private val displayAdapter: DisplayAdapter,
     private val volumeAdapter: VolumeAdapter,
     private val toastAdapter: ToastAdapter,
     private val permissionAdapter: PermissionAdapter,
@@ -243,8 +241,6 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
             }
         }
     }
-
-    override val isScreenOn: Flow<Boolean> = displayAdapter.isScreenOn
 }
 
 interface DetectKeyMapsUseCase {
@@ -273,6 +269,4 @@ interface DetectKeyMapsUseCase {
         scanCode: Int = 0,
         source: Int = InputDevice.SOURCE_UNKNOWN,
     )
-
-    val isScreenOn: Flow<Boolean>
 }

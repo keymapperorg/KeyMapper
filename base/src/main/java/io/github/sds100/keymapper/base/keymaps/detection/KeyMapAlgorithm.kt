@@ -11,9 +11,6 @@ import io.github.sds100.keymapper.base.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.base.constraints.ConstraintState
 import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.base.constraints.isSatisfied
-import io.github.sds100.keymapper.base.input.InputEventDetectionSource
-import io.github.sds100.keymapper.base.input.InputEventHub
-import io.github.sds100.keymapper.base.input.InputEventHubCallback
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.trigger.AssistantTriggerKey
@@ -32,26 +29,21 @@ import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
-import io.github.sds100.keymapper.system.inputevents.KMInputEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class KeyMapController(
+class KeyMapAlgorithm(
     private val coroutineScope: CoroutineScope,
     private val useCase: DetectKeyMapsUseCase,
     private val performActionsUseCase: PerformActionsUseCase,
     private val detectConstraints: DetectConstraintsUseCase,
-    private val inputEventHub: InputEventHub,
-    isPausedFlow: Flow<Boolean>
-) : InputEventHubCallback {
+) {
     companion object {
 
         // the states for keys awaiting a double press
@@ -70,11 +62,9 @@ class KeyMapController(
             ) ||
 
             trigger.mode is TriggerMode.Parallel
-
-        private const val INPUT_EVENT_HUB_ID = "key_map_controller"
     }
 
-    private fun loadKeyMaps(value: List<DetectKeyMapModel>) {
+    fun loadKeyMaps(value: List<DetectKeyMapModel>) {
         actionMap.clear()
 
         // If there are no keymaps with actions then keys don't need to be detected.
@@ -343,8 +333,6 @@ class KeyMapController(
                 }
             }
 
-            reset()
-
             triggers.flatMap { trigger ->
                 trigger.keys.filterIsInstance<EvdevTriggerKey>()
             }.toList()
@@ -385,7 +373,7 @@ class KeyMapController(
 
             this.triggerKeysThatSendRepeatedKeyEvents = triggerKeysThatSendRepeatedKeyEvents
 
-
+            reset()
         }
     }
 
@@ -572,40 +560,6 @@ class KeyMapController(
         )
 
     private val dpadMotionEventTracker: DpadMotionEventTracker = DpadMotionEventTracker()
-
-    private val isPaused: StateFlow<Boolean> =
-        isPausedFlow.stateIn(coroutineScope, SharingStarted.Eagerly, true)
-
-    init {
-        coroutineScope.launch {
-            useCase.allKeyMapList.collectLatest { keyMapList ->
-                reset()
-                loadKeyMaps(keyMapList)
-            }
-        }
-
-        inputEventHub.registerClient(INPUT_EVENT_HUB_ID, this)
-    }
-
-    fun teardown() {
-        reset()
-        inputEventHub.unregisterClient(INPUT_EVENT_HUB_ID)
-    }
-
-    override fun onInputEvent(
-        event: KMInputEvent,
-        detectionSource: InputEventDetectionSource
-    ): Boolean {
-        if (isPaused.value) {
-            return false
-        }
-
-        if (event is KMKeyEvent) {
-            return onKeyEvent(event)
-        } else {
-            return false
-        }
-    }
 
     fun onMotionEvent(event: KMGamePadEvent): Boolean {
         if (!detectKeyMaps) return false
@@ -1547,8 +1501,6 @@ class KeyMapController(
 
         performActionsAfterSequenceTriggerTimeout.forEach { (_, job) -> job.cancel() }
         performActionsAfterSequenceTriggerTimeout.clear()
-
-        inputEventHub.setGrabbedEvdevDevices(INPUT_EVENT_HUB_ID, emptyList())
     }
 
     /**

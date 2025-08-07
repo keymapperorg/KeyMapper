@@ -8,7 +8,7 @@ import io.github.sds100.keymapper.base.actions.canBeHeldDown
 import io.github.sds100.keymapper.base.constraints.ConstraintEntityMapper
 import io.github.sds100.keymapper.base.constraints.ConstraintModeEntityMapper
 import io.github.sds100.keymapper.base.constraints.ConstraintState
-import io.github.sds100.keymapper.base.keymaps.detection.KeyMapController
+import io.github.sds100.keymapper.base.keymaps.detection.KeyMapAlgorithm
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerEntityMapper
 import io.github.sds100.keymapper.base.trigger.TriggerKey
@@ -37,13 +37,14 @@ data class KeyMap(
     val vibrateDuration: Int?
         get() = trigger.vibrateDuration
 
-    fun isRepeatingActionsAllowed(): Boolean = KeyMapController.performActionOnDown(trigger)
+    fun isRepeatingActionsAllowed(): Boolean = KeyMapAlgorithm.performActionOnDown(trigger)
 
     fun isChangingActionRepeatRateAllowed(action: Action): Boolean = action.repeat && isRepeatingActionsAllowed()
 
     fun isChangingActionRepeatDelayAllowed(action: Action): Boolean = action.repeat && isRepeatingActionsAllowed()
 
-    fun isHoldingDownActionAllowed(action: Action): Boolean = KeyMapController.performActionOnDown(trigger) && action.data.canBeHeldDown()
+    fun isHoldingDownActionAllowed(action: Action): Boolean =
+        KeyMapAlgorithm.performActionOnDown(trigger) && action.data.canBeHeldDown()
 
     fun isHoldingDownActionBeforeRepeatingAllowed(action: Action): Boolean = action.repeat && action.holdDown
 

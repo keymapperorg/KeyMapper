@@ -19,8 +19,7 @@ import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCa
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.TriggerKeyMapEvent
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCaseImpl
-import io.github.sds100.keymapper.base.keymaps.detection.DetectScreenOffKeyEventsController
-import io.github.sds100.keymapper.base.keymaps.detection.KeyMapController
+import io.github.sds100.keymapper.base.keymaps.detection.KeyMapDetectionController
 import io.github.sds100.keymapper.base.keymaps.detection.TriggerKeyMapFromOtherAppsController
 import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.common.utils.firstBlocking
@@ -37,7 +36,6 @@ import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
 import io.github.sds100.keymapper.system.root.SuAdapter
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,7 +53,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 abstract class BaseAccessibilityServiceController(
@@ -91,13 +88,13 @@ abstract class BaseAccessibilityServiceController(
 
     val detectConstraintsUseCase = detectConstraintsUseCaseFactory.create(service)
 
-    val keyMapController = KeyMapController(
+    val keyMapDetectionController = KeyMapDetectionController(
         service.lifecycleScope,
         detectKeyMapsUseCase,
         performActionsUseCase,
         detectConstraintsUseCase,
         inputEventHub,
-        pauseKeyMapsUseCase.isPaused
+        pauseKeyMapsUseCase
     )
 
     val triggerKeyMapFromOtherAppsController = TriggerKeyMapFromOtherAppsController(
@@ -113,17 +110,6 @@ abstract class BaseAccessibilityServiceController(
     )
 
     val accessibilityNodeRecorder = accessibilityNodeRecorderFactory.create(service)
-
-    private val detectScreenOffKeyEventsController = DetectScreenOffKeyEventsController(
-        suAdapter,
-        devicesAdapter,
-    ) { event ->
-        if (!isPaused.value) {
-            withContext(Dispatchers.Main.immediate) {
-                keyMapController.onKeyEvent(event)
-            }
-        }
-    }
 
     val isPaused: StateFlow<Boolean> =
         pauseKeyMapsUseCase.isPaused
@@ -249,18 +235,7 @@ abstract class BaseAccessibilityServiceController(
         }
 
         pauseKeyMapsUseCase.isPaused.distinctUntilChanged().onEach {
-            keyMapController.reset()
             triggerKeyMapFromOtherAppsController.reset()
-        }.launchIn(service.lifecycleScope)
-
-        detectKeyMapsUseCase.isScreenOn.onEach { isScreenOn ->
-            if (!isScreenOn) {
-                if (screenOffTriggersEnabled.value) {
-                    detectScreenOffKeyEventsController.startListening(service.lifecycleScope)
-                }
-            } else {
-                detectScreenOffKeyEventsController.stopListening()
-            }
         }.launchIn(service.lifecycleScope)
 
         inputEvents.onEach {
@@ -379,7 +354,7 @@ abstract class BaseAccessibilityServiceController(
     }
 
     open fun onDestroy() {
-        keyMapController.teardown()
+        keyMapDetectionController.teardown()
         keyEventRelayServiceWrapper.unregisterClient(CALLBACK_ID_ACCESSIBILITY_SERVICE)
         accessibilityNodeRecorder.teardown()
     }
@@ -510,7 +485,7 @@ abstract class BaseAccessibilityServiceController(
     }
 
     fun onFingerprintGesture(type: FingerprintGestureType) {
-        keyMapController.onFingerprintGesture(type)
+        keyMapDetectionController.onFingerprintGesture(type)
     }
 
     private fun triggerKeyMapFromIntent(uid: String) {
