@@ -1,4 +1,4 @@
-name: Bug Report
+name: Bug report
 description: Use this template if there is a technical fault in the app
 labels: ["bug", "needs triage"]
 assignees:
