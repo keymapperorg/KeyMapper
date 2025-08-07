@@ -13,24 +13,30 @@ data class KMKeyEvent(
     val action: Int,
     val metaState: Int,
     val scanCode: Int,
-    val device: InputDeviceInfo?,
+    val device: InputDeviceInfo,
     val repeatCount: Int,
     val source: Int,
     val eventTime: Long,
 ) : KMInputEvent {
 
-    override val deviceId: Int? = device?.id
+    companion object {
+        fun fromKeyEvent(keyEvent: KeyEvent): KMKeyEvent? {
+            val device = keyEvent.device ?: return null
 
-    constructor(keyEvent: KeyEvent) : this(
-        keyCode = keyEvent.keyCode,
-        action = keyEvent.action,
-        metaState = keyEvent.metaState,
-        scanCode = keyEvent.scanCode,
-        device = keyEvent.device?.let { InputDeviceUtils.createInputDeviceInfo(it) },
-        repeatCount = keyEvent.repeatCount,
-        source = keyEvent.source,
-        eventTime = keyEvent.eventTime,
-    )
+            return KMKeyEvent(
+                keyCode = keyEvent.keyCode,
+                action = keyEvent.action,
+                metaState = keyEvent.metaState,
+                scanCode = keyEvent.scanCode,
+                device = InputDeviceUtils.createInputDeviceInfo(device),
+                repeatCount = keyEvent.repeatCount,
+                source = keyEvent.source,
+                eventTime = keyEvent.eventTime,
+            )
+        }
+    }
+
+    override val deviceId: Int = device.id
 
     fun toKeyEvent(): KeyEvent {
         return KeyEvent(

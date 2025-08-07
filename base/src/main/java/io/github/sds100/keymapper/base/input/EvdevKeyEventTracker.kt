@@ -30,7 +30,7 @@ class EvdevKeyEventTracker(
             else -> throw IllegalArgumentException("Unknown evdev event value for keycode: ${event.value}")
         }
 
-        val inputDevice = inputDeviceCache.getById(event.deviceId)
+        val inputDevice = inputDeviceCache.getById(event.deviceId) ?: return null
 
         return KMKeyEvent(
             keyCode = event.androidCode!!,
@@ -39,7 +39,7 @@ class EvdevKeyEventTracker(
             scanCode = event.code,
             device = inputDevice,
             repeatCount = 0, // TODO does this need handling?
-            source = inputDevice?.sources ?: InputDevice.SOURCE_UNKNOWN,// TODO
+            source = inputDevice.sources ?: InputDevice.SOURCE_UNKNOWN,// TODO
             eventTime = SystemClock.uptimeMillis()
         )
     }

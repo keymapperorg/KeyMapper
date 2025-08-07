@@ -96,7 +96,7 @@ fun TriggerKeyOptionsBottomSheet(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            if (state is TriggerKeyOptionsState.KeyCode) {
+            if (state is TriggerKeyOptionsState.KeyEvent) {
                 CheckBoxText(
                     modifier = Modifier.padding(8.dp),
                     text = stringResource(R.string.flag_dont_override_default_action),
@@ -146,7 +146,7 @@ fun TriggerKeyOptionsBottomSheet(
                 }
             }
 
-            if (state is TriggerKeyOptionsState.KeyCode) {
+            if (state is TriggerKeyOptionsState.KeyEvent) {
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     text = stringResource(R.string.trigger_key_device_header),
@@ -296,7 +296,7 @@ private fun Preview() {
 
         TriggerKeyOptionsBottomSheet(
             sheetState = sheetState,
-            state = TriggerKeyOptionsState.KeyCode(
+            state = TriggerKeyOptionsState.KeyEvent(
                 doNotRemapChecked = true,
                 clickType = ClickType.DOUBLE_PRESS,
                 showClickTypes = true,

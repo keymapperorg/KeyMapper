@@ -27,6 +27,7 @@ class DpadMotionEventTrackerTest {
             name = "Controller 1",
             isExternal = true,
             isGameController = true,
+            sources = InputDevice.SOURCE_GAMEPAD
         )
 
         private val CONTROLLER_2_DEVICE = InputDeviceInfo(
@@ -35,6 +36,7 @@ class DpadMotionEventTrackerTest {
             name = "Controller 2",
             isExternal = true,
             isGameController = true,
+            sources = InputDevice.SOURCE_GAMEPAD
         )
     }
 

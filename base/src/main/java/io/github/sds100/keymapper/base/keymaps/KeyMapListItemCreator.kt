@@ -9,16 +9,17 @@ import io.github.sds100.keymapper.base.actions.ActionUiHelper
 import io.github.sds100.keymapper.base.constraints.ConstraintErrorSnapshot
 import io.github.sds100.keymapper.base.constraints.ConstraintState
 import io.github.sds100.keymapper.base.constraints.ConstraintUiHelper
-import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.base.trigger.AssistantTriggerType
+import io.github.sds100.keymapper.base.trigger.EvdevTriggerKey
 import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
 import io.github.sds100.keymapper.base.trigger.FloatingButtonKey
+import io.github.sds100.keymapper.base.trigger.KeyEventTriggerDevice
+import io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey
 import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
-import io.github.sds100.keymapper.base.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.base.trigger.TriggerMode
 import io.github.sds100.keymapper.base.utils.InputEventStrings
 import io.github.sds100.keymapper.base.utils.isFixable
@@ -56,12 +57,14 @@ class KeyMapListItemCreator(
         val triggerKeys = keyMap.trigger.keys.map { key ->
             when (key) {
                 is AssistantTriggerKey -> assistantTriggerKeyName(key)
-                is io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey -> keyCodeTriggerKeyName(
+                is KeyEventTriggerKey -> keyEventTriggerKeyName(
                     key,
                     showDeviceDescriptors,
                 )
+
                 is FloatingButtonKey -> floatingButtonKeyName(key)
                 is FingerprintTriggerKey -> fingerprintKeyName(key)
+                is EvdevTriggerKey -> evdevTriggerKeyName(key, showDeviceDescriptors)
             }
         }
 
@@ -243,8 +246,8 @@ class KeyMapListItemCreator(
         }
     }
 
-    private fun keyCodeTriggerKeyName(
-        key: io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey,
+    private fun keyEventTriggerKeyName(
+        key: KeyEventTriggerKey,
         showDeviceDescriptors: Boolean,
     ): String = buildString {
         when (key.clickType) {
@@ -256,9 +259,9 @@ class KeyMapListItemCreator(
         append(InputEventStrings.keyCodeToString(key.keyCode))
 
         val deviceName = when (key.device) {
-            is TriggerKeyDevice.Internal -> null
-            is TriggerKeyDevice.Any -> getString(R.string.any_device)
-            is TriggerKeyDevice.External -> {
+            is KeyEventTriggerDevice.Internal -> null
+            is KeyEventTriggerDevice.Any -> getString(R.string.any_device)
+            is KeyEventTriggerDevice.External -> {
                 if (showDeviceDescriptors) {
                     InputDeviceUtils.appendDeviceDescriptorToName(
                         key.device.descriptor,
@@ -272,8 +275,8 @@ class KeyMapListItemCreator(
 
         val parts = mutableListOf<String>()
 
-        if (deviceName != null || key.detectionSource == InputEventDetectionSource.INPUT_METHOD || !key.consumeEvent) {
-            if (key.detectionSource == InputEventDetectionSource.INPUT_METHOD) {
+        if (deviceName != null || key.requiresIme || !key.consumeEvent) {
+            if (key.requiresIme) {
                 parts.add(getString(R.string.flag_detect_from_input_method))
             }
 
@@ -283,6 +286,43 @@ class KeyMapListItemCreator(
 
             if (!key.consumeEvent) {
                 parts.add(getString(R.string.flag_dont_override_default_action))
+            }
+        }
+
+        if (parts.isNotEmpty()) {
+            append(" (")
+            append(parts.joinToString(separator = " $midDot "))
+            append(")")
+        }
+    }
+
+    private fun evdevTriggerKeyName(
+        key: EvdevTriggerKey,
+        showDeviceDescriptors: Boolean,
+    ): String = buildString {
+        when (key.clickType) {
+            ClickType.LONG_PRESS -> append(longPressString).append(" ")
+            ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
+            else -> Unit
+        }
+
+        append(InputEventStrings.keyCodeToString(key.keyCode))
+
+        val deviceName = if (showDeviceDescriptors) {
+            InputDeviceUtils.appendDeviceDescriptorToName(
+                key.deviceDescriptor,
+                key.deviceName,
+            )
+        } else {
+            key.deviceName
+        }
+
+
+        val parts = buildList {
+            add(deviceName)
+
+            if (!key.consumeEvent) {
+                add(getString(R.string.flag_dont_override_default_action))
             }
         }
 

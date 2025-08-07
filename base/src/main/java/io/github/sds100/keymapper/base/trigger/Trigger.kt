@@ -7,10 +7,11 @@ import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.entities.AssistantTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
+import io.github.sds100.keymapper.data.entities.EvdevTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.FingerprintTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
 import io.github.sds100.keymapper.data.entities.FloatingButtonKeyEntity
-import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
+import io.github.sds100.keymapper.data.entities.KeyEventTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
@@ -49,7 +50,7 @@ data class Trigger(
     fun isDetectingWhenScreenOffAllowed(): Boolean {
         return keys.isNotEmpty() &&
             keys.all {
-                it is KeyCodeTriggerKey &&
+                it is KeyEventTriggerKey &&
                     InputEventUtils.canDetectKeyWhenScreenOff(
                         it.keyCode,
                     )
@@ -89,7 +90,7 @@ object TriggerEntityMapper {
         val keys = entity.keys.map { key ->
             when (key) {
                 is AssistantTriggerKeyEntity -> AssistantTriggerKey.fromEntity(key)
-                is KeyCodeTriggerKeyEntity -> KeyCodeTriggerKey.fromEntity(
+                is KeyEventTriggerKeyEntity -> KeyEventTriggerKey.fromEntity(
                     key,
                 )
                 is FloatingButtonKeyEntity -> {
@@ -98,6 +99,7 @@ object TriggerEntityMapper {
                 }
 
                 is FingerprintTriggerKeyEntity -> FingerprintTriggerKey.fromEntity(key)
+                is EvdevTriggerKeyEntity -> EvdevTriggerKey.fromEntity(key)
             }
         }
 
@@ -204,11 +206,12 @@ object TriggerEntityMapper {
         val keys = trigger.keys.map { key ->
             when (key) {
                 is AssistantTriggerKey -> AssistantTriggerKey.toEntity(key)
-                is KeyCodeTriggerKey -> KeyCodeTriggerKey.toEntity(
+                is KeyEventTriggerKey -> KeyEventTriggerKey.toEntity(
                     key,
                 )
                 is FloatingButtonKey -> FloatingButtonKey.toEntity(key)
                 is FingerprintTriggerKey -> FingerprintTriggerKey.toEntity(key)
+                is EvdevTriggerKey -> EvdevTriggerKey.toEntity(key)
             }
         }
 

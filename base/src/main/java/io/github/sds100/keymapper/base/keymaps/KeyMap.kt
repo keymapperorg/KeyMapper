@@ -67,7 +67,7 @@ fun KeyMap.requiresImeKeyEventForwarding(): Boolean {
         actionList.any { it.data is ActionData.AnswerCall || it.data is ActionData.EndCall }
 
     val hasVolumeKeys = trigger.keys
-        .mapNotNull { it as? io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey }
+        .mapNotNull { it as? io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey }
         .any {
             it.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ||
                 it.keyCode == KeyEvent.KEYCODE_VOLUME_UP
@@ -83,7 +83,7 @@ fun KeyMap.requiresImeKeyEventForwarding(): Boolean {
  * is incoming.
  */
 fun KeyMap.requiresImeKeyEventForwardingInPhoneCall(triggerKey: TriggerKey): Boolean {
-    if (triggerKey !is io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey) {
+    if (triggerKey !is io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey) {
         return false
     }
 
@@ -91,7 +91,7 @@ fun KeyMap.requiresImeKeyEventForwardingInPhoneCall(triggerKey: TriggerKey): Boo
         actionList.any { it.data is ActionData.AnswerCall || it.data is ActionData.EndCall }
 
     val hasVolumeKeys = trigger.keys
-        .mapNotNull { it as? io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey }
+        .mapNotNull { it as? io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey }
         .any {
             it.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ||
                 it.keyCode == KeyEvent.KEYCODE_VOLUME_UP

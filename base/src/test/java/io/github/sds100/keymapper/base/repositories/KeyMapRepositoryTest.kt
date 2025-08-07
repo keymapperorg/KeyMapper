@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.base.repositories
 
 import io.github.sds100.keymapper.base.TestDispatcherProvider
 import io.github.sds100.keymapper.base.system.devices.FakeDevicesAdapter
-import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
@@ -25,16 +24,6 @@ import org.mockito.kotlin.times
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class KeyMapRepositoryTest {
-
-    companion object {
-        private val FAKE_KEYBOARD = InputDeviceInfo(
-            descriptor = "fake_keyboard_descriptor",
-            name = "fake keyboard",
-            id = 1,
-            isExternal = true,
-            isGameController = false,
-        )
-    }
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testScope = TestScope(testDispatcher)

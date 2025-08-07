@@ -137,7 +137,7 @@ fun TriggerKeyListItem(
                         model.buttonName,
                     )
 
-                    is TriggerKeyListItemModel.KeyCode -> model.keyName
+                    is TriggerKeyListItemModel.KeyEvent -> model.keyName
 
                     is TriggerKeyListItemModel.FloatingButtonDeleted -> stringResource(R.string.trigger_error_floating_button_deleted_title)
 
@@ -159,7 +159,7 @@ fun TriggerKeyListItem(
                     }
 
                     val tertiaryText = when (model) {
-                        is TriggerKeyListItemModel.KeyCode -> model.extraInfo
+                        is TriggerKeyListItemModel.KeyEvent -> model.extraInfo
                         is TriggerKeyListItemModel.FloatingButton -> model.layoutName
 
                         else -> null
@@ -324,7 +324,7 @@ private fun ErrorTextColumn(
 @Composable
 private fun KeyCodePreview() {
     TriggerKeyListItem(
-        model = TriggerKeyListItemModel.KeyCode(
+        model = TriggerKeyListItemModel.KeyEvent(
             id = "id",
             keyName = "Volume Up",
             clickType = ClickType.SHORT_PRESS,
@@ -342,7 +342,7 @@ private fun KeyCodePreview() {
 @Composable
 private fun NoDragPreview() {
     TriggerKeyListItem(
-        model = TriggerKeyListItemModel.KeyCode(
+        model = TriggerKeyListItemModel.KeyEvent(
             id = "id",
             keyName = "Volume Up",
             clickType = ClickType.LONG_PRESS,

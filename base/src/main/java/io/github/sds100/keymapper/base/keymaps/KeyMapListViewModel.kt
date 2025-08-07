@@ -360,6 +360,9 @@ class KeyMapListViewModel(
                 onAutomaticBackupResult(result)
             }
         }
+
+        // TODO REMOVE
+        onNewKeyMapClick()
     }
 
     private fun buildSelectingAppBarState(

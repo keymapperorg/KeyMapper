@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.keymaps
 
+import android.view.InputDevice
 import android.view.KeyEvent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.github.sds100.keymapper.base.actions.Action
@@ -12,16 +13,15 @@ import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.base.constraints.ConstraintState
 import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
-import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapModel
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
-import io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey
+import io.github.sds100.keymapper.base.trigger.KeyEventTriggerDevice
+import io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerKey
-import io.github.sds100.keymapper.base.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.base.trigger.TriggerMode
 import io.github.sds100.keymapper.base.utils.TestConstraintSnapshot
 import io.github.sds100.keymapper.base.utils.parallelTrigger
@@ -74,19 +74,27 @@ class KeyMapControllerTest {
     companion object {
         private const val FAKE_KEYBOARD_DEVICE_ID = 123
         private const val FAKE_KEYBOARD_DESCRIPTOR = "fake_keyboard"
-        private val FAKE_KEYBOARD_TRIGGER_KEY_DEVICE = TriggerKeyDevice.External(
+        private val FAKE_KEYBOARD_TRIGGER_KEY_DEVICE = KeyEventTriggerDevice.External(
             descriptor = FAKE_KEYBOARD_DESCRIPTOR,
             name = "Fake Keyboard",
         )
+        private val FAKE_KEYBOARD_DEVICE = InputDeviceInfo(
+            descriptor = FAKE_KEYBOARD_DESCRIPTOR,
+            name = "Fake Keyboard",
+            id = FAKE_KEYBOARD_DEVICE_ID,
+            isExternal = true,
+            isGameController = false,
+            sources = InputDevice.SOURCE_KEYBOARD
+        )
 
         private const val FAKE_HEADPHONE_DESCRIPTOR = "fake_headphone"
-        private val FAKE_HEADPHONE_TRIGGER_KEY_DEVICE = TriggerKeyDevice.External(
+        private val FAKE_HEADPHONE_TRIGGER_KEY_DEVICE = KeyEventTriggerDevice.External(
             descriptor = FAKE_HEADPHONE_DESCRIPTOR,
             name = "Fake Headphones",
         )
 
         private const val FAKE_CONTROLLER_DESCRIPTOR = "fake_controller"
-        private val FAKE_CONTROLLER_TRIGGER_KEY_DEVICE = TriggerKeyDevice.External(
+        private val FAKE_CONTROLLER_TRIGGER_KEY_DEVICE = KeyEventTriggerDevice.External(
             descriptor = FAKE_CONTROLLER_DESCRIPTOR,
             name = "Fake Controller",
         )
@@ -96,6 +104,7 @@ class KeyMapControllerTest {
             id = 0,
             isExternal = true,
             isGameController = true,
+            sources = InputDevice.SOURCE_GAMEPAD
         )
 
         private const val FAKE_PACKAGE_NAME = "test_package"
@@ -213,6 +222,8 @@ class KeyMapControllerTest {
             detectKeyMapsUseCase,
             performActionsUseCase,
             detectConstraintsUseCase,
+            inputEventHub = mock(),
+            isPausedFlow = MutableStateFlow(false)
         )
     }
 
@@ -846,7 +857,7 @@ class KeyMapControllerTest {
                 triggerKey(
                     KeyEvent.KEYCODE_DPAD_LEFT,
                     clickType = ClickType.SHORT_PRESS,
-                    detectionSource = InputEventDetectionSource.INPUT_METHOD,
+                    requiresIme = true,
                     device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
                 ),
             )
@@ -877,7 +888,7 @@ class KeyMapControllerTest {
                 triggerKey(
                     KeyEvent.KEYCODE_DPAD_LEFT,
                     clickType = ClickType.SHORT_PRESS,
-                    detectionSource = InputEventDetectionSource.INPUT_METHOD,
+                    requiresIme = true,
                     device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
                 ),
             )
@@ -912,7 +923,7 @@ class KeyMapControllerTest {
                 triggerKey(
                     KeyEvent.KEYCODE_DPAD_LEFT,
                     clickType = ClickType.SHORT_PRESS,
-                    detectionSource = InputEventDetectionSource.INPUT_METHOD,
+                    requiresIme = true,
                     device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
                 ),
             )
@@ -941,7 +952,7 @@ class KeyMapControllerTest {
             triggerKey(
                 KeyEvent.KEYCODE_DPAD_LEFT,
                 clickType = ClickType.LONG_PRESS,
-                detectionSource = InputEventDetectionSource.INPUT_METHOD,
+                requiresIme = true,
                 device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
             ),
         )
@@ -968,7 +979,7 @@ class KeyMapControllerTest {
             triggerKey(
                 KeyEvent.KEYCODE_DPAD_LEFT,
                 clickType = ClickType.SHORT_PRESS,
-                detectionSource = InputEventDetectionSource.INPUT_METHOD,
+                requiresIme = true,
                 device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
             ),
         )
@@ -998,7 +1009,7 @@ class KeyMapControllerTest {
                 triggerKey(
                     KeyEvent.KEYCODE_DPAD_LEFT,
                     clickType = ClickType.SHORT_PRESS,
-                    detectionSource = InputEventDetectionSource.INPUT_METHOD,
+                    requiresIme = true,
                 ),
             )
 
@@ -1047,7 +1058,7 @@ class KeyMapControllerTest {
             triggerKey(
                 KeyEvent.KEYCODE_DPAD_LEFT,
                 clickType = ClickType.LONG_PRESS,
-                detectionSource = InputEventDetectionSource.INPUT_METHOD,
+                requiresIme = true,
             ),
         )
 
@@ -2602,7 +2613,7 @@ class KeyMapControllerTest {
             val triggerAnyDevice = singleKeyTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    device = TriggerKeyDevice.Any,
+                    device = KeyEventTriggerDevice.Any,
                 ),
             )
 
@@ -2750,7 +2761,7 @@ class KeyMapControllerTest {
             val firstTrigger = sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    device = TriggerKeyDevice.Any,
+                    device = KeyEventTriggerDevice.Any,
                 ),
                 triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
             )
@@ -2759,7 +2770,7 @@ class KeyMapControllerTest {
                 triggerKey(KeyEvent.KEYCODE_HOME),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    device = TriggerKeyDevice.Any,
+                    device = KeyEventTriggerDevice.Any,
                 ),
                 triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
             )
@@ -2773,7 +2784,7 @@ class KeyMapControllerTest {
             mockTriggerKeyInput(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    device = TriggerKeyDevice.Any,
+                    device = KeyEventTriggerDevice.Any,
                 ),
             )
             mockTriggerKeyInput(triggerKey(KeyEvent.KEYCODE_VOLUME_UP))
@@ -2797,13 +2808,14 @@ class KeyMapControllerTest {
                 KeyMap(0, trigger = homeTrigger, actionList = listOf(TEST_ACTION)),
             )
 
-            val consumedHomeDown = inputKeyEvent(KeyEvent.KEYCODE_HOME, KeyEvent.ACTION_DOWN, null)
-            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, null)
+            val consumedHomeDown =
+                inputKeyEvent(KeyEvent.KEYCODE_HOME, KeyEvent.ACTION_DOWN, FAKE_KEYBOARD_DEVICE)
+            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, FAKE_KEYBOARD_DEVICE)
 
             advanceUntilIdle()
 
-            inputKeyEvent(KeyEvent.KEYCODE_HOME, KeyEvent.ACTION_UP, null)
-            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP, null)
+            inputKeyEvent(KeyEvent.KEYCODE_HOME, KeyEvent.ACTION_UP, FAKE_KEYBOARD_DEVICE)
+            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP, FAKE_KEYBOARD_DEVICE)
 
             assertThat(consumedHomeDown, `is`(true))
 
@@ -2821,13 +2833,17 @@ class KeyMapControllerTest {
             )
 
             val consumedRecentsDown =
-                inputKeyEvent(KeyEvent.KEYCODE_APP_SWITCH, KeyEvent.ACTION_DOWN, null)
-            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, null)
+                inputKeyEvent(
+                    KeyEvent.KEYCODE_APP_SWITCH,
+                    KeyEvent.ACTION_DOWN,
+                    FAKE_KEYBOARD_DEVICE
+                )
+            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, FAKE_KEYBOARD_DEVICE)
 
             advanceUntilIdle()
 
-            inputKeyEvent(KeyEvent.KEYCODE_APP_SWITCH, KeyEvent.ACTION_UP, null)
-            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP, null)
+            inputKeyEvent(KeyEvent.KEYCODE_APP_SWITCH, KeyEvent.ACTION_UP, FAKE_KEYBOARD_DEVICE)
+            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP, FAKE_KEYBOARD_DEVICE)
 
             assertThat(consumedRecentsDown, `is`(true))
         }
@@ -2966,7 +2982,7 @@ class KeyMapControllerTest {
             listOf(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
 
         // when
-        (trigger.keys[1] as KeyCodeTriggerKey).let {
+        (trigger.keys[1] as KeyEventTriggerKey).let {
             inputKeyEvent(
                 it.keyCode,
                 KeyEvent.ACTION_DOWN,
@@ -2974,7 +2990,7 @@ class KeyMapControllerTest {
             )
         }
 
-        (trigger.keys[1] as KeyCodeTriggerKey).let {
+        (trigger.keys[1] as KeyEventTriggerKey).let {
             val consumed = inputKeyEvent(
                 it.keyCode,
                 KeyEvent.ACTION_UP,
@@ -3016,7 +3032,7 @@ class KeyMapControllerTest {
             listOf(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
 
         // when
-        for (key in trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
+        for (key in trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
             inputKeyEvent(
                 key.keyCode,
                 KeyEvent.ACTION_DOWN,
@@ -3026,7 +3042,7 @@ class KeyMapControllerTest {
 
         var consumedUpCount = 0
 
-        for (key in trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
+        for (key in trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
             val consumed =
                 inputKeyEvent(
                     key.keyCode,
@@ -3055,7 +3071,7 @@ class KeyMapControllerTest {
             listOf(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
 
         // when
-        for (key in trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
+        for (key in trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
             inputKeyEvent(
                 key.keyCode,
                 KeyEvent.ACTION_DOWN,
@@ -3067,7 +3083,7 @@ class KeyMapControllerTest {
 
         var consumedUpCount = 0
 
-        for (key in trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
+        for (key in trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
             val consumed =
                 inputKeyEvent(
                     key.keyCode,
@@ -3262,7 +3278,7 @@ class KeyMapControllerTest {
             singleKeyTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                 ),
             ),
         ),
@@ -3271,7 +3287,7 @@ class KeyMapControllerTest {
             sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                 ),
             ),
         ),
@@ -3295,7 +3311,7 @@ class KeyMapControllerTest {
             // WHEN
             var consumedCount = 0
 
-            for (key in keyMap.trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
+            for (key in keyMap.trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
                 val consumed =
                     inputKeyEvent(
                         999,
@@ -3321,7 +3337,7 @@ class KeyMapControllerTest {
 
         var consumedCount = 0
 
-        for (key in keyMap.trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
+        for (key in keyMap.trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
             val consumed =
                 inputKeyEvent(
                     key.keyCode,
@@ -3346,7 +3362,7 @@ class KeyMapControllerTest {
 
             var consumedCount = 0
 
-            for (key in keyMap.trigger.keys.mapNotNull { it as? KeyCodeTriggerKey }) {
+            for (key in keyMap.trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
                 val consumed =
                     inputKeyEvent(
                         key.keyCode,
@@ -3367,14 +3383,14 @@ class KeyMapControllerTest {
             "undefined single short-press this-device, do not consume" to singleKeyTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     consume = false,
                 ),
             ),
             "undefined single long-press this-device, do not consume" to singleKeyTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                     consume = false,
                 ),
@@ -3382,7 +3398,7 @@ class KeyMapControllerTest {
             "undefined single double-press this-device, do not consume" to singleKeyTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.DOUBLE_PRESS,
                     consume = false,
                 ),
@@ -3391,14 +3407,14 @@ class KeyMapControllerTest {
             "undefined single short-press any-device, do not consume" to singleKeyTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                     consume = false,
                 ),
             ),
             "undefined single long-press any-device, do not consume" to singleKeyTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                     clickType = ClickType.LONG_PRESS,
                     consume = false,
                 ),
@@ -3406,7 +3422,7 @@ class KeyMapControllerTest {
             "undefined single double-press any-device, do not consume" to singleKeyTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                     clickType = ClickType.DOUBLE_PRESS,
                     consume = false,
                 ),
@@ -3415,19 +3431,19 @@ class KeyMapControllerTest {
             "sequence multiple short-press this-device, do not consume" to sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.SHORT_PRESS,
                     consume = false,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.SHORT_PRESS,
                     consume = false,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.SHORT_PRESS,
                     consume = false,
                 ),
@@ -3436,19 +3452,19 @@ class KeyMapControllerTest {
             "sequence multiple long-press this-device, do not consume" to sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                     consume = false,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                     consume = false,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                     consume = false,
                 ),
@@ -3457,19 +3473,19 @@ class KeyMapControllerTest {
             "sequence multiple double-press this-device, do not consume" to sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.DOUBLE_PRESS,
                     consume = false,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.DOUBLE_PRESS,
                     consume = false,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.DOUBLE_PRESS,
                     consume = false,
                 ),
@@ -3478,19 +3494,19 @@ class KeyMapControllerTest {
             "sequence multiple mix this-device, do not consume" to sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                     consume = false,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.SHORT_PRESS,
                     consume = false,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.DOUBLE_PRESS,
                     consume = false,
                 ),
@@ -3532,13 +3548,13 @@ class KeyMapControllerTest {
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                     clickType = ClickType.SHORT_PRESS,
                     consume = false,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.SHORT_PRESS,
                     consume = false,
                 ),
@@ -3553,13 +3569,13 @@ class KeyMapControllerTest {
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                     clickType = ClickType.LONG_PRESS,
                     consume = false,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                     consume = false,
                 ),
@@ -3574,13 +3590,13 @@ class KeyMapControllerTest {
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                     clickType = ClickType.DOUBLE_PRESS,
                     consume = false,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.DOUBLE_PRESS,
                     consume = false,
                 ),
@@ -3595,13 +3611,13 @@ class KeyMapControllerTest {
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                     clickType = ClickType.SHORT_PRESS,
                     consume = false,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.DOUBLE_PRESS,
                     consume = false,
                 ),
@@ -3610,7 +3626,7 @@ class KeyMapControllerTest {
             "sequence multiple mix mixed-device, do not consume" to sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                     clickType = ClickType.LONG_PRESS,
                     consume = false,
                 ),
@@ -3622,7 +3638,7 @@ class KeyMapControllerTest {
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                     consume = false,
                 ),
@@ -3637,19 +3653,19 @@ class KeyMapControllerTest {
             "parallel multiple short-press this-device, do not consume" to parallelTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.SHORT_PRESS,
                     consume = false,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.SHORT_PRESS,
                     consume = false,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.SHORT_PRESS,
                     consume = false,
                 ),
@@ -3658,19 +3674,19 @@ class KeyMapControllerTest {
             "parallel multiple long-press this-device, do not consume" to parallelTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                     consume = false,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                     consume = false,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                     consume = false,
                 ),
@@ -3721,13 +3737,13 @@ class KeyMapControllerTest {
             "parallel multiple short-press mix-device, do not consume" to parallelTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.SHORT_PRESS,
                     consume = false,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                     clickType = ClickType.SHORT_PRESS,
                     consume = false,
                 ),
@@ -3742,13 +3758,13 @@ class KeyMapControllerTest {
             "parallel multiple long-press mix-device, do not consume" to parallelTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                     consume = false,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                     clickType = ClickType.LONG_PRESS,
                     consume = false,
                 ),
@@ -3778,20 +3794,20 @@ class KeyMapControllerTest {
             "undefined single short-press this-device" to singleKeyTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                 ),
             ),
             "undefined single long-press this-device" to singleKeyTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                 ),
             ),
             "undefined single double-press this-device" to singleKeyTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.DOUBLE_PRESS,
                 ),
             ),
@@ -3799,20 +3815,20 @@ class KeyMapControllerTest {
             "undefined single short-press any-device" to singleKeyTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                 ),
             ),
             "undefined single long-press any-device" to singleKeyTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                     clickType = ClickType.LONG_PRESS,
                 ),
             ),
             "undefined single double-press any-device" to singleKeyTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                     clickType = ClickType.DOUBLE_PRESS,
                 ),
             ),
@@ -3820,68 +3836,68 @@ class KeyMapControllerTest {
             "sequence multiple short-press this-device" to sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.SHORT_PRESS,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.SHORT_PRESS,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.SHORT_PRESS,
                 ),
             ),
             "sequence multiple long-press this-device" to sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                 ),
             ),
             "sequence multiple double-press this-device" to sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.DOUBLE_PRESS,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.DOUBLE_PRESS,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.DOUBLE_PRESS,
                 ),
             ),
             "sequence multiple mix this-device" to sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.SHORT_PRESS,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.DOUBLE_PRESS,
                 ),
             ),
@@ -3916,12 +3932,12 @@ class KeyMapControllerTest {
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                     clickType = ClickType.SHORT_PRESS,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.SHORT_PRESS,
                 ),
             ),
@@ -3933,12 +3949,12 @@ class KeyMapControllerTest {
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                     clickType = ClickType.LONG_PRESS,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                 ),
             ),
@@ -3950,12 +3966,12 @@ class KeyMapControllerTest {
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                     clickType = ClickType.DOUBLE_PRESS,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.DOUBLE_PRESS,
                 ),
             ),
@@ -3967,19 +3983,19 @@ class KeyMapControllerTest {
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                     clickType = ClickType.SHORT_PRESS,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.DOUBLE_PRESS,
                 ),
             ),
             "sequence multiple mix mixed-device" to sequenceTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                     clickType = ClickType.LONG_PRESS,
                 ),
                 triggerKey(
@@ -3989,7 +4005,7 @@ class KeyMapControllerTest {
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                 ),
                 triggerKey(
@@ -4002,34 +4018,34 @@ class KeyMapControllerTest {
             "parallel multiple short-press this-device" to parallelTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.SHORT_PRESS,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.SHORT_PRESS,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.SHORT_PRESS,
                 ),
             ),
             "parallel multiple long-press this-device" to parallelTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_A,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                 ),
             ),
@@ -4070,12 +4086,12 @@ class KeyMapControllerTest {
             "parallel multiple short-press mix-device" to parallelTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.SHORT_PRESS,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                     clickType = ClickType.SHORT_PRESS,
                 ),
                 triggerKey(
@@ -4087,12 +4103,12 @@ class KeyMapControllerTest {
             "parallel multiple long-press mix-device" to parallelTrigger(
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_DOWN,
-                    TriggerKeyDevice.Internal,
+                    KeyEventTriggerDevice.Internal,
                     clickType = ClickType.LONG_PRESS,
                 ),
                 triggerKey(
                     KeyEvent.KEYCODE_VOLUME_UP,
-                    TriggerKeyDevice.Any,
+                    KeyEventTriggerDevice.Any,
                     clickType = ClickType.LONG_PRESS,
                 ),
                 triggerKey(
@@ -4140,7 +4156,7 @@ class KeyMapControllerTest {
     }
 
     private suspend fun mockTriggerKeyInput(key: TriggerKey, delay: Long? = null) {
-        if (key !is KeyCodeTriggerKey) {
+        if (key !is KeyEventTriggerKey) {
             return
         }
 
@@ -4206,7 +4222,7 @@ class KeyMapControllerTest {
     private fun inputKeyEvent(
         keyCode: Int,
         action: Int,
-        device: InputDeviceInfo? = null,
+        device: InputDeviceInfo = FAKE_KEYBOARD_DEVICE,
         metaState: Int? = null,
         scanCode: Int = 0,
         repeatCount: Int = 0,
@@ -4228,16 +4244,16 @@ class KeyMapControllerTest {
         delay: Long? = null,
     ) {
         require(trigger.mode is TriggerMode.Parallel)
-        require(trigger.keys.all { it is KeyCodeTriggerKey })
+        require(trigger.keys.all { it is KeyEventTriggerKey })
 
         for (key in trigger.keys) {
-            if (key !is KeyCodeTriggerKey) {
+            if (key !is KeyEventTriggerKey) {
                 continue
             }
 
-            val deviceDescriptor = triggerKeyDeviceToInputDevice(key.device)
+            val inputDevice = triggerKeyDeviceToInputDevice(key.device)
 
-            inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, deviceDescriptor)
+            inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, inputDevice)
         }
 
         if (delay != null) {
@@ -4251,7 +4267,7 @@ class KeyMapControllerTest {
         }
 
         for (key in trigger.keys) {
-            if (key !is KeyCodeTriggerKey) {
+            if (key !is KeyEventTriggerKey) {
                 continue
             }
 
@@ -4262,32 +4278,35 @@ class KeyMapControllerTest {
     }
 
     private fun triggerKeyDeviceToInputDevice(
-        device: TriggerKeyDevice,
+        device: KeyEventTriggerDevice,
         deviceId: Int = 0,
         isGameController: Boolean = false,
     ): InputDeviceInfo = when (device) {
-        TriggerKeyDevice.Any -> InputDeviceInfo(
+        KeyEventTriggerDevice.Any -> InputDeviceInfo(
             descriptor = "any_device",
             name = "any_device_name",
             isExternal = false,
             id = deviceId,
             isGameController = isGameController,
+            sources = if (isGameController) InputDevice.SOURCE_GAMEPAD else InputDevice.SOURCE_KEYBOARD
         )
 
-        is TriggerKeyDevice.External -> InputDeviceInfo(
+        is KeyEventTriggerDevice.External -> InputDeviceInfo(
             descriptor = device.descriptor,
             name = "device_name",
             isExternal = true,
             id = deviceId,
             isGameController = isGameController,
+            sources = if (isGameController) InputDevice.SOURCE_GAMEPAD else InputDevice.SOURCE_KEYBOARD
         )
 
-        TriggerKeyDevice.Internal -> InputDeviceInfo(
+        KeyEventTriggerDevice.Internal -> InputDeviceInfo(
             descriptor = "internal_device",
             name = "internal_device_name",
             isExternal = false,
             id = deviceId,
             isGameController = isGameController,
+            sources = if (isGameController) InputDevice.SOURCE_GAMEPAD else InputDevice.SOURCE_KEYBOARD
         )
     }
 }

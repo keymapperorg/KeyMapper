@@ -23,6 +23,7 @@ import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
+import io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.*
 import io.github.sds100.keymapper.base.utils.InputEventStrings
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
@@ -287,7 +288,6 @@ abstract class BaseConfigTriggerViewModel(
                 createListItems(
                     keyMap,
                     showDeviceDescriptors,
-                    triggerKeyShortcuts.size,
                     triggerErrorSnapshot,
                 )
             val isReorderingEnabled = trigger.keys.size > 1
@@ -355,11 +355,11 @@ abstract class BaseConfigTriggerViewModel(
                 val showClickTypes = trigger.mode is TriggerMode.Sequence
 
                 when (key) {
-                    is KeyCodeTriggerKey -> {
+                    is KeyEventTriggerKey -> {
                         val showDeviceDescriptors = displayKeyMap.showDeviceDescriptors.first()
                         val deviceListItems: List<CheckBoxListItem> =
                             config.getAvailableTriggerKeyDevices()
-                                .map { device: TriggerKeyDevice ->
+                                .map { device: KeyEventTriggerDevice ->
                                     buildDeviceListItem(
                                         device = device,
                                         showDeviceDescriptors = showDeviceDescriptors,
@@ -367,7 +367,7 @@ abstract class BaseConfigTriggerViewModel(
                                     )
                                 }
 
-                        return TriggerKeyOptionsState.KeyCode(
+                        return TriggerKeyOptionsState.KeyEvent(
                             doNotRemapChecked = !key.consumeEvent,
                             clickType = key.clickType,
                             showClickTypes = showClickTypes,
@@ -396,30 +396,38 @@ abstract class BaseConfigTriggerViewModel(
                             clickType = key.clickType,
                         )
                     }
+
+                    is EvdevTriggerKey -> {
+                        return TriggerKeyOptionsState.EvdevEvent(
+                            doNotRemapChecked = !key.consumeEvent,
+                            clickType = key.clickType,
+                            showClickTypes = showClickTypes
+                        )
+                    }
                 }
             }
         }
     }
 
     private fun buildDeviceListItem(
-        device: TriggerKeyDevice,
+        device: KeyEventTriggerDevice,
         isChecked: Boolean,
         showDeviceDescriptors: Boolean,
     ): CheckBoxListItem {
         return when (device) {
-            TriggerKeyDevice.Any -> CheckBoxListItem(
+            KeyEventTriggerDevice.Any -> CheckBoxListItem(
                 id = DEVICE_ID_ANY,
                 isChecked = isChecked,
                 label = getString(R.string.any_device),
             )
 
-            TriggerKeyDevice.Internal -> CheckBoxListItem(
+            KeyEventTriggerDevice.Internal -> CheckBoxListItem(
                 id = DEVICE_ID_INTERNAL,
                 isChecked = isChecked,
                 label = getString(R.string.this_device),
             )
 
-            is TriggerKeyDevice.External -> {
+            is KeyEventTriggerDevice.External -> {
                 val name = if (showDeviceDescriptors) {
                     InputDeviceUtils.appendDeviceDescriptorToName(
                         device.descriptor,
@@ -472,7 +480,29 @@ abstract class BaseConfigTriggerViewModel(
     private suspend fun onRecordTriggerKey(key: RecordedKey) {
         // Add the trigger key before showing the dialog so it doesn't
         // need to be dismissed before it is added.
-        config.addKeyCodeTriggerKey(key.keyCode, key.device, key.detectionSource)
+        when (key.detectionSource) {
+            InputEventDetectionSource.EVDEV -> config.addEvdevTriggerKey(
+                key.keyCode,
+                key.scanCode,
+                key.deviceDescriptor,
+                key.deviceName
+            )
+
+            InputEventDetectionSource.ACCESSIBILITY_SERVICE,
+            InputEventDetectionSource.INPUT_METHOD,
+            InputEventDetectionSource.MAIN_ACTIVITY -> {
+                val triggerDevice = if (key.isExternalDevice) {
+                    KeyEventTriggerDevice.External(key.deviceDescriptor, key.deviceName)
+                } else {
+                    KeyEventTriggerDevice.Internal
+                }
+
+                config.addKeyEventTriggerKey(
+                    key.keyCode, key.scanCode, triggerDevice,
+                    key.detectionSource != InputEventDetectionSource.ACCESSIBILITY_SERVICE
+                )
+            }
+        }
 
         if (key.keyCode >= InputEventUtils.KEYCODE_TO_SCANCODE_OFFSET || key.keyCode < 0) {
             if (onboarding.shownKeyCodeToScanCodeTriggerExplanation) {
@@ -565,15 +595,15 @@ abstract class BaseConfigTriggerViewModel(
     fun onSelectTriggerKeyDevice(descriptor: String) {
         triggerKeyOptionsUid.value?.let { triggerKeyUid ->
             val device = when (descriptor) {
-                DEVICE_ID_ANY -> TriggerKeyDevice.Any
-                DEVICE_ID_INTERNAL -> TriggerKeyDevice.Internal
+                DEVICE_ID_ANY -> KeyEventTriggerDevice.Any
+                DEVICE_ID_INTERNAL -> KeyEventTriggerDevice.Internal
                 else -> {
                     val device = config.getAvailableTriggerKeyDevices()
-                        .filterIsInstance<TriggerKeyDevice.External>()
+                        .filterIsInstance<KeyEventTriggerDevice.External>()
                         .firstOrNull { it.descriptor == descriptor }
                         ?: return
 
-                    TriggerKeyDevice.External(
+                    KeyEventTriggerDevice.External(
                         device.descriptor,
                         device.name,
                     )
@@ -660,7 +690,6 @@ abstract class BaseConfigTriggerViewModel(
     private fun createListItems(
         keyMap: KeyMap,
         showDeviceDescriptors: Boolean,
-        shortcutCount: Int,
         triggerErrorSnapshot: TriggerErrorSnapshot,
     ): List<TriggerKeyListItemModel> {
         val trigger = keyMap.trigger
@@ -681,7 +710,7 @@ abstract class BaseConfigTriggerViewModel(
             }
 
             when (key) {
-                is AssistantTriggerKey -> TriggerKeyListItemModel.Assistant(
+                is AssistantTriggerKey -> Assistant(
                     id = key.uid,
                     assistantType = key.type,
                     clickType = clickType,
@@ -689,7 +718,7 @@ abstract class BaseConfigTriggerViewModel(
                     error = error,
                 )
 
-                is FingerprintTriggerKey -> TriggerKeyListItemModel.FingerprintGesture(
+                is FingerprintTriggerKey -> FingerprintGesture(
                     id = key.uid,
                     gestureType = key.type,
                     clickType = clickType,
@@ -697,7 +726,7 @@ abstract class BaseConfigTriggerViewModel(
                     error = error,
                 )
 
-                is KeyCodeTriggerKey -> TriggerKeyListItemModel.KeyCode(
+                is KeyEventTriggerKey -> KeyEvent(
                     id = key.uid,
                     keyName = getTriggerKeyName(key),
                     clickType = clickType,
@@ -711,13 +740,13 @@ abstract class BaseConfigTriggerViewModel(
 
                 is FloatingButtonKey -> {
                     if (key.button == null) {
-                        TriggerKeyListItemModel.FloatingButtonDeleted(
+                        FloatingButtonDeleted(
                             id = key.uid,
                             clickType = clickType,
                             linkType = linkType,
                         )
                     } else {
-                        TriggerKeyListItemModel.FloatingButton(
+                        FloatingButton(
                             id = key.uid,
                             buttonName = key.button.appearance.text,
                             layoutName = key.button.layoutName,
@@ -727,12 +756,14 @@ abstract class BaseConfigTriggerViewModel(
                         )
                     }
                 }
+
+                is EvdevTriggerKey -> TODO()
             }
         }
     }
 
     private fun getTriggerKeyExtraInfo(
-        key: KeyCodeTriggerKey,
+        key: KeyEventTriggerKey,
         showDeviceDescriptors: Boolean,
     ): String {
         return buildString {
@@ -745,11 +776,11 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    private fun getTriggerKeyName(key: KeyCodeTriggerKey): String {
+    private fun getTriggerKeyName(key: KeyEventTriggerKey): String {
         return buildString {
             append(InputEventStrings.keyCodeToString(key.keyCode))
 
-            if (key.detectionSource == InputEventDetectionSource.INPUT_METHOD) {
+            if (key.requiresIme) {
                 val midDot = getString(R.string.middot)
                 append(" $midDot ${getString(R.string.flag_detect_from_input_method)}")
             }
@@ -757,12 +788,12 @@ abstract class BaseConfigTriggerViewModel(
     }
 
     private fun getTriggerKeyDeviceName(
-        device: TriggerKeyDevice,
+        device: KeyEventTriggerDevice,
         showDeviceDescriptors: Boolean,
     ): String = when (device) {
-        is TriggerKeyDevice.Internal -> getString(R.string.this_device)
-        is TriggerKeyDevice.Any -> getString(R.string.any_device)
-        is TriggerKeyDevice.External -> {
+        is KeyEventTriggerDevice.Internal -> getString(R.string.this_device)
+        is KeyEventTriggerDevice.Any -> getString(R.string.any_device)
+        is KeyEventTriggerDevice.External -> {
             if (showDeviceDescriptors) {
                 InputDeviceUtils.appendDeviceDescriptorToName(
                     device.descriptor,
@@ -837,7 +868,7 @@ sealed class TriggerKeyListItemModel {
     abstract val error: TriggerError?
     abstract val clickType: ClickType
 
-    data class KeyCode(
+    data class KeyEvent(
         override val id: String,
         override val linkType: LinkType,
         val keyName: String,
@@ -886,11 +917,19 @@ sealed class TriggerKeyOptionsState {
     abstract val showClickTypes: Boolean
     abstract val showLongPressClickType: Boolean
 
-    data class KeyCode(
+    data class KeyEvent(
         val doNotRemapChecked: Boolean = false,
         override val clickType: ClickType,
         override val showClickTypes: Boolean,
         val devices: List<CheckBoxListItem>,
+    ) : TriggerKeyOptionsState() {
+        override val showLongPressClickType: Boolean = true
+    }
+
+    data class EvdevEvent(
+        val doNotRemapChecked: Boolean = false,
+        override val clickType: ClickType,
+        override val showClickTypes: Boolean,
     ) : TriggerKeyOptionsState() {
         override val showLongPressClickType: Boolean = true
     }

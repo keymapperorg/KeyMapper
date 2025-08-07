@@ -11,18 +11,24 @@ import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 data class KMGamePadEvent(
     val eventTime: Long,
     val metaState: Int,
-    val device: InputDeviceInfo?,
+    val device: InputDeviceInfo,
     val axisHatX: Float,
     val axisHatY: Float,
 ) : KMInputEvent {
 
-    override val deviceId: Int? = device?.id
+    companion object {
+        fun fromMotionEvent(event: MotionEvent): KMGamePadEvent? {
+            val device = event.device ?: return null
 
-    constructor(event: MotionEvent) : this(
-        eventTime = event.eventTime,
-        metaState = event.metaState,
-        device = event.device?.let { InputDeviceUtils.createInputDeviceInfo(it) },
-        axisHatX = event.getAxisValue(MotionEvent.AXIS_HAT_X),
-        axisHatY = event.getAxisValue(MotionEvent.AXIS_HAT_Y),
-    )
+            return KMGamePadEvent(
+                eventTime = event.eventTime,
+                metaState = event.metaState,
+                device = InputDeviceUtils.createInputDeviceInfo(device),
+                axisHatX = event.getAxisValue(MotionEvent.AXIS_HAT_X),
+                axisHatY = event.getAxisValue(MotionEvent.AXIS_HAT_Y),
+            )
+        }
+    }
+
+    override val deviceId: Int = device.id
 }

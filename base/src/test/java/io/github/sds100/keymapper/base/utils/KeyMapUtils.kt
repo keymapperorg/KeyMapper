@@ -1,11 +1,10 @@
 package io.github.sds100.keymapper.base.utils
 
-import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.keymaps.ClickType
-import io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey
+import io.github.sds100.keymapper.base.trigger.KeyEventTriggerDevice
+import io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerKey
-import io.github.sds100.keymapper.base.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.base.trigger.TriggerMode
 
 fun singleKeyTrigger(key: TriggerKey): Trigger = Trigger(
@@ -25,14 +24,14 @@ fun sequenceTrigger(vararg keys: TriggerKey): Trigger = Trigger(
 
 fun triggerKey(
     keyCode: Int,
-    device: TriggerKeyDevice = TriggerKeyDevice.Internal,
+    device: KeyEventTriggerDevice = KeyEventTriggerDevice.Internal,
     clickType: ClickType = ClickType.SHORT_PRESS,
     consume: Boolean = true,
-    detectionSource: InputEventDetectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
-): KeyCodeTriggerKey = KeyCodeTriggerKey(
+    requiresIme: Boolean = false,
+): KeyEventTriggerKey = KeyEventTriggerKey(
     keyCode = keyCode,
     device = device,
     clickType = clickType,
     consumeEvent = consume,
-    detectionSource = detectionSource,
+    requiresIme = requiresIme,
 )

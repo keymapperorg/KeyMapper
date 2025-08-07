@@ -5,7 +5,6 @@ import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.input.InputEventHubCallback
 import io.github.sds100.keymapper.base.keymaps.detection.DpadMotionEventTracker
-import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.dataOrNull
@@ -82,8 +81,7 @@ class RecordTriggerControllerImpl @Inject constructor(
                         Timber.d("Recorded motion event ${KeyEvent.keyCodeToString(keyEvent.keyCode)}")
 
                         val recordedKey = createRecordedKey(
-                            keyEvent.keyCode,
-                            keyEvent.device,
+                            keyEvent,
                             detectionSource
                         )
                         onRecordKey(recordedKey)
@@ -95,7 +93,7 @@ class RecordTriggerControllerImpl @Inject constructor(
             is KMKeyEvent -> {
                 if (event.action == KeyEvent.ACTION_DOWN) {
                     val recordedKey =
-                        createRecordedKey(event.keyCode, event.device, detectionSource)
+                        createRecordedKey(event, detectionSource)
                     onRecordKey(recordedKey)
                 }
                 return true
@@ -149,8 +147,7 @@ class RecordTriggerControllerImpl @Inject constructor(
 
         if (keyEvent.action == KeyEvent.ACTION_UP) {
             val recordedKey = createRecordedKey(
-                keyEvent.keyCode,
-                keyEvent.device,
+                keyEvent,
                 InputEventDetectionSource.INPUT_METHOD,
             )
 
@@ -169,17 +166,17 @@ class RecordTriggerControllerImpl @Inject constructor(
     }
 
     private fun createRecordedKey(
-        keyCode: Int,
-        device: InputDeviceInfo?,
-        detectionSource: InputEventDetectionSource,
+        keyEvent: KMKeyEvent,
+        detectionSource: InputEventDetectionSource
     ): RecordedKey {
-        val triggerKeyDevice = if (device != null && device.isExternal) {
-            TriggerKeyDevice.External(device.descriptor, device.name)
-        } else {
-            TriggerKeyDevice.Internal
-        }
-
-        return RecordedKey(keyCode, triggerKeyDevice, detectionSource)
+        return RecordedKey(
+            keyCode = keyEvent.keyCode,
+            scanCode = keyEvent.scanCode,
+            deviceDescriptor = keyEvent.device.descriptor,
+            deviceName = keyEvent.device.name,
+            isExternalDevice = keyEvent.device.isExternal,
+            detectionSource = detectionSource
+        )
     }
 
     // Run on a different thread in case the main thread is locked up while recording and

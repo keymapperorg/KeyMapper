@@ -1,22 +1,26 @@
 package io.github.sds100.keymapper.base.trigger
 
-import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.withFlag
-import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
+import io.github.sds100.keymapper.data.entities.KeyEventTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
 @Serializable
-data class KeyCodeTriggerKey(
+data class KeyEventTriggerKey(
     override val uid: String = UUID.randomUUID().toString(),
     val keyCode: Int,
-    val device: TriggerKeyDevice,
+    val device: KeyEventTriggerDevice,
     override val clickType: ClickType,
     override val consumeEvent: Boolean = true,
-    val detectionSource: InputEventDetectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
+    /**
+     * Whether this key can only be detected by an input method. Some keys, such as DPAD buttons,
+     * do not send key events to the accessibility service.
+     */
+    val requiresIme: Boolean = false,
+    val scanCode: Int? = null,
 ) : TriggerKey() {
 
     override val allowedLongPress: Boolean = true
@@ -24,16 +28,16 @@ data class KeyCodeTriggerKey(
 
     override fun toString(): String {
         val deviceString = when (device) {
-            TriggerKeyDevice.Any -> "any"
-            is TriggerKeyDevice.External -> "external"
-            TriggerKeyDevice.Internal -> "internal"
+            KeyEventTriggerDevice.Any -> "any"
+            is KeyEventTriggerDevice.External -> "external"
+            KeyEventTriggerDevice.Internal -> "internal"
         }
         return "KeyCodeTriggerKey(uid=${uid.substring(0..5)}, keyCode=$keyCode, device=$deviceString, clickType=$clickType, consume=$consumeEvent) "
     }
 
     // key code -> click type -> device -> consume key event
     override fun compareTo(other: TriggerKey) = when (other) {
-        is KeyCodeTriggerKey -> compareValuesBy(
+        is KeyEventTriggerKey -> compareValuesBy(
             this,
             other,
             { it.keyCode },
@@ -46,11 +50,11 @@ data class KeyCodeTriggerKey(
     }
 
     companion object {
-        fun fromEntity(entity: KeyCodeTriggerKeyEntity): TriggerKey {
+        fun fromEntity(entity: KeyEventTriggerKeyEntity): TriggerKey {
             val device = when (entity.deviceId) {
-                KeyCodeTriggerKeyEntity.DEVICE_ID_THIS_DEVICE -> TriggerKeyDevice.Internal
-                KeyCodeTriggerKeyEntity.DEVICE_ID_ANY_DEVICE -> TriggerKeyDevice.Any
-                else -> TriggerKeyDevice.External(
+                KeyEventTriggerKeyEntity.DEVICE_ID_THIS_DEVICE -> KeyEventTriggerDevice.Internal
+                KeyEventTriggerKeyEntity.DEVICE_ID_ANY_DEVICE -> KeyEventTriggerDevice.Any
+                else -> KeyEventTriggerDevice.External(
                     entity.deviceId,
                     entity.deviceName ?: "",
                 )
@@ -64,34 +68,31 @@ data class KeyCodeTriggerKey(
             }
 
             val consumeEvent =
-                !entity.flags.hasFlag(KeyCodeTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT)
+                !entity.flags.hasFlag(KeyEventTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT)
 
-            val detectionSource =
-                if (entity.flags.hasFlag(KeyCodeTriggerKeyEntity.FLAG_DETECTION_SOURCE_INPUT_METHOD)) {
-                    InputEventDetectionSource.INPUT_METHOD
-                } else {
-                    InputEventDetectionSource.ACCESSIBILITY_SERVICE
-                }
+            val requiresIme =
+                entity.flags.hasFlag(KeyEventTriggerKeyEntity.FLAG_DETECTION_SOURCE_INPUT_METHOD)
 
-            return KeyCodeTriggerKey(
+            return KeyEventTriggerKey(
                 uid = entity.uid,
                 keyCode = entity.keyCode,
                 device = device,
                 clickType = clickType,
                 consumeEvent = consumeEvent,
-                detectionSource = detectionSource,
+                requiresIme = requiresIme,
+                scanCode = entity.scanCode
             )
         }
 
-        fun toEntity(key: KeyCodeTriggerKey): KeyCodeTriggerKeyEntity {
+        fun toEntity(key: KeyEventTriggerKey): KeyEventTriggerKeyEntity {
             val deviceId = when (key.device) {
-                TriggerKeyDevice.Any -> KeyCodeTriggerKeyEntity.DEVICE_ID_ANY_DEVICE
-                is TriggerKeyDevice.External -> key.device.descriptor
-                TriggerKeyDevice.Internal -> KeyCodeTriggerKeyEntity.DEVICE_ID_THIS_DEVICE
+                KeyEventTriggerDevice.Any -> KeyEventTriggerKeyEntity.DEVICE_ID_ANY_DEVICE
+                is KeyEventTriggerDevice.External -> key.device.descriptor
+                KeyEventTriggerDevice.Internal -> KeyEventTriggerKeyEntity.DEVICE_ID_THIS_DEVICE
             }
 
             val deviceName =
-                if (key.device is TriggerKeyDevice.External) {
+                if (key.device is KeyEventTriggerDevice.External) {
                     key.device.name
                 } else {
                     null
@@ -106,20 +107,21 @@ data class KeyCodeTriggerKey(
             var flags = 0
 
             if (!key.consumeEvent) {
-                flags = flags.withFlag(KeyCodeTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT)
+                flags = flags.withFlag(KeyEventTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT)
             }
 
-            if (key.detectionSource == InputEventDetectionSource.INPUT_METHOD) {
-                flags = flags.withFlag(KeyCodeTriggerKeyEntity.FLAG_DETECTION_SOURCE_INPUT_METHOD)
+            if (key.requiresIme) {
+                flags = flags.withFlag(KeyEventTriggerKeyEntity.FLAG_DETECTION_SOURCE_INPUT_METHOD)
             }
 
-            return KeyCodeTriggerKeyEntity(
+            return KeyEventTriggerKeyEntity(
                 keyCode = key.keyCode,
                 deviceId = deviceId,
                 deviceName = deviceName,
                 clickType = clickType,
                 flags = flags,
                 uid = key.uid,
+                scanCode = key.scanCode
             )
         }
     }

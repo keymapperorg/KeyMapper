@@ -8,16 +8,16 @@ import io.github.sds100.keymapper.base.constraints.Constraint
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.constraints.ConstraintState
 import io.github.sds100.keymapper.base.floating.FloatingButtonEntityMapper
-import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.base.trigger.AssistantTriggerType
+import io.github.sds100.keymapper.base.trigger.EvdevTriggerKey
 import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
 import io.github.sds100.keymapper.base.trigger.FloatingButtonKey
-import io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey
+import io.github.sds100.keymapper.base.trigger.KeyEventTriggerDevice
+import io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerKey
-import io.github.sds100.keymapper.base.trigger.TriggerKeyDevice
 import io.github.sds100.keymapper.base.trigger.TriggerMode
 import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -253,7 +253,7 @@ class ConfigKeyMapUseCaseController @Inject constructor(
             // Check whether the trigger already contains the key because if so
             // then it must be converted to a sequence trigger.
             val containsKey = trigger.keys
-                .mapNotNull { it as? FloatingButtonKey }
+                .filterIsInstance<FloatingButtonKey>()
                 .any { keyToCompare -> keyToCompare.buttonUid == buttonUid }
 
             val button = floatingButtonRepository.get(buttonUid)
@@ -352,10 +352,11 @@ class ConfigKeyMapUseCaseController @Inject constructor(
         trigger.copy(keys = newKeys, mode = newMode)
     }
 
-    override fun addKeyCodeTriggerKey(
+    override fun addKeyEventTriggerKey(
         keyCode: Int,
-        device: TriggerKeyDevice,
-        detectionSource: InputEventDetectionSource,
+        scanCode: Int,
+        device: KeyEventTriggerDevice,
+        requiresIme: Boolean
     ) = editTrigger { trigger ->
         val clickType = when (trigger.mode) {
             is TriggerMode.Parallel -> trigger.mode.clickType
@@ -366,9 +367,9 @@ class ConfigKeyMapUseCaseController @Inject constructor(
         // Check whether the trigger already contains the key because if so
         // then it must be converted to a sequence trigger.
         val containsKey = trigger.keys
-            .mapNotNull { it as? KeyCodeTriggerKey }
+            .filterIsInstance<KeyEventTriggerKey>()
             .any { keyToCompare ->
-                keyToCompare.keyCode == keyCode && keyToCompare.device.isSameDevice(device)
+                keyToCompare.keyCode == keyCode && keyToCompare.device?.isSameDevice(device) == true
             }
 
         var consumeKeyEvent = true
@@ -378,15 +379,63 @@ class ConfigKeyMapUseCaseController @Inject constructor(
             consumeKeyEvent = false
         }
 
-        val triggerKey = KeyCodeTriggerKey(
+        val triggerKey = KeyEventTriggerKey(
             keyCode = keyCode,
             device = device,
             clickType = clickType,
             consumeEvent = consumeKeyEvent,
-            detectionSource = detectionSource,
+            requiresIme = requiresIme,
         )
 
-        var newKeys = trigger.keys.plus(triggerKey)
+        var newKeys = trigger.keys.filter { it !is EvdevTriggerKey }.plus(triggerKey)
+
+        val newMode = when {
+            trigger.mode != TriggerMode.Sequence && containsKey -> TriggerMode.Sequence
+            newKeys.size <= 1 -> TriggerMode.Undefined
+
+            /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
+            because this is what most users are expecting when they make a trigger with multiple keys */
+            newKeys.size == 2 && !containsKey -> {
+                newKeys = newKeys.map { it.setClickType(triggerKey.clickType) }
+                TriggerMode.Parallel(triggerKey.clickType)
+            }
+
+            else -> trigger.mode
+        }
+
+        trigger.copy(keys = newKeys, mode = newMode)
+    }
+
+    override fun addEvdevTriggerKey(
+        keyCode: Int,
+        scanCode: Int,
+        deviceDescriptor: String,
+        deviceName: String
+    ) = editTrigger { trigger ->
+        val clickType = when (trigger.mode) {
+            is TriggerMode.Parallel -> trigger.mode.clickType
+            TriggerMode.Sequence -> ClickType.SHORT_PRESS
+            TriggerMode.Undefined -> ClickType.SHORT_PRESS
+        }
+
+        // Check whether the trigger already contains the key because if so
+        // then it must be converted to a sequence trigger.
+        val containsKey = trigger.keys
+            .filterIsInstance<EvdevTriggerKey>()
+            .any { keyToCompare ->
+                keyToCompare.keyCode == keyCode && keyToCompare.deviceDescriptor == deviceDescriptor
+            }
+
+        val triggerKey = EvdevTriggerKey(
+            keyCode = keyCode,
+            scanCode = scanCode,
+            deviceDescriptor = deviceDescriptor,
+            deviceName = deviceName,
+            clickType = clickType,
+            consumeEvent = true,
+        )
+
+        var newKeys = trigger.keys.filter { it !is KeyEventTriggerKey }.plus(triggerKey)
 
         val newMode = when {
             trigger.mode != TriggerMode.Sequence && containsKey -> TriggerMode.Sequence
@@ -452,12 +501,16 @@ class ConfigKeyMapUseCaseController @Inject constructor(
                 when (key) {
                     // You can't mix assistant trigger types in a parallel trigger because there is no notion of a "down" key event, which means they can't be pressed at the same time
                     is AssistantTriggerKey, is FingerprintTriggerKey -> 0
-                    is KeyCodeTriggerKey -> Pair(
+                    is KeyEventTriggerKey -> Pair(
                         key.keyCode,
                         key.device,
                     )
 
                     is FloatingButtonKey -> key.buttonUid
+                    is EvdevTriggerKey -> Pair(
+                        key.keyCode,
+                        key.deviceDescriptor,
+                    )
                 }
             }
 
@@ -554,19 +607,19 @@ class ConfigKeyMapUseCaseController @Inject constructor(
         }
     }
 
-    override fun setTriggerKeyDevice(keyUid: String, device: TriggerKeyDevice) {
+    override fun setTriggerKeyDevice(keyUid: String, device: KeyEventTriggerDevice) {
         editTriggerKey(keyUid) { key ->
-            if (key is KeyCodeTriggerKey) {
-                key.copy(device = device)
-            } else {
-                key
+            if (key !is KeyEventTriggerKey) {
+                throw IllegalArgumentException("You can not set the device for non KeyEventTriggerKeys.")
             }
+
+            key.copy(device = device)
         }
     }
 
     override fun setTriggerKeyConsumeKeyEvent(keyUid: String, consumeKeyEvent: Boolean) {
         editTriggerKey(keyUid) { key ->
-            if (key is KeyCodeTriggerKey) {
+            if (key is KeyEventTriggerKey) {
                 key.copy(consumeEvent = consumeKeyEvent)
             } else {
                 key
@@ -648,8 +701,8 @@ class ConfigKeyMapUseCaseController @Inject constructor(
         editTrigger { it.copy(showToast = enabled) }
     }
 
-    override fun getAvailableTriggerKeyDevices(): List<TriggerKeyDevice> {
-        val externalTriggerKeyDevices = sequence {
+    override fun getAvailableTriggerKeyDevices(): List<KeyEventTriggerDevice> {
+        val externalKeyEventTriggerDevices = sequence {
             val inputDevices =
                 devicesAdapter.connectedInputDevices.value.dataOrNull() ?: emptyList()
 
@@ -667,15 +720,15 @@ class ConfigKeyMapUseCaseController @Inject constructor(
                         device.name
                     }
 
-                    yield(TriggerKeyDevice.External(device.descriptor, name))
+                    yield(KeyEventTriggerDevice.External(device.descriptor, name))
                 }
             }
         }
 
         return sequence {
-            yield(TriggerKeyDevice.Internal)
-            yield(TriggerKeyDevice.Any)
-            yieldAll(externalTriggerKeyDevices)
+            yield(KeyEventTriggerDevice.Internal)
+            yield(KeyEventTriggerDevice.Any)
+            yieldAll(externalKeyEventTriggerDevices)
         }.toList()
     }
 
@@ -797,7 +850,7 @@ class ConfigKeyMapUseCaseController @Inject constructor(
                 false
             } else {
                 trigger.keys
-                    .mapNotNull { it as? KeyCodeTriggerKey }
+                    .mapNotNull { it as? KeyEventTriggerKey }
                     .any { InputEventUtils.isDpadKeyCode(it.keyCode) }
             }
 
@@ -998,15 +1051,23 @@ interface ConfigKeyMapUseCase : GetDefaultKeyMapOptionsUseCase {
     suspend fun sendServiceEvent(event: AccessibilityServiceEvent): KMResult<*>
 
     // trigger
-    fun addKeyCodeTriggerKey(
+    fun addKeyEventTriggerKey(
         keyCode: Int,
-        device: TriggerKeyDevice,
-        detectionSource: InputEventDetectionSource,
+        scanCode: Int,
+        device: KeyEventTriggerDevice,
+        requiresIme: Boolean
     )
 
     suspend fun addFloatingButtonTriggerKey(buttonUid: String)
     fun addAssistantTriggerKey(type: AssistantTriggerType)
     fun addFingerprintGesture(type: FingerprintGestureType)
+    fun addEvdevTriggerKey(
+        keyCode: Int,
+        scanCode: Int,
+        deviceDescriptor: String,
+        deviceName: String,
+    )
+
     fun removeTriggerKey(uid: String)
     fun getTriggerKey(uid: String): TriggerKey?
     fun moveTriggerKey(fromIndex: Int, toIndex: Int)
@@ -1024,7 +1085,7 @@ interface ConfigKeyMapUseCase : GetDefaultKeyMapOptionsUseCase {
     fun setTriggerDoublePress()
 
     fun setTriggerKeyClickType(keyUid: String, clickType: ClickType)
-    fun setTriggerKeyDevice(keyUid: String, device: TriggerKeyDevice)
+    fun setTriggerKeyDevice(keyUid: String, device: KeyEventTriggerDevice)
     fun setTriggerKeyConsumeKeyEvent(keyUid: String, consumeKeyEvent: Boolean)
     fun setAssistantTriggerKeyType(keyUid: String, type: AssistantTriggerType)
     fun setFingerprintGestureType(keyUid: String, type: FingerprintGestureType)
@@ -1039,7 +1100,7 @@ interface ConfigKeyMapUseCase : GetDefaultKeyMapOptionsUseCase {
     fun setTriggerFromOtherAppsEnabled(enabled: Boolean)
     fun setShowToastEnabled(enabled: Boolean)
 
-    fun getAvailableTriggerKeyDevices(): List<TriggerKeyDevice>
+    fun getAvailableTriggerKeyDevices(): List<KeyEventTriggerDevice>
 
     val floatingButtonToUse: MutableStateFlow<String?>
     suspend fun getFloatingLayoutCount(): Int

@@ -370,7 +370,7 @@ object InputEventUtils {
     /**
      * Used for keyCode to scanCode fallback to go past possible keyCode values
      */
-    val KEYCODE_TO_SCANCODE_OFFSET: Int = 1000
+    const val KEYCODE_TO_SCANCODE_OFFSET: Int = 1000
 
     fun isModifierKey(keyCode: Int): Boolean = keyCode in MODIFIER_KEYCODES
 

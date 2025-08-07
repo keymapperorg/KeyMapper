@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.base.trigger
 
 import android.os.Build
 import android.view.KeyEvent
-import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.requiresImeKeyEventForwardingInPhoneCall
 import io.github.sds100.keymapper.base.purchasing.ProductId
@@ -55,7 +54,7 @@ data class TriggerErrorSnapshot(
         }
 
         val requiresDndAccess =
-            key is KeyCodeTriggerKey && key.keyCode in keysThatRequireDndAccess
+            key is KeyEventTriggerKey && key.keyCode in keysThatRequireDndAccess
 
         if (requiresDndAccess) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !isDndAccessGranted) {
@@ -71,11 +70,8 @@ data class TriggerErrorSnapshot(
         }
 
         val containsDpadKey =
-            key is KeyCodeTriggerKey &&
-                InputEventUtils.isDpadKeyCode(
-                    key.keyCode,
-                ) &&
-                key.detectionSource == InputEventDetectionSource.INPUT_METHOD
+            key is KeyEventTriggerKey &&
+                InputEventUtils.isDpadKeyCode(key.keyCode) && key.requiresIme
 
         if (showDpadImeSetupError && !isKeyMapperImeChosen && containsDpadKey) {
             return TriggerError.DPAD_IME_NOT_SELECTED

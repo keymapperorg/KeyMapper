@@ -11,7 +11,7 @@ import com.google.gson.GsonBuilder
 import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.minusFlag
 import io.github.sds100.keymapper.common.utils.withFlag
-import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
+import io.github.sds100.keymapper.data.entities.KeyEventTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 
@@ -40,10 +40,10 @@ object Migration6To7 {
                 val trigger = gson.fromJson<TriggerEntity>(getString(triggerColumnIndex))
 
                 val newTriggerKeys = trigger.keys
-                    .mapNotNull { it as? KeyCodeTriggerKeyEntity }
+                    .mapNotNull { it as? KeyEventTriggerKeyEntity }
                     .map { key ->
                         if (trigger.flags.hasFlag(TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION)) {
-                            key.copy(flags = key.flags.withFlag(KeyCodeTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT))
+                            key.copy(flags = key.flags.withFlag(KeyEventTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT))
                         } else {
                             key
                         }

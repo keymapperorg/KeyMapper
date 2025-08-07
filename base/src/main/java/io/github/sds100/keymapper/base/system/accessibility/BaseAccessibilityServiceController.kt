@@ -23,7 +23,6 @@ import io.github.sds100.keymapper.base.keymaps.detection.DetectScreenOffKeyEvent
 import io.github.sds100.keymapper.base.keymaps.detection.KeyMapController
 import io.github.sds100.keymapper.base.keymaps.detection.TriggerKeyMapFromOtherAppsController
 import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsController
-import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.minusFlag
@@ -97,6 +96,8 @@ abstract class BaseAccessibilityServiceController(
         detectKeyMapsUseCase,
         performActionsUseCase,
         detectConstraintsUseCase,
+        inputEventHub,
+        pauseKeyMapsUseCase.isPaused
     )
 
     val triggerKeyMapFromOtherAppsController = TriggerKeyMapFromOtherAppsController(
@@ -191,26 +192,16 @@ abstract class BaseAccessibilityServiceController(
             override fun onKeyEvent(event: KeyEvent?): Boolean {
                 event ?: return false
 
-                val device = event.device?.let { InputDeviceUtils.createInputDeviceInfo(it) }
-
-                return onKeyEventFromIme(
-                    KMKeyEvent(
-                        keyCode = event.keyCode,
-                        action = event.action,
-                        metaState = event.metaState,
-                        scanCode = event.scanCode,
-                        device = device,
-                        repeatCount = event.repeatCount,
-                        source = event.source,
-                        eventTime = event.eventTime
-                    ),
-                )
+                val kmKeyEvent = KMKeyEvent.fromKeyEvent(event) ?: return false
+                return onKeyEventFromIme(kmKeyEvent)
             }
 
             override fun onMotionEvent(event: MotionEvent?): Boolean {
                 event ?: return false
 
-                return onMotionEventFromIme(KMGamePadEvent(event))
+                val gamePadEvent = KMGamePadEvent.fromMotionEvent(event)
+                    ?: return false
+                return onMotionEventFromIme(gamePadEvent)
             }
         }
 
@@ -388,8 +379,8 @@ abstract class BaseAccessibilityServiceController(
     }
 
     open fun onDestroy() {
+        keyMapController.teardown()
         keyEventRelayServiceWrapper.unregisterClient(CALLBACK_ID_ACCESSIBILITY_SERVICE)
-
         accessibilityNodeRecorder.teardown()
     }
 
@@ -403,27 +394,6 @@ abstract class BaseAccessibilityServiceController(
         return inputEventHub.onInputEvent(event, detectionSource)
 
 //        val detailedLogInfo = event.toString()
-//
-//        if (recordingTrigger) {
-//            // TODO recordtriggercontroller will observe inputeventhub
-//            if (event.action == KeyEvent.ACTION_DOWN) {
-//                Timber.d("Recorded key ${KeyEvent.keyCodeToString(event.keyCode)}, $detailedLogInfo")
-//
-//                val uniqueEvent: KMKeyEvent = getUniqueEvent(event)
-//
-//                service.lifecycleScope.launch {
-//                    outputEvents.emit(
-//                        RecordTriggerEvent.RecordedTriggerKey(
-//                            uniqueEvent.keyCode,
-//                            uniqueEvent.device,
-//                            detectionSource,
-//                        ),
-//                    )
-//                }
-//            }
-//
-//            return true
-//        }
 //
 //        // TODO move paused check to KeyMapController
 //        if (isPaused.value) {
@@ -448,6 +418,7 @@ abstract class BaseAccessibilityServiceController(
 //        }
     }
 
+    // TODO handle somewhere else
     fun onKeyEventFromIme(event: KMKeyEvent): Boolean {
         /*
         Issue #850

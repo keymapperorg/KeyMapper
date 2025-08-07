@@ -580,7 +580,7 @@ private fun TriggerModeRadioGroup(
 }
 
 private val sampleList = listOf(
-    TriggerKeyListItemModel.KeyCode(
+    TriggerKeyListItemModel.KeyEvent(
         id = "id1",
         keyName = "Volume Up",
         clickType = ClickType.SHORT_PRESS,

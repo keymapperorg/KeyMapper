@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.actions.keyevents
 
+import android.view.InputDevice
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.github.sds100.keymapper.base.actions.keyevent.ConfigKeyEventActionViewModel
 import io.github.sds100.keymapper.base.actions.keyevent.ConfigKeyEventUseCase
@@ -71,6 +72,7 @@ class ConfigKeyServiceEventActionViewModelTest {
                 id = 0,
                 isExternal = false,
                 isGameController = false,
+                sources = InputDevice.SOURCE_KEYBOARD
             )
 
             val fakeDevice2 = InputDeviceInfo(
@@ -79,6 +81,7 @@ class ConfigKeyServiceEventActionViewModelTest {
                 id = 1,
                 isExternal = false,
                 isGameController = false,
+                sources = InputDevice.SOURCE_KEYBOARD
             )
 
             // WHEN

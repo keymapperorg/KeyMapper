@@ -244,8 +244,10 @@ abstract class BaseAccessibilityService :
     override fun onKeyEvent(event: KeyEvent?): Boolean {
         event ?: return super.onKeyEvent(event)
 
+        val kmKeyEvent = KMKeyEvent.fromKeyEvent(event) ?: return false
+
         return getController()?.onKeyEvent(
-            KMKeyEvent(event),
+            kmKeyEvent,
             InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         ) ?: false
     }

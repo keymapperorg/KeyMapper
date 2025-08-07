@@ -31,4 +31,8 @@ class FakeDevicesAdapter : DevicesAdapter {
     override fun getInputDeviceName(descriptor: String): KMResult<String> {
         throw Exception()
     }
+
+    override fun getInputDevice(deviceId: Int): InputDeviceInfo? {
+        throw NotImplementedError()
+    }
 }
