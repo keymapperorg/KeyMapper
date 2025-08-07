@@ -37,6 +37,27 @@ class TriggerKeyDeviceTest {
     fun `internal device is the same as an internal device`() {
         val device1 = KeyEventTriggerDevice.Internal
         val device2 = KeyEventTriggerDevice.Internal
-        assertThat(device1.isSameDevice(device2), `is`(false))
+        assertThat(device1.isSameDevice(device2), `is`(true))
+    }
+
+    @Test
+    fun `any device is the same as an internal device`() {
+        val device1 = KeyEventTriggerDevice.Any
+        val device2 = KeyEventTriggerDevice.Internal
+        assertThat(device1.isSameDevice(device2), `is`(true))
+    }
+
+    @Test
+    fun `any device is the same as any device`() {
+        val device1 = KeyEventTriggerDevice.Any
+        val device2 = KeyEventTriggerDevice.Any
+        assertThat(device1.isSameDevice(device2), `is`(true))
+    }
+
+    @Test
+    fun `any device is the same as an external device`() {
+        val device1 = KeyEventTriggerDevice.Any
+        val device2 = KeyEventTriggerDevice.External("keyboard1", "Keyboard 0")
+        assertThat(device1.isSameDevice(device2), `is`(true))
     }
 }

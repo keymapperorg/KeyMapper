@@ -30,11 +30,14 @@ sealed class KeyEventTriggerDevice() : Comparable<KeyEventTriggerDevice> {
     }
 
     fun isSameDevice(other: KeyEventTriggerDevice): Boolean {
-        if (other is External && this is External) {
-            return other.descriptor == this.descriptor
-        } else {
+        if (this is Any || other is Any) {
             return true
         }
-    }
 
+        if (this is External && other is External) {
+            return this.descriptor == other.descriptor
+        } else {
+            return this is Internal && other is Internal
+        }
+    }
 }
