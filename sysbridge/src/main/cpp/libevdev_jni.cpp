@@ -303,7 +303,7 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLo
         return;
     }
 
-    epollFd = epoll_create1(EPOLL_CLOEXEC | EPOLLWAKEUP);
+epollFd = epoll_create1(EPOLL_CLOEXEC);
     if (epollFd == -1) {
         LOGE("Failed to create epoll fd: %s", strerror(errno));
         return;
