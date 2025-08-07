@@ -19,7 +19,7 @@ public:
   explicit BpEvdevCallback(const ::ndk::SpAIBinder& binder);
   virtual ~BpEvdevCallback();
 
-    ::ndk::ScopedAStatus onEvdevEventLoopStarted() override;
+  ::ndk::ScopedAStatus onEvdevEventLoopStarted() override;
   ::ndk::ScopedAStatus onEvdevEvent(int32_t in_deviceId, int64_t in_timeSec, int64_t in_timeUsec, int32_t in_type, int32_t in_code, int32_t in_value, int32_t in_androidCode) override;
 };
 }  // namespace sysbridge

@@ -14,13 +14,13 @@ import java.util.UUID
  */
 data class EvdevTriggerKey(
     override val uid: String = UUID.randomUUID().toString(),
-    val keyCode: Int,
-    val scanCode: Int,
+    override val keyCode: Int,
+    override val scanCode: Int,
     val deviceDescriptor: String,
     val deviceName: String,
     override val clickType: ClickType = ClickType.SHORT_PRESS,
     override val consumeEvent: Boolean = true,
-) : TriggerKey() {
+) : TriggerKey(), KeyCodeTriggerKey {
     override val allowedDoublePress: Boolean = true
     override val allowedLongPress: Boolean = true
 

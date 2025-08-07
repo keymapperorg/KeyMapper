@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.base.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.base.trigger.EvdevTriggerKey
 import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
 import io.github.sds100.keymapper.base.trigger.FloatingButtonKey
+import io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.base.trigger.KeyEventTriggerDevice
 import io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey
 import io.github.sds100.keymapper.base.trigger.Trigger
@@ -64,6 +65,191 @@ class KeyMapAlgorithm(
             trigger.mode is TriggerMode.Parallel
     }
 
+    private var detectKeyMaps: Boolean = false
+    private var detectInternalEvents: Boolean = false
+    private var detectExternalEvents: Boolean = false
+    private var detectSequenceLongPresses: Boolean = false
+    private var detectSequenceDoublePresses: Boolean = false
+
+    /**
+     * All sequence events that have the long press click type.
+     */
+    private var longPressSequenceTriggerKeys: Array<KeyCodeTriggerKey> = arrayOf()
+
+    /**
+     * All double press keys and the index of their corresponding trigger. first is the event and second is
+     * the trigger index.
+     */
+    private var doublePressTriggerKeys: Array<TriggerKeyLocation> = arrayOf()
+
+    /**
+     * order matches with [doublePressTriggerKeys]
+     */
+    private var doublePressEventStates: IntArray = intArrayOf()
+
+    /**
+     * The user has an amount of time to double press a key before it is registered as a double press.
+     * The order matches with [doublePressTriggerKeys]. This array stores the time when the corresponding trigger will
+     * timeout. If the key isn't waiting to timeout, the value is -1.
+     */
+    private var doublePressTimeoutTimes = longArrayOf()
+
+    private var actionMap: SparseArrayCompat<Action> = SparseArrayCompat()
+    var triggers: Array<Trigger> = emptyArray()
+        private set
+
+    /**
+     * The events to detect for each sequence trigger.
+     */
+    private var sequenceTriggers: IntArray = intArrayOf()
+
+    /**
+     * Sequence triggers timeout after the first key has been pressed.
+     * This map stores the time when the corresponding trigger will timeout. If the trigger in
+     * isn't waiting to timeout, the value is -1.
+     * The index of a trigger matches with the index in [triggers]
+     */
+    private var sequenceTriggersTimeoutTimes: MutableMap<Int, Long> = mutableMapOf()
+
+    /**
+     * The indexes of triggers that overlap after the first element with each trigger in [sequenceTriggers]
+     */
+    private var sequenceTriggersOverlappingSequenceTriggers: Array<IntArray> = arrayOf()
+
+    private var sequenceTriggersOverlappingParallelTriggers: Array<IntArray> = arrayOf()
+
+    /**
+     * An array of the index of the last matched event in each trigger.
+     */
+    private var lastMatchedEventIndices: IntArray = intArrayOf()
+
+    /**
+     * An array of the constraints for every trigger
+     */
+    private var triggerConstraints: Array<Array<ConstraintState>> = arrayOf()
+
+    /**
+     * The events to detect for each parallel trigger.
+     */
+    private var parallelTriggers: IntArray = intArrayOf()
+
+    /**
+     * The actions to perform when each trigger is detected. The order matches with
+     * [triggers].
+     */
+    private var triggerActions: Array<IntArray> = arrayOf()
+
+    /**
+     * Stores whether each event in each parallel trigger need to be released after being held down.
+     * The index of a trigger matches with the index in [triggers]
+     */
+    private var parallelTriggerEventsAwaitingRelease: Array<BooleanArray> = emptyArray()
+
+    /**
+     * Whether each parallel trigger is awaiting to be released after performing an action.
+     * This is only set to true if the trigger has been successfully triggered and *all* the keys
+     * have not been released.
+     * The index of a trigger matches with the index in [triggers]
+     */
+    private var parallelTriggersAwaitingReleaseAfterBeingTriggered: BooleanArray = booleanArrayOf()
+
+    private var parallelTriggerModifierKeyIndices: Array<Pair<Int, Int>> = arrayOf()
+
+    /**
+     * The indexes of triggers that overlap after the first element with each trigger in [parallelTriggers]
+     */
+    private var parallelTriggersOverlappingParallelTriggers = arrayOf<IntArray>()
+
+    private var modifierKeyEventActions: Boolean = false
+    private var notModifierKeyEventActions: Boolean = false
+    private var keyCodesToImitateUpAction: MutableSet<Int> = mutableSetOf()
+    private var metaStateFromActions: Int = 0
+    private var metaStateFromKeyEvent: Int = 0
+
+    private val eventDownTimeMap: MutableMap<Event, Long> = mutableMapOf()
+
+    /**
+     * This solves issue #1386. This stores the jobs that will wait until the sequence trigger
+     * times out and check whether the overlapping sequence trigger was indeed triggered.
+     */
+    private val performActionsAfterSequenceTriggerTimeout: MutableMap<Int, Job> = mutableMapOf()
+
+    /**
+     * The indexes of parallel triggers that didn't have their actions performed because there is a matching trigger but
+     * for a long-press. These actions should only be performed if the long-press fails, otherwise when the user
+     * holds down the trigger keys for the long-press trigger, actions from both triggers will be performed.
+     */
+    private val performActionsOnFailedLongPress: MutableSet<Int> = mutableSetOf()
+
+    /**
+     * The indexes of parallel triggers that didn't have their actions performed because there is a matching trigger but
+     * for a double-press. These actions should only be performed if the double-press fails, otherwise each time the user
+     * presses the keys for the double press, actions from both triggers will be performed.
+     */
+    private val performActionsOnFailedDoublePress: MutableSet<Int> = mutableSetOf()
+
+    /**
+     * Maps jobs to perform an action after a long press to their corresponding parallel trigger index
+     */
+    private val parallelTriggerLongPressJobs: SparseArrayCompat<Job> = SparseArrayCompat()
+
+    /**
+     * Keys that are detected through an input method will potentially send multiple DOWN key events
+     * with incremented repeatCounts, such as DPAD buttons. These repeated DOWN key events must
+     * all be consumed and ignored because the UP key event is only sent once at the end. The action
+     * must not be executed for each repeat. The user may potentially have many hundreds
+     * of trigger keys so to reduce latency this set caches which keys
+     * will be affected by this behavior.
+     *
+     * NOTE: This only contains the trigger keys that are flagged to consume the key event.
+     */
+    private var triggerKeysThatSendRepeatedKeyEvents: Set<KeyEventTriggerKey> = emptySet()
+
+    private var parallelTriggerActionPerformers: Map<Int, ParallelTriggerActionPerformer> =
+        emptyMap()
+    private var sequenceTriggerActionPerformers: Map<Int, SequenceTriggerActionPerformer> =
+        emptyMap()
+
+    private val currentTime: Long
+        get() = useCase.currentTime
+
+    private val defaultVibrateDuration: StateFlow<Long> =
+        useCase.defaultVibrateDuration.stateIn(
+            coroutineScope,
+            SharingStarted.Eagerly,
+            PreferenceDefaults.VIBRATION_DURATION.toLong(),
+        )
+
+    private val defaultSequenceTriggerTimeout: StateFlow<Long> =
+        useCase.defaultSequenceTriggerTimeout.stateIn(
+            coroutineScope,
+            SharingStarted.Eagerly,
+            PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT.toLong(),
+        )
+
+    private val defaultLongPressDelay: StateFlow<Long> =
+        useCase.defaultLongPressDelay.stateIn(
+            coroutineScope,
+            SharingStarted.Eagerly,
+            PreferenceDefaults.LONG_PRESS_DELAY.toLong(),
+        )
+
+    private val defaultDoublePressDelay: StateFlow<Long> =
+        useCase.defaultDoublePressDelay.stateIn(
+            coroutineScope,
+            SharingStarted.Eagerly,
+            PreferenceDefaults.DOUBLE_PRESS_DELAY.toLong(),
+        )
+
+    private val forceVibrate: StateFlow<Boolean> =
+        useCase.forceVibrate.stateIn(
+            coroutineScope,
+            SharingStarted.Eagerly,
+            PreferenceDefaults.FORCE_VIBRATE,
+        )
+
+    private val dpadMotionEventTracker: DpadMotionEventTracker = DpadMotionEventTracker()
+
     fun loadKeyMaps(value: List<DetectKeyMapModel>) {
         actionMap.clear()
 
@@ -83,7 +269,7 @@ class KeyMapAlgorithm(
         } else {
             detectKeyMaps = true
 
-            val longPressSequenceTriggerKeys = mutableListOf<KeyEventTriggerKey>()
+            val longPressSequenceTriggerKeys = mutableListOf<KeyCodeTriggerKey>()
 
             val doublePressKeys = mutableListOf<TriggerKeyLocation>()
 
@@ -118,7 +304,7 @@ class KeyMapAlgorithm(
 
                     if (keyMap.trigger.mode == TriggerMode.Sequence &&
                         key.clickType == ClickType.LONG_PRESS &&
-                        key is KeyEventTriggerKey
+                        key is KeyCodeTriggerKey
                     ) {
                         if (keyMap.trigger.keys.size > 1) {
                             longPressSequenceTriggerKeys.add(key)
@@ -145,6 +331,11 @@ class KeyMapAlgorithm(
                             is KeyEventTriggerDevice.External -> {
                                 detectExternalEvents = true
                             }
+                        }
+
+                        is EvdevTriggerKey -> {
+                            detectInternalEvents = true
+                            detectExternalEvents = true
                         }
 
                         else -> {}
@@ -326,8 +517,8 @@ class KeyMapAlgorithm(
             for (triggerIndex in parallelTriggers) {
                 val trigger = triggers[triggerIndex]
 
-                trigger.keys.forEachIndexed { keyIndex, key ->
-                    if (key is KeyEventTriggerKey && isModifierKey(key.keyCode)) {
+                for ((keyIndex, key) in trigger.keys.withIndex()) {
+                    if (key is KeyCodeTriggerKey && isModifierKey(key.keyCode)) {
                         parallelTriggerModifierKeyIndices.add(triggerIndex to keyIndex)
                     }
                 }
@@ -372,191 +563,6 @@ class KeyMapAlgorithm(
             reset()
         }
     }
-
-    private var detectKeyMaps: Boolean = false
-    private var detectInternalEvents: Boolean = false
-    private var detectExternalEvents: Boolean = false
-    private var detectSequenceLongPresses: Boolean = false
-    private var detectSequenceDoublePresses: Boolean = false
-
-    /**
-     * All sequence events that have the long press click type.
-     */
-    private var longPressSequenceTriggerKeys: Array<KeyEventTriggerKey> = arrayOf()
-
-    /**
-     * All double press keys and the index of their corresponding trigger. first is the event and second is
-     * the trigger index.
-     */
-    private var doublePressTriggerKeys: Array<TriggerKeyLocation> = arrayOf()
-
-    /**
-     * order matches with [doublePressTriggerKeys]
-     */
-    private var doublePressEventStates: IntArray = intArrayOf()
-
-    /**
-     * The user has an amount of time to double press a key before it is registered as a double press.
-     * The order matches with [doublePressTriggerKeys]. This array stores the time when the corresponding trigger will
-     * timeout. If the key isn't waiting to timeout, the value is -1.
-     */
-    private var doublePressTimeoutTimes = longArrayOf()
-
-    private var actionMap: SparseArrayCompat<Action> = SparseArrayCompat()
-    var triggers: Array<Trigger> = emptyArray()
-        private set
-
-    /**
-     * The events to detect for each sequence trigger.
-     */
-    private var sequenceTriggers: IntArray = intArrayOf()
-
-    /**
-     * Sequence triggers timeout after the first key has been pressed.
-     * This map stores the time when the corresponding trigger will timeout. If the trigger in
-     * isn't waiting to timeout, the value is -1.
-     * The index of a trigger matches with the index in [triggers]
-     */
-    private var sequenceTriggersTimeoutTimes: MutableMap<Int, Long> = mutableMapOf()
-
-    /**
-     * The indexes of triggers that overlap after the first element with each trigger in [sequenceTriggers]
-     */
-    private var sequenceTriggersOverlappingSequenceTriggers: Array<IntArray> = arrayOf()
-
-    private var sequenceTriggersOverlappingParallelTriggers: Array<IntArray> = arrayOf()
-
-    /**
-     * An array of the index of the last matched event in each trigger.
-     */
-    private var lastMatchedEventIndices: IntArray = intArrayOf()
-
-    /**
-     * An array of the constraints for every trigger
-     */
-    private var triggerConstraints: Array<Array<ConstraintState>> = arrayOf()
-
-    /**
-     * The events to detect for each parallel trigger.
-     */
-    private var parallelTriggers: IntArray = intArrayOf()
-
-    /**
-     * The actions to perform when each trigger is detected. The order matches with
-     * [triggers].
-     */
-    private var triggerActions: Array<IntArray> = arrayOf()
-
-    /**
-     * Stores whether each event in each parallel trigger need to be released after being held down.
-     * The index of a trigger matches with the index in [triggers]
-     */
-    private var parallelTriggerEventsAwaitingRelease: Array<BooleanArray> = emptyArray()
-
-    /**
-     * Whether each parallel trigger is awaiting to be released after performing an action.
-     * This is only set to true if the trigger has been successfully triggered and *all* the keys
-     * have not been released.
-     * The index of a trigger matches with the index in [triggers]
-     */
-    private var parallelTriggersAwaitingReleaseAfterBeingTriggered: BooleanArray = booleanArrayOf()
-
-    private var parallelTriggerModifierKeyIndices: Array<Pair<Int, Int>> = arrayOf()
-
-    /**
-     * The indexes of triggers that overlap after the first element with each trigger in [parallelTriggers]
-     */
-    private var parallelTriggersOverlappingParallelTriggers = arrayOf<IntArray>()
-
-    private var modifierKeyEventActions: Boolean = false
-    private var notModifierKeyEventActions: Boolean = false
-    private var keyCodesToImitateUpAction: MutableSet<Int> = mutableSetOf()
-    private var metaStateFromActions: Int = 0
-    private var metaStateFromKeyEvent: Int = 0
-
-    private val eventDownTimeMap: MutableMap<Event, Long> = mutableMapOf()
-
-    /**
-     * This solves issue #1386. This stores the jobs that will wait until the sequence trigger
-     * times out and check whether the overlapping sequence trigger was indeed triggered.
-     */
-    private val performActionsAfterSequenceTriggerTimeout: MutableMap<Int, Job> = mutableMapOf()
-
-    /**
-     * The indexes of parallel triggers that didn't have their actions performed because there is a matching trigger but
-     * for a long-press. These actions should only be performed if the long-press fails, otherwise when the user
-     * holds down the trigger keys for the long-press trigger, actions from both triggers will be performed.
-     */
-    private val performActionsOnFailedLongPress: MutableSet<Int> = mutableSetOf()
-
-    /**
-     * The indexes of parallel triggers that didn't have their actions performed because there is a matching trigger but
-     * for a double-press. These actions should only be performed if the double-press fails, otherwise each time the user
-     * presses the keys for the double press, actions from both triggers will be performed.
-     */
-    private val performActionsOnFailedDoublePress: MutableSet<Int> = mutableSetOf()
-
-    /**
-     * Maps jobs to perform an action after a long press to their corresponding parallel trigger index
-     */
-    private val parallelTriggerLongPressJobs: SparseArrayCompat<Job> = SparseArrayCompat()
-
-    /**
-     * Keys that are detected through an input method will potentially send multiple DOWN key events
-     * with incremented repeatCounts, such as DPAD buttons. These repeated DOWN key events must
-     * all be consumed and ignored because the UP key event is only sent once at the end. The action
-     * must not be executed for each repeat. The user may potentially have many hundreds
-     * of trigger keys so to reduce latency this set caches which keys
-     * will be affected by this behavior.
-     *
-     * NOTE: This only contains the trigger keys that are flagged to consume the key event.
-     */
-    private var triggerKeysThatSendRepeatedKeyEvents: Set<KeyEventTriggerKey> = emptySet()
-
-    private var parallelTriggerActionPerformers: Map<Int, ParallelTriggerActionPerformer> =
-        emptyMap()
-    private var sequenceTriggerActionPerformers: Map<Int, SequenceTriggerActionPerformer> =
-        emptyMap()
-
-    private val currentTime: Long
-        get() = useCase.currentTime
-
-    private val defaultVibrateDuration: StateFlow<Long> =
-        useCase.defaultVibrateDuration.stateIn(
-            coroutineScope,
-            SharingStarted.Eagerly,
-            PreferenceDefaults.VIBRATION_DURATION.toLong(),
-        )
-
-    private val defaultSequenceTriggerTimeout: StateFlow<Long> =
-        useCase.defaultSequenceTriggerTimeout.stateIn(
-            coroutineScope,
-            SharingStarted.Eagerly,
-            PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT.toLong(),
-        )
-
-    private val defaultLongPressDelay: StateFlow<Long> =
-        useCase.defaultLongPressDelay.stateIn(
-            coroutineScope,
-            SharingStarted.Eagerly,
-            PreferenceDefaults.LONG_PRESS_DELAY.toLong(),
-        )
-
-    private val defaultDoublePressDelay: StateFlow<Long> =
-        useCase.defaultDoublePressDelay.stateIn(
-            coroutineScope,
-            SharingStarted.Eagerly,
-            PreferenceDefaults.DOUBLE_PRESS_DELAY.toLong(),
-        )
-
-    private val forceVibrate: StateFlow<Boolean> =
-        useCase.forceVibrate.stateIn(
-            coroutineScope,
-            SharingStarted.Eagerly,
-            PreferenceDefaults.FORCE_VIBRATE,
-        )
-
-    private val dpadMotionEventTracker: DpadMotionEventTracker = DpadMotionEventTracker()
 
     fun onMotionEvent(event: KMGamePadEvent): Boolean {
         if (!detectKeyMaps) return false
@@ -606,7 +612,7 @@ class KeyMapAlgorithm(
         for ((triggerIndex, eventIndex) in parallelTriggerModifierKeyIndices) {
             val key = triggers[triggerIndex].keys[eventIndex]
 
-            if (key !is KeyEventTriggerKey) {
+            if (key !is KeyCodeTriggerKey) {
                 continue
             }
 
@@ -618,27 +624,16 @@ class KeyMapAlgorithm(
 
         val device = keyEvent.device
 
-        val event = if (device.isExternal) {
-            KeyCodeEvent(
-                keyCode = keyEvent.keyCode,
-                clickType = null,
-                descriptor = device.descriptor,
-                deviceId = device.id,
-                scanCode = keyEvent.scanCode,
-                repeatCount = keyEvent.repeatCount,
-                source = keyEvent.source,
-            )
-        } else {
-            KeyCodeEvent(
-                keyCode = keyEvent.keyCode,
-                clickType = null,
-                descriptor = null,
-                deviceId = device?.id ?: 0,
-                scanCode = keyEvent.scanCode,
-                repeatCount = keyEvent.repeatCount,
-                source = keyEvent.source,
-            )
-        }
+        val event = KeyCodeEvent(
+            keyCode = keyEvent.keyCode,
+            clickType = null,
+            descriptor = device.descriptor,
+            deviceId = device.id,
+            scanCode = keyEvent.scanCode,
+            repeatCount = keyEvent.repeatCount,
+            source = keyEvent.source,
+            isExternal = device.isExternal
+        )
 
         when (keyEvent.action) {
             KeyEvent.ACTION_DOWN -> return onKeyDown(event)
@@ -721,7 +716,7 @@ class KeyMapAlgorithm(
                                 consumeEvent = true
                             }
 
-                        key is KeyEventTriggerKey && event is KeyCodeEvent ->
+                        key is KeyCodeTriggerKey && event is KeyCodeEvent ->
                             if (key.keyCode == event.keyCode && key.consumeEvent) {
                                 consumeEvent = true
                             }
@@ -1140,7 +1135,12 @@ class KeyMapAlgorithm(
             if ((currentTime - downTime) >= longPressDelay(trigger)) {
                 successfulLongPressTrigger = true
             } else if (detectSequenceLongPresses &&
-                longPressSequenceTriggerKeys.any { it.matchesEvent(event.withLongPress) }
+                longPressSequenceTriggerKeys.any { key ->
+                    when (key) {
+                        is EvdevTriggerKey -> key.matchesEvent(event.withLongPress)
+                        is KeyEventTriggerKey -> key.matchesEvent(event.withLongPress)
+                    }
+                }
             ) {
                 imitateDownUpKeyEvent = true
             }
@@ -1654,18 +1654,15 @@ class KeyMapAlgorithm(
             return when (this.device) {
                 KeyEventTriggerDevice.Any -> this.keyCode == event.keyCode && this.clickType == event.clickType
                 is KeyEventTriggerDevice.External ->
-                    this.keyCode == event.keyCode &&
-                        event.descriptor != null &&
-                        event.descriptor == this.device.descriptor &&
-                        this.clickType == event.clickType
+                    event.isExternal && this.keyCode == event.keyCode && event.descriptor == this.device.descriptor && this.clickType == event.clickType
 
                 KeyEventTriggerDevice.Internal ->
-                    this.keyCode == event.keyCode &&
-                        event.descriptor == null &&
+                    !event.isExternal &&
+                        this.keyCode == event.keyCode &&
                         this.clickType == event.clickType
             }
         } else if (this is EvdevTriggerKey && event is KeyCodeEvent) {
-            return this.keyCode == event.keyCode && event.clickType == this.clickType && event.descriptor == this.deviceDescriptor
+            return this.keyCode == event.keyCode && this.clickType == event.clickType && this.deviceDescriptor == event.descriptor
         } else if (this is AssistantTriggerKey && event is AssistantEvent) {
             return if (this.type == AssistantTriggerType.ANY || event.type == AssistantTriggerType.ANY) {
                 this.clickType == event.clickType
@@ -1698,6 +1695,8 @@ class KeyMapAlgorithm(
                         otherKey.device == KeyEventTriggerDevice.Internal &&
                         this.clickType == otherKey.clickType
             }
+        } else if (this is EvdevTriggerKey && otherKey is EvdevTriggerKey) {
+            return this.keyCode == otherKey.keyCode && this.clickType == otherKey.clickType && this.deviceDescriptor == otherKey.deviceDescriptor
         } else if (this is AssistantTriggerKey && otherKey is AssistantTriggerKey) {
             return this.type == otherKey.type && this.clickType == otherKey.clickType
         } else if (this is FloatingButtonKey && otherKey is FloatingButtonKey) {
@@ -1778,8 +1777,9 @@ class KeyMapAlgorithm(
     private data class KeyCodeEvent(
         val keyCode: Int,
         override val clickType: ClickType?,
-        val descriptor: String?,
+        val descriptor: String,
         val deviceId: Int,
+        val isExternal: Boolean,
         val scanCode: Int,
         val repeatCount: Int,
         val source: Int,

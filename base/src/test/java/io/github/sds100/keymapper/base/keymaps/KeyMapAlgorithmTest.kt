@@ -17,7 +17,10 @@ import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapModel
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.detection.KeyMapAlgorithm
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
+import io.github.sds100.keymapper.base.trigger.AssistantTriggerKey
+import io.github.sds100.keymapper.base.trigger.EvdevTriggerKey
 import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
+import io.github.sds100.keymapper.base.trigger.FloatingButtonKey
 import io.github.sds100.keymapper.base.trigger.KeyEventTriggerDevice
 import io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey
 import io.github.sds100.keymapper.base.trigger.Trigger
@@ -49,6 +52,7 @@ import kotlinx.coroutines.test.currentTime
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -201,6 +205,138 @@ class KeyMapAlgorithmTest {
             performActionsUseCase,
             detectConstraintsUseCase,
         )
+    }
+
+    @Test
+    fun `Sequence trigger with multiple evdev keys is triggered`() =
+        runTest(testDispatcher) {
+            val trigger = sequenceTrigger(
+                EvdevTriggerKey(
+                    keyCode = KeyEvent.KEYCODE_A,
+                    scanCode = 900,
+                    deviceDescriptor = FAKE_CONTROLLER_INPUT_DEVICE.descriptor,
+                    deviceName = FAKE_CONTROLLER_INPUT_DEVICE.name,
+                ),
+                EvdevTriggerKey(
+                    keyCode = KeyEvent.KEYCODE_B,
+                    scanCode = 901,
+                    deviceDescriptor = FAKE_CONTROLLER_INPUT_DEVICE.descriptor,
+                    deviceName = FAKE_CONTROLLER_INPUT_DEVICE.name,
+                ),
+            )
+
+            loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
+
+            inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_DOWN, FAKE_CONTROLLER_INPUT_DEVICE)
+            inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_UP, FAKE_CONTROLLER_INPUT_DEVICE)
+
+            inputKeyEvent(KeyEvent.KEYCODE_B, KeyEvent.ACTION_DOWN, FAKE_CONTROLLER_INPUT_DEVICE)
+            inputKeyEvent(KeyEvent.KEYCODE_B, KeyEvent.ACTION_UP, FAKE_CONTROLLER_INPUT_DEVICE)
+
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        }
+
+    @Test
+    fun `Parallel trigger with multiple evdev keys is triggered`() =
+        runTest(testDispatcher) {
+            val trigger = parallelTrigger(
+                EvdevTriggerKey(
+                    keyCode = KeyEvent.KEYCODE_A,
+                    scanCode = 900,
+                    deviceDescriptor = FAKE_CONTROLLER_INPUT_DEVICE.descriptor,
+                    deviceName = FAKE_CONTROLLER_INPUT_DEVICE.name,
+                ),
+                EvdevTriggerKey(
+                    keyCode = KeyEvent.KEYCODE_B,
+                    scanCode = 901,
+                    deviceDescriptor = FAKE_CONTROLLER_INPUT_DEVICE.descriptor,
+                    deviceName = FAKE_CONTROLLER_INPUT_DEVICE.name,
+                ),
+            )
+
+            loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
+
+            inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_DOWN, FAKE_CONTROLLER_INPUT_DEVICE)
+            inputKeyEvent(KeyEvent.KEYCODE_B, KeyEvent.ACTION_DOWN, FAKE_CONTROLLER_INPUT_DEVICE)
+
+            inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_UP, FAKE_CONTROLLER_INPUT_DEVICE)
+            inputKeyEvent(KeyEvent.KEYCODE_B, KeyEvent.ACTION_UP, FAKE_CONTROLLER_INPUT_DEVICE)
+
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        }
+
+    @Test
+    fun `Evdev trigger is not triggered from events from other internal devices`() =
+        runTest(testDispatcher) {
+            val trigger = singleKeyTrigger(
+                EvdevTriggerKey(
+                    keyCode = KeyEvent.KEYCODE_POWER,
+                    scanCode = 900,
+                    deviceDescriptor = "gpio_keys",
+                    deviceName = "GPIO",
+                )
+            )
+
+            loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
+
+            mockEvdevKeyInput(trigger.keys[0], FAKE_INTERNAL_DEVICE)
+
+            verify(performActionsUseCase, never()).perform(TEST_ACTION.data)
+        }
+
+    @Test
+    fun `Evdev trigger is not triggered from events from other external devices`() =
+        runTest(testDispatcher) {
+            val trigger = singleKeyTrigger(
+                EvdevTriggerKey(
+                    keyCode = KeyEvent.KEYCODE_A,
+                    scanCode = 900,
+                    deviceDescriptor = FAKE_KEYBOARD_TRIGGER_KEY_DEVICE.descriptor,
+                    deviceName = FAKE_KEYBOARD_TRIGGER_KEY_DEVICE.name,
+                )
+            )
+
+            loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
+
+            mockEvdevKeyInput(trigger.keys[0], FAKE_CONTROLLER_INPUT_DEVICE)
+
+            verify(performActionsUseCase, never()).perform(TEST_ACTION.data)
+        }
+
+    @Test
+    fun `Short press trigger evdev trigger from external device`() = runTest(testDispatcher) {
+        val trigger = singleKeyTrigger(
+            EvdevTriggerKey(
+                keyCode = KeyEvent.KEYCODE_A,
+                scanCode = 900,
+                deviceDescriptor = FAKE_CONTROLLER_INPUT_DEVICE.descriptor,
+                deviceName = FAKE_CONTROLLER_INPUT_DEVICE.name,
+            )
+        )
+
+        loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
+
+        mockEvdevKeyInput(trigger.keys[0], FAKE_CONTROLLER_INPUT_DEVICE)
+
+        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+    }
+
+    @Test
+    fun `Short press trigger evdev trigger from internal device`() = runTest(testDispatcher) {
+        val trigger = singleKeyTrigger(
+            EvdevTriggerKey(
+                keyCode = KeyEvent.KEYCODE_POWER,
+                scanCode = 900,
+                deviceDescriptor = FAKE_INTERNAL_DEVICE.descriptor,
+                deviceName = FAKE_INTERNAL_DEVICE.name,
+            )
+        )
+
+        loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
+
+        mockEvdevKeyInput(trigger.keys[0], FAKE_INTERNAL_DEVICE)
+
+        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
     }
 
     @Test
@@ -4129,33 +4265,72 @@ class KeyMapAlgorithmTest {
             return
         }
 
-        val deviceDescriptor = triggerKeyDeviceToInputDevice(key.device)
+        val inputDevice = triggerKeyDeviceToInputDevice(key.device)
         val pressDuration: Long = delay ?: when (key.clickType) {
             ClickType.LONG_PRESS -> LONG_PRESS_DELAY + 100L
             else -> 50L
         }
 
-        inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, deviceDescriptor)
+        inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, inputDevice)
 
         when (key.clickType) {
             ClickType.SHORT_PRESS -> {
                 delay(pressDuration)
-                inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
+                inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, inputDevice)
             }
 
             ClickType.LONG_PRESS -> {
                 delay(pressDuration)
-                inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
+                inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, inputDevice)
             }
 
             ClickType.DOUBLE_PRESS -> {
                 delay(pressDuration)
-                inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
+                inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, inputDevice)
                 delay(pressDuration)
 
-                inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, deviceDescriptor)
+                inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, inputDevice)
                 delay(pressDuration)
-                inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, deviceDescriptor)
+                inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, inputDevice)
+            }
+        }
+    }
+
+    private suspend fun mockEvdevKeyInput(
+        key: TriggerKey,
+        inputDevice: InputDeviceInfo,
+        delay: Long? = null,
+    ) {
+        if (key !is EvdevTriggerKey) {
+            return
+        }
+
+        val pressDuration: Long = delay ?: when (key.clickType) {
+            ClickType.LONG_PRESS -> LONG_PRESS_DELAY + 100L
+            else -> 50L
+        }
+
+        inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, inputDevice)
+
+        when (key.clickType) {
+            ClickType.SHORT_PRESS -> {
+                delay(pressDuration)
+                inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, inputDevice)
+            }
+
+            ClickType.LONG_PRESS -> {
+                delay(pressDuration)
+                inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, inputDevice)
+            }
+
+            ClickType.DOUBLE_PRESS -> {
+                delay(pressDuration)
+                inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, inputDevice)
+                delay(pressDuration)
+
+                inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, inputDevice)
+                delay(pressDuration)
+                inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, inputDevice)
             }
         }
     }
