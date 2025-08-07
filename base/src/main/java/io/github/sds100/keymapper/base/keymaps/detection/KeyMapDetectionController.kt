@@ -35,6 +35,9 @@ class KeyMapDetectionController(
         pauseKeyMapsUseCase.isPaused.stateIn(coroutineScope, SharingStarted.Eagerly, true)
 
     init {
+        // Must first register before collecting anything that may call reset()
+        inputEventHub.registerClient(INPUT_EVENT_HUB_ID, this)
+
         coroutineScope.launch {
             detectUseCase.allKeyMapList.collectLatest { keyMapList ->
                 algorithm.reset()
@@ -49,8 +52,6 @@ class KeyMapDetectionController(
                 }
             }
         }
-
-        inputEventHub.registerClient(INPUT_EVENT_HUB_ID, this)
     }
 
     override fun onInputEvent(

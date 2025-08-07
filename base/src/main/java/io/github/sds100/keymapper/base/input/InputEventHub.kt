@@ -226,7 +226,7 @@ class InputEventHubImpl @Inject constructor(
 
     override fun setGrabbedEvdevDevices(clientId: String, deviceDescriptors: List<String>) {
         if (!clients.containsKey(clientId)) {
-            throw IllegalArgumentException("This client is not registered!")
+            throw IllegalArgumentException("This client $clientId is not registered when trying to grab devices!")
         }
 
         clients[clientId] =
