@@ -319,6 +319,7 @@ class KeyMapListItemCreator(
 
 
         val parts = buildList {
+            add("PRO")
             add(deviceName)
 
             if (!key.consumeEvent) {

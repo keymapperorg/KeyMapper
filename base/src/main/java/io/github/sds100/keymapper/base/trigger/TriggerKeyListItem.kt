@@ -46,6 +46,8 @@ import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.compose.DragDropState
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.ProModeIcon
 
 @Composable
 fun TriggerKeyListItem(
@@ -112,6 +114,7 @@ fun TriggerKeyListItem(
                         is TriggerKeyListItemModel.Assistant -> Icons.Outlined.Assistant
                         is TriggerKeyListItemModel.FloatingButton -> Icons.Outlined.BubbleChart
                         is TriggerKeyListItemModel.FingerprintGesture -> Icons.Outlined.Fingerprint
+                        is TriggerKeyListItemModel.EvdevEvent -> KeyMapperIcons.ProModeIcon
                         else -> null
                     }
 
@@ -138,6 +141,7 @@ fun TriggerKeyListItem(
                     )
 
                     is TriggerKeyListItemModel.KeyEvent -> model.keyName
+                    is TriggerKeyListItemModel.EvdevEvent -> "${model.keyName} (${model.deviceName})"
 
                     is TriggerKeyListItemModel.FloatingButtonDeleted -> stringResource(R.string.trigger_error_floating_button_deleted_title)
 
@@ -160,6 +164,7 @@ fun TriggerKeyListItem(
 
                     val tertiaryText = when (model) {
                         is TriggerKeyListItemModel.KeyEvent -> model.extraInfo
+                        is TriggerKeyListItemModel.EvdevEvent -> model.extraInfo
                         is TriggerKeyListItemModel.FloatingButton -> model.layoutName
 
                         else -> null
@@ -322,13 +327,32 @@ private fun ErrorTextColumn(
 
 @Preview
 @Composable
-private fun KeyCodePreview() {
+private fun KeyEventPreview() {
     TriggerKeyListItem(
         model = TriggerKeyListItemModel.KeyEvent(
             id = "id",
             keyName = "Volume Up",
             clickType = ClickType.SHORT_PRESS,
             extraInfo = "External Keyboard",
+            linkType = LinkType.ARROW,
+            error = null,
+        ),
+        isDragging = false,
+        isReorderingEnabled = true,
+        index = 0,
+    )
+}
+
+@Preview
+@Composable
+private fun EvdevEventPreview() {
+    TriggerKeyListItem(
+        model = TriggerKeyListItemModel.EvdevEvent(
+            id = "id",
+            keyName = "Volume Up",
+            deviceName = "Gpio-keys",
+            clickType = ClickType.SHORT_PRESS,
+            extraInfo = "Do not consume",
             linkType = LinkType.ARROW,
             error = null,
         ),

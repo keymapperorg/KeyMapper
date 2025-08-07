@@ -757,7 +757,19 @@ abstract class BaseConfigTriggerViewModel(
                     }
                 }
 
-                is EvdevTriggerKey -> TODO()
+                is EvdevTriggerKey -> EvdevEvent(
+                    id = key.uid,
+                    keyName = InputEventStrings.keyCodeToString(key.keyCode),
+                    deviceName = key.deviceName,
+                    clickType = clickType,
+                    extraInfo = if (!key.consumeEvent) {
+                        getString(R.string.flag_dont_override_default_action)
+                    } else {
+                        null
+                    },
+                    linkType = linkType,
+                    error = error,
+                )
             }
         }
     }
@@ -872,6 +884,16 @@ sealed class TriggerKeyListItemModel {
         override val id: String,
         override val linkType: LinkType,
         val keyName: String,
+        override val clickType: ClickType,
+        val extraInfo: String?,
+        override val error: TriggerError?,
+    ) : TriggerKeyListItemModel()
+
+    data class EvdevEvent(
+        override val id: String,
+        override val linkType: LinkType,
+        val keyName: String,
+        val deviceName: String,
         override val clickType: ClickType,
         val extraInfo: String?,
         override val error: TriggerError?,
