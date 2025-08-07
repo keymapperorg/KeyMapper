@@ -4,9 +4,13 @@ import android.view.KeyEvent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import io.github.sds100.keymapper.base.input.InputEventDetectionSource
+import io.github.sds100.keymapper.base.input.InputEventHub
+import io.github.sds100.keymapper.base.input.InputEventHubCallback
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.common.utils.InputEventType
+import io.github.sds100.keymapper.system.inputevents.KMInputEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import kotlinx.coroutines.CoroutineScope
@@ -25,7 +29,13 @@ class RerouteKeyEventsController @AssistedInject constructor(
     private val coroutineScope: CoroutineScope,
     private val keyMapperImeMessenger: ImeInputEventInjector,
     private val useCaseFactory: RerouteKeyEventsUseCaseImpl.Factory,
-) {
+    private val inputEventHub: InputEventHub
+) : InputEventHubCallback {
+
+    companion object {
+        private const val INPUT_EVENT_HUB_ID = "reroute_key_events"
+    }
+
     @AssistedFactory
     interface Factory {
         fun create(
@@ -43,8 +53,34 @@ class RerouteKeyEventsController @AssistedInject constructor(
      */
     private var repeatJob: Job? = null
 
-    fun onKeyEvent(event: KMKeyEvent): Boolean {
-        if (!useCase.shouldRerouteKeyEvent(event.device?.descriptor)) {
+    init {
+        coroutineScope.launch {
+            useCase.isReroutingEnabled.collect { isEnabled ->
+                if (isEnabled) {
+                    inputEventHub.registerClient(
+                        INPUT_EVENT_HUB_ID,
+                        this@RerouteKeyEventsController
+                    )
+                } else {
+                    inputEventHub.unregisterClient(INPUT_EVENT_HUB_ID)
+                }
+            }
+        }
+    }
+
+    fun teardown() {
+        inputEventHub.unregisterClient(INPUT_EVENT_HUB_ID)
+    }
+
+    override fun onInputEvent(
+        event: KMInputEvent,
+        detectionSource: InputEventDetectionSource
+    ): Boolean {
+        if (event !is KMKeyEvent) {
+            return false
+        }
+
+        if (!useCase.shouldRerouteKeyEvent(event.device.descriptor)) {
             return false
         }
 

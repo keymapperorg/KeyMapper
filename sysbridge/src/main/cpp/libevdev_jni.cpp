@@ -335,6 +335,10 @@ epollFd = epoll_create1(EPOLL_CLOEXEC);
 
     LOGI("Start evdev event loop");
 
+callback->
+
+onEvdevEventLoopStarted();
+
     while (running) {
         int n = epoll_wait(epollFd, events, MAX_EPOLL_EVENTS, -1);
 

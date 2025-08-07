@@ -244,6 +244,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
         synchronized(evdevCallbackLock) {
             evdevCallback?.asBinder()?.unlinkToDeath(evdevCallbackDeathRecipient, 0)
             evdevCallback = null
+            stopEvdevEventLoop()
         }
     }
 

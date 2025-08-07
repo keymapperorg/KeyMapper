@@ -91,6 +91,11 @@ class InputEventHubImpl @Inject constructor(
         }
     }
 
+    override fun onEvdevEventLoopStarted() {
+        Timber.i("On evdev event loop started")
+        invalidateGrabbedEvdevDevices()
+    }
+
     override fun onEvdevEvent(
         deviceId: Int,
         timeSec: Long,
@@ -142,10 +147,14 @@ class InputEventHubImpl @Inject constructor(
                 // Only send events from evdev devices to the client if they grabbed it
 
                 if (clientContext.grabbedEvdevDevices.contains(deviceDescriptor)) {
-                    consume = consume || clientContext.callback.onInputEvent(event, detectionSource)
+                    // Lazy evaluation may not execute this if its inlined?
+                    val result = clientContext.callback.onInputEvent(event, detectionSource)
+                    consume = consume || result
                 }
             } else {
-                consume = consume || clientContext.callback.onInputEvent(event, detectionSource)
+                // Lazy evaluation may not execute this if its inlined?
+                val result = clientContext.callback.onInputEvent(event, detectionSource)
+                consume = consume || result
             }
         }
 
@@ -253,6 +262,10 @@ class InputEventHubImpl @Inject constructor(
 
     private fun invalidateGrabbedEvdevDevices() {
         val descriptors: Set<String> = clients.values.flatMap { it.grabbedEvdevDevices }.toSet()
+
+        if (systemBridge == null) {
+            return
+        }
 
         try {
             systemBridge?.ungrabAllEvdevDevices()

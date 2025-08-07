@@ -156,7 +156,7 @@ class AndroidDevicesAdapter @Inject constructor(
                 .values
                 .joinToString()
 
-            Timber.i("Input device: $id ${device.name} Vendor=${device.vendorId} Product=${device.productId} Sources=$supportedSources")
+            Timber.d("Input device: $id ${device.name} Vendor=${device.vendorId} Product=${device.productId} Descriptor=${device.descriptor} Sources=$supportedSources")
 
             devices.add(InputDeviceUtils.createInputDeviceInfo(device))
         }

@@ -104,19 +104,15 @@ abstract class BaseAccessibilityServiceController(
         detectConstraintsUseCase,
     )
 
-    // TODO
-    val rerouteKeyEventsController = rerouteKeyEventsControllerFactory.create(
-        service.lifecycleScope,
-    )
+    val rerouteKeyEventsController: RerouteKeyEventsController =
+        rerouteKeyEventsControllerFactory.create(
+            service.lifecycleScope,
+        )
 
     val accessibilityNodeRecorder = accessibilityNodeRecorderFactory.create(service)
 
     val isPaused: StateFlow<Boolean> =
         pauseKeyMapsUseCase.isPaused
-            .stateIn(service.lifecycleScope, SharingStarted.Eagerly, false)
-
-    private val screenOffTriggersEnabled: StateFlow<Boolean> =
-        detectKeyMapsUseCase.detectScreenOffTriggers
             .stateIn(service.lifecycleScope, SharingStarted.Eagerly, false)
 
     private val changeImeOnInputFocusFlow: StateFlow<Boolean> =
@@ -357,6 +353,7 @@ abstract class BaseAccessibilityServiceController(
         keyMapDetectionController.teardown()
         keyEventRelayServiceWrapper.unregisterClient(CALLBACK_ID_ACCESSIBILITY_SERVICE)
         accessibilityNodeRecorder.teardown()
+        rerouteKeyEventsController.teardown()
     }
 
     open fun onConfigurationChanged(newConfig: Configuration) {
@@ -367,33 +364,8 @@ abstract class BaseAccessibilityServiceController(
         detectionSource: InputEventDetectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
     ): Boolean {
         return inputEventHub.onInputEvent(event, detectionSource)
-
-//        val detailedLogInfo = event.toString()
-//
-//        // TODO move paused check to KeyMapController
-//        if (isPaused.value) {
-//            when (event.action) {
-//                KeyEvent.ACTION_DOWN -> Timber.d("Down ${KeyEvent.keyCodeToString(event.keyCode)} - not filtering because paused, $detailedLogInfo")
-//                KeyEvent.ACTION_UP -> Timber.d("Up ${KeyEvent.keyCodeToString(event.keyCode)} - not filtering because paused, $detailedLogInfo")
-//            }
-//        } else {
-//            try {
-//                var consume: Boolean
-//
-//                consume = keyMapController.onKeyEvent(uniqueEvent)
-//
-//                if (!consume) {
-//                    consume = rerouteKeyEventsController.onKeyEvent(uniqueEvent)
-//                }
-//
-//                return consume
-//            } catch (e: Exception) {
-//                Timber.e(e)
-//            }
-//        }
     }
 
-    // TODO handle somewhere else
     fun onKeyEventFromIme(event: KMKeyEvent): Boolean {
         /*
         Issue #850
@@ -403,33 +375,20 @@ abstract class BaseAccessibilityServiceController(
         before returning the UP key event.
          */
         if (event.action == KeyEvent.ACTION_UP && (event.keyCode == KeyEvent.KEYCODE_VOLUME_UP || event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
-            onKeyEvent(
+            inputEventHub.onInputEvent(
                 event.copy(action = KeyEvent.ACTION_DOWN),
                 detectionSource = InputEventDetectionSource.INPUT_METHOD,
             )
         }
 
-        return onKeyEvent(
-            event,
-            detectionSource = InputEventDetectionSource.INPUT_METHOD,
-        )
+        return inputEventHub.onInputEvent(event, InputEventDetectionSource.INPUT_METHOD)
     }
 
     fun onMotionEventFromIme(event: KMGamePadEvent): Boolean {
-        // TODO keymapcontroller will observe inputeventhub and check if a trigger is being recorded
-//        if (isPaused.value || record) {
-//            return false
-//        }
-//
-//        try {
-//            val consume = keyMapController.onMotionEvent(event)
-//
-//            return consume
-//        } catch (e: Exception) {
-//            Timber.e(e)
-//            return false
-//        }
-        return false
+        return inputEventHub.onInputEvent(
+            event,
+            detectionSource = InputEventDetectionSource.INPUT_METHOD,
+        )
     }
 
     open fun onAccessibilityEvent(event: AccessibilityEvent) {

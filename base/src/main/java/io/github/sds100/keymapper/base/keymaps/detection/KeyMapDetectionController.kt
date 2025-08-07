@@ -7,14 +7,16 @@ import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.input.InputEventHubCallback
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
+import io.github.sds100.keymapper.base.trigger.EvdevTriggerKey
+import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class KeyMapDetectionController(
     private val coroutineScope: CoroutineScope,
@@ -39,16 +41,18 @@ class KeyMapDetectionController(
         inputEventHub.registerClient(INPUT_EVENT_HUB_ID, this)
 
         coroutineScope.launch {
-            detectUseCase.allKeyMapList.collectLatest { keyMapList ->
+            detectUseCase.allKeyMapList.collect { keyMapList ->
                 algorithm.reset()
                 algorithm.loadKeyMaps(keyMapList)
+                // Only grab the triggers that are actually being listened to by the algorithm
+                grabEvdevDevicesForTriggers(algorithm.triggers)
             }
         }
 
         coroutineScope.launch {
             isPaused.collect { isPaused ->
                 if (isPaused) {
-                    reset()
+                    algorithm.reset()
                 }
             }
         }
@@ -76,6 +80,17 @@ class KeyMapDetectionController(
     fun teardown() {
         reset()
         inputEventHub.unregisterClient(INPUT_EVENT_HUB_ID)
+    }
+
+    private fun grabEvdevDevicesForTriggers(triggers: Array<Trigger>) {
+        val evdevDevices = triggers
+            .flatMap { trigger -> trigger.keys.filterIsInstance<EvdevTriggerKey>() }
+            .map { it.deviceDescriptor }
+            .distinct()
+            .toList()
+
+        Timber.i("Grab evdev devices for key map detection: ${evdevDevices.joinToString()}")
+        inputEventHub.setGrabbedEvdevDevices(INPUT_EVENT_HUB_ID, evdevDevices)
     }
 
     private fun reset() {

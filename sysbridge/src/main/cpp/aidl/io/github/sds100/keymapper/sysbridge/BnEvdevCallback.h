@@ -34,6 +34,9 @@ public:
   explicit IEvdevCallbackDelegator(const std::shared_ptr<IEvdevCallback> &impl) : _impl(impl) {
   }
 
+    ::ndk::ScopedAStatus onEvdevEventLoopStarted() override {
+        return _impl->onEvdevEventLoopStarted();
+    }
   ::ndk::ScopedAStatus onEvdevEvent(int32_t in_deviceId, int64_t in_timeSec, int64_t in_timeUsec, int32_t in_type, int32_t in_code, int32_t in_value, int32_t in_androidCode) override {
     return _impl->onEvdevEvent(in_deviceId, in_timeSec, in_timeUsec, in_type, in_code, in_value, in_androidCode);
   }

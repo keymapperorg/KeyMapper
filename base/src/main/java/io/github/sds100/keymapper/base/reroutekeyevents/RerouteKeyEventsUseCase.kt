@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 
@@ -35,7 +36,7 @@ class RerouteKeyEventsUseCaseImpl @AssistedInject constructor(
         ): RerouteKeyEventsUseCaseImpl
     }
 
-    private val rerouteKeyEvents =
+    override val isReroutingEnabled: Flow<Boolean> =
         preferenceRepository.get(Keys.rerouteKeyEvents).map { it ?: false }
 
     private val devicesToRerouteKeyEvents =
@@ -53,7 +54,7 @@ class RerouteKeyEventsUseCaseImpl @AssistedInject constructor(
             return false
         }
 
-        return rerouteKeyEvents.firstBlocking() &&
+        return isReroutingEnabled.firstBlocking() &&
             imeHelper.isCompatibleImeChosen() &&
             (
                 descriptor != null &&
@@ -71,6 +72,7 @@ class RerouteKeyEventsUseCaseImpl @AssistedInject constructor(
 }
 
 interface RerouteKeyEventsUseCase {
+    val isReroutingEnabled: Flow<Boolean>
     fun shouldRerouteKeyEvent(descriptor: String?): Boolean
     fun inputKeyEvent(keyModel: InputKeyModel)
 }

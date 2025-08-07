@@ -333,10 +333,6 @@ class KeyMapAlgorithm(
                 }
             }
 
-            triggers.flatMap { trigger ->
-                trigger.keys.filterIsInstance<EvdevTriggerKey>()
-            }.toList()
-
             this.triggers = triggers.toTypedArray()
             this.triggerActions = triggerActions.toTypedArray()
             this.triggerConstraints = triggerConstraints.toTypedArray()
@@ -407,7 +403,8 @@ class KeyMapAlgorithm(
     private var doublePressTimeoutTimes = longArrayOf()
 
     private var actionMap: SparseArrayCompat<Action> = SparseArrayCompat()
-    private var triggers: Array<Trigger> = emptyArray()
+    var triggers: Array<Trigger> = emptyArray()
+        private set
 
     /**
      * The events to detect for each sequence trigger.
