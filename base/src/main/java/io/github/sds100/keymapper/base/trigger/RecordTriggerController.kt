@@ -24,6 +24,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -210,7 +211,7 @@ class RecordTriggerControllerImpl @Inject constructor(
 }
 
 interface RecordTriggerController {
-    val state: Flow<RecordTriggerState>
+    val state: StateFlow<RecordTriggerState>
     val onRecordKey: Flow<RecordedKey>
 
     /**

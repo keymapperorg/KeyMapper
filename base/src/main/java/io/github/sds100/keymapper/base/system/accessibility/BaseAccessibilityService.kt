@@ -23,7 +23,7 @@ import androidx.savedstate.SavedStateRegistryOwner
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.input.InputEventDetectionSource
-import io.github.sds100.keymapper.common.utils.InputEventType
+import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.MathUtils
@@ -244,7 +244,7 @@ abstract class BaseAccessibilityService :
     override fun onKeyEvent(event: KeyEvent?): Boolean {
         event ?: return super.onKeyEvent(event)
 
-        val kmKeyEvent = KMKeyEvent.fromKeyEvent(event) ?: return false
+        val kmKeyEvent = KMKeyEvent.fromAndroidKeyEvent(event) ?: return false
 
         return getController()?.onKeyEvent(
             kmKeyEvent,
@@ -284,7 +284,7 @@ abstract class BaseAccessibilityService :
         }
     }
 
-    override fun tapScreen(x: Int, y: Int, inputEventType: InputEventType): KMResult<*> {
+    override fun tapScreen(x: Int, y: Int, inputEventAction: InputEventAction): KMResult<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val duration = 1L // ms
 
@@ -294,7 +294,7 @@ abstract class BaseAccessibilityService :
 
             val strokeDescription =
                 when {
-                    inputEventType == InputEventType.DOWN && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
+                    inputEventAction == InputEventAction.DOWN && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
                         StrokeDescription(
                             path,
                             0,
@@ -302,7 +302,7 @@ abstract class BaseAccessibilityService :
                             true,
                         )
 
-                    inputEventType == InputEventType.UP && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
+                    inputEventAction == InputEventAction.UP && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
                         StrokeDescription(
                             path,
                             59999,
@@ -338,7 +338,7 @@ abstract class BaseAccessibilityService :
         yEnd: Int,
         fingerCount: Int,
         duration: Int,
-        inputEventType: InputEventType,
+        inputEventAction: InputEventAction,
     ): KMResult<*> {
         // virtual distance between fingers on multitouch gestures
         val fingerGestureDistance = 10L
@@ -440,7 +440,7 @@ abstract class BaseAccessibilityService :
         pinchType: PinchScreenType,
         fingerCount: Int,
         duration: Int,
-        inputEventType: InputEventType,
+        inputEventAction: InputEventAction,
     ): KMResult<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (fingerCount >= GestureDescription.getMaxStrokeCount()) {

@@ -4,15 +4,13 @@ import android.view.KeyEvent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import io.github.sds100.keymapper.base.input.InjectKeyEventModel
 import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.input.InputEventHubCallback
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
-import io.github.sds100.keymapper.common.utils.InputDeviceInfo
-import io.github.sds100.keymapper.common.utils.InputEventType
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
-import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -24,11 +22,13 @@ import kotlinx.coroutines.launch
  * on Android 11. There was a bug in the system where enabling an accessibility service
  * would reset the device ID of key events to -1.
  */
+// TODO remove this feature because it is extra maintenance for a bug that only exists on a small amount of devices.
+// TODO update changelog and website, remove strings.
 class RerouteKeyEventsController @AssistedInject constructor(
     @Assisted
     private val coroutineScope: CoroutineScope,
     private val keyMapperImeMessenger: ImeInputEventInjector,
-    private val useCaseFactory: RerouteKeyEventsUseCaseImpl.Factory,
+    private val useCase: RerouteKeyEventsUseCase,
     private val inputEventHub: InputEventHub
 ) : InputEventHubCallback {
 
@@ -42,8 +42,6 @@ class RerouteKeyEventsController @AssistedInject constructor(
             coroutineScope: CoroutineScope,
         ): RerouteKeyEventsController
     }
-
-    private val useCase = useCaseFactory.create(keyMapperImeMessenger)
 
     /**
      * The job of the key that should be repeating. This should be a down key event for the last
@@ -85,20 +83,8 @@ class RerouteKeyEventsController @AssistedInject constructor(
         }
 
         return when (event.action) {
-            KeyEvent.ACTION_DOWN -> onKeyDown(
-                event.keyCode,
-                event.device,
-                event.metaState,
-                event.scanCode,
-            )
-
-            KeyEvent.ACTION_UP -> onKeyUp(
-                event.keyCode,
-                event.device,
-                event.metaState,
-                event.scanCode,
-            )
-
+            KeyEvent.ACTION_DOWN -> onKeyDown(event)
+            KeyEvent.ACTION_UP -> onKeyUp(event)
             else -> false
         }
     }
@@ -107,21 +93,19 @@ class RerouteKeyEventsController @AssistedInject constructor(
      * @return whether to consume the key event.
      */
     private fun onKeyDown(
-        keyCode: Int,
-        device: InputDeviceInfo?,
-        metaState: Int,
-        scanCode: Int = 0,
+        event: KMKeyEvent
     ): Boolean {
-        val inputKeyModel = InputKeyModel(
-            keyCode = keyCode,
-            inputType = InputEventType.DOWN,
-            metaState = metaState,
-            deviceId = device?.id ?: 0,
-            scanCode = scanCode,
-            repeat = 0,
+        val injectModel = InjectKeyEventModel(
+            keyCode = event.keyCode,
+            action = KeyEvent.ACTION_DOWN,
+            metaState = event.metaState,
+            deviceId = event.deviceId,
+            scanCode = event.scanCode,
+            repeatCount = event.repeatCount,
+            source = event.source
         )
 
-        useCase.inputKeyEvent(inputKeyModel)
+        useCase.inputKeyEvent(injectModel)
 
         repeatJob?.cancel()
 
@@ -131,7 +115,7 @@ class RerouteKeyEventsController @AssistedInject constructor(
             var repeatCount = 1
 
             while (isActive) {
-                useCase.inputKeyEvent(inputKeyModel.copy(repeat = repeatCount))
+                useCase.inputKeyEvent(injectModel.copy(repeatCount = repeatCount))
                 delay(50)
                 repeatCount++
             }
@@ -140,21 +124,17 @@ class RerouteKeyEventsController @AssistedInject constructor(
         return true
     }
 
-    private fun onKeyUp(
-        keyCode: Int,
-        device: InputDeviceInfo?,
-        metaState: Int,
-        scanCode: Int = 0,
-    ): Boolean {
+    private fun onKeyUp(event: KMKeyEvent): Boolean {
         repeatJob?.cancel()
 
-        val inputKeyModel = InputKeyModel(
-            keyCode = keyCode,
-            inputType = InputEventType.UP,
-            metaState = metaState,
-            deviceId = device?.id ?: 0,
-            scanCode = scanCode,
-            repeat = 0,
+        val inputKeyModel = InjectKeyEventModel(
+            keyCode = event.keyCode,
+            action = KeyEvent.ACTION_UP,
+            metaState = event.metaState,
+            deviceId = event.deviceId,
+            scanCode = event.scanCode,
+            repeatCount = event.repeatCount,
+            source = event.source
         )
 
         useCase.inputKeyEvent(inputKeyModel)

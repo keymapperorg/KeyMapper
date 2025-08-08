@@ -37,7 +37,7 @@ enum CommandType {
 
 struct Command {
     CommandType type;
-    std::variant<GrabData, UngrabData> data;
+    std::variant <GrabData, UngrabData> data;
 };
 
 struct DeviceContext {
@@ -52,7 +52,7 @@ void ungrabDevice(jint device_id);
 static int epollFd = -1;
 static int commandEventFd = -1;
 
-static std::queue<Command> commandQueue;
+static std::queue <Command> commandQueue;
 static std::mutex commandMutex;
 
 // This maps the file descriptor of an evdev device to its context.
@@ -110,9 +110,11 @@ static int findEvdevDevice(
         int devBus = libevdev_get_id_bustype(*outDev);
 
         if (name != devName ||
-            devVendor != vendor ||
-            devProduct != product ||
-            devBus != bus) {
+                devVendor != vendor ||
+                devProduct != product ||
+                // The hidden device bus field was only added to InputDevice.java in Android 14.
+                        // So only check it if it is a real value
+                        (bus != -1 && devBus != bus)) {
 
             libevdev_free(*outDev);
             close(fd);
@@ -127,8 +129,8 @@ static int findEvdevDevice(
     closedir(dir);
 
     LOGE("Input device not found with name: %s, bus: %d, vendor: %d, product: %d", name.c_str(),
-         bus,
-         vendor, product);
+            bus,
+            vendor, product);
 
     return -1;
 }
@@ -149,7 +151,7 @@ convertJInputDeviceIdentifier(JNIEnv *env, jobject jInputDeviceIdentifier) {
     deviceIdentifier.product = env->GetIntField(jInputDeviceIdentifier, productFieldId);
 
     jfieldID nameFieldId = env->GetFieldID(inputDeviceIdentifierClass, "name",
-                                           "Ljava/lang/String;");
+            "Ljava/lang/String;");
     auto nameString = (jstring) env->GetObjectField(jInputDeviceIdentifier, nameFieldId);
 
     const char *nameChars = env->GetStringUTFChars(nameString, nullptr);
@@ -165,19 +167,21 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 }
 
 extern "C"
-JNIEXPORT jboolean JNICALL
+JNIEXPORT jboolean
+
+JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDeviceNative(JNIEnv *env,
-                                                                                     jobject thiz,
-                                                                                     jobject jInputDeviceIdentifier) {
+        jobject thiz,
+        jobject jInputDeviceIdentifier) {
     jclass inputDeviceIdentifierClass = env->GetObjectClass(jInputDeviceIdentifier);
     jfieldID idFieldId = env->GetFieldID(inputDeviceIdentifierClass, "id", "I");
     android::InputDeviceIdentifier identifier = convertJInputDeviceIdentifier(env,
-                                                                              jInputDeviceIdentifier);
+            jInputDeviceIdentifier);
     int deviceId = env->GetIntField(jInputDeviceIdentifier, idFieldId);
 
     Command cmd = {GRAB, GrabData{deviceId, identifier}};
 
-    std::lock_guard<std::mutex> lock(commandMutex);
+    std::lock_guard <std::mutex> lock(commandMutex);
     commandQueue.push(cmd);
 
     uint64_t val = 1;
@@ -205,12 +209,12 @@ int onEpollEvent(DeviceContext *deviceContext, IEvdevCallback *callback) {
         deviceContext->keyLayoutMap.mapKey(inputEvent.code, 0, &outKeycode, &outFlags);
 
         callback->onEvdevEvent(deviceId,
-                               inputEvent.time.tv_sec,
-                               inputEvent.time.tv_usec,
-                               inputEvent.type,
-                               inputEvent.code,
-                               inputEvent.value,
-                               outKeycode);
+                inputEvent.time.tv_sec,
+                inputEvent.time.tv_usec,
+                inputEvent.type,
+                inputEvent.code,
+                inputEvent.value,
+                outKeycode);
     }
 
     if (rc == 1 || rc == 0 || rc == -EAGAIN) {
@@ -230,10 +234,10 @@ void handleCommand(const Command &cmd) {
 
         struct libevdev *dev = nullptr;
         int rc = findEvdevDevice(data.identifier.name,
-                                 data.identifier.bus,
-                                 data.identifier.vendor,
-                                 data.identifier.product,
-                                 &dev);
+                data.identifier.bus,
+                data.identifier.vendor,
+                data.identifier.product,
+                &dev);
         if (rc < 0) {
             LOGE("Failed to find device for grab command");
             return;
@@ -242,7 +246,7 @@ void handleCommand(const Command &cmd) {
         rc = libevdev_grab(dev, LIBEVDEV_GRAB);
         if (rc < 0) {
             LOGE("Failed to grab evdev device %s: %s",
-                 libevdev_get_name(dev), strerror(-rc));
+                    libevdev_get_name(dev), strerror(-rc));
             libevdev_free(dev);
             return;
         }
@@ -273,13 +277,13 @@ void handleCommand(const Command &cmd) {
             return;
         }
 
-        std::lock_guard<std::mutex> lock(evdevDevicesMutex);
+        std::lock_guard <std::mutex> lock(evdevDevicesMutex);
         evdevDevices->insert_or_assign(evdevFd, context);
 
     } else if (cmd.type == UNGRAB) {
         const UngrabData &data = std::get<UngrabData>(cmd.data);
 
-        std::lock_guard<std::mutex> lock(evdevDevicesMutex);
+        std::lock_guard <std::mutex> lock(evdevDevicesMutex);
         for (auto it = evdevDevices->begin(); it != evdevDevices->end(); ++it) {
             if (it->second.deviceId == data.deviceId) {
                 int fd = it->first;
@@ -295,90 +299,124 @@ void handleCommand(const Command &cmd) {
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLoop(JNIEnv *env,
-                                                                                   jobject thiz,
-                                                                                   jobject jCallbackBinder) {
-    if (epollFd != -1 || commandEventFd != -1) {
-        LOGE("The evdev event loop has already started.");
-        return;
-    }
+Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLoop(JNIEnv
+*env,
+jobject thiz,
+        jobject
+jCallbackBinder) {
+if (epollFd != -1 || commandEventFd != -1) {
+LOGE("The evdev event loop has already started.");
+return;
+}
 
 epollFd = epoll_create1(EPOLL_CLOEXEC);
-    if (epollFd == -1) {
-        LOGE("Failed to create epoll fd: %s", strerror(errno));
-        return;
-    }
+if (epollFd == -1) {
+LOGE("Failed to create epoll fd: %s",
+strerror(errno)
+);
+return;
+}
 
-    commandEventFd = eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
-    if (commandEventFd == -1) {
-        LOGE("Failed to create command eventfd: %s", strerror(errno));
-        close(epollFd);
-        return;
-    }
+commandEventFd = eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
+if (commandEventFd == -1) {
+LOGE("Failed to create command eventfd: %s",
+strerror(errno)
+);
+close(epollFd);
+return;
+}
 
-    struct epoll_event event{};
-    event.events = EPOLLIN;
-    event.data.fd = commandEventFd;
-    if (epoll_ctl(epollFd, EPOLL_CTL_ADD, commandEventFd, &event) == -1) {
-        LOGE("Failed to add command eventfd to epoll: %s", strerror(errno));
-        close(epollFd);
-        close(commandEventFd);
-        return;
-    }
+struct epoll_event event{};
+event.
+events = EPOLLIN;
+event.data.
+fd = commandEventFd;
+if (
+epoll_ctl(epollFd, EPOLL_CTL_ADD, commandEventFd, &event
+) == -1) {
+LOGE("Failed to add command eventfd to epoll: %s",
+strerror(errno)
+);
+close(epollFd);
+close(commandEventFd);
+return;
+}
 
-    AIBinder *callbackAIBinder = AIBinder_fromJavaBinder(env, jCallbackBinder);
-    const ::ndk::SpAIBinder spBinder(callbackAIBinder);
-    std::shared_ptr<IEvdevCallback> callback = IEvdevCallback::fromBinder(spBinder);
+AIBinder *callbackAIBinder = AIBinder_fromJavaBinder(env, jCallbackBinder);
+const ::ndk::SpAIBinder spBinder(callbackAIBinder);
+std::shared_ptr <IEvdevCallback> callback = IEvdevCallback::fromBinder(spBinder);
 
-    struct epoll_event events[MAX_EPOLL_EVENTS];
-    bool running = true;
+struct epoll_event events[MAX_EPOLL_EVENTS];
+bool running = true;
 
-    LOGI("Start evdev event loop");
+LOGI("Start evdev event loop");
 
 callback->
 
 onEvdevEventLoopStarted();
 
-    while (running) {
-        int n = epoll_wait(epollFd, events, MAX_EPOLL_EVENTS, -1);
+while (running) {
+int n = epoll_wait(epollFd, events, MAX_EPOLL_EVENTS, -1);
 
-        for (int i = 0; i < n; ++i) {
-            if (events[i].data.fd == commandEventFd) {
-                uint64_t val;
-                ssize_t s = read(commandEventFd, &val, sizeof(val));
-                if (s < 0) {
-                    LOGE("Error reading from command event fd: %s", strerror(errno));
-                }
+for (
+int i = 0;
+i<n;
+++i) {
+if (events[i].data.fd == commandEventFd) {
+uint64_t val;
+ssize_t s = read(commandEventFd, &val, sizeof(val));
+if (s < 0) {
+LOGE("Error reading from command event fd: %s",
+strerror(errno)
+);
+}
 
-                std::lock_guard<std::mutex> lock(commandMutex);
-                while (!commandQueue.empty()) {
-                    Command cmd = commandQueue.front();
-                    commandQueue.pop();
-                    if (cmd.type == STOP) {
-                        running = false;
-                        break;
-                    }
-                    handleCommand(cmd);
-                }
-            } else {
-                std::lock_guard<std::mutex> lock(evdevDevicesMutex);
-                DeviceContext *dc = &evdevDevices->at(events[i].data.fd);
-                onEpollEvent(dc, callback.get());
-            }
-        }
-    }
+std::lock_guard <std::mutex> lock(commandMutex);
+while (!commandQueue.
 
-    // Cleanup
-    std::lock_guard<std::mutex> lock(evdevDevicesMutex);
+empty()
 
-    for (auto const &[fd, dc]: *evdevDevices) {
-        libevdev_grab(dc.evdev, LIBEVDEV_UNGRAB);
-        libevdev_free(dc.evdev);
-    }
+) {
+Command cmd = commandQueue.front();
+commandQueue.
 
-    evdevDevices->clear();
-    close(commandEventFd);
-    close(epollFd);
+pop();
+
+if (cmd.type == STOP) {
+running = false;
+break;
+}
+handleCommand(cmd);
+}
+} else {
+std::lock_guard <std::mutex> lock(evdevDevicesMutex);
+DeviceContext *dc = &evdevDevices->at(events[i].data.fd);
+onEpollEvent(dc, callback
+.
+
+get()
+
+);
+}
+}
+}
+
+// Cleanup
+std::lock_guard <std::mutex> lock(evdevDevicesMutex);
+
+for (auto const &[fd, dc]: *evdevDevices) {
+libevdev_grab(dc
+.evdev, LIBEVDEV_UNGRAB);
+libevdev_free(dc
+.evdev);
+}
+
+evdevDevices->
+
+clear();
+
+close(commandEventFd);
+close(epollFd);
 }
 
 void ungrabDevice(int deviceId) {
@@ -388,7 +426,7 @@ void ungrabDevice(int deviceId) {
     cmd.type = UNGRAB;
     cmd.data = UngrabData{deviceId};
 
-    std::lock_guard<std::mutex> lock(commandMutex);
+    std::lock_guard <std::mutex> lock(commandMutex);
     commandQueue.push(cmd);
 
     // Notify the event loop
@@ -401,56 +439,75 @@ void ungrabDevice(int deviceId) {
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_ungrabEvdevDeviceNative(JNIEnv *env,
-                                                                                       jobject thiz,
-                                                                                       jint device_id) {
-    ungrabDevice(device_id);
+Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_ungrabEvdevDeviceNative(JNIEnv
+*env,
+jobject thiz,
+        jint
+device_id) {
+ungrabDevice(device_id);
 }
 
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stopEvdevEventLoop(JNIEnv *env,
-                                                                                  jobject thiz) {
-    Command cmd = {STOP};
+Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stopEvdevEventLoop(JNIEnv
+*env,
+jobject thiz
+) {
+Command cmd = {STOP};
 
-    std::lock_guard<std::mutex> lock(commandMutex);
-    commandQueue.push(cmd);
+std::lock_guard <std::mutex> lock(commandMutex);
+commandQueue.
+push(cmd);
 
-    // Notify the event loop
-    uint64_t val = 1;
-    ssize_t written = write(commandEventFd, &val, sizeof(val));
-    if (written < 0) {
-        LOGE("Failed to write to commandEventFd: %s", strerror(errno));
-    }
+// Notify the event loop
+uint64_t val = 1;
+ssize_t written = write(commandEventFd, &val, sizeof(val));
+if (written < 0) {
+LOGE("Failed to write to commandEventFd: %s",
+strerror(errno)
+);
+}
 }
 
 extern "C"
-JNIEXPORT jboolean JNICALL
-Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_writeEvdevEventNative(JNIEnv *env,
-                                                                                     jobject thiz,
-                                                                                     jint device_id,
-                                                                                     jint type,
-                                                                                     jint code,
-                                                                                     jint value) {
-    // TODO: implement writeEvdevEvent()
+JNIEXPORT jboolean
+JNICALL
+        Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_writeEvdevEventNative(JNIEnv * env,
+        jobject
+thiz,
+jint device_id,
+        jint
+type,
+jint code,
+        jint
+value) {
+// TODO: implement writeEvdevEvent()
 }
 extern "C"
 JNIEXPORT void JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_ungrabAllEvdevDevicesNative(
-        JNIEnv *env,
-        jobject thiz) {
-    std::vector<int> deviceIds;
+        JNIEnv
+*env,
+jobject thiz
+) {
+std::vector<int> deviceIds;
 
-    {
-        std::lock_guard<std::mutex> evdevLock(evdevDevicesMutex);
+{
+std::lock_guard <std::mutex> evdevLock(evdevDevicesMutex);
 
-        for (auto pair: *evdevDevices) {
-            deviceIds.push_back(pair.second.deviceId);
-        }
-    }
+for (
+auto pair
+: *evdevDevices) {
+deviceIds.
+push_back(pair
+.second.deviceId);
+}
+}
 
-    for (int id: deviceIds) {
-        ungrabDevice(id);
-    }
+for (
+int id
+: deviceIds) {
+ungrabDevice(id);
+}
 }

@@ -24,7 +24,6 @@ import io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerKey
 import io.github.sds100.keymapper.base.trigger.TriggerMode
-import io.github.sds100.keymapper.common.utils.InputEventType
 import io.github.sds100.keymapper.common.utils.minusFlag
 import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.PreferenceDefaults
@@ -917,7 +916,7 @@ class KeyMapAlgorithm(
                 keyCode = event.keyCode,
                 metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
                 deviceId = event.deviceId,
-                inputEventType = InputEventType.DOWN,
+                action = KeyEvent.ACTION_DOWN,
                 scanCode = event.scanCode,
                 source = event.source,
             )
@@ -1409,7 +1408,14 @@ class KeyMapAlgorithm(
                     if (event is KeyCodeEvent) {
                         useCase.imitateButtonPress(
                             event.keyCode,
-                            inputEventType = InputEventType.DOWN_UP,
+                            action = KeyEvent.ACTION_DOWN,
+                            scanCode = event.scanCode,
+                            source = event.source,
+                        )
+
+                        useCase.imitateButtonPress(
+                            event.keyCode,
+                            action = KeyEvent.ACTION_UP,
                             scanCode = event.scanCode,
                             source = event.source,
                         )
@@ -1424,20 +1430,33 @@ class KeyMapAlgorithm(
             !mappedToDoublePress &&
             event is KeyCodeEvent
         ) {
-            val keyEventAction = if (imitateUpKeyEvent) {
-                InputEventType.UP
+            if (imitateUpKeyEvent) {
+                useCase.imitateButtonPress(
+                    keyCode = event.keyCode,
+                    metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
+                    deviceId = event.deviceId,
+                    action = KeyEvent.ACTION_UP,
+                    scanCode = event.scanCode,
+                    source = event.source,
+                )
             } else {
-                InputEventType.DOWN_UP
+                useCase.imitateButtonPress(
+                    keyCode = event.keyCode,
+                    metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
+                    deviceId = event.deviceId,
+                    action = KeyEvent.ACTION_DOWN,
+                    scanCode = event.scanCode,
+                    source = event.source,
+                )
+                useCase.imitateButtonPress(
+                    keyCode = event.keyCode,
+                    metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
+                    deviceId = event.deviceId,
+                    action = KeyEvent.ACTION_UP,
+                    scanCode = event.scanCode,
+                    source = event.source,
+                )
             }
-
-            useCase.imitateButtonPress(
-                keyCode = event.keyCode,
-                metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
-                deviceId = event.deviceId,
-                inputEventType = keyEventAction,
-                scanCode = event.scanCode,
-                source = event.source,
-            )
 
             keyCodesToImitateUpAction.remove(event.keyCode)
         }
@@ -1577,7 +1596,7 @@ class KeyMapAlgorithm(
                 keyCode = keyCode,
                 metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
                 deviceId = deviceId,
-                inputEventType = InputEventType.DOWN,
+                action = KeyEvent.ACTION_DOWN,
                 scanCode = scanCode,
                 source = source,
             ) // use down action because this is what Android does

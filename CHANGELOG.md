@@ -1,3 +1,12 @@
+## [4.0.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.01)
+
+#### TO BE RELEASED
+
+## Removed
+
+- The key event relay service is now also used on all Android versions below Android 14. The
+  broadcast receiver method is no longer used.
+
 ## [3.2.0](https://github.com/sds100/KeyMapper/releases/tag/v3.2.0)
 
 #### TO BE RELEASED

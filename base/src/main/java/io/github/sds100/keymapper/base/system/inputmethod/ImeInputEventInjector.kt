@@ -1,16 +1,9 @@
 package io.github.sds100.keymapper.base.system.inputmethod
 
-import android.content.Context
-import android.content.Intent
-import android.os.Build
 import android.os.SystemClock
 import android.view.KeyCharacterMap
 import android.view.KeyEvent
-import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.sds100.keymapper.common.utils.InputEventType
-import io.github.sds100.keymapper.system.inputevents.InputEventInjector
-import io.github.sds100.keymapper.system.inputevents.createKeyEvent
-import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
+import io.github.sds100.keymapper.base.input.InjectKeyEventModel
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
 import timber.log.Timber
@@ -23,33 +16,15 @@ import javax.inject.Singleton
  */
 @Singleton
 class ImeInputEventInjectorImpl @Inject constructor(
-    @ApplicationContext private val ctx: Context,
     private val keyEventRelayService: KeyEventRelayServiceWrapper,
     private val inputMethodAdapter: InputMethodAdapter,
 ) : ImeInputEventInjector {
-
     companion object {
-        // DON'T CHANGE THESE!!!
-        private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP =
-            "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN_UP"
-        private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN =
-            "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN"
-        private const val KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP =
-            "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_UP"
-        private const val KEY_MAPPER_INPUT_METHOD_ACTION_TEXT =
-            "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_TEXT"
-
-        private const val KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT =
-            "io.github.sds100.keymapper.inputmethod.EXTRA_KEY_EVENT"
-        private const val KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT =
-            "io.github.sds100.keymapper.inputmethod.EXTRA_TEXT"
-
         private const val CALLBACK_ID_INPUT_METHOD = "input_method"
     }
 
-    // TODO replace with a method that accepts KMKeyEvent
-    override suspend fun inputKeyEvent(model: InputKeyModel) {
-        Timber.d("Inject key event with input method ${KeyEvent.keyCodeToString(model.keyCode)}, $model")
+    override fun inputKeyEvent(event: InjectKeyEventModel) {
+        Timber.d("Inject key event with input method $event")
 
         val imePackageName = inputMethodAdapter.chosenIme.value?.packageName
 
@@ -58,79 +33,11 @@ class ImeInputEventInjectorImpl @Inject constructor(
             return
         }
 
-        // Only use the new key event relay service on Android 14+ because
-        // it introduced a 1 second delay for broadcasts to context-registered
-        // receivers.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            inputKeyEventRelayService(model, imePackageName)
-        } else {
-            inputKeyEventBroadcast(model, imePackageName)
-        }
-    }
-
-    private fun inputKeyEventBroadcast(model: InputKeyModel, imePackageName: String) {
-        val intentAction = when (model.inputType) {
-            InputEventType.DOWN -> KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN
-            InputEventType.DOWN_UP -> KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP
-            InputEventType.UP -> KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP
-        }
-
-        Intent(intentAction).apply {
-            setPackage(imePackageName)
-
-            val action = when (model.inputType) {
-                InputEventType.DOWN, InputEventType.DOWN_UP -> KeyEvent.ACTION_DOWN
-                InputEventType.UP -> KeyEvent.ACTION_UP
-            }
-
-            val eventTime = SystemClock.uptimeMillis()
-
-            val keyEvent = createKeyEvent(eventTime, action, model)
-
-            putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT, keyEvent)
-
-            ctx.sendBroadcast(this)
-        }
-    }
-
-    private fun inputKeyEventRelayService(model: InputKeyModel, imePackageName: String) {
-        val eventTime = SystemClock.uptimeMillis()
-
-        when (model.inputType) {
-            InputEventType.DOWN_UP -> {
-                val downKeyEvent = createKeyEvent(eventTime, KeyEvent.ACTION_DOWN, model)
-                keyEventRelayService.sendKeyEvent(
-                    downKeyEvent,
-                    imePackageName,
-                    CALLBACK_ID_INPUT_METHOD,
-                )
-
-                val upKeyEvent = createKeyEvent(eventTime, KeyEvent.ACTION_UP, model)
-                keyEventRelayService.sendKeyEvent(
-                    upKeyEvent,
-                    imePackageName,
-                    CALLBACK_ID_INPUT_METHOD,
-                )
-            }
-
-            InputEventType.DOWN -> {
-                val downKeyEvent = createKeyEvent(eventTime, KeyEvent.ACTION_DOWN, model)
-                keyEventRelayService.sendKeyEvent(
-                    downKeyEvent,
-                    imePackageName,
-                    CALLBACK_ID_INPUT_METHOD,
-                )
-            }
-
-            InputEventType.UP -> {
-                val upKeyEvent = createKeyEvent(eventTime, KeyEvent.ACTION_UP, model)
-                keyEventRelayService.sendKeyEvent(
-                    upKeyEvent,
-                    imePackageName,
-                    CALLBACK_ID_INPUT_METHOD,
-                )
-            }
-        }
+        keyEventRelayService.sendKeyEvent(
+            event.toAndroidKeyEvent(),
+            imePackageName,
+            CALLBACK_ID_INPUT_METHOD,
+        )
     }
 
     override fun inputText(text: String) {
@@ -143,25 +50,11 @@ class ImeInputEventInjectorImpl @Inject constructor(
             return
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            inputTextRelayService(text, imePackageName)
-        } else {
-            inputTextBroadcast(text, imePackageName)
-        }
-    }
-
-    private fun inputTextBroadcast(text: String, imePackageName: String) {
-        Intent(KEY_MAPPER_INPUT_METHOD_ACTION_TEXT).apply {
-            setPackage(imePackageName)
-
-            putExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT, text)
-            ctx.sendBroadcast(this)
-        }
+        inputTextRelayService(text, imePackageName)
     }
 
     private fun inputTextRelayService(text: String, imePackageName: String) {
         // taken from android.view.inputmethod.BaseInputConnection.sendCurrentText()
-
         if (text.isEmpty()) {
             return
         }
@@ -207,6 +100,7 @@ class ImeInputEventInjectorImpl @Inject constructor(
     }
 }
 
-interface ImeInputEventInjector : InputEventInjector {
+interface ImeInputEventInjector {
     fun inputText(text: String)
+    fun inputKeyEvent(event: InjectKeyEventModel)
 }

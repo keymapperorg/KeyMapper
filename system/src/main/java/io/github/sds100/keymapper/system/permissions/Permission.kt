@@ -12,6 +12,8 @@ enum class Permission {
     CALL_PHONE,
     ROOT,
     IGNORE_BATTERY_OPTIMISATION,
+
+    // TODO remove. Replace with System Bridge.
     SHIZUKU,
     ACCESS_FINE_LOCATION,
     ANSWER_PHONE_CALL,

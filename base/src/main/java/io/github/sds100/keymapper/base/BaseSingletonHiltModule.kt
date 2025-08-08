@@ -24,6 +24,8 @@ import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCaseImpl
+import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsUseCase
+import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsUseCaseImpl
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.base.system.accessibility.ControlAccessibilityServiceUseCaseImpl
@@ -152,4 +154,8 @@ abstract class BaseSingletonHiltModule {
     @Binds
     @Singleton
     abstract fun imeInputEvenInjector(impl: ImeInputEventInjectorImpl): ImeInputEventInjector
+
+    @Binds
+    @Singleton
+    abstract fun rerouteKeyEventsUseCase(impl: RerouteKeyEventsUseCaseImpl): RerouteKeyEventsUseCase
 }

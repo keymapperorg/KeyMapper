@@ -5,7 +5,6 @@ import android.os.RemoteException
 import android.view.KeyEvent
 import io.github.sds100.keymapper.base.BuildConfig
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
-import io.github.sds100.keymapper.common.utils.InputEventType
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
@@ -24,7 +23,6 @@ import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
-import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -91,6 +89,10 @@ class InputEventHubImpl @Inject constructor(
         }
     }
 
+    override fun isSystemBridgeConnected(): Boolean {
+        return systemBridge != null
+    }
+
     override fun onEvdevEventLoopStarted() {
         Timber.i("On evdev event loop started")
         invalidateGrabbedEvdevDevices()
@@ -114,7 +116,25 @@ class InputEventHubImpl @Inject constructor(
         val keyEvent: KMKeyEvent? = evdevKeyEventTracker.toKeyEvent(evdevEvent)
 
         if (keyEvent != null) {
-            onInputEvent(keyEvent, InputEventDetectionSource.EVDEV)
+            val consumed = onInputEvent(keyEvent, InputEventDetectionSource.EVDEV)
+
+            // Passthrough the key event if it is not consumed.
+            if (!consumed) {
+                if (logInputEventsEnabled.value) {
+                    Timber.d("Passthrough key event from evdev: ${keyEvent.keyCode}")
+                }
+                injectKeyEvent(
+                    InjectKeyEventModel(
+                        keyCode = keyEvent.keyCode,
+                        action = keyEvent.action,
+                        metaState = keyEvent.metaState,
+                        deviceId = keyEvent.deviceId,
+                        scanCode = keyEvent.scanCode,
+                        repeatCount = keyEvent.repeatCount,
+                        source = keyEvent.source
+                    )
+                )
+            }
         } else {
             onInputEvent(evdevEvent, InputEventDetectionSource.EVDEV)
         }
@@ -244,22 +264,6 @@ class InputEventHubImpl @Inject constructor(
         invalidateGrabbedEvdevDevices()
     }
 
-    override suspend fun injectEvent(event: KMInputEvent): KMResult<Boolean> {
-        when (event) {
-            is KMGamePadEvent -> {
-                throw IllegalArgumentException("KMGamePadEvents can not be injected. Must use an evdev event instead.")
-            }
-
-            is KMKeyEvent -> {
-                return injectKeyEvent(event)
-            }
-
-            is KMEvdevEvent -> {
-                return injectEvdevEvent(event)
-            }
-        }
-    }
-
     private fun invalidateGrabbedEvdevDevices() {
         val descriptors: Set<String> = clients.values.flatMap { it.grabbedEvdevDevices }.toSet()
 
@@ -284,7 +288,7 @@ class InputEventHubImpl @Inject constructor(
         }
     }
 
-    private fun injectEvdevEvent(event: KMEvdevEvent): KMResult<Boolean> {
+    override fun injectEvdevEvent(event: KMEvdevEvent): KMResult<Boolean> {
         val systemBridge = this.systemBridge
 
         if (systemBridge == null) {
@@ -303,34 +307,16 @@ class InputEventHubImpl @Inject constructor(
         }
     }
 
-    private suspend fun injectKeyEvent(event: KMKeyEvent): KMResult<Boolean> {
+    override fun injectKeyEvent(event: InjectKeyEventModel): KMResult<Boolean> {
         val systemBridge = this.systemBridge
 
         if (systemBridge == null) {
-            // TODO InputKeyModel will be removed
-            val action = if (event.action == KeyEvent.ACTION_DOWN) {
-                InputEventType.DOWN
-            } else {
-                InputEventType.UP
-            }
-
-            val model = InputKeyModel(
-                keyCode = event.keyCode,
-                inputType = action,
-                metaState = event.metaState,
-                deviceId = event.device?.id ?: -1,
-                scanCode = event.scanCode,
-                repeat = event.repeatCount,
-                source = event.source
-            )
-
-            imeInputEventInjector.inputKeyEvent(model)
-
+            imeInputEventInjector.inputKeyEvent(event)
             return Success(true)
         } else {
             try {
                 return systemBridge.injectInputEvent(
-                    event.toKeyEvent(),
+                    event.toAndroidKeyEvent(),
                     INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH
                 ).success()
             } catch (e: RemoteException) {
@@ -368,10 +354,12 @@ interface InputEventHub {
     fun setGrabbedEvdevDevices(clientId: String, deviceDescriptors: List<String>)
 
     /**
-     * Inject an input event. This may either use the key event relay service or the system
+     * Inject a key event. This may either use the key event relay service or the system
      * bridge depending on the permissions granted to Key Mapper.
      */
-    suspend fun injectEvent(event: KMInputEvent): KMResult<Boolean>
+    fun injectKeyEvent(event: InjectKeyEventModel): KMResult<Boolean>
+
+    fun injectEvdevEvent(event: KMEvdevEvent): KMResult<Boolean>
 
     /**
      * Send an input event to the connected clients.
@@ -379,4 +367,6 @@ interface InputEventHub {
      * @return whether the input event was consumed by a client.
      */
     fun onInputEvent(event: KMInputEvent, detectionSource: InputEventDetectionSource): Boolean
+
+    fun isSystemBridgeConnected(): Boolean
 }

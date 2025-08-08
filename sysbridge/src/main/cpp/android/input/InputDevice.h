@@ -39,10 +39,10 @@ namespace android {
         std::string name;
         std::string location;
         std::string uniqueId;
-        uint16_t bus;
-        uint16_t vendor;
-        uint16_t product;
-        uint16_t version;
+        int bus;
+        int vendor;
+        int product;
+        int version;
 
         // A composite input device descriptor string that uniquely identifies the device
         // even across reboots or reconnections.  The value of this field is used by

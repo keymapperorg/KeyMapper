@@ -17,10 +17,8 @@ import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapModel
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.detection.KeyMapAlgorithm
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
-import io.github.sds100.keymapper.base.trigger.AssistantTriggerKey
 import io.github.sds100.keymapper.base.trigger.EvdevTriggerKey
 import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
-import io.github.sds100.keymapper.base.trigger.FloatingButtonKey
 import io.github.sds100.keymapper.base.trigger.KeyEventTriggerDevice
 import io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey
 import io.github.sds100.keymapper.base.trigger.Trigger
@@ -32,7 +30,7 @@ import io.github.sds100.keymapper.base.utils.sequenceTrigger
 import io.github.sds100.keymapper.base.utils.singleKeyTrigger
 import io.github.sds100.keymapper.base.utils.triggerKey
 import io.github.sds100.keymapper.common.utils.InputDeviceInfo
-import io.github.sds100.keymapper.common.utils.InputEventType
+import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.system.camera.CameraLens
@@ -52,7 +50,6 @@ import kotlinx.coroutines.test.currentTime
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -985,11 +982,11 @@ class KeyMapAlgorithmTest {
 
             inOrder(performActionsUseCase) {
                 inputMotionEvent(axisHatX = -1.0f)
-                verify(performActionsUseCase, times(1)).perform(action.data, InputEventType.DOWN)
+                verify(performActionsUseCase, times(1)).perform(action.data, InputEventAction.DOWN)
 
                 delay(1000) // Hold down the DPAD button for 1 second.
                 inputMotionEvent(axisHatX = 0.0f)
-                verify(performActionsUseCase, times(1)).perform(action.data, InputEventType.UP)
+                verify(performActionsUseCase, times(1)).perform(action.data, InputEventAction.UP)
             }
         }
 
@@ -1341,12 +1338,11 @@ class KeyMapAlgorithmTest {
                 )
 
                 // If no triggers are detected
-
                 mockTriggerKeyInput(shorterTrigger.keys[0], 100L)
 
                 verify(performActionsUseCase, never()).perform(TEST_ACTION_2.data)
                 verify(performActionsUseCase, never()).perform(TEST_ACTION.data)
-                verify(detectKeyMapsUseCase, times(1)).imitateButtonPress(
+                verify(detectKeyMapsUseCase, times(2)).imitateButtonPress(
                     any(),
                     any(),
                     any(),
@@ -2044,7 +2040,14 @@ class KeyMapAlgorithmTest {
                 inputKeyEvent(keyCode = 1, action = KeyEvent.ACTION_UP)
 
                 // THEN
-                verify(detectKeyMapsUseCase, times(1)).imitateButtonPress(keyCode = 1)
+                verify(detectKeyMapsUseCase, times(1)).imitateButtonPress(
+                    keyCode = 1,
+                    action = KeyEvent.ACTION_DOWN
+                )
+                verify(detectKeyMapsUseCase, times(1)).imitateButtonPress(
+                    keyCode = 1,
+                    action = KeyEvent.ACTION_UP
+                )
                 verifyNoMoreInteractions()
 
                 // verify nothing happens and no key events are consumed when the 2nd key in the trigger is pressed
@@ -2053,8 +2056,22 @@ class KeyMapAlgorithmTest {
                 assertThat(inputKeyEvent(keyCode = 2, action = KeyEvent.ACTION_UP), `is`(false))
 
                 // THEN
-                verify(detectKeyMapsUseCase, never()).imitateButtonPress(keyCode = 1)
-                verify(detectKeyMapsUseCase, never()).imitateButtonPress(keyCode = 2)
+                verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+                    keyCode = 1,
+                    action = KeyEvent.ACTION_DOWN
+                )
+                verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+                    keyCode = 1,
+                    action = KeyEvent.ACTION_UP
+                )
+                verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+                    keyCode = 2,
+                    action = KeyEvent.ACTION_DOWN
+                )
+                verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+                    keyCode = 2,
+                    action = KeyEvent.ACTION_UP
+                )
                 verify(performActionsUseCase, never()).perform(action = TEST_ACTION.data)
 
                 // verify the action is performed and no keys are imitated when triggering the key map
@@ -2105,8 +2122,22 @@ class KeyMapAlgorithmTest {
             inputKeyEvent(keyCode = 2, action = KeyEvent.ACTION_UP)
 
             // THEN
-            verify(detectKeyMapsUseCase, never()).imitateButtonPress(keyCode = 1)
-            verify(detectKeyMapsUseCase, never()).imitateButtonPress(keyCode = 2)
+            verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+                keyCode = 1,
+                action = KeyEvent.ACTION_DOWN
+            )
+            verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+                keyCode = 1,
+                action = KeyEvent.ACTION_UP
+            )
+            verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+                keyCode = 2,
+                action = KeyEvent.ACTION_DOWN
+            )
+            verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+                keyCode = 2,
+                action = KeyEvent.ACTION_UP
+            )
         }
 
     /**
@@ -2568,7 +2599,7 @@ class KeyMapAlgorithmTest {
 
             verify(performActionsUseCase, times(1)).perform(
                 action.data,
-                InputEventType.DOWN,
+                InputEventAction.DOWN,
                 metaState,
             )
 
@@ -2576,13 +2607,13 @@ class KeyMapAlgorithmTest {
                 KeyEvent.KEYCODE_E,
                 metaState,
                 FAKE_KEYBOARD_DEVICE_ID,
-                InputEventType.DOWN,
+                KeyEvent.ACTION_DOWN,
                 scanCode = 33,
             )
 
             verify(performActionsUseCase, times(1)).perform(
                 action.data,
-                InputEventType.UP,
+                InputEventAction.UP,
                 0,
             )
 
@@ -2590,7 +2621,7 @@ class KeyMapAlgorithmTest {
                 KeyEvent.KEYCODE_E,
                 0,
                 FAKE_KEYBOARD_DEVICE_ID,
-                InputEventType.UP,
+                KeyEvent.ACTION_UP,
                 scanCode = 33,
             )
 
@@ -2637,7 +2668,7 @@ class KeyMapAlgorithmTest {
 
             verify(performActionsUseCase, times(1)).perform(
                 action.data,
-                InputEventType.DOWN,
+                InputEventAction.DOWN,
                 metaState,
             )
 
@@ -2645,7 +2676,7 @@ class KeyMapAlgorithmTest {
                 KeyEvent.KEYCODE_E,
                 metaState,
                 FAKE_KEYBOARD_DEVICE_ID,
-                InputEventType.DOWN,
+                KeyEvent.ACTION_DOWN,
                 scanCode = 33,
             )
 
@@ -2653,13 +2684,13 @@ class KeyMapAlgorithmTest {
                 KeyEvent.KEYCODE_E,
                 metaState,
                 FAKE_KEYBOARD_DEVICE_ID,
-                InputEventType.UP,
+                KeyEvent.ACTION_UP,
                 scanCode = 33,
             )
 
             verify(performActionsUseCase, times(1)).perform(
                 action.data,
-                InputEventType.UP,
+                InputEventAction.UP,
                 0,
             )
 
@@ -2783,7 +2814,7 @@ class KeyMapAlgorithmTest {
             // THEN
             verify(performActionsUseCase, times(1)).perform(
                 action.data,
-                InputEventType.DOWN,
+                InputEventAction.DOWN,
             )
 
             // WHEN
@@ -2791,7 +2822,7 @@ class KeyMapAlgorithmTest {
 
             verify(performActionsUseCase, times(1)).perform(
                 action.data,
-                InputEventType.UP,
+                InputEventAction.UP,
             )
         }
 
@@ -3230,10 +3261,16 @@ class KeyMapAlgorithmTest {
             advanceUntilIdle()
 
             // then
-            verify(
-                detectKeyMapsUseCase,
-                times(1),
-            ).imitateButtonPress(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)
+            verify(detectKeyMapsUseCase, times(1))
+                .imitateButtonPress(
+                    keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                    action = KeyEvent.ACTION_DOWN
+                )
+            verify(detectKeyMapsUseCase, times(1))
+                .imitateButtonPress(
+                    keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                    action = KeyEvent.ACTION_UP
+                )
         }
 
     @Test
@@ -3346,10 +3383,14 @@ class KeyMapAlgorithmTest {
             delay = 100L,
         )
 
-        verify(
-            detectKeyMapsUseCase,
-            times(1),
-        ).imitateButtonPress(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)
+        verify(detectKeyMapsUseCase, times(1))
+            .imitateButtonPress(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                action = KeyEvent.ACTION_DOWN
+            )
+
+        verify(detectKeyMapsUseCase, times(1))
+            .imitateButtonPress(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN, action = KeyEvent.ACTION_UP)
     }
 
     @Test

@@ -4,7 +4,7 @@ import io.github.sds100.keymapper.base.actions.Action
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.base.actions.RepeatMode
-import io.github.sds100.keymapper.common.utils.InputEventType
+import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import kotlinx.coroutines.CoroutineScope
@@ -75,13 +75,13 @@ class ParallelTriggerActionPerformer(
                     actionIsHeldDown[actionIndex] = true
                 }
 
-                val actionInputEventType = when {
-                    performUpAction -> InputEventType.UP
-                    action.holdDown -> InputEventType.DOWN
-                    else -> InputEventType.DOWN_UP
+                val actionInputEventAction = when {
+                    performUpAction -> InputEventAction.UP
+                    action.holdDown -> InputEventAction.DOWN
+                    else -> InputEventAction.DOWN_UP
                 }
 
-                performAction(action, actionInputEventType, metaState)
+                performAction(action, actionInputEventAction, metaState)
 
                 if (action.repeat && action.holdDown) {
                     delay(action.holdDownDuration?.toLong() ?: defaultHoldDownDuration.value)
@@ -124,13 +124,13 @@ class ParallelTriggerActionPerformer(
 
                 while (isActive && continueRepeating) {
                     if (action.holdDown) {
-                        performAction(action, InputEventType.DOWN, metaState)
+                        performAction(action, InputEventAction.DOWN, metaState)
                         delay(
                             action.holdDownDuration?.toLong() ?: defaultHoldDownDuration.value,
                         )
-                        performAction(action, InputEventType.UP, metaState)
+                        performAction(action, InputEventAction.UP, metaState)
                     } else {
-                        performAction(action, InputEventType.DOWN_UP, metaState)
+                        performAction(action, InputEventAction.DOWN_UP, metaState)
                     }
 
                     repeatCount++
@@ -159,7 +159,7 @@ class ParallelTriggerActionPerformer(
                     if (actionIsHeldDown[actionIndex]) {
                         actionIsHeldDown[actionIndex] = false
 
-                        performAction(action, InputEventType.UP, metaState)
+                        performAction(action, InputEventAction.UP, metaState)
                     }
                 }
             }
@@ -173,7 +173,7 @@ class ParallelTriggerActionPerformer(
         coroutineScope.launch {
             for ((index, isHeldDown) in actionIsHeldDown.withIndex()) {
                 if (isHeldDown) {
-                    performAction(actionList[index], inputEventType = InputEventType.UP, 0)
+                    performAction(actionList[index], inputEventAction = InputEventAction.UP, 0)
                 }
             }
         }
@@ -190,11 +190,11 @@ class ParallelTriggerActionPerformer(
 
     private suspend fun performAction(
         action: Action,
-        inputEventType: InputEventType,
+        inputEventAction: InputEventAction,
         metaState: Int,
     ) {
         repeat(action.multiplier ?: 1) {
-            useCase.perform(action.data, inputEventType, metaState)
+            useCase.perform(action.data, inputEventAction, metaState)
         }
     }
 }

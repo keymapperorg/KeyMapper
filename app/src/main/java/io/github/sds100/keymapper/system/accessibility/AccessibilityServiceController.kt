@@ -12,11 +12,10 @@ import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCaseImp
 import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeRecorder
 import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilityServiceController
+import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
-import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
-import io.github.sds100.keymapper.system.root.SuAdapter
 
 class AccessibilityServiceController @AssistedInject constructor(
     @Assisted
@@ -28,12 +27,11 @@ class AccessibilityServiceController @AssistedInject constructor(
     detectConstraintsUseCaseFactory: DetectConstraintsUseCaseImpl.Factory,
     fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
     pauseKeyMapsUseCase: PauseKeyMapsUseCase,
-    devicesAdapter: DevicesAdapter,
-    suAdapter: SuAdapter,
     settingsRepository: PreferenceRepository,
     systemBridgeSetupController: SystemBridgeSetupController,
     keyEventRelayServiceWrapper: KeyEventRelayServiceWrapper,
-    inputEventHub: InputEventHub
+    inputEventHub: InputEventHub,
+    recordTriggerController: RecordTriggerController
 ) : BaseAccessibilityServiceController(
     service = service,
     rerouteKeyEventsControllerFactory = rerouteKeyEventsControllerFactory,
@@ -43,13 +41,11 @@ class AccessibilityServiceController @AssistedInject constructor(
     detectConstraintsUseCaseFactory = detectConstraintsUseCaseFactory,
     fingerprintGesturesSupported = fingerprintGesturesSupported,
     pauseKeyMapsUseCase = pauseKeyMapsUseCase,
-    devicesAdapter = devicesAdapter,
-    suAdapter = suAdapter,
     settingsRepository = settingsRepository,
     systemBridgeSetupController = systemBridgeSetupController,
     keyEventRelayServiceWrapper = keyEventRelayServiceWrapper,
-    inputEventHub = inputEventHub
-
+    inputEventHub = inputEventHub,
+    recordTriggerController = recordTriggerController
 ) {
     @AssistedFactory
     interface Factory {

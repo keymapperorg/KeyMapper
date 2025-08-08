@@ -22,6 +22,7 @@ import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCaseImp
 import io.github.sds100.keymapper.base.keymaps.detection.KeyMapDetectionController
 import io.github.sds100.keymapper.base.keymaps.detection.TriggerKeyMapFromOtherAppsController
 import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsController
+import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.minusFlag
@@ -31,11 +32,9 @@ import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
-import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
-import io.github.sds100.keymapper.system.root.SuAdapter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -64,15 +63,13 @@ abstract class BaseAccessibilityServiceController(
     private val detectConstraintsUseCaseFactory: DetectConstraintsUseCaseImpl.Factory,
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
     private val pauseKeyMapsUseCase: PauseKeyMapsUseCase,
-    private val devicesAdapter: DevicesAdapter,
-    private val suAdapter: SuAdapter,
     private val settingsRepository: PreferenceRepository,
     private val systemBridgeSetupController: SystemBridgeSetupController,
     private val keyEventRelayServiceWrapper: KeyEventRelayServiceWrapper,
-    private val inputEventHub: InputEventHub
+    private val inputEventHub: InputEventHub,
+    private val recordTriggerController: RecordTriggerController
 ) {
     companion object {
-
         private const val DEFAULT_NOTIFICATION_TIMEOUT = 200L
         private const val CALLBACK_ID_ACCESSIBILITY_SERVICE = "accessibility_service"
     }
@@ -94,7 +91,8 @@ abstract class BaseAccessibilityServiceController(
         performActionsUseCase,
         detectConstraintsUseCase,
         inputEventHub,
-        pauseKeyMapsUseCase
+        pauseKeyMapsUseCase,
+        recordTriggerController
     )
 
     val triggerKeyMapFromOtherAppsController = TriggerKeyMapFromOtherAppsController(
@@ -174,7 +172,7 @@ abstract class BaseAccessibilityServiceController(
             override fun onKeyEvent(event: KeyEvent?): Boolean {
                 event ?: return false
 
-                val kmKeyEvent = KMKeyEvent.fromKeyEvent(event) ?: return false
+                val kmKeyEvent = KMKeyEvent.fromAndroidKeyEvent(event) ?: return false
                 return onKeyEventFromIme(kmKeyEvent)
             }
 

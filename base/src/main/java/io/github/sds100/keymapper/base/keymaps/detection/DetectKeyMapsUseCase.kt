@@ -11,14 +11,14 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.constraints.ConstraintState
 import io.github.sds100.keymapper.base.groups.Group
 import io.github.sds100.keymapper.base.groups.GroupEntityMapper
+import io.github.sds100.keymapper.base.input.InjectKeyEventModel
+import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.KeyMapEntityMapper
 import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
-import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.common.utils.InputEventType
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.data.Keys
@@ -27,12 +27,9 @@ import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.GroupRepository
 import io.github.sds100.keymapper.data.repositories.KeyMapRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
-import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.popup.ToastAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
-import io.github.sds100.keymapper.system.shizuku.ShizukuInputEventInjector
 import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import kotlinx.coroutines.CoroutineScope
@@ -41,12 +38,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
 class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
-    private val imeInputEventInjector: ImeInputEventInjector,
     @Assisted
     private val accessibilityService: IAccessibilityService,
     private val keyMapRepository: KeyMapRepository,
@@ -61,6 +55,7 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
     private val vibrator: VibratorAdapter,
     @Assisted
     private val coroutineScope: CoroutineScope,
+    private val inputEventHub: InputEventHub
 ) : DetectKeyMapsUseCase {
 
     @AssistedFactory
@@ -170,14 +165,9 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
     override val currentTime: Long
         get() = SystemClock.elapsedRealtime()
 
-    private val shizukuInputEventInjector = ShizukuInputEventInjector()
-
     private val openMenuHelper = OpenMenuHelper(
-        suAdapter,
         accessibilityService,
-        shizukuInputEventInjector,
-        permissionAdapter,
-        coroutineScope,
+        inputEventHub,
     )
 
     override val forceVibrate: Flow<Boolean> =
@@ -200,25 +190,22 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
         keyCode: Int,
         metaState: Int,
         deviceId: Int,
-        inputEventType: InputEventType,
+        action: Int,
         scanCode: Int,
         source: Int,
     ) {
-        val model = InputKeyModel(
-            keyCode,
-            inputEventType,
-            metaState,
-            deviceId,
-            scanCode,
+        val model = InjectKeyEventModel(
+            keyCode = keyCode,
+            action = action,
+            metaState = metaState,
+            deviceId = deviceId,
+            scanCode = scanCode,
             source = source,
         )
 
-        if (permissionAdapter.isGranted(Permission.SHIZUKU)) {
-            Timber.d("Imitate button press ${KeyEvent.keyCodeToString(keyCode)} with Shizuku, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode")
-
-            coroutineScope.launch {
-                shizukuInputEventInjector.inputKeyEvent(model)
-            }
+        if (inputEventHub.isSystemBridgeConnected()) {
+            Timber.d("Imitate button press ${KeyEvent.keyCodeToString(keyCode)} with system bridge, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode")
+            inputEventHub.injectKeyEvent(model)
         } else {
             Timber.d("Imitate button press ${KeyEvent.keyCodeToString(keyCode)}, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode")
 
@@ -235,9 +222,7 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
 
                 KeyEvent.KEYCODE_MENU -> openMenuHelper.openMenu()
 
-                else -> runBlocking {
-                    imeInputEventInjector.inputKeyEvent(model)
-                }
+                else -> inputEventHub.injectKeyEvent(model)
             }
         }
     }
@@ -265,7 +250,7 @@ interface DetectKeyMapsUseCase {
         keyCode: Int,
         metaState: Int = 0,
         deviceId: Int = 0,
-        inputEventType: InputEventType = InputEventType.DOWN_UP,
+        action: Int,
         scanCode: Int = 0,
         source: Int = InputDevice.SOURCE_UNKNOWN,
     )

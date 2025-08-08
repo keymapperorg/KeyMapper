@@ -6,7 +6,7 @@ import io.github.sds100.keymapper.base.actions.RepeatMode
 import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.base.constraints.isSatisfied
 import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCase
-import io.github.sds100.keymapper.common.utils.InputEventType
+import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -97,9 +97,9 @@ abstract class SimpleMappingController(
                     val alreadyBeingHeldDown = actionsBeingHeldDown.any { action.uid == it.uid }
 
                     val keyEventAction = when {
-                        action.holdDown && !alreadyBeingHeldDown -> InputEventType.DOWN
-                        alreadyBeingHeldDown -> InputEventType.UP
-                        else -> InputEventType.DOWN_UP
+                        action.holdDown && !alreadyBeingHeldDown -> InputEventAction.DOWN
+                        alreadyBeingHeldDown -> InputEventAction.UP
+                        else -> InputEventAction.DOWN_UP
                     }
 
                     when {
@@ -129,10 +129,10 @@ abstract class SimpleMappingController(
 
     private suspend fun performAction(
         action: Action,
-        inputEventType: InputEventType = InputEventType.DOWN_UP,
+        inputEventAction: InputEventAction = InputEventAction.DOWN_UP,
     ) {
         repeat(action.multiplier ?: 1) {
-            performActionsUseCase.perform(action.data, inputEventType)
+            performActionsUseCase.perform(action.data, inputEventAction)
         }
     }
 
@@ -149,15 +149,15 @@ abstract class SimpleMappingController(
 
         while (continueRepeating) {
             val keyEventAction = when {
-                holdDown -> InputEventType.DOWN
-                else -> InputEventType.DOWN_UP
+                holdDown -> InputEventAction.DOWN
+                else -> InputEventAction.DOWN_UP
             }
 
             performAction(action, keyEventAction)
 
             if (holdDown) {
                 delay(holdDownDuration)
-                performAction(action, InputEventType.UP)
+                performAction(action, InputEventAction.UP)
             }
 
             repeatCount++
@@ -186,7 +186,7 @@ abstract class SimpleMappingController(
 
         coroutineScope.launch {
             for (it in actionsBeingHeldDown) {
-                performAction(it, InputEventType.UP)
+                performAction(it, InputEventAction.UP)
             }
         }
 

@@ -7,7 +7,10 @@ import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.input.InputEventHubCallback
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
+import io.github.sds100.keymapper.base.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.base.trigger.EvdevTriggerKey
+import io.github.sds100.keymapper.base.trigger.RecordTriggerController
+import io.github.sds100.keymapper.base.trigger.RecordTriggerState
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
@@ -24,7 +27,8 @@ class KeyMapDetectionController(
     private val performActionsUseCase: PerformActionsUseCase,
     private val detectConstraints: DetectConstraintsUseCase,
     private val inputEventHub: InputEventHub,
-    private val pauseKeyMapsUseCase: PauseKeyMapsUseCase
+    private val pauseKeyMapsUseCase: PauseKeyMapsUseCase,
+    private val recordTriggerController: RecordTriggerController
 ) : InputEventHubCallback {
     companion object {
         private const val INPUT_EVENT_HUB_ID = "key_map_controller"
@@ -66,6 +70,10 @@ class KeyMapDetectionController(
             return false
         }
 
+        if (recordTriggerController.state.value is RecordTriggerState.CountingDown) {
+            return false
+        }
+
         if (event is KMKeyEvent) {
             return algorithm.onKeyEvent(event)
         } else {
@@ -75,6 +83,18 @@ class KeyMapDetectionController(
 
     fun onFingerprintGesture(type: FingerprintGestureType) {
         algorithm.onFingerprintGesture(type)
+    }
+
+    fun onFloatingButtonDown(button: String) {
+        algorithm.onFloatingButtonDown(button)
+    }
+
+    fun onFloatingButtonUp(button: String) {
+        algorithm.onFloatingButtonUp(button)
+    }
+
+    fun onAssistantEvent(event: AssistantTriggerType) {
+        algorithm.onAssistantEvent(event)
     }
 
     fun teardown() {

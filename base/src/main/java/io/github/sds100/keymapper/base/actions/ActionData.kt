@@ -48,6 +48,7 @@ sealed class ActionData : Comparable<ActionData> {
     data class InputKeyEvent(
         val keyCode: Int,
         val metaState: Int = 0,
+        // TODO remove this option
         val useShell: Boolean = false,
         val device: Device? = null,
     ) : ActionData() {

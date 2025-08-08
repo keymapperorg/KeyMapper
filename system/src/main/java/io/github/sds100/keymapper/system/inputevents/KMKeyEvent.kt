@@ -20,7 +20,7 @@ data class KMKeyEvent(
 ) : KMInputEvent {
 
     companion object {
-        fun fromKeyEvent(keyEvent: KeyEvent): KMKeyEvent? {
+        fun fromAndroidKeyEvent(keyEvent: KeyEvent): KMKeyEvent? {
             val device = keyEvent.device ?: return null
 
             return KMKeyEvent(
@@ -38,7 +38,7 @@ data class KMKeyEvent(
 
     override val deviceId: Int = device.id
 
-    fun toKeyEvent(): KeyEvent {
+    fun toAndroidKeyEvent(): KeyEvent {
         return KeyEvent(
             eventTime,
             eventTime,
@@ -46,7 +46,7 @@ data class KMKeyEvent(
             keyCode,
             repeatCount,
             metaState,
-            device?.id ?: -1,
+            device.id,
             scanCode,
             source
         )

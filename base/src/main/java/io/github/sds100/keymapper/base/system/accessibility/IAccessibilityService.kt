@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.system.accessibility
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import io.github.sds100.keymapper.common.utils.InputEventType
+import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.PinchScreenType
 import kotlinx.coroutines.flow.Flow
@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface IAccessibilityService {
     fun doGlobalAction(action: Int): KMResult<*>
 
-    fun tapScreen(x: Int, y: Int, inputEventType: InputEventType): KMResult<*>
+    fun tapScreen(x: Int, y: Int, inputEventAction: InputEventAction): KMResult<*>
 
     fun swipeScreen(
         xStart: Int,
@@ -19,7 +19,7 @@ interface IAccessibilityService {
         yEnd: Int,
         fingerCount: Int,
         duration: Int,
-        inputEventType: InputEventType,
+        inputEventAction: InputEventAction,
     ): KMResult<*>
 
     fun pinchScreen(
@@ -29,7 +29,7 @@ interface IAccessibilityService {
         pinchType: PinchScreenType,
         fingerCount: Int,
         duration: Int,
-        inputEventType: InputEventType,
+        inputEventAction: InputEventAction,
     ): KMResult<*>
 
     val isFingerprintGestureDetectionAvailable: Boolean

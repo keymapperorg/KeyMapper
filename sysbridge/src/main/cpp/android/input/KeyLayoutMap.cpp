@@ -279,8 +279,8 @@ namespace android {
         std::optional<int> keyCode = InputEventLookup::getKeyCodeByLabel(keyCodeToken.c_str());
 
         if (!keyCode) {
-            LOGW("%s: Unknown key code label %s", mTokenizer->getLocation().c_str(),
-                 keyCodeToken.c_str());
+//            LOGW("%s: Unknown key code label %s", mTokenizer->getLocation().c_str(),
+//                 keyCodeToken.c_str());
             // Do not crash at this point because there may be more flags afterwards that need parsing.
         }
 
