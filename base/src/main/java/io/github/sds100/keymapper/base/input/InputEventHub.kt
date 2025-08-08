@@ -342,10 +342,17 @@ class InputEventHubImpl @Inject constructor(
             return Success(true)
         } else {
             try {
-                Timber.d("Injecting input event ${event.keyCode} with system bridge")
+                val androidKeyEvent = event.toAndroidKeyEvent(flags = KeyEvent.FLAG_FROM_SYSTEM)
+
+                if (logInputEventsEnabled.value) {
+                    Timber.d("Injecting key event $androidKeyEvent with system bridge")
+                }
+
                 return withContext(Dispatchers.IO) {
+                    // All injected events have their device id set to -1 (VIRTUAL_KEYBOARD_ID)
+                    // in InputDispatcher.cpp injectInputEvent.
                     systemBridge.injectInputEvent(
-                        event.toAndroidKeyEvent(),
+                        androidKeyEvent,
                         INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH
                     ).success()
                 }

@@ -87,7 +87,7 @@ static int findEvdevDevice(
         // Check if it's a character device (input device)
         struct stat st{};
 
-        LOGD("Found input device: %s", fullPath);
+//        LOGD("Found input device: %s", fullPath);
 
         // Try to open the device to see if it's accessible
         int fd = open(fullPath, O_RDONLY);
