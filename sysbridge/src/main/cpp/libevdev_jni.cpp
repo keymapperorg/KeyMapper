@@ -381,6 +381,8 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLo
     evdevDevices->clear();
     close(commandEventFd);
     close(epollFd);
+
+    LOGI("Stopped evdev event loop");
 }
 
 void ungrabDevice(int deviceId) {

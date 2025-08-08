@@ -27,7 +27,6 @@ import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.GroupRepository
 import io.github.sds100.keymapper.data.repositories.KeyMapRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.popup.ToastAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
@@ -50,7 +49,6 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
     private val suAdapter: SuAdapter,
     private val volumeAdapter: VolumeAdapter,
     private val toastAdapter: ToastAdapter,
-    private val permissionAdapter: PermissionAdapter,
     private val resourceProvider: ResourceProvider,
     private val vibrator: VibratorAdapter,
     @Assisted
@@ -205,7 +203,7 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
 
         if (inputEventHub.isSystemBridgeConnected()) {
             Timber.d("Imitate button press ${KeyEvent.keyCodeToString(keyCode)} with system bridge, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode")
-            inputEventHub.injectKeyEvent(model)
+            inputEventHub.injectKeyEventAsync(model)
         } else {
             Timber.d("Imitate button press ${KeyEvent.keyCodeToString(keyCode)}, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode")
 
@@ -222,7 +220,7 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
 
                 KeyEvent.KEYCODE_MENU -> openMenuHelper.openMenu()
 
-                else -> inputEventHub.injectKeyEvent(model)
+                else -> inputEventHub.injectKeyEventAsync(model)
             }
         }
     }
