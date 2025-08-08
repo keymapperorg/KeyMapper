@@ -258,13 +258,9 @@ internal class SystemBridge : ISystemBridge.Stub() {
     override fun grabEvdevDevice(
         deviceId: Int,
     ): Boolean {
-        // Can not filter touchscreens because the volume and power buttons in the emulator come through touchscreen devices.
-        // Perhaps this will also happen on other real devices.
-
-        // TODO whenever grabbing a touchscreen device, duplicate the input device
         val inputDevice = inputManager.getInputDevice(deviceId) ?: return false
 
-        // Don't grab any virtual devices or udev devices
+        // Don't grab any virtual devices
         if (inputDevice.isVirtual) {
             Log.i(TAG, "Not grabbing virtual device: $deviceId")
             return false
@@ -280,7 +276,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
     }
 
     override fun ungrabAllEvdevDevices(): Boolean {
-        Log.i(TAG, "Start ungrab all evdev devices");
+        Log.i(TAG, "Start ungrab all evdev devices")
         ungrabAllEvdevDevicesNative()
         return true
     }

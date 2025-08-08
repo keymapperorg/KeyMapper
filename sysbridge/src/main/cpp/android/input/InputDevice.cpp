@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-#define LOG_TAG "InputDevice"
 
 #include <cstdlib>
 #include <unistd.h>
@@ -74,6 +73,7 @@ namespace android {
                                              suffix),
                                 type);
                 if (!versionPath.empty()) {
+                    LOGI("Found key layout map by version path %s", versionPath.c_str());
                     return versionPath;
                 }
             }
@@ -87,6 +87,7 @@ namespace android {
                                          suffix),
                             type);
             if (!productPath.empty()) {
+                LOGI("Found key layout map by product path %s", productPath.c_str());
                 return productPath;
             }
         }
@@ -97,6 +98,7 @@ namespace android {
                 type);
 
         if (!namePath.empty()) {
+            LOGI("Found key layout map by name path %s", namePath.c_str());
             return namePath;
         }
 

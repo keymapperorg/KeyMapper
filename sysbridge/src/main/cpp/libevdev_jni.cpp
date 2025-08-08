@@ -275,6 +275,7 @@ void handleCommand(const Command &cmd) {
         int evdevFd = libevdev_get_fd(dev);
         std::string klPath = android::getInputDeviceConfigurationFilePathByDeviceIdentifier(
                 data.identifier, android::InputDeviceConfigurationFileType::KEY_LAYOUT);
+
         auto klResult = android::KeyLayoutMap::load(klPath, nullptr);
 
         if (!klResult.ok()) {
@@ -347,8 +348,6 @@ void handleCommand(const Command &cmd) {
     }
 }
 
-// TODO create separate loops for handling evdev events and commands so that ungrabbing can work if one is still processing a stream a of evdev events.
-// The systemBridge should launch these loops on separate threads.
 extern "C"
 JNIEXPORT void JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLoop(JNIEnv *env,
