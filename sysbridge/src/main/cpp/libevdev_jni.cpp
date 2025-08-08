@@ -61,6 +61,8 @@ static std::mutex commandMutex;
 static std::map<int, struct DeviceContext> *evdevDevices = new std::map<int, struct DeviceContext>();
 static std::mutex evdevDevicesMutex;
 
+#define DEBUG_PROBE false
+
 static int findEvdevDevice(
         std::string name,
         int bus,
@@ -107,6 +109,11 @@ static int findEvdevDevice(
         int devVendor = libevdev_get_id_vendor(*outDev);
         int devProduct = libevdev_get_id_product(*outDev);
         int devBus = libevdev_get_id_bustype(*outDev);
+
+        if (DEBUG_PROBE) {
+            LOGD("Evdev device: %s, bus: %d, vendor: %d, product: %d, path: %s",
+                 devName, devBus, devVendor, devProduct, fullPath);
+        }
 
         if (devName != name ||
             devVendor != vendor ||
