@@ -159,6 +159,18 @@ class AndroidDevicesAdapter @Inject constructor(
         return InputDevice.getDevice(deviceId)?.let { InputDeviceUtils.createInputDeviceInfo(it) }
     }
 
+    override fun getInputDevicesNow(): List<InputDeviceInfo> {
+        val devices = mutableListOf<InputDeviceInfo>()
+
+        for (id in InputDevice.getDeviceIds()) {
+            val device = InputDevice.getDevice(id) ?: continue
+
+            devices.add(InputDeviceUtils.createInputDeviceInfo(device))
+        }
+
+        return devices
+    }
+
     private fun updateInputDevices() {
         val devices = mutableListOf<InputDeviceInfo>()
 

@@ -8,7 +8,6 @@ import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
-import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -141,26 +140,6 @@ class InputEventHubImpl @Inject constructor(
 
         if (keyEvent != null) {
             return onInputEvent(keyEvent, InputEventDetectionSource.EVDEV)
-
-            // Passthrough the key event if it is not consumed.
-//            if (!consumed) {
-//                if (logInputEventsEnabled.value) {
-//                    Timber.d("Passthrough key event from evdev: ${keyEvent.keyCode}")
-//                }
-//                runBlocking {
-//                    injectKeyEvent(
-//                        InjectKeyEventModel(
-//                            keyCode = keyEvent.keyCode,
-//                            action = keyEvent.action,
-//                            metaState = keyEvent.metaState,
-//                            deviceId = keyEvent.deviceId,
-//                            scanCode = keyEvent.scanCode,
-//                            repeatCount = keyEvent.repeatCount,
-//                            source = keyEvent.source
-//                        )
-//                    )
-//                }
-//            }
         } else {
             return onInputEvent(evdevEvent, InputEventDetectionSource.EVDEV)
         }
@@ -290,6 +269,7 @@ class InputEventHubImpl @Inject constructor(
         invalidateGrabbedEvdevDevices()
     }
 
+    // TODO invalidate when the input devices change
     private fun invalidateGrabbedEvdevDevices() {
         val descriptors: Set<String> = clients.values.flatMap { it.grabbedEvdevDevices }.toSet()
 
@@ -306,7 +286,9 @@ class InputEventHubImpl @Inject constructor(
                 return
             }
 
-            val inputDevices = devicesAdapter.connectedInputDevices.value.dataOrNull() ?: return
+            // Must make sure we get up to date input device information and not from the Flow
+            // that is updated by broadcast receiver
+            val inputDevices = devicesAdapter.getInputDevicesNow()
 
             for (descriptor in descriptors) {
                 val device = inputDevices.find { it.descriptor == descriptor } ?: continue

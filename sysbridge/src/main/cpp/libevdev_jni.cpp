@@ -46,6 +46,7 @@ struct DeviceContext {
     struct libevdev *evdev;
     struct libevdev_uinput *uinputDev;
     struct android::KeyLayoutMap keyLayoutMap;
+    char devicePath[256];
 };
 
 void ungrabDevice(jint device_id);
@@ -65,7 +66,8 @@ static int findEvdevDevice(
         int bus,
         int vendor,
         int product,
-        libevdev **outDev
+        libevdev **outDev,
+        char *outPath
 ) {
     DIR *dir = opendir("/dev/input");
 
@@ -106,7 +108,7 @@ static int findEvdevDevice(
         int devProduct = libevdev_get_id_product(*outDev);
         int devBus = libevdev_get_id_bustype(*outDev);
 
-        if (name != devName ||
+        if (devName != name ||
             devVendor != vendor ||
             devProduct != product ||
             // The hidden device bus field was only added to InputDevice.java in Android 14.
@@ -120,6 +122,7 @@ static int findEvdevDevice(
 
         closedir(dir);
 
+        strcpy(outPath, fullPath);
         return 0;
     }
 
@@ -238,30 +241,31 @@ void handleCommand(const Command &cmd) {
     if (cmd.type == GRAB) {
         const GrabData &data = std::get<GrabData>(cmd.data);
 
-        {
-            std::lock_guard<std::mutex> lock(evdevDevicesMutex);
-            for (auto pair: *evdevDevices) {
-                DeviceContext context = pair.second;
-                if (context.inputDeviceIdentifier.name == data.identifier.name
-                    && context.inputDeviceIdentifier.bus == data.identifier.bus
-                    && context.inputDeviceIdentifier.vendor == data.identifier.vendor
-                    && context.inputDeviceIdentifier.product == data.identifier.product) {
-                    LOGW("Device %s is already grabbed. Maybe it is a virtual uinput device.",
-                         data.identifier.name.c_str());
-                    return;
-                }
-            }
-        }
-
         struct libevdev *dev = nullptr;
+        char devicePath[256];
+
         int rc = findEvdevDevice(data.identifier.name,
                                  data.identifier.bus,
                                  data.identifier.vendor,
                                  data.identifier.product,
-                                 &dev);
+                                 &dev,
+                                 devicePath);
         if (rc < 0) {
             LOGE("Failed to find device for grab command");
             return;
+        }
+
+        {
+            std::lock_guard<std::mutex> lock(evdevDevicesMutex);
+            for (const auto &pair: *evdevDevices) {
+                DeviceContext context = pair.second;
+                if (strcmp(context.devicePath, devicePath) == 0) {
+                    LOGW("Device %s %s is already grabbed. Maybe it is a virtual uinput device.",
+                         data.identifier.name.c_str(),
+                         devicePath);
+                    return;
+                }
+            }
         }
 
         rc = libevdev_grab(dev, LIBEVDEV_GRAB);
@@ -305,8 +309,10 @@ void handleCommand(const Command &cmd) {
                 data.identifier,
                 dev,
                 uinputDev,
-                *klResult.value()
+                *klResult.value(),
         };
+
+        strcpy(context.devicePath, devicePath);
 
         struct epoll_event event{};
         event.events = EPOLLIN;
@@ -321,7 +327,10 @@ void handleCommand(const Command &cmd) {
         std::lock_guard<std::mutex> lock(evdevDevicesMutex);
         evdevDevices->insert_or_assign(evdevFd, context);
 
-        LOGI("Grabbed device %d", context.deviceId);
+        // TODO add device input file to epoll so the state is cleared when it is disconnected. Remember to remove the epoll after it has disconnected.
+
+        LOGI("Grabbed device %d, %s, %s", context.deviceId,
+             context.inputDeviceIdentifier.name.c_str(), context.devicePath);
 
     } else if (cmd.type == UNGRAB) {
 
