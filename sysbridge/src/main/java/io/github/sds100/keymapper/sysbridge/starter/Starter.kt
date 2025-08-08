@@ -48,8 +48,9 @@ internal object Starter {
         val sh = writeScript(context, File(dir, "start.sh"), starter)
         val apkPath = context.applicationInfo.sourceDir
         val libPath = context.applicationInfo.nativeLibraryDir
+        val packageName = context.applicationInfo.packageName
 
-        commandInternal[1] = "sh $sh --apk=$apkPath --lib=$libPath"
+        commandInternal[1] = "sh $sh --apk=$apkPath --lib=$libPath --package=$packageName"
         logd(commandInternal[1]!!)
     }
 

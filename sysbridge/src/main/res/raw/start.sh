@@ -39,7 +39,8 @@ fi
 
 if [ -f $STARTER_PATH ]; then
   echo "info: exec $STARTER_PATH"
-    $STARTER_PATH "$1" "$2"
+    # Pass apk path, library path, and package name
+    $STARTER_PATH "$1" "$2" "$3"
     result=$?
     if [ ${result} -ne 0 ]; then
         echo "info: keymapper_sysbridge_starter exit with non-zero value $result"

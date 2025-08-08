@@ -36,6 +36,8 @@ import kotlin.system.exitProcess
 internal class SystemBridge : ISystemBridge.Stub() {
 
     // TODO observe if Key Mapper is uninstalled and stop the process. Look at ApkChangedObservers in Shizuku code.
+    // TODO every minute ping key mapper and if no response then stop the process.
+    // TODO if no response when sending to the callback, stop the process.
 
     // TODO return error code and map this to a SystemBridgeError in key mapper
     external fun grabEvdevDeviceNative(
@@ -50,11 +52,13 @@ internal class SystemBridge : ISystemBridge.Stub() {
     external fun stopEvdevEventLoop()
 
     companion object {
-        private const val TAG: String = "SystemBridge"
+        private const val TAG: String = "KeyMapperSystemBridge"
+        private val packageName: String? = System.getProperty("keymapper_sysbridge.package")
 
         @JvmStatic
         fun main(args: Array<String>) {
-            DdmHandleAppName.setAppName("keymapper_sysbridge", 0)
+            Log.i(TAG, "Sysbridge package name = $packageName")
+            DdmHandleAppName.setAppName("keymapper_sysbridge", packageName, 0)
             @Suppress("DEPRECATION")
             Looper.prepareMainLooper()
             SystemBridge()
@@ -170,8 +174,11 @@ internal class SystemBridge : ISystemBridge.Stub() {
     }
 
     init {
+        val libraryPath = System.getProperty("keymapper_sysbridge.library.path")
         @SuppressLint("UnsafeDynamicallyLoadedCode")
-        System.load("${System.getProperty("keymapper_sysbridge.library.path")}/libevdev.so")
+        System.load("$libraryPath/libevdev.so")
+
+
         Log.i(TAG, "SystemBridge started")
 
         waitSystemService("package")
@@ -202,8 +209,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
         mainHandler.post {
             for (userId in UserManagerApis.getUserIdsNoThrow()) {
-                // TODO use correct package name
-                sendBinderToApp(this, "io.github.sds100.keymapper.debug", userId)
+                sendBinderToApp(this, packageName, userId)
             }
         }
     }

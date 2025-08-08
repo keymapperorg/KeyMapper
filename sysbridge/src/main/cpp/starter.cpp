@@ -30,8 +30,6 @@
 #define EXIT_FATAL_KILL 9
 #define EXIT_FATAL_BINDER_BLOCKED_BY_SELINUX 10
 
-// TODO take package name as argument
-#define PACKAGE_NAME "io.github.sds100.keymapper.debug"
 #define SERVER_NAME "keymapper_sysbridge"
 #define SERVER_CLASS_PATH "io.github.sds100.keymapper.sysbridge.service.SystemBridge"
 
@@ -46,7 +44,7 @@
 #endif
 
 static void run_server(const char *apk_path, const char *lib_path, const char *main_class,
-                       const char *process_name) {
+        const char *process_name, const char *package_name) {
     if (setenv("CLASSPATH", apk_path, true)) {
         LOGE("can't set CLASSPATH\n");
         exit(EXIT_FATAL_SET_CLASSPATH);
@@ -97,6 +95,7 @@ v_current = (uintptr_t) v + v_size - sizeof(char *); \
     ARG_PUSH(argv, "/system/bin/app_process")
     ARG_PUSH_FMT(argv, "-Djava.class.path=%s", apk_path)
     ARG_PUSH_FMT(argv, "-Dkeymapper_sysbridge.library.path=%s", lib_path)
+    ARG_PUSH_FMT(argv, "-Dkeymapper_sysbridge.package=%s", package_name)
     ARG_PUSH_DEBUG_VM_PARAMS(argv)
     ARG_PUSH(argv, "/system/bin")
     ARG_PUSH_FMT(argv, "--nice-name=%s", process_name)
@@ -112,11 +111,11 @@ v_current = (uintptr_t) v + v_size - sizeof(char *); \
 }
 
 static void start_server(const char *apk_path, const char *lib_path, const char *main_class,
-                         const char *process_name) {
+        const char *process_name, const char *package_name) {
 
     if (daemon(false, false) == 0) {
         LOGD("child");
-        run_server(apk_path, lib_path, main_class, process_name);
+        run_server(apk_path, lib_path, main_class, process_name, package_name);
     } else {
         perrorf("fatal: can't fork\n");
         exit(EXIT_FATAL_FORK);
@@ -171,6 +170,7 @@ char *context = nullptr;
 int starter_main(int argc, char *argv[]) {
     char *apk_path = nullptr;
     char *lib_path = nullptr;
+    char *package_name = nullptr;
 
     // Get the apk path from the program arguments. This gets the path by setting the
     // start of the apk path array to after the "--apk=" by offsetting by 6 characters.
@@ -179,10 +179,14 @@ int starter_main(int argc, char *argv[]) {
             apk_path = argv[i] + 6;
         } else if (strncmp(argv[i], "--lib=", 6) == 0) {
             lib_path = argv[i] + 6;
+        } else if (strncmp(argv[i], "--package=", 10) == 0) {
+            package_name = argv[i] + 10;
         }
     }
 
     printf("info: apk path = %s\n", apk_path);
+    printf("info: lib path = %s\n", lib_path);
+    printf("info: package name = %s\n", package_name);
 
     int uid = getuid();
     if (uid != 0 && uid != 2000) {
@@ -195,7 +199,7 @@ int starter_main(int argc, char *argv[]) {
     if (uid == 0) {
         chown("/data/local/tmp/keymapper_sysbridge_starter", 2000, 2000);
         se::setfilecon("/data/local/tmp/keymapper_sysbridge_starter",
-                       "u:object_r:shell_data_file:s0");
+                "u:object_r:shell_data_file:s0");
         switch_cgroup();
 
         int sdkLevel = 0;
@@ -269,19 +273,6 @@ int starter_main(int argc, char *argv[]) {
     }
 
     if (!apk_path) {
-        auto f = popen("pm path " PACKAGE_NAME, "r");
-        if (f) {
-            char line[PATH_MAX]{0};
-            fgets(line, PATH_MAX, f);
-            trim(line);
-            if (strstr(line, "package:") == line) {
-                apk_path = line + strlen("package:");
-            }
-            pclose(f);
-        }
-    }
-
-    if (!apk_path) {
         perrorf("fatal: can't get path of manager\n");
         exit(EXIT_FATAL_PM_PATH);
     }
@@ -301,7 +292,7 @@ int starter_main(int argc, char *argv[]) {
     printf("info: starting server...\n");
     fflush(stdout);
     LOGD("start_server");
-    start_server(apk_path, lib_path, SERVER_CLASS_PATH, SERVER_NAME);
+    start_server(apk_path, lib_path, SERVER_CLASS_PATH, SERVER_NAME, package_name);
     exit(EXIT_SUCCESS);
 }
 
