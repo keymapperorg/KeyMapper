@@ -37,18 +37,4 @@ data class KMKeyEvent(
     }
 
     override val deviceId: Int = device.id
-
-    fun toAndroidKeyEvent(): KeyEvent {
-        return KeyEvent(
-            eventTime,
-            eventTime,
-            action,
-            keyCode,
-            repeatCount,
-            metaState,
-            device.id,
-            scanCode,
-            source
-        )
-    }
 }

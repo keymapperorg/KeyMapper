@@ -14,12 +14,22 @@ class EvdevKeyEventTracker(
     private val inputDeviceCache: InputDeviceCache
 ) {
 
+    companion object {
+        private val IGNORED_CODES: Set<Int> = setOf(
+            330 // BTN_TOUCH. This is sent when you sometimes tap the touch screen.
+        )
+    }
+
     fun toKeyEvent(event: KMEvdevEvent): KMKeyEvent? {
         if (!event.isKeyEvent) {
             return null
         }
 
         if (event.androidCode == null) {
+            return null
+        }
+
+        if (IGNORED_CODES.contains(event.code)) {
             return null
         }
 

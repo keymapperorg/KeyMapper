@@ -57,6 +57,11 @@ class RecordTriggerControllerImpl @Inject constructor(
     private val recordedKeys: MutableList<RecordedKey> = mutableListOf()
     override val onRecordKey: MutableSharedFlow<RecordedKey> = MutableSharedFlow()
 
+    /**
+     * The keys that are currently being held down. They are removed from the set when the up event
+     * is received and it is cleared when recording starts.
+     */
+    private val downKeyEvents: MutableSet<KMKeyEvent> = mutableSetOf()
     private val dpadMotionEventTracker: DpadMotionEventTracker = DpadMotionEventTracker()
 
     override fun onInputEvent(
@@ -92,10 +97,30 @@ class RecordTriggerControllerImpl @Inject constructor(
             }
 
             is KMKeyEvent -> {
+                val matchingDownEvent: KMKeyEvent? = downKeyEvents.find {
+                    it.keyCode == event.keyCode &&
+                        it.scanCode == event.scanCode &&
+                        it.deviceId == event.deviceId &&
+                        it.source == event.source
+                }
+
+                // Must also remove old down events if a new down even is received.
+                if (matchingDownEvent != null) {
+                    downKeyEvents.remove(matchingDownEvent)
+                }
+                
                 if (event.action == KeyEvent.ACTION_DOWN) {
-                    val recordedKey =
-                        createRecordedKey(event, detectionSource)
-                    onRecordKey(recordedKey)
+                    downKeyEvents.add(event)
+                } else if (event.action == KeyEvent.ACTION_UP) {
+
+                    // Only record the key if there is a matching down event.
+                    // Do not do this when recording motion events from the input method
+                    // or Activity because they intentionally only input a down event.
+                    if (matchingDownEvent != null) {
+                        val recordedKey = createRecordedKey(event, detectionSource)
+                        onRecordKey(recordedKey)
+                    }
+
                 }
                 return true
             }
@@ -185,6 +210,7 @@ class RecordTriggerControllerImpl @Inject constructor(
     private fun recordTriggerJob(): Job = coroutineScope.launch(Dispatchers.Default) {
         recordedKeys.clear()
         dpadMotionEventTracker.reset()
+        downKeyEvents.clear()
 
         inputEventHub.registerClient(INPUT_EVENT_HUB_ID, this@RecordTriggerControllerImpl)
 
@@ -204,6 +230,7 @@ class RecordTriggerControllerImpl @Inject constructor(
             delay(1000)
         }
 
+        downKeyEvents.clear()
         dpadMotionEventTracker.reset()
         inputEventHub.unregisterClient(INPUT_EVENT_HUB_ID)
         state.update { RecordTriggerState.Completed(recordedKeys) }

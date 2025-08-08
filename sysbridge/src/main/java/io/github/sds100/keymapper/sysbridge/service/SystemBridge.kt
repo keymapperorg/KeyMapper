@@ -257,6 +257,9 @@ internal class SystemBridge : ISystemBridge.Stub() {
     ): Boolean {
         // Can not filter touchscreens because the volume and power buttons in the emulator come through touchscreen devices.
         // Perhaps this will also happen on other real devices.
+
+        // TODO whenever grabbing a touchscreen device, duplicate the input device
+
         return grabEvdevDeviceNative(buildInputDeviceIdentifier(deviceId))
     }
 

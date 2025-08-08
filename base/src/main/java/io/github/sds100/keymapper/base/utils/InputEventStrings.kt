@@ -362,7 +362,7 @@ object InputEventStrings {
         KeyEvent.KEYCODE_MACRO_3 to "Macro 3",
         KeyEvent.KEYCODE_MACRO_4 to "Macro 4",
         KeyEvent.KEYCODE_EMOJI_PICKER to "Emoji Picker",
-        KeyEvent.KEYCODE_SCREENSHOT to "Screenshot"
+        KeyEvent.KEYCODE_SCREENSHOT to "Screenshot",
     )
 
 
