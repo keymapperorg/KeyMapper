@@ -1,0 +1,54 @@
+name: User experience complaint
+description: Use this template if you found the app hard to use or confusing
+labels: ["user experience", "needs triage"]
+assignees:
+  - jambl3r
+
+body:
+  - type: checkboxes
+    id: screening
+    attributes:
+      label: Have you checked if an issue already exists for this problem?
+      description: Please search to see if someone has already reported this problem. If they have, you can speed up improving the app by commenting on that issue.
+      options:
+        - label: Nobody else has reported this problem before
+          required: true
+
+  - type: textarea
+    id: complaint
+    attributes:
+      label: What problem did you face using the app?
+      description: If something was confusing or difficult, please explain in as much detail as you can what you found difficult.
+
+  - type: textarea
+    id: improvements
+    attributes:
+      label: What do you think would make the experience easier for you?
+      description: Feel free to share your ideas, you can use examples of good experiences elsewhere in the app or in other apps or your every day life.
+
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: You can find the app version on the About page
+      placeholder: 3.2.1 999
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Device model and manufacturer
+      description: What model is your device? Be as specific as you can
+      placeholder: Xiaomi, Samsung Galaxy, etc.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: extras
+    attributes:
+      label: Extra info
+      description: It would help us even more if you could check the boxes that apply to you.
+      options:
+        - label: My device is rooted
+          required: false
