@@ -144,12 +144,13 @@ class RecordTriggerControllerImpl @Inject constructor(
     }
 
     override suspend fun stopRecording(): KMResult<*> {
+        recordingTriggerJob?.cancel()
+        recordingTriggerJob = null
+
         dpadMotionEventTracker.reset()
         inputEventHub.unregisterClient(INPUT_EVENT_HUB_ID)
         state.update { RecordTriggerState.Completed(recordedKeys) }
 
-        recordingTriggerJob?.cancel()
-        recordingTriggerJob = null
         return Success(Unit)
     }
 

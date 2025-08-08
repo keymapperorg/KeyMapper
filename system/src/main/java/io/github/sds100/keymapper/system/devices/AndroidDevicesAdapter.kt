@@ -123,6 +123,20 @@ class AndroidDevicesAdapter @Inject constructor(
         }.launchIn(coroutineScope)
     }
 
+    fun logConnectedInputDevices() {
+        val deviceIds = inputManager?.inputDeviceIds ?: return
+        for (deviceId in deviceIds) {
+            val device = InputDevice.getDevice(deviceId) ?: continue
+
+            val supportedSources: String = InputDeviceUtils.SOURCE_NAMES
+                .filter { device.supportsSource(it.key) }
+                .values
+                .joinToString()
+
+            Timber.d("Input device: ${device.id} ${device.name} Vendor=${device.vendorId} Product=${device.productId} Descriptor=${device.descriptor} Sources=$supportedSources")
+        }
+    }
+
     override fun deviceHasKey(id: Int, keyCode: Int): Boolean {
         val device = InputDevice.getDevice(id) ?: return false
 
@@ -150,13 +164,6 @@ class AndroidDevicesAdapter @Inject constructor(
 
         for (id in InputDevice.getDeviceIds()) {
             val device = InputDevice.getDevice(id) ?: continue
-
-            val supportedSources: String = InputDeviceUtils.SOURCE_NAMES
-                .filter { device.supportsSource(it.key) }
-                .values
-                .joinToString()
-
-            Timber.d("Input device: $id ${device.name} Vendor=${device.vendorId} Product=${device.productId} Descriptor=${device.descriptor} Sources=$supportedSources")
 
             devices.add(InputDeviceUtils.createInputDeviceInfo(device))
         }

@@ -12,6 +12,7 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.ServiceManager
 import android.util.Log
+import android.view.InputDevice
 import android.view.InputEvent
 import io.github.sds100.keymapper.common.utils.getBluetoothAddress
 import io.github.sds100.keymapper.common.utils.getDeviceBus
@@ -40,6 +41,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
     // TODO if no response when sending to the callback, stop the process.
 
     // TODO return error code and map this to a SystemBridgeError in key mapper
+
     external fun grabEvdevDeviceNative(
         deviceIdentifier: InputDeviceIdentifier
     ): Boolean
@@ -252,6 +254,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
         }
     }
 
+    // TODO passthrough a timeout that will automatically ungrab after that time.
     override fun grabEvdevDevice(
         deviceId: Int,
     ): Boolean {
@@ -259,8 +262,16 @@ internal class SystemBridge : ISystemBridge.Stub() {
         // Perhaps this will also happen on other real devices.
 
         // TODO whenever grabbing a touchscreen device, duplicate the input device
+        val inputDevice = inputManager.getInputDevice(deviceId) ?: return false
 
-        return grabEvdevDeviceNative(buildInputDeviceIdentifier(deviceId))
+        // Don't grab any virtual devices or udev devices
+        if (inputDevice.isVirtual) {
+            Log.i(TAG, "Not grabbing virtual device: $deviceId")
+            return false
+        }
+
+        val deviceIdentifier = buildInputDeviceIdentifier(inputDevice) ?: return false
+        return grabEvdevDeviceNative(deviceIdentifier)
     }
 
     override fun ungrabEvdevDevice(deviceId: Int): Boolean {
@@ -269,23 +280,21 @@ internal class SystemBridge : ISystemBridge.Stub() {
     }
 
     override fun ungrabAllEvdevDevices(): Boolean {
+        Log.i(TAG, "Start ungrab all evdev devices");
         ungrabAllEvdevDevicesNative()
         return true
     }
 
-    private fun buildInputDeviceIdentifier(deviceId: Int): InputDeviceIdentifier {
-        val inputDevice = inputManager.getInputDevice(deviceId)
-
-        val deviceIdentifier = InputDeviceIdentifier(
-            id = deviceId,
-            name = inputDevice.name,
+    private fun buildInputDeviceIdentifier(inputDevice: InputDevice): InputDeviceIdentifier? {
+        return InputDeviceIdentifier(
+            id = inputDevice.id,
+            name = inputDevice.name ?: return null,
             vendor = inputDevice.vendorId,
             product = inputDevice.productId,
-            descriptor = inputDevice.descriptor,
+            descriptor = inputDevice.descriptor ?: return null,
             bus = inputDevice.getDeviceBus(),
             bluetoothAddress = inputDevice.getBluetoothAddress()
         )
-        return deviceIdentifier
     }
 
     override fun injectInputEvent(event: InputEvent?, mode: Int): Boolean {

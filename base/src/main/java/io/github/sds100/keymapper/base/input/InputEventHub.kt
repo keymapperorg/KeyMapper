@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.util.concurrent.ConcurrentHashMap
@@ -131,7 +130,7 @@ class InputEventHubImpl @Inject constructor(
         code: Int,
         value: Int,
         androidCode: Int
-    ) {
+    ): Boolean {
         val evdevEvent = KMEvdevEvent(deviceId, type, code, value, androidCode, timeSec, timeUsec)
 
         if (logInputEventsEnabled.value) {
@@ -141,29 +140,29 @@ class InputEventHubImpl @Inject constructor(
         val keyEvent: KMKeyEvent? = evdevKeyEventTracker.toKeyEvent(evdevEvent)
 
         if (keyEvent != null) {
-            val consumed = onInputEvent(keyEvent, InputEventDetectionSource.EVDEV)
+            return onInputEvent(keyEvent, InputEventDetectionSource.EVDEV)
 
             // Passthrough the key event if it is not consumed.
-            if (!consumed) {
-                if (logInputEventsEnabled.value) {
-                    Timber.d("Passthrough key event from evdev: ${keyEvent.keyCode}")
-                }
-                runBlocking {
-                    injectKeyEvent(
-                        InjectKeyEventModel(
-                            keyCode = keyEvent.keyCode,
-                            action = keyEvent.action,
-                            metaState = keyEvent.metaState,
-                            deviceId = keyEvent.deviceId,
-                            scanCode = keyEvent.scanCode,
-                            repeatCount = keyEvent.repeatCount,
-                            source = keyEvent.source
-                        )
-                    )
-                }
-            }
+//            if (!consumed) {
+//                if (logInputEventsEnabled.value) {
+//                    Timber.d("Passthrough key event from evdev: ${keyEvent.keyCode}")
+//                }
+//                runBlocking {
+//                    injectKeyEvent(
+//                        InjectKeyEventModel(
+//                            keyCode = keyEvent.keyCode,
+//                            action = keyEvent.action,
+//                            metaState = keyEvent.metaState,
+//                            deviceId = keyEvent.deviceId,
+//                            scanCode = keyEvent.scanCode,
+//                            repeatCount = keyEvent.repeatCount,
+//                            source = keyEvent.source
+//                        )
+//                    )
+//                }
+//            }
         } else {
-            onInputEvent(evdevEvent, InputEventDetectionSource.EVDEV)
+            return onInputEvent(evdevEvent, InputEventDetectionSource.EVDEV)
         }
     }
 
@@ -299,7 +298,13 @@ class InputEventHubImpl @Inject constructor(
         }
 
         try {
-            systemBridge?.ungrabAllEvdevDevices()
+            val ungrabResult = systemBridge?.ungrabAllEvdevDevices()
+            Timber.i("Ungrabbed all evdev devices: $ungrabResult")
+
+            if (ungrabResult != true) {
+                Timber.e("Failed to ungrab all evdev devices before grabbing.")
+                return
+            }
 
             val inputDevices = devicesAdapter.connectedInputDevices.value.dataOrNull() ?: return
 
@@ -311,7 +316,7 @@ class InputEventHubImpl @Inject constructor(
                 Timber.i("Grabbed evdev device ${device.name}: $grabResult")
             }
         } catch (_: RemoteException) {
-            Timber.e("Failed to grab device. Is the system bridge dead?")
+            Timber.e("Failed to invalidate grabbed device. Is the system bridge dead?")
         }
     }
 
