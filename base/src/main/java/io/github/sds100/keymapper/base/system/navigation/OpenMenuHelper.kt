@@ -35,8 +35,8 @@ class OpenMenuHelper(
 
                 val upEvent = downEvent.copy(action = KeyEvent.ACTION_UP)
 
-                return inputEventHub.injectKeyEvent(downEvent).then {
-                    inputEventHub.injectKeyEvent(upEvent)
+                return inputEventHub.injectKeyEventAsync(downEvent).then {
+                    inputEventHub.injectKeyEventAsync(upEvent)
                 }
             }
 

@@ -168,10 +168,10 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 )
 
                 if (inputEventAction == InputEventAction.DOWN_UP) {
-                    result =
-                        injectKeyEvent(model).then { injectKeyEvent(model.copy(action = KeyEvent.ACTION_UP)) }
+                    result = inputEventHub.injectKeyEvent(model)
+                        .then { inputEventHub.injectKeyEvent(model.copy(action = KeyEvent.ACTION_UP)) }
                 } else {
-                    result = injectKeyEvent(model)
+                    result = inputEventHub.injectKeyEvent(model)
                 }
             }
 
@@ -867,19 +867,6 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
         }
 
         result.showErrorMessageOnFail()
-    }
-
-    private fun injectKeyEvent(model: InjectKeyEventModel): KMResult<Any?> {
-        return when {
-            inputEventHub.isSystemBridgeConnected() -> {
-                return inputEventHub.injectKeyEvent(model)
-            }
-
-            else -> {
-                keyMapperImeMessenger.inputKeyEvent(model)
-                Success(Unit)
-            }
-        }
     }
 
     override fun getErrorSnapshot(): ActionErrorSnapshot {

@@ -58,7 +58,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
         @JvmStatic
         fun main(args: Array<String>) {
             Log.i(TAG, "Sysbridge package name = $packageName")
-            DdmHandleAppName.setAppName("keymapper_sysbridge", packageName, 0)
+            DdmHandleAppName.setAppName("keymapper_sysbridge", 0)
             @Suppress("DEPRECATION")
             Looper.prepareMainLooper()
             SystemBridge()
@@ -214,8 +214,6 @@ internal class SystemBridge : ISystemBridge.Stub() {
         }
     }
 
-    // TODO ungrab all evdev devices
-    // TODO ungrab all evdev devices if no key mapper app is bound to the service
     override fun destroy() {
         Log.i(TAG, "SystemBridge destroyed")
 
@@ -258,18 +256,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
         deviceId: Int,
     ): Boolean {
         // Can not filter touchscreens because the volume and power buttons in the emulator come through touchscreen devices.
-
-//        val inputDevice = inputManager.getInputDevice(deviceId);
-//
-//        if (inputDevice == null) {
-//            return false;
-//        }
-//
-//        if (inputDevice.supportsSource(InputDevice.SOURCE_TOUCHSCREEN)) {
-//            Log.e(TAG, "Key Mapper does not permit touchscreens to be grabbed")
-//            return false;
-//        }
-
+        // Perhaps this will also happen on other real devices.
         return grabEvdevDeviceNative(buildInputDeviceIdentifier(deviceId))
     }
 
