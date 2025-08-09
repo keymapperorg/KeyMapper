@@ -33,8 +33,8 @@ object KeyCodeStrings {
      * Maps keys which aren't single characters like the Control keys to a string representation
      */
     private val NON_CHARACTER_KEY_LABELS: Map<Int, String> = mapOf(
-        KeyEvent.KEYCODE_VOLUME_DOWN to "Volume down",
-        KeyEvent.KEYCODE_VOLUME_UP to "Volume up",
+        KeyEvent.KEYCODE_VOLUME_DOWN to "Volume Down",
+        KeyEvent.KEYCODE_VOLUME_UP to "Volume Up",
 
         KeyEvent.KEYCODE_CTRL_LEFT to "Ctrl Left",
         KeyEvent.KEYCODE_CTRL_RIGHT to "Ctrl Right",
