@@ -16,10 +16,12 @@ import io.github.sds100.keymapper.base.constraints.GetConstraintErrorUseCase
 import io.github.sds100.keymapper.base.constraints.GetConstraintErrorUseCaseImpl
 import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.input.InputEventHubImpl
-import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCase
-import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCaseController
+import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapState
+import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapStateImpl
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCaseImpl
+import io.github.sds100.keymapper.base.keymaps.GetDefaultKeyMapOptionsUseCase
+import io.github.sds100.keymapper.base.keymaps.GetDefaultKeyMapOptionsUseCaseImpl
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
@@ -109,10 +111,6 @@ abstract class BaseSingletonHiltModule {
 
     @Binds
     @Singleton
-    abstract fun bindConfigKeyMapUseCase(impl: ConfigKeyMapUseCaseController): ConfigKeyMapUseCase
-
-    @Binds
-    @Singleton
     abstract fun bindRecordTriggerUseCase(impl: RecordTriggerControllerImpl): RecordTriggerController
 
     @Binds
@@ -158,4 +156,12 @@ abstract class BaseSingletonHiltModule {
     @Binds
     @Singleton
     abstract fun rerouteKeyEventsUseCase(impl: RerouteKeyEventsUseCaseImpl): RerouteKeyEventsUseCase
+
+    @Binds
+    @Singleton
+    abstract fun bindConfigKeyMapState(impl: ConfigKeyMapStateImpl): ConfigKeyMapState
+
+    @Binds
+    @Singleton
+    abstract fun bindGetDefaultKeyMapOptionsUseCas(impl: GetDefaultKeyMapOptionsUseCaseImpl): GetDefaultKeyMapOptionsUseCase
 }

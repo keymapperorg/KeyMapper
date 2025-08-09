@@ -2,11 +2,10 @@ package io.github.sds100.keymapper.base.keymaps
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.sds100.keymapper.base.actions.ConfigActionsViewModel
-import io.github.sds100.keymapper.base.constraints.ConfigConstraintsViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
-import io.github.sds100.keymapper.base.trigger.BaseConfigTriggerViewModel
+import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCase
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.common.utils.dataOrNull
@@ -16,9 +15,12 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-abstract class BaseConfigKeyMapViewModel(
-    private val config: ConfigKeyMapUseCase,
+@HiltViewModel
+class ConfigKeyMapViewModel @Inject constructor(
+    private val configKeyMapState: ConfigKeyMapState,
+    private val configTrigger: ConfigTriggerUseCase,
     private val onboarding: OnboardingUseCase,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
@@ -26,21 +28,17 @@ abstract class BaseConfigKeyMapViewModel(
     NavigationProvider by navigationProvider,
     DialogProvider by dialogProvider {
 
-    abstract val configActionsViewModel: ConfigActionsViewModel
-    abstract val configTriggerViewModel: BaseConfigTriggerViewModel
-    abstract val configConstraintsViewModel: ConfigConstraintsViewModel
+    val isKeyMapEdited: Boolean
+        get() = configKeyMapState.isEdited
 
-    val isEnabled: StateFlow<Boolean> = config.keyMap
+    val isEnabled: StateFlow<Boolean> = configTrigger.keyMap
         .map { state -> state.dataOrNull()?.isEnabled ?: true }
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
-
-    val isKeyMapEdited: Boolean
-        get() = config.isEdited
 
     val showActionsTapTarget: StateFlow<Boolean> =
         combine(
             onboarding.showTapTarget(OnboardingTapTarget.CHOOSE_ACTION),
-            config.keyMap,
+            configKeyMapState.keyMap,
         ) { showTapTarget, keyMapState ->
             // Show the choose action tap target if they have recorded a key.
             showTapTarget && keyMapState.dataOrNull()?.trigger?.keys?.isNotEmpty() ?: false
@@ -49,14 +47,14 @@ abstract class BaseConfigKeyMapViewModel(
     val showConstraintsTapTarget: StateFlow<Boolean> =
         combine(
             onboarding.showTapTarget(OnboardingTapTarget.CHOOSE_CONSTRAINT),
-            config.keyMap,
+            configKeyMapState.keyMap,
         ) { showTapTarget, keyMapState ->
             // Show the choose constraint tap target if they have added an action.
             showTapTarget && keyMapState.dataOrNull()?.actionList?.isNotEmpty() ?: false
         }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     fun onDoneClick() {
-        config.save()
+        configKeyMapState.save()
 
         viewModelScope.launch {
             popBackStack()
@@ -64,17 +62,17 @@ abstract class BaseConfigKeyMapViewModel(
     }
 
     fun loadNewKeyMap(floatingButtonUid: String? = null, groupUid: String?) {
-        config.loadNewKeyMap(groupUid)
+        configKeyMapState.loadNewKeyMap(groupUid)
         if (floatingButtonUid != null) {
             viewModelScope.launch {
-                config.addFloatingButtonTriggerKey(floatingButtonUid)
+                configTrigger.addFloatingButtonTriggerKey(floatingButtonUid)
             }
         }
     }
 
     fun loadKeyMap(uid: String) {
         viewModelScope.launch {
-            config.loadKeyMap(uid)
+            configKeyMapState.loadKeyMap(uid)
         }
     }
 
@@ -82,10 +80,6 @@ abstract class BaseConfigKeyMapViewModel(
         viewModelScope.launch {
             popBackStack()
         }
-    }
-
-    fun onEnabledChanged(enabled: Boolean) {
-        config.setEnabled(enabled)
     }
 
     fun onActionTapTargetCompleted() {
@@ -99,4 +93,9 @@ abstract class BaseConfigKeyMapViewModel(
     fun onSkipTutorialClick() {
         onboarding.skipTapTargetOnboarding()
     }
+
+    fun onEnabledChanged(enabled: Boolean) {
+        configTrigger.setEnabled(enabled)
+    }
+
 }

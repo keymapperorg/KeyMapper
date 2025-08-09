@@ -5,8 +5,11 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ViewModelScoped
+import io.github.sds100.keymapper.base.actions.ConfigActionsUseCase
+import io.github.sds100.keymapper.base.actions.ConfigActionsUseCaseImpl
 import io.github.sds100.keymapper.base.actions.CreateActionUseCase
 import io.github.sds100.keymapper.base.actions.CreateActionUseCaseImpl
+import io.github.sds100.keymapper.base.actions.DisplayActionUseCase
 import io.github.sds100.keymapper.base.actions.TestActionUseCase
 import io.github.sds100.keymapper.base.actions.TestActionUseCaseImpl
 import io.github.sds100.keymapper.base.actions.keyevent.ConfigKeyEventUseCase
@@ -15,22 +18,25 @@ import io.github.sds100.keymapper.base.actions.sound.ChooseSoundFileUseCase
 import io.github.sds100.keymapper.base.actions.sound.ChooseSoundFileUseCaseImpl
 import io.github.sds100.keymapper.base.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.base.backup.BackupRestoreMappingsUseCaseImpl
+import io.github.sds100.keymapper.base.constraints.ConfigConstraintsUseCase
+import io.github.sds100.keymapper.base.constraints.ConfigConstraintsUseCaseImpl
 import io.github.sds100.keymapper.base.constraints.CreateConstraintUseCase
 import io.github.sds100.keymapper.base.constraints.CreateConstraintUseCaseImpl
-import io.github.sds100.keymapper.base.home.ShowHomeScreenAlertsUseCase
-import io.github.sds100.keymapper.base.home.ShowHomeScreenAlertsUseCaseImpl
-import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
-import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCaseImpl
-import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
-import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCaseImpl
+import io.github.sds100.keymapper.base.constraints.DisplayConstraintUseCase
 import io.github.sds100.keymapper.base.home.ListKeyMapsUseCase
 import io.github.sds100.keymapper.base.home.ListKeyMapsUseCaseImpl
+import io.github.sds100.keymapper.base.home.ShowHomeScreenAlertsUseCase
+import io.github.sds100.keymapper.base.home.ShowHomeScreenAlertsUseCaseImpl
+import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
+import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCaseImpl
 import io.github.sds100.keymapper.base.logging.DisplayLogUseCase
 import io.github.sds100.keymapper.base.logging.DisplayLogUseCaseImpl
 import io.github.sds100.keymapper.base.promode.ProModeSetupUseCase
 import io.github.sds100.keymapper.base.promode.ProModeSetupUseCaseImpl
 import io.github.sds100.keymapper.base.settings.ConfigSettingsUseCase
 import io.github.sds100.keymapper.base.settings.ConfigSettingsUseCaseImpl
+import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
+import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCaseImpl
 import io.github.sds100.keymapper.base.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.base.sorting.SortKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.system.apps.DisplayAppShortcutsUseCase
@@ -39,6 +45,8 @@ import io.github.sds100.keymapper.base.system.apps.DisplayAppsUseCase
 import io.github.sds100.keymapper.base.system.apps.DisplayAppsUseCaseImpl
 import io.github.sds100.keymapper.base.system.bluetooth.ChooseBluetoothDeviceUseCase
 import io.github.sds100.keymapper.base.system.bluetooth.ChooseBluetoothDeviceUseCaseImpl
+import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCase
+import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCaseImpl
 import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCaseImpl
 
@@ -48,6 +56,14 @@ abstract class BaseViewModelHiltModule {
     @Binds
     @ViewModelScoped
     abstract fun bindDisplayKeyMapUseCase(impl: DisplayKeyMapUseCaseImpl): DisplayKeyMapUseCase
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindDisplayActionUseCase(impl: DisplayKeyMapUseCaseImpl): DisplayActionUseCase
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindDisplayConstraintUseCase(impl: DisplayKeyMapUseCaseImpl): DisplayConstraintUseCase
 
     @Binds
     @ViewModelScoped
@@ -116,4 +132,16 @@ abstract class BaseViewModelHiltModule {
     @Binds
     @ViewModelScoped
     abstract fun bindProModeSetupUseCase(impl: ProModeSetupUseCaseImpl): ProModeSetupUseCase
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindConfigConstraintsUseCase(impl: ConfigConstraintsUseCaseImpl): ConfigConstraintsUseCase
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindConfigActionsUseCase(impl: ConfigActionsUseCaseImpl): ConfigActionsUseCase
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindConfigTriggerUseCase(impl: ConfigTriggerUseCaseImpl): ConfigTriggerUseCase
 }

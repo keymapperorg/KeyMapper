@@ -15,12 +15,13 @@ import io.github.sds100.keymapper.base.constraints.ConstraintErrorSnapshot
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.constraints.ConstraintUiHelper
 import io.github.sds100.keymapper.base.groups.GroupListItemModel
-import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCase
+import io.github.sds100.keymapper.base.home.KeyMapAppBarState
+import io.github.sds100.keymapper.base.home.KeyMapGroup
 import io.github.sds100.keymapper.base.home.KeyMapListItemCreator
 import io.github.sds100.keymapper.base.home.KeyMapListState
 import io.github.sds100.keymapper.base.home.ListKeyMapsUseCase
-import io.github.sds100.keymapper.base.home.KeyMapAppBarState
-import io.github.sds100.keymapper.base.home.KeyMapGroup
+import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapState
+import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCase
 import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
@@ -41,7 +42,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateKeyMapShortcutViewModel @Inject constructor(
-    private val config: ConfigKeyMapUseCase,
+    private val configKeyMapState: ConfigKeyMapState,
+    private val configTrigger: ConfigTriggerUseCase,
     private val listKeyMaps: ListKeyMapsUseCase,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val resourceProvider: ResourceProvider,
@@ -162,10 +164,10 @@ class CreateKeyMapShortcutViewModel @Inject constructor(
 
             if (state.keyMaps !is State.Data) return@launch
 
-            config.loadKeyMap(uid)
-            config.setTriggerFromOtherAppsEnabled(true)
+            configKeyMapState.loadKeyMap(uid)
+            configTrigger.setTriggerFromOtherAppsEnabled(true)
 
-            val keyMapState = config.keyMap.first()
+            val keyMapState = configKeyMapState.keyMap.first()
 
             if (keyMapState !is State.Data) return@launch
 
@@ -218,7 +220,7 @@ class CreateKeyMapShortcutViewModel @Inject constructor(
                 icon = icon,
             )
 
-            config.save()
+            configKeyMapState.save()
 
             _returnIntentResult.emit(intent)
         }

@@ -3,15 +3,15 @@ package io.github.sds100.keymapper.base.shortcuts
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import androidx.core.os.bundleOf
+import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import javax.inject.Inject
 
+@ViewModelScoped
 class CreateKeyMapShortcutUseCaseImpl @Inject constructor(
     private val appShortcutAdapter: AppShortcutAdapter,
-    private val resourceProvider: ResourceProvider,
 ) : CreateKeyMapShortcutUseCase {
 
     companion object {

@@ -8,12 +8,12 @@ import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapOptionsViewModel
-import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCase
-import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
@@ -22,6 +22,7 @@ import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
+import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
@@ -42,7 +43,6 @@ import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.ifIsData
 import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.common.utils.onSuccess
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -62,9 +62,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 abstract class BaseConfigTriggerViewModel(
-    private val coroutineScope: CoroutineScope,
     private val onboarding: OnboardingUseCase,
-    private val config: ConfigKeyMapUseCase,
+    private val config: ConfigTriggerUseCase,
     private val recordTrigger: RecordTriggerController,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
@@ -74,7 +73,8 @@ abstract class BaseConfigTriggerViewModel(
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
-) : ResourceProvider by resourceProvider,
+) : ViewModel(),
+    ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider {
 
@@ -84,7 +84,7 @@ abstract class BaseConfigTriggerViewModel(
     }
 
     val optionsViewModel = ConfigKeyMapOptionsViewModel(
-        coroutineScope,
+        viewModelScope,
         config,
         displayKeyMap,
         createKeyMapShortcut,
@@ -140,7 +140,7 @@ abstract class BaseConfigTriggerViewModel(
     val state: StateFlow<State<ConfigTriggerState>> = _state.asStateFlow()
 
     val recordTriggerState: StateFlow<RecordTriggerState> = recordTrigger.state.stateIn(
-        coroutineScope,
+        viewModelScope,
         SharingStarted.Lazily,
         RecordTriggerState.Idle,
     )
@@ -160,7 +160,7 @@ abstract class BaseConfigTriggerViewModel(
             isChosen,
         )
     }.stateIn(
-        coroutineScope,
+        viewModelScope,
         SharingStarted.Lazily,
         SetupGuiKeyboardState.DEFAULT,
     )
@@ -168,7 +168,7 @@ abstract class BaseConfigTriggerViewModel(
     val triggerKeyOptionsUid = MutableStateFlow<String?>(null)
     val triggerKeyOptionsState: StateFlow<TriggerKeyOptionsState?> =
         combine(config.keyMap, triggerKeyOptionsUid, transform = ::buildKeyOptionsUiState)
-            .stateIn(coroutineScope, SharingStarted.Lazily, null)
+            .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     /**
      * Check whether the user stopped the trigger recording countdown. This
@@ -205,9 +205,9 @@ abstract class BaseConfigTriggerViewModel(
                     showTapTargetsPair.second,
                 )
             }
-        }.launchIn(coroutineScope)
+        }.launchIn(viewModelScope)
 
-        coroutineScope.launch {
+        viewModelScope.launch {
             recordTrigger.onRecordKey.collect { key ->
                 when (key) {
                     is RecordedKey.EvdevEvent -> onRecordEvdevEvent(key)
@@ -216,7 +216,7 @@ abstract class BaseConfigTriggerViewModel(
             }
         }
 
-        coroutineScope.launch {
+        viewModelScope.launch {
             config.keyMap
                 .mapNotNull { it.dataOrNull()?.trigger?.mode }
                 .distinctUntilChanged()
@@ -240,12 +240,12 @@ abstract class BaseConfigTriggerViewModel(
 
             // reset this field when recording has completed
             isRecordingCompletionUserInitiated = false
-        }.launchIn(coroutineScope)
+        }.launchIn(viewModelScope)
     }
 
     open fun onClickTriggerKeyShortcut(shortcut: TriggerKeyShortcut) {
         if (shortcut == TriggerKeyShortcut.FINGERPRINT_GESTURE) {
-            coroutineScope.launch {
+            viewModelScope.launch {
                 val listItems = listOf(
                     FingerprintGestureType.SWIPE_DOWN to getString(R.string.fingerprint_gesture_down),
                     FingerprintGestureType.SWIPE_UP to getString(R.string.fingerprint_gesture_up),
@@ -614,7 +614,7 @@ abstract class BaseConfigTriggerViewModel(
     }
 
     fun onRecordTriggerButtonClick() {
-        coroutineScope.launch {
+        viewModelScope.launch {
             val recordTriggerState = recordTrigger.state.firstOrNull() ?: return@launch
 
             val result = when (recordTriggerState) {
@@ -652,7 +652,7 @@ abstract class BaseConfigTriggerViewModel(
     }
 
     open fun onTriggerErrorClick(error: TriggerError) {
-        coroutineScope.launch {
+        viewModelScope.launch {
             when (error) {
                 TriggerError.DND_ACCESS_DENIED ->
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
@@ -805,7 +805,7 @@ abstract class BaseConfigTriggerViewModel(
     }
 
     fun onEnableGuiKeyboardClick() {
-        coroutineScope.launch {
+        viewModelScope.launch {
             setupGuiKeyboard.enableInputMethod()
         }
     }

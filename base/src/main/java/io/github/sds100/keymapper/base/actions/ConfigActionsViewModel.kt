@@ -1,7 +1,9 @@
 package io.github.sds100.keymapper.base.actions
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
@@ -26,7 +28,6 @@ import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -39,24 +40,25 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ConfigActionsViewModel(
-    private val coroutineScope: CoroutineScope,
+@HiltViewModel
+class ConfigActionsViewModel @Inject constructor(
     private val displayAction: DisplayActionUseCase,
     private val createAction: CreateActionUseCase,
     private val testAction: TestActionUseCase,
-    private val config: ConfigKeyMapUseCase,
+    private val config: ConfigActionsUseCase,
     private val onboarding: OnboardingUseCase,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
-) : ActionOptionsBottomSheetCallback,
+) : ViewModel(), ActionOptionsBottomSheetCallback,
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider {
 
     val createActionDelegate =
-        CreateActionDelegate(coroutineScope, createAction, this, this, this)
+        CreateActionDelegate(viewModelScope, createAction, this, this, this)
     private val uiHelper = ActionUiHelper(displayAction, resourceProvider)
 
     private val _state = MutableStateFlow<State<ConfigActionsState>>(State.Loading)
@@ -65,15 +67,15 @@ class ConfigActionsViewModel(
     private val shortcuts: StateFlow<Set<ShortcutModel<ActionData>>> =
         config.recentlyUsedActions.map { actions ->
             actions.map(::buildShortcut).toSet()
-        }.stateIn(coroutineScope, SharingStarted.Lazily, emptySet())
+        }.stateIn(viewModelScope, SharingStarted.Lazily, emptySet())
 
     val actionOptionsUid = MutableStateFlow<String?>(null)
     val actionOptionsState: StateFlow<ActionOptionsState?> =
         combine(config.keyMap, actionOptionsUid, transform = ::buildOptionsState)
-            .stateIn(coroutineScope, SharingStarted.Lazily, null)
+            .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     private val actionErrorSnapshot: StateFlow<ActionErrorSnapshot?> =
-        displayAction.actionErrorSnapshot.stateIn(coroutineScope, SharingStarted.Lazily, null)
+        displayAction.actionErrorSnapshot.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     init {
         combine(
@@ -85,9 +87,9 @@ class ConfigActionsViewModel(
             _state.value = keyMapState.mapData { keyMap ->
                 buildState(keyMap, shortcuts, errorSnapshot, showDeviceDescriptors)
             }
-        }.launchIn(coroutineScope)
+        }.launchIn(viewModelScope)
 
-        coroutineScope.launch {
+        viewModelScope.launch {
             createActionDelegate.actionResult.filterNotNull().collect { action ->
                 val actionUid = actionOptionsUid.value ?: return@collect
                 config.setActionData(actionUid, action)
@@ -101,19 +103,19 @@ class ConfigActionsViewModel(
     }
 
     fun onClickShortcut(action: ActionData) {
-        coroutineScope.launch {
+        viewModelScope.launch {
             config.addAction(action)
         }
     }
 
     fun onFixError(actionUid: String) {
-        coroutineScope.launch {
+        viewModelScope.launch {
             val actionData = getActionData(actionUid) ?: return@launch
             val error =
                 actionErrorSnapshot.filterNotNull().first().getError(actionData) ?: return@launch
 
             if (error == SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
-                coroutineScope.launch {
+                viewModelScope.launch {
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@ConfigActionsViewModel,
                         dialogProvider = this@ConfigActionsViewModel,
@@ -134,7 +136,7 @@ class ConfigActionsViewModel(
     }
 
     fun onAddActionClick() {
-        coroutineScope.launch {
+        viewModelScope.launch {
             val actionData = navigate("add_action", NavDestination.ChooseAction) ?: return@launch
 
             val showInstallShizukuPrompt = onboarding.showInstallShizukuPrompt(actionData)
@@ -165,7 +167,7 @@ class ConfigActionsViewModel(
     }
 
     fun onTestClick(actionUid: String) {
-        coroutineScope.launch {
+        viewModelScope.launch {
             val actionData = getActionData(actionUid) ?: return@launch
             attemptTestAction(actionData)
         }
@@ -173,7 +175,7 @@ class ConfigActionsViewModel(
 
     override fun onEditClick() {
         val actionUid = actionOptionsUid.value ?: return
-        coroutineScope.launch {
+        viewModelScope.launch {
             val keyMap = config.keyMap.first().dataOrNull() ?: return@launch
 
             val oldAction = keyMap.actionList.find { it.uid == actionUid } ?: return@launch
@@ -183,7 +185,7 @@ class ConfigActionsViewModel(
 
     override fun onReplaceClick() {
         val actionUid = actionOptionsUid.value ?: return
-        coroutineScope.launch {
+        viewModelScope.launch {
             val newActionData =
                 navigate("replace_action", NavDestination.ChooseAction) ?: return@launch
 

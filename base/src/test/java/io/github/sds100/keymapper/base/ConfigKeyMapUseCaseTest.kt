@@ -5,7 +5,7 @@ import io.github.sds100.keymapper.base.actions.Action
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.constraints.Constraint
 import io.github.sds100.keymapper.base.keymaps.ClickType
-import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCaseController
+import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapController
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.trigger.AssistantTriggerKey
@@ -43,11 +43,11 @@ class ConfigKeyMapUseCaseTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testScope = TestScope(testDispatcher)
 
-    private lateinit var useCase: ConfigKeyMapUseCaseController
+    private lateinit var useCase: ConfigKeyMapController
 
     @Before
     fun init() {
-        useCase = ConfigKeyMapUseCaseController(
+        useCase = ConfigKeyMapController(
             coroutineScope = testScope,
             devicesAdapter = mock(),
             keyMapRepository = mock(),
