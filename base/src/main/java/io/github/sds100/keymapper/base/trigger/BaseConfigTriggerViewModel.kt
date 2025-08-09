@@ -35,6 +35,7 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.showDialog
+import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -209,8 +210,11 @@ abstract class BaseConfigTriggerViewModel(
         }.launchIn(coroutineScope)
 
         coroutineScope.launch {
-            recordTrigger.onRecordKey.collectLatest {
-                onRecordTriggerKey(it)
+            recordTrigger.onRecordKey.collect { key ->
+                when (key) {
+                    is RecordedKey.EvdevEvent -> onRecordEvdevEvent(key)
+                    is RecordedKey.KeyEvent -> onRecordKeyEvent(key)
+                }
             }
         }
 
@@ -477,32 +481,17 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    private suspend fun onRecordTriggerKey(key: RecordedKey) {
-        // Add the trigger key before showing the dialog so it doesn't
-        // need to be dismissed before it is added.
-        when (key.detectionSource) {
-            InputEventDetectionSource.EVDEV -> config.addEvdevTriggerKey(
-                key.keyCode,
-                key.scanCode,
-                key.deviceDescriptor,
-                key.deviceName
-            )
-
-            InputEventDetectionSource.ACCESSIBILITY_SERVICE,
-            InputEventDetectionSource.INPUT_METHOD,
-            InputEventDetectionSource.MAIN_ACTIVITY -> {
-                val triggerDevice = if (key.isExternalDevice) {
-                    KeyEventTriggerDevice.External(key.deviceDescriptor, key.deviceName)
-                } else {
-                    KeyEventTriggerDevice.Internal
-                }
-
-                config.addKeyEventTriggerKey(
-                    key.keyCode, key.scanCode, triggerDevice,
-                    key.detectionSource != InputEventDetectionSource.ACCESSIBILITY_SERVICE
-                )
-            }
+    private suspend fun onRecordKeyEvent(key: RecordedKey.KeyEvent) {
+        val triggerDevice = if (key.isExternalDevice) {
+            KeyEventTriggerDevice.External(key.deviceDescriptor, key.deviceName)
+        } else {
+            KeyEventTriggerDevice.Internal
         }
+
+        config.addKeyEventTriggerKey(
+            key.keyCode, key.scanCode, triggerDevice,
+            key.detectionSource != InputEventDetectionSource.ACCESSIBILITY_SERVICE
+        )
 
         if (key.keyCode >= InputEventUtils.KEYCODE_TO_SCANCODE_OFFSET || key.keyCode < 0) {
             if (onboarding.shownKeyCodeToScanCodeTriggerExplanation) {
@@ -555,6 +544,19 @@ abstract class BaseConfigTriggerViewModel(
                 displayKeyMap.neverShowTriggerKeyboardIconExplanation()
             }
         }
+    }
+
+    private fun onRecordEvdevEvent(key: RecordedKey.EvdevEvent) {
+        config.addEvdevTriggerKey(
+            key.keyCode,
+            key.scanCode,
+            EvdevDeviceInfo(
+                name = key.device.name,
+                bus = key.device.bus,
+                vendor = key.device.vendor,
+                product = key.device.product,
+            )
+        )
     }
 
     fun onParallelRadioButtonChecked() {
@@ -760,7 +762,7 @@ abstract class BaseConfigTriggerViewModel(
                 is EvdevTriggerKey -> EvdevEvent(
                     id = key.uid,
                     keyName = InputEventStrings.keyCodeToString(key.keyCode),
-                    deviceName = key.deviceName,
+                    deviceName = key.device.name,
                     clickType = clickType,
                     extraInfo = if (!key.consumeEvent) {
                         getString(R.string.flag_dont_override_default_action)

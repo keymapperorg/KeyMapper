@@ -35,7 +35,6 @@ import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.system.devices.AndroidDevicesAdapter
-import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
@@ -193,8 +192,6 @@ abstract class BaseMainActivity : AppCompatActivity() {
                 ContextCompat.RECEIVER_EXPORTED,
             )
         }
-
-        devicesAdapter.logConnectedInputDevices()
     }
 
     override fun onResume() {

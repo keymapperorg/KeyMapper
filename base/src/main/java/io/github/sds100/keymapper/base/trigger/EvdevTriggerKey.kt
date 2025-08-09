@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.trigger
 
 import io.github.sds100.keymapper.base.keymaps.ClickType
+import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.entities.EvdevTriggerKeyEntity
@@ -16,11 +17,10 @@ data class EvdevTriggerKey(
     override val uid: String = UUID.randomUUID().toString(),
     override val keyCode: Int,
     override val scanCode: Int,
-    val deviceDescriptor: String,
-    val deviceName: String,
+    val device: EvdevDeviceInfo,
     override val clickType: ClickType = ClickType.SHORT_PRESS,
     override val consumeEvent: Boolean = true,
-) : TriggerKey(), KeyCodeTriggerKey {
+) : TriggerKey(), InputEventTriggerKey {
     override val allowedDoublePress: Boolean = true
     override val allowedLongPress: Boolean = true
 
@@ -40,8 +40,12 @@ data class EvdevTriggerKey(
                 uid = entity.uid,
                 keyCode = entity.keyCode,
                 scanCode = entity.scanCode,
-                deviceDescriptor = entity.deviceDescriptor,
-                deviceName = entity.deviceName,
+                device = EvdevDeviceInfo(
+                    name = entity.deviceName,
+                    bus = entity.deviceBus,
+                    vendor = entity.deviceVendor,
+                    product = entity.deviceProduct,
+                ),
                 clickType = clickType,
                 consumeEvent = consumeEvent,
             )
@@ -63,12 +67,15 @@ data class EvdevTriggerKey(
             return EvdevTriggerKeyEntity(
                 keyCode = key.keyCode,
                 scanCode = key.scanCode,
-                deviceDescriptor = key.deviceDescriptor,
-                deviceName = key.deviceName,
+                deviceName = key.device.name,
+                deviceBus = key.device.bus,
+                deviceVendor = key.device.vendor,
+                deviceProduct = key.device.product,
                 clickType = clickType,
                 flags = flags,
                 uid = key.uid
             )
         }
     }
+
 }

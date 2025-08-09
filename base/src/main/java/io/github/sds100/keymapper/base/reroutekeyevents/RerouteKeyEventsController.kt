@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.input.InputEventHubCallback
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
+import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import kotlinx.coroutines.CoroutineScope
@@ -57,7 +58,8 @@ class RerouteKeyEventsController @AssistedInject constructor(
                 if (isEnabled) {
                     inputEventHub.registerClient(
                         INPUT_EVENT_HUB_ID,
-                        this@RerouteKeyEventsController
+                        this@RerouteKeyEventsController,
+                        listOf(KMEvdevEvent.TYPE_KEY_EVENT)
                     )
                 } else {
                     inputEventHub.unregisterClient(INPUT_EVENT_HUB_ID)

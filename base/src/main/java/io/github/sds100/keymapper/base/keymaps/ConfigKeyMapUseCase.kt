@@ -19,6 +19,7 @@ import io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerKey
 import io.github.sds100.keymapper.base.trigger.TriggerMode
+import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
@@ -409,8 +410,7 @@ class ConfigKeyMapUseCaseController @Inject constructor(
     override fun addEvdevTriggerKey(
         keyCode: Int,
         scanCode: Int,
-        deviceDescriptor: String,
-        deviceName: String
+        device: EvdevDeviceInfo
     ) = editTrigger { trigger ->
         val clickType = when (trigger.mode) {
             is TriggerMode.Parallel -> trigger.mode.clickType
@@ -423,14 +423,13 @@ class ConfigKeyMapUseCaseController @Inject constructor(
         val containsKey = trigger.keys
             .filterIsInstance<EvdevTriggerKey>()
             .any { keyToCompare ->
-                keyToCompare.keyCode == keyCode && keyToCompare.deviceDescriptor == deviceDescriptor
+                keyToCompare.keyCode == keyCode && keyToCompare.device == device
             }
 
         val triggerKey = EvdevTriggerKey(
             keyCode = keyCode,
             scanCode = scanCode,
-            deviceDescriptor = deviceDescriptor,
-            deviceName = deviceName,
+            device = device,
             clickType = clickType,
             consumeEvent = true,
         )
@@ -509,7 +508,7 @@ class ConfigKeyMapUseCaseController @Inject constructor(
                     is FloatingButtonKey -> key.buttonUid
                     is EvdevTriggerKey -> Pair(
                         key.keyCode,
-                        key.deviceDescriptor,
+                        key.device,
                     )
                 }
             }
@@ -1064,8 +1063,7 @@ interface ConfigKeyMapUseCase : GetDefaultKeyMapOptionsUseCase {
     fun addEvdevTriggerKey(
         keyCode: Int,
         scanCode: Int,
-        deviceDescriptor: String,
-        deviceName: String,
+        device: EvdevDeviceInfo
     )
 
     fun removeTriggerKey(uid: String)

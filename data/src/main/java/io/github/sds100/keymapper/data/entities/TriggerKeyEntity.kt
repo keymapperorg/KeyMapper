@@ -61,7 +61,7 @@ sealed class TriggerKeyEntity : Parcelable {
                         return@jsonDeserializer deserializeFingerprintTriggerKey(json, uid!!)
                     }
 
-                    json.obj.has(EvdevTriggerKeyEntity.NAME_DEVICE_DESCRIPTOR) -> {
+                    json.obj.has(EvdevTriggerKeyEntity.NAME_DEVICE_PRODUCT) -> {
                         return@jsonDeserializer deserializeEvdevTriggerKey(json, uid!!)
                     }
 
@@ -107,16 +107,20 @@ sealed class TriggerKeyEntity : Parcelable {
         ): EvdevTriggerKeyEntity {
             val keyCode by json.byInt(EvdevTriggerKeyEntity.NAME_KEYCODE)
             val scanCode by json.byInt(EvdevTriggerKeyEntity.NAME_SCANCODE)
-            val deviceDescriptor by json.byString(EvdevTriggerKeyEntity.NAME_DEVICE_DESCRIPTOR)
             val deviceName by json.byString(EvdevTriggerKeyEntity.NAME_DEVICE_NAME)
+            val deviceVendor by json.byInt(EvdevTriggerKeyEntity.NAME_DEVICE_VENDOR)
+            val deviceProduct by json.byInt(EvdevTriggerKeyEntity.NAME_DEVICE_PRODUCT)
+            val deviceBus by json.byInt(EvdevTriggerKeyEntity.NAME_DEVICE_BUS)
             val clickType by json.byInt(NAME_CLICK_TYPE)
             val flags by json.byNullableInt(EvdevTriggerKeyEntity.NAME_FLAGS)
 
             return EvdevTriggerKeyEntity(
                 keyCode,
                 scanCode,
-                deviceDescriptor,
                 deviceName,
+                deviceBus,
+                deviceVendor,
+                deviceProduct,
                 clickType,
                 flags ?: 0,
                 uid,

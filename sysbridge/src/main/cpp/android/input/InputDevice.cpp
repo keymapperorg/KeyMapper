@@ -138,8 +138,10 @@ namespace android {
                 }
                 return path;
             } else if (errno != ENOENT) {
-                LOGW("Couldn't find a system-provided input device configuration file at %s due to error %d (%s); there may be an IDC file there that cannot be loaded.",
-                     path.c_str(), errno, strerror(errno));
+                if (DEBUG_PROBE) {
+                    LOGW("Couldn't find a system-provided input device configuration file at %s due to error %d (%s); there may be an IDC file there that cannot be loaded.",
+                         path.c_str(), errno, strerror(errno));
+                }
             } else {
                 if (DEBUG_PROBE) {
                     LOGE("Didn't find system-provided input device configuration file at %s: %s",

@@ -31,7 +31,7 @@ static binder_status_t _aidl_io_github_sds100_keymapper_sysbridge_IEvdevCallback
       break;
     }
     case (FIRST_CALL_TRANSACTION + 1 /*onEvdevEvent*/): {
-      int32_t in_deviceId;
+        std::string in_devicePath;
       int64_t in_timeSec;
       int64_t in_timeUsec;
       int32_t in_type;
@@ -40,7 +40,7 @@ static binder_status_t _aidl_io_github_sds100_keymapper_sysbridge_IEvdevCallback
       int32_t in_androidCode;
       bool _aidl_return;
 
-      _aidl_ret_status = ::ndk::AParcel_readData(_aidl_in, &in_deviceId);
+        _aidl_ret_status = ::ndk::AParcel_readData(_aidl_in, &in_devicePath);
       if (_aidl_ret_status != STATUS_OK) break;
 
       _aidl_ret_status = ::ndk::AParcel_readData(_aidl_in, &in_timeSec);
@@ -61,7 +61,10 @@ static binder_status_t _aidl_io_github_sds100_keymapper_sysbridge_IEvdevCallback
       _aidl_ret_status = ::ndk::AParcel_readData(_aidl_in, &in_androidCode);
       if (_aidl_ret_status != STATUS_OK) break;
 
-      ::ndk::ScopedAStatus _aidl_status = _aidl_impl->onEvdevEvent(in_deviceId, in_timeSec, in_timeUsec, in_type, in_code, in_value, in_androidCode, &_aidl_return);
+        ::ndk::ScopedAStatus _aidl_status = _aidl_impl->onEvdevEvent(in_devicePath, in_timeSec,
+                                                                     in_timeUsec, in_type, in_code,
+                                                                     in_value, in_androidCode,
+                                                                     &_aidl_return);
       _aidl_ret_status = AParcel_writeStatusHeader(_aidl_out, _aidl_status.get());
       if (_aidl_ret_status != STATUS_OK) break;
 
@@ -115,7 +118,11 @@ BpEvdevCallback::~BpEvdevCallback() {}
   _aidl_status_return:
   return _aidl_status;
 }
-::ndk::ScopedAStatus BpEvdevCallback::onEvdevEvent(int32_t in_deviceId, int64_t in_timeSec, int64_t in_timeUsec, int32_t in_type, int32_t in_code, int32_t in_value, int32_t in_androidCode, bool* _aidl_return) {
+
+    ::ndk::ScopedAStatus
+    BpEvdevCallback::onEvdevEvent(const std::string &in_devicePath, int64_t in_timeSec,
+                                  int64_t in_timeUsec, int32_t in_type, int32_t in_code,
+                                  int32_t in_value, int32_t in_androidCode, bool *_aidl_return) {
   binder_status_t _aidl_ret_status = STATUS_OK;
   ::ndk::ScopedAStatus _aidl_status;
   ::ndk::ScopedAParcel _aidl_in;
@@ -124,7 +131,7 @@ BpEvdevCallback::~BpEvdevCallback() {}
   _aidl_ret_status = AIBinder_prepareTransaction(asBinder().get(), _aidl_in.getR());
   if (_aidl_ret_status != STATUS_OK) goto _aidl_error;
 
-  _aidl_ret_status = ::ndk::AParcel_writeData(_aidl_in.get(), in_deviceId);
+        _aidl_ret_status = ::ndk::AParcel_writeData(_aidl_in.get(), in_devicePath);
   if (_aidl_ret_status != STATUS_OK) goto _aidl_error;
 
   _aidl_ret_status = ::ndk::AParcel_writeData(_aidl_in.get(), in_timeSec);
@@ -156,7 +163,10 @@ BpEvdevCallback::~BpEvdevCallback() {}
     #endif  // BINDER_STABILITY_SUPPORT
     );
   if (_aidl_ret_status == STATUS_UNKNOWN_TRANSACTION && IEvdevCallback::getDefaultImpl()) {
-    _aidl_status = IEvdevCallback::getDefaultImpl()->onEvdevEvent(in_deviceId, in_timeSec, in_timeUsec, in_type, in_code, in_value, in_androidCode, _aidl_return);
+      _aidl_status = IEvdevCallback::getDefaultImpl()->onEvdevEvent(in_devicePath, in_timeSec,
+                                                                    in_timeUsec, in_type, in_code,
+                                                                    in_value, in_androidCode,
+                                                                    _aidl_return);
     goto _aidl_status_return;
   }
   if (_aidl_ret_status != STATUS_OK) goto _aidl_error;
@@ -237,7 +247,15 @@ std::shared_ptr<IEvdevCallback> IEvdevCallback::default_impl = nullptr;
   _aidl_status.set(AStatus_fromStatus(STATUS_UNKNOWN_TRANSACTION));
   return _aidl_status;
 }
-::ndk::ScopedAStatus IEvdevCallbackDefault::onEvdevEvent(int32_t /*in_deviceId*/, int64_t /*in_timeSec*/, int64_t /*in_timeUsec*/, int32_t /*in_type*/, int32_t /*in_code*/, int32_t /*in_value*/, int32_t /*in_androidCode*/, bool* /*_aidl_return*/) {
+
+    ::ndk::ScopedAStatus IEvdevCallbackDefault::onEvdevEvent(const std::string & /*in_devicePath*/,
+                                                             int64_t /*in_timeSec*/,
+                                                             int64_t /*in_timeUsec*/,
+                                                             int32_t /*in_type*/,
+                                                             int32_t /*in_code*/,
+                                                             int32_t /*in_value*/,
+                                                             int32_t /*in_androidCode*/,
+                                                             bool * /*_aidl_return*/) {
   ::ndk::ScopedAStatus _aidl_status;
   _aidl_status.set(AStatus_fromStatus(STATUS_UNKNOWN_TRANSACTION));
   return _aidl_status;

@@ -4411,7 +4411,7 @@ class KeyMapAlgorithmTest {
         metaState: Int? = null,
         scanCode: Int = 0,
         repeatCount: Int = 0,
-    ): Boolean = controller.onKeyEvent(
+    ): Boolean = controller.onInputEvent(
         KMKeyEvent(
             keyCode = keyCode,
             action = action,

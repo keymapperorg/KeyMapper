@@ -16,17 +16,17 @@
 #include <map>
 #include <queue>
 #include <variant>
+#include <vector>
 #include <sys/eventfd.h>
 
 using aidl::io::github::sds100::keymapper::sysbridge::IEvdevCallback;
 
 struct GrabData {
-    int deviceId;
-    android::InputDeviceIdentifier identifier;
+    char devicePath[256];
 };
 
 struct UngrabData {
-    int deviceId;
+    char devicePath[256];
 };
 
 enum CommandType {
@@ -41,15 +41,11 @@ struct Command {
 };
 
 struct DeviceContext {
-    int deviceId;
-    struct android::InputDeviceIdentifier inputDeviceIdentifier;
     struct libevdev *evdev;
     struct libevdev_uinput *uinputDev;
     struct android::KeyLayoutMap keyLayoutMap;
     char devicePath[256];
 };
-
-void ungrabDevice(jint device_id);
 
 static int epollFd = -1;
 static int commandEventFd = -1;
@@ -142,32 +138,6 @@ static int findEvdevDevice(
     return -1;
 }
 
-android::InputDeviceIdentifier
-convertJInputDeviceIdentifier(JNIEnv *env, jobject jInputDeviceIdentifier) {
-    android::InputDeviceIdentifier deviceIdentifier;
-
-    jclass inputDeviceIdentifierClass = env->GetObjectClass(jInputDeviceIdentifier);
-
-    jfieldID busFieldId = env->GetFieldID(inputDeviceIdentifierClass, "bus", "I");
-    deviceIdentifier.bus = env->GetIntField(jInputDeviceIdentifier, busFieldId);
-
-    jfieldID vendorFieldId = env->GetFieldID(inputDeviceIdentifierClass, "vendor", "I");
-    deviceIdentifier.vendor = env->GetIntField(jInputDeviceIdentifier, vendorFieldId);
-
-    jfieldID productFieldId = env->GetFieldID(inputDeviceIdentifierClass, "product", "I");
-    deviceIdentifier.product = env->GetIntField(jInputDeviceIdentifier, productFieldId);
-
-    jfieldID nameFieldId = env->GetFieldID(inputDeviceIdentifierClass, "name",
-                                           "Ljava/lang/String;");
-    auto nameString = (jstring) env->GetObjectField(jInputDeviceIdentifier, nameFieldId);
-
-    const char *nameChars = env->GetStringUTFChars(nameString, nullptr);
-    deviceIdentifier.name = std::string(nameChars);
-    env->ReleaseStringUTFChars(nameString, nameChars);
-
-    return deviceIdentifier;
-}
-
 jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     evdevDevices = new std::map<int, struct DeviceContext>();
     return JNI_VERSION_1_6;
@@ -177,14 +147,20 @@ extern "C"
 JNIEXPORT jboolean JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDeviceNative(JNIEnv *env,
                                                                                      jobject thiz,
-                                                                                     jobject jInputDeviceIdentifier) {
-    jclass inputDeviceIdentifierClass = env->GetObjectClass(jInputDeviceIdentifier);
-    jfieldID idFieldId = env->GetFieldID(inputDeviceIdentifierClass, "id", "I");
-    android::InputDeviceIdentifier identifier = convertJInputDeviceIdentifier(env,
-                                                                              jInputDeviceIdentifier);
-    int deviceId = env->GetIntField(jInputDeviceIdentifier, idFieldId);
+                                                                                     jstring jDevicePath) {
+    // TODO does this really need epoll now with the looper and handler? Can't it just be done here? Then one can return actually legit error codes
 
-    Command cmd = {GRAB, GrabData{deviceId, identifier}};
+    const char *devicePath = env->GetStringUTFChars(jDevicePath, nullptr);
+    if (devicePath == nullptr) {
+        return false;
+    }
+
+    Command cmd;
+    cmd.type = GRAB;
+    cmd.data = GrabData{};
+    strcpy(std::get<GrabData>(cmd.data).devicePath, devicePath);
+
+    env->ReleaseStringUTFChars(jDevicePath, devicePath);
 
     std::lock_guard<std::mutex> lock(commandMutex);
     commandQueue.push(cmd);
@@ -210,11 +186,10 @@ void onEpollEvent(DeviceContext *deviceContext, IEvdevCallback *callback) {
         if (rc == LIBEVDEV_READ_STATUS_SUCCESS) { // rc == 0
             int32_t outKeycode = -1;
             uint32_t outFlags = -1;
-            int deviceId = deviceContext->deviceId;
             deviceContext->keyLayoutMap.mapKey(inputEvent.code, 0, &outKeycode, &outFlags);
 
             bool returnValue;
-            callback->onEvdevEvent(deviceId,
+            callback->onEvdevEvent(deviceContext->devicePath,
                                    inputEvent.time.tv_sec,
                                    inputEvent.time.tv_usec,
                                    inputEvent.type,
@@ -251,14 +226,20 @@ void handleCommand(const Command &cmd) {
         struct libevdev *dev = nullptr;
         char devicePath[256];
 
-        int rc = findEvdevDevice(data.identifier.name,
-                                 data.identifier.bus,
-                                 data.identifier.vendor,
-                                 data.identifier.product,
-                                 &dev,
-                                 devicePath);
-        if (rc < 0) {
-            LOGE("Failed to find device for grab command");
+        strcpy(devicePath, data.devicePath);
+
+        // MUST be NONBLOCK so that the loop reading the evdev events eventually returns
+        // due to an EAGAIN error.
+        int fd = open(devicePath, O_RDONLY | O_NONBLOCK);
+        if (fd == -1) {
+            LOGE("Failed to open device %s: %s", devicePath, strerror(errno));
+            return;
+        }
+
+        int rc = libevdev_new_from_fd(fd, &dev);
+        if (rc != 0) {
+            LOGE("Failed to create libevdev device from %s: %s", devicePath, strerror(errno));
+            close(fd);
             return;
         }
 
@@ -267,9 +248,9 @@ void handleCommand(const Command &cmd) {
             for (const auto &pair: *evdevDevices) {
                 DeviceContext context = pair.second;
                 if (strcmp(context.devicePath, devicePath) == 0) {
-                    LOGW("Device %s %s is already grabbed. Maybe it is a virtual uinput device.",
-                         data.identifier.name.c_str(),
+                    LOGW("Device %s is already grabbed. Maybe it is a virtual uinput device.",
                          devicePath);
+                    libevdev_free(dev);
                     return;
                 }
             }
@@ -284,13 +265,22 @@ void handleCommand(const Command &cmd) {
         }
 
         int evdevFd = libevdev_get_fd(dev);
+
+        // Create a dummy InputDeviceIdentifier for key layout loading
+        android::InputDeviceIdentifier identifier;
+        identifier.name = std::string(libevdev_get_name(dev));
+        identifier.bus = libevdev_get_id_bustype(dev);
+        identifier.vendor = libevdev_get_id_vendor(dev);
+        identifier.product = libevdev_get_id_product(dev);
+
         std::string klPath = android::getInputDeviceConfigurationFilePathByDeviceIdentifier(
-                data.identifier, android::InputDeviceConfigurationFileType::KEY_LAYOUT);
+                identifier, android::InputDeviceConfigurationFileType::KEY_LAYOUT);
 
         auto klResult = android::KeyLayoutMap::load(klPath, nullptr);
 
         if (!klResult.ok()) {
             LOGE("key layout map not found for device %s", libevdev_get_name(dev));
+            libevdev_free(dev);
             return;
         }
 
@@ -311,12 +301,11 @@ void handleCommand(const Command &cmd) {
             return;
         }
 
-        DeviceContext context{
-                data.deviceId,
-                data.identifier,
+        DeviceContext context = {
                 dev,
                 uinputDev,
                 *klResult.value(),
+                *data.devicePath,
         };
 
         strcpy(context.devicePath, devicePath);
@@ -336,8 +325,7 @@ void handleCommand(const Command &cmd) {
 
         // TODO add device input file to epoll so the state is cleared when it is disconnected. Remember to remove the epoll after it has disconnected.
 
-        LOGI("Grabbed device %d, %s, %s", context.deviceId,
-             context.inputDeviceIdentifier.name.c_str(), context.devicePath);
+        LOGI("Grabbed device %s, %s", libevdev_get_name(dev), context.devicePath);
 
     } else if (cmd.type == UNGRAB) {
 
@@ -345,8 +333,7 @@ void handleCommand(const Command &cmd) {
 
         std::lock_guard<std::mutex> lock(evdevDevicesMutex);
         for (auto it = evdevDevices->begin(); it != evdevDevices->end(); ++it) {
-            int deviceId = it->second.deviceId;
-            if (it->second.deviceId == data.deviceId) {
+            if (strcmp(it->second.devicePath, data.devicePath) == 0) {
 
                 // Do this before freeing the evdev file descriptor
                 libevdev_uinput_destroy(it->second.uinputDev);
@@ -357,7 +344,7 @@ void handleCommand(const Command &cmd) {
                 libevdev_free(it->second.evdev);
                 evdevDevices->erase(it);
 
-                LOGI("Ungrabbed device %d", deviceId);
+                LOGI("Ungrabbed device %s", data.devicePath);
                 break;
             }
         }
@@ -464,10 +451,18 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_ungrabEvdevDeviceNative(JNIEnv *env,
                                                                                        jobject thiz,
-                                                                                       jint deviceId) {
+                                                                                       jstring jDevicePath) {
+    const char *devicePath = env->GetStringUTFChars(jDevicePath, nullptr);
+    if (devicePath == nullptr) {
+        return;
+    }
+
     Command cmd;
     cmd.type = UNGRAB;
-    cmd.data = UngrabData{deviceId};
+    cmd.data = UngrabData{};
+    strcpy(std::get<UngrabData>(cmd.data).devicePath, devicePath);
+
+    env->ReleaseStringUTFChars(jDevicePath, devicePath);
 
     {
         std::lock_guard<std::mutex> lock(commandMutex);
@@ -504,32 +499,54 @@ extern "C"
 JNIEXPORT jboolean JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_writeEvdevEventNative(JNIEnv *env,
                                                                                      jobject thiz,
-                                                                                     jint deviceId,
+                                                                                     jstring jDevicePath,
                                                                                      jint type,
                                                                                      jint code,
                                                                                      jint value) {
-    // TODO: implement writeEvdevEvent()
+    const char *devicePath = env->GetStringUTFChars(jDevicePath, nullptr);
+    if (devicePath == nullptr) {
+        return false;
+    }
+
+    bool result = false;
+    {
+        std::lock_guard<std::mutex> lock(evdevDevicesMutex);
+        for (const auto &pair: *evdevDevices) {
+            if (strcmp(pair.second.devicePath, devicePath) == 0) {
+                int rc = libevdev_uinput_write_event(pair.second.uinputDev, type, code, value);
+                if (rc == 0) {
+                    rc = libevdev_uinput_write_event(pair.second.uinputDev, EV_SYN, SYN_REPORT, 0);
+                }
+                result = (rc == 0);
+                break;
+            }
+        }
+    }
+
+    env->ReleaseStringUTFChars(jDevicePath, devicePath);
+    return result;
 }
 extern "C"
 JNIEXPORT void JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_ungrabAllEvdevDevicesNative(
         JNIEnv *env,
         jobject thiz) {
-    std::vector<int> deviceIds;
+    std::vector<std::string> devicePaths;
 
     {
         std::lock_guard<std::mutex> evdevLock(evdevDevicesMutex);
 
         for (auto pair: *evdevDevices) {
-            deviceIds.push_back(pair.second.deviceId);
+            devicePaths.push_back(std::string(pair.second.devicePath));
         }
     }
 
     std::lock_guard<std::mutex> commandLock(commandMutex);
-    for (int id: deviceIds) {
+    for (const std::string &path: devicePaths) {
         Command cmd;
         cmd.type = UNGRAB;
-        cmd.data = UngrabData{id};
+        cmd.data = UngrabData{};
+        strcpy(std::get<UngrabData>(cmd.data).devicePath, path.c_str());
         commandQueue.push(cmd);
     }
 
@@ -539,4 +556,133 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_ungrabAllEvdevDev
     if (written < 0) {
         LOGE("Failed to write to commandEventFd: %s", strerror(errno));
     }
+}
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabAllEvdevDevicesNative(
+        JNIEnv *env, jobject thiz) {
+    // TODO: implement grabAllEvdevDevicesNative()
+}
+
+// Helper function to create a Java EvdevDeviceHandle object
+jobject
+createEvdevDeviceHandle(JNIEnv *env, const char *path, const char *name, int bus, int vendor,
+                        int product) {
+    // Find the EvdevDeviceHandle class
+    jclass evdevDeviceHandleClass = env->FindClass(
+            "io/github/sds100/keymapper/common/models/EvdevDeviceHandle");
+    if (evdevDeviceHandleClass == nullptr) {
+        LOGE("Failed to find EvdevDeviceHandle class");
+        return nullptr;
+    }
+
+    // Get the constructor
+    jmethodID constructor = env->GetMethodID(evdevDeviceHandleClass, "<init>",
+                                             "(Ljava/lang/String;Ljava/lang/String;III)V");
+    if (constructor == nullptr) {
+        LOGE("Failed to find EvdevDeviceHandle constructor");
+        return nullptr;
+    }
+
+    // Create Java strings
+    jstring jPath = env->NewStringUTF(path);
+    jstring jName = env->NewStringUTF(name);
+
+    // Create the object
+    jobject evdevDeviceHandle = env->NewObject(evdevDeviceHandleClass, constructor, jPath, jName,
+                                               bus, vendor, product);
+
+    // Clean up local references
+    env->DeleteLocalRef(jPath);
+    env->DeleteLocalRef(jName);
+    env->DeleteLocalRef(evdevDeviceHandleClass);
+
+    return evdevDeviceHandle;
+}
+
+extern "C"
+JNIEXPORT jobjectArray JNICALL
+Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_getEvdevDevicesNative(JNIEnv *env,
+                                                                                     jobject thiz) {
+    DIR *dir = opendir("/dev/input");
+
+    if (dir == nullptr) {
+        LOGE("Failed to open /dev/input directory");
+        return nullptr;
+    }
+
+    std::vector<jobject> deviceHandles;
+    struct dirent *entry;
+
+    while ((entry = readdir(dir)) != nullptr) {
+        // Skip . and .. entries
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+            continue;
+        }
+
+        char fullPath[256];
+        snprintf(fullPath, sizeof(fullPath), "/dev/input/%s", entry->d_name);
+
+        int fd = open(fullPath, O_RDONLY);
+
+        if (fd == -1) {
+            continue;
+        }
+
+        struct libevdev *dev = nullptr;
+        int status = libevdev_new_from_fd(fd, &dev);
+
+        if (status != 0) {
+            LOGE("Failed to open libevdev device from path %s: %s", fullPath, strerror(errno));
+            close(fd);
+            continue;
+        }
+
+        const char *devName = libevdev_get_name(dev);
+        int devVendor = libevdev_get_id_vendor(dev);
+        int devProduct = libevdev_get_id_product(dev);
+        int devBus = libevdev_get_id_bustype(dev);
+
+        if (DEBUG_PROBE) {
+            LOGD("Evdev device: %s, bus: %d, vendor: %d, product: %d, path: %s",
+                 devName, devBus, devVendor, devProduct, fullPath);
+        }
+
+        // Create EvdevDeviceHandle object
+        jobject deviceHandle = createEvdevDeviceHandle(env, fullPath, devName, devBus, devVendor,
+                                                       devProduct);
+        if (deviceHandle != nullptr) {
+            deviceHandles.push_back(deviceHandle);
+        }
+
+        libevdev_free(dev);
+        close(fd);
+    }
+
+    closedir(dir);
+
+    // Create the Java array
+    jclass evdevDeviceHandleClass = env->FindClass(
+            "io/github/sds100/keymapper/common/models/EvdevDeviceHandle");
+    if (evdevDeviceHandleClass == nullptr) {
+        LOGE("Failed to find EvdevDeviceHandle class for array creation");
+        return nullptr;
+    }
+
+    jobjectArray result = env->NewObjectArray(deviceHandles.size(), evdevDeviceHandleClass,
+                                              nullptr);
+    if (result == nullptr) {
+        LOGE("Failed to create EvdevDeviceHandle array");
+        env->DeleteLocalRef(evdevDeviceHandleClass);
+        return nullptr;
+    }
+
+    // Fill the array
+    for (size_t i = 0; i < deviceHandles.size(); i++) {
+        env->SetObjectArrayElement(result, i, deviceHandles[i]);
+        env->DeleteLocalRef(deviceHandles[i]); // Clean up local reference
+    }
+
+    env->DeleteLocalRef(evdevDeviceHandleClass);
+    return result;
 }

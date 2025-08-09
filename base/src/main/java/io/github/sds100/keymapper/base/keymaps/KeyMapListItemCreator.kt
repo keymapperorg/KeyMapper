@@ -64,7 +64,7 @@ class KeyMapListItemCreator(
 
                 is FloatingButtonKey -> floatingButtonKeyName(key)
                 is FingerprintTriggerKey -> fingerprintKeyName(key)
-                is EvdevTriggerKey -> evdevTriggerKeyName(key, showDeviceDescriptors)
+                is EvdevTriggerKey -> evdevTriggerKeyName(key)
             }
         }
 
@@ -296,10 +296,7 @@ class KeyMapListItemCreator(
         }
     }
 
-    private fun evdevTriggerKeyName(
-        key: EvdevTriggerKey,
-        showDeviceDescriptors: Boolean,
-    ): String = buildString {
+    private fun evdevTriggerKeyName(key: EvdevTriggerKey): String = buildString {
         when (key.clickType) {
             ClickType.LONG_PRESS -> append(longPressString).append(" ")
             ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
@@ -308,19 +305,9 @@ class KeyMapListItemCreator(
 
         append(InputEventStrings.keyCodeToString(key.keyCode))
 
-        val deviceName = if (showDeviceDescriptors) {
-            InputDeviceUtils.appendDeviceDescriptorToName(
-                key.deviceDescriptor,
-                key.deviceName,
-            )
-        } else {
-            key.deviceName
-        }
-
-
         val parts = buildList {
             add("PRO")
-            add(deviceName)
+            add(key.device.name)
 
             if (!key.consumeEvent) {
                 add(getString(R.string.flag_dont_override_default_action))

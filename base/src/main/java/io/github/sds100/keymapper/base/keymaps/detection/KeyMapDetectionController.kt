@@ -12,8 +12,8 @@ import io.github.sds100.keymapper.base.trigger.EvdevTriggerKey
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.base.trigger.RecordTriggerState
 import io.github.sds100.keymapper.base.trigger.Trigger
+import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
-import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -42,7 +42,7 @@ class KeyMapDetectionController(
 
     init {
         // Must first register before collecting anything that may call reset()
-        inputEventHub.registerClient(INPUT_EVENT_HUB_ID, this)
+        inputEventHub.registerClient(INPUT_EVENT_HUB_ID, this, listOf(KMEvdevEvent.TYPE_KEY_EVENT))
 
         coroutineScope.launch {
             detectUseCase.allKeyMapList.collect { keyMapList ->
@@ -74,11 +74,7 @@ class KeyMapDetectionController(
             return false
         }
 
-        if (event is KMKeyEvent) {
-            return algorithm.onKeyEvent(event)
-        } else {
-            return false
-        }
+        return algorithm.onInputEvent(event)
     }
 
     fun onFingerprintGesture(type: FingerprintGestureType) {
@@ -105,12 +101,15 @@ class KeyMapDetectionController(
     private fun grabEvdevDevicesForTriggers(triggers: Array<Trigger>) {
         val evdevDevices = triggers
             .flatMap { trigger -> trigger.keys.filterIsInstance<EvdevTriggerKey>() }
-            .map { it.deviceDescriptor }
+            .map { it.device }
             .distinct()
             .toList()
 
         Timber.i("Grab evdev devices for key map detection: ${evdevDevices.joinToString()}")
-        inputEventHub.setGrabbedEvdevDevices(INPUT_EVENT_HUB_ID, evdevDevices)
+        inputEventHub.setGrabbedEvdevDevices(
+            INPUT_EVENT_HUB_ID,
+            evdevDevices,
+        )
     }
 
     private fun reset() {

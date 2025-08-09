@@ -38,14 +38,22 @@ public:
   static bool setDefaultImpl(const std::shared_ptr<IEvdevCallback>& impl);
   static const std::shared_ptr<IEvdevCallback>& getDefaultImpl();
   virtual ::ndk::ScopedAStatus onEvdevEventLoopStarted() = 0;
-  virtual ::ndk::ScopedAStatus onEvdevEvent(int32_t in_deviceId, int64_t in_timeSec, int64_t in_timeUsec, int32_t in_type, int32_t in_code, int32_t in_value, int32_t in_androidCode, bool* _aidl_return) = 0;
+
+    virtual ::ndk::ScopedAStatus
+    onEvdevEvent(const std::string &in_devicePath, int64_t in_timeSec, int64_t in_timeUsec,
+                 int32_t in_type, int32_t in_code, int32_t in_value, int32_t in_androidCode,
+                 bool *_aidl_return) = 0;
 private:
   static std::shared_ptr<IEvdevCallback> default_impl;
 };
 class IEvdevCallbackDefault : public IEvdevCallback {
 public:
   ::ndk::ScopedAStatus onEvdevEventLoopStarted() override;
-  ::ndk::ScopedAStatus onEvdevEvent(int32_t in_deviceId, int64_t in_timeSec, int64_t in_timeUsec, int32_t in_type, int32_t in_code, int32_t in_value, int32_t in_androidCode, bool* _aidl_return) override;
+
+    ::ndk::ScopedAStatus
+    onEvdevEvent(const std::string &in_devicePath, int64_t in_timeSec, int64_t in_timeUsec,
+                 int32_t in_type, int32_t in_code, int32_t in_value, int32_t in_androidCode,
+                 bool *_aidl_return) override;
   ::ndk::SpAIBinder asBinder() override;
   bool isRemote() override;
 };

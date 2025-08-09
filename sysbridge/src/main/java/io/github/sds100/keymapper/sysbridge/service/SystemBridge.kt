@@ -12,16 +12,13 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.ServiceManager
 import android.util.Log
-import android.view.InputDevice
 import android.view.InputEvent
-import io.github.sds100.keymapper.common.utils.getBluetoothAddress
-import io.github.sds100.keymapper.common.utils.getDeviceBus
+import io.github.sds100.keymapper.common.models.EvdevDeviceHandle
 import io.github.sds100.keymapper.sysbridge.IEvdevCallback
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
 import io.github.sds100.keymapper.sysbridge.provider.BinderContainer
 import io.github.sds100.keymapper.sysbridge.provider.SystemBridgeBinderProvider
 import io.github.sds100.keymapper.sysbridge.utils.IContentProviderUtils
-import io.github.sds100.keymapper.sysbridge.utils.InputDeviceIdentifier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -42,13 +39,19 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
     // TODO return error code and map this to a SystemBridgeError in key mapper
 
-    external fun grabEvdevDeviceNative(
-        deviceIdentifier: InputDeviceIdentifier
+    external fun grabEvdevDeviceNative(devicePath: String): Boolean
+    external fun grabAllEvdevDevicesNative(): Boolean
+
+    external fun ungrabEvdevDeviceNative(devicePath: String)
+    external fun ungrabAllEvdevDevicesNative()
+    external fun writeEvdevEventNative(
+        devicePath: String,
+        type: Int,
+        code: Int,
+        value: Int
     ): Boolean
 
-    external fun ungrabEvdevDeviceNative(deviceId: Int)
-    external fun ungrabAllEvdevDevicesNative()
-    external fun writeEvdevEventNative(deviceId: Int, type: Int, code: Int, value: Int): Boolean
+    external fun getEvdevDevicesNative(): Array<EvdevDeviceHandle>
 
     external fun startEvdevEventLoop(callback: IBinder)
     external fun stopEvdevEventLoop()
@@ -254,50 +257,37 @@ internal class SystemBridge : ISystemBridge.Stub() {
         }
     }
 
-    // TODO passthrough a timeout that will automatically ungrab after that time.
-    override fun grabEvdevDevice(
-        deviceId: Int,
-    ): Boolean {
-        val inputDevice = inputManager.getInputDevice(deviceId) ?: return false
-
-        // Don't grab any virtual devices
-        if (inputDevice.isVirtual) {
-            Log.i(TAG, "Not grabbing virtual device: $deviceId")
-            return false
-        }
-
-        val deviceIdentifier = buildInputDeviceIdentifier(inputDevice) ?: return false
-        return grabEvdevDeviceNative(deviceIdentifier)
+    // TODO passthrough a timeout that will automatically ungrab after that time. Use this when recording.
+    override fun grabEvdevDevice(devicePath: String?): Boolean {
+        devicePath ?: return false
+        return grabEvdevDeviceNative(devicePath)
     }
 
-    override fun ungrabEvdevDevice(deviceId: Int): Boolean {
-        ungrabEvdevDeviceNative(deviceId)
+    override fun grabAllEvdevDevices(): Boolean {
+        return grabAllEvdevDevicesNative()
+    }
+
+    override fun ungrabEvdevDevice(devicePath: String?): Boolean {
+        devicePath ?: return false
+        ungrabEvdevDeviceNative(devicePath)
         return true
     }
 
     override fun ungrabAllEvdevDevices(): Boolean {
-        Log.i(TAG, "Start ungrab all evdev devices")
         ungrabAllEvdevDevicesNative()
         return true
-    }
-
-    private fun buildInputDeviceIdentifier(inputDevice: InputDevice): InputDeviceIdentifier? {
-        return InputDeviceIdentifier(
-            id = inputDevice.id,
-            name = inputDevice.name ?: return null,
-            vendor = inputDevice.vendorId,
-            product = inputDevice.productId,
-            descriptor = inputDevice.descriptor ?: return null,
-            bus = inputDevice.getDeviceBus(),
-            bluetoothAddress = inputDevice.getBluetoothAddress()
-        )
     }
 
     override fun injectInputEvent(event: InputEvent?, mode: Int): Boolean {
         return inputManager.injectInputEvent(event, mode)
     }
 
-    override fun writeEvdevEvent(deviceId: Int, type: Int, code: Int, value: Int): Boolean {
-        return writeEvdevEventNative(deviceId, type, code, value)
+    override fun getEvdevInputDevices(): Array<out EvdevDeviceHandle?>? {
+        return getEvdevDevicesNative()
+    }
+
+    override fun writeEvdevEvent(devicePath: String?, type: Int, code: Int, value: Int): Boolean {
+        devicePath ?: return false
+        return writeEvdevEventNative(devicePath, type, code, value)
     }
 }

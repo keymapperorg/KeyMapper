@@ -21,7 +21,7 @@ data class KeyEventTriggerKey(
      */
     val requiresIme: Boolean = false,
    override val scanCode: Int? = null,
-) : TriggerKey(), KeyCodeTriggerKey {
+) : TriggerKey(), InputEventTriggerKey {
 
     override val allowedLongPress: Boolean = true
     override val allowedDoublePress: Boolean = true
@@ -32,7 +32,7 @@ data class KeyEventTriggerKey(
             is KeyEventTriggerDevice.External -> "external"
             KeyEventTriggerDevice.Internal -> "internal"
         }
-        return "KeyCodeTriggerKey(uid=${uid.substring(0..5)}, keyCode=$keyCode, device=$deviceString, clickType=$clickType, consume=$consumeEvent) "
+        return "InputEventTriggerKey(uid=${uid.substring(0..5)}, keyCode=$keyCode, device=$deviceString, clickType=$clickType, consume=$consumeEvent) "
     }
 
     // key code -> click type -> device -> consume key event

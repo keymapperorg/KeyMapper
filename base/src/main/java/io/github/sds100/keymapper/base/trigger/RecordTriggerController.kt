@@ -7,7 +7,6 @@ import io.github.sds100.keymapper.base.input.InputEventHubCallback
 import io.github.sds100.keymapper.base.keymaps.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
-import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.isError
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
@@ -62,6 +61,7 @@ class RecordTriggerControllerImpl @Inject constructor(
      * is received and it is cleared when recording starts.
      */
     private val downKeyEvents: MutableSet<KMKeyEvent> = mutableSetOf()
+    private val downEvdevEvents: MutableSet<KMEvdevEvent> = mutableSetOf()
     private val dpadMotionEventTracker: DpadMotionEventTracker = DpadMotionEventTracker()
 
     override fun onInputEvent(
@@ -74,9 +74,29 @@ class RecordTriggerControllerImpl @Inject constructor(
 
         when (event) {
             is KMEvdevEvent -> {
-                // Do nothing if receiving an evdev event that hasn't already been
-                // converted into a key event
-                return false
+                // Do not record evdev events that are not key events.
+                if (event.type != KMEvdevEvent.TYPE_KEY_EVENT) {
+                    return false
+                }
+
+                Timber.d("Recorded evdev event ${event.code} ${KeyEvent.keyCodeToString(event.androidCode)}")
+
+                // Must also remove old down events if a new down even is received.
+                val matchingDownEvent: KMEvdevEvent? = downEvdevEvents.find {
+                    it == event.copy(value = KMEvdevEvent.VALUE_DOWN)
+                }
+
+                if (matchingDownEvent != null) {
+                    downEvdevEvents.remove(matchingDownEvent)
+                }
+
+                if (event.isDownEvent) {
+                    downEvdevEvents.add(event)
+                } else if (event.isUpEvent) {
+                    onRecordKey(createEvdevRecordedKey(event))
+                }
+
+                return true
             }
 
             is KMGamePadEvent -> {
@@ -86,7 +106,7 @@ class RecordTriggerControllerImpl @Inject constructor(
                     if (keyEvent.action == KeyEvent.ACTION_DOWN) {
                         Timber.d("Recorded motion event ${KeyEvent.keyCodeToString(keyEvent.keyCode)}")
 
-                        val recordedKey = createRecordedKey(
+                        val recordedKey = createKeyEventRecordedKey(
                             keyEvent,
                             detectionSource
                         )
@@ -108,7 +128,7 @@ class RecordTriggerControllerImpl @Inject constructor(
                 if (matchingDownEvent != null) {
                     downKeyEvents.remove(matchingDownEvent)
                 }
-                
+
                 if (event.action == KeyEvent.ACTION_DOWN) {
                     downKeyEvents.add(event)
                 } else if (event.action == KeyEvent.ACTION_UP) {
@@ -117,7 +137,7 @@ class RecordTriggerControllerImpl @Inject constructor(
                     // Do not do this when recording motion events from the input method
                     // or Activity because they intentionally only input a down event.
                     if (matchingDownEvent != null) {
-                        val recordedKey = createRecordedKey(event, detectionSource)
+                        val recordedKey = createKeyEventRecordedKey(event, detectionSource)
                         onRecordKey(recordedKey)
                     }
 
@@ -173,7 +193,7 @@ class RecordTriggerControllerImpl @Inject constructor(
         }
 
         if (keyEvent.action == KeyEvent.ACTION_UP) {
-            val recordedKey = createRecordedKey(
+            val recordedKey = createKeyEventRecordedKey(
                 keyEvent,
                 InputEventDetectionSource.INPUT_METHOD,
             )
@@ -192,17 +212,25 @@ class RecordTriggerControllerImpl @Inject constructor(
         runBlocking { onRecordKey.emit(recordedKey) }
     }
 
-    private fun createRecordedKey(
+    private fun createKeyEventRecordedKey(
         keyEvent: KMKeyEvent,
         detectionSource: InputEventDetectionSource
-    ): RecordedKey {
-        return RecordedKey(
+    ): RecordedKey.KeyEvent {
+        return RecordedKey.KeyEvent(
             keyCode = keyEvent.keyCode,
             scanCode = keyEvent.scanCode,
             deviceDescriptor = keyEvent.device.descriptor,
             deviceName = keyEvent.device.name,
             isExternalDevice = keyEvent.device.isExternal,
             detectionSource = detectionSource
+        )
+    }
+
+    private fun createEvdevRecordedKey(evdevEvent: KMEvdevEvent): RecordedKey.EvdevEvent {
+        return RecordedKey.EvdevEvent(
+            keyCode = evdevEvent.androidCode,
+            scanCode = evdevEvent.code,
+            device = evdevEvent.device
         )
     }
 
@@ -213,15 +241,14 @@ class RecordTriggerControllerImpl @Inject constructor(
         dpadMotionEventTracker.reset()
         downKeyEvents.clear()
 
-        inputEventHub.registerClient(INPUT_EVENT_HUB_ID, this@RecordTriggerControllerImpl)
-
-        val inputDevices = devicesAdapter.connectedInputDevices.value.dataOrNull()
+        inputEventHub.registerClient(
+            INPUT_EVENT_HUB_ID,
+            this@RecordTriggerControllerImpl,
+            listOf(KMEvdevEvent.TYPE_KEY_EVENT)
+        )
 
         // Grab all evdev devices
-        if (inputDevices != null) {
-            val allDeviceDescriptors = inputDevices.map { it.descriptor }.toList()
-            inputEventHub.setGrabbedEvdevDevices(INPUT_EVENT_HUB_ID, allDeviceDescriptors)
-        }
+        inputEventHub.grabAllEvdevDevices(INPUT_EVENT_HUB_ID)
 
         repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
             val timeLeft = RECORD_TRIGGER_TIMER_LENGTH - iteration

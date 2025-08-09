@@ -28,7 +28,6 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -123,20 +122,6 @@ class AndroidDevicesAdapter @Inject constructor(
         }.launchIn(coroutineScope)
     }
 
-    fun logConnectedInputDevices() {
-        val deviceIds = inputManager?.inputDeviceIds ?: return
-        for (deviceId in deviceIds) {
-            val device = InputDevice.getDevice(deviceId) ?: continue
-
-            val supportedSources: String = InputDeviceUtils.SOURCE_NAMES
-                .filter { device.supportsSource(it.key) }
-                .values
-                .joinToString()
-
-            Timber.d("Input device: ${device.id} ${device.name} Vendor=${device.vendorId} Product=${device.productId} Descriptor=${device.descriptor} Sources=$supportedSources")
-        }
-    }
-
     override fun deviceHasKey(id: Int, keyCode: Int): Boolean {
         val device = InputDevice.getDevice(id) ?: return false
 
@@ -157,18 +142,6 @@ class AndroidDevicesAdapter @Inject constructor(
 
     override fun getInputDevice(deviceId: Int): InputDeviceInfo? {
         return InputDevice.getDevice(deviceId)?.let { InputDeviceUtils.createInputDeviceInfo(it) }
-    }
-
-    override fun getInputDevicesNow(): List<InputDeviceInfo> {
-        val devices = mutableListOf<InputDeviceInfo>()
-
-        for (id in InputDevice.getDeviceIds()) {
-            val device = InputDevice.getDevice(id) ?: continue
-
-            devices.add(InputDeviceUtils.createInputDeviceInfo(device))
-        }
-
-        return devices
     }
 
     private fun updateInputDevices() {

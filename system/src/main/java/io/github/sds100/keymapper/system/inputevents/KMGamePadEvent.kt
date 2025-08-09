@@ -30,5 +30,5 @@ data class KMGamePadEvent(
         }
     }
 
-    override val deviceId: Int = device.id
+    val deviceId: Int = device.id
 }

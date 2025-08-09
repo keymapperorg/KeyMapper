@@ -36,5 +36,5 @@ data class KMKeyEvent(
         }
     }
 
-    override val deviceId: Int = device.id
+    val deviceId: Int = device.id
 }

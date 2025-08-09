@@ -1,21 +1,27 @@
 package io.github.sds100.keymapper.sysbridge;
 
 import io.github.sds100.keymapper.sysbridge.IEvdevCallback;
-import io.github.sds100.keymapper.sysbridge.utils.InputDeviceIdentifier;
+import io.github.sds100.keymapper.common.models.EvdevDeviceHandle;
 import android.view.InputEvent;
 
 interface ISystemBridge {
    // Destroy method defined by Shizuku server. This is required
    // for Shizuku user services.
    // See demo/service/UserService.java in the Shizuku-API repository.
-   // TODO is this used?
+   // TODO use this from Key Mapper to kill the system bridge
    void destroy() = 16777114;
 
-   boolean grabEvdevDevice(int deviceId) = 1;
-   boolean ungrabEvdevDevice(int deviceId) = 2;
-   boolean ungrabAllEvdevDevices() = 3;
-   void registerEvdevCallback(IEvdevCallback callback) = 4;
-   void unregisterEvdevCallback() = 5;
-   boolean writeEvdevEvent(int deviceId, int type, int code, int value) = 6;
-   boolean injectInputEvent(in InputEvent event, int mode) = 7;
+   boolean grabEvdevDevice(String devicePath) = 1;
+   boolean grabAllEvdevDevices() = 2;
+
+   boolean ungrabEvdevDevice(String devicePath) = 3;
+   boolean ungrabAllEvdevDevices() = 4;
+
+   void registerEvdevCallback(IEvdevCallback callback) = 5;
+   void unregisterEvdevCallback() = 6;
+
+   boolean writeEvdevEvent(String devicePath, int type, int code, int value) = 7;
+   boolean injectInputEvent(in InputEvent event, int mode) = 8;
+
+   EvdevDeviceHandle[] getEvdevInputDevices() = 9;
 }

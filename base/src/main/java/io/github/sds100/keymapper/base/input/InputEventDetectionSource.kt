@@ -4,5 +4,4 @@ enum class InputEventDetectionSource {
     ACCESSIBILITY_SERVICE,
     INPUT_METHOD,
     EVDEV,
-    MAIN_ACTIVITY
 }

@@ -13,11 +13,17 @@ data class EvdevTriggerKeyEntity(
     @SerializedName(NAME_SCANCODE)
     val scanCode: Int,
 
-    @SerializedName(NAME_DEVICE_DESCRIPTOR)
-    val deviceDescriptor: String,
-
     @SerializedName(NAME_DEVICE_NAME)
     val deviceName: String,
+
+    @SerializedName(NAME_DEVICE_BUS)
+    val deviceBus: Int,
+
+    @SerializedName(NAME_DEVICE_VENDOR)
+    val deviceVendor: Int,
+
+    @SerializedName(NAME_DEVICE_PRODUCT)
+    val deviceProduct: Int,
 
     @SerializedName(NAME_CLICK_TYPE)
     override val clickType: Int = SHORT_PRESS,
@@ -34,8 +40,10 @@ data class EvdevTriggerKeyEntity(
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_KEYCODE = "keyCode"
         const val NAME_SCANCODE = "scanCode"
-        const val NAME_DEVICE_DESCRIPTOR = "deviceDescriptor"
         const val NAME_DEVICE_NAME = "deviceName"
+        const val NAME_DEVICE_BUS = "deviceBus"
+        const val NAME_DEVICE_VENDOR = "deviceVendor"
+        const val NAME_DEVICE_PRODUCT = "deviceProduct"
         const val NAME_FLAGS = "flags"
 
         const val FLAG_DO_NOT_CONSUME_KEY_EVENT = 1
