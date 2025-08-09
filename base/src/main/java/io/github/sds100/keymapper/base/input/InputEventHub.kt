@@ -17,7 +17,6 @@ import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnection
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeManager
 import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
@@ -145,14 +144,8 @@ class InputEventHubImpl @Inject constructor(
         event: KMInputEvent,
         detectionSource: InputEventDetectionSource,
     ): Boolean {
-        val uniqueEvent: KMInputEvent = if (event is KMKeyEvent) {
-            makeUniqueKeyEvent(event)
-        } else {
-            event
-        }
-
         if (logInputEventsEnabled.value) {
-            logInputEvent(uniqueEvent)
+            logInputEvent(event)
         }
 
         var consume = false
@@ -195,30 +188,6 @@ class InputEventHubImpl @Inject constructor(
         }
 
         return consume
-    }
-
-    /**
-     * Sometimes key events are sent with an unknown key code so to make it unique,
-     * this will set a unique key code to the key event that won't conflict.
-     */
-    private fun makeUniqueKeyEvent(event: KMKeyEvent): KMKeyEvent {
-        // Guard to ignore processing when not applicable
-        if (event.keyCode != KeyEvent.KEYCODE_UNKNOWN) {
-            return event
-        }
-
-        // Don't offset negative values
-        val scanCodeOffset: Int = if (event.scanCode >= 0) {
-            InputEventUtils.KEYCODE_TO_SCANCODE_OFFSET
-        } else {
-            0
-        }
-
-        return event.copy(
-            // Fallback to scanCode when keyCode is unknown as it's typically more unique
-            // Add offset to go past possible keyCode values
-            keyCode = event.scanCode + scanCodeOffset,
-        )
     }
 
     private fun logInputEvent(event: KMInputEvent) {

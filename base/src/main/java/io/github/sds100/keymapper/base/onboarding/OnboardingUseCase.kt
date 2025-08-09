@@ -77,11 +77,6 @@ class OnboardingUseCaseImpl @Inject constructor(
         Keys.shownSequenceTriggerExplanation,
         false,
     )
-    override var shownKeyCodeToScanCodeTriggerExplanation by PrefDelegate(
-        Keys.shownKeyCodeToScanCodeTriggerExplanation,
-        false,
-    )
-
     override val showWhatsNew = get(Keys.lastInstalledVersionCodeHomeScreen)
         .map { (it ?: -1) < buildConfigProvider.versionCode }
 
@@ -251,7 +246,6 @@ interface OnboardingUseCase {
 
     var shownParallelTriggerOrderExplanation: Boolean
     var shownSequenceTriggerExplanation: Boolean
-    var shownKeyCodeToScanCodeTriggerExplanation: Boolean
 
     val showFloatingButtonFeatureNotification: Flow<Boolean>
     fun showedFloatingButtonFeatureNotification()

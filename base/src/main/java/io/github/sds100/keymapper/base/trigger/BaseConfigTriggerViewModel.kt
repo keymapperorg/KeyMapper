@@ -494,24 +494,6 @@ abstract class BaseConfigTriggerViewModel(
             key.detectionSource != InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         )
 
-        if (key.keyCode >= InputEventUtils.KEYCODE_TO_SCANCODE_OFFSET || key.keyCode < 0) {
-            if (onboarding.shownKeyCodeToScanCodeTriggerExplanation) {
-                return
-            }
-
-            val dialog = DialogModel.Alert(
-                title = getString(R.string.dialog_title_keycode_to_scancode_trigger_explanation),
-                message = getString(R.string.dialog_message_keycode_to_scancode_trigger_explanation),
-                positiveButtonText = getString(R.string.pos_understood),
-            )
-
-            val response = showDialog("keycode_to_scancode_message", dialog)
-
-            if (response == DialogResponse.POSITIVE) {
-                onboarding.shownKeyCodeToScanCodeTriggerExplanation = true
-            }
-        }
-
         if (key.keyCode == KeyEvent.KEYCODE_CAPS_LOCK) {
             val dialog = DialogModel.Ok(
                 message = getString(R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout),
