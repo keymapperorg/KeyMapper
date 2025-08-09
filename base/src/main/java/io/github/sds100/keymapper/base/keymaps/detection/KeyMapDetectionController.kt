@@ -17,6 +17,8 @@ import io.github.sds100.keymapper.system.inputevents.KMInputEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -45,20 +47,18 @@ class KeyMapDetectionController(
         inputEventHub.registerClient(INPUT_EVENT_HUB_ID, this, listOf(KMEvdevEvent.TYPE_KEY_EVENT))
 
         coroutineScope.launch {
-            detectUseCase.allKeyMapList.collect { keyMapList ->
+            combine(detectUseCase.allKeyMapList, isPaused) { keyMapList, isPaused ->
                 algorithm.reset()
-                algorithm.loadKeyMaps(keyMapList)
-                // Only grab the triggers that are actually being listened to by the algorithm
-                grabEvdevDevicesForTriggers(algorithm.triggers)
-            }
-        }
 
-        coroutineScope.launch {
-            isPaused.collect { isPaused ->
                 if (isPaused) {
-                    algorithm.reset()
+                    algorithm.loadKeyMaps(emptyList())
+                    inputEventHub.setGrabbedEvdevDevices(INPUT_EVENT_HUB_ID, emptyList())
+                } else {
+                    algorithm.loadKeyMaps(keyMapList)
+                    // Only grab the triggers that are actually being listened to by the algorithm
+                    grabEvdevDevicesForTriggers(algorithm.triggers)
                 }
-            }
+            }.launchIn(coroutineScope)
         }
     }
 
