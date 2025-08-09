@@ -10,7 +10,6 @@ import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.isError
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
-import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
@@ -36,7 +35,6 @@ class RecordTriggerControllerImpl @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val inputEventHub: InputEventHub,
     private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
-    private val devicesAdapter: DevicesAdapter
 ) : RecordTriggerController, InputEventHubCallback {
     companion object {
         /**
@@ -44,6 +42,10 @@ class RecordTriggerControllerImpl @Inject constructor(
          */
         private const val RECORD_TRIGGER_TIMER_LENGTH = 5
         private const val INPUT_EVENT_HUB_ID = "record_trigger"
+
+        private val SCAN_CODES_BLACKLIST = setOf(
+            330 // BTN_TOUCH
+        )
     }
 
     override val state = MutableStateFlow<RecordTriggerState>(RecordTriggerState.Idle)
@@ -76,6 +78,10 @@ class RecordTriggerControllerImpl @Inject constructor(
             is KMEvdevEvent -> {
                 // Do not record evdev events that are not key events.
                 if (event.type != KMEvdevEvent.TYPE_KEY_EVENT) {
+                    return false
+                }
+
+                if (SCAN_CODES_BLACKLIST.contains(event.code)) {
                     return false
                 }
 
