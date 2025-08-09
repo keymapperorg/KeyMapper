@@ -77,6 +77,12 @@ class ConfigKeyMapStateImpl @Inject constructor(
         originalKeyMap = keyMap
     }
 
+    // Useful for testing
+    fun setKeyMap(keyMap: KeyMap) {
+        _keyMap.update { State.Data(keyMap) }
+        originalKeyMap = keyMap
+    }
+
     override fun save() {
         val keyMap = keyMap.value.dataOrNull() ?: return
 

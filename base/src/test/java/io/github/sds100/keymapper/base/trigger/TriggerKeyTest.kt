@@ -5,9 +5,27 @@ import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.system.inputevents.Scancode
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
+import org.mockito.MockedStatic
+import org.mockito.Mockito.mockStatic
 
 class TriggerKeyTest {
+
+    private lateinit var mockedKeyEvent: MockedStatic<KeyEvent>
+
+    @Before
+    fun setUp() {
+        mockedKeyEvent = mockStatic(KeyEvent::class.java)
+        mockedKeyEvent.`when`<Int> { KeyEvent.getMaxKeyCode() }.thenReturn(1000)
+    }
+
+    @After
+    fun tearDown() {
+        mockedKeyEvent.close()
+    }
+    
     @Test
     fun `detect with scan code if key code is unknown and user setting enabled`() {
         val triggerKey = KeyEventTriggerKey(
