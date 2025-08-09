@@ -18,10 +18,6 @@ data class AssistantTriggerKey(
     override val clickType: ClickType,
 ) : TriggerKey() {
 
-    // This is always true for an assistant key event because Key Mapper can't forward the
-    // assistant event to another app (or can it??).
-    override val consumeEvent: Boolean = true
-
     override val allowedLongPress: Boolean = false
     override val allowedDoublePress: Boolean = false
 

@@ -46,7 +46,7 @@ import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils
+import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.intents.IntentAdapter
 import io.github.sds100.keymapper.system.intents.IntentTarget
@@ -146,8 +146,8 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
                 // See issue #1683. Some apps ignore key events which do not have a source.
                 val source = when {
-                    InputEventUtils.isDpadKeyCode(action.keyCode) -> InputDevice.SOURCE_DPAD
-                    InputEventUtils.isGamepadButton(action.keyCode) -> InputDevice.SOURCE_GAMEPAD
+                    KeyEventUtils.isDpadKeyCode(action.keyCode) -> InputDevice.SOURCE_DPAD
+                    KeyEventUtils.isGamepadButton(action.keyCode) -> InputDevice.SOURCE_GAMEPAD
                     else -> InputDevice.SOURCE_KEYBOARD
                 }
 
@@ -892,7 +892,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
         if (action.device?.descriptor == null) {
             // automatically select a game controller as the input device for game controller key events
 
-            if (InputEventUtils.isGamepadKeyCode(action.keyCode)) {
+            if (KeyEventUtils.isGamepadKeyCode(action.keyCode)) {
                 devicesAdapter.connectedInputDevices.value.ifIsData { inputDevices ->
                     val device = inputDevices.find { it.isGameController }
 

@@ -9,7 +9,7 @@ import io.github.sds100.keymapper.base.purchasing.PurchasingError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils
+import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
 
 /**
  * Store the data required for determining trigger errors to reduce the number of calls with
@@ -71,7 +71,7 @@ data class TriggerErrorSnapshot(
 
         val containsDpadKey =
             key is KeyEventTriggerKey &&
-                InputEventUtils.isDpadKeyCode(key.keyCode) && key.requiresIme
+                KeyEventUtils.isDpadKeyCode(key.keyCode) && key.requiresIme
 
         if (showDpadImeSetupError && !isKeyMapperImeChosen && containsDpadKey) {
             return TriggerError.DPAD_IME_NOT_SELECTED

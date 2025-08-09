@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.ActionData
-import io.github.sds100.keymapper.base.utils.InputEventStrings
+import io.github.sds100.keymapper.base.utils.KeyCodeStrings
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
@@ -190,7 +190,7 @@ class ConfigKeyEventActionViewModel @Inject constructor(
             onError = { "" },
         )
 
-        val modifierListItems = InputEventStrings.MODIFIER_LABELS.map { (modifier, label) ->
+        val modifierListItems = KeyCodeStrings.MODIFIER_LABELS.map { (modifier, label) ->
             CheckBoxListItem(
                 id = modifier.toString(),
                 label = getString(label),

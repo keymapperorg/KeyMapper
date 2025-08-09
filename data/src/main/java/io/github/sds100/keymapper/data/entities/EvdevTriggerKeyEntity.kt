@@ -47,5 +47,6 @@ data class EvdevTriggerKeyEntity(
         const val NAME_FLAGS = "flags"
 
         const val FLAG_DO_NOT_CONSUME_KEY_EVENT = 1
+        const val FLAG_DETECT_WITH_SCAN_CODE = 2
     }
 }

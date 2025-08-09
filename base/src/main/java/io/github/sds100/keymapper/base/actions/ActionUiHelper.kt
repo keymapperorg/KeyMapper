@@ -7,7 +7,7 @@ import androidx.compose.material.icons.outlined.Android
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.utils.DndModeStrings
-import io.github.sds100.keymapper.base.utils.InputEventStrings
+import io.github.sds100.keymapper.base.utils.KeyCodeStrings
 import io.github.sds100.keymapper.base.utils.RingerModeStrings
 import io.github.sds100.keymapper.base.utils.VolumeStreamStrings
 import io.github.sds100.keymapper.base.utils.ui.IconInfo
@@ -50,7 +50,7 @@ class ActionUiHelper(
                 getString(R.string.description_keyevent_through_shell, keyCodeString)
             } else {
                 val metaStateString = buildString {
-                    for (label in InputEventStrings.MODIFIER_LABELS.entries) {
+                    for (label in KeyCodeStrings.MODIFIER_LABELS.entries) {
                         val modifier = label.key
                         val labelRes = label.value
 

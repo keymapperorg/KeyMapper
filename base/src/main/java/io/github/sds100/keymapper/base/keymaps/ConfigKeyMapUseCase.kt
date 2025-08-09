@@ -36,7 +36,7 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils
+import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -376,7 +376,7 @@ class ConfigKeyMapUseCaseController @Inject constructor(
         var consumeKeyEvent = true
 
         // Issue #753
-        if (InputEventUtils.isModifierKey(keyCode)) {
+        if (KeyEventUtils.isModifierKey(keyCode)) {
             consumeKeyEvent = false
         }
 
@@ -618,10 +618,18 @@ class ConfigKeyMapUseCaseController @Inject constructor(
 
     override fun setTriggerKeyConsumeKeyEvent(keyUid: String, consumeKeyEvent: Boolean) {
         editTriggerKey(keyUid) { key ->
-            if (key is KeyEventTriggerKey) {
-                key.copy(consumeEvent = consumeKeyEvent)
-            } else {
-                key
+            when (key) {
+                is KeyEventTriggerKey -> {
+                    key.copy(consumeEvent = consumeKeyEvent)
+                }
+
+                is EvdevTriggerKey -> {
+                    key.copy(consumeEvent = consumeKeyEvent)
+                }
+
+                else -> {
+                    key
+                }
             }
         }
     }
@@ -850,10 +858,10 @@ class ConfigKeyMapUseCaseController @Inject constructor(
             } else {
                 trigger.keys
                     .mapNotNull { it as? KeyEventTriggerKey }
-                    .any { InputEventUtils.isDpadKeyCode(it.keyCode) }
+                    .any { KeyEventUtils.isDpadKeyCode(it.keyCode) }
             }
 
-            if (InputEventUtils.isModifierKey(data.keyCode) || containsDpadKey) {
+            if (KeyEventUtils.isModifierKey(data.keyCode) || containsDpadKey) {
                 holdDown = true
                 repeat = false
             } else {

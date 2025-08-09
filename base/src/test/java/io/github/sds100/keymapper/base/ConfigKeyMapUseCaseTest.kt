@@ -23,7 +23,7 @@ import io.github.sds100.keymapper.base.utils.triggerKey
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils
+import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -758,7 +758,7 @@ class ConfigKeyMapUseCaseTest {
     @Test
     fun `add modifier key event action, enable hold down option and disable repeat option`() =
         runTest(testDispatcher) {
-            InputEventUtils.MODIFIER_KEYCODES.forEach { keyCode ->
+            KeyEventUtils.MODIFIER_KEYCODES.forEach { keyCode ->
                 useCase.keyMap.value = State.Data(KeyMap())
 
                 useCase.addAction(ActionData.InputKeyEvent(keyCode))

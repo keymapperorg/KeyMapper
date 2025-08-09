@@ -1515,6 +1515,8 @@
     <string name="trigger_key_fingerprint_gesture_left">Swipe left fingerprint reader</string>
     <string name="trigger_key_fingerprint_gesture_right">Swipe right fingerprint reader</string>
     <string name="trigger_shortcuts_header">Advanced triggers</string>
+    <string name="trigger_key_unknown_key_code">Key code %d</string>
+    <string name="trigger_key_unknown_scan_code">Scan code %d</string>
 
     <!--  Action screen  -->
     <string name="action_list_item_remove">Remove</string>

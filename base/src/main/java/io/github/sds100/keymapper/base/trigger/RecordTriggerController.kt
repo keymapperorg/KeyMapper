@@ -10,11 +10,11 @@ import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.isError
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
+import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -193,7 +193,7 @@ class RecordTriggerControllerImpl @Inject constructor(
         val keyEvent =
             dpadMotionEventTracker.convertMotionEvent(event).firstOrNull() ?: return false
 
-        if (!InputEventUtils.isDpadKeyCode(keyEvent.keyCode)) {
+        if (!KeyEventUtils.isDpadKeyCode(keyEvent.keyCode)) {
             return false
         }
 

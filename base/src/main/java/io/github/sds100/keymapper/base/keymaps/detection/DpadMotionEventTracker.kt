@@ -3,9 +3,9 @@ package io.github.sds100.keymapper.base.keymaps.detection
 import android.view.InputDevice
 import android.view.KeyEvent
 import io.github.sds100.keymapper.common.utils.InputDeviceInfo
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
+import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
 
 /**
  * See https://developer.android.com/develop/ui/views/touch-and-input/game-controllers/controller-input#dpad
@@ -35,7 +35,7 @@ class DpadMotionEventTracker {
     fun onKeyEvent(event: KMKeyEvent): Boolean {
         val device = event.device ?: return false
 
-        if (!InputEventUtils.isDpadKeyCode(event.keyCode)) {
+        if (!KeyEventUtils.isDpadKeyCode(event.keyCode)) {
             return false
         }
 

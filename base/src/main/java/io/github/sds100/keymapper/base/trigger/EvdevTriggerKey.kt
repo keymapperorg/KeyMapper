@@ -20,7 +20,8 @@ data class EvdevTriggerKey(
     val device: EvdevDeviceInfo,
     override val clickType: ClickType = ClickType.SHORT_PRESS,
     override val consumeEvent: Boolean = true,
-) : TriggerKey(), InputEventTriggerKey {
+    override val detectWithScanCodeUserSetting: Boolean = false
+) : TriggerKey(), KeyCodeTriggerKey {
     override val allowedDoublePress: Boolean = true
     override val allowedLongPress: Boolean = true
 
@@ -36,6 +37,9 @@ data class EvdevTriggerKey(
             val consumeEvent =
                 !entity.flags.hasFlag(EvdevTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT)
 
+            val detectWithScancode =
+                entity.flags.hasFlag(EvdevTriggerKeyEntity.FLAG_DETECT_WITH_SCAN_CODE)
+
             return EvdevTriggerKey(
                 uid = entity.uid,
                 keyCode = entity.keyCode,
@@ -48,6 +52,7 @@ data class EvdevTriggerKey(
                 ),
                 clickType = clickType,
                 consumeEvent = consumeEvent,
+                detectWithScanCodeUserSetting = detectWithScancode
             )
         }
 
@@ -62,6 +67,10 @@ data class EvdevTriggerKey(
 
             if (!key.consumeEvent) {
                 flags = flags.withFlag(EvdevTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT)
+            }
+
+            if (key.detectWithScanCodeUserSetting) {
+                flags = flags.withFlag(EvdevTriggerKeyEntity.FLAG_DETECT_WITH_SCAN_CODE)
             }
 
             return EvdevTriggerKeyEntity(

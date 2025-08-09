@@ -21,7 +21,7 @@ import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.base.trigger.TriggerMode
-import io.github.sds100.keymapper.base.utils.InputEventStrings
+import io.github.sds100.keymapper.base.trigger.getCodeLabel
 import io.github.sds100.keymapper.base.utils.isFixable
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
@@ -256,7 +256,7 @@ class KeyMapListItemCreator(
             else -> Unit
         }
 
-        append(InputEventStrings.keyCodeToString(key.keyCode))
+        append(key.getCodeLabel(this@KeyMapListItemCreator))
 
         val deviceName = when (key.device) {
             is KeyEventTriggerDevice.Internal -> null
@@ -303,7 +303,7 @@ class KeyMapListItemCreator(
             else -> Unit
         }
 
-        append(InputEventStrings.keyCodeToString(key.keyCode))
+        append(key.getCodeLabel(this@KeyMapListItemCreator))
 
         val parts = buildList {
             add("PRO")

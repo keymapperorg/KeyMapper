@@ -17,7 +17,6 @@ data class FloatingButtonKey(
     override val clickType: ClickType,
 ) : TriggerKey() {
 
-    override val consumeEvent: Boolean = true
     override val allowedLongPress: Boolean = true
     override val allowedDoublePress: Boolean = true
 

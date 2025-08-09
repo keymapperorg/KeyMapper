@@ -141,7 +141,7 @@ fun TriggerKeyListItem(
                     )
 
                     is TriggerKeyListItemModel.KeyEvent -> model.keyName
-                    is TriggerKeyListItemModel.EvdevEvent -> "${model.keyName} (${model.deviceName})"
+                    is TriggerKeyListItemModel.EvdevEvent -> model.keyName
 
                     is TriggerKeyListItemModel.FloatingButtonDeleted -> stringResource(R.string.trigger_error_floating_button_deleted_title)
 
@@ -350,9 +350,8 @@ private fun EvdevEventPreview() {
         model = TriggerKeyListItemModel.EvdevEvent(
             id = "id",
             keyName = "Volume Up",
-            deviceName = "Gpio-keys",
             clickType = ClickType.SHORT_PRESS,
-            extraInfo = "Do not consume",
+            extraInfo = "Gpio-keys",
             linkType = LinkType.ARROW,
             error = null,
         ),

@@ -18,7 +18,7 @@ import io.github.sds100.keymapper.base.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.base.trigger.EvdevTriggerKey
 import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey
 import io.github.sds100.keymapper.base.trigger.FloatingButtonKey
-import io.github.sds100.keymapper.base.trigger.InputEventTriggerKey
+import io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.base.trigger.KeyEventTriggerDevice
 import io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey
 import io.github.sds100.keymapper.base.trigger.Trigger
@@ -28,11 +28,11 @@ import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.minusFlag
 import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.PreferenceDefaults
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
+import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -76,7 +76,7 @@ class KeyMapAlgorithm(
     /**
      * All sequence events that have the long press click type.
      */
-    private var longPressSequenceTriggerKeys: Array<InputEventTriggerKey> = arrayOf()
+    private var longPressSequenceTriggerKeys: Array<KeyCodeTriggerKey> = arrayOf()
 
     /**
      * All double press keys and the index of their corresponding trigger. first is the event and second is
@@ -271,7 +271,7 @@ class KeyMapAlgorithm(
         } else {
             detectKeyMaps = true
 
-            val longPressSequenceTriggerKeys = mutableListOf<InputEventTriggerKey>()
+            val longPressSequenceTriggerKeys = mutableListOf<KeyCodeTriggerKey>()
 
             val doublePressKeys = mutableListOf<TriggerKeyLocation>()
 
@@ -306,7 +306,7 @@ class KeyMapAlgorithm(
 
                     if (keyMap.trigger.mode == TriggerMode.Sequence &&
                         key.clickType == ClickType.LONG_PRESS &&
-                        key is InputEventTriggerKey
+                        key is KeyCodeTriggerKey
                     ) {
                         if (keyMap.trigger.keys.size > 1) {
                             longPressSequenceTriggerKeys.add(key)
@@ -520,7 +520,7 @@ class KeyMapAlgorithm(
                 val trigger = triggers[triggerIndex]
 
                 for ((keyIndex, key) in trigger.keys.withIndex()) {
-                    if (key is InputEventTriggerKey && isModifierKey(key.keyCode)) {
+                    if (key is KeyCodeTriggerKey && isModifierKey(key.keyCode)) {
                         parallelTriggerModifierKeyIndices.add(triggerIndex to keyIndex)
                     }
                 }
@@ -619,13 +619,13 @@ class KeyMapAlgorithm(
         for ((triggerIndex, eventIndex) in parallelTriggerModifierKeyIndices) {
             val key = triggers[triggerIndex].keys[eventIndex]
 
-            if (key !is InputEventTriggerKey) {
+            if (key !is KeyCodeTriggerKey) {
                 continue
             }
 
             if (parallelTriggerEventsAwaitingRelease[triggerIndex][eventIndex]) {
                 metaStateFromKeyEvent =
-                    metaStateFromKeyEvent.minusFlag(InputEventUtils.modifierKeycodeToMetaState(key.keyCode))
+                    metaStateFromKeyEvent.minusFlag(KeyEventUtils.modifierKeycodeToMetaState(key.keyCode))
             }
         }
 
@@ -750,7 +750,7 @@ class KeyMapAlgorithm(
                                 consumeEvent = true
                             }
 
-                        key is InputEventTriggerKey && event is KeyEventAlgo ->
+                        key is KeyCodeTriggerKey && event is KeyEventAlgo ->
                             if (key.keyCode == event.keyCode && key.consumeEvent) {
                                 consumeEvent = true
                             }
@@ -775,7 +775,7 @@ class KeyMapAlgorithm(
                 val doublePressEvent =
                     triggers[eventLocation.triggerIndex].keys[eventLocation.keyIndex]
 
-                triggers[triggerIndex].keys.forEachIndexed { eventIndex, event ->
+                for ((eventIndex, event) in triggers[triggerIndex].keys.withIndex()) {
                     if (event == doublePressEvent &&
                         triggers[triggerIndex].keys[eventIndex].consumeEvent
                     ) {
@@ -895,7 +895,7 @@ class KeyMapAlgorithm(
 
                                 if (isModifierKey(actionKeyCode)) {
                                     val actionMetaState =
-                                        InputEventUtils.modifierKeycodeToMetaState(actionKeyCode)
+                                        KeyEventUtils.modifierKeycodeToMetaState(actionKeyCode)
                                     metaStateFromActions =
                                         metaStateFromActions.withFlag(actionMetaState)
                                 }
@@ -1296,7 +1296,7 @@ class KeyMapAlgorithm(
                             actionMap[actionKey]?.let { action ->
                                 if (action.data is ActionData.InputKeyEvent && isModifierKey(action.data.keyCode)) {
                                     val actionMetaState =
-                                        InputEventUtils.modifierKeycodeToMetaState(action.data.keyCode)
+                                        KeyEventUtils.modifierKeycodeToMetaState(action.data.keyCode)
 
                                     metaStateFromActionsToRemove =
                                         metaStateFromActionsToRemove.withFlag(actionMetaState)
@@ -1846,6 +1846,17 @@ class KeyMapAlgorithm(
 
     private val AlgoEvent.withDoublePress: AlgoEvent
         get() = setClickType(clickType = ClickType.DOUBLE_PRESS)
+
+    private val TriggerKey.consumeEvent: Boolean
+        get() {
+            return when (this) {
+                is AssistantTriggerKey -> true
+                is EvdevTriggerKey -> consumeEvent
+                is FingerprintTriggerKey -> true
+                is FloatingButtonKey -> true
+                is KeyEventTriggerKey -> consumeEvent
+            }
+        }
 
     /**
      * Represents the kind of event a trigger key is expecting to happen.

@@ -3,8 +3,7 @@ package io.github.sds100.keymapper.system.inputevents
 import android.view.KeyEvent
 import io.github.sds100.keymapper.common.utils.withFlag
 
-object InputEventUtils {
-
+object KeyEventUtils {
     private val KEYCODES: IntArray = intArrayOf(
         KeyEvent.KEYCODE_SOFT_LEFT,
         KeyEvent.KEYCODE_SOFT_RIGHT,
@@ -326,32 +325,6 @@ object InputEventUtils {
         KeyEvent.KEYCODE_SCREENSHOT,
     )
 
-    /**
-     * These are key code maps for the getevent command. These names aren't the same as the
-     * KeyEvent key codes in the Android SDK so these have to be manually whitelisted
-     * as people need.
-     */
-    val GET_EVENT_LABEL_TO_KEYCODE: List<Pair<String, Int>> = listOf(
-        "KEY_VOLUMEDOWN" to KeyEvent.KEYCODE_VOLUME_DOWN,
-        "KEY_VOLUMEUP" to KeyEvent.KEYCODE_VOLUME_UP,
-        "KEY_MEDIA" to KeyEvent.KEYCODE_HEADSETHOOK,
-        "KEY_HEADSETHOOK" to KeyEvent.KEYCODE_HEADSETHOOK,
-        "KEY_CAMERA_FOCUS" to KeyEvent.KEYCODE_FOCUS,
-        "02fe" to KeyEvent.KEYCODE_CAMERA,
-        "00fa" to KeyEvent.KEYCODE_CAMERA,
-
-        // This kernel key event code seems to be the Bixby button
-        // but different ROMs have different key maps and so
-        // it is reported as different Android key codes.
-        "02bf" to KeyEvent.KEYCODE_MENU,
-        "02bf" to KeyEvent.KEYCODE_ASSIST,
-
-        "KEY_SEARCH" to KeyEvent.KEYCODE_SEARCH,
-    )
-
-    fun canDetectKeyWhenScreenOff(keyCode: Int): Boolean =
-        GET_EVENT_LABEL_TO_KEYCODE.any { it.second == keyCode }
-
     val MODIFIER_KEYCODES: Set<Int>
         get() = setOf(
             KeyEvent.KEYCODE_SHIFT_LEFT,
@@ -366,11 +339,6 @@ object InputEventUtils {
             KeyEvent.KEYCODE_NUM,
             KeyEvent.KEYCODE_FUNCTION,
         )
-
-    /**
-     * Used for keyCode to scanCode fallback to go past possible keyCode values
-     */
-    const val KEYCODE_TO_SCANCODE_OFFSET: Int = 1000
 
     fun isModifierKey(keyCode: Int): Boolean = keyCode in MODIFIER_KEYCODES
 
@@ -494,4 +462,10 @@ object InputEventUtils {
             else -> false
         }
     }
+
+    fun isKeyCodeUnknown(keyCode: Int): Boolean {
+        // The lowest key code is 1 (KEYCODE_SOFT_LEFT)
+        return keyCode > KeyEvent.getMaxKeyCode() || keyCode < 1
+    }
 }
+

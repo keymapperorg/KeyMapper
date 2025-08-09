@@ -21,7 +21,8 @@ data class KeyEventTriggerKey(
      */
     val requiresIme: Boolean = false,
     override val scanCode: Int? = null,
-) : TriggerKey(), InputEventTriggerKey {
+    override val detectWithScanCodeUserSetting: Boolean = false
+) : TriggerKey(), KeyCodeTriggerKey {
 
     override val allowedLongPress: Boolean = true
     override val allowedDoublePress: Boolean = true
@@ -32,7 +33,7 @@ data class KeyEventTriggerKey(
             is KeyEventTriggerDevice.External -> "external"
             KeyEventTriggerDevice.Internal -> "internal"
         }
-        return "InputEventTriggerKey(uid=${uid.substring(0..5)}, keyCode=$keyCode, device=$deviceString, clickType=$clickType, consume=$consumeEvent) "
+        return "KeyCodeTriggerKey(uid=${uid.substring(0..5)}, keyCode=$keyCode, device=$deviceString, clickType=$clickType, consume=$consumeEvent) "
     }
 
     // key code -> click type -> device -> consume key event
@@ -73,6 +74,9 @@ data class KeyEventTriggerKey(
             val requiresIme =
                 entity.flags.hasFlag(KeyEventTriggerKeyEntity.FLAG_DETECTION_SOURCE_INPUT_METHOD)
 
+            val detectWithScancode =
+                entity.flags.hasFlag(KeyEventTriggerKeyEntity.FLAG_DETECT_WITH_SCAN_CODE)
+
             return KeyEventTriggerKey(
                 uid = entity.uid,
                 keyCode = entity.keyCode,
@@ -81,6 +85,7 @@ data class KeyEventTriggerKey(
                 consumeEvent = consumeEvent,
                 requiresIme = requiresIme,
                 scanCode = entity.scanCode,
+                detectWithScanCodeUserSetting = detectWithScancode
             )
         }
 
@@ -112,6 +117,10 @@ data class KeyEventTriggerKey(
 
             if (key.requiresIme) {
                 flags = flags.withFlag(KeyEventTriggerKeyEntity.FLAG_DETECTION_SOURCE_INPUT_METHOD)
+            }
+
+            if (key.detectWithScanCodeUserSetting) {
+                flags = flags.withFlag(KeyEventTriggerKeyEntity.FLAG_DETECT_WITH_SCAN_CODE)
             }
 
             return KeyEventTriggerKeyEntity(

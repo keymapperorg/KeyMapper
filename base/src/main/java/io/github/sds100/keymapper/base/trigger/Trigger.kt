@@ -14,7 +14,6 @@ import io.github.sds100.keymapper.data.entities.FloatingButtonKeyEntity
 import io.github.sds100.keymapper.data.entities.KeyEventTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.getData
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -48,13 +47,8 @@ data class Trigger(
      * anyway.
      */
     fun isDetectingWhenScreenOffAllowed(): Boolean {
-        return keys.isNotEmpty() &&
-            keys.all {
-                it is KeyEventTriggerKey &&
-                    InputEventUtils.canDetectKeyWhenScreenOff(
-                        it.keyCode,
-                    )
-            }
+        // TODO triggers should always detect when screen is off if possible
+        return false
     }
 
     fun isChangingSequenceTriggerTimeoutAllowed(): Boolean = keys.isNotEmpty() && keys.size > 1 && mode is TriggerMode.Sequence

@@ -96,7 +96,18 @@ fun TriggerKeyOptionsBottomSheet(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // TODO use segmented button to switch between key code and scancode.
+
             if (state is TriggerKeyOptionsState.KeyEvent) {
+                CheckBoxText(
+                    modifier = Modifier.padding(8.dp),
+                    text = stringResource(R.string.flag_dont_override_default_action),
+                    isChecked = state.doNotRemapChecked,
+                    onCheckedChange = onCheckDoNotRemap,
+                )
+            }
+
+            if (state is TriggerKeyOptionsState.EvdevEvent) {
                 CheckBoxText(
                     modifier = Modifier.padding(8.dp),
                     text = stringResource(R.string.flag_dont_override_default_action),

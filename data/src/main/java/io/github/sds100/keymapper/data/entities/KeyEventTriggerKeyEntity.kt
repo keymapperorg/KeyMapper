@@ -44,5 +44,6 @@ data class KeyEventTriggerKeyEntity(
 
         const val FLAG_DO_NOT_CONSUME_KEY_EVENT = 1
         const val FLAG_DETECTION_SOURCE_INPUT_METHOD = 2
+        const val FLAG_DETECT_WITH_SCAN_CODE = 4
     }
 }

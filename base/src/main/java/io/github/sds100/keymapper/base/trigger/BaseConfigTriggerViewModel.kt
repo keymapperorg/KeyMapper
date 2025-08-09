@@ -23,7 +23,6 @@ import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
-import io.github.sds100.keymapper.base.utils.InputEventStrings
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
 import io.github.sds100.keymapper.base.utils.ui.DialogModel
@@ -43,7 +42,6 @@ import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.ifIsData
 import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.common.utils.onSuccess
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -178,6 +176,7 @@ abstract class BaseConfigTriggerViewModel(
      * when no buttons are recorded is not shown.
      */
     private var isRecordingCompletionUserInitiated: Boolean = false
+    private val midDot = getString(R.string.middot)
 
     init {
         val showTapTargetsPairFlow: Flow<Pair<Boolean, Boolean>> = combine(
@@ -715,7 +714,7 @@ abstract class BaseConfigTriggerViewModel(
                     id = key.uid,
                     keyName = getTriggerKeyName(key),
                     clickType = clickType,
-                    extraInfo = getTriggerKeyExtraInfo(
+                    extraInfo = getKeyEventTriggerKeyExtraInfo(
                         key,
                         showDeviceDescriptors,
                     ).takeIf { it.isNotBlank() },
@@ -744,14 +743,9 @@ abstract class BaseConfigTriggerViewModel(
 
                 is EvdevTriggerKey -> TriggerKeyListItemModel.EvdevEvent(
                     id = key.uid,
-                    keyName = InputEventStrings.keyCodeToString(key.keyCode),
-                    deviceName = key.device.name,
+                    keyName = key.getCodeLabel(this),
                     clickType = clickType,
-                    extraInfo = if (!key.consumeEvent) {
-                        getString(R.string.flag_dont_override_default_action)
-                    } else {
-                        null
-                    },
+                    extraInfo = getEvdevTriggerKeyExtraInfo(key),
                     linkType = linkType,
                     error = error,
                 )
@@ -759,13 +753,22 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    private fun getTriggerKeyExtraInfo(
+    private fun getEvdevTriggerKeyExtraInfo(key: EvdevTriggerKey): String {
+        return buildString {
+            append(key.device.name)
+
+            if (!key.consumeEvent) {
+                append(" $midDot ${getString(R.string.flag_dont_override_default_action)}")
+            }
+        }
+    }
+
+    private fun getKeyEventTriggerKeyExtraInfo(
         key: KeyEventTriggerKey,
         showDeviceDescriptors: Boolean,
     ): String {
         return buildString {
             append(getTriggerKeyDeviceName(key.device, showDeviceDescriptors))
-            val midDot = getString(R.string.middot)
 
             if (!key.consumeEvent) {
                 append(" $midDot ${getString(R.string.flag_dont_override_default_action)}")
@@ -775,10 +778,9 @@ abstract class BaseConfigTriggerViewModel(
 
     private fun getTriggerKeyName(key: KeyEventTriggerKey): String {
         return buildString {
-            append(InputEventStrings.keyCodeToString(key.keyCode))
+            append(key.getCodeLabel(this@BaseConfigTriggerViewModel))
 
             if (key.requiresIme) {
-                val midDot = getString(R.string.middot)
                 append(" $midDot ${getString(R.string.flag_detect_from_input_method)}")
             }
         }
@@ -878,7 +880,6 @@ sealed class TriggerKeyListItemModel {
         override val id: String,
         override val linkType: LinkType,
         val keyName: String,
-        val deviceName: String,
         override val clickType: ClickType,
         val extraInfo: String?,
         override val error: TriggerError?,

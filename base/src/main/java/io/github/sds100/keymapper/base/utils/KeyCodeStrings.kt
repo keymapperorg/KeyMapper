@@ -2,9 +2,8 @@ package io.github.sds100.keymapper.base.utils
 
 import android.view.KeyEvent
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils.KEYCODE_TO_SCANCODE_OFFSET
 
-object InputEventStrings {
+object KeyCodeStrings {
 
     val MODIFIER_LABELS = mapOf(
         KeyEvent.META_CTRL_ON to R.string.meta_state_ctrl,
@@ -369,11 +368,7 @@ object InputEventStrings {
      * Create a text representation of a key event. E.g if the control key was pressed,
      * "Ctrl" will be returned
      */
-    fun keyCodeToString(keyCode: Int): String = NON_CHARACTER_KEY_LABELS[keyCode].let {
-        if (keyCode >= KEYCODE_TO_SCANCODE_OFFSET || keyCode < 0) {
-            "scancode $keyCode"
-        } else {
-            it ?: "unknown keycode $keyCode"
-        }
+    fun keyCodeToString(keyCode: Int): String? {
+        return NON_CHARACTER_KEY_LABELS[keyCode]
     }
 }
