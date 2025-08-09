@@ -252,6 +252,12 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
         }
     }
 
+    override fun setScanCodeDetectionEnabled(keyUid: String, enabled: Boolean) {
+        updateTrigger { trigger ->
+            delegate.setScanCodeDetectionEnabled(trigger, keyUid, enabled)
+        }
+    }
+
     override fun getAvailableTriggerKeyDevices(): List<KeyEventTriggerDevice> {
         val externalKeyEventTriggerDevices = sequence {
             val inputDevices =
@@ -342,6 +348,7 @@ interface ConfigTriggerUseCase : GetDefaultKeyMapOptionsUseCase {
     fun setTriggerWhenScreenOff(enabled: Boolean)
     fun setTriggerFromOtherAppsEnabled(enabled: Boolean)
     fun setShowToastEnabled(enabled: Boolean)
+    fun setScanCodeDetectionEnabled(keyUid: String, enabled: Boolean)
 
     fun getAvailableTriggerKeyDevices(): List<KeyEventTriggerDevice>
 

@@ -20,8 +20,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue.Expanded
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -58,6 +60,7 @@ fun TriggerKeyOptionsBottomSheet(
     onSelectFingerprintGestureType: (FingerprintGestureType) -> Unit = {},
     onEditFloatingButtonClick: () -> Unit = {},
     onEditFloatingLayoutClick: () -> Unit = {},
+    onScanCodeDetectionChanged: (Boolean) -> Unit = {},
 ) {
     ModalBottomSheet(
         modifier = modifier,
@@ -96,9 +99,15 @@ fun TriggerKeyOptionsBottomSheet(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // TODO use segmented button to switch between key code and scancode.
 
             if (state is TriggerKeyOptionsState.KeyEvent) {
+                ScanCodeDetectionButtonRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    isEnabled = state.isScanCodeSettingEnabled,
+                    isScanCodeSelected = state.isScanCodeDetectionSelected,
+                    onSelectedChange = onScanCodeDetectionChanged
+                )
+
                 CheckBoxText(
                     modifier = Modifier.padding(8.dp),
                     text = stringResource(R.string.flag_dont_override_default_action),
@@ -108,6 +117,13 @@ fun TriggerKeyOptionsBottomSheet(
             }
 
             if (state is TriggerKeyOptionsState.EvdevEvent) {
+                ScanCodeDetectionButtonRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    isEnabled = state.isScanCodeSettingEnabled,
+                    isScanCodeSelected = state.isScanCodeDetectionSelected,
+                    onSelectedChange = onScanCodeDetectionChanged
+                )
+
                 CheckBoxText(
                     modifier = Modifier.padding(8.dp),
                     text = stringResource(R.string.flag_dont_override_default_action),
@@ -294,10 +310,51 @@ fun TriggerKeyOptionsBottomSheet(
     }
 }
 
+@Composable
+private fun ScanCodeDetectionButtonRow(
+    modifier: Modifier = Modifier,
+    isEnabled: Boolean,
+    isScanCodeSelected: Boolean,
+    onSelectedChange: (Boolean) -> Unit
+) {
+    Column(modifier) {
+        Text(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            text = stringResource(R.string.trigger_scan_code_detection_explanation),
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Spacer(Modifier.height(8.dp))
+
+        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+            Spacer(Modifier.width(16.dp))
+            SegmentedButton(
+                selected = !isScanCodeSelected,
+                onClick = { onSelectedChange(false) },
+                shape = MaterialTheme.shapes.medium,
+                enabled = isEnabled
+            ) {
+                Text(stringResource(R.string.trigger_use_key_code_button))
+            }
+
+            Spacer(Modifier.width(16.dp))
+
+            SegmentedButton(
+                selected = isScanCodeSelected,
+                onClick = { onSelectedChange(true) },
+                shape = MaterialTheme.shapes.medium,
+                enabled = isEnabled
+            ) {
+                Text(stringResource(R.string.trigger_use_scan_code_button))
+            }
+            Spacer(Modifier.width(16.dp))
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-private fun Preview() {
+private fun PreviewKeyEvent() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
@@ -323,6 +380,32 @@ private fun Preview() {
                         isChecked = false,
                     ),
                 ),
+                isScanCodeDetectionSelected = true,
+                isScanCodeSettingEnabled = true
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun PreviewEvdev() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = Expanded,
+        )
+
+        TriggerKeyOptionsBottomSheet(
+            sheetState = sheetState,
+            state = TriggerKeyOptionsState.EvdevEvent(
+                doNotRemapChecked = true,
+                clickType = ClickType.DOUBLE_PRESS,
+                showClickTypes = true,
+                isScanCodeDetectionSelected = false,
+                isScanCodeSettingEnabled = false
             ),
         )
     }

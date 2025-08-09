@@ -38,6 +38,10 @@ fun KeyCodeTriggerKey.isKeyCodeUnknown(): Boolean {
     return KeyEventUtils.isKeyCodeUnknown(keyCode)
 }
 
+fun KeyCodeTriggerKey.isScanCodeDetectionUserConfigurable(): Boolean {
+    return scanCode != null && !isKeyCodeUnknown()
+}
+
 /**
  * Get the label for the key code or scan code, depending on whether to detect it with a scan code.
  */

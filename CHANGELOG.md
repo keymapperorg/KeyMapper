@@ -2,6 +2,11 @@
 
 #### TO BE RELEASED
 
+## Added
+
+- #761 Detect keys with scancodes. Key Mapper will do this automatically if the key code is unknown
+  or you record different physical keys from the same device with the same key code.
+
 ## Removed
 
 - The key event relay service is now also used on all Android versions below Android 14. The

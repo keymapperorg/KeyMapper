@@ -97,6 +97,7 @@ fun BaseTriggerScreen(modifier: Modifier = Modifier, viewModel: BaseConfigTrigge
             onEditFloatingButtonClick = viewModel::onEditFloatingButtonClick,
             onEditFloatingLayoutClick = viewModel::onEditFloatingLayoutClick,
             onSelectFingerprintGestureType = viewModel::onSelectFingerprintGestureType,
+            onScanCodeDetectionChanged = viewModel::onSelectScanCodeDetection
         )
     }
 
@@ -693,7 +694,7 @@ private fun HorizontalEmptyPreview() {
                     ),
                 ),
 
-            ),
+                ),
             recordTriggerState = RecordTriggerState.Idle,
         )
     }

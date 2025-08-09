@@ -563,4 +563,24 @@ class ConfigTriggerDelegate {
     fun setShowToastEnabled(trigger: Trigger, enabled: Boolean): Trigger {
         return trigger.copy(showToast = enabled)
     }
+
+    fun setScanCodeDetectionEnabled(trigger: Trigger, keyUid: String, enabled: Boolean): Trigger {
+        val newKeys = trigger.keys.map { key ->
+            if (key.uid == keyUid && key is KeyCodeTriggerKey && key.isScanCodeDetectionUserConfigurable()) {
+                when (key) {
+                    is KeyEventTriggerKey -> {
+                        key.copy(detectWithScanCodeUserSetting = enabled)
+                    }
+
+                    is EvdevTriggerKey -> {
+                        key.copy(detectWithScanCodeUserSetting = enabled)
+                    }
+                }
+            } else {
+                key
+            }
+        }
+
+        return trigger.copy(keys = newKeys)
+    }
 }

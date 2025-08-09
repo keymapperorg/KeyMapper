@@ -27,6 +27,42 @@ class TriggerKeyTest {
     }
     
     @Test
+    fun `User can not change scan code detection if the scan code is null`() {
+        val triggerKey = KeyEventTriggerKey(
+            keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+            scanCode = null,
+            device = KeyEventTriggerDevice.Internal,
+            clickType = ClickType.SHORT_PRESS,
+            detectWithScanCodeUserSetting = true
+        )
+        assertThat(triggerKey.isScanCodeDetectionUserConfigurable(), `is`(false))
+    }
+
+    @Test
+    fun `User can not change scan code detection if the key code is unknown and scan code is non null`() {
+        val triggerKey = KeyEventTriggerKey(
+            keyCode = KeyEvent.KEYCODE_UNKNOWN,
+            scanCode = Scancode.KEY_VOLUMEDOWN,
+            device = KeyEventTriggerDevice.Internal,
+            clickType = ClickType.SHORT_PRESS,
+            detectWithScanCodeUserSetting = true
+        )
+        assertThat(triggerKey.isScanCodeDetectionUserConfigurable(), `is`(false))
+    }
+
+    @Test
+    fun `User can change scan code detection if the key code is known and scan code is non null`() {
+        val triggerKey = KeyEventTriggerKey(
+            keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+            scanCode = Scancode.KEY_VOLUMEDOWN,
+            device = KeyEventTriggerDevice.Internal,
+            clickType = ClickType.SHORT_PRESS,
+            detectWithScanCodeUserSetting = true
+        )
+        assertThat(triggerKey.isScanCodeDetectionUserConfigurable(), `is`(true))
+    }
+
+    @Test
     fun `detect with scan code if key code is unknown and user setting enabled`() {
         val triggerKey = KeyEventTriggerKey(
             keyCode = 0,

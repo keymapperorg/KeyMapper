@@ -374,6 +374,8 @@ abstract class BaseConfigTriggerViewModel(
                             clickType = key.clickType,
                             showClickTypes = showClickTypes,
                             devices = deviceListItems,
+                            isScanCodeDetectionSelected = key.detectWithScancode(),
+                            isScanCodeSettingEnabled = key.isScanCodeDetectionUserConfigurable()
                         )
                     }
 
@@ -404,6 +406,8 @@ abstract class BaseConfigTriggerViewModel(
                             doNotRemapChecked = !key.consumeEvent,
                             clickType = key.clickType,
                             showClickTypes = showClickTypes,
+                            isScanCodeDetectionSelected = key.detectWithScancode(),
+                            isScanCodeSettingEnabled = key.isScanCodeDetectionUserConfigurable()
                         )
                     }
                 }
@@ -610,6 +614,12 @@ abstract class BaseConfigTriggerViewModel(
     fun onSelectFingerprintGestureType(type: FingerprintGestureType) {
         triggerKeyOptionsUid.value?.let { triggerKeyUid ->
             config.setFingerprintGestureType(triggerKeyUid, type)
+        }
+    }
+
+    fun onSelectScanCodeDetection(isSelected: Boolean) {
+        triggerKeyOptionsUid.value?.let { triggerKeyUid ->
+            config.setScanCodeDetectionEnabled(triggerKeyUid, isSelected)
         }
     }
 
@@ -925,12 +935,15 @@ sealed class TriggerKeyOptionsState {
     abstract val showClickTypes: Boolean
     abstract val showLongPressClickType: Boolean
 
-    // TODO add isScanCodeSettingEnabled field and isScanCodeDetectionEnabled
     data class KeyEvent(
         val doNotRemapChecked: Boolean = false,
         override val clickType: ClickType,
         override val showClickTypes: Boolean,
         val devices: List<CheckBoxListItem>,
+        // Whether scan code is checked.
+        val isScanCodeDetectionSelected: Boolean,
+        // Whether the setting should be enabled and allow user interaction.
+        val isScanCodeSettingEnabled: Boolean,
     ) : TriggerKeyOptionsState() {
         override val showLongPressClickType: Boolean = true
     }
@@ -939,6 +952,10 @@ sealed class TriggerKeyOptionsState {
         val doNotRemapChecked: Boolean = false,
         override val clickType: ClickType,
         override val showClickTypes: Boolean,
+        // Whether scan code is checked.
+        val isScanCodeDetectionSelected: Boolean,
+        // Whether the setting should be enabled and allow user interaction.
+        val isScanCodeSettingEnabled: Boolean,
     ) : TriggerKeyOptionsState() {
         override val showLongPressClickType: Boolean = true
     }
