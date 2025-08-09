@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.keymaps.detection
+package io.github.sds100.keymapper.base.detection
 
 import android.view.KeyEvent
 import androidx.collection.SparseArrayCompat

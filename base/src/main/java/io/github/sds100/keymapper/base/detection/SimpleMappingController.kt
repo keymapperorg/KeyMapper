@@ -1,11 +1,11 @@
-package io.github.sds100.keymapper.base.keymaps
+package io.github.sds100.keymapper.base.detection
 
 import io.github.sds100.keymapper.base.actions.Action
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.base.actions.RepeatMode
 import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.base.constraints.isSatisfied
-import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCase
+import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import kotlinx.coroutines.CoroutineScope
@@ -30,27 +30,27 @@ abstract class SimpleMappingController(
     private val defaultRepeatRate: StateFlow<Long> =
         performActionsUseCase.defaultRepeatRate.stateIn(
             coroutineScope,
-            SharingStarted.Eagerly,
+            SharingStarted.Companion.Eagerly,
             PreferenceDefaults.REPEAT_RATE.toLong(),
         )
 
     private val forceVibrate: StateFlow<Boolean> =
         detectMappingUseCase.forceVibrate.stateIn(
             coroutineScope,
-            SharingStarted.Eagerly,
+            SharingStarted.Companion.Eagerly,
             PreferenceDefaults.FORCE_VIBRATE,
         )
     private val defaultHoldDownDuration: StateFlow<Long> =
         performActionsUseCase.defaultHoldDownDuration.stateIn(
             coroutineScope,
-            SharingStarted.Eagerly,
+            SharingStarted.Companion.Eagerly,
             PreferenceDefaults.HOLD_DOWN_DURATION.toLong(),
         )
 
     private val defaultVibrateDuration: StateFlow<Long> =
         detectMappingUseCase.defaultVibrateDuration.stateIn(
             coroutineScope,
-            SharingStarted.Eagerly,
+            SharingStarted.Companion.Eagerly,
             PreferenceDefaults.VIBRATION_DURATION.toLong(),
         )
 

@@ -4,7 +4,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.base.home.BaseHomeViewModel
 import io.github.sds100.keymapper.base.home.ShowHomeScreenAlertsUseCase
-import io.github.sds100.keymapper.base.keymaps.ListKeyMapsUseCase
+import io.github.sds100.keymapper.base.home.ListKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.sorting.SortKeyMapsUseCase

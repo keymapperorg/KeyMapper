@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.keymaps
+package io.github.sds100.keymapper.base.home
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,9 +14,8 @@ import io.github.sds100.keymapper.base.constraints.ConstraintUiHelper
 import io.github.sds100.keymapper.base.groups.Group
 import io.github.sds100.keymapper.base.groups.GroupFamily
 import io.github.sds100.keymapper.base.groups.GroupListItemModel
-import io.github.sds100.keymapper.base.home.HomeWarningListItem
-import io.github.sds100.keymapper.base.home.SelectedKeyMapsEnabled
-import io.github.sds100.keymapper.base.home.ShowHomeScreenAlertsUseCase
+import io.github.sds100.keymapper.base.keymaps.KeyMap
+import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.sorting.SortKeyMapsUseCase

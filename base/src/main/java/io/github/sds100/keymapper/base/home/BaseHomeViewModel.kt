@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.backup.BackupRestoreMappingsUseCase
-import io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel
-import io.github.sds100.keymapper.base.keymaps.ListKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.sorting.SortKeyMapsUseCase

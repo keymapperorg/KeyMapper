@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.keymaps
+package io.github.sds100.keymapper.base.home
 
 import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.common.utils.State

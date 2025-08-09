@@ -4,7 +4,7 @@ import android.view.KeyEvent
 import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.input.InputEventHubCallback
-import io.github.sds100.keymapper.base.keymaps.detection.DpadMotionEventTracker
+import io.github.sds100.keymapper.base.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.isError

@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.keymaps
+package io.github.sds100.keymapper.base.home
 
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement

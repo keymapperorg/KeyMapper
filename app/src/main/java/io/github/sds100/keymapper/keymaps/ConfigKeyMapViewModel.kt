@@ -8,7 +8,7 @@ import io.github.sds100.keymapper.base.actions.TestActionUseCase
 import io.github.sds100.keymapper.base.constraints.ConfigConstraintsViewModel
 import io.github.sds100.keymapper.base.keymaps.BaseConfigKeyMapViewModel
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCase
-import io.github.sds100.keymapper.base.keymaps.CreateKeyMapShortcutUseCase
+import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase

@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.base.keymaps
+package io.github.sds100.keymapper.base.shortcuts
 
 import android.os.Bundle
 import androidx.activity.SystemBarStyle

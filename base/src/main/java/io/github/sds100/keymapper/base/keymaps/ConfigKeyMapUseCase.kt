@@ -56,6 +56,7 @@ import kotlinx.serialization.json.Json
 import java.util.LinkedList
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.collections.map
 
 @Singleton
 class ConfigKeyMapUseCaseController @Inject constructor(
@@ -370,7 +371,7 @@ class ConfigKeyMapUseCaseController @Inject constructor(
         val containsKey = trigger.keys
             .filterIsInstance<KeyEventTriggerKey>()
             .any { keyToCompare ->
-                keyToCompare.keyCode == keyCode && keyToCompare.device?.isSameDevice(device) == true
+                keyToCompare.keyCode == keyCode && keyToCompare.device.isSameDevice(device)
             }
 
         var consumeKeyEvent = true

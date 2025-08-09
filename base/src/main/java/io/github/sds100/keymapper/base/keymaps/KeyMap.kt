@@ -8,7 +8,7 @@ import io.github.sds100.keymapper.base.actions.canBeHeldDown
 import io.github.sds100.keymapper.base.constraints.ConstraintEntityMapper
 import io.github.sds100.keymapper.base.constraints.ConstraintModeEntityMapper
 import io.github.sds100.keymapper.base.constraints.ConstraintState
-import io.github.sds100.keymapper.base.keymaps.detection.KeyMapAlgorithm
+import io.github.sds100.keymapper.base.detection.KeyMapAlgorithm
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerEntityMapper
 import io.github.sds100.keymapper.base.trigger.TriggerKey

@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import io.github.sds100.keymapper.base.keymaps.chipHeight
+import io.github.sds100.keymapper.base.home.chipHeight
 
 @Composable
 fun CompactChip(

@@ -13,7 +13,7 @@ import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapOptionsViewModel
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCase
-import io.github.sds100.keymapper.base.keymaps.CreateKeyMapShortcutUseCase
+import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap

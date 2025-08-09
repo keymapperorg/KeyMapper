@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.ActionUiHelper
+import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlin.collections.first
 
 class ConfigKeyMapOptionsViewModel(
     private val coroutineScope: CoroutineScope,

@@ -13,9 +13,9 @@ import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.base.constraints.ConstraintState
 import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
-import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapModel
-import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCase
-import io.github.sds100.keymapper.base.keymaps.detection.KeyMapAlgorithm
+import io.github.sds100.keymapper.base.detection.DetectKeyMapModel
+import io.github.sds100.keymapper.base.detection.DetectKeyMapsUseCase
+import io.github.sds100.keymapper.base.detection.KeyMapAlgorithm
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.trigger.EvdevTriggerKey
 import io.github.sds100.keymapper.base.trigger.FingerprintTriggerKey

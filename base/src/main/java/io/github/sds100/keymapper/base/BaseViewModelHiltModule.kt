@@ -19,12 +19,12 @@ import io.github.sds100.keymapper.base.constraints.CreateConstraintUseCase
 import io.github.sds100.keymapper.base.constraints.CreateConstraintUseCaseImpl
 import io.github.sds100.keymapper.base.home.ShowHomeScreenAlertsUseCase
 import io.github.sds100.keymapper.base.home.ShowHomeScreenAlertsUseCaseImpl
-import io.github.sds100.keymapper.base.keymaps.CreateKeyMapShortcutUseCase
-import io.github.sds100.keymapper.base.keymaps.CreateKeyMapShortcutUseCaseImpl
+import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
+import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCaseImpl
 import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCaseImpl
-import io.github.sds100.keymapper.base.keymaps.ListKeyMapsUseCase
-import io.github.sds100.keymapper.base.keymaps.ListKeyMapsUseCaseImpl
+import io.github.sds100.keymapper.base.home.ListKeyMapsUseCase
+import io.github.sds100.keymapper.base.home.ListKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.logging.DisplayLogUseCase
 import io.github.sds100.keymapper.base.logging.DisplayLogUseCaseImpl
 import io.github.sds100.keymapper.base.promode.ProModeSetupUseCase
