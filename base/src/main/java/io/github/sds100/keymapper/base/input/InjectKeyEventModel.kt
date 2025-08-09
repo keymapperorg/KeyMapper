@@ -10,7 +10,7 @@ data class InjectKeyEventModel(
     val deviceId: Int,
     val scanCode: Int,
     val source: Int,
-    val repeatCount: Int = 0
+    val repeatCount: Int = 0,
 ) {
     fun toAndroidKeyEvent(flags: Int = 0): KeyEvent {
         val eventTime = SystemClock.uptimeMillis()
@@ -23,7 +23,7 @@ data class InjectKeyEventModel(
             metaState,
             deviceId,
             scanCode,
-            flags, // flags
+            flags,
             source,
         )
     }

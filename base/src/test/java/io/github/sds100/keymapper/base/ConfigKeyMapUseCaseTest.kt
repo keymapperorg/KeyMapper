@@ -67,7 +67,7 @@ class ConfigKeyMapUseCaseTest {
                         FloatingButtonKey(
                             buttonUid = "floating_button",
                             button = null,
-                            clickType = ClickType.SHORT_PRESS
+                            clickType = ClickType.SHORT_PRESS,
                         ),
                         EvdevTriggerKey(
                             keyCode = KeyEvent.KEYCODE_VOLUME_UP,
@@ -76,12 +76,12 @@ class ConfigKeyMapUseCaseTest {
                                 name = "Volume Keys",
                                 bus = 0,
                                 vendor = 1,
-                                product = 2
-                            )
+                                product = 2,
+                            ),
                         ),
                         AssistantTriggerKey(
                             type = AssistantTriggerType.ANY,
-                            clickType = ClickType.SHORT_PRESS
+                            clickType = ClickType.SHORT_PRESS,
                         ),
                         EvdevTriggerKey(
                             keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
@@ -90,18 +90,18 @@ class ConfigKeyMapUseCaseTest {
                                 name = "Volume Keys",
                                 bus = 0,
                                 vendor = 1,
-                                product = 2
-                            )
+                                product = 2,
+                            ),
                         ),
-                    )
-                )
+                    ),
+                ),
             )
 
             useCase.addKeyEventTriggerKey(
                 KeyEvent.KEYCODE_VOLUME_DOWN,
                 0,
                 KeyEventTriggerDevice.Internal,
-                false
+                false,
             )
 
             val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
@@ -110,7 +110,8 @@ class ConfigKeyMapUseCaseTest {
             assertThat(trigger.keys[1], instanceOf(AssistantTriggerKey::class.java))
             assertThat(trigger.keys[2], instanceOf(KeyEventTriggerKey::class.java))
             assertThat(
-                (trigger.keys[2] as KeyEventTriggerKey).requiresIme, `is`(false)
+                (trigger.keys[2] as KeyEventTriggerKey).requiresIme,
+                `is`(false),
             )
         }
 
@@ -123,34 +124,34 @@ class ConfigKeyMapUseCaseTest {
                         FloatingButtonKey(
                             buttonUid = "floating_button",
                             button = null,
-                            clickType = ClickType.SHORT_PRESS
+                            clickType = ClickType.SHORT_PRESS,
                         ),
                         triggerKey(
                             KeyEvent.KEYCODE_VOLUME_UP,
-                            KeyEventTriggerDevice.Internal
+                            KeyEventTriggerDevice.Internal,
                         ),
                         AssistantTriggerKey(
                             type = AssistantTriggerType.ANY,
-                            clickType = ClickType.SHORT_PRESS
+                            clickType = ClickType.SHORT_PRESS,
                         ),
                         triggerKey(
                             KeyEvent.KEYCODE_VOLUME_DOWN,
-                            KeyEventTriggerDevice.Internal
-                        )
-                    )
-                )
+                            KeyEventTriggerDevice.Internal,
+                        ),
+                    ),
+                ),
             )
 
             val evdevDevice = EvdevDeviceInfo(
                 name = "Volume Keys",
                 bus = 0,
                 vendor = 1,
-                product = 2
+                product = 2,
             )
             useCase.addEvdevTriggerKey(
                 keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
                 scanCode = 0,
-                device = evdevDevice
+                device = evdevDevice,
             )
 
             val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
@@ -159,7 +160,8 @@ class ConfigKeyMapUseCaseTest {
             assertThat(trigger.keys[1], instanceOf(AssistantTriggerKey::class.java))
             assertThat(trigger.keys[2], instanceOf(EvdevTriggerKey::class.java))
             assertThat(
-                (trigger.keys[2] as EvdevTriggerKey).device, `is`(evdevDevice)
+                (trigger.keys[2] as EvdevTriggerKey).device,
+                `is`(evdevDevice),
             )
         }
 
@@ -176,20 +178,21 @@ class ConfigKeyMapUseCaseTest {
                                 name = "Volume Keys",
                                 bus = 0,
                                 vendor = 1,
-                                product = 2
-                            )
+                                product = 2,
+                            ),
                         ),
                         EvdevTriggerKey(
                             keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
-                            scanCode = 0, device = EvdevDeviceInfo(
+                            scanCode = 0,
+                            device = EvdevDeviceInfo(
                                 name = "Volume Keys",
                                 bus = 0,
                                 vendor = 1,
-                                product = 2
-                            )
-                        )
-                    )
-                )
+                                product = 2,
+                            ),
+                        ),
+                    ),
+                ),
             )
 
             useCase.setParallelTriggerMode()
@@ -199,7 +202,7 @@ class ConfigKeyMapUseCaseTest {
             assertThat(trigger.keys[0], instanceOf(EvdevTriggerKey::class.java))
             assertThat(
                 (trigger.keys[0] as EvdevTriggerKey).keyCode,
-                `is`(KeyEvent.KEYCODE_VOLUME_DOWN)
+                `is`(KeyEvent.KEYCODE_VOLUME_DOWN),
             )
         }
 
@@ -215,8 +218,8 @@ class ConfigKeyMapUseCaseTest {
                     name = "Volume Keys",
                     bus = 0,
                     vendor = 1,
-                    product = 2
-                )
+                    product = 2,
+                ),
             )
 
             useCase.addEvdevTriggerKey(
@@ -226,8 +229,8 @@ class ConfigKeyMapUseCaseTest {
                     name = "Volume Keys",
                     bus = 0,
                     vendor = 1,
-                    product = 2
-                )
+                    product = 2,
+                ),
             )
 
             val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
@@ -247,8 +250,8 @@ class ConfigKeyMapUseCaseTest {
                                 name = "Volume Keys",
                                 bus = 0,
                                 vendor = 1,
-                                product = 2
-                            )
+                                product = 2,
+                            ),
                         ),
                         EvdevTriggerKey(
                             keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
@@ -257,11 +260,11 @@ class ConfigKeyMapUseCaseTest {
                                 name = "Volume Keys",
                                 bus = 0,
                                 vendor = 1,
-                                product = 2
-                            )
-                        )
-                    )
-                )
+                                product = 2,
+                            ),
+                        ),
+                    ),
+                ),
             )
 
             // Add a third key and it should still be a sequence trigger now
@@ -272,8 +275,8 @@ class ConfigKeyMapUseCaseTest {
                     name = "Volume Keys",
                     bus = 0,
                     vendor = 1,
-                    product = 2
-                )
+                    product = 2,
+                ),
             )
 
             val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
@@ -292,8 +295,8 @@ class ConfigKeyMapUseCaseTest {
                     name = "Volume Keys",
                     bus = 0,
                     vendor = 1,
-                    product = 2
-                )
+                    product = 2,
+                ),
             )
 
             useCase.addEvdevTriggerKey(
@@ -303,13 +306,12 @@ class ConfigKeyMapUseCaseTest {
                     name = "Fake Controller",
                     bus = 1,
                     vendor = 2,
-                    product = 1
-                )
+                    product = 1,
+                ),
             )
 
             val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
             assertThat(trigger.mode, `is`(TriggerMode.Parallel(ClickType.SHORT_PRESS)))
-
         }
 
     @Test
@@ -321,7 +323,7 @@ class ConfigKeyMapUseCaseTest {
                 KeyEvent.KEYCODE_VOLUME_DOWN,
                 0,
                 KeyEventTriggerDevice.Internal,
-                false
+                false,
             )
             useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
 
@@ -342,7 +344,7 @@ class ConfigKeyMapUseCaseTest {
                 KeyEvent.KEYCODE_VOLUME_DOWN,
                 0,
                 KeyEventTriggerDevice.Internal,
-                false
+                false,
             )
             useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
 
@@ -389,7 +391,7 @@ class ConfigKeyMapUseCaseTest {
                 KeyEvent.KEYCODE_VOLUME_DOWN,
                 0,
                 KeyEventTriggerDevice.Internal,
-                false
+                false,
             )
 
             useCase.setTriggerDoublePress()
@@ -411,7 +413,7 @@ class ConfigKeyMapUseCaseTest {
                 KeyEvent.KEYCODE_VOLUME_DOWN,
                 0,
                 KeyEventTriggerDevice.Internal,
-                false
+                false,
             )
 
             useCase.setTriggerDoublePress()
@@ -433,7 +435,7 @@ class ConfigKeyMapUseCaseTest {
                 KeyEvent.KEYCODE_VOLUME_DOWN,
                 0,
                 KeyEventTriggerDevice.Internal,
-                false
+                false,
             )
 
             useCase.setTriggerLongPress()
@@ -455,7 +457,7 @@ class ConfigKeyMapUseCaseTest {
                 KeyEvent.KEYCODE_VOLUME_DOWN,
                 0,
                 KeyEventTriggerDevice.Internal,
-                false
+                false,
             )
 
             useCase.setTriggerLongPress()
@@ -476,7 +478,7 @@ class ConfigKeyMapUseCaseTest {
                 KeyEvent.KEYCODE_DPAD_LEFT,
                 0,
                 KeyEventTriggerDevice.Internal,
-                true
+                true,
             )
 
             useCase.addAction(ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_W))
@@ -498,7 +500,7 @@ class ConfigKeyMapUseCaseTest {
                 KeyEvent.KEYCODE_VOLUME_DOWN,
                 0,
                 KeyEventTriggerDevice.Internal,
-                false
+                false,
             )
             useCase.addAssistantTriggerKey(AssistantTriggerType.VOICE)
             useCase.addAssistantTriggerKey(AssistantTriggerType.DEVICE)
@@ -522,7 +524,7 @@ class ConfigKeyMapUseCaseTest {
                 KeyEvent.KEYCODE_VOLUME_DOWN,
                 0,
                 KeyEventTriggerDevice.Internal,
-                false
+                false,
             )
             useCase.addAssistantTriggerKey(AssistantTriggerType.DEVICE)
             useCase.addAssistantTriggerKey(AssistantTriggerType.VOICE)
@@ -546,13 +548,13 @@ class ConfigKeyMapUseCaseTest {
                 KeyEvent.KEYCODE_VOLUME_DOWN,
                 0,
                 KeyEventTriggerDevice.Internal,
-                false
+                false,
             )
             useCase.addKeyEventTriggerKey(
                 KeyEvent.KEYCODE_VOLUME_UP,
                 0,
                 KeyEventTriggerDevice.Internal,
-                false
+                false,
             )
             useCase.setTriggerLongPress()
 
@@ -571,7 +573,7 @@ class ConfigKeyMapUseCaseTest {
                 KeyEvent.KEYCODE_VOLUME_DOWN,
                 0,
                 KeyEventTriggerDevice.Internal,
-                false
+                false,
             )
             useCase.setTriggerDoublePress()
             useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
@@ -589,7 +591,7 @@ class ConfigKeyMapUseCaseTest {
                 KeyEvent.KEYCODE_VOLUME_DOWN,
                 0,
                 KeyEventTriggerDevice.Internal,
-                false
+                false,
             )
             useCase.setTriggerLongPress()
             useCase.addAssistantTriggerKey(AssistantTriggerType.ANY)
@@ -651,7 +653,7 @@ class ConfigKeyMapUseCaseTest {
                 modifierKeyCode,
                 0,
                 KeyEventTriggerDevice.Internal,
-                false
+                false,
             )
 
             // THEN
@@ -675,7 +677,7 @@ class ConfigKeyMapUseCaseTest {
                 KeyEvent.KEYCODE_A,
                 0,
                 KeyEventTriggerDevice.Internal,
-                false
+                false,
             )
 
             // THEN

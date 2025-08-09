@@ -30,7 +30,7 @@ class RerouteKeyEventsController @AssistedInject constructor(
     private val coroutineScope: CoroutineScope,
     private val keyMapperImeMessenger: ImeInputEventInjector,
     private val useCase: RerouteKeyEventsUseCase,
-    private val inputEventHub: InputEventHub
+    private val inputEventHub: InputEventHub,
 ) : InputEventHubCallback {
 
     companion object {
@@ -59,7 +59,7 @@ class RerouteKeyEventsController @AssistedInject constructor(
                     inputEventHub.registerClient(
                         INPUT_EVENT_HUB_ID,
                         this@RerouteKeyEventsController,
-                        listOf(KMEvdevEvent.TYPE_KEY_EVENT)
+                        listOf(KMEvdevEvent.TYPE_KEY_EVENT),
                     )
                 } else {
                     inputEventHub.unregisterClient(INPUT_EVENT_HUB_ID)
@@ -74,7 +74,7 @@ class RerouteKeyEventsController @AssistedInject constructor(
 
     override fun onInputEvent(
         event: KMInputEvent,
-        detectionSource: InputEventDetectionSource
+        detectionSource: InputEventDetectionSource,
     ): Boolean {
         if (event !is KMKeyEvent) {
             return false
@@ -95,7 +95,7 @@ class RerouteKeyEventsController @AssistedInject constructor(
      * @return whether to consume the key event.
      */
     private fun onKeyDown(
-        event: KMKeyEvent
+        event: KMKeyEvent,
     ): Boolean {
         val injectModel = InjectKeyEventModel(
             keyCode = event.keyCode,
@@ -104,7 +104,7 @@ class RerouteKeyEventsController @AssistedInject constructor(
             deviceId = event.deviceId,
             scanCode = event.scanCode,
             repeatCount = event.repeatCount,
-            source = event.source
+            source = event.source,
         )
 
         useCase.inputKeyEvent(injectModel)
@@ -136,7 +136,7 @@ class RerouteKeyEventsController @AssistedInject constructor(
             deviceId = event.deviceId,
             scanCode = event.scanCode,
             repeatCount = event.repeatCount,
-            source = event.source
+            source = event.source,
         )
 
         useCase.inputKeyEvent(inputKeyModel)

@@ -365,7 +365,6 @@ object InputEventStrings {
         KeyEvent.KEYCODE_SCREENSHOT to "Screenshot",
     )
 
-
     /**
      * Create a text representation of a key event. E.g if the control key was pressed,
      * "Ctrl" will be returned

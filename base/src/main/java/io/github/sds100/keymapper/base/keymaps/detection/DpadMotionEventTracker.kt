@@ -109,7 +109,7 @@ class DpadMotionEventTracker {
                 device = event.device,
                 repeatCount = 0,
                 source = InputDevice.SOURCE_DPAD,
-                eventTime = event.eventTime
+                eventTime = event.eventTime,
             )
         }
     }

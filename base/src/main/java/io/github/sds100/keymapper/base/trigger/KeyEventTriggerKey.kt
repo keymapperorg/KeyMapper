@@ -11,7 +11,7 @@ import java.util.UUID
 @Serializable
 data class KeyEventTriggerKey(
     override val uid: String = UUID.randomUUID().toString(),
-  override  val keyCode: Int,
+    override val keyCode: Int,
     val device: KeyEventTriggerDevice,
     override val clickType: ClickType,
     override val consumeEvent: Boolean = true,
@@ -20,7 +20,7 @@ data class KeyEventTriggerKey(
      * do not send key events to the accessibility service.
      */
     val requiresIme: Boolean = false,
-   override val scanCode: Int? = null,
+    override val scanCode: Int? = null,
 ) : TriggerKey(), InputEventTriggerKey {
 
     override val allowedLongPress: Boolean = true
@@ -80,7 +80,7 @@ data class KeyEventTriggerKey(
                 clickType = clickType,
                 consumeEvent = consumeEvent,
                 requiresIme = requiresIme,
-                scanCode = entity.scanCode
+                scanCode = entity.scanCode,
             )
         }
 
@@ -121,7 +121,7 @@ data class KeyEventTriggerKey(
                 clickType = clickType,
                 flags = flags,
                 uid = key.uid,
-                scanCode = key.scanCode
+                scanCode = key.scanCode,
             )
         }
     }

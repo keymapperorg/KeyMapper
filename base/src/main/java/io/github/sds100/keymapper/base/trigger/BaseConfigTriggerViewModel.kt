@@ -23,7 +23,6 @@ import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
-import io.github.sds100.keymapper.base.trigger.TriggerKeyListItemModel.*
 import io.github.sds100.keymapper.base.utils.InputEventStrings
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
@@ -405,7 +404,7 @@ abstract class BaseConfigTriggerViewModel(
                         return TriggerKeyOptionsState.EvdevEvent(
                             doNotRemapChecked = !key.consumeEvent,
                             clickType = key.clickType,
-                            showClickTypes = showClickTypes
+                            showClickTypes = showClickTypes,
                         )
                     }
                 }
@@ -489,8 +488,10 @@ abstract class BaseConfigTriggerViewModel(
         }
 
         config.addKeyEventTriggerKey(
-            key.keyCode, key.scanCode, triggerDevice,
-            key.detectionSource != InputEventDetectionSource.ACCESSIBILITY_SERVICE
+            key.keyCode,
+            key.scanCode,
+            triggerDevice,
+            key.detectionSource != InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         )
 
         if (key.keyCode >= InputEventUtils.KEYCODE_TO_SCANCODE_OFFSET || key.keyCode < 0) {
@@ -555,7 +556,7 @@ abstract class BaseConfigTriggerViewModel(
                 bus = key.device.bus,
                 vendor = key.device.vendor,
                 product = key.device.product,
-            )
+            ),
         )
     }
 
@@ -712,7 +713,7 @@ abstract class BaseConfigTriggerViewModel(
             }
 
             when (key) {
-                is AssistantTriggerKey -> Assistant(
+                is AssistantTriggerKey -> TriggerKeyListItemModel.Assistant(
                     id = key.uid,
                     assistantType = key.type,
                     clickType = clickType,
@@ -720,7 +721,7 @@ abstract class BaseConfigTriggerViewModel(
                     error = error,
                 )
 
-                is FingerprintTriggerKey -> FingerprintGesture(
+                is FingerprintTriggerKey -> TriggerKeyListItemModel.FingerprintGesture(
                     id = key.uid,
                     gestureType = key.type,
                     clickType = clickType,
@@ -728,7 +729,7 @@ abstract class BaseConfigTriggerViewModel(
                     error = error,
                 )
 
-                is KeyEventTriggerKey -> KeyEvent(
+                is KeyEventTriggerKey -> TriggerKeyListItemModel.KeyEvent(
                     id = key.uid,
                     keyName = getTriggerKeyName(key),
                     clickType = clickType,
@@ -742,13 +743,13 @@ abstract class BaseConfigTriggerViewModel(
 
                 is FloatingButtonKey -> {
                     if (key.button == null) {
-                        FloatingButtonDeleted(
+                        TriggerKeyListItemModel.FloatingButtonDeleted(
                             id = key.uid,
                             clickType = clickType,
                             linkType = linkType,
                         )
                     } else {
-                        FloatingButton(
+                        TriggerKeyListItemModel.FloatingButton(
                             id = key.uid,
                             buttonName = key.button.appearance.text,
                             layoutName = key.button.layoutName,
@@ -759,7 +760,7 @@ abstract class BaseConfigTriggerViewModel(
                     }
                 }
 
-                is EvdevTriggerKey -> EvdevEvent(
+                is EvdevTriggerKey -> TriggerKeyListItemModel.EvdevEvent(
                     id = key.uid,
                     keyName = InputEventStrings.keyCodeToString(key.keyCode),
                     deviceName = key.device.name,

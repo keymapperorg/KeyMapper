@@ -32,7 +32,7 @@ data class EvdevTriggerKeyEntity(
     val flags: Int = 0,
 
     @SerializedName(NAME_UID)
-    override val uid: String = UUID.randomUUID().toString()
+    override val uid: String = UUID.randomUUID().toString(),
 ) : TriggerKeyEntity(),
     Parcelable {
 

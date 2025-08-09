@@ -34,7 +34,7 @@ class SettingsViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     val sharedPrefsDataStoreWrapper: SharedPrefsDataStoreWrapper,
     dialogProvider: DialogProvider,
-    navigationProvider: NavigationProvider
+    navigationProvider: NavigationProvider,
 ) : ViewModel(),
     DialogProvider by dialogProvider,
     ResourceProvider by resourceProvider,

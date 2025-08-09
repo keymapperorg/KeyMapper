@@ -79,7 +79,7 @@ class PerformActionsUseCaseTest {
             soundsManager = mock(),
             notificationReceiverAdapter = mock(),
             ringtoneAdapter = mock(),
-            inputEventHub = mockInputEventHub
+            inputEventHub = mockInputEventHub,
         )
     }
 
@@ -119,7 +119,7 @@ class PerformActionsUseCaseTest {
                 id = 1,
                 isExternal = true,
                 isGameController = true,
-                sources = InputDevice.SOURCE_GAMEPAD
+                sources = InputDevice.SOURCE_GAMEPAD,
             )
 
             fakeDevicesAdapter.connectedInputDevices.value = State.Data(listOf(fakeGamePad))
@@ -197,7 +197,7 @@ class PerformActionsUseCaseTest {
                 id = 1,
                 isExternal = true,
                 isGameController = true,
-                sources = InputDevice.SOURCE_GAMEPAD
+                sources = InputDevice.SOURCE_GAMEPAD,
             )
 
             val fakeKeyboard = InputDeviceInfo(
@@ -206,7 +206,7 @@ class PerformActionsUseCaseTest {
                 id = 2,
                 isExternal = true,
                 isGameController = false,
-                sources = InputDevice.SOURCE_GAMEPAD
+                sources = InputDevice.SOURCE_GAMEPAD,
             )
 
             fakeDevicesAdapter.connectedInputDevices.value =
@@ -268,7 +268,7 @@ class PerformActionsUseCaseTest {
                         id = 10,
                         isExternal = true,
                         isGameController = false,
-                        sources = InputDevice.SOURCE_GAMEPAD
+                        sources = InputDevice.SOURCE_GAMEPAD,
                     ),
 
                     InputDeviceInfo(
@@ -277,7 +277,7 @@ class PerformActionsUseCaseTest {
                         id = 11,
                         isExternal = true,
                         isGameController = false,
-                        sources = InputDevice.SOURCE_GAMEPAD
+                        sources = InputDevice.SOURCE_GAMEPAD,
                     ),
                 ),
             )
@@ -327,7 +327,7 @@ class PerformActionsUseCaseTest {
                         id = 10,
                         isExternal = true,
                         isGameController = false,
-                        sources = InputDevice.SOURCE_GAMEPAD
+                        sources = InputDevice.SOURCE_GAMEPAD,
                     ),
                 ),
             )

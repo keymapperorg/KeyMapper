@@ -16,6 +16,6 @@ sealed class RecordedKey {
     data class EvdevEvent(
         val keyCode: Int,
         val scanCode: Int,
-        val device: EvdevDeviceHandle
+        val device: EvdevDeviceHandle,
     ) : RecordedKey()
 }

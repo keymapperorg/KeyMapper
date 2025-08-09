@@ -72,7 +72,7 @@ class ConfigKeyServiceEventActionViewModelTest {
                 id = 0,
                 isExternal = false,
                 isGameController = false,
-                sources = InputDevice.SOURCE_KEYBOARD
+                sources = InputDevice.SOURCE_KEYBOARD,
             )
 
             val fakeDevice2 = InputDeviceInfo(
@@ -81,7 +81,7 @@ class ConfigKeyServiceEventActionViewModelTest {
                 id = 1,
                 isExternal = false,
                 isGameController = false,
-                sources = InputDevice.SOURCE_KEYBOARD
+                sources = InputDevice.SOURCE_KEYBOARD,
             )
 
             // WHEN

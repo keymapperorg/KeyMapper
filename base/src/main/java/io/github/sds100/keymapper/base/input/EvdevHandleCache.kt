@@ -15,7 +15,7 @@ import timber.log.Timber
 class EvdevHandleCache(
     private val coroutineScope: CoroutineScope,
     private val devicesAdapter: DevicesAdapter,
-    private val systemBridge: StateFlow<ISystemBridge?>
+    private val systemBridge: StateFlow<ISystemBridge?>,
 ) {
     private val devicesByPath: StateFlow<Map<String, EvdevDeviceHandle>> =
         combine(devicesAdapter.connectedInputDevices, systemBridge) { _, systemBridge ->
@@ -35,7 +35,7 @@ class EvdevHandleCache(
                 name = device.name,
                 bus = device.bus,
                 vendor = device.vendor,
-                product = device.product
+                product = device.product,
             )
         }
     }

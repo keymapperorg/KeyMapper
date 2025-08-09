@@ -80,7 +80,7 @@ class InputEventHubImpl @Inject constructor(
     private val evdevHandles: EvdevHandleCache = EvdevHandleCache(
         coroutineScope,
         devicesAdapter,
-        systemBridgeFlow
+        systemBridgeFlow,
     )
 
     private val logInputEventsEnabled: StateFlow<Boolean> =
@@ -131,7 +131,7 @@ class InputEventHubImpl @Inject constructor(
         type: Int,
         code: Int,
         value: Int,
-        androidCode: Int
+        androidCode: Int,
     ): Boolean {
         devicePath ?: return false
 
@@ -143,7 +143,7 @@ class InputEventHubImpl @Inject constructor(
 
     override fun onInputEvent(
         event: KMInputEvent,
-        detectionSource: InputEventDetectionSource
+        detectionSource: InputEventDetectionSource,
     ): Boolean {
         val uniqueEvent: KMInputEvent = if (event is KMKeyEvent) {
             makeUniqueKeyEvent(event)
@@ -162,8 +162,8 @@ class InputEventHubImpl @Inject constructor(
                 // TODO maybe flatmap all the client event types into one Set so this check
                 // can be done in onEvdevEvent. Hundreds of events may be sent per second synchronously so important to be as fast as possible.
                 // This client can ignore this event.
-                if (!clientContext.evdevEventTypes.contains(event.type)
-                    || clientContext.grabbedEvdevDevices.isEmpty()
+                if (!clientContext.evdevEventTypes.contains(event.type) ||
+                    clientContext.grabbedEvdevDevices.isEmpty()
                 ) {
                     continue
                 }
@@ -172,7 +172,7 @@ class InputEventHubImpl @Inject constructor(
                     event.device.name,
                     event.device.bus,
                     event.device.vendor,
-                    event.device.product
+                    event.device.product,
                 )
 
                 // Only send events from evdev devices to the client if they grabbed it
@@ -225,13 +225,13 @@ class InputEventHubImpl @Inject constructor(
         when (event) {
             is KMEvdevEvent -> {
                 Timber.d(
-                    "Evdev event: devicePath=${event.device.path}, deviceName=${event.device.name}, type=${event.type}, code=${event.code}, value=${event.value}"
+                    "Evdev event: devicePath=${event.device.path}, deviceName=${event.device.name}, type=${event.type}, code=${event.code}, value=${event.value}",
                 )
             }
 
             is KMGamePadEvent -> {
                 Timber.d(
-                    "GamePad event: deviceId=${event.deviceId}, axisHatX=${event.axisHatX}, axisHatY=${event.axisHatY}"
+                    "GamePad event: deviceId=${event.deviceId}, axisHatX=${event.axisHatX}, axisHatY=${event.axisHatY}",
                 )
             }
 
@@ -256,7 +256,7 @@ class InputEventHubImpl @Inject constructor(
     override fun registerClient(
         clientId: String,
         callback: InputEventHubCallback,
-        eventTypes: List<Int>
+        eventTypes: List<Int>,
     ) {
         if (clients.containsKey(clientId)) {
             throw IllegalArgumentException("This client already has a callback registered!")
@@ -326,7 +326,7 @@ class InputEventHubImpl @Inject constructor(
         devicePath: String,
         type: Int,
         code: Int,
-        value: Int
+        value: Int,
     ): KMResult<Boolean> {
         val systemBridge = this.systemBridgeFlow.value
 
@@ -340,7 +340,7 @@ class InputEventHubImpl @Inject constructor(
                 devicePath,
                 type,
                 code,
-                value
+                value,
             )
 
             Timber.d("Injected evdev event: $result")
@@ -371,7 +371,7 @@ class InputEventHubImpl @Inject constructor(
                     // in InputDispatcher.cpp injectInputEvent.
                     systemBridge.injectInputEvent(
                         androidKeyEvent,
-                        INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH
+                        INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH,
                     )
                 }
 
@@ -401,7 +401,7 @@ class InputEventHubImpl @Inject constructor(
          * The evdev devices that this client wants to grab.
          */
         val grabbedEvdevDevices: Set<EvdevDeviceInfo>,
-        val evdevEventTypes: Set<Int>
+        val evdevEventTypes: Set<Int>,
     )
 }
 
@@ -415,7 +415,7 @@ interface InputEventHub {
     fun registerClient(
         clientId: String,
         callback: InputEventHubCallback,
-        eventTypes: List<Int>
+        eventTypes: List<Int>,
     )
 
     fun unregisterClient(clientId: String)

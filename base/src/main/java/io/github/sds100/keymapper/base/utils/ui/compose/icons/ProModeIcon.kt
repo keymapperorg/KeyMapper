@@ -18,7 +18,7 @@ val KeyMapperIcons.ProModeIcon: ImageVector
             defaultWidth = 32.dp,
             defaultHeight = 32.dp,
             viewportWidth = 32f,
-            viewportHeight = 32f
+            viewportHeight = 32f,
         ).apply {
             group(
                 clipPathData = PathData {
@@ -27,7 +27,7 @@ val KeyMapperIcons.ProModeIcon: ImageVector
                     lineTo(32f, 32f)
                     lineTo(0f, 32f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -37,7 +37,7 @@ val KeyMapperIcons.ProModeIcon: ImageVector
                     lineTo(32f, 32f)
                     lineTo(0f, 32f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -47,7 +47,7 @@ val KeyMapperIcons.ProModeIcon: ImageVector
                     lineTo(32f, 32f)
                     lineTo(-0f, 32f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -57,7 +57,7 @@ val KeyMapperIcons.ProModeIcon: ImageVector
                     lineTo(32f, -0f)
                     lineTo(-0f, -0f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -67,7 +67,7 @@ val KeyMapperIcons.ProModeIcon: ImageVector
                     lineTo(32f, 32f)
                     lineTo(0f, 32f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -77,7 +77,7 @@ val KeyMapperIcons.ProModeIcon: ImageVector
                     lineTo(32f, -0f)
                     lineTo(-0f, -0f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -87,7 +87,7 @@ val KeyMapperIcons.ProModeIcon: ImageVector
                     lineTo(32f, -0f)
                     lineTo(-0f, -0f)
                     close()
-                }
+                },
             ) {
             }
             path(fill = SolidColor(Color.Black)) {

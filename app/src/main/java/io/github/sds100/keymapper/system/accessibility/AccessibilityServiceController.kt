@@ -31,7 +31,7 @@ class AccessibilityServiceController @AssistedInject constructor(
     systemBridgeSetupController: SystemBridgeSetupController,
     keyEventRelayServiceWrapper: KeyEventRelayServiceWrapper,
     inputEventHub: InputEventHub,
-    recordTriggerController: RecordTriggerController
+    recordTriggerController: RecordTriggerController,
 ) : BaseAccessibilityServiceController(
     service = service,
     rerouteKeyEventsControllerFactory = rerouteKeyEventsControllerFactory,
@@ -45,7 +45,7 @@ class AccessibilityServiceController @AssistedInject constructor(
     systemBridgeSetupController = systemBridgeSetupController,
     keyEventRelayServiceWrapper = keyEventRelayServiceWrapper,
     inputEventHub = inputEventHub,
-    recordTriggerController = recordTriggerController
+    recordTriggerController = recordTriggerController,
 ) {
     @AssistedFactory
     interface Factory {

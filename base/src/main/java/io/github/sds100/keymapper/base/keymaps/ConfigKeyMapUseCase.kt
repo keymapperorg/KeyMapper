@@ -357,7 +357,7 @@ class ConfigKeyMapUseCaseController @Inject constructor(
         keyCode: Int,
         scanCode: Int,
         device: KeyEventTriggerDevice,
-        requiresIme: Boolean
+        requiresIme: Boolean,
     ) = editTrigger { trigger ->
         val clickType = when (trigger.mode) {
             is TriggerMode.Parallel -> trigger.mode.clickType
@@ -410,7 +410,7 @@ class ConfigKeyMapUseCaseController @Inject constructor(
     override fun addEvdevTriggerKey(
         keyCode: Int,
         scanCode: Int,
-        device: EvdevDeviceInfo
+        device: EvdevDeviceInfo,
     ) = editTrigger { trigger ->
         val clickType = when (trigger.mode) {
             is TriggerMode.Parallel -> trigger.mode.clickType
@@ -1054,7 +1054,7 @@ interface ConfigKeyMapUseCase : GetDefaultKeyMapOptionsUseCase {
         keyCode: Int,
         scanCode: Int,
         device: KeyEventTriggerDevice,
-        requiresIme: Boolean
+        requiresIme: Boolean,
     )
 
     suspend fun addFloatingButtonTriggerKey(buttonUid: String)
@@ -1063,7 +1063,7 @@ interface ConfigKeyMapUseCase : GetDefaultKeyMapOptionsUseCase {
     fun addEvdevTriggerKey(
         keyCode: Int,
         scanCode: Int,
-        device: EvdevDeviceInfo
+        device: EvdevDeviceInfo,
     )
 
     fun removeTriggerKey(uid: String)

@@ -26,7 +26,7 @@ data class KeyEventTriggerKeyEntity(
     override val uid: String = UUID.randomUUID().toString(),
 
     @SerializedName(NAME_SCANCODE)
-    val scanCode: Int? = null
+    val scanCode: Int? = null,
 ) : TriggerKeyEntity(),
     Parcelable {
 

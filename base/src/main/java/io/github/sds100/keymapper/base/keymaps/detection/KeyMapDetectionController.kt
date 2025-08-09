@@ -30,7 +30,7 @@ class KeyMapDetectionController(
     private val detectConstraints: DetectConstraintsUseCase,
     private val inputEventHub: InputEventHub,
     private val pauseKeyMapsUseCase: PauseKeyMapsUseCase,
-    private val recordTriggerController: RecordTriggerController
+    private val recordTriggerController: RecordTriggerController,
 ) : InputEventHubCallback {
     companion object {
         private const val INPUT_EVENT_HUB_ID = "key_map_controller"
@@ -64,7 +64,7 @@ class KeyMapDetectionController(
 
     override fun onInputEvent(
         event: KMInputEvent,
-        detectionSource: InputEventDetectionSource
+        detectionSource: InputEventDetectionSource,
     ): Boolean {
         if (isPaused.value) {
             return false

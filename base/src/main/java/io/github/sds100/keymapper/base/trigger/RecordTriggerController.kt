@@ -44,7 +44,8 @@ class RecordTriggerControllerImpl @Inject constructor(
         private const val INPUT_EVENT_HUB_ID = "record_trigger"
 
         private val SCAN_CODES_BLACKLIST = setOf(
-            330 // BTN_TOUCH
+            // BTN_TOUCH
+            330,
         )
     }
 
@@ -68,7 +69,7 @@ class RecordTriggerControllerImpl @Inject constructor(
 
     override fun onInputEvent(
         event: KMInputEvent,
-        detectionSource: InputEventDetectionSource
+        detectionSource: InputEventDetectionSource,
     ): Boolean {
         if (!recordingTrigger) {
             return false
@@ -114,7 +115,7 @@ class RecordTriggerControllerImpl @Inject constructor(
 
                         val recordedKey = createKeyEventRecordedKey(
                             keyEvent,
-                            detectionSource
+                            detectionSource,
                         )
                         onRecordKey(recordedKey)
                     }
@@ -138,7 +139,6 @@ class RecordTriggerControllerImpl @Inject constructor(
                 if (event.action == KeyEvent.ACTION_DOWN) {
                     downKeyEvents.add(event)
                 } else if (event.action == KeyEvent.ACTION_UP) {
-
                     // Only record the key if there is a matching down event.
                     // Do not do this when recording motion events from the input method
                     // or Activity because they intentionally only input a down event.
@@ -146,7 +146,6 @@ class RecordTriggerControllerImpl @Inject constructor(
                         val recordedKey = createKeyEventRecordedKey(event, detectionSource)
                         onRecordKey(recordedKey)
                     }
-
                 }
                 return true
             }
@@ -220,7 +219,7 @@ class RecordTriggerControllerImpl @Inject constructor(
 
     private fun createKeyEventRecordedKey(
         keyEvent: KMKeyEvent,
-        detectionSource: InputEventDetectionSource
+        detectionSource: InputEventDetectionSource,
     ): RecordedKey.KeyEvent {
         return RecordedKey.KeyEvent(
             keyCode = keyEvent.keyCode,
@@ -228,7 +227,7 @@ class RecordTriggerControllerImpl @Inject constructor(
             deviceDescriptor = keyEvent.device.descriptor,
             deviceName = keyEvent.device.name,
             isExternalDevice = keyEvent.device.isExternal,
-            detectionSource = detectionSource
+            detectionSource = detectionSource,
         )
     }
 
@@ -236,7 +235,7 @@ class RecordTriggerControllerImpl @Inject constructor(
         return RecordedKey.EvdevEvent(
             keyCode = evdevEvent.androidCode,
             scanCode = evdevEvent.code,
-            device = evdevEvent.device
+            device = evdevEvent.device,
         )
     }
 
@@ -250,7 +249,7 @@ class RecordTriggerControllerImpl @Inject constructor(
         inputEventHub.registerClient(
             INPUT_EVENT_HUB_ID,
             this@RecordTriggerControllerImpl,
-            listOf(KMEvdevEvent.TYPE_KEY_EVENT)
+            listOf(KMEvdevEvent.TYPE_KEY_EVENT),
         )
 
         // Grab all evdev devices

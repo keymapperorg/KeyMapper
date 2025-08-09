@@ -611,7 +611,6 @@ class KeyMapAlgorithm(
     }
 
     private fun onKeyEventPostFilter(inputEvent: KMInputEvent): Boolean {
-
         if (inputEvent is KMKeyEvent) {
             metaStateFromKeyEvent = inputEvent.metaState
         }
@@ -663,7 +662,7 @@ class KeyMapAlgorithm(
                     scanCode = inputEvent.scanCode,
                     repeatCount = inputEvent.repeatCount,
                     source = inputEvent.source,
-                    isExternal = device.isExternal
+                    isExternal = device.isExternal,
                 )
 
                 when (inputEvent.action) {
@@ -1456,14 +1455,14 @@ class KeyMapAlgorithm(
                             devicePath = event.devicePath,
                             KMEvdevEvent.TYPE_KEY_EVENT,
                             event.scanCode,
-                            KMEvdevEvent.VALUE_DOWN
+                            KMEvdevEvent.VALUE_DOWN,
                         )
 
                         useCase.imitateEvdevEvent(
                             devicePath = event.devicePath,
                             KMEvdevEvent.TYPE_KEY_EVENT,
                             event.scanCode,
-                            KMEvdevEvent.VALUE_UP
+                            KMEvdevEvent.VALUE_UP,
                         )
                     }
                 }
@@ -1510,20 +1509,20 @@ class KeyMapAlgorithm(
                         devicePath = event.devicePath,
                         type = KMEvdevEvent.TYPE_KEY_EVENT,
                         code = event.scanCode,
-                        value = KMEvdevEvent.VALUE_UP
+                        value = KMEvdevEvent.VALUE_UP,
                     )
                 } else {
                     useCase.imitateEvdevEvent(
                         devicePath = event.devicePath,
                         type = KMEvdevEvent.TYPE_KEY_EVENT,
                         code = event.scanCode,
-                        value = KMEvdevEvent.VALUE_DOWN
+                        value = KMEvdevEvent.VALUE_DOWN,
                     )
                     useCase.imitateEvdevEvent(
                         devicePath = event.devicePath,
                         type = KMEvdevEvent.TYPE_KEY_EVENT,
                         code = event.scanCode,
-                        value = KMEvdevEvent.VALUE_UP
+                        value = KMEvdevEvent.VALUE_UP,
                     )
                 }
                 keyCodesToImitateUpAction.remove(event.keyCode)
@@ -1868,7 +1867,7 @@ class KeyMapAlgorithm(
         val device: EvdevDeviceInfo,
         val scanCode: Int,
         val keyCode: Int,
-        override val clickType: ClickType?
+        override val clickType: ClickType?,
     ) : AlgoEvent()
 
     private data class KeyEventAlgo(

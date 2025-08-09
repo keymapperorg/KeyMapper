@@ -73,9 +73,8 @@ data class EvdevTriggerKey(
                 deviceProduct = key.device.product,
                 clickType = clickType,
                 flags = flags,
-                uid = key.uid
+                uid = key.uid,
             )
         }
     }
-
 }

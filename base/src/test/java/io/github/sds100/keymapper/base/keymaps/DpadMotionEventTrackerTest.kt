@@ -27,7 +27,7 @@ class DpadMotionEventTrackerTest {
             name = "Controller 1",
             isExternal = true,
             isGameController = true,
-            sources = InputDevice.SOURCE_GAMEPAD
+            sources = InputDevice.SOURCE_GAMEPAD,
         )
 
         private val CONTROLLER_2_DEVICE = InputDeviceInfo(
@@ -36,7 +36,7 @@ class DpadMotionEventTrackerTest {
             name = "Controller 2",
             isExternal = true,
             isGameController = true,
-            sources = InputDevice.SOURCE_GAMEPAD
+            sources = InputDevice.SOURCE_GAMEPAD,
         )
     }
 
@@ -70,7 +70,7 @@ class DpadMotionEventTrackerTest {
                     device = CONTROLLER_1_DEVICE,
                     repeatCount = 0,
                     source = InputDevice.SOURCE_DPAD,
-                    eventTime = motionEvent.eventTime
+                    eventTime = motionEvent.eventTime,
                 ),
             ),
         )
@@ -85,7 +85,7 @@ class DpadMotionEventTrackerTest {
                     device = CONTROLLER_1_DEVICE,
                     repeatCount = 0,
                     source = InputDevice.SOURCE_DPAD,
-                    eventTime = motionEvent.eventTime
+                    eventTime = motionEvent.eventTime,
                 ),
             ),
         )
@@ -267,7 +267,7 @@ class DpadMotionEventTrackerTest {
             device = device,
             axisHatX = axisHatX,
             axisHatY = axisHatY,
-            eventTime = System.currentTimeMillis()
+            eventTime = System.currentTimeMillis(),
         )
     }
 
@@ -280,7 +280,7 @@ class DpadMotionEventTrackerTest {
             device = device,
             repeatCount = 0,
             source = 0,
-            eventTime = System.currentTimeMillis()
+            eventTime = System.currentTimeMillis(),
         )
     }
 
@@ -293,7 +293,7 @@ class DpadMotionEventTrackerTest {
             device = device,
             repeatCount = 0,
             source = 0,
-            eventTime = System.currentTimeMillis()
+            eventTime = System.currentTimeMillis(),
 
         )
     }

@@ -101,7 +101,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val notificationReceiverAdapter: NotificationReceiverAdapter,
     private val ringtoneAdapter: RingtoneAdapter,
     private val settingsRepository: PreferenceRepository,
-    private val inputEventHub: InputEventHub
+    private val inputEventHub: InputEventHub,
 ) : PerformActionsUseCase {
 
     @AssistedFactory
@@ -164,7 +164,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                     deviceId = deviceId,
                     source = source,
                     repeatCount = 0,
-                    scanCode = 0
+                    scanCode = 0,
                 )
 
                 if (inputEventAction == InputEventAction.DOWN_UP) {

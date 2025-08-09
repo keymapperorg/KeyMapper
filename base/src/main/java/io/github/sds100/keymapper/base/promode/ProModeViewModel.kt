@@ -21,7 +21,7 @@ class ProModeViewModel @Inject constructor(
     private val useCase: ProModeSetupUseCase,
     resourceProvider: ResourceProvider,
     dialogProvider: DialogProvider,
-    navigationProvider: NavigationProvider
+    navigationProvider: NavigationProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,

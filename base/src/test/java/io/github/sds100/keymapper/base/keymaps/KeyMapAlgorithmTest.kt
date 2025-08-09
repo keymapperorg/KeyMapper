@@ -86,7 +86,7 @@ class KeyMapAlgorithmTest {
             id = 0,
             isExternal = false,
             isGameController = false,
-            sources = InputDevice.SOURCE_UNKNOWN
+            sources = InputDevice.SOURCE_UNKNOWN,
         )
 
         private const val FAKE_HEADPHONE_DESCRIPTOR = "fake_headphone"
@@ -106,21 +106,21 @@ class KeyMapAlgorithmTest {
             id = 1,
             isExternal = true,
             isGameController = true,
-            sources = InputDevice.SOURCE_GAMEPAD
+            sources = InputDevice.SOURCE_GAMEPAD,
         )
 
         private val FAKE_CONTROLLER_EVDEV_DEVICE = EvdevDeviceInfo(
             name = "Fake Controller",
             bus = 1,
             vendor = 2,
-            product = 1
+            product = 1,
         )
 
         private val FAKE_VOLUME_EVDEV_DEVICE = EvdevDeviceInfo(
             name = "Volume Keys",
             bus = 0,
             vendor = 1,
-            product = 2
+            product = 2,
         )
 
         private const val FAKE_PACKAGE_NAME = "test_package"
@@ -228,12 +228,12 @@ class KeyMapAlgorithmTest {
                 EvdevTriggerKey(
                     keyCode = KeyEvent.KEYCODE_A,
                     scanCode = 900,
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE
+                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
                 ),
                 EvdevTriggerKey(
                     keyCode = KeyEvent.KEYCODE_B,
                     scanCode = 901,
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE
+                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
                 ),
             )
 
@@ -255,12 +255,12 @@ class KeyMapAlgorithmTest {
                 EvdevTriggerKey(
                     keyCode = KeyEvent.KEYCODE_A,
                     scanCode = 900,
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE
+                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
                 ),
                 EvdevTriggerKey(
                     keyCode = KeyEvent.KEYCODE_B,
                     scanCode = 901,
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE
+                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
                 ),
             )
 
@@ -282,8 +282,8 @@ class KeyMapAlgorithmTest {
                 EvdevTriggerKey(
                     keyCode = KeyEvent.KEYCODE_POWER,
                     scanCode = 900,
-                    device = FAKE_VOLUME_EVDEV_DEVICE
-                )
+                    device = FAKE_VOLUME_EVDEV_DEVICE,
+                ),
             )
 
             loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
@@ -299,8 +299,8 @@ class KeyMapAlgorithmTest {
             EvdevTriggerKey(
                 keyCode = KeyEvent.KEYCODE_A,
                 scanCode = 900,
-                device = FAKE_CONTROLLER_EVDEV_DEVICE
-            )
+                device = FAKE_CONTROLLER_EVDEV_DEVICE,
+            ),
         )
 
         loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
@@ -316,8 +316,8 @@ class KeyMapAlgorithmTest {
             EvdevTriggerKey(
                 keyCode = KeyEvent.KEYCODE_POWER,
                 scanCode = 900,
-                device = FAKE_VOLUME_EVDEV_DEVICE
-            )
+                device = FAKE_VOLUME_EVDEV_DEVICE,
+            ),
         )
 
         loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
@@ -2033,11 +2033,11 @@ class KeyMapAlgorithmTest {
                 // THEN
                 verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
                     keyCode = 1,
-                    action = KeyEvent.ACTION_DOWN
+                    action = KeyEvent.ACTION_DOWN,
                 )
                 verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
                     keyCode = 1,
-                    action = KeyEvent.ACTION_UP
+                    action = KeyEvent.ACTION_UP,
                 )
                 verifyNoMoreInteractions()
 
@@ -2049,19 +2049,19 @@ class KeyMapAlgorithmTest {
                 // THEN
                 verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                     keyCode = 1,
-                    action = KeyEvent.ACTION_DOWN
+                    action = KeyEvent.ACTION_DOWN,
                 )
                 verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                     keyCode = 1,
-                    action = KeyEvent.ACTION_UP
+                    action = KeyEvent.ACTION_UP,
                 )
                 verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                     keyCode = 2,
-                    action = KeyEvent.ACTION_DOWN
+                    action = KeyEvent.ACTION_DOWN,
                 )
                 verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                     keyCode = 2,
-                    action = KeyEvent.ACTION_UP
+                    action = KeyEvent.ACTION_UP,
                 )
                 verify(performActionsUseCase, never()).perform(action = TEST_ACTION.data)
 
@@ -2115,19 +2115,19 @@ class KeyMapAlgorithmTest {
             // THEN
             verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                 keyCode = 1,
-                action = KeyEvent.ACTION_DOWN
+                action = KeyEvent.ACTION_DOWN,
             )
             verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                 keyCode = 1,
-                action = KeyEvent.ACTION_UP
+                action = KeyEvent.ACTION_UP,
             )
             verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                 keyCode = 2,
-                action = KeyEvent.ACTION_DOWN
+                action = KeyEvent.ACTION_DOWN,
             )
             verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                 keyCode = 2,
-                action = KeyEvent.ACTION_UP
+                action = KeyEvent.ACTION_UP,
             )
         }
 
@@ -2966,7 +2966,7 @@ class KeyMapAlgorithmTest {
                 inputKeyEvent(
                     KeyEvent.KEYCODE_APP_SWITCH,
                     KeyEvent.ACTION_DOWN,
-                    FAKE_INTERNAL_DEVICE
+                    FAKE_INTERNAL_DEVICE,
                 )
             inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN, FAKE_INTERNAL_DEVICE)
 
@@ -3255,12 +3255,12 @@ class KeyMapAlgorithmTest {
             verify(detectKeyMapsUseCase, times(1))
                 .imitateKeyEvent(
                     keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
-                    action = KeyEvent.ACTION_DOWN
+                    action = KeyEvent.ACTION_DOWN,
                 )
             verify(detectKeyMapsUseCase, times(1))
                 .imitateKeyEvent(
                     keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
-                    action = KeyEvent.ACTION_UP
+                    action = KeyEvent.ACTION_UP,
                 )
         }
 
@@ -3377,7 +3377,7 @@ class KeyMapAlgorithmTest {
         verify(detectKeyMapsUseCase, times(1))
             .imitateKeyEvent(
                 keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
-                action = KeyEvent.ACTION_DOWN
+                action = KeyEvent.ACTION_DOWN,
             )
 
         verify(detectKeyMapsUseCase, times(1))
@@ -4377,7 +4377,7 @@ class KeyMapAlgorithmTest {
             device = device,
             axisHatX = axisHatX,
             axisHatY = axisHatY,
-            eventTime = System.currentTimeMillis()
+            eventTime = System.currentTimeMillis(),
         )
     }
 
@@ -4391,7 +4391,7 @@ class KeyMapAlgorithmTest {
             device = device,
             axisHatX = axisHatX,
             axisHatY = axisHatY,
-            eventTime = System.currentTimeMillis()
+            eventTime = System.currentTimeMillis(),
         ),
     )
 
@@ -4411,14 +4411,14 @@ class KeyMapAlgorithmTest {
             device = device,
             repeatCount = repeatCount,
             source = 0,
-            eventTime = System.currentTimeMillis()
+            eventTime = System.currentTimeMillis(),
         ),
     )
 
     private fun inputDownEvdevEvent(
         keyCode: Int,
         scanCode: Int,
-        device: EvdevDeviceInfo
+        device: EvdevDeviceInfo,
     ): Boolean = controller.onInputEvent(
         KMEvdevEvent(
             type = KMEvdevEvent.TYPE_KEY_EVENT,
@@ -4427,20 +4427,20 @@ class KeyMapAlgorithmTest {
                 name = device.name,
                 bus = device.bus,
                 vendor = device.vendor,
-                product = device.product
+                product = device.product,
             ),
             code = scanCode,
             androidCode = keyCode,
             value = KMEvdevEvent.VALUE_DOWN,
             timeSec = testScope.currentTime,
-            timeUsec = 0
+            timeUsec = 0,
         ),
     )
 
     private fun inputUpEvdevEvent(
         keyCode: Int,
         scanCode: Int,
-        device: EvdevDeviceInfo
+        device: EvdevDeviceInfo,
     ): Boolean = controller.onInputEvent(
         KMEvdevEvent(
             type = KMEvdevEvent.TYPE_KEY_EVENT,
@@ -4449,12 +4449,13 @@ class KeyMapAlgorithmTest {
                 name = device.name,
                 bus = device.bus,
                 vendor = device.vendor,
-                product = device.product
-            ), code = scanCode,
+                product = device.product,
+            ),
+            code = scanCode,
             androidCode = keyCode,
             value = KMEvdevEvent.VALUE_UP,
             timeSec = testScope.currentTime,
-            timeUsec = 0
+            timeUsec = 0,
         ),
     )
 
@@ -4507,7 +4508,7 @@ class KeyMapAlgorithmTest {
             isExternal = false,
             id = deviceId,
             isGameController = isGameController,
-            sources = if (isGameController) InputDevice.SOURCE_GAMEPAD else InputDevice.SOURCE_KEYBOARD
+            sources = if (isGameController) InputDevice.SOURCE_GAMEPAD else InputDevice.SOURCE_KEYBOARD,
         )
 
         is KeyEventTriggerDevice.External -> InputDeviceInfo(
@@ -4516,7 +4517,7 @@ class KeyMapAlgorithmTest {
             isExternal = true,
             id = deviceId,
             isGameController = isGameController,
-            sources = if (isGameController) InputDevice.SOURCE_GAMEPAD else InputDevice.SOURCE_KEYBOARD
+            sources = if (isGameController) InputDevice.SOURCE_GAMEPAD else InputDevice.SOURCE_KEYBOARD,
         )
 
         KeyEventTriggerDevice.Internal -> InputDeviceInfo(
@@ -4525,7 +4526,7 @@ class KeyMapAlgorithmTest {
             isExternal = false,
             id = deviceId,
             isGameController = isGameController,
-            sources = if (isGameController) InputDevice.SOURCE_GAMEPAD else InputDevice.SOURCE_KEYBOARD
+            sources = if (isGameController) InputDevice.SOURCE_GAMEPAD else InputDevice.SOURCE_KEYBOARD,
         )
     }
 }

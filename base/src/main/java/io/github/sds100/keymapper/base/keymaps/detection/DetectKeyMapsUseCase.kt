@@ -53,7 +53,7 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
     private val vibrator: VibratorAdapter,
     @Assisted
     private val coroutineScope: CoroutineScope,
-    private val inputEventHub: InputEventHub
+    private val inputEventHub: InputEventHub,
 ) : DetectKeyMapsUseCase {
 
     @AssistedFactory

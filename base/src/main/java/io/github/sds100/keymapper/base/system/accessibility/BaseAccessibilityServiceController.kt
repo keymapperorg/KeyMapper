@@ -67,7 +67,7 @@ abstract class BaseAccessibilityServiceController(
     private val systemBridgeSetupController: SystemBridgeSetupController,
     private val keyEventRelayServiceWrapper: KeyEventRelayServiceWrapper,
     private val inputEventHub: InputEventHub,
-    private val recordTriggerController: RecordTriggerController
+    private val recordTriggerController: RecordTriggerController,
 ) {
     companion object {
         private const val DEFAULT_NOTIFICATION_TIMEOUT = 200L
@@ -92,7 +92,7 @@ abstract class BaseAccessibilityServiceController(
         detectConstraintsUseCase,
         inputEventHub,
         pauseKeyMapsUseCase,
-        recordTriggerController
+        recordTriggerController,
     )
 
     val triggerKeyMapFromOtherAppsController = TriggerKeyMapFromOtherAppsController(
@@ -166,7 +166,6 @@ abstract class BaseAccessibilityServiceController(
     private val outputEvents: MutableSharedFlow<AccessibilityServiceEvent> =
         service.accessibilityServiceAdapter.eventReceiver
 
-
     private val relayServiceCallback: IKeyEventRelayServiceCallback =
         object : IKeyEventRelayServiceCallback.Stub() {
             override fun onKeyEvent(event: KeyEvent?): Boolean {
@@ -184,7 +183,6 @@ abstract class BaseAccessibilityServiceController(
                 return onMotionEventFromIme(gamePadEvent)
             }
         }
-
 
     init {
         serviceFlags.onEach { flags ->
@@ -343,7 +341,7 @@ abstract class BaseAccessibilityServiceController(
 
         keyEventRelayServiceWrapper.registerClient(
             CALLBACK_ID_ACCESSIBILITY_SERVICE,
-            relayServiceCallback
+            relayServiceCallback,
         )
     }
 
