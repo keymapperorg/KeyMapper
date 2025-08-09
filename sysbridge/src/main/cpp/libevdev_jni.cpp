@@ -630,15 +630,18 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_getEvdevDevicesNa
 
         bool ignoreDevice = false;
 
-        // Ignore this device if it is a uinput device we created
-        for (const auto &pair: *evdevDevices) {
-            DeviceContext context = pair.second;
-            const char *uinputDevicePath = libevdev_uinput_get_devnode(context.uinputDev);
+        {
+            std::lock_guard<std::mutex> lock(evdevDevicesMutex);
+            // Ignore this device if it is a uinput device we created
+            for (const auto &pair: *evdevDevices) {
+                DeviceContext context = pair.second;
+                const char *uinputDevicePath = libevdev_uinput_get_devnode(context.uinputDev);
 
-            if (strcmp(fullPath, uinputDevicePath) == 0) {
-                LOGW("Ignoring uinput device %s.", uinputDevicePath);
-                ignoreDevice = true;
-                break;
+                if (strcmp(fullPath, uinputDevicePath) == 0) {
+                    LOGW("Ignoring uinput device %s.", uinputDevicePath);
+                    ignoreDevice = true;
+                    break;
+                }
             }
         }
 
