@@ -1313,7 +1313,7 @@ class KeyMapAlgorithmTest {
 
                 verify(performActionsUseCase, times(1)).perform(TEST_ACTION_2.data)
                 verify(performActionsUseCase, never()).perform(TEST_ACTION_2.data)
-                verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+                verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                     any(),
                     any(),
                     any(),
@@ -1328,7 +1328,7 @@ class KeyMapAlgorithmTest {
 
                 verify(performActionsUseCase, times(1)).perform(TEST_ACTION_2.data)
                 verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-                verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+                verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                     any(),
                     any(),
                     any(),
@@ -1342,7 +1342,7 @@ class KeyMapAlgorithmTest {
 
                 verify(performActionsUseCase, never()).perform(TEST_ACTION_2.data)
                 verify(performActionsUseCase, never()).perform(TEST_ACTION.data)
-                verify(detectKeyMapsUseCase, times(2)).imitateButtonPress(
+                verify(detectKeyMapsUseCase, times(2)).imitateKeyEvent(
                     any(),
                     any(),
                     any(),
@@ -2040,11 +2040,11 @@ class KeyMapAlgorithmTest {
                 inputKeyEvent(keyCode = 1, action = KeyEvent.ACTION_UP)
 
                 // THEN
-                verify(detectKeyMapsUseCase, times(1)).imitateButtonPress(
+                verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
                     keyCode = 1,
                     action = KeyEvent.ACTION_DOWN
                 )
-                verify(detectKeyMapsUseCase, times(1)).imitateButtonPress(
+                verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
                     keyCode = 1,
                     action = KeyEvent.ACTION_UP
                 )
@@ -2056,19 +2056,19 @@ class KeyMapAlgorithmTest {
                 assertThat(inputKeyEvent(keyCode = 2, action = KeyEvent.ACTION_UP), `is`(false))
 
                 // THEN
-                verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+                verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                     keyCode = 1,
                     action = KeyEvent.ACTION_DOWN
                 )
-                verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+                verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                     keyCode = 1,
                     action = KeyEvent.ACTION_UP
                 )
-                verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+                verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                     keyCode = 2,
                     action = KeyEvent.ACTION_DOWN
                 )
-                verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+                verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                     keyCode = 2,
                     action = KeyEvent.ACTION_UP
                 )
@@ -2122,19 +2122,19 @@ class KeyMapAlgorithmTest {
             inputKeyEvent(keyCode = 2, action = KeyEvent.ACTION_UP)
 
             // THEN
-            verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+            verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                 keyCode = 1,
                 action = KeyEvent.ACTION_DOWN
             )
-            verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+            verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                 keyCode = 1,
                 action = KeyEvent.ACTION_UP
             )
-            verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+            verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                 keyCode = 2,
                 action = KeyEvent.ACTION_DOWN
             )
-            verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+            verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                 keyCode = 2,
                 action = KeyEvent.ACTION_UP
             )
@@ -2603,7 +2603,7 @@ class KeyMapAlgorithmTest {
                 metaState,
             )
 
-            verify(detectKeyMapsUseCase, times(1)).imitateButtonPress(
+            verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
                 KeyEvent.KEYCODE_E,
                 metaState,
                 FAKE_KEYBOARD_DEVICE_ID,
@@ -2617,7 +2617,7 @@ class KeyMapAlgorithmTest {
                 0,
             )
 
-            verify(detectKeyMapsUseCase, times(1)).imitateButtonPress(
+            verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
                 KeyEvent.KEYCODE_E,
                 0,
                 FAKE_KEYBOARD_DEVICE_ID,
@@ -2672,7 +2672,7 @@ class KeyMapAlgorithmTest {
                 metaState,
             )
 
-            verify(detectKeyMapsUseCase, times(1)).imitateButtonPress(
+            verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
                 KeyEvent.KEYCODE_E,
                 metaState,
                 FAKE_KEYBOARD_DEVICE_ID,
@@ -2680,7 +2680,7 @@ class KeyMapAlgorithmTest {
                 scanCode = 33,
             )
 
-            verify(detectKeyMapsUseCase, times(1)).imitateButtonPress(
+            verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
                 KeyEvent.KEYCODE_E,
                 metaState,
                 FAKE_KEYBOARD_DEVICE_ID,
@@ -2874,7 +2874,7 @@ class KeyMapAlgorithmTest {
             inputKeyEvent(KeyEvent.KEYCODE_C, KeyEvent.ACTION_UP)
 
             inOrder(detectKeyMapsUseCase) {
-                verify(detectKeyMapsUseCase, times(1)).imitateButtonPress(
+                verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
                     any(),
                     metaState = eq(KeyEvent.META_ALT_LEFT_ON + KeyEvent.META_ALT_ON + KeyEvent.META_SHIFT_LEFT_ON + KeyEvent.META_SHIFT_ON),
                     any(),
@@ -2883,7 +2883,7 @@ class KeyMapAlgorithmTest {
                     any(),
                 )
 
-                verify(detectKeyMapsUseCase, times(1)).imitateButtonPress(
+                verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
                     any(),
                     metaState = eq(0),
                     any(),
@@ -3262,12 +3262,12 @@ class KeyMapAlgorithmTest {
 
             // then
             verify(detectKeyMapsUseCase, times(1))
-                .imitateButtonPress(
+                .imitateKeyEvent(
                     keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
                     action = KeyEvent.ACTION_DOWN
                 )
             verify(detectKeyMapsUseCase, times(1))
-                .imitateButtonPress(
+                .imitateKeyEvent(
                     keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
                     action = KeyEvent.ACTION_UP
                 )
@@ -3294,7 +3294,7 @@ class KeyMapAlgorithmTest {
             // then
             verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
             verify(performActionsUseCase, never()).perform(TEST_ACTION_2.data)
-            verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+            verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                 any(),
                 any(),
                 any(),
@@ -3327,7 +3327,7 @@ class KeyMapAlgorithmTest {
             verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
 
             // wait for the double press to try and imitate the key.
-            verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+            verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                 any(),
                 any(),
                 any(),
@@ -3356,7 +3356,7 @@ class KeyMapAlgorithmTest {
             mockTriggerKeyInput(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
 
             // then
-            verify(detectKeyMapsUseCase, never()).imitateButtonPress(
+            verify(detectKeyMapsUseCase, never()).imitateKeyEvent(
                 any(),
                 any(),
                 any(),
@@ -3384,13 +3384,13 @@ class KeyMapAlgorithmTest {
         )
 
         verify(detectKeyMapsUseCase, times(1))
-            .imitateButtonPress(
+            .imitateKeyEvent(
                 keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
                 action = KeyEvent.ACTION_DOWN
             )
 
         verify(detectKeyMapsUseCase, times(1))
-            .imitateButtonPress(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN, action = KeyEvent.ACTION_UP)
+            .imitateKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN, action = KeyEvent.ACTION_UP)
     }
 
     @Test

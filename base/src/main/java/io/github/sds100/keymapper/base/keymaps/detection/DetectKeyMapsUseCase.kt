@@ -184,7 +184,7 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
         vibrator.vibrate(duration)
     }
 
-    override fun imitateButtonPress(
+    override fun imitateKeyEvent(
         keyCode: Int,
         metaState: Int,
         deviceId: Int,
@@ -224,6 +224,15 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
             }
         }
     }
+
+    override fun imitateEvdevEvent(devicePath: String, type: Int, code: Int, value: Int) {
+        if (inputEventHub.isSystemBridgeConnected()) {
+            Timber.d("Imitate evdev event, device path: $devicePath, type: $type, code: $code, value: $value")
+            inputEventHub.injectEvdevEvent(devicePath, type, code, value)
+        } else {
+            Timber.w("Cannot imitate evdev event without system bridge connected. Device path: $devicePath, type: $type, code: $code, value: $value")
+        }
+    }
 }
 
 interface DetectKeyMapsUseCase {
@@ -244,12 +253,19 @@ interface DetectKeyMapsUseCase {
 
     val currentTime: Long
 
-    fun imitateButtonPress(
+    fun imitateKeyEvent(
         keyCode: Int,
         metaState: Int = 0,
         deviceId: Int = 0,
         action: Int,
         scanCode: Int = 0,
         source: Int = InputDevice.SOURCE_UNKNOWN,
+    )
+
+    fun imitateEvdevEvent(
+        devicePath: String,
+        type: Int,
+        code: Int,
+        value: Int,
     )
 }

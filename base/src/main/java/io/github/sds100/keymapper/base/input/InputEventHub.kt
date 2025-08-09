@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.sysbridge.IEvdevCallback
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnection
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeManager
+import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
 import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
@@ -190,6 +191,10 @@ class InputEventHubImpl @Inject constructor(
             }
         }
 
+        if (logInputEventsEnabled.value) {
+            Timber.d("Consumed: $consume")
+        }
+
         return consume
     }
 
@@ -318,24 +323,35 @@ class InputEventHubImpl @Inject constructor(
         }
     }
 
-//    override fun injectEvdevEvent(event: KMEvdevEvent): KMResult<Boolean> {
-//        val systemBridge = this.systemBridgeFlow
-//
-//        if (systemBridge == null) {
-//            return SystemBridgeError.Disconnected
-//        }
-//
-//        try {
-//            return systemBridge.writeEvdevEvent(
-//                event.deviceId,
-//                event.type,
-//                event.code,
-//                event.value
-//            ).success()
-//        } catch (e: RemoteException) {
-//            return KMError.Exception(e)
-//        }
-//    }
+    override fun injectEvdevEvent(
+        devicePath: String,
+        type: Int,
+        code: Int,
+        value: Int
+    ): KMResult<Boolean> {
+        val systemBridge = this.systemBridgeFlow.value
+
+        if (systemBridge == null) {
+            Timber.w("System bridge is not connected, cannot inject evdev event.")
+            return SystemBridgeError.Disconnected
+        }
+
+        try {
+            val result = systemBridge.writeEvdevEvent(
+                devicePath,
+                type,
+                code,
+                value
+            )
+
+            Timber.d("Injected evdev event: $result")
+
+            return Success(result)
+        } catch (e: RemoteException) {
+            Timber.e(e, "Failed to inject evdev event")
+            return KMError.Exception(e)
+        }
+    }
 
     override suspend fun injectKeyEvent(event: InjectKeyEventModel): KMResult<Boolean> {
         val systemBridge = this.systemBridgeFlow.value
@@ -421,8 +437,7 @@ interface InputEventHub {
      */
     fun injectKeyEventAsync(event: InjectKeyEventModel): KMResult<Unit>
 
-    // TODO make InjectEvdevEventModel
-//    fun injectEvdevEvent(event: KMEvdevEvent): KMResult<Boolean>
+    fun injectEvdevEvent(devicePath: String, type: Int, code: Int, value: Int): KMResult<Boolean>
 
     /**
      * Send an input event to the connected clients.

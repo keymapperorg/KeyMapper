@@ -635,6 +635,7 @@ class KeyMapAlgorithm(
                 val event = EvdevEventAlgo(
                     keyCode = inputEvent.androidCode,
                     clickType = null,
+                    devicePath = inputEvent.device.path,
                     device = EvdevDeviceInfo(
                         name = inputEvent.device.name,
                         bus = inputEvent.device.bus,
@@ -947,7 +948,7 @@ class KeyMapAlgorithm(
             consumeEvent = true
             keyCodesToImitateUpAction.add(event.keyCode)
 
-            useCase.imitateButtonPress(
+            useCase.imitateKeyEvent(
                 keyCode = event.keyCode,
                 metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
                 deviceId = event.deviceId,
@@ -1280,10 +1281,7 @@ class KeyMapAlgorithm(
 
                 // short press
                 if (keyAwaitingRelease &&
-                    trigger.matchingEventAtIndex(
-                        event.withShortPress,
-                        keyIndex,
-                    )
+                    trigger.matchingEventAtIndex(event.withShortPress, keyIndex)
                 ) {
                     if (isSingleKeyTrigger) {
                         shortPressSingleKeyTriggerJustReleased = true
@@ -1295,8 +1293,7 @@ class KeyMapAlgorithm(
 
                     if (modifierKeyEventActions) {
                         val actionKeys = triggerActions[triggerIndex]
-                        actionKeys.forEach { actionKey ->
-
+                        for (actionKey in actionKeys) {
                             actionMap[actionKey]?.let { action ->
                                 if (action.data is ActionData.InputKeyEvent && isModifierKey(action.data.keyCode)) {
                                     val actionMetaState =
@@ -1441,18 +1438,32 @@ class KeyMapAlgorithm(
                     }
 
                     if (event is KeyEventAlgo) {
-                        useCase.imitateButtonPress(
+                        useCase.imitateKeyEvent(
                             event.keyCode,
                             action = KeyEvent.ACTION_DOWN,
                             scanCode = event.scanCode,
                             source = event.source,
                         )
 
-                        useCase.imitateButtonPress(
+                        useCase.imitateKeyEvent(
                             event.keyCode,
                             action = KeyEvent.ACTION_UP,
                             scanCode = event.scanCode,
                             source = event.source,
+                        )
+                    } else if (event is EvdevEventAlgo) {
+                        useCase.imitateEvdevEvent(
+                            devicePath = event.devicePath,
+                            KMEvdevEvent.TYPE_KEY_EVENT,
+                            event.scanCode,
+                            KMEvdevEvent.VALUE_DOWN
+                        )
+
+                        useCase.imitateEvdevEvent(
+                            devicePath = event.devicePath,
+                            KMEvdevEvent.TYPE_KEY_EVENT,
+                            event.scanCode,
+                            KMEvdevEvent.VALUE_UP
                         )
                     }
                 }
@@ -1462,38 +1473,61 @@ class KeyMapAlgorithm(
             detectedSequenceTriggerIndexes.isEmpty() &&
             detectedParallelTriggerIndexes.isEmpty() &&
             !shortPressSingleKeyTriggerJustReleased &&
-            !mappedToDoublePress &&
-            event is KeyEventAlgo
+            !mappedToDoublePress
         ) {
-            if (imitateUpKeyEvent) {
-                useCase.imitateButtonPress(
-                    keyCode = event.keyCode,
-                    metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
-                    deviceId = event.deviceId,
-                    action = KeyEvent.ACTION_UP,
-                    scanCode = event.scanCode,
-                    source = event.source,
-                )
-            } else {
-                useCase.imitateButtonPress(
-                    keyCode = event.keyCode,
-                    metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
-                    deviceId = event.deviceId,
-                    action = KeyEvent.ACTION_DOWN,
-                    scanCode = event.scanCode,
-                    source = event.source,
-                )
-                useCase.imitateButtonPress(
-                    keyCode = event.keyCode,
-                    metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
-                    deviceId = event.deviceId,
-                    action = KeyEvent.ACTION_UP,
-                    scanCode = event.scanCode,
-                    source = event.source,
-                )
+            if (event is KeyEventAlgo) {
+                if (imitateUpKeyEvent) {
+                    useCase.imitateKeyEvent(
+                        keyCode = event.keyCode,
+                        metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
+                        deviceId = event.deviceId,
+                        action = KeyEvent.ACTION_UP,
+                        scanCode = event.scanCode,
+                        source = event.source,
+                    )
+                } else {
+                    useCase.imitateKeyEvent(
+                        keyCode = event.keyCode,
+                        metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
+                        deviceId = event.deviceId,
+                        action = KeyEvent.ACTION_DOWN,
+                        scanCode = event.scanCode,
+                        source = event.source,
+                    )
+                    useCase.imitateKeyEvent(
+                        keyCode = event.keyCode,
+                        metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
+                        deviceId = event.deviceId,
+                        action = KeyEvent.ACTION_UP,
+                        scanCode = event.scanCode,
+                        source = event.source,
+                    )
+                }
+                keyCodesToImitateUpAction.remove(event.keyCode)
+            } else if (event is EvdevEventAlgo) {
+                if (imitateUpKeyEvent) {
+                    useCase.imitateEvdevEvent(
+                        devicePath = event.devicePath,
+                        type = KMEvdevEvent.TYPE_KEY_EVENT,
+                        code = event.scanCode,
+                        value = KMEvdevEvent.VALUE_UP
+                    )
+                } else {
+                    useCase.imitateEvdevEvent(
+                        devicePath = event.devicePath,
+                        type = KMEvdevEvent.TYPE_KEY_EVENT,
+                        code = event.scanCode,
+                        value = KMEvdevEvent.VALUE_DOWN
+                    )
+                    useCase.imitateEvdevEvent(
+                        devicePath = event.devicePath,
+                        type = KMEvdevEvent.TYPE_KEY_EVENT,
+                        code = event.scanCode,
+                        value = KMEvdevEvent.VALUE_UP
+                    )
+                }
+                keyCodesToImitateUpAction.remove(event.keyCode)
             }
-
-            keyCodesToImitateUpAction.remove(event.keyCode)
         }
 
         return consumeEvent
@@ -1627,7 +1661,7 @@ class KeyMapAlgorithm(
         delay(400)
 
         while (keyCodesToImitateUpAction.contains(keyCode)) {
-            useCase.imitateButtonPress(
+            useCase.imitateKeyEvent(
                 keyCode = keyCode,
                 metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
                 deviceId = deviceId,
@@ -1830,6 +1864,7 @@ class KeyMapAlgorithm(
     }
 
     private data class EvdevEventAlgo(
+        val devicePath: String,
         val device: EvdevDeviceInfo,
         val scanCode: Int,
         val keyCode: Int,
