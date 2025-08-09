@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintToKe
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -34,7 +35,7 @@ class RoomKeyMapRepository @Inject constructor(
         private const val MAX_KEY_MAP_BATCH_SIZE = 200
     }
 
-    override val keyMapList = keyMapDao.getAll()
+    override val keyMapList: StateFlow<State<List<KeyMapEntity>>> = keyMapDao.getAll()
         .map { State.Data(it) }
         .flowOn(dispatchers.io())
         .stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)

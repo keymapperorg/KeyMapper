@@ -17,7 +17,6 @@ import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
-import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,6 +40,8 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
     private val showDeviceDescriptors: Flow<Boolean> =
         preferenceRepository.get(Keys.showDeviceDescriptors).map { it == true }
 
+    private val delegate: ConfigTriggerDelegate = ConfigTriggerDelegate()
+
     override fun setEnabled(enabled: Boolean) {
         state.update { it.copy(isEnabled = enabled) }
     }
@@ -61,104 +62,16 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
             }
 
         updateTrigger { trigger ->
-            val clickType = when (trigger.mode) {
-                is TriggerMode.Parallel -> trigger.mode.clickType
-                TriggerMode.Sequence -> ClickType.SHORT_PRESS
-                TriggerMode.Undefined -> ClickType.SHORT_PRESS
-            }
-
-            // Check whether the trigger already contains the key because if so
-            // then it must be converted to a sequence trigger.
-            val containsKey = trigger.keys
-                .filterIsInstance<FloatingButtonKey>()
-                .any { keyToCompare -> keyToCompare.buttonUid == buttonUid }
-
-            val triggerKey = FloatingButtonKey(
-                buttonUid = buttonUid,
-                button = button,
-                clickType = clickType,
-            )
-
-            var newKeys = trigger.keys.plus(triggerKey)
-
-            val newMode = when {
-                trigger.mode != TriggerMode.Sequence && containsKey -> TriggerMode.Sequence
-                newKeys.size <= 1 -> TriggerMode.Undefined
-
-                /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
-                because this is what most users are expecting when they make a trigger with multiple keys */
-                newKeys.size == 2 && !containsKey -> {
-                    newKeys = newKeys.map { it.setClickType(triggerKey.clickType) }
-                    TriggerMode.Parallel(triggerKey.clickType)
-                }
-
-                else -> trigger.mode
-            }
-
-            trigger.copy(keys = newKeys, mode = newMode)
+            delegate.addFloatingButtonTriggerKey(trigger, buttonUid, button)
         }
     }
 
     override fun addAssistantTriggerKey(type: AssistantTriggerType) = updateTrigger { trigger ->
-        val clickType = when (trigger.mode) {
-            is TriggerMode.Parallel -> trigger.mode.clickType
-            TriggerMode.Sequence -> ClickType.SHORT_PRESS
-            TriggerMode.Undefined -> ClickType.SHORT_PRESS
-        }
-
-        // Check whether the trigger already contains the key because if so
-        // then it must be converted to a sequence trigger.
-        val containsAssistantKey = trigger.keys.any { it is AssistantTriggerKey }
-
-        val triggerKey = AssistantTriggerKey(type = type, clickType = clickType)
-
-        val newKeys = trigger.keys.plus(triggerKey).map { it.setClickType(ClickType.SHORT_PRESS) }
-
-        val newMode = when {
-            trigger.mode != TriggerMode.Sequence && containsAssistantKey -> TriggerMode.Sequence
-            newKeys.size <= 1 -> TriggerMode.Undefined
-
-            /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
-            because this is what most users are expecting when they make a trigger with multiple keys.
-
-            It must be a short press because long pressing the assistant key isn't supported.
-             */
-            !containsAssistantKey -> TriggerMode.Parallel(ClickType.SHORT_PRESS)
-            else -> trigger.mode
-        }
-
-        trigger.copy(keys = newKeys, mode = newMode)
+        delegate.addAssistantTriggerKey(trigger, type)
     }
 
     override fun addFingerprintGesture(type: FingerprintGestureType) = updateTrigger { trigger ->
-        val clickType = when (trigger.mode) {
-            is TriggerMode.Parallel -> trigger.mode.clickType
-            TriggerMode.Sequence -> ClickType.SHORT_PRESS
-            TriggerMode.Undefined -> ClickType.SHORT_PRESS
-        }
-
-        // Check whether the trigger already contains the key because if so
-        // then it must be converted to a sequence trigger.
-        val containsFingerprintGesture = trigger.keys.any { it is FingerprintTriggerKey }
-
-        val triggerKey = FingerprintTriggerKey(type = type, clickType = clickType)
-
-        val newKeys = trigger.keys.plus(triggerKey).map { it.setClickType(ClickType.SHORT_PRESS) }
-
-        val newMode = when {
-            trigger.mode != TriggerMode.Sequence && containsFingerprintGesture -> TriggerMode.Sequence
-            newKeys.size <= 1 -> TriggerMode.Undefined
-
-            /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
-            because this is what most users are expecting when they make a trigger with multiple keys.
-
-            It must be a short press because long pressing the assistant key isn't supported.
-             */
-            !containsFingerprintGesture -> TriggerMode.Parallel(ClickType.SHORT_PRESS)
-            else -> trigger.mode
-        }
-
-        trigger.copy(keys = newKeys, mode = newMode)
+        delegate.addFingerprintGesture(trigger, type)
     }
 
     override fun addKeyEventTriggerKey(
@@ -167,52 +80,13 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
         device: KeyEventTriggerDevice,
         requiresIme: Boolean,
     ) = updateTrigger { trigger ->
-        val clickType = when (trigger.mode) {
-            is TriggerMode.Parallel -> trigger.mode.clickType
-            TriggerMode.Sequence -> ClickType.SHORT_PRESS
-            TriggerMode.Undefined -> ClickType.SHORT_PRESS
-        }
-
-        // Check whether the trigger already contains the key because if so
-        // then it must be converted to a sequence trigger.
-        val containsKey = trigger.keys
-            .filterIsInstance<KeyEventTriggerKey>()
-            .any { keyToCompare ->
-                keyToCompare.keyCode == keyCode && keyToCompare.device.isSameDevice(device)
-            }
-
-        var consumeKeyEvent = true
-
-        // Issue #753
-        if (KeyEventUtils.isModifierKey(keyCode)) {
-            consumeKeyEvent = false
-        }
-
-        val triggerKey = KeyEventTriggerKey(
-            keyCode = keyCode,
-            device = device,
-            clickType = clickType,
-            consumeEvent = consumeKeyEvent,
-            requiresIme = requiresIme,
+        delegate.addKeyEventTriggerKey(
+            trigger,
+            keyCode,
+            scanCode,
+            device,
+            requiresIme,
         )
-
-        var newKeys = trigger.keys.filter { it !is EvdevTriggerKey }.plus(triggerKey)
-
-        val newMode = when {
-            trigger.mode != TriggerMode.Sequence && containsKey -> TriggerMode.Sequence
-            newKeys.size <= 1 -> TriggerMode.Undefined
-
-            /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
-            because this is what most users are expecting when they make a trigger with multiple keys */
-            newKeys.size == 2 && !containsKey -> {
-                newKeys = newKeys.map { it.setClickType(triggerKey.clickType) }
-                TriggerMode.Parallel(triggerKey.clickType)
-            }
-
-            else -> trigger.mode
-        }
-
-        trigger.copy(keys = newKeys, mode = newMode)
     }
 
     override fun addEvdevTriggerKey(
@@ -220,66 +94,20 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
         scanCode: Int,
         device: EvdevDeviceInfo,
     ) = updateTrigger { trigger ->
-        val clickType = when (trigger.mode) {
-            is TriggerMode.Parallel -> trigger.mode.clickType
-            TriggerMode.Sequence -> ClickType.SHORT_PRESS
-            TriggerMode.Undefined -> ClickType.SHORT_PRESS
-        }
-
-        // Check whether the trigger already contains the key because if so
-        // then it must be converted to a sequence trigger.
-        val containsKey = trigger.keys
-            .filterIsInstance<EvdevTriggerKey>()
-            .any { keyToCompare ->
-                keyToCompare.keyCode == keyCode && keyToCompare.device == device
-            }
-
-        val triggerKey = EvdevTriggerKey(
-            keyCode = keyCode,
-            scanCode = scanCode,
-            device = device,
-            clickType = clickType,
-            consumeEvent = true,
+        delegate.addEvdevTriggerKey(
+            trigger,
+            keyCode,
+            scanCode,
+            device,
         )
-
-        var newKeys = trigger.keys.filter { it !is KeyEventTriggerKey }.plus(triggerKey)
-
-        val newMode = when {
-            trigger.mode != TriggerMode.Sequence && containsKey -> TriggerMode.Sequence
-            newKeys.size <= 1 -> TriggerMode.Undefined
-
-            /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
-            because this is what most users are expecting when they make a trigger with multiple keys */
-            newKeys.size == 2 && !containsKey -> {
-                newKeys = newKeys.map { it.setClickType(triggerKey.clickType) }
-                TriggerMode.Parallel(triggerKey.clickType)
-            }
-
-            else -> trigger.mode
-        }
-
-        trigger.copy(keys = newKeys, mode = newMode)
     }
 
     override fun removeTriggerKey(uid: String) = updateTrigger { trigger ->
-        val newKeys = trigger.keys.toMutableList().apply {
-            removeAll { it.uid == uid }
-        }
-
-        val newMode = when {
-            newKeys.size <= 1 -> TriggerMode.Undefined
-            else -> trigger.mode
-        }
-
-        trigger.copy(keys = newKeys, mode = newMode)
+        delegate.removeTriggerKey(trigger, uid)
     }
 
     override fun moveTriggerKey(fromIndex: Int, toIndex: Int) = updateTrigger { trigger ->
-        trigger.copy(
-            keys = trigger.keys.toMutableList().apply {
-                add(toIndex, removeAt(fromIndex))
-            },
-        )
+        delegate.moveTriggerKey(trigger, fromIndex, toIndex)
     }
 
     override fun getTriggerKey(uid: String): TriggerKey? {
@@ -287,233 +115,111 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
     }
 
     override fun setParallelTriggerMode() = updateTrigger { trigger ->
-        if (trigger.mode is TriggerMode.Parallel) {
-            return@updateTrigger trigger
-        }
-
-        // undefined mode only allowed if one or no keys
-        if (trigger.keys.size <= 1) {
-            return@updateTrigger trigger.copy(mode = TriggerMode.Undefined)
-        }
-
-        val oldKeys = trigger.keys
-        var newKeys = oldKeys
-
-        // set all the keys to a short press if coming from a non-parallel trigger
-        // because they must all be the same click type and can't all be double pressed
-        newKeys = newKeys
-            .map { key -> key.setClickType(clickType = ClickType.SHORT_PRESS) }
-            // remove duplicates of keys that have the same keycode and device id
-            .distinctBy { key ->
-                when (key) {
-                    // You can't mix assistant trigger types in a parallel trigger because there is no notion of a "down" key event, which means they can't be pressed at the same time
-                    is AssistantTriggerKey, is FingerprintTriggerKey -> 0
-                    is KeyEventTriggerKey -> Pair(
-                        key.keyCode,
-                        key.device,
-                    )
-
-                    is FloatingButtonKey -> key.buttonUid
-                    is EvdevTriggerKey -> Pair(
-                        key.keyCode,
-                        key.device,
-                    )
-                }
-            }
-
-        val newMode = if (newKeys.size <= 1) {
-            TriggerMode.Undefined
-        } else {
-            TriggerMode.Parallel(newKeys[0].clickType)
-        }
-
-        trigger.copy(keys = newKeys, mode = newMode)
+        delegate.setParallelTriggerMode(trigger)
     }
 
     override fun setSequenceTriggerMode() = updateTrigger { trigger ->
-        if (trigger.mode == TriggerMode.Sequence) return@updateTrigger trigger
-        // undefined mode only allowed if one or no keys
-        if (trigger.keys.size <= 1) {
-            return@updateTrigger trigger.copy(mode = TriggerMode.Undefined)
-        }
-
-        trigger.copy(mode = TriggerMode.Sequence)
+        delegate.setSequenceTriggerMode(trigger)
     }
 
     override fun setUndefinedTriggerMode() = updateTrigger { trigger ->
-        if (trigger.mode == TriggerMode.Undefined) return@updateTrigger trigger
-
-        // undefined mode only allowed if one or no keys
-        if (trigger.keys.size > 1) {
-            return@updateTrigger trigger
-        }
-
-        trigger.copy(mode = TriggerMode.Undefined)
+        delegate.setUndefinedTriggerMode(trigger)
     }
 
     override fun setTriggerShortPress() {
-        updateTrigger { oldTrigger ->
-            if (oldTrigger.mode == TriggerMode.Sequence) {
-                return@updateTrigger oldTrigger
-            }
-
-            val newKeys = oldTrigger.keys.map { it.setClickType(clickType = ClickType.SHORT_PRESS) }
-            val newMode = if (newKeys.size <= 1) {
-                TriggerMode.Undefined
-            } else {
-                TriggerMode.Parallel(ClickType.SHORT_PRESS)
-            }
-            oldTrigger.copy(keys = newKeys, mode = newMode)
+        updateTrigger { trigger ->
+            delegate.setTriggerShortPress(trigger)
         }
     }
 
     override fun setTriggerLongPress() {
         updateTrigger { trigger ->
-            if (trigger.mode == TriggerMode.Sequence) {
-                return@updateTrigger trigger
-            }
-
-            // You can't set the trigger to a long press if it contains a key
-            // that isn't detected with key codes. This is because there aren't
-            // separate key events for the up and down press that can be timed.
-            if (trigger.keys.any { !it.allowedLongPress }) {
-                return@updateTrigger trigger
-            }
-
-            val newKeys = trigger.keys.map { it.setClickType(clickType = ClickType.LONG_PRESS) }
-            val newMode = if (newKeys.size <= 1) {
-                TriggerMode.Undefined
-            } else {
-                TriggerMode.Parallel(ClickType.LONG_PRESS)
-            }
-
-            trigger.copy(keys = newKeys, mode = newMode)
+            delegate.setTriggerLongPress(trigger)
         }
     }
 
     override fun setTriggerDoublePress() {
         updateTrigger { trigger ->
-            if (trigger.mode != TriggerMode.Undefined) {
-                return@updateTrigger trigger
-            }
-
-            if (trigger.keys.any { !it.allowedDoublePress }) {
-                return@updateTrigger trigger
-            }
-
-            val newKeys = trigger.keys.map { it.setClickType(clickType = ClickType.DOUBLE_PRESS) }
-            val newMode = TriggerMode.Undefined
-
-            trigger.copy(keys = newKeys, mode = newMode)
+            delegate.setTriggerDoublePress(trigger)
         }
     }
 
     override fun setTriggerKeyClickType(keyUid: String, clickType: ClickType) {
-        updateTriggerKey(keyUid) { key ->
-            key.setClickType(clickType = clickType)
+        updateTrigger { trigger ->
+            delegate.setTriggerKeyClickType(trigger, keyUid, clickType)
         }
     }
 
     override fun setTriggerKeyDevice(keyUid: String, device: KeyEventTriggerDevice) {
-        updateTriggerKey(keyUid) { key ->
-            if (key !is KeyEventTriggerKey) {
-                throw IllegalArgumentException("You can not set the device for non KeyEventTriggerKeys.")
-            }
-
-            key.copy(device = device)
+        updateTrigger { trigger ->
+            delegate.setTriggerKeyDevice(trigger, keyUid, device)
         }
     }
 
     override fun setTriggerKeyConsumeKeyEvent(keyUid: String, consumeKeyEvent: Boolean) {
-        updateTriggerKey(keyUid) { key ->
-            when (key) {
-                is KeyEventTriggerKey -> {
-                    key.copy(consumeEvent = consumeKeyEvent)
-                }
-
-                is EvdevTriggerKey -> {
-                    key.copy(consumeEvent = consumeKeyEvent)
-                }
-
-                else -> {
-                    key
-                }
-            }
+        updateTrigger { trigger ->
+            delegate.setTriggerKeyConsumeKeyEvent(trigger, keyUid, consumeKeyEvent)
         }
     }
 
     override fun setAssistantTriggerKeyType(keyUid: String, type: AssistantTriggerType) {
-        updateTriggerKey(keyUid) { key ->
-            if (key is AssistantTriggerKey) {
-                key.copy(type = type)
-            } else {
-                key
-            }
+        updateTrigger { trigger ->
+            delegate.setAssistantTriggerKeyType(trigger, keyUid, type)
         }
     }
 
     override fun setFingerprintGestureType(keyUid: String, type: FingerprintGestureType) {
-        updateTriggerKey(keyUid) { key ->
-            if (key is FingerprintTriggerKey) {
-                key.copy(type = type)
-            } else {
-                key
-            }
+        updateTrigger { trigger ->
+            delegate.setFingerprintGestureType(trigger, keyUid, type)
         }
     }
 
-    override fun setVibrateEnabled(enabled: Boolean) = updateTrigger { it.copy(vibrate = enabled) }
+    override fun setVibrateEnabled(enabled: Boolean) = updateTrigger { trigger ->
+        delegate.setVibrateEnabled(trigger, enabled)
+    }
 
     override fun setVibrationDuration(duration: Int) = updateTrigger { trigger ->
-        if (duration == defaultVibrateDuration.value) {
-            trigger.copy(vibrateDuration = null)
-        } else {
-            trigger.copy(vibrateDuration = duration)
-        }
+        delegate.setVibrationDuration(trigger, duration, defaultVibrateDuration.value)
     }
 
     override fun setLongPressDelay(delay: Int) = updateTrigger { trigger ->
-        if (delay == defaultLongPressDelay.value) {
-            trigger.copy(longPressDelay = null)
-        } else {
-            trigger.copy(longPressDelay = delay)
-        }
+        delegate.setLongPressDelay(trigger, delay, defaultLongPressDelay.value)
     }
 
     override fun setDoublePressDelay(delay: Int) {
         updateTrigger { trigger ->
-            if (delay == defaultDoublePressDelay.value) {
-                trigger.copy(doublePressDelay = null)
-            } else {
-                trigger.copy(doublePressDelay = delay)
-            }
+            delegate.setDoublePressDelay(trigger, delay, defaultDoublePressDelay.value)
         }
     }
 
     override fun setSequenceTriggerTimeout(delay: Int) {
         updateTrigger { trigger ->
-            if (delay == defaultSequenceTriggerTimeout.value) {
-                trigger.copy(sequenceTriggerTimeout = null)
-            } else {
-                trigger.copy(sequenceTriggerTimeout = delay)
-            }
+            delegate.setSequenceTriggerTimeout(trigger, delay, defaultSequenceTriggerTimeout.value)
         }
     }
 
     override fun setLongPressDoubleVibrationEnabled(enabled: Boolean) {
-        updateTrigger { it.copy(longPressDoubleVibration = enabled) }
+        updateTrigger { trigger ->
+            delegate.setLongPressDoubleVibrationEnabled(trigger, enabled)
+        }
     }
 
     override fun setTriggerWhenScreenOff(enabled: Boolean) {
-        updateTrigger { it.copy(screenOffTrigger = enabled) }
+        updateTrigger { trigger ->
+            delegate.setTriggerWhenScreenOff(trigger, enabled)
+        }
     }
 
     override fun setTriggerFromOtherAppsEnabled(enabled: Boolean) {
-        updateTrigger { it.copy(triggerFromOtherApps = enabled) }
+        updateTrigger { trigger ->
+            delegate.setTriggerFromOtherAppsEnabled(trigger, enabled)
+        }
     }
 
     override fun setShowToastEnabled(enabled: Boolean) {
-        updateTrigger { it.copy(showToast = enabled) }
+        updateTrigger { trigger ->
+            delegate.setShowToastEnabled(trigger, enabled)
+        }
     }
 
     override fun getAvailableTriggerKeyDevices(): List<KeyEventTriggerDevice> {
@@ -554,21 +260,6 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
             keyMap.copy(trigger = newTrigger)
         }
     }
-
-    private fun updateTriggerKey(uid: String, block: (key: TriggerKey) -> TriggerKey) {
-        updateTrigger { oldTrigger ->
-            val newKeys = oldTrigger.keys.map {
-                if (it.uid == uid) {
-                    block.invoke(it)
-                } else {
-                    it
-                }
-            }
-
-            oldTrigger.copy(keys = newKeys)
-        }
-    }
-
 }
 
 interface ConfigTriggerUseCase : GetDefaultKeyMapOptionsUseCase {
