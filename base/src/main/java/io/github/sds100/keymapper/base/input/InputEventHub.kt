@@ -9,7 +9,6 @@ import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
-import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.IEvdevCallback
@@ -353,12 +352,12 @@ class InputEventHubImpl @Inject constructor(
         }
     }
 
-    override suspend fun injectKeyEvent(event: InjectKeyEventModel): KMResult<Boolean> {
+    override suspend fun injectKeyEvent(event: InjectKeyEventModel): KMResult<Unit> {
         val systemBridge = this.systemBridgeFlow.value
 
         if (systemBridge == null) {
             imeInputEventInjector.inputKeyEvent(event)
-            return Success(true)
+            return Success(Unit)
         } else {
             try {
                 val androidKeyEvent = event.toAndroidKeyEvent(flags = KeyEvent.FLAG_FROM_SYSTEM)
@@ -367,14 +366,16 @@ class InputEventHubImpl @Inject constructor(
                     Timber.d("Injecting key event $androidKeyEvent with system bridge")
                 }
 
-                return withContext(Dispatchers.IO) {
+                withContext(Dispatchers.IO) {
                     // All injected events have their device id set to -1 (VIRTUAL_KEYBOARD_ID)
                     // in InputDispatcher.cpp injectInputEvent.
                     systemBridge.injectInputEvent(
                         androidKeyEvent,
                         INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH
-                    ).success()
+                    )
                 }
+
+                return Success(Unit)
             } catch (e: RemoteException) {
                 return KMError.Exception(e)
             }
@@ -428,7 +429,7 @@ interface InputEventHub {
      *
      * Must be suspend so injecting to the systembridge can happen on another thread.
      */
-    suspend fun injectKeyEvent(event: InjectKeyEventModel): KMResult<Boolean>
+    suspend fun injectKeyEvent(event: InjectKeyEventModel): KMResult<Unit>
 
     /**
      * Some callers don't care about the result from injecting and it isn't critical

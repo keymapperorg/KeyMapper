@@ -20,6 +20,7 @@ import io.github.sds100.keymapper.base.utils.parallelTrigger
 import io.github.sds100.keymapper.base.utils.sequenceTrigger
 import io.github.sds100.keymapper.base.utils.singleKeyTrigger
 import io.github.sds100.keymapper.base.utils.triggerKey
+import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.system.inputevents.InputEventUtils
@@ -32,7 +33,6 @@ import org.hamcrest.Matchers.contains
 import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.instanceOf
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -59,39 +59,6 @@ class ConfigKeyMapUseCaseTest {
     }
 
     @Test
-    fun `Any device can not be selected for evdev trigger key`() =
-        runTest(testDispatcher) {
-            val triggerKey = EvdevTriggerKey(
-                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
-                scanCode = 0,
-                deviceDescriptor = "keyboard0",
-                deviceName = "Keyboard",
-                clickType = ClickType.SHORT_PRESS,
-                consumeEvent = true
-            )
-
-            useCase.keyMap.value = State.Data(
-                KeyMap(
-                    trigger = sequenceTrigger(
-                        triggerKey,
-                        EvdevTriggerKey(
-                            keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
-                            scanCode = 0,
-                            deviceDescriptor = "keyboard0",
-                            deviceName = "Keyboard",
-                            clickType = ClickType.SHORT_PRESS,
-                            consumeEvent = true
-                        )
-                    )
-                )
-            )
-
-            assertThrows(IllegalArgumentException::class.java) {
-                useCase.setTriggerKeyDevice(triggerKey.uid, KeyEventTriggerDevice.Any)
-            }
-        }
-
-    @Test
     fun `Adding a non evdev key deletes all evdev keys in the trigger`() =
         runTest(testDispatcher) {
             useCase.keyMap.value = State.Data(
@@ -105,8 +72,12 @@ class ConfigKeyMapUseCaseTest {
                         EvdevTriggerKey(
                             keyCode = KeyEvent.KEYCODE_VOLUME_UP,
                             scanCode = 123,
-                            deviceDescriptor = "keyboard0",
-                            deviceName = "Keyboard 0",
+                            device = EvdevDeviceInfo(
+                                name = "Volume Keys",
+                                bus = 0,
+                                vendor = 1,
+                                product = 2
+                            )
                         ),
                         AssistantTriggerKey(
                             type = AssistantTriggerType.ANY,
@@ -115,8 +86,12 @@ class ConfigKeyMapUseCaseTest {
                         EvdevTriggerKey(
                             keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
                             scanCode = 100,
-                            deviceDescriptor = "gpio",
-                            deviceName = "GPIO",
+                            device = EvdevDeviceInfo(
+                                name = "Volume Keys",
+                                bus = 0,
+                                vendor = 1,
+                                product = 2
+                            )
                         ),
                     )
                 )
@@ -166,11 +141,16 @@ class ConfigKeyMapUseCaseTest {
                 )
             )
 
+            val evdevDevice = EvdevDeviceInfo(
+                name = "Volume Keys",
+                bus = 0,
+                vendor = 1,
+                product = 2
+            )
             useCase.addEvdevTriggerKey(
-                KeyEvent.KEYCODE_VOLUME_DOWN,
-                0,
-                "keyboard0",
-                "Keyboard"
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = 0,
+                device = evdevDevice
             )
 
             val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
@@ -179,7 +159,7 @@ class ConfigKeyMapUseCaseTest {
             assertThat(trigger.keys[1], instanceOf(AssistantTriggerKey::class.java))
             assertThat(trigger.keys[2], instanceOf(EvdevTriggerKey::class.java))
             assertThat(
-                (trigger.keys[2] as EvdevTriggerKey).deviceDescriptor, `is`("keyboard0")
+                (trigger.keys[2] as EvdevTriggerKey).device, `is`(evdevDevice)
             )
         }
 
@@ -192,33 +172,27 @@ class ConfigKeyMapUseCaseTest {
                         EvdevTriggerKey(
                             keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
                             scanCode = 0,
-                            deviceDescriptor = "keyboard0",
-                            deviceName = "Keyboard",
-                            clickType = ClickType.SHORT_PRESS,
-                            consumeEvent = true
+                            device = EvdevDeviceInfo(
+                                name = "Volume Keys",
+                                bus = 0,
+                                vendor = 1,
+                                product = 2
+                            )
                         ),
                         EvdevTriggerKey(
                             keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
-                            scanCode = 0,
-                            deviceDescriptor = "keyboard0",
-                            deviceName = "Keyboard",
-                            clickType = ClickType.SHORT_PRESS,
-                            consumeEvent = true
+                            scanCode = 0, device = EvdevDeviceInfo(
+                                name = "Volume Keys",
+                                bus = 0,
+                                vendor = 1,
+                                product = 2
+                            )
                         )
                     )
                 )
             )
 
             useCase.setParallelTriggerMode()
-
-            EvdevTriggerKey(
-                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
-                scanCode = 0,
-                deviceDescriptor = "keyboard0",
-                deviceName = "Keyboard",
-                clickType = ClickType.SHORT_PRESS,
-                consumeEvent = true
-            )
 
             val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
             assertThat(trigger.keys, hasSize(1))
@@ -227,7 +201,6 @@ class ConfigKeyMapUseCaseTest {
                 (trigger.keys[0] as EvdevTriggerKey).keyCode,
                 `is`(KeyEvent.KEYCODE_VOLUME_DOWN)
             )
-            assertThat((trigger.keys[0] as EvdevTriggerKey).deviceDescriptor, `is`("keyboard0"))
         }
 
     @Test
@@ -238,15 +211,23 @@ class ConfigKeyMapUseCaseTest {
             useCase.addEvdevTriggerKey(
                 KeyEvent.KEYCODE_VOLUME_DOWN,
                 0,
-                "keyboard0",
-                "Keyboard"
+                device = EvdevDeviceInfo(
+                    name = "Volume Keys",
+                    bus = 0,
+                    vendor = 1,
+                    product = 2
+                )
             )
 
             useCase.addEvdevTriggerKey(
                 KeyEvent.KEYCODE_VOLUME_DOWN,
                 0,
-                "keyboard0",
-                "Keyboard"
+                device = EvdevDeviceInfo(
+                    name = "Volume Keys",
+                    bus = 0,
+                    vendor = 1,
+                    product = 2
+                )
             )
 
             val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
@@ -262,18 +243,22 @@ class ConfigKeyMapUseCaseTest {
                         EvdevTriggerKey(
                             keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
                             scanCode = 0,
-                            deviceDescriptor = "keyboard0",
-                            deviceName = "Keyboard",
-                            clickType = ClickType.SHORT_PRESS,
-                            consumeEvent = true
+                            device = EvdevDeviceInfo(
+                                name = "Volume Keys",
+                                bus = 0,
+                                vendor = 1,
+                                product = 2
+                            )
                         ),
                         EvdevTriggerKey(
                             keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
                             scanCode = 0,
-                            deviceDescriptor = "keyboard0",
-                            deviceName = "Keyboard",
-                            clickType = ClickType.SHORT_PRESS,
-                            consumeEvent = true
+                            device = EvdevDeviceInfo(
+                                name = "Volume Keys",
+                                bus = 0,
+                                vendor = 1,
+                                product = 2
+                            )
                         )
                     )
                 )
@@ -281,10 +266,14 @@ class ConfigKeyMapUseCaseTest {
 
             // Add a third key and it should still be a sequence trigger now
             useCase.addEvdevTriggerKey(
-                KeyEvent.KEYCODE_VOLUME_UP,
-                0,
-                "keyboard0",
-                "Keyboard"
+                keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+                scanCode = 0,
+                device = EvdevDeviceInfo(
+                    name = "Volume Keys",
+                    bus = 0,
+                    vendor = 1,
+                    product = 2
+                )
             )
 
             val trigger = useCase.keyMap.value.dataOrNull()!!.trigger
@@ -299,15 +288,23 @@ class ConfigKeyMapUseCaseTest {
             useCase.addEvdevTriggerKey(
                 KeyEvent.KEYCODE_VOLUME_DOWN,
                 0,
-                "keyboard0",
-                "Keyboard 0"
+                device = EvdevDeviceInfo(
+                    name = "Volume Keys",
+                    bus = 0,
+                    vendor = 1,
+                    product = 2
+                )
             )
 
             useCase.addEvdevTriggerKey(
                 KeyEvent.KEYCODE_VOLUME_DOWN,
                 0,
-                "keyboard1",
-                "Keyboard 1"
+                device = EvdevDeviceInfo(
+                    name = "Fake Controller",
+                    bus = 1,
+                    vendor = 2,
+                    product = 1
+                )
             )
 
             val trigger = useCase.keyMap.value.dataOrNull()!!.trigger

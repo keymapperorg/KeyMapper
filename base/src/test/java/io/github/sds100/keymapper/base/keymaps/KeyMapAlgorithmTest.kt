@@ -29,11 +29,14 @@ import io.github.sds100.keymapper.base.utils.parallelTrigger
 import io.github.sds100.keymapper.base.utils.sequenceTrigger
 import io.github.sds100.keymapper.base.utils.singleKeyTrigger
 import io.github.sds100.keymapper.base.utils.triggerKey
+import io.github.sds100.keymapper.common.models.EvdevDeviceHandle
+import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.system.camera.CameraLens
+import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import junitparams.JUnitParamsRunner
@@ -104,6 +107,20 @@ class KeyMapAlgorithmTest {
             isExternal = true,
             isGameController = true,
             sources = InputDevice.SOURCE_GAMEPAD
+        )
+
+        private val FAKE_CONTROLLER_EVDEV_DEVICE = EvdevDeviceInfo(
+            name = "Fake Controller",
+            bus = 1,
+            vendor = 2,
+            product = 1
+        )
+
+        private val FAKE_VOLUME_EVDEV_DEVICE = EvdevDeviceInfo(
+            name = "Volume Keys",
+            bus = 0,
+            vendor = 1,
+            product = 2
         )
 
         private const val FAKE_PACKAGE_NAME = "test_package"
@@ -211,24 +228,22 @@ class KeyMapAlgorithmTest {
                 EvdevTriggerKey(
                     keyCode = KeyEvent.KEYCODE_A,
                     scanCode = 900,
-                    deviceDescriptor = FAKE_CONTROLLER_INPUT_DEVICE.descriptor,
-                    deviceName = FAKE_CONTROLLER_INPUT_DEVICE.name,
+                    device = FAKE_CONTROLLER_EVDEV_DEVICE
                 ),
                 EvdevTriggerKey(
                     keyCode = KeyEvent.KEYCODE_B,
                     scanCode = 901,
-                    deviceDescriptor = FAKE_CONTROLLER_INPUT_DEVICE.descriptor,
-                    deviceName = FAKE_CONTROLLER_INPUT_DEVICE.name,
+                    device = FAKE_CONTROLLER_EVDEV_DEVICE
                 ),
             )
 
             loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
-            inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_DOWN, FAKE_CONTROLLER_INPUT_DEVICE)
-            inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_UP, FAKE_CONTROLLER_INPUT_DEVICE)
+            inputDownEvdevEvent(KeyEvent.KEYCODE_A, 900, FAKE_CONTROLLER_EVDEV_DEVICE)
+            inputUpEvdevEvent(KeyEvent.KEYCODE_A, 900, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-            inputKeyEvent(KeyEvent.KEYCODE_B, KeyEvent.ACTION_DOWN, FAKE_CONTROLLER_INPUT_DEVICE)
-            inputKeyEvent(KeyEvent.KEYCODE_B, KeyEvent.ACTION_UP, FAKE_CONTROLLER_INPUT_DEVICE)
+            inputDownEvdevEvent(KeyEvent.KEYCODE_B, 901, FAKE_CONTROLLER_EVDEV_DEVICE)
+            inputUpEvdevEvent(KeyEvent.KEYCODE_B, 901, FAKE_CONTROLLER_EVDEV_DEVICE)
 
             verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
         }
@@ -240,62 +255,40 @@ class KeyMapAlgorithmTest {
                 EvdevTriggerKey(
                     keyCode = KeyEvent.KEYCODE_A,
                     scanCode = 900,
-                    deviceDescriptor = FAKE_CONTROLLER_INPUT_DEVICE.descriptor,
-                    deviceName = FAKE_CONTROLLER_INPUT_DEVICE.name,
+                    device = FAKE_CONTROLLER_EVDEV_DEVICE
                 ),
                 EvdevTriggerKey(
                     keyCode = KeyEvent.KEYCODE_B,
                     scanCode = 901,
-                    deviceDescriptor = FAKE_CONTROLLER_INPUT_DEVICE.descriptor,
-                    deviceName = FAKE_CONTROLLER_INPUT_DEVICE.name,
+                    device = FAKE_CONTROLLER_EVDEV_DEVICE
                 ),
             )
 
             loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
-            inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_DOWN, FAKE_CONTROLLER_INPUT_DEVICE)
-            inputKeyEvent(KeyEvent.KEYCODE_B, KeyEvent.ACTION_DOWN, FAKE_CONTROLLER_INPUT_DEVICE)
+            inputDownEvdevEvent(KeyEvent.KEYCODE_A, 900, FAKE_CONTROLLER_EVDEV_DEVICE)
+            inputDownEvdevEvent(KeyEvent.KEYCODE_B, 901, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-            inputKeyEvent(KeyEvent.KEYCODE_A, KeyEvent.ACTION_UP, FAKE_CONTROLLER_INPUT_DEVICE)
-            inputKeyEvent(KeyEvent.KEYCODE_B, KeyEvent.ACTION_UP, FAKE_CONTROLLER_INPUT_DEVICE)
+            inputUpEvdevEvent(KeyEvent.KEYCODE_A, 900, FAKE_CONTROLLER_EVDEV_DEVICE)
+            inputUpEvdevEvent(KeyEvent.KEYCODE_B, 901, FAKE_CONTROLLER_EVDEV_DEVICE)
 
             verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
         }
 
     @Test
-    fun `Evdev trigger is not triggered from events from other internal devices`() =
+    fun `Evdev trigger is not triggered from events from other devices`() =
         runTest(testDispatcher) {
             val trigger = singleKeyTrigger(
                 EvdevTriggerKey(
                     keyCode = KeyEvent.KEYCODE_POWER,
                     scanCode = 900,
-                    deviceDescriptor = "gpio_keys",
-                    deviceName = "GPIO",
+                    device = FAKE_VOLUME_EVDEV_DEVICE
                 )
             )
 
             loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
-            mockEvdevKeyInput(trigger.keys[0], FAKE_INTERNAL_DEVICE)
-
-            verify(performActionsUseCase, never()).perform(TEST_ACTION.data)
-        }
-
-    @Test
-    fun `Evdev trigger is not triggered from events from other external devices`() =
-        runTest(testDispatcher) {
-            val trigger = singleKeyTrigger(
-                EvdevTriggerKey(
-                    keyCode = KeyEvent.KEYCODE_A,
-                    scanCode = 900,
-                    deviceDescriptor = FAKE_KEYBOARD_TRIGGER_KEY_DEVICE.descriptor,
-                    deviceName = FAKE_KEYBOARD_TRIGGER_KEY_DEVICE.name,
-                )
-            )
-
-            loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
-
-            mockEvdevKeyInput(trigger.keys[0], FAKE_CONTROLLER_INPUT_DEVICE)
+            mockEvdevKeyInput(trigger.keys[0], FAKE_CONTROLLER_EVDEV_DEVICE)
 
             verify(performActionsUseCase, never()).perform(TEST_ACTION.data)
         }
@@ -306,14 +299,13 @@ class KeyMapAlgorithmTest {
             EvdevTriggerKey(
                 keyCode = KeyEvent.KEYCODE_A,
                 scanCode = 900,
-                deviceDescriptor = FAKE_CONTROLLER_INPUT_DEVICE.descriptor,
-                deviceName = FAKE_CONTROLLER_INPUT_DEVICE.name,
+                device = FAKE_CONTROLLER_EVDEV_DEVICE
             )
         )
 
         loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
-        mockEvdevKeyInput(trigger.keys[0], FAKE_CONTROLLER_INPUT_DEVICE)
+        mockEvdevKeyInput(trigger.keys[0], FAKE_CONTROLLER_EVDEV_DEVICE)
 
         verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
     }
@@ -324,14 +316,13 @@ class KeyMapAlgorithmTest {
             EvdevTriggerKey(
                 keyCode = KeyEvent.KEYCODE_POWER,
                 scanCode = 900,
-                deviceDescriptor = FAKE_INTERNAL_DEVICE.descriptor,
-                deviceName = FAKE_INTERNAL_DEVICE.name,
+                device = FAKE_VOLUME_EVDEV_DEVICE
             )
         )
 
         loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
-        mockEvdevKeyInput(trigger.keys[0], FAKE_INTERNAL_DEVICE)
+        mockEvdevKeyInput(trigger.keys[0], FAKE_VOLUME_EVDEV_DEVICE)
 
         verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
     }
@@ -4303,7 +4294,7 @@ class KeyMapAlgorithmTest {
 
     private suspend fun mockTriggerKeyInput(key: TriggerKey, delay: Long? = null) {
         if (key !is KeyEventTriggerKey) {
-            return
+            throw IllegalArgumentException("Key must be a KeyEventTriggerKey")
         }
 
         val inputDevice = triggerKeyDeviceToInputDevice(key.device)
@@ -4339,11 +4330,11 @@ class KeyMapAlgorithmTest {
 
     private suspend fun mockEvdevKeyInput(
         key: TriggerKey,
-        inputDevice: InputDeviceInfo,
+        evdevDevice: EvdevDeviceInfo,
         delay: Long? = null,
     ) {
         if (key !is EvdevTriggerKey) {
-            return
+            throw IllegalArgumentException("Key must be an EvdevTriggerKey")
         }
 
         val pressDuration: Long = delay ?: when (key.clickType) {
@@ -4351,27 +4342,27 @@ class KeyMapAlgorithmTest {
             else -> 50L
         }
 
-        inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, inputDevice)
+        inputDownEvdevEvent(key.keyCode, key.scanCode, evdevDevice)
 
         when (key.clickType) {
             ClickType.SHORT_PRESS -> {
                 delay(pressDuration)
-                inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, inputDevice)
+                inputUpEvdevEvent(key.keyCode, key.scanCode, evdevDevice)
             }
 
             ClickType.LONG_PRESS -> {
                 delay(pressDuration)
-                inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, inputDevice)
+                inputUpEvdevEvent(key.keyCode, key.scanCode, evdevDevice)
             }
 
             ClickType.DOUBLE_PRESS -> {
                 delay(pressDuration)
-                inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, inputDevice)
+                inputUpEvdevEvent(key.keyCode, key.scanCode, evdevDevice)
                 delay(pressDuration)
 
-                inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, inputDevice)
+                inputDownEvdevEvent(key.keyCode, key.scanCode, evdevDevice)
                 delay(pressDuration)
-                inputKeyEvent(key.keyCode, KeyEvent.ACTION_UP, inputDevice)
+                inputUpEvdevEvent(key.keyCode, key.scanCode, evdevDevice)
             }
         }
     }
@@ -4421,6 +4412,49 @@ class KeyMapAlgorithmTest {
             repeatCount = repeatCount,
             source = 0,
             eventTime = System.currentTimeMillis()
+        ),
+    )
+
+    private fun inputDownEvdevEvent(
+        keyCode: Int,
+        scanCode: Int,
+        device: EvdevDeviceInfo
+    ): Boolean = controller.onInputEvent(
+        KMEvdevEvent(
+            type = KMEvdevEvent.TYPE_KEY_EVENT,
+            device = EvdevDeviceHandle(
+                path = "/dev/input${device.name}",
+                name = device.name,
+                bus = device.bus,
+                vendor = device.vendor,
+                product = device.product
+            ),
+            code = scanCode,
+            androidCode = keyCode,
+            value = KMEvdevEvent.VALUE_DOWN,
+            timeSec = testScope.currentTime,
+            timeUsec = 0
+        ),
+    )
+
+    private fun inputUpEvdevEvent(
+        keyCode: Int,
+        scanCode: Int,
+        device: EvdevDeviceInfo
+    ): Boolean = controller.onInputEvent(
+        KMEvdevEvent(
+            type = KMEvdevEvent.TYPE_KEY_EVENT,
+            device = EvdevDeviceHandle(
+                path = "/dev/input${device.name}",
+                name = device.name,
+                bus = device.bus,
+                vendor = device.vendor,
+                product = device.product
+            ), code = scanCode,
+            androidCode = keyCode,
+            value = KMEvdevEvent.VALUE_UP,
+            timeSec = testScope.currentTime,
+            timeUsec = 0
         ),
     )
 

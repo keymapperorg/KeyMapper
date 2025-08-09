@@ -3,16 +3,17 @@ package io.github.sds100.keymapper.base.actions
 import android.view.InputDevice
 import android.view.KeyEvent
 import io.github.sds100.keymapper.base.input.InjectKeyEventModel
+import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.base.system.devices.FakeDevicesAdapter
-import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.popup.ToastAdapter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -33,20 +34,21 @@ import org.mockito.kotlin.whenever
 class PerformActionsUseCaseTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val testScope = TestScope(testDispatcher)
 
     private lateinit var useCase: PerformActionsUseCaseImpl
-    private lateinit var mockImeInputEventInjector: ImeInputEventInjector
     private lateinit var fakeDevicesAdapter: FakeDevicesAdapter
     private lateinit var mockAccessibilityService: IAccessibilityService
     private lateinit var mockToastAdapter: ToastAdapter
+    private lateinit var mockInputEventHub: InputEventHub
 
     @Before
     fun init() {
-        mockImeInputEventInjector = mock()
         fakeDevicesAdapter = FakeDevicesAdapter()
         mockAccessibilityService = mock()
         mockToastAdapter = mock()
+        mockInputEventHub = mock {
+            on { runBlocking { injectKeyEvent(any()) } }.then { Success(Unit) }
+        }
 
         useCase = PerformActionsUseCaseImpl(
             service = mockAccessibilityService,
@@ -56,7 +58,7 @@ class PerformActionsUseCaseTest {
             shell = mock(),
             intentAdapter = mock(),
             getActionErrorUseCase = mock(),
-            keyMapperImeMessenger = mockImeInputEventInjector,
+            keyMapperImeMessenger = mock(),
             packageManagerAdapter = mock(),
             appShortcutAdapter = mock(),
             toastAdapter = mockToastAdapter,
@@ -77,7 +79,7 @@ class PerformActionsUseCaseTest {
             soundsManager = mock(),
             notificationReceiverAdapter = mock(),
             ringtoneAdapter = mock(),
-            inputEventHub = mock()
+            inputEventHub = mockInputEventHub
         )
     }
 
@@ -132,7 +134,6 @@ class PerformActionsUseCaseTest {
 
             // THEN
             val expectedDownEvent = InjectKeyEventModel(
-
                 keyCode = KeyEvent.KEYCODE_BUTTON_A,
                 action = KeyEvent.ACTION_DOWN,
                 metaState = 0,
@@ -144,8 +145,8 @@ class PerformActionsUseCaseTest {
 
             val expectedUpEvent = expectedDownEvent.copy(action = KeyEvent.ACTION_UP)
 
-            verify(mockImeInputEventInjector, times(1)).inputKeyEvent(expectedDownEvent)
-            verify(mockImeInputEventInjector, times(1)).inputKeyEvent(expectedUpEvent)
+            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedDownEvent)
+            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedUpEvent)
         }
 
     /**
@@ -179,8 +180,8 @@ class PerformActionsUseCaseTest {
 
             val expectedUpEvent = expectedDownEvent.copy(action = KeyEvent.ACTION_UP)
 
-            verify(mockImeInputEventInjector, times(1)).inputKeyEvent(expectedDownEvent)
-            verify(mockImeInputEventInjector, times(1)).inputKeyEvent(expectedUpEvent)
+            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedDownEvent)
+            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedUpEvent)
         }
 
     /**
@@ -236,8 +237,8 @@ class PerformActionsUseCaseTest {
 
             val expectedUpEvent = expectedDownEvent.copy(action = KeyEvent.ACTION_UP)
 
-            verify(mockImeInputEventInjector, times(1)).inputKeyEvent(expectedDownEvent)
-            verify(mockImeInputEventInjector, times(1)).inputKeyEvent(expectedUpEvent)
+            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedDownEvent)
+            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedUpEvent)
         }
 
     /**
@@ -301,8 +302,8 @@ class PerformActionsUseCaseTest {
 
             val expectedUpEvent = expectedDownEvent.copy(action = KeyEvent.ACTION_UP)
 
-            verify(mockImeInputEventInjector, times(1)).inputKeyEvent(expectedDownEvent)
-            verify(mockImeInputEventInjector, times(1)).inputKeyEvent(expectedUpEvent)
+            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedDownEvent)
+            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedUpEvent)
         }
 
     @Test
@@ -348,7 +349,7 @@ class PerformActionsUseCaseTest {
 
             val expectedUpEvent = expectedDownEvent.copy(action = KeyEvent.ACTION_UP)
 
-            verify(mockImeInputEventInjector, times(1)).inputKeyEvent(expectedDownEvent)
-            verify(mockImeInputEventInjector, times(1)).inputKeyEvent(expectedUpEvent)
+            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedDownEvent)
+            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedUpEvent)
         }
 }
