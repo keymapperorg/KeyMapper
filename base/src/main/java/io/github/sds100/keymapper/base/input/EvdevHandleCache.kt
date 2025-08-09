@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import timber.log.Timber
 
 class EvdevHandleCache(
     private val coroutineScope: CoroutineScope,
@@ -22,7 +23,8 @@ class EvdevHandleCache(
 
             try {
                 systemBridge.evdevInputDevices.associateBy { it.path }
-            } catch (_: RemoteException) {
+            } catch (e: RemoteException) {
+                Timber.e("Failed to get evdev input devices from system bridge $e")
                 emptyMap()
             }
         }.stateIn(coroutineScope, SharingStarted.Eagerly, emptyMap())

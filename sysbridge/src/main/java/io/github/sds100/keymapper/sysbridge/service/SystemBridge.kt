@@ -42,8 +42,8 @@ internal class SystemBridge : ISystemBridge.Stub() {
     external fun grabEvdevDeviceNative(devicePath: String): Boolean
     external fun grabAllEvdevDevicesNative(): Boolean
 
-    external fun ungrabEvdevDeviceNative(devicePath: String)
-    external fun ungrabAllEvdevDevicesNative()
+    external fun ungrabEvdevDeviceNative(devicePath: String): Boolean
+    external fun ungrabAllEvdevDevicesNative(): Boolean
     external fun writeEvdevEventNative(
         devicePath: String,
         type: Int,
