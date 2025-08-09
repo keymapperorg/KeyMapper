@@ -13,13 +13,21 @@ import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.entities.AssistantTriggerKeyEntity
+import io.github.sds100.keymapper.data.entities.EvdevTriggerKeyEntity
+import io.github.sds100.keymapper.data.entities.FingerprintTriggerKeyEntity
+import io.github.sds100.keymapper.data.entities.FloatingButtonKeyEntity
+import io.github.sds100.keymapper.data.entities.KeyEventTriggerKeyEntity
+import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
+import io.github.sds100.keymapper.data.repositories.KeyMapRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
@@ -31,7 +39,8 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
     private val floatingButtonRepository: FloatingButtonRepository,
     private val devicesAdapter: DevicesAdapter,
     private val floatingLayoutRepository: FloatingLayoutRepository,
-    private val getDefaultKeyMapOptionsUseCase: GetDefaultKeyMapOptionsUseCase
+    private val getDefaultKeyMapOptionsUseCase: GetDefaultKeyMapOptionsUseCase,
+    private val keyMapRepository: KeyMapRepository
 ) : ConfigTriggerUseCase, GetDefaultKeyMapOptionsUseCase by getDefaultKeyMapOptionsUseCase {
     override val keyMap: StateFlow<State<KeyMap>> = state.keyMap
 
@@ -41,6 +50,25 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
         preferenceRepository.get(Keys.showDeviceDescriptors).map { it == true }
 
     private val delegate: ConfigTriggerDelegate = ConfigTriggerDelegate()
+
+    // This class is viewmodel scoped so this will be recomputed each time
+    // the user starts configuring a key map
+    private val otherTriggerKeys: List<KeyCodeTriggerKey> by lazy {
+        keyMapRepository.keyMapList
+            .filterIsInstance<State.Data<List<KeyMapEntity>>>()
+            .map { state -> state.data.flatMap { it.trigger.keys } }
+            .map { keys ->
+                keys
+                    .mapNotNull { key ->
+                        when (key) {
+                            is EvdevTriggerKeyEntity -> EvdevTriggerKey.fromEntity(key)
+                            is KeyEventTriggerKeyEntity -> KeyEventTriggerKey.fromEntity(key)
+                            is AssistantTriggerKeyEntity, is FingerprintTriggerKeyEntity, is FloatingButtonKeyEntity -> null
+                        }
+                    }.filterIsInstance<KeyCodeTriggerKey>()
+
+            }.firstBlocking()
+    }
 
     override fun setEnabled(enabled: Boolean) {
         state.update { it.copy(isEnabled = enabled) }
@@ -74,11 +102,11 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
         delegate.addFingerprintGesture(trigger, type)
     }
 
-    override fun addKeyEventTriggerKey(
+    override suspend fun addKeyEventTriggerKey(
         keyCode: Int,
         scanCode: Int,
         device: KeyEventTriggerDevice,
-        requiresIme: Boolean,
+        requiresIme: Boolean
     ) = updateTrigger { trigger ->
         delegate.addKeyEventTriggerKey(
             trigger,
@@ -86,10 +114,11 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
             scanCode,
             device,
             requiresIme,
+            otherTriggerKeys = otherTriggerKeys
         )
     }
 
-    override fun addEvdevTriggerKey(
+    override suspend fun addEvdevTriggerKey(
         keyCode: Int,
         scanCode: Int,
         device: EvdevDeviceInfo,
@@ -99,6 +128,7 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
             keyCode,
             scanCode,
             device,
+            otherTriggerKeys = otherTriggerKeys
         )
     }
 
@@ -269,7 +299,7 @@ interface ConfigTriggerUseCase : GetDefaultKeyMapOptionsUseCase {
     fun setEnabled(enabled: Boolean)
 
     // trigger
-    fun addKeyEventTriggerKey(
+    suspend fun addKeyEventTriggerKey(
         keyCode: Int,
         scanCode: Int,
         device: KeyEventTriggerDevice,
@@ -279,7 +309,7 @@ interface ConfigTriggerUseCase : GetDefaultKeyMapOptionsUseCase {
     suspend fun addFloatingButtonTriggerKey(buttonUid: String)
     fun addAssistantTriggerKey(type: AssistantTriggerType)
     fun addFingerprintGesture(type: FingerprintGestureType)
-    fun addEvdevTriggerKey(
+    suspend fun addEvdevTriggerKey(
         keyCode: Int,
         scanCode: Int,
         device: EvdevDeviceInfo,

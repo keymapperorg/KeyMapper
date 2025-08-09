@@ -528,7 +528,7 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    private fun onRecordEvdevEvent(key: RecordedKey.EvdevEvent) {
+    private suspend fun onRecordEvdevEvent(key: RecordedKey.EvdevEvent) {
         config.addEvdevTriggerKey(
             key.keyCode,
             key.scanCode,
@@ -925,6 +925,7 @@ sealed class TriggerKeyOptionsState {
     abstract val showClickTypes: Boolean
     abstract val showLongPressClickType: Boolean
 
+    // TODO add isScanCodeSettingEnabled field and isScanCodeDetectionEnabled
     data class KeyEvent(
         val doNotRemapChecked: Boolean = false,
         override val clickType: ClickType,

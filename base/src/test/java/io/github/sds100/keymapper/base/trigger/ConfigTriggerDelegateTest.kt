@@ -5,13 +5,13 @@ import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.utils.parallelTrigger
 import io.github.sds100.keymapper.base.utils.sequenceTrigger
+import io.github.sds100.keymapper.base.utils.singleKeyTrigger
 import io.github.sds100.keymapper.base.utils.triggerKey
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.instanceOf
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 
@@ -29,7 +29,38 @@ class ConfigTriggerDelegateTest {
      */
     @Test
     fun `Do not enable scan code detection if a key in another key map has the same key code, different scan code and is from a different device`() {
-        fail()
+        val device1 = KeyEventTriggerDevice.External(
+            descriptor = "keyboard0",
+            name = "Keyboard",
+        )
+
+        val device2 = KeyEventTriggerDevice.External(
+            descriptor = "keyboard1",
+            name = "Other Keyboard",
+        )
+
+        val otherTriggers = listOf(
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+                scanCode = 123,
+                device = device1,
+                clickType = ClickType.SHORT_PRESS
+            ),
+        )
+
+        val newTrigger = delegate.addKeyEventTriggerKey(
+            trigger = Trigger(),
+            keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+            scanCode = 124,
+            device = device2, // Different device
+            requiresIme = false,
+            otherTriggers
+        )
+
+        assertThat(
+            (newTrigger.keys[0] as KeyEventTriggerKey).detectWithScanCodeUserSetting,
+            `is`(false),
+        )
     }
 
     /**
@@ -37,7 +68,37 @@ class ConfigTriggerDelegateTest {
      */
     @Test
     fun `Do not enable scan code detection if a key in the trigger has the same key code, different scan code and is from a different device`() {
-        fail()
+        val device1 = KeyEventTriggerDevice.External(
+            descriptor = "keyboard0",
+            name = "Keyboard",
+        )
+
+        val device2 = KeyEventTriggerDevice.External(
+            descriptor = "keyboard1",
+            name = "Other Keyboard",
+        )
+
+        val trigger = singleKeyTrigger(
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+                scanCode = 123,
+                device = device1,
+                clickType = ClickType.SHORT_PRESS
+            ),
+        )
+
+        val newTrigger = delegate.addKeyEventTriggerKey(
+            trigger = trigger,
+            keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+            scanCode = 124,
+            device = device2, // Different device
+            requiresIme = false,
+        )
+
+        assertThat(
+            (newTrigger.keys[1] as KeyEventTriggerKey).detectWithScanCodeUserSetting,
+            `is`(false),
+        )
     }
 
     /**
@@ -45,7 +106,33 @@ class ConfigTriggerDelegateTest {
      */
     @Test
     fun `Enable scan code detection for an evdev trigger if a key in another key map has the same key code but different scan code`() {
-        fail()
+        val device = EvdevDeviceInfo(
+            name = "Volume Keys",
+            bus = 0,
+            vendor = 1,
+            product = 2,
+        )
+
+        val otherTriggers = listOf(
+            EvdevTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+                scanCode = 123,
+                device = device,
+            ),
+        )
+
+        val newTrigger = delegate.addEvdevTriggerKey(
+            trigger = Trigger(),
+            keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+            scanCode = 124,
+            device = device,
+            otherTriggers
+        )
+
+        assertThat(
+            (newTrigger.keys[0] as EvdevTriggerKey).detectWithScanCodeUserSetting,
+            `is`(true),
+        )
     }
 
     /**
@@ -53,15 +140,99 @@ class ConfigTriggerDelegateTest {
      */
     @Test
     fun `Enable scan code detection for a key event trigger if a key in another key map has the same key code but different scan code`() {
-        fail()
+        val device = KeyEventTriggerDevice.External(
+            descriptor = "keyboard0",
+            name = "Keyboard",
+        )
+
+        val otherTriggers = listOf(
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+                scanCode = 123,
+                device = device,
+                clickType = ClickType.SHORT_PRESS
+            ),
+        )
+
+        val newTrigger = delegate.addKeyEventTriggerKey(
+            trigger = Trigger(),
+            keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+            scanCode = 124,
+            device = device,
+            requiresIme = false,
+            otherTriggers
+        )
+
+        assertThat(
+            (newTrigger.keys[0] as KeyEventTriggerKey).detectWithScanCodeUserSetting,
+            `is`(true),
+        )
     }
 
     /**
      * Issue #761
      */
     @Test
-    fun `Enable scan code detection if another key exists in the trigger with the same key code but different scan code`() {
-        fail()
+    fun `Enable scan code detection if another key event key exists in the trigger with the same key code but different scan code`() {
+        val device = KeyEventTriggerDevice.External(
+            descriptor = "keyboard0",
+            name = "Keyboard",
+        )
+
+        val trigger = singleKeyTrigger(
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+                scanCode = 123,
+                device = device,
+                clickType = ClickType.SHORT_PRESS
+            ),
+        )
+
+        val newTrigger = delegate.addKeyEventTriggerKey(
+            trigger = trigger,
+            keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+            scanCode = 124,
+            device = device,
+            requiresIme = false,
+        )
+
+        assertThat(
+            (newTrigger.keys[1] as KeyEventTriggerKey).detectWithScanCodeUserSetting,
+            `is`(true),
+        )
+    }
+
+    /**
+     * Issue #761
+     */
+    @Test
+    fun `Enable scan code detection if another evdev key exists in the trigger with the same key code but different scan code`() {
+        val device = EvdevDeviceInfo(
+            name = "Volume Keys",
+            bus = 0,
+            vendor = 1,
+            product = 2,
+        )
+
+        val trigger = singleKeyTrigger(
+            EvdevTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+                scanCode = 123,
+                device = device,
+            ),
+        )
+
+        val newTrigger = delegate.addEvdevTriggerKey(
+            trigger = trigger,
+            keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+            scanCode = 124,
+            device = device,
+        )
+
+        assertThat(
+            (newTrigger.keys[1] as EvdevTriggerKey).detectWithScanCodeUserSetting,
+            `is`(true),
+        )
     }
 
     @Test
@@ -682,5 +853,4 @@ class ConfigTriggerDelegateTest {
         // THEN
         assertThat((trigger.keys[0] as KeyEventTriggerKey).consumeEvent, `is`(true))
     }
-
 }

@@ -116,12 +116,17 @@ class ConfigTriggerDelegate {
         return trigger.copy(keys = newKeys, mode = newMode)
     }
 
+    /**
+     * @param otherTriggerKeys This needs to check the other triggers in the app so that it can
+     * enable scancode detection by default in some situations.
+     */
     fun addKeyEventTriggerKey(
         trigger: Trigger,
         keyCode: Int,
         scanCode: Int,
         device: KeyEventTriggerDevice,
         requiresIme: Boolean,
+        otherTriggerKeys: List<KeyCodeTriggerKey> = emptyList()
     ): Trigger {
         val clickType = when (trigger.mode) {
             is TriggerMode.Parallel -> trigger.mode.clickType
@@ -144,6 +149,12 @@ class ConfigTriggerDelegate {
             consumeKeyEvent = false
         }
 
+        // Scan code detection should be turned on by default if there are other
+        // keys from the same device that report the same key code but have a different scan code.
+        val conflictingKeys = otherTriggerKeys.plus(trigger.keys)
+            .filterIsInstance<KeyEventTriggerKey>()
+            .filter { it.isConflictingKey(keyCode, scanCode, device) }
+
         val triggerKey = KeyEventTriggerKey(
             keyCode = keyCode,
             device = device,
@@ -151,6 +162,7 @@ class ConfigTriggerDelegate {
             scanCode = scanCode,
             consumeEvent = consumeKeyEvent,
             requiresIme = requiresIme,
+            detectWithScanCodeUserSetting = conflictingKeys.isNotEmpty()
         )
 
         var newKeys = trigger.keys.filter { it !is EvdevTriggerKey }.plus(triggerKey)
@@ -172,11 +184,26 @@ class ConfigTriggerDelegate {
         return trigger.copy(keys = newKeys, mode = newMode)
     }
 
+    /**
+     * This will return true if the key has same key code but different
+     * scan code, and is from the same device.
+     */
+    private fun KeyEventTriggerKey.isConflictingKey(
+        keyCode: Int,
+        scanCode: Int,
+        device: KeyEventTriggerDevice,
+    ): Boolean {
+        return this.keyCode == keyCode
+            && this.scanCode != scanCode
+            && this.device.isSameDevice(device)
+    }
+
     fun addEvdevTriggerKey(
         trigger: Trigger,
         keyCode: Int,
         scanCode: Int,
         device: EvdevDeviceInfo,
+        otherTriggerKeys: List<KeyCodeTriggerKey> = emptyList()
     ): Trigger {
         val clickType = when (trigger.mode) {
             is TriggerMode.Parallel -> trigger.mode.clickType
@@ -192,12 +219,19 @@ class ConfigTriggerDelegate {
                 keyToCompare.keyCode == keyCode && keyToCompare.device == device
             }
 
+        // Scan code detection should be turned on by default if there are other
+        // keys from the same device that report the same key code but have a different scan code.
+        val conflictingKeys = otherTriggerKeys.plus(trigger.keys)
+            .filterIsInstance<EvdevTriggerKey>()
+            .filter { it.isConflictingKey(keyCode, scanCode, device) }
+
         val triggerKey = EvdevTriggerKey(
             keyCode = keyCode,
             scanCode = scanCode,
             device = device,
             clickType = clickType,
             consumeEvent = true,
+            detectWithScanCodeUserSetting = conflictingKeys.isNotEmpty()
         )
 
         var newKeys = trigger.keys.filter { it !is KeyEventTriggerKey }.plus(triggerKey)
@@ -217,6 +251,20 @@ class ConfigTriggerDelegate {
         }
 
         return trigger.copy(keys = newKeys, mode = newMode)
+    }
+
+    /**
+     * This will return true if the key has same key code but different
+     * scan code, and is from the same device.
+     */
+    private fun EvdevTriggerKey.isConflictingKey(
+        keyCode: Int,
+        scanCode: Int,
+        device: EvdevDeviceInfo,
+    ): Boolean {
+        return this.keyCode == keyCode
+            && this.scanCode != scanCode
+            && this.device == device
     }
 
     fun removeTriggerKey(trigger: Trigger, uid: String): Trigger {
