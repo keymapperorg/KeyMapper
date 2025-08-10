@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowHeightSizeClass
@@ -65,6 +66,8 @@ fun TriggerKeyOptionsBottomSheet(
     onEditFloatingLayoutClick: () -> Unit = {},
     onScanCodeDetectionChanged: (Boolean) -> Unit = {},
 ) {
+    val isCompact = isVerticalCompactLayout()
+
     ModalBottomSheet(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
@@ -72,37 +75,32 @@ fun TriggerKeyOptionsBottomSheet(
         // Hide drag handle because other bottom sheets don't have it
         dragHandle = {},
     ) {
-        val uriHandler = LocalUriHandler.current
-        val ctx = LocalContext.current
-        val helpUrl = stringResource(R.string.url_trigger_key_options_guide)
+
         val scope = rememberCoroutineScope()
 
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
             Spacer(modifier = Modifier.height(12.dp))
             Box(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    modifier = Modifier.align(Alignment.Center),
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .fillMaxWidth()
+                        .padding(horizontal = 48.dp),
                     textAlign = TextAlign.Center,
                     text = stringResource(R.string.trigger_key_options_title),
                     style = MaterialTheme.typography.headlineMedium,
+                    overflow = TextOverflow.Ellipsis
                 )
 
-                IconButton(
+                HelpIconButton(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(horizontal = 8.dp),
-                    onClick = { uriHandler.openUriSafe(ctx, helpUrl) },
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.HelpOutline,
-                        contentDescription = null,
-                    )
-                }
+                        .padding(horizontal = 8.dp)
+                )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
 
-            val isCompact = isVerticalCompactLayout()
+            Spacer(modifier = Modifier.height(8.dp))
 
             if (state is TriggerKeyOptionsState.KeyEvent) {
                 ScanCodeDetectionButtonRow(
@@ -149,6 +147,8 @@ fun TriggerKeyOptionsBottomSheet(
                         .padding(horizontal = 16.dp), state, onSelectClickType,
                     isCompact = isCompact
                 )
+
+                Spacer(Modifier.height(8.dp))
             }
 
             if (state is TriggerKeyOptionsState.KeyEvent) {
@@ -157,6 +157,8 @@ fun TriggerKeyOptionsBottomSheet(
                     text = stringResource(R.string.trigger_key_device_header),
                     style = MaterialTheme.typography.titleSmall,
                 )
+
+                Spacer(Modifier.height(8.dp))
 
                 for (device in state.devices) {
                     RadioButtonText(
@@ -289,33 +291,55 @@ fun TriggerKeyOptionsBottomSheet(
 }
 
 @Composable
+private fun HelpIconButton(
+    modifier: Modifier
+) {
+    val uriHandler = LocalUriHandler.current
+    val helpUrl = stringResource(R.string.url_trigger_key_options_guide)
+    val ctx = LocalContext.current
+
+    IconButton(
+        modifier = modifier,
+        onClick = { uriHandler.openUriSafe(ctx, helpUrl) },
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Rounded.HelpOutline,
+            contentDescription = null,
+        )
+    }
+}
+
+@Composable
 private fun ClickTypeSection(
     modifier: Modifier,
     state: TriggerKeyOptionsState,
     onSelectClickType: (ClickType) -> Unit,
     isCompact: Boolean
 ) {
-    Text(
-        modifier = Modifier.padding(horizontal = 16.dp),
-        text = stringResource(R.string.trigger_key_click_types_header),
-        style = MaterialTheme.typography.titleSmall,
-    )
+    Column(modifier) {
+        Text(
+            text = stringResource(R.string.trigger_key_click_types_header),
+            style = MaterialTheme.typography.titleSmall,
+        )
 
-    val clickTypeButtonContent: List<Pair<ClickType, String>> = buildList {
-        add(ClickType.SHORT_PRESS to stringResource(R.string.radio_button_short_press))
-        if (state.showLongPressClickType) {
-            add(ClickType.LONG_PRESS to stringResource(R.string.radio_button_long_press))
+        Spacer(Modifier.height(8.dp))
+
+        val clickTypeButtonContent: List<Pair<ClickType, String>> = buildList {
+            add(ClickType.SHORT_PRESS to stringResource(R.string.radio_button_short_press))
+            if (state.showLongPressClickType) {
+                add(ClickType.LONG_PRESS to stringResource(R.string.radio_button_long_press))
+            }
+            add(ClickType.DOUBLE_PRESS to stringResource(R.string.radio_button_double_press))
         }
-        add(ClickType.DOUBLE_PRESS to stringResource(R.string.radio_button_double_press))
-    }
 
-    KeyMapperSegmentedButtonRow(
-        modifier = modifier,
-        buttonStates = clickTypeButtonContent,
-        selectedState = state.clickType,
-        onStateSelected = onSelectClickType,
-        isCompact = isCompact
-    )
+        KeyMapperSegmentedButtonRow(
+            modifier = Modifier.fillMaxWidth(),
+            buttonStates = clickTypeButtonContent,
+            selectedState = state.clickType,
+            onStateSelected = onSelectClickType,
+            isCompact = isCompact
+        )
+    }
 }
 
 @Composable
