@@ -271,23 +271,26 @@ class InputEventHubImpl @Inject constructor(
             return
         }
 
-        try {
-            val ungrabResult = systemBridge.ungrabAllEvdevDevices()
-            Timber.i("Ungrabbed all evdev devices: $ungrabResult")
+        // Grabbing can block if there are other grabbing or event loop start/stop operations happening.
+        coroutineScope.launch(Dispatchers.IO) {
+            try {
+                val ungrabResult = systemBridge.ungrabAllEvdevDevices()
+                Timber.i("Ungrabbed all evdev devices: $ungrabResult")
 
-            if (!ungrabResult) {
-                Timber.e("Failed to ungrab all evdev devices before grabbing.")
-                return
+                if (!ungrabResult) {
+                    Timber.e("Failed to ungrab all evdev devices before grabbing.")
+                    return@launch
+                }
+
+                for (device in evdevDevices) {
+                    val handle = evdevHandles.getByInfo(device) ?: continue
+                    val grabResult = systemBridge.grabEvdevDevice(handle.path)
+
+                    Timber.i("Grabbed evdev device ${device.name}: $grabResult")
+                }
+            } catch (_: RemoteException) {
+                Timber.e("Failed to invalidate grabbed device. Is the system bridge dead?")
             }
-
-            for (device in evdevDevices) {
-                val handle = evdevHandles.getByInfo(device) ?: continue
-                val grabResult = systemBridge.grabEvdevDevice(handle.path)
-
-                Timber.i("Grabbed evdev device ${device.name}: $grabResult")
-            }
-        } catch (_: RemoteException) {
-            Timber.e("Failed to invalidate grabbed device. Is the system bridge dead?")
         }
     }
 

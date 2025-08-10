@@ -206,6 +206,13 @@ bool onEpollEvdevEvent(DeviceContext *deviceContext, IEvdevCallback *callback) {
 
     int rc = libevdev_next_event(deviceContext->evdev, LIBEVDEV_READ_FLAG_NORMAL, &inputEvent);
 
+    if (rc < 0) {
+        if (rc != -EAGAIN) {
+            LOGE("libevdev_next_event failed with error %d: %s", rc, strerror(-rc));
+        }
+        return rc == -EAGAIN;
+    }
+
     do {
         if (rc == LIBEVDEV_READ_STATUS_SUCCESS) { // rc == 0
             int32_t outKeycode = -1;
@@ -239,6 +246,11 @@ bool onEpollEvdevEvent(DeviceContext *deviceContext, IEvdevCallback *callback) {
             rc = libevdev_next_event(deviceContext->evdev,
                                      LIBEVDEV_READ_FLAG_NORMAL | LIBEVDEV_READ_FLAG_SYNC,
                                      &inputEvent);
+        }
+
+        if (rc < 0 && rc != -EAGAIN) {
+            LOGE("libevdev_next_event failed with error %d: %s", rc, strerror(-rc));
+            return false;
         }
     } while (rc != -EAGAIN);
 
@@ -334,18 +346,29 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLo
                     }
                 }
             } else {
-                std::lock_guard<std::mutex> lock(evdevDevicesMutex);
+                if ((events[i].events & (EPOLLHUP | EPOLLERR))) {
+                    LOGI("Device disconnected, removing from epoll.");
+                    epoll_ctl(epollFd, EPOLL_CTL_DEL, fd, nullptr);
 
-                auto it = fdToDevicePath->find(fd);
-                if (it != fdToDevicePath->end()) {
-                    DeviceContext *dc = &evdevDevices->at(it->second);
-                    // If handling the evdev event fails then stop the event loop
-                    // and ungrab all the devices.
-                    bool result = onEpollEvdevEvent(dc, callback.get());
+                    std::lock_guard<std::mutex> lock(evdevDevicesMutex);
+                    auto it = fdToDevicePath->find(fd);
+                    if (it != fdToDevicePath->end()) {
+                        evdevDevices->erase(it->second);
+                        fdToDevicePath->erase(it);
+                    }
+                } else {
+                    std::lock_guard<std::mutex> lock(evdevDevicesMutex);
+                    auto it = fdToDevicePath->find(fd);
+                    if (it != fdToDevicePath->end()) {
+                        DeviceContext *dc = &evdevDevices->at(it->second);
+                        // If handling the evdev event fails then stop the event loop
+                        // and ungrab all the devices.
+                        bool result = onEpollEvdevEvent(dc, callback.get());
 
-                    if (!result) {
-                        running = false;
-                        break;
+                        if (!result) {
+                            running = false;
+                            break;
+                        }
                     }
                 }
             }
@@ -562,6 +585,7 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_getEvdevDevicesNa
     std::vector<jobject> deviceHandles;
     struct dirent *entry;
 
+    std::lock_guard<std::mutex> lock(evdevDevicesMutex);
     while ((entry = readdir(dir)) != nullptr) {
         // Skip . and .. entries
         if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
@@ -574,7 +598,6 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_getEvdevDevicesNa
         bool ignoreDevice = false;
 
         {
-            std::lock_guard<std::mutex> lock(evdevDevicesMutex);
             // Ignore this device if it is a uinput device we created
             for (const auto &pair: *evdevDevices) {
                 DeviceContext context = pair.second;
