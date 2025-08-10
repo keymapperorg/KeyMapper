@@ -71,15 +71,14 @@ fun <T> KeyMapperSegmentedButtonRow(
                     colors = colors
                 ) {
                     BasicText(
+                        modifier = if (isUnselectedDisabled) Modifier.alpha(0.5f) else Modifier,
                         text = label,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        style = LocalTextStyle.current,
                         autoSize = TextAutoSize.StepBased(
                             maxFontSize = LocalTextStyle.current.fontSize,
                             minFontSize = 10.sp
                         ),
-                        modifier = if (isUnselectedDisabled) Modifier.alpha(0.5f) else Modifier
                     )
                 }
             } else {
