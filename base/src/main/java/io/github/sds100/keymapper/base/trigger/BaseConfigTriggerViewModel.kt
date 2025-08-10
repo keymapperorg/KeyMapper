@@ -374,6 +374,8 @@ abstract class BaseConfigTriggerViewModel(
                             clickType = key.clickType,
                             showClickTypes = showClickTypes,
                             devices = deviceListItems,
+                            keyCode = key.keyCode,
+                            scanCode = key.scanCode,
                             isScanCodeDetectionSelected = key.detectWithScancode(),
                             isScanCodeSettingEnabled = key.isScanCodeDetectionUserConfigurable()
                         )
@@ -406,6 +408,8 @@ abstract class BaseConfigTriggerViewModel(
                             doNotRemapChecked = !key.consumeEvent,
                             clickType = key.clickType,
                             showClickTypes = showClickTypes,
+                            keyCode = key.keyCode,
+                            scanCode = key.scanCode,
                             isScanCodeDetectionSelected = key.detectWithScancode(),
                             isScanCodeSettingEnabled = key.isScanCodeDetectionUserConfigurable()
                         )
@@ -940,6 +944,8 @@ sealed class TriggerKeyOptionsState {
         override val clickType: ClickType,
         override val showClickTypes: Boolean,
         val devices: List<CheckBoxListItem>,
+        val keyCode: Int,
+        val scanCode: Int?,
         // Whether scan code is checked.
         val isScanCodeDetectionSelected: Boolean,
         // Whether the setting should be enabled and allow user interaction.
@@ -952,6 +958,8 @@ sealed class TriggerKeyOptionsState {
         val doNotRemapChecked: Boolean = false,
         override val clickType: ClickType,
         override val showClickTypes: Boolean,
+        val keyCode: Int,
+        val scanCode: Int,
         // Whether scan code is checked.
         val isScanCodeDetectionSelected: Boolean,
         // Whether the setting should be enabled and allow user interaction.

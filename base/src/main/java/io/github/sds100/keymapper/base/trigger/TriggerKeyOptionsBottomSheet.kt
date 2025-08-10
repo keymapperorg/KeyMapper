@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.trigger
 
+import android.view.KeyEvent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -44,6 +45,7 @@ import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.base.utils.ui.compose.openUriSafe
+import io.github.sds100.keymapper.system.inputevents.Scancode
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -105,6 +107,8 @@ fun TriggerKeyOptionsBottomSheet(
                     modifier = Modifier.fillMaxWidth(),
                     isEnabled = state.isScanCodeSettingEnabled,
                     isScanCodeSelected = state.isScanCodeDetectionSelected,
+                    keyCode = state.keyCode,
+                    scanCode = state.scanCode,
                     onSelectedChange = onScanCodeDetectionChanged
                 )
 
@@ -121,6 +125,8 @@ fun TriggerKeyOptionsBottomSheet(
                     modifier = Modifier.fillMaxWidth(),
                     isEnabled = state.isScanCodeSettingEnabled,
                     isScanCodeSelected = state.isScanCodeDetectionSelected,
+                    keyCode = state.keyCode,
+                    scanCode = state.scanCode,
                     onSelectedChange = onScanCodeDetectionChanged
                 )
 
@@ -313,6 +319,8 @@ fun TriggerKeyOptionsBottomSheet(
 @Composable
 private fun ScanCodeDetectionButtonRow(
     modifier: Modifier = Modifier,
+    keyCode: Int,
+    scanCode: Int?,
     isEnabled: Boolean,
     isScanCodeSelected: Boolean,
     onSelectedChange: (Boolean) -> Unit
@@ -333,7 +341,13 @@ private fun ScanCodeDetectionButtonRow(
                 shape = MaterialTheme.shapes.medium,
                 enabled = isEnabled
             ) {
-                Text(stringResource(R.string.trigger_use_key_code_button))
+                val text = if (keyCode == KeyEvent.KEYCODE_UNKNOWN) {
+                    stringResource(R.string.trigger_use_key_code_button_disabled)
+                } else {
+                    stringResource(R.string.trigger_use_key_code_button_enabled, keyCode)
+
+                }
+                Text(text)
             }
 
             Spacer(Modifier.width(16.dp))
@@ -344,7 +358,13 @@ private fun ScanCodeDetectionButtonRow(
                 shape = MaterialTheme.shapes.medium,
                 enabled = isEnabled
             ) {
-                Text(stringResource(R.string.trigger_use_scan_code_button))
+                val text = if (scanCode == null) {
+                    stringResource(R.string.trigger_use_scan_code_button_disabled)
+                } else {
+                    stringResource(R.string.trigger_use_scan_code_button_enabled, scanCode)
+
+                }
+                Text(text)
             }
             Spacer(Modifier.width(16.dp))
         }
@@ -380,6 +400,8 @@ private fun PreviewKeyEvent() {
                         isChecked = false,
                     ),
                 ),
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
                 isScanCodeDetectionSelected = true,
                 isScanCodeSettingEnabled = true
             ),
@@ -404,7 +426,9 @@ private fun PreviewEvdev() {
                 doNotRemapChecked = true,
                 clickType = ClickType.DOUBLE_PRESS,
                 showClickTypes = true,
-                isScanCodeDetectionSelected = false,
+                keyCode = KeyEvent.KEYCODE_UNKNOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                isScanCodeDetectionSelected = true,
                 isScanCodeSettingEnabled = false
             ),
         )
