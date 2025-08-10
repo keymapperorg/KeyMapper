@@ -8,6 +8,7 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -131,7 +132,7 @@ private fun AdvancedTriggersButton(
         enabled = isEnabled,
         onClick = onClick,
     ) {
-        val color = ButtonDefaults.textButtonColors().contentColor
+        val color = LocalContentColor.current
         BasicText(
             text = stringResource(R.string.button_advanced_triggers),
             maxLines = 1,
