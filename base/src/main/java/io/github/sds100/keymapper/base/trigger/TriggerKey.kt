@@ -20,4 +20,30 @@ sealed class TriggerKey : Comparable<TriggerKey> {
     }
 
     override fun compareTo(other: TriggerKey) = this.javaClass.name.compareTo(other.javaClass.name)
+
+    fun isLogicallyEqual(other: TriggerKey): Boolean {
+        when {
+            this is KeyCodeTriggerKey && other is KeyCodeTriggerKey -> {
+                if (this.detectWithScancode()) {
+                    return this.scanCode == other.scanCode && this.isSameDevice(other)
+                } else {
+                    return this.keyCode == other.keyCode && this.isSameDevice(other)
+                }
+            }
+
+            this is AssistantTriggerKey && other is AssistantTriggerKey -> {
+                return this.type == other.type
+            }
+
+            this is FingerprintTriggerKey && other is FingerprintTriggerKey -> {
+                return this.type == other.type
+            }
+
+            this is FloatingButtonKey && other is FloatingButtonKey -> {
+                return this.buttonUid == other.buttonUid
+            }
+        }
+
+        return false
+    }
 }

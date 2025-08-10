@@ -16,7 +16,7 @@ abstract class SystemBridgeHiltModule {
 
     @Singleton
     @Binds
-    abstract fun bindPrivServiceSetupController(impl: SystemBridgeSetupControllerImpl): SystemBridgeSetupController
+    abstract fun bindSystemBridgeSetupController(impl: SystemBridgeSetupControllerImpl): SystemBridgeSetupController
 
     @Singleton
     @Binds

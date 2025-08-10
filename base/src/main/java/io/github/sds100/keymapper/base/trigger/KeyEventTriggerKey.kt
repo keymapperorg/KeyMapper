@@ -27,13 +27,11 @@ data class KeyEventTriggerKey(
     override val allowedLongPress: Boolean = true
     override val allowedDoublePress: Boolean = true
 
-    override fun toString(): String {
-        val deviceString = when (device) {
-            KeyEventTriggerDevice.Any -> "any"
-            is KeyEventTriggerDevice.External -> "external"
-            KeyEventTriggerDevice.Internal -> "internal"
+    override fun isSameDevice(otherKey: KeyCodeTriggerKey): Boolean {
+        if (otherKey !is KeyEventTriggerKey) {
+            return false
         }
-        return "KeyCodeTriggerKey(uid=${uid.substring(0..5)}, keyCode=$keyCode, device=$deviceString, clickType=$clickType, consume=$consumeEvent) "
+        return device.isSameDevice(otherKey.device)
     }
 
     // key code -> click type -> device -> consume key event

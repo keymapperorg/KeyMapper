@@ -8,21 +8,175 @@ import io.github.sds100.keymapper.base.utils.sequenceTrigger
 import io.github.sds100.keymapper.base.utils.singleKeyTrigger
 import io.github.sds100.keymapper.base.utils.triggerKey
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
+import io.github.sds100.keymapper.system.inputevents.Scancode
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.contains
 import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.instanceOf
 import org.hamcrest.Matchers.`is`
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.mockito.MockedStatic
+import org.mockito.Mockito.mockStatic
 
 class ConfigTriggerDelegateTest {
 
+    private lateinit var mockedKeyEvent: MockedStatic<KeyEvent>
     private lateinit var delegate: ConfigTriggerDelegate
 
     @Before
     fun before() {
+
+        mockedKeyEvent = mockStatic(KeyEvent::class.java)
+        mockedKeyEvent.`when`<Int> { KeyEvent.getMaxKeyCode() }.thenReturn(1000)
+
         delegate = ConfigTriggerDelegate()
     }
+
+    @After
+    fun tearDown() {
+        mockedKeyEvent.close()
+    }
+
+    @Test
+    fun `Remove keys with the same scan code if scan code detection is enabled when switching to a parallel trigger`() {
+        val key = KeyEventTriggerKey(
+            keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+            scanCode = Scancode.KEY_VOLUMEDOWN,
+            device = KeyEventTriggerDevice.Internal,
+            clickType = ClickType.SHORT_PRESS,
+            detectWithScanCodeUserSetting = true
+        )
+
+        val trigger = sequenceTrigger(
+            key,
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                device = KeyEventTriggerDevice.Internal,
+                clickType = ClickType.SHORT_PRESS,
+                detectWithScanCodeUserSetting = true
+            ),
+        )
+
+        val newTrigger = delegate.setParallelTriggerMode(trigger)
+
+        assertThat(newTrigger.mode, `is`(TriggerMode.Undefined))
+        assertThat(newTrigger.keys, hasSize(1))
+        assertThat(newTrigger.keys, contains(key))
+    }
+
+    @Test
+    fun `Convert to sequence trigger when enabling scan code detection when scan codes are the same`() {
+        val key = KeyEventTriggerKey(
+            keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+            scanCode = Scancode.KEY_VOLUMEDOWN,
+            device = KeyEventTriggerDevice.Internal,
+            clickType = ClickType.SHORT_PRESS,
+            detectWithScanCodeUserSetting = false
+        )
+        val trigger = parallelTrigger(
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                device = KeyEventTriggerDevice.Internal,
+                clickType = ClickType.SHORT_PRESS,
+                detectWithScanCodeUserSetting = true
+            ),
+            key
+        )
+
+        val newTrigger = delegate.setScanCodeDetectionEnabled(trigger, key.uid, true)
+        assertThat(newTrigger.mode, `is`(TriggerMode.Sequence))
+        assertThat(newTrigger.keys, hasSize(2))
+        assertThat(newTrigger.keys[1], `is`(key.copy(detectWithScanCodeUserSetting = true)))
+    }
+
+    @Test
+    fun `Do not remove other keys with the same scan code when enabling scan code detection for sequence triggers`() {
+        val key = KeyEventTriggerKey(
+            keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+            scanCode = Scancode.KEY_VOLUMEDOWN,
+            device = KeyEventTriggerDevice.Internal,
+            clickType = ClickType.SHORT_PRESS,
+            detectWithScanCodeUserSetting = true
+        )
+        val trigger = sequenceTrigger(
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                device = KeyEventTriggerDevice.Internal,
+                clickType = ClickType.SHORT_PRESS,
+                detectWithScanCodeUserSetting = false
+            ),
+            key
+        )
+
+        val newTrigger = delegate.setScanCodeDetectionEnabled(trigger, key.uid, true)
+        assertThat(newTrigger.keys, hasSize(2))
+        assertThat(
+            newTrigger.keys,
+            contains(trigger.keys[0], key.copy(detectWithScanCodeUserSetting = true))
+        )
+    }
+
+    @Test
+    fun `Convert to sequence trigger when disabling scan code detection and other keys with same key code`() {
+        val key = KeyEventTriggerKey(
+            keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+            scanCode = Scancode.KEY_VOLUMEUP,
+            device = KeyEventTriggerDevice.Internal,
+            clickType = ClickType.SHORT_PRESS,
+            detectWithScanCodeUserSetting = false
+        )
+
+        val trigger = parallelTrigger(
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                device = KeyEventTriggerDevice.Internal,
+                clickType = ClickType.SHORT_PRESS,
+                detectWithScanCodeUserSetting = false
+            ),
+            key
+        )
+
+        val newTrigger = delegate.setScanCodeDetectionEnabled(trigger, key.uid, false)
+        assertThat(newTrigger.mode, `is`(TriggerMode.Sequence))
+        assertThat(newTrigger.keys, hasSize(2))
+        assertThat(newTrigger.keys[1], `is`(key.copy(detectWithScanCodeUserSetting = false)))
+    }
+
+
+    @Test
+    fun `Do not remove other keys from different devices when enabling scan code detection`() {
+        val key = KeyEventTriggerKey(
+            keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+            scanCode = Scancode.KEY_VOLUMEDOWN,
+            device = KeyEventTriggerDevice.External(descriptor = "keyboard0", name = "Keyboard"),
+            clickType = ClickType.SHORT_PRESS,
+            detectWithScanCodeUserSetting = false
+        )
+        val trigger = parallelTrigger(
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                device = KeyEventTriggerDevice.Internal,
+                clickType = ClickType.SHORT_PRESS,
+                detectWithScanCodeUserSetting = false
+            ),
+            key
+        )
+
+        val newTrigger = delegate.setScanCodeDetectionEnabled(trigger, key.uid, true)
+        assertThat(newTrigger.keys, hasSize(2))
+        assertThat(
+            newTrigger.keys,
+            contains(trigger.keys[0], key.copy(detectWithScanCodeUserSetting = true))
+        )
+    }
+
 
     /**
      * Issue #761
@@ -393,6 +547,65 @@ class ConfigTriggerDelegateTest {
         )
 
         assertThat(triggerWithSecondKey.mode, `is`(TriggerMode.Sequence))
+    }
+
+    @Test
+    fun `Adding a key which has the same scan code as another key with scan code detection enabled makes the trigger a sequence`() {
+        val device = EvdevDeviceInfo(
+            name = "Volume Keys",
+            bus = 0,
+            vendor = 1,
+            product = 2,
+        )
+
+        val trigger = parallelTrigger(
+            EvdevTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                clickType = ClickType.SHORT_PRESS,
+                device = device,
+                detectWithScanCodeUserSetting = true
+            ),
+            AssistantTriggerKey(type = AssistantTriggerType.ANY, clickType = ClickType.SHORT_PRESS)
+        )
+
+        val newTrigger = delegate.addEvdevTriggerKey(
+            trigger = trigger,
+            keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+            scanCode = Scancode.KEY_VOLUMEDOWN,
+            device = device,
+        )
+
+        assertThat(newTrigger.mode, `is`(TriggerMode.Sequence))
+    }
+
+    @Test
+    fun `Adding a key which has the same scan code as the only other key with scan code detection enabled makes the trigger a sequence`() {
+        val device = EvdevDeviceInfo(
+            name = "Volume Keys",
+            bus = 0,
+            vendor = 1,
+            product = 2,
+        )
+
+        val trigger = singleKeyTrigger(
+            EvdevTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                clickType = ClickType.SHORT_PRESS,
+                device = device,
+                detectWithScanCodeUserSetting = true
+            )
+        )
+
+        val newTrigger = delegate.addEvdevTriggerKey(
+            trigger = trigger,
+            keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+            scanCode = Scancode.KEY_VOLUMEDOWN,
+            device = device,
+        )
+
+        assertThat(newTrigger.mode, `is`(TriggerMode.Sequence))
     }
 
     @Test
@@ -852,5 +1065,188 @@ class ConfigTriggerDelegateTest {
 
         // THEN
         assertThat((trigger.keys[0] as KeyEventTriggerKey).consumeEvent, `is`(true))
+    }
+
+
+    @Test
+    fun `Remove keys with same key code from the same internal device when converting to a parallel trigger`() {
+        val key = KeyEventTriggerKey(
+            keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+            scanCode = Scancode.KEY_VOLUMEDOWN,
+            device = KeyEventTriggerDevice.Internal,
+            clickType = ClickType.SHORT_PRESS,
+            detectWithScanCodeUserSetting = false
+        )
+
+        val trigger = sequenceTrigger(
+            key,
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                device = KeyEventTriggerDevice.Internal,
+                clickType = ClickType.SHORT_PRESS,
+                detectWithScanCodeUserSetting = false
+            ),
+        )
+
+        val newTrigger = delegate.setParallelTriggerMode(trigger)
+        assertThat(newTrigger.keys, hasSize(1))
+        assertThat(newTrigger.keys, contains(key))
+    }
+
+    @Test
+    fun `Do not remove keys with same key code from different devices when converting to a parallel trigger`() {
+        val trigger = sequenceTrigger(
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                device = KeyEventTriggerDevice.Internal,
+                clickType = ClickType.SHORT_PRESS,
+                detectWithScanCodeUserSetting = false
+            ),
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                device = KeyEventTriggerDevice.External(
+                    descriptor = "keyboard0",
+                    name = "Keyboard"
+                ),
+                clickType = ClickType.SHORT_PRESS,
+                detectWithScanCodeUserSetting = false
+            ),
+        )
+
+        val newTrigger = delegate.setParallelTriggerMode(trigger)
+        assertThat(newTrigger.keys, hasSize(2))
+        assertThat(newTrigger.keys, `is`(trigger.keys))
+    }
+
+    @Test
+    fun `Do not remove keys with different key code from the same device when converting to a parallel trigger`() {
+        val trigger = sequenceTrigger(
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+                scanCode = Scancode.KEY_VOLUMEUP,
+                device = KeyEventTriggerDevice.Internal,
+                clickType = ClickType.SHORT_PRESS,
+                detectWithScanCodeUserSetting = false
+            ),
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                device = KeyEventTriggerDevice.Internal,
+                clickType = ClickType.SHORT_PRESS,
+                detectWithScanCodeUserSetting = false
+            ),
+        )
+
+        val newTrigger = delegate.setParallelTriggerMode(trigger)
+        assertThat(newTrigger.keys, hasSize(2))
+        assertThat(newTrigger.keys, `is`(trigger.keys))
+    }
+
+    @Test
+    fun `Remove keys from an internal device if it conflicts with any-device key when converting to a parallel trigger`() {
+        val internalKey = KeyEventTriggerKey(
+            keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+            scanCode = Scancode.KEY_VOLUMEDOWN,
+            device = KeyEventTriggerDevice.Internal,
+            clickType = ClickType.SHORT_PRESS,
+            detectWithScanCodeUserSetting = false
+        )
+
+        val anyDeviceKey = KeyEventTriggerKey(
+            keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+            scanCode = Scancode.KEY_VOLUMEDOWN,
+            device = KeyEventTriggerDevice.Any,
+            clickType = ClickType.SHORT_PRESS,
+            detectWithScanCodeUserSetting = false
+        )
+
+        val trigger = sequenceTrigger(internalKey, anyDeviceKey)
+
+        val newTrigger = delegate.setParallelTriggerMode(trigger)
+        assertThat(newTrigger.keys, hasSize(1))
+        assertThat(newTrigger.keys, contains(internalKey))
+    }
+
+    @Test
+    fun `Remove keys with the same key code from the same external device when converting to a parallel trigger`() {
+        val key = KeyEventTriggerKey(
+            keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+            scanCode = Scancode.KEY_VOLUMEDOWN,
+            device = KeyEventTriggerDevice.External(
+                descriptor = "keyboard0",
+                name = "Keyboard"
+            ),
+            clickType = ClickType.SHORT_PRESS,
+            detectWithScanCodeUserSetting = false
+        )
+
+        val trigger = sequenceTrigger(
+            key,
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                device = KeyEventTriggerDevice.External(
+                    descriptor = "keyboard0",
+                    name = "Keyboard"
+                ),
+                clickType = ClickType.SHORT_PRESS,
+                detectWithScanCodeUserSetting = false
+            ),
+        )
+
+        val newTrigger = delegate.setParallelTriggerMode(trigger)
+        assertThat(newTrigger.keys, hasSize(1))
+        assertThat(newTrigger.keys, contains(key))
+    }
+
+    @Test
+    fun `Remove conflicting keys that are all any-device or internal when converting to a parallel trigger`() {
+        val trigger = sequenceTrigger(
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                device = KeyEventTriggerDevice.Any,
+                clickType = ClickType.SHORT_PRESS,
+                detectWithScanCodeUserSetting = false
+            ),
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                device = KeyEventTriggerDevice.Any,
+                clickType = ClickType.SHORT_PRESS,
+                detectWithScanCodeUserSetting = false
+            ),
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                device = KeyEventTriggerDevice.Internal,
+                clickType = ClickType.SHORT_PRESS,
+                detectWithScanCodeUserSetting = false
+            ),
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                device = KeyEventTriggerDevice.External(
+                    descriptor = "keyboard0",
+                    name = "Keyboard"
+                ),
+                clickType = ClickType.SHORT_PRESS,
+                detectWithScanCodeUserSetting = false
+            ),
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                device = KeyEventTriggerDevice.Any,
+                clickType = ClickType.SHORT_PRESS,
+                detectWithScanCodeUserSetting = false
+            ),
+        )
+
+        val newTrigger = delegate.setParallelTriggerMode(trigger)
+        assertThat(newTrigger.keys, hasSize(1))
+        assertThat(newTrigger.keys, contains(trigger.keys[0]))
     }
 }

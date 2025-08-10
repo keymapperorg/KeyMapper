@@ -28,6 +28,8 @@ sealed interface KeyCodeTriggerKey {
      * doesn't change.
      */
     val consumeEvent: Boolean
+
+    fun isSameDevice(otherKey: KeyCodeTriggerKey): Boolean
 }
 
 fun KeyCodeTriggerKey.detectWithScancode(): Boolean {

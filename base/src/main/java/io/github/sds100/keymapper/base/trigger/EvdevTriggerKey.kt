@@ -25,6 +25,13 @@ data class EvdevTriggerKey(
     override val allowedDoublePress: Boolean = true
     override val allowedLongPress: Boolean = true
 
+    override fun isSameDevice(otherKey: KeyCodeTriggerKey): Boolean {
+        if (otherKey !is EvdevTriggerKey) {
+            return false
+        }
+        return device == otherKey.device
+    }
+
     companion object {
         fun fromEntity(entity: EvdevTriggerKeyEntity): TriggerKey {
             val clickType = when (entity.clickType) {
