@@ -1,23 +1,35 @@
 package io.github.sds100.keymapper.base.trigger
 
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,6 +41,9 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperTapTarget
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.ProModeIcon
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.ProModeIconDisabled
 import io.github.sds100.keymapper.base.utils.ui.compose.keyMapperShowcaseStyle
 
 @Composable
@@ -42,18 +57,17 @@ fun RecordTriggerButtonRow(
     onSkipTapTarget: () -> Unit = {},
     showAdvancedTriggerTapTarget: Boolean = false,
     onAdvancedTriggerTapTargetCompleted: () -> Unit = {},
+    isProModeSelected: Boolean = false // TODO
 ) {
     Column {
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = stringResource(R.string.trigger_record_with_pro_mode),
-                overflow = TextOverflow.Ellipsis
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Switch(
-                checked = false,
-                onCheckedChange = {})
-        }
+//        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+//            Text(
+//                text = stringResource(R.string.trigger_record_with_pro_mode),
+//                overflow = TextOverflow.Ellipsis
+//            )
+//            Spacer(modifier = Modifier.width(16.dp))
+//
+//        }
         Row(modifier, verticalAlignment = Alignment.CenterVertically) {
             IntroShowcase(
                 showIntroShowCase = showRecordTriggerTapTarget,
@@ -76,24 +90,39 @@ fun RecordTriggerButtonRow(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            IntroShowcase(
-                showIntroShowCase = showAdvancedTriggerTapTarget,
-                onShowCaseCompleted = onAdvancedTriggerTapTargetCompleted,
-                dismissOnClickOutside = true,
-            ) {
-                AdvancedTriggersButton(
-                    modifier = Modifier
-                        .weight(1f)
-                        .introShowCaseTarget(0, style = keyMapperShowcaseStyle()) {
-                            KeyMapperTapTarget(
-                                OnboardingTapTarget.ADVANCED_TRIGGERS,
-                                showSkipButton = false,
-                            )
-                        },
-                    isEnabled = recordTriggerState !is RecordTriggerState.CountingDown,
-                    onClick = onAdvancedTriggersClick,
-                )
-            }
+            Switch(
+                checked = isProModeSelected,
+                onCheckedChange = {},
+                enabled = recordTriggerState !is RecordTriggerState.CountingDown,
+                thumbContent = {
+                    if (isProModeSelected) {
+                        Icon(imageVector = KeyMapperIcons.ProModeIcon, contentDescription = null)
+                    } else {
+                        Icon(
+                            imageVector = KeyMapperIcons.ProModeIconDisabled,
+                            contentDescription = null
+                        )
+
+                    }
+                })
+//            IntroShowcase(
+//                showIntroShowCase = showAdvancedTriggerTapTarget,
+//                onShowCaseCompleted = onAdvancedTriggerTapTargetCompleted,
+//                dismissOnClickOutside = true,
+//            ) {
+//                AdvancedTriggersButton(
+//                    modifier = Modifier
+//                        .weight(1f)
+//                        .introShowCaseTarget(0, style = keyMapperShowcaseStyle()) {
+//                            KeyMapperTapTarget(
+//                                OnboardingTapTarget.ADVANCED_TRIGGERS,
+//                                showSkipButton = false,
+//                            )
+//                        },
+//                    isEnabled = recordTriggerState !is RecordTriggerState.CountingDown,
+//                    onClick = onAdvancedTriggersClick,
+//                )
+//            }
         }
     }
 }
@@ -117,22 +146,52 @@ private fun RecordTriggerButton(
             stringResource(R.string.button_record_trigger)
     }
 
+    // Create pulsing animation for the recording dot
+    val infiniteTransition = rememberInfiniteTransition(label = "recording_dot_pulse")
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 0.3f,
+        targetValue = 1.0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "recording_dot_alpha"
+    )
+
     FilledTonalButton(
         modifier = modifier,
         onClick = onClick,
         colors = colors,
     ) {
-        BasicText(
-            text = text,
-            maxLines = 1,
-            autoSize = TextAutoSize.StepBased(
-                minFontSize = 5.sp,
-                maxFontSize = MaterialTheme.typography.labelLarge.fontSize,
-            ),
-            style = MaterialTheme.typography.labelLarge,
-            color = { colors.contentColor },
-            overflow = TextOverflow.Ellipsis,
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // White recording dot
+            if (state is RecordTriggerState.CountingDown) {
+                Box(
+                    modifier = Modifier
+                        .size(8.dp)
+                        .alpha(alpha)
+                        .background(
+                            color = Color.White,
+                            shape = CircleShape
+                        )
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+
+            BasicText(
+                text = text,
+                maxLines = 1,
+                autoSize = TextAutoSize.StepBased(
+                    minFontSize = 5.sp,
+                    maxFontSize = MaterialTheme.typography.labelLarge.fontSize,
+                ),
+                style = MaterialTheme.typography.labelLarge,
+                color = { colors.contentColor },
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
     }
 }
 
@@ -170,6 +229,7 @@ private fun PreviewCountingDown() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.CountingDown(3),
+                isProModeSelected = true
             )
         }
     }
@@ -183,6 +243,7 @@ private fun PreviewStopped() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.Idle,
+                isProModeSelected = false
             )
         }
     }
@@ -196,6 +257,7 @@ private fun PreviewStoppedCompact() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.Idle,
+                isProModeSelected = true
             )
         }
     }

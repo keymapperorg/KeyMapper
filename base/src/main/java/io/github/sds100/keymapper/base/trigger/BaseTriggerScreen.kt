@@ -191,6 +191,8 @@ private fun TriggerScreenVertical(
 ) {
     Surface(modifier = modifier) {
         Column {
+            val isCompact = isVerticalCompactLayout()
+
             when (configState) {
                 is ConfigTriggerState.Empty -> {
                     Column(
@@ -227,7 +229,6 @@ private fun TriggerScreenVertical(
                 }
 
                 is ConfigTriggerState.Loaded -> {
-                    val isCompact = isVerticalCompactLayout()
                     Spacer(Modifier.height(8.dp))
 
                     TriggerList(
@@ -271,6 +272,10 @@ private fun TriggerScreenVertical(
                         )
                     }
                 }
+            }
+
+            if (!isCompact) {
+                Spacer(Modifier.height(8.dp))
             }
 
             RecordTriggerButtonRow(
