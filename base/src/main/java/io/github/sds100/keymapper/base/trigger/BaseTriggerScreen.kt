@@ -16,18 +16,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.BasicText
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -38,11 +32,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowHeightSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
@@ -54,6 +46,7 @@ import io.github.sds100.keymapper.base.keymaps.ShortcutRow
 import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.DraggableItem
+import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
 import io.github.sds100.keymapper.base.utils.ui.compose.rememberDragDropState
 import io.github.sds100.keymapper.common.utils.State
 
@@ -259,6 +252,10 @@ private fun TriggerScreenVertical(
                             onSelectClickType = onSelectClickType,
                             isCompact = isCompact
                         )
+
+                        if (!isCompact) {
+                            Spacer(Modifier.height(8.dp))
+                        }
                     }
 
                     if (configState.triggerModeButtonsVisible) {
@@ -390,6 +387,7 @@ private fun TriggerScreenHorizontal(
                             .weight(1f)
                             .verticalScroll(rememberScrollState()),
                     ) {
+                        Spacer(modifier = Modifier.height(16.dp))
                         if (configState.clickTypeButtons.isNotEmpty()) {
                             ClickTypeRadioGroup(
                                 modifier = Modifier
@@ -401,6 +399,8 @@ private fun TriggerScreenHorizontal(
                                 isCompact = false
                             )
                         }
+
+                        Spacer(modifier = Modifier.height(8.dp))
 
                         if (configState.triggerModeButtonsVisible) {
                             TriggerModeRadioGroup(
@@ -414,6 +414,8 @@ private fun TriggerScreenHorizontal(
                                 isCompact = false,
                             )
                         }
+
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
 
                     RecordTriggerButtonRow(
@@ -527,50 +529,13 @@ private fun ClickTypeRadioGroup(
         }
     }
 
-    Spacer(modifier = Modifier.height(8.dp))
-
-    SingleChoiceSegmentedButtonRow(
+    KeyMapperSegmentedButtonRow(
         modifier = modifier,
-    ) {
-        for (content in clickTypeButtonContent) {
-            val (clickType, label) = content
-
-            if (isCompact) {
-                SegmentedButton(
-                    selected = clickType == checkedClickType,
-                    onClick = { onSelectClickType(clickType) },
-                    icon = { },
-                    shape = SegmentedButtonDefaults.itemShape(
-                        index = clickTypeButtonContent.indexOf(content),
-                        count = clickTypeButtonContent.size,
-                        baseShape = MaterialTheme.shapes.extraSmall
-                    ),
-                ) {
-                    BasicText(
-                        text = label,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = LocalTextStyle.current,
-                        autoSize = TextAutoSize.StepBased(
-                            maxFontSize = LocalTextStyle.current.fontSize,
-                            minFontSize = 10.sp
-                        )
-                    )
-                }
-            } else {
-                SegmentedButton(
-                    selected = clickType == checkedClickType,
-                    onClick = { onSelectClickType(clickType) },
-                    shape = SegmentedButtonDefaults.itemShape(
-                        index = clickTypeButtonContent.indexOf(content),
-                        count = clickTypeButtonContent.size,
-                    ),
-                ) {
-                    Text(text = label, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                }
-            }
-        }
-    }
+        buttonStates = clickTypeButtonContent,
+        selectedState = checkedClickType,
+        onStateSelected = onSelectClickType,
+        isCompact = isCompact
+    )
 }
 
 @Composable
@@ -583,67 +548,27 @@ private fun TriggerModeRadioGroup(
     isCompact: Boolean
 ) {
     val triggerModeButtonContent = listOf(
-        TriggerMode.Parallel to stringResource(R.string.radio_button_parallel),
-        TriggerMode.Sequence to stringResource(R.string.radio_button_sequence)
+        "parallel" to stringResource(R.string.radio_button_parallel),
+        "sequence" to stringResource(R.string.radio_button_sequence)
     )
 
-    Spacer(modifier = Modifier.height(8.dp))
-
-    SingleChoiceSegmentedButtonRow(
+    KeyMapperSegmentedButtonRow(
         modifier = modifier,
-    ) {
-        for (content in triggerModeButtonContent) {
-            val (triggerMode, label) = content
-            val isSelected = mode == triggerMode
-
-            if (isCompact) {
-                SegmentedButton(
-                    selected = isSelected,
-                    onClick = {
-                        when (triggerMode) {
-                            is TriggerMode.Parallel -> onSelectParallelMode()
-                            is TriggerMode.Sequence -> onSelectSequenceMode()
-                        }
-                    },
-                    enabled = isEnabled,
-                    icon = { },
-                    shape = SegmentedButtonDefaults.itemShape(
-                        index = triggerModeButtonContent.indexOf(content),
-                        count = triggerModeButtonContent.size,
-                        baseShape = MaterialTheme.shapes.extraSmall
-                    ),
-                ) {
-                    BasicText(
-                        text = label,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = LocalTextStyle.current,
-                        autoSize = TextAutoSize.StepBased(
-                            maxFontSize = LocalTextStyle.current.fontSize,
-                            minFontSize = 10.sp
-                        )
-                    )
-                }
-            } else {
-                SegmentedButton(
-                    selected = isSelected,
-                    onClick = {
-                        when (triggerMode) {
-                            is TriggerMode.Parallel -> onSelectParallelMode()
-                            is TriggerMode.Sequence -> onSelectSequenceMode()
-                        }
-                    },
-                    enabled = isEnabled,
-                    shape = SegmentedButtonDefaults.itemShape(
-                        index = triggerModeButtonContent.indexOf(content),
-                        count = triggerModeButtonContent.size,
-                    ),
-                ) {
-                    Text(text = label, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                }
+        buttonStates = triggerModeButtonContent,
+        selectedState = when (mode) {
+            is TriggerMode.Parallel -> "parallel"
+            TriggerMode.Sequence -> "sequence"
+            TriggerMode.Undefined -> null
+        },
+        onStateSelected = { selectedMode ->
+            when (selectedMode) {
+                "parallel" -> onSelectParallelMode()
+                "sequence" -> onSelectSequenceMode()
             }
-        }
-    }
+        },
+        isCompact = isCompact,
+        isEnabled = isEnabled
+    )
 }
 
 private val sampleList = listOf(

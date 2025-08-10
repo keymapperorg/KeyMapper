@@ -20,12 +20,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue.Expanded
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -37,12 +35,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowHeightSizeClass
+import androidx.window.core.layout.WindowWidthSizeClass
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
+import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.base.utils.ui.compose.openUriSafe
 import io.github.sds100.keymapper.system.inputevents.Scancode
@@ -101,6 +102,7 @@ fun TriggerKeyOptionsBottomSheet(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            val isCompact = isVerticalCompactLayout()
 
             if (state is TriggerKeyOptionsState.KeyEvent) {
                 ScanCodeDetectionButtonRow(
@@ -109,7 +111,8 @@ fun TriggerKeyOptionsBottomSheet(
                     isScanCodeSelected = state.isScanCodeDetectionSelected,
                     keyCode = state.keyCode,
                     scanCode = state.scanCode,
-                    onSelectedChange = onScanCodeDetectionChanged
+                    onSelectedChange = onScanCodeDetectionChanged,
+                    isCompact = isCompact
                 )
 
                 CheckBoxText(
@@ -127,7 +130,8 @@ fun TriggerKeyOptionsBottomSheet(
                     isScanCodeSelected = state.isScanCodeDetectionSelected,
                     keyCode = state.keyCode,
                     scanCode = state.scanCode,
-                    onSelectedChange = onScanCodeDetectionChanged
+                    onSelectedChange = onScanCodeDetectionChanged,
+                    isCompact = isCompact
                 )
 
                 CheckBoxText(
@@ -142,7 +146,8 @@ fun TriggerKeyOptionsBottomSheet(
                 ClickTypeSection(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp), state, onSelectClickType
+                        .padding(horizontal = 16.dp), state, onSelectClickType,
+                    isCompact = isCompact
                 )
             }
 
@@ -287,7 +292,8 @@ fun TriggerKeyOptionsBottomSheet(
 private fun ClickTypeSection(
     modifier: Modifier,
     state: TriggerKeyOptionsState,
-    onSelectClickType: (ClickType) -> Unit
+    onSelectClickType: (ClickType) -> Unit,
+    isCompact: Boolean
 ) {
     Text(
         modifier = Modifier.padding(horizontal = 16.dp),
@@ -303,25 +309,13 @@ private fun ClickTypeSection(
         add(ClickType.DOUBLE_PRESS to stringResource(R.string.radio_button_double_press))
     }
 
-    Spacer(modifier = Modifier.height(8.dp))
-
-    SingleChoiceSegmentedButtonRow(
+    KeyMapperSegmentedButtonRow(
         modifier = modifier,
-    ) {
-        for (content in clickTypeButtonContent) {
-            val (clickType, label) = content
-            SegmentedButton(
-                selected = state.clickType == clickType,
-                onClick = { onSelectClickType(clickType) },
-                shape = SegmentedButtonDefaults.itemShape(
-                    index = clickTypeButtonContent.indexOf(content),
-                    count = clickTypeButtonContent.size
-                ),
-            ) {
-                Text(label)
-            }
-        }
-    }
+        buttonStates = clickTypeButtonContent,
+        selectedState = state.clickType,
+        onStateSelected = onSelectClickType,
+        isCompact = isCompact
+    )
 }
 
 @Composable
@@ -331,7 +325,8 @@ private fun ScanCodeDetectionButtonRow(
     scanCode: Int?,
     isEnabled: Boolean,
     isScanCodeSelected: Boolean,
-    onSelectedChange: (Boolean) -> Unit
+    onSelectedChange: (Boolean) -> Unit,
+    isCompact: Boolean,
 ) {
     Column(modifier) {
         Text(
@@ -341,52 +336,81 @@ private fun ScanCodeDetectionButtonRow(
         )
         Spacer(Modifier.height(8.dp))
 
-        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-            Spacer(Modifier.width(16.dp))
-            SegmentedButton(
-                selected = !isScanCodeSelected,
-                onClick = { onSelectedChange(false) },
-                shape = SegmentedButtonDefaults.itemShape(
-                    index = 0,
-                    count = 2,
-                ),
-                enabled = false
-            ) {
-                val text = if (keyCode == KeyEvent.KEYCODE_UNKNOWN) {
-                    stringResource(R.string.trigger_use_key_code_button_disabled)
-                } else {
-                    stringResource(R.string.trigger_use_key_code_button_enabled, keyCode)
-
-                }
-                Text(text)
+        val buttonStates = listOf(
+            false to if (keyCode == KeyEvent.KEYCODE_UNKNOWN) {
+                stringResource(R.string.trigger_use_key_code_button_disabled)
+            } else {
+                stringResource(R.string.trigger_use_key_code_button_enabled, keyCode)
+            },
+            true to if (scanCode == null) {
+                stringResource(R.string.trigger_use_scan_code_button_disabled)
+            } else {
+                stringResource(R.string.trigger_use_scan_code_button_enabled, scanCode)
             }
+        )
 
-            SegmentedButton(
-                selected = isScanCodeSelected,
-                onClick = { onSelectedChange(true) },
-                shape = SegmentedButtonDefaults.itemShape(
-                    index = 1,
-                    count = 2,
-                ),
-                enabled = isEnabled
-            ) {
-                val text = if (scanCode == null) {
-                    stringResource(R.string.trigger_use_scan_code_button_disabled)
-                } else {
-                    stringResource(R.string.trigger_use_scan_code_button_enabled, scanCode)
-
-                }
-                Text(text)
-            }
-            Spacer(Modifier.width(16.dp))
-        }
+        KeyMapperSegmentedButtonRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            buttonStates = buttonStates,
+            selectedState = isScanCodeSelected,
+            onStateSelected = onSelectedChange,
+            isCompact = isCompact,
+            isEnabled = isEnabled
+        )
     }
+}
+
+@Composable
+private fun isVerticalCompactLayout(): Boolean {
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+
+    return windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT && windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 private fun PreviewKeyEvent() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = Expanded,
+        )
+
+        TriggerKeyOptionsBottomSheet(
+            sheetState = sheetState,
+            state = TriggerKeyOptionsState.KeyEvent(
+                doNotRemapChecked = true,
+                clickType = ClickType.DOUBLE_PRESS,
+                showClickTypes = true,
+                devices = listOf(
+                    CheckBoxListItem(
+                        id = "id1",
+                        label = "Device 1",
+                        isChecked = true,
+                    ),
+                    CheckBoxListItem(
+                        id = "id2",
+                        label = "Device 2",
+                        isChecked = false,
+                    ),
+                ),
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                isScanCodeDetectionSelected = true,
+                isScanCodeSettingEnabled = true
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(heightDp = 400, widthDp = 300)
+@Composable
+private fun PreviewKeyEventTiny() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
