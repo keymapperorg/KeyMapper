@@ -526,11 +526,18 @@ private fun ClickTypeRadioGroup(
     onSelectClickType: (ClickType) -> Unit,
     isCompact: Boolean,
 ) {
-    val clickTypeButtonContent: List<Pair<ClickType, String>> = clickTypes.map { clickType ->
-        when (clickType) {
-            ClickType.SHORT_PRESS -> clickType to stringResource(R.string.radio_button_short_press)
-            ClickType.LONG_PRESS -> clickType to stringResource(R.string.radio_button_long_press)
-            ClickType.DOUBLE_PRESS -> clickType to stringResource(R.string.radio_button_double_press)
+    // Always put the buttons in the same order
+    val clickTypeButtonContent: List<Pair<ClickType, String>> = buildList {
+        if (clickTypes.contains(ClickType.SHORT_PRESS)) {
+            add(ClickType.SHORT_PRESS to stringResource(R.string.radio_button_short_press))
+        }
+
+        if (clickTypes.contains(ClickType.LONG_PRESS)) {
+            add(ClickType.LONG_PRESS to stringResource(R.string.radio_button_long_press))
+        }
+
+        if (clickTypes.contains(ClickType.DOUBLE_PRESS)) {
+            add(ClickType.DOUBLE_PRESS to stringResource(R.string.radio_button_double_press))
         }
     }
 
