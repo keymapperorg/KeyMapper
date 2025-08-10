@@ -34,101 +34,25 @@ struct DeviceContext {
     struct libevdev_uinput *uinputDev;
     struct android::KeyLayoutMap keyLayoutMap;
     char devicePath[256];
+    int fd;
 };
 
 static int epollFd = -1;
-static int commandEventFd = -1;
+static std::mutex epollMutex;
 
+static int commandEventFd = -1;
 static std::queue<Command> commandQueue;
 static std::mutex commandMutex;
 
 // This maps the file descriptor of an evdev device to its context.
-static std::map<int, struct DeviceContext> *evdevDevices = new std::map<int, struct DeviceContext>();
+static std::map<std::string, struct DeviceContext> *evdevDevices = new std::map<std::string, struct DeviceContext>();
 static std::mutex evdevDevicesMutex;
+static std::map<int, std::string> *fdToDevicePath = new std::map<int, std::string>();
 
 #define DEBUG_PROBE false
 
-static int findEvdevDevice(
-        std::string name,
-        int bus,
-        int vendor,
-        int product,
-        libevdev **outDev,
-        char *outPath
-) {
-    DIR *dir = opendir("/dev/input");
-
-    if (dir == nullptr) {
-        LOGE("Failed to open /dev/input directory");
-        return -1;
-    }
-
-    struct dirent *entry;
-
-    while ((entry = readdir(dir)) != nullptr) {
-        // Skip . and .. entries
-        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
-            continue;
-        }
-
-        char fullPath[256];
-        snprintf(fullPath, sizeof(fullPath), "/dev/input/%s", entry->d_name);
-
-        // MUST be NONBLOCK so that the loop reading the evdev events eventually returns
-        // due to an EAGAIN error.
-        int fd = open(fullPath, O_RDONLY | O_NONBLOCK);
-
-        if (fd == -1) {
-            continue;
-        }
-
-        int status = libevdev_new_from_fd(fd, outDev);
-
-        if (status != 0) {
-            LOGE("Failed to open libevdev device from path %s: %s", fullPath, strerror(errno));
-            close(fd);
-            continue;
-        }
-
-        const char *devName = libevdev_get_name(*outDev);
-        int devVendor = libevdev_get_id_vendor(*outDev);
-        int devProduct = libevdev_get_id_product(*outDev);
-        int devBus = libevdev_get_id_bustype(*outDev);
-
-        if (DEBUG_PROBE) {
-            LOGD("Evdev device: %s, bus: %d, vendor: %d, product: %d, path: %s",
-                 devName, devBus, devVendor, devProduct, fullPath);
-        }
-
-        if (devName != name ||
-            devVendor != vendor ||
-            devProduct != product ||
-            // The hidden device bus field was only added to InputDevice.java in Android 14.
-            // So only check it if it is a real value
-            (bus != -1 && devBus != bus)) {
-
-            libevdev_free(*outDev);
-            close(fd);
-            continue;
-        }
-
-        closedir(dir);
-
-        strcpy(outPath, fullPath);
-        return 0;
-    }
-
-    closedir(dir);
-
-    LOGE("Input device not found with name: %s, bus: %d, vendor: %d, product: %d", name.c_str(),
-         bus,
-         vendor, product);
-
-    return -1;
-}
-
 jint JNI_OnLoad(JavaVM *vm, void *reserved) {
-    evdevDevices = new std::map<int, struct DeviceContext>();
+    evdevDevices = new std::map<std::string, struct DeviceContext>();
     return JNI_VERSION_1_6;
 }
 
@@ -145,18 +69,21 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDeviceNa
     bool result = false;
 
     {
+        std::lock_guard<std::mutex> epollLock(epollMutex);
+        if (epollFd == -1) {
+            LOGE("Epoll is not initialized. Cannot grab evdev device.");
+            return false;
+        }
+
         // Lock to prevent concurrent grab/ungrab operations on the same device
         std::lock_guard<std::mutex> lock(evdevDevicesMutex);
 
         // Check if device is already grabbed
-        for (const auto &pair: *evdevDevices) {
-            DeviceContext context = pair.second;
-            if (strcmp(context.devicePath, devicePath) == 0) {
-                LOGW("Device %s is already grabbed. Maybe it is a virtual uinput device.",
-                     devicePath);
-                env->ReleaseStringUTFChars(jDevicePath, devicePath);
-                return false;
-            }
+        if (evdevDevices->contains(devicePath)) {
+            LOGW("Device %s is already grabbed. Maybe it is a virtual uinput device.",
+                 devicePath);
+            env->ReleaseStringUTFChars(jDevicePath, devicePath);
+            return false;
         }
 
         // Perform synchronous grab operation
@@ -188,8 +115,6 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDeviceNa
             env->ReleaseStringUTFChars(jDevicePath, devicePath);
             return false;
         }
-
-        int evdevFd = libevdev_get_fd(dev);
 
         // Create a dummy InputDeviceIdentifier for key layout loading
         android::InputDeviceIdentifier identifier;
@@ -240,30 +165,30 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDeviceNa
                 dev,
                 uinputDev,
                 *klResult.value(),
-                {}  // Initialize devicePath array
+                {},  // Initialize devicePath array
+                fd
         };
 
         strcpy(context.devicePath, devicePath);
 
-        // Add to epoll for event monitoring (only if event loop is running)
-        if (epollFd != -1) {
-            struct epoll_event event{};
-            event.events = EPOLLIN;
-            event.data.fd = evdevFd;
+        // Already checked at the start of the method whether epoll was running
+        struct epoll_event event{};
+        event.events = EPOLLIN;
+        event.data.fd = fd;
 
-            if (epoll_ctl(epollFd, EPOLL_CTL_ADD, evdevFd, &event) == -1) {
-                LOGE("Failed to add new device to epoll: %s", strerror(errno));
-                libevdev_uinput_destroy(uinputDev);
-                libevdev_grab(dev, LIBEVDEV_UNGRAB);
-                libevdev_free(dev);
-                close(fd);
-                env->ReleaseStringUTFChars(jDevicePath, devicePath);
-                return false;
-            }
+        if (epoll_ctl(epollFd, EPOLL_CTL_ADD, fd, &event) == -1) {
+            LOGE("Failed to add new device to epoll: %s", strerror(errno));
+            libevdev_uinput_destroy(uinputDev);
+            libevdev_grab(dev, LIBEVDEV_UNGRAB);
+            libevdev_free(dev);
+            close(fd);
+            env->ReleaseStringUTFChars(jDevicePath, devicePath);
+            return false;
         }
 
-        evdevDevices->insert_or_assign(evdevFd, context);
+        evdevDevices->insert_or_assign(devicePath, context);
         result = true;
+        fdToDevicePath->insert_or_assign(fd, devicePath);
 
         LOGI("Grabbed device %s, %s", libevdev_get_name(dev), context.devicePath);
     }
@@ -272,8 +197,11 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDeviceNa
     return result;
 }
 
-
-void onEpollEvent(DeviceContext *deviceContext, IEvdevCallback *callback) {
+/**
+ * @return Whether the events were all handled by the callback. If the callback dies then this
+ * returns false.
+ */
+bool onEpollEvdevEvent(DeviceContext *deviceContext, IEvdevCallback *callback) {
     struct input_event inputEvent{};
 
     int rc = libevdev_next_event(deviceContext->evdev, LIBEVDEV_READ_FLAG_NORMAL, &inputEvent);
@@ -285,14 +213,18 @@ void onEpollEvent(DeviceContext *deviceContext, IEvdevCallback *callback) {
             deviceContext->keyLayoutMap.mapKey(inputEvent.code, 0, &outKeycode, &outFlags);
 
             bool returnValue;
-            callback->onEvdevEvent(deviceContext->devicePath,
-                                   inputEvent.time.tv_sec,
-                                   inputEvent.time.tv_usec,
-                                   inputEvent.type,
-                                   inputEvent.code,
-                                   inputEvent.value,
-                                   outKeycode,
-                                   &returnValue);
+            ndk::ScopedAStatus callbackResult = callback->onEvdevEvent(deviceContext->devicePath,
+                                                                       inputEvent.time.tv_sec,
+                                                                       inputEvent.time.tv_usec,
+                                                                       inputEvent.type,
+                                                                       inputEvent.code,
+                                                                       inputEvent.value,
+                                                                       outKeycode,
+                                                                       &returnValue);
+
+            if (!callbackResult.isOk()) {
+                return false;
+            }
 
             if (!returnValue) {
                 libevdev_uinput_write_event(deviceContext->uinputDev,
@@ -309,21 +241,21 @@ void onEpollEvent(DeviceContext *deviceContext, IEvdevCallback *callback) {
                                      &inputEvent);
         }
     } while (rc != -EAGAIN);
+
+    return true;
 }
 
 // Set this to some upper limit. It is unlikely that Key Mapper will be polling
 // more than a few evdev devices at once.
 static int MAX_EPOLL_EVENTS = 100;
 
-void handleCommand(const Command &cmd) {
-    // Only STOP commands are handled here now, grab/ungrab are synchronous
-}
-
 extern "C"
 JNIEXPORT void JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLoop(JNIEnv *env,
                                                                                    jobject thiz,
                                                                                    jobject jCallbackBinder) {
+    std::unique_lock epollLock(epollMutex);
+
     if (epollFd != -1 || commandEventFd != -1) {
         LOGE("The evdev event loop has already started.");
         return;
@@ -350,8 +282,11 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLo
         LOGE("Failed to add command eventfd to epoll: %s", strerror(errno));
         close(epollFd);
         close(commandEventFd);
+        epollLock.unlock();
         return;
     }
+
+    epollLock.unlock();
 
     AIBinder *callbackAIBinder = AIBinder_fromJavaBinder(env, jCallbackBinder);
     const ::ndk::SpAIBinder spBinder(callbackAIBinder);
@@ -362,13 +297,19 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLo
 
     LOGI("Start evdev event loop");
 
-    callback->onEvdevEventLoopStarted();
+    ndk::ScopedAStatus callbackResult = callback->onEvdevEventLoopStarted();
+
+    if (!callbackResult.isOk()) {
+        LOGE("Callback is dead. Not starting evdev loop.");
+        return;
+    }
 
     while (running) {
         int n = epoll_wait(epollFd, events, MAX_EPOLL_EVENTS, -1);
 
         for (int i = 0; i < n; ++i) {
-            if (events[i].data.fd == commandEventFd) {
+            int fd = events[i].data.fd;
+            if (fd == commandEventFd) {
                 uint64_t val;
                 ssize_t s = read(commandEventFd, &val, sizeof(val));
 
@@ -391,11 +332,22 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLo
                         running = false;
                         break;
                     }
-                    handleCommand(cmd);
                 }
             } else {
-                DeviceContext *dc = &evdevDevices->at(events[i].data.fd);
-                onEpollEvent(dc, callback.get());
+                std::lock_guard<std::mutex> lock(evdevDevicesMutex);
+
+                auto it = fdToDevicePath->find(fd);
+                if (it != fdToDevicePath->end()) {
+                    DeviceContext *dc = &evdevDevices->at(it->second);
+                    // If handling the evdev event fails then stop the event loop
+                    // and ungrab all the devices.
+                    bool result = onEpollEvdevEvent(dc, callback.get());
+
+                    if (!result) {
+                        running = false;
+                        break;
+                    }
+                }
             }
         }
     }
@@ -403,7 +355,8 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLo
     // Cleanup
     std::lock_guard<std::mutex> lock(evdevDevicesMutex);
 
-    for (auto const &[fd, dc]: *evdevDevices) {
+    for (auto const &[path, dc]: *evdevDevices) {
+        libevdev_uinput_destroy(dc.uinputDev);
         libevdev_grab(dc.evdev, LIBEVDEV_UNGRAB);
         libevdev_free(dc.evdev);
     }
@@ -431,33 +384,31 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_ungrabEvdevDevice
         // Lock to prevent concurrent grab/ungrab operations
         std::lock_guard<std::mutex> lock(evdevDevicesMutex);
 
-        for (auto it = evdevDevices->begin(); it != evdevDevices->end(); ++it) {
-            if (strcmp(it->second.devicePath, devicePath) == 0) {
-                // Remove from epoll first (if event loop is running)
-                if (epollFd != -1) {
-                    int fd = it->first;
-                    if (epoll_ctl(epollFd, EPOLL_CTL_DEL, fd, nullptr) == -1) {
-                        LOGW("Failed to remove device from epoll: %s", strerror(errno));
-                        // Continue with ungrab even if epoll removal fails
-                    }
+        auto it = evdevDevices->find(devicePath);
+        if (it != evdevDevices->end()) {
+            // Remove from epoll first (if event loop is running)
+            if (epollFd != -1) {
+                if (epoll_ctl(epollFd, EPOLL_CTL_DEL, it->second.fd, nullptr) == -1) {
+                    LOGW("Failed to remove device from epoll: %s", strerror(errno));
+                    // Continue with ungrab even if epoll removal fails
                 }
-
-                // Do this before freeing the evdev file descriptor
-                libevdev_uinput_destroy(it->second.uinputDev);
-
-                // Ungrab the device
-                libevdev_grab(it->second.evdev, LIBEVDEV_UNGRAB);
-
-                // Free resources
-                libevdev_free(it->second.evdev);
-
-                // Remove from device map
-                evdevDevices->erase(it);
-                result = true;
-
-                LOGI("Ungrabbed device %s", devicePath);
-                break;
             }
+
+            // Do this before freeing the evdev file descriptor
+            libevdev_uinput_destroy(it->second.uinputDev);
+
+            // Ungrab the device
+            libevdev_grab(it->second.evdev, LIBEVDEV_UNGRAB);
+
+            // Free resources
+            libevdev_free(it->second.evdev);
+
+            // Remove from device map
+            evdevDevices->erase(it);
+            fdToDevicePath->erase(it->second.fd);
+            result = true;
+
+            LOGI("Ungrabbed device %s", devicePath);
         }
 
         if (!result) {
@@ -502,16 +453,13 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_writeEvdevEventNa
 
     bool result = false;
     {
-        std::lock_guard<std::mutex> lock(evdevDevicesMutex);
-        for (const auto &pair: *evdevDevices) {
-            if (strcmp(pair.second.devicePath, devicePath) == 0) {
-                int rc = libevdev_uinput_write_event(pair.second.uinputDev, type, code, value);
-                if (rc == 0) {
-                    rc = libevdev_uinput_write_event(pair.second.uinputDev, EV_SYN, SYN_REPORT, 0);
-                }
-                result = (rc == 0);
-                break;
+        auto it = evdevDevices->find(devicePath);
+        if (it != evdevDevices->end()) {
+            int rc = libevdev_uinput_write_event(it->second.uinputDev, type, code, value);
+            if (rc == 0) {
+                rc = libevdev_uinput_write_event(it->second.uinputDev, EV_SYN, SYN_REPORT, 0);
             }
+            result = (rc == 0);
         }
     }
 
@@ -527,17 +475,17 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_ungrabAllEvdevDev
     {
         // Lock to prevent concurrent grab/ungrab operations
         std::lock_guard<std::mutex> lock(evdevDevicesMutex);
+        std::lock_guard<std::mutex> epollLock(epollMutex);
 
         // Create a copy of the iterator to avoid issues with erasing during iteration
         auto devicesCopy = *evdevDevices;
 
         for (const auto &pair: devicesCopy) {
-            int fd = pair.first;
             const DeviceContext &context = pair.second;
 
             // Remove from epoll first (if event loop is running)
             if (epollFd != -1) {
-                if (epoll_ctl(epollFd, EPOLL_CTL_DEL, fd, nullptr) == -1) {
+                if (epoll_ctl(epollFd, EPOLL_CTL_DEL, context.fd, nullptr) == -1) {
                     LOGW("Failed to remove device %s from epoll: %s", context.devicePath,
                          strerror(errno));
                     // Continue with ungrab even if epoll removal fails
@@ -558,15 +506,10 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_ungrabAllEvdevDev
 
         // Clear all devices from the map
         evdevDevices->clear();
+        fdToDevicePath->clear();
     }
 
     return true;
-}
-extern "C"
-JNIEXPORT jboolean JNICALL
-Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabAllEvdevDevicesNative(
-        JNIEnv *env, jobject thiz) {
-    // TODO: implement grabAllEvdevDevicesNative()
 }
 
 // Helper function to create a Java EvdevDeviceHandle object

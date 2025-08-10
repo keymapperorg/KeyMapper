@@ -40,7 +40,6 @@ internal class SystemBridge : ISystemBridge.Stub() {
     // TODO return error code and map this to a SystemBridgeError in key mapper
 
     external fun grabEvdevDeviceNative(devicePath: String): Boolean
-    external fun grabAllEvdevDevicesNative(): Boolean
 
     external fun ungrabEvdevDeviceNative(devicePath: String): Boolean
     external fun ungrabAllEvdevDevicesNative(): Boolean
@@ -175,14 +174,15 @@ internal class SystemBridge : ISystemBridge.Stub() {
     private var evdevCallback: IEvdevCallback? = null
     private val evdevCallbackDeathRecipient: IBinder.DeathRecipient = IBinder.DeathRecipient {
         Log.i(TAG, "EvdevCallback binder died")
-        stopEvdevEventLoop()
+        coroutineScope.launch(Dispatchers.Default) {
+            stopEvdevEventLoop()
+        }
     }
 
     init {
         val libraryPath = System.getProperty("keymapper_sysbridge.library.path")
         @SuppressLint("UnsafeDynamicallyLoadedCode")
         System.load("$libraryPath/libevdev.so")
-
 
         Log.i(TAG, "SystemBridge started")
 
@@ -261,10 +261,6 @@ internal class SystemBridge : ISystemBridge.Stub() {
     override fun grabEvdevDevice(devicePath: String?): Boolean {
         devicePath ?: return false
         return grabEvdevDeviceNative(devicePath)
-    }
-
-    override fun grabAllEvdevDevices(): Boolean {
-        return grabAllEvdevDevicesNative()
     }
 
     override fun ungrabEvdevDevice(devicePath: String?): Boolean {

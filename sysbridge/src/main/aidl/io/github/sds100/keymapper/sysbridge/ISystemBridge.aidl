@@ -12,7 +12,6 @@ interface ISystemBridge {
    void destroy() = 16777114;
 
    boolean grabEvdevDevice(String devicePath) = 1;
-   boolean grabAllEvdevDevices() = 2;
 
    boolean ungrabEvdevDevice(String devicePath) = 3;
    boolean ungrabAllEvdevDevices() = 4;

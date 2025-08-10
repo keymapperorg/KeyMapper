@@ -6,10 +6,12 @@ import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class EvdevHandleCache(
@@ -22,7 +24,10 @@ class EvdevHandleCache(
             systemBridge ?: return@combine emptyMap<String, EvdevDeviceHandle>()
 
             try {
-                systemBridge.evdevInputDevices.associateBy { it.path }
+                // Do it on a separate thread in case there is deadlock
+                withContext(Dispatchers.IO) {
+                    systemBridge.evdevInputDevices.associateBy { it.path }
+                }
             } catch (e: RemoteException) {
                 Timber.e("Failed to get evdev input devices from system bridge $e")
                 emptyMap()
