@@ -24,6 +24,7 @@ import io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerKey
 import io.github.sds100.keymapper.base.trigger.TriggerMode
+import io.github.sds100.keymapper.base.trigger.detectWithScancode
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.minusFlag
 import io.github.sds100.keymapper.common.utils.withFlag
@@ -1738,18 +1739,30 @@ class KeyMapAlgorithm(
 
     private fun TriggerKey.matchesEvent(event: AlgoEvent): Boolean {
         if (this is KeyEventTriggerKey && event is KeyEventAlgo) {
+            val codeMatches = if (this.detectWithScancode()) {
+                this.scanCode == event.scanCode
+            } else {
+                this.keyCode == event.keyCode
+            }
+
             return when (this.device) {
-                KeyEventTriggerDevice.Any -> this.keyCode == event.keyCode && this.clickType == event.clickType
+                KeyEventTriggerDevice.Any -> codeMatches && this.clickType == event.clickType
                 is KeyEventTriggerDevice.External ->
-                    event.isExternal && this.keyCode == event.keyCode && event.descriptor == this.device.descriptor && this.clickType == event.clickType
+                    event.isExternal && codeMatches && event.descriptor == this.device.descriptor && this.clickType == event.clickType
 
                 KeyEventTriggerDevice.Internal ->
                     !event.isExternal &&
-                        this.keyCode == event.keyCode &&
+                        codeMatches &&
                         this.clickType == event.clickType
             }
         } else if (this is EvdevTriggerKey && event is EvdevEventAlgo) {
-            return this.keyCode == event.keyCode && this.clickType == event.clickType && this.device == event.device
+            val codeMatches = if (this.detectWithScancode()) {
+                this.scanCode == event.scanCode
+            } else {
+                this.keyCode == event.keyCode
+            }
+
+            return codeMatches && this.clickType == event.clickType && this.device == event.device
         } else if (this is AssistantTriggerKey && event is AssistantEvent) {
             return if (this.type == AssistantTriggerType.ANY || event.type == AssistantTriggerType.ANY) {
                 this.clickType == event.clickType
@@ -1767,23 +1780,35 @@ class KeyMapAlgorithm(
 
     private fun TriggerKey.matchesWithOtherKey(otherKey: TriggerKey): Boolean {
         if (this is KeyEventTriggerKey && otherKey is KeyEventTriggerKey) {
+            val codeMatches = if (this.detectWithScancode()) {
+                otherKey.detectWithScancode() && this.scanCode == otherKey.scanCode
+            } else {
+                this.keyCode == otherKey.keyCode
+            }
+
             return when (this.device) {
                 KeyEventTriggerDevice.Any ->
-                    this.keyCode == otherKey.keyCode &&
+                    codeMatches &&
                         this.clickType == otherKey.clickType
 
                 is KeyEventTriggerDevice.External ->
-                    this.keyCode == otherKey.keyCode &&
+                    codeMatches &&
                         this.device == otherKey.device &&
                         this.clickType == otherKey.clickType
 
                 KeyEventTriggerDevice.Internal ->
-                    this.keyCode == otherKey.keyCode &&
+                    codeMatches &&
                         otherKey.device == KeyEventTriggerDevice.Internal &&
                         this.clickType == otherKey.clickType
             }
         } else if (this is EvdevTriggerKey && otherKey is EvdevTriggerKey) {
-            return this.keyCode == otherKey.keyCode && this.clickType == otherKey.clickType && this.device == otherKey.device
+            val codeMatches = if (this.detectWithScancode()) {
+                otherKey.detectWithScancode() && this.scanCode == otherKey.scanCode
+            } else {
+                this.keyCode == otherKey.keyCode
+            }
+
+            return codeMatches && this.clickType == otherKey.clickType && this.device == otherKey.device
         } else if (this is AssistantTriggerKey && otherKey is AssistantTriggerKey) {
             return this.type == otherKey.type && this.clickType == otherKey.clickType
         } else if (this is FloatingButtonKey && otherKey is FloatingButtonKey) {
