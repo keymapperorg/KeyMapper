@@ -54,7 +54,6 @@ import io.github.sds100.keymapper.base.keymaps.ShortcutRow
 import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.DraggableItem
-import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.base.utils.ui.compose.rememberDragDropState
 import io.github.sds100.keymapper.common.utils.State
 
@@ -263,21 +262,15 @@ private fun TriggerScreenVertical(
                     }
 
                     if (configState.triggerModeButtonsVisible) {
-                        if (!isCompact) {
-                            Text(
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                                text = stringResource(R.string.press_dot_dot_dot),
-                                style = MaterialTheme.typography.labelLarge,
-                            )
-                        }
-
                         TriggerModeRadioGroup(
-                            modifier = Modifier.padding(horizontal = 8.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp),
                             mode = configState.checkedTriggerMode,
                             isEnabled = configState.triggerModeButtonsEnabled,
                             onSelectParallelMode = onSelectParallelMode,
                             onSelectSequenceMode = onSelectSequenceMode,
-                            maxLines = if (isCompact) 1 else 2,
+                            isCompact = isCompact,
                         )
                     }
                 }
@@ -409,19 +402,16 @@ private fun TriggerScreenHorizontal(
                             )
                         }
 
-                        Text(
-                            modifier = Modifier.padding(horizontal = 8.dp),
-                            text = stringResource(R.string.press_dot_dot_dot),
-                            style = MaterialTheme.typography.labelLarge,
-                        )
-
                         if (configState.triggerModeButtonsVisible) {
                             TriggerModeRadioGroup(
-                                modifier = Modifier.padding(horizontal = 8.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp),
                                 mode = configState.checkedTriggerMode,
                                 isEnabled = configState.triggerModeButtonsEnabled,
                                 onSelectParallelMode = onSelectParallelMode,
                                 onSelectSequenceMode = onSelectSequenceMode,
+                                isCompact = false,
                             )
                         }
                     }
@@ -561,7 +551,10 @@ private fun ClickTypeRadioGroup(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         style = LocalTextStyle.current,
-                        autoSize = TextAutoSize.StepBased(minFontSize = 10.sp)
+                        autoSize = TextAutoSize.StepBased(
+                            maxFontSize = LocalTextStyle.current.fontSize,
+                            minFontSize = 10.sp
+                        )
                     )
                 }
             } else {
@@ -587,26 +580,68 @@ private fun TriggerModeRadioGroup(
     isEnabled: Boolean,
     onSelectParallelMode: () -> Unit,
     onSelectSequenceMode: () -> Unit,
-    maxLines: Int = 2,
+    isCompact: Boolean
 ) {
-    Column(modifier = modifier) {
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            RadioButtonText(
-                modifier = Modifier.weight(1f),
-                isSelected = mode is TriggerMode.Parallel,
-                isEnabled = isEnabled,
-                text = stringResource(R.string.radio_button_parallel),
-                onSelected = onSelectParallelMode,
-                maxLines = maxLines,
-            )
-            RadioButtonText(
-                modifier = Modifier.weight(1f),
-                isSelected = mode == TriggerMode.Sequence,
-                isEnabled = isEnabled,
-                text = stringResource(R.string.radio_button_sequence),
-                onSelected = onSelectSequenceMode,
-                maxLines = maxLines,
-            )
+    val triggerModeButtonContent = listOf(
+        TriggerMode.Parallel to stringResource(R.string.radio_button_parallel),
+        TriggerMode.Sequence to stringResource(R.string.radio_button_sequence)
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    SingleChoiceSegmentedButtonRow(
+        modifier = modifier,
+    ) {
+        for (content in triggerModeButtonContent) {
+            val (triggerMode, label) = content
+            val isSelected = mode == triggerMode
+
+            if (isCompact) {
+                SegmentedButton(
+                    selected = isSelected,
+                    onClick = {
+                        when (triggerMode) {
+                            is TriggerMode.Parallel -> onSelectParallelMode()
+                            is TriggerMode.Sequence -> onSelectSequenceMode()
+                        }
+                    },
+                    enabled = isEnabled,
+                    icon = { },
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = triggerModeButtonContent.indexOf(content),
+                        count = triggerModeButtonContent.size,
+                        baseShape = MaterialTheme.shapes.extraSmall
+                    ),
+                ) {
+                    BasicText(
+                        text = label,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = LocalTextStyle.current,
+                        autoSize = TextAutoSize.StepBased(
+                            maxFontSize = LocalTextStyle.current.fontSize,
+                            minFontSize = 10.sp
+                        )
+                    )
+                }
+            } else {
+                SegmentedButton(
+                    selected = isSelected,
+                    onClick = {
+                        when (triggerMode) {
+                            is TriggerMode.Parallel -> onSelectParallelMode()
+                            is TriggerMode.Sequence -> onSelectSequenceMode()
+                        }
+                    },
+                    enabled = isEnabled,
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = triggerModeButtonContent.indexOf(content),
+                        count = triggerModeButtonContent.size,
+                    ),
+                ) {
+                    Text(text = label, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                }
+            }
         }
     }
 }

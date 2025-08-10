@@ -313,7 +313,6 @@ private fun ClickTypeSection(
             SegmentedButton(
                 selected = state.clickType == clickType,
                 onClick = { onSelectClickType(clickType) },
-                icon = {},
                 shape = SegmentedButtonDefaults.itemShape(
                     index = clickTypeButtonContent.indexOf(content),
                     count = clickTypeButtonContent.size
@@ -351,7 +350,7 @@ private fun ScanCodeDetectionButtonRow(
                     index = 0,
                     count = 2,
                 ),
-                enabled = isEnabled
+                enabled = false
             ) {
                 val text = if (keyCode == KeyEvent.KEYCODE_UNKNOWN) {
                     stringResource(R.string.trigger_use_key_code_button_disabled)
