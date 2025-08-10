@@ -398,7 +398,7 @@
     <string name="button_advanced_triggers_badge">NEW!</string>
     <string name="button_done">Done</string>
     <string name="button_fix">Fix</string>
-    <string name="button_recording_trigger_countdown">Recording (%d…)</string>
+    <string name="button_recording_trigger_countdown">Recording now (%d…)</string>
     <string name="button_add_constraint">Add constraint</string>
     <string name="button_choose_keycode">Choose Key code</string>
     <string name="button_add_intent_extra">Add extra</string>
@@ -1521,6 +1521,7 @@
     <string name="trigger_scan_code_detection_explanation">Keys can be identified by either a \'key code\' or a \'scan code\'. A scan code is more unique than a key code but your trigger may not work with other devices. We recommend using key codes.</string>
     <string name="trigger_use_key_code_button">Use key code</string>
     <string name="trigger_use_scan_code_button">Use scan code</string>
+    <string name="trigger_record_with_pro_mode">Use PRO mode</string>
 
     <!--  Action screen  -->
     <string name="action_list_item_remove">Remove</string>

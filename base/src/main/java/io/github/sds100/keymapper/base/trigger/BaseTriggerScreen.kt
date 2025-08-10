@@ -255,7 +255,7 @@ private fun TriggerScreenVertical(
                     if (configState.triggerModeButtonsVisible) {
                         if (!isCompact) {
                             Text(
-                                modifier = Modifier.padding(horizontal = 8.dp),
+                                modifier = Modifier.padding(horizontal = 16.dp),
                                 text = stringResource(R.string.press_dot_dot_dot),
                                 style = MaterialTheme.typography.labelLarge,
                             )

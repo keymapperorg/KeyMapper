@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.trigger
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,8 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,45 +43,57 @@ fun RecordTriggerButtonRow(
     showAdvancedTriggerTapTarget: Boolean = false,
     onAdvancedTriggerTapTargetCompleted: () -> Unit = {},
 ) {
-    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
-        IntroShowcase(
-            showIntroShowCase = showRecordTriggerTapTarget,
-            onShowCaseCompleted = onRecordTriggerTapTargetCompleted,
-            dismissOnClickOutside = true,
-        ) {
-            RecordTriggerButton(
-                modifier = Modifier
-                    .weight(1f)
-                    .introShowCaseTarget(0, style = keyMapperShowcaseStyle()) {
-                        KeyMapperTapTarget(
-                            OnboardingTapTarget.RECORD_TRIGGER,
-                            onSkipClick = onSkipTapTarget,
-                        )
-                    },
-                recordTriggerState,
-                onClick = onRecordTriggerClick,
+    Column {
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = stringResource(R.string.trigger_record_with_pro_mode),
+                overflow = TextOverflow.Ellipsis
             )
+            Spacer(modifier = Modifier.width(16.dp))
+            Switch(
+                checked = false,
+                onCheckedChange = {})
         }
+        Row(modifier, verticalAlignment = Alignment.CenterVertically) {
+            IntroShowcase(
+                showIntroShowCase = showRecordTriggerTapTarget,
+                onShowCaseCompleted = onRecordTriggerTapTargetCompleted,
+                dismissOnClickOutside = true,
+            ) {
+                RecordTriggerButton(
+                    modifier = Modifier
+                        .weight(1f)
+                        .introShowCaseTarget(0, style = keyMapperShowcaseStyle()) {
+                            KeyMapperTapTarget(
+                                OnboardingTapTarget.RECORD_TRIGGER,
+                                onSkipClick = onSkipTapTarget,
+                            )
+                        },
+                    recordTriggerState,
+                    onClick = onRecordTriggerClick,
+                )
+            }
 
-        Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(8.dp))
 
-        IntroShowcase(
-            showIntroShowCase = showAdvancedTriggerTapTarget,
-            onShowCaseCompleted = onAdvancedTriggerTapTargetCompleted,
-            dismissOnClickOutside = true,
-        ) {
-            AdvancedTriggersButton(
-                modifier = Modifier
-                    .weight(1f)
-                    .introShowCaseTarget(0, style = keyMapperShowcaseStyle()) {
-                        KeyMapperTapTarget(
-                            OnboardingTapTarget.ADVANCED_TRIGGERS,
-                            showSkipButton = false,
-                        )
-                    },
-                isEnabled = recordTriggerState !is RecordTriggerState.CountingDown,
-                onClick = onAdvancedTriggersClick,
-            )
+            IntroShowcase(
+                showIntroShowCase = showAdvancedTriggerTapTarget,
+                onShowCaseCompleted = onAdvancedTriggerTapTargetCompleted,
+                dismissOnClickOutside = true,
+            ) {
+                AdvancedTriggersButton(
+                    modifier = Modifier
+                        .weight(1f)
+                        .introShowCaseTarget(0, style = keyMapperShowcaseStyle()) {
+                            KeyMapperTapTarget(
+                                OnboardingTapTarget.ADVANCED_TRIGGERS,
+                                showSkipButton = false,
+                            )
+                        },
+                    isEnabled = recordTriggerState !is RecordTriggerState.CountingDown,
+                    onClick = onAdvancedTriggersClick,
+                )
+            }
         }
     }
 }

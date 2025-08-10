@@ -1,10 +1,10 @@
 package io.github.sds100.keymapper.base.trigger
 
 import android.view.KeyEvent
+import io.github.sds100.keymapper.base.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.input.InputEventHubCallback
-import io.github.sds100.keymapper.base.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.isError
@@ -67,6 +67,30 @@ class RecordTriggerControllerImpl @Inject constructor(
     private val downEvdevEvents: MutableSet<KMEvdevEvent> = mutableSetOf()
     private val dpadMotionEventTracker: DpadMotionEventTracker = DpadMotionEventTracker()
 
+    // TODO update when system bridge is (dis)connected
+    override val isEvdevRecordingPermitted: MutableStateFlow<Boolean> =
+        MutableStateFlow(getIsEvdevRecordingPermitted())
+
+    // TODO set to false by default and turn into a flow
+    private var isEvdevRecordingEnabled: Boolean = true
+
+    override fun setEvdevRecordingEnabled(enabled: Boolean) {
+        if (!isEvdevRecordingPermitted.value) {
+            return
+        }
+
+        if (state.value is RecordTriggerState.CountingDown) {
+            return
+        }
+
+        isEvdevRecordingEnabled = enabled
+    }
+
+    private fun getIsEvdevRecordingPermitted(): Boolean {
+        // TODO check if the preference enabling pro mode key maps is turned on
+        return inputEventHub.isSystemBridgeConnected()
+    }
+
     override fun onInputEvent(
         event: KMInputEvent,
         detectionSource: InputEventDetectionSource,
@@ -77,6 +101,11 @@ class RecordTriggerControllerImpl @Inject constructor(
 
         when (event) {
             is KMEvdevEvent -> {
+                // TODO check
+//                if (!isEvdevRecordingEnabled || !isEvdevRecordingPermitted.value) {
+//                    return false
+//                }
+
                 // Do not record evdev events that are not key events.
                 if (event.type != KMEvdevEvent.TYPE_KEY_EVENT) {
                     return false
@@ -107,6 +136,10 @@ class RecordTriggerControllerImpl @Inject constructor(
             }
 
             is KMGamePadEvent -> {
+                if (isEvdevRecordingEnabled && isEvdevRecordingPermitted.value) {
+                    return false
+                }
+
                 val dpadKeyEvents = dpadMotionEventTracker.convertMotionEvent(event)
 
                 for (keyEvent in dpadKeyEvents) {
@@ -124,6 +157,10 @@ class RecordTriggerControllerImpl @Inject constructor(
             }
 
             is KMKeyEvent -> {
+                if (isEvdevRecordingEnabled && isEvdevRecordingPermitted.value) {
+                    return false
+                }
+
                 val matchingDownEvent: KMKeyEvent? = downKeyEvents.find {
                     it.keyCode == event.keyCode &&
                         it.scanCode == event.scanCode &&
@@ -190,6 +227,10 @@ class RecordTriggerControllerImpl @Inject constructor(
             return false
         }
 
+        if (isEvdevRecordingEnabled && isEvdevRecordingPermitted.value) {
+            return false
+        }
+
         val keyEvent =
             dpadMotionEventTracker.convertMotionEvent(event).firstOrNull() ?: return false
 
@@ -203,10 +244,7 @@ class RecordTriggerControllerImpl @Inject constructor(
                 InputEventDetectionSource.INPUT_METHOD,
             )
 
-            recordedKeys.add(recordedKey)
-            coroutineScope.launch {
-                onRecordKey.emit(recordedKey)
-            }
+            onRecordKey(recordedKey)
         }
 
         return true
@@ -246,6 +284,8 @@ class RecordTriggerControllerImpl @Inject constructor(
         dpadMotionEventTracker.reset()
         downKeyEvents.clear()
 
+        //TODO
+//        if (isEvdevRecordingEnabled && isEvdevRecordingPermitted.value) {
         inputEventHub.registerClient(
             INPUT_EVENT_HUB_ID,
             this@RecordTriggerControllerImpl,
@@ -254,6 +294,7 @@ class RecordTriggerControllerImpl @Inject constructor(
 
         // Grab all evdev devices
         inputEventHub.grabAllEvdevDevices(INPUT_EVENT_HUB_ID)
+//        }
 
         repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
             val timeLeft = RECORD_TRIGGER_TIMER_LENGTH - iteration
@@ -273,6 +314,9 @@ class RecordTriggerControllerImpl @Inject constructor(
 interface RecordTriggerController {
     val state: StateFlow<RecordTriggerState>
     val onRecordKey: Flow<RecordedKey>
+
+    val isEvdevRecordingPermitted: Flow<Boolean>
+    fun setEvdevRecordingEnabled(enabled: Boolean)
 
     /**
      * @return Success if started and an Error if failed to start.
