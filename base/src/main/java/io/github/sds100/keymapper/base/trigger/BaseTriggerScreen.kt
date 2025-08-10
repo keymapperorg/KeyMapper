@@ -16,12 +16,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -32,9 +38,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowHeightSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
@@ -244,11 +252,13 @@ private fun TriggerScreenVertical(
 
                     if (configState.clickTypeButtons.isNotEmpty()) {
                         ClickTypeRadioGroup(
-                            modifier = Modifier.padding(horizontal = 8.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp),
                             clickTypes = configState.clickTypeButtons,
                             checkedClickType = configState.checkedClickType,
                             onSelectClickType = onSelectClickType,
-                            maxLines = if (isCompact) 1 else 2,
+                            isCompact = isCompact
                         )
                     }
 
@@ -389,10 +399,13 @@ private fun TriggerScreenHorizontal(
                     ) {
                         if (configState.clickTypeButtons.isNotEmpty()) {
                             ClickTypeRadioGroup(
-                                modifier = Modifier.padding(horizontal = 8.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp),
                                 clickTypes = configState.clickTypeButtons,
                                 checkedClickType = configState.checkedClickType,
                                 onSelectClickType = onSelectClickType,
+                                isCompact = false
                             )
                         }
 
@@ -514,36 +527,54 @@ private fun ClickTypeRadioGroup(
     clickTypes: Set<ClickType>,
     checkedClickType: ClickType?,
     onSelectClickType: (ClickType) -> Unit,
-    maxLines: Int = 2,
+    isCompact: Boolean,
 ) {
-    Column(modifier = modifier) {
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            if (clickTypes.contains(ClickType.SHORT_PRESS)) {
-                RadioButtonText(
-                    modifier = Modifier.weight(1f),
-                    isSelected = checkedClickType == ClickType.SHORT_PRESS,
-                    text = stringResource(R.string.radio_button_short_press),
-                    onSelected = { onSelectClickType(ClickType.SHORT_PRESS) },
-                    maxLines = maxLines,
-                )
-            }
-            if (clickTypes.contains(ClickType.LONG_PRESS)) {
-                RadioButtonText(
-                    modifier = Modifier.weight(1f),
-                    isSelected = checkedClickType == ClickType.LONG_PRESS,
-                    text = stringResource(R.string.radio_button_long_press),
-                    onSelected = { onSelectClickType(ClickType.LONG_PRESS) },
-                    maxLines = maxLines,
-                )
-            }
-            if (clickTypes.contains(ClickType.DOUBLE_PRESS)) {
-                RadioButtonText(
-                    modifier = Modifier.weight(1f),
-                    isSelected = checkedClickType == ClickType.DOUBLE_PRESS,
-                    text = stringResource(R.string.radio_button_double_press),
-                    onSelected = { onSelectClickType(ClickType.DOUBLE_PRESS) },
-                    maxLines = maxLines,
-                )
+    val clickTypeButtonContent: List<Pair<ClickType, String>> = clickTypes.map { clickType ->
+        when (clickType) {
+            ClickType.SHORT_PRESS -> clickType to stringResource(R.string.radio_button_short_press)
+            ClickType.LONG_PRESS -> clickType to stringResource(R.string.radio_button_long_press)
+            ClickType.DOUBLE_PRESS -> clickType to stringResource(R.string.radio_button_double_press)
+        }
+    }
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    SingleChoiceSegmentedButtonRow(
+        modifier = modifier,
+    ) {
+        for (content in clickTypeButtonContent) {
+            val (clickType, label) = content
+
+            if (isCompact) {
+                SegmentedButton(
+                    selected = clickType == checkedClickType,
+                    onClick = { onSelectClickType(clickType) },
+                    icon = { },
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = clickTypeButtonContent.indexOf(content),
+                        count = clickTypeButtonContent.size,
+                        baseShape = MaterialTheme.shapes.extraSmall
+                    ),
+                ) {
+                    BasicText(
+                        text = label,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = LocalTextStyle.current,
+                        autoSize = TextAutoSize.StepBased(minFontSize = 10.sp)
+                    )
+                }
+            } else {
+                SegmentedButton(
+                    selected = clickType == checkedClickType,
+                    onClick = { onSelectClickType(clickType) },
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = clickTypeButtonContent.indexOf(content),
+                        count = clickTypeButtonContent.size,
+                    ),
+                ) {
+                    Text(text = label, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
             }
         }
     }

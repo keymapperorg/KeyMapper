@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.base.trigger
 import android.view.KeyEvent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +21,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue.Expanded
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -139,44 +139,11 @@ fun TriggerKeyOptionsBottomSheet(
             }
 
             if (state.showClickTypes) {
-                Text(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    text = stringResource(R.string.trigger_key_click_types_header),
-                    style = MaterialTheme.typography.titleSmall,
-                )
-
-                FlowRow(
+                ClickTypeSection(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
-                ) {
-                    Spacer(Modifier.width(8.dp))
-
-                    RadioButtonText(
-                        modifier = Modifier.weight(1f),
-                        isSelected = state.clickType == ClickType.SHORT_PRESS,
-                        text = stringResource(R.string.radio_button_short_press),
-                        onSelected = { onSelectClickType(ClickType.SHORT_PRESS) },
-                    )
-
-                    if (state.showLongPressClickType) {
-                        RadioButtonText(
-                            modifier = Modifier.weight(1f),
-                            isSelected = state.clickType == ClickType.LONG_PRESS,
-                            text = stringResource(R.string.radio_button_long_press),
-                            onSelected = { onSelectClickType(ClickType.LONG_PRESS) },
-                        )
-                    }
-
-                    RadioButtonText(
-                        modifier = Modifier.weight(1f),
-                        isSelected = state.clickType == ClickType.DOUBLE_PRESS,
-                        text = stringResource(R.string.radio_button_double_press),
-                        onSelected = { onSelectClickType(ClickType.DOUBLE_PRESS) },
-                    )
-
-                    Spacer(Modifier.width(8.dp))
-                }
+                        .padding(horizontal = 16.dp), state, onSelectClickType
+                )
             }
 
             if (state is TriggerKeyOptionsState.KeyEvent) {
@@ -317,6 +284,48 @@ fun TriggerKeyOptionsBottomSheet(
 }
 
 @Composable
+private fun ClickTypeSection(
+    modifier: Modifier,
+    state: TriggerKeyOptionsState,
+    onSelectClickType: (ClickType) -> Unit
+) {
+    Text(
+        modifier = Modifier.padding(horizontal = 16.dp),
+        text = stringResource(R.string.trigger_key_click_types_header),
+        style = MaterialTheme.typography.titleSmall,
+    )
+
+    val clickTypeButtonContent: List<Pair<ClickType, String>> = buildList {
+        add(ClickType.SHORT_PRESS to stringResource(R.string.radio_button_short_press))
+        if (state.showLongPressClickType) {
+            add(ClickType.LONG_PRESS to stringResource(R.string.radio_button_long_press))
+        }
+        add(ClickType.DOUBLE_PRESS to stringResource(R.string.radio_button_double_press))
+    }
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    SingleChoiceSegmentedButtonRow(
+        modifier = modifier,
+    ) {
+        for (content in clickTypeButtonContent) {
+            val (clickType, label) = content
+            SegmentedButton(
+                selected = state.clickType == clickType,
+                onClick = { onSelectClickType(clickType) },
+                icon = {},
+                shape = SegmentedButtonDefaults.itemShape(
+                    index = clickTypeButtonContent.indexOf(content),
+                    count = clickTypeButtonContent.size
+                ),
+            ) {
+                Text(label)
+            }
+        }
+    }
+}
+
+@Composable
 private fun ScanCodeDetectionButtonRow(
     modifier: Modifier = Modifier,
     keyCode: Int,
@@ -338,7 +347,10 @@ private fun ScanCodeDetectionButtonRow(
             SegmentedButton(
                 selected = !isScanCodeSelected,
                 onClick = { onSelectedChange(false) },
-                shape = MaterialTheme.shapes.medium,
+                shape = SegmentedButtonDefaults.itemShape(
+                    index = 0,
+                    count = 2,
+                ),
                 enabled = isEnabled
             ) {
                 val text = if (keyCode == KeyEvent.KEYCODE_UNKNOWN) {
@@ -350,12 +362,13 @@ private fun ScanCodeDetectionButtonRow(
                 Text(text)
             }
 
-            Spacer(Modifier.width(16.dp))
-
             SegmentedButton(
                 selected = isScanCodeSelected,
                 onClick = { onSelectedChange(true) },
-                shape = MaterialTheme.shapes.medium,
+                shape = SegmentedButtonDefaults.itemShape(
+                    index = 1,
+                    count = 2,
+                ),
                 enabled = isEnabled
             ) {
                 val text = if (scanCode == null) {
