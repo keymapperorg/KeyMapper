@@ -95,7 +95,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     }
 
     override fun startSystemBridge() {
-        TODO("Not yet implemented")
+        systemBridgeSetupController.startService()
     }
 }
 

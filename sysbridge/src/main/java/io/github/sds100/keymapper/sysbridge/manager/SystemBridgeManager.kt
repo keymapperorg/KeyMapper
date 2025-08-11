@@ -1,11 +1,13 @@
 package io.github.sds100.keymapper.sysbridge.manager
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Build
 import android.os.IBinder
 import android.os.IBinder.DeathRecipient
 import android.os.RemoteException
 import androidx.annotation.RequiresApi
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +20,9 @@ import javax.inject.Singleton
  * This class handles starting, stopping and (dis)connecting to the system bridge.
  */
 @Singleton
-class SystemBridgeManagerImpl @Inject constructor() : SystemBridgeManager {
+class SystemBridgeManagerImpl @Inject constructor(
+    @ApplicationContext private val ctx: Context
+) : SystemBridgeManager {
 
     private val systemBridgeLock: Any = Any()
     private var systemBridge: MutableStateFlow<ISystemBridge?> = MutableStateFlow(null)
@@ -76,18 +80,6 @@ class SystemBridgeManagerImpl @Inject constructor() : SystemBridgeManager {
         }
     }
 
-    override fun startWithShizuku() {
-        TODO("Not yet implemented")
-    }
-
-    override fun startWithAdb() {
-        TODO("Not yet implemented")
-    }
-
-    override fun startWithRoot() {
-        TODO("Not yet implemented")
-    }
-
     override fun stopSystemBridge() {
         synchronized(systemBridgeLock) {
             try {
@@ -97,6 +89,7 @@ class SystemBridgeManagerImpl @Inject constructor() : SystemBridgeManager {
             }
         }
     }
+
 }
 
 @SuppressLint("ObsoleteSdkInt")
@@ -107,8 +100,5 @@ interface SystemBridgeManager {
     fun registerConnection(connection: SystemBridgeConnection)
     fun unregisterConnection(connection: SystemBridgeConnection)
 
-    fun startWithShizuku()
-    fun startWithAdb()
-    fun startWithRoot()
     fun stopSystemBridge()
 }

@@ -21,7 +21,8 @@ import java.io.InputStreamReader
 import java.io.PrintWriter
 import java.util.zip.ZipFile
 
-internal object Starter {
+// TODO clean up this code and move it to SystemBridgeManager, and if a lot of starter code in there then move it to a StarterDelegate
+internal object SystemBridgeStarter {
 
     private var commandInternal = arrayOfNulls<String>(2)
 
@@ -29,10 +30,13 @@ internal object Starter {
 
     val sdcardCommand get() = commandInternal[1]!!
 
-    fun writeSdcardFiles(context: Context) {
+    /**
+     * @return the path to the script file.
+     */
+    fun writeSdcardFiles(context: Context): String? {
         if (commandInternal[1] != null) {
             logd("already written")
-            return
+            return null
         }
 
         val um = context.getSystemService(UserManager::class.java)!!
@@ -50,9 +54,18 @@ internal object Starter {
         val libPath = context.applicationInfo.nativeLibraryDir
         val packageName = context.applicationInfo.packageName
 
-        commandInternal[1] = "sh $sh --apk=$apkPath --lib=$libPath --package=$packageName"
+        commandInternal[1] = buildStartCommand(sh, apkPath, libPath, packageName)
         logd(commandInternal[1]!!)
+
+        return sh
     }
+
+    fun buildStartCommand(
+        sh: String,
+        apkPath: String,
+        libPath: String,
+        packageName: String
+    ): String = "sh $sh --apk=$apkPath --lib=$libPath --package=$packageName"
 
     fun writeDataFiles(context: Context, permission: Boolean = false) {
         if (commandInternal[0] != null && !permission) {

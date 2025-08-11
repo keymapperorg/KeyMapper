@@ -54,6 +54,7 @@ android {
     buildFeatures {
         aidl = true
         prefab = true
+        buildConfig = true
     }
 
     packaging {
@@ -91,6 +92,8 @@ dependencies {
     implementation(libs.dagger.hilt.android)
     ksp(libs.dagger.hilt.android.compiler)
 
+    implementation(libs.rikka.shizuku.api)
+    implementation(libs.rikka.shizuku.provider)
     implementation(libs.rikka.hidden.compat)
     compileOnly(libs.rikka.hidden.stub)
 

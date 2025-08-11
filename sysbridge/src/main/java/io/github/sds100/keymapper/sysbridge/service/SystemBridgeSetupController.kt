@@ -1,12 +1,19 @@
 package io.github.sds100.keymapper.sysbridge.service
 
 import android.annotation.SuppressLint
+import android.content.ComponentName
 import android.content.Context
+import android.content.ServiceConnection
 import android.os.Build
+import android.os.IBinder
+import android.os.RemoteException
 import android.preference.PreferenceManager
 import android.util.Log
 import androidx.annotation.RequiresApi
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.sysbridge.BuildConfig
+import io.github.sds100.keymapper.sysbridge.IShizukuStarterService
 import io.github.sds100.keymapper.sysbridge.adb.AdbClient
 import io.github.sds100.keymapper.sysbridge.adb.AdbKey
 import io.github.sds100.keymapper.sysbridge.adb.AdbKeyException
@@ -14,7 +21,8 @@ import io.github.sds100.keymapper.sysbridge.adb.AdbMdns
 import io.github.sds100.keymapper.sysbridge.adb.AdbPairingClient
 import io.github.sds100.keymapper.sysbridge.adb.AdbServiceType
 import io.github.sds100.keymapper.sysbridge.adb.PreferenceAdbKeyStore
-import io.github.sds100.keymapper.sysbridge.starter.Starter
+import io.github.sds100.keymapper.sysbridge.shizuku.ShizukuStarterService
+import io.github.sds100.keymapper.sysbridge.starter.SystemBridgeStarter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +30,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
+import rikka.shizuku.Shizuku
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -33,7 +42,8 @@ import javax.inject.Singleton
 @Singleton
 class SystemBridgeSetupControllerImpl @Inject constructor(
     @ApplicationContext private val ctx: Context,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
+    private val buildConfigProvider: BuildConfigProvider
 ) : SystemBridgeSetupController {
 
     private val sb = StringBuilder()
@@ -43,6 +53,35 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     override val nextSetupStep: Flow<SystemBridgeSetupStep> =
         flowOf(SystemBridgeSetupStep.ACCESSIBILITY_SERVICE)
 
+    private var scriptPath: String? = null
+    private val apkPath = ctx.applicationInfo.sourceDir
+    private val libPath = ctx.applicationInfo.nativeLibraryDir
+    private val packageName = ctx.applicationInfo.packageName
+
+    private val shizukuStarterConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(
+            name: ComponentName?,
+            binder: IBinder?
+        ) {
+            Timber.i("Shizuku starter service connected")
+
+            val service = IShizukuStarterService.Stub.asInterface(binder)
+
+            Timber.i("Starting System Bridge with Shizuku starter service")
+            try {
+                service.startSystemBridge(scriptPath, apkPath, libPath, packageName)
+
+            } catch (e: RemoteException) {
+                Timber.e("Exception starting with Shizuku starter service: $e")
+            }
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            // Do nothing. The service is supposed to immediately kill itself
+            // after starting the command.
+        }
+    }
+
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             adbConnectMdns = AdbMdns(ctx, AdbServiceType.TLS_CONNECT)
@@ -51,10 +90,45 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         }
     }
 
+    private fun startWithShizuku() {
+        if (!Shizuku.pingBinder()) {
+            Timber.e("Unable to start System Bridge with Shizuku. Shizuku Binder is not connected.")
+            return
+        }
+
+        preStart()
+
+        // Shizuku will start a service which will then start the System Bridge. Shizuku won't be
+        // used to start the System Bridge directly because native libraries need to be used
+        // and we want to limit the dependency on Shizuku as much as possible. Also, the System
+        // Bridge should still be running even if Shizuku dies.
+        val serviceComponentName = ComponentName(ctx, ShizukuStarterService::class.java)
+        val args = Shizuku.UserServiceArgs(serviceComponentName)
+            .daemon(false)
+            .processNameSuffix("service")
+            .debuggable(BuildConfig.DEBUG)
+            .version(buildConfigProvider.versionCode)
+
+        try {
+            Shizuku.bindUserService(
+                args,
+                shizukuStarterConnection
+            )
+        } catch (e: Exception) {
+            Timber.e("Exception when starting System Bridge with Shizuku. $e")
+        }
+    }
+
     // TODO clean up
     // TODO have lock so can only launch one start job at a time
     @RequiresApi(Build.VERSION_CODES.R)
-    override fun startWithAdb() {
+    override fun startService() {
+        // TODO check if shizuku permission is granted, and its running and start it that way
+        if (Shizuku.pingBinder()) {
+            startWithShizuku()
+            return
+        }
+
         if (adbConnectMdns == null) {
             return
         }
@@ -91,7 +165,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
             AdbClient(host, port, key).runCatching {
                 connect()
-                shellCommand(Starter.sdcardCommand) {
+                shellCommand(SystemBridgeStarter.sdcardCommand) {
                     sb.append(String(it))
                     postResult()
                 }
@@ -114,11 +188,11 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
                     .appendLine()
                 postResult()
 
-                Starter.writeDataFiles(ctx, true)
+                SystemBridgeStarter.writeDataFiles(ctx, true)
 
                 AdbClient(host, port, key).runCatching {
                     connect()
-                    shellCommand(Starter.dataCommand) {
+                    shellCommand(SystemBridgeStarter.dataCommand) {
                         sb.append(String(it))
                         postResult()
                     }
@@ -139,7 +213,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     private fun writeStarterFiles() {
         coroutineScope.launch(Dispatchers.IO) {
             try {
-                Starter.writeSdcardFiles(ctx)
+                SystemBridgeStarter.writeSdcardFiles(ctx)
             } catch (e: Throwable) {
                 // TODO show error message if fails to start
             }
@@ -156,6 +230,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun pairWirelessAdb(port: Int, code: Int) {
+        // TODO move this to AdbManager class
         coroutineScope.launch(Dispatchers.IO) {
             val host = "127.0.0.1"
 
@@ -208,6 +283,10 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 //            }
 //        }
     }
+
+    private fun preStart() {
+        scriptPath = SystemBridgeStarter.writeSdcardFiles(ctx)
+    }
 }
 
 @SuppressLint("ObsoleteSdkInt")
@@ -218,6 +297,5 @@ interface SystemBridgeSetupController {
     @RequiresApi(Build.VERSION_CODES.R)
     fun pairWirelessAdb(port: Int, code: Int)
 
-    @RequiresApi(Build.VERSION_CODES.R)
-    fun startWithAdb()
+    fun startService()
 }
