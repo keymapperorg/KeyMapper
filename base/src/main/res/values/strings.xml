@@ -1586,7 +1586,7 @@
     <!--  Pro mode  -->
     <string name="pro_mode_app_bar_title">PRO mode</string>
     <string name="pro_mode_warning_title">Important!</string>
-    <string name="pro_mode_warning_text">These settings are dangerous and can cause your buttons to stop working if you set them incorrectly.\n\nIf you make a mistake, you may need to force restart your device by holding down the power button for a long time.</string>
+    <string name="pro_mode_warning_text">These settings are dangerous and can cause your buttons to stop working if you set them incorrectly.\n\nIf you make a mistake, you may need to force restart your device by holding down the power and volume buttons in the correct combination for a long time.</string>
     <string name="pro_mode_warning_understand_button_countdown">%d…</string>
     <string name="pro_mode_warning_understand_button_not_completed">I understand</string>
     <string name="pro_mode_warning_understand_button_completed">Understood</string>
