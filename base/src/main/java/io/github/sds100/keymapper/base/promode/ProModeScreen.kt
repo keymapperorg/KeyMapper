@@ -73,6 +73,7 @@ fun ProModeScreen(
             setupState = proModeSetupState,
             onWarningButtonClick = viewModel::onWarningButtonClick,
             onStopServiceClick = viewModel::onStopServiceClick,
+            onShizukuButtonClick = viewModel::onShizukuButtonClick
         )
     }
 }
@@ -381,7 +382,8 @@ private fun ProModeStartedCard(
 
             Text(
                 modifier = Modifier.weight(1f),
-                text = stringResource(R.string.pro_mode_service_started)
+                text = stringResource(R.string.pro_mode_service_started),
+                style = MaterialTheme.typography.titleMedium
             )
 
             Spacer(modifier = Modifier.width(16.dp))

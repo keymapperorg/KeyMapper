@@ -13,14 +13,14 @@ import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCaseImpl
 import io.github.sds100.keymapper.base.actions.TestActionEvent
 import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCaseImpl
+import io.github.sds100.keymapper.base.detection.DetectKeyMapsUseCaseImpl
+import io.github.sds100.keymapper.base.detection.KeyMapDetectionController
+import io.github.sds100.keymapper.base.detection.TriggerKeyMapFromOtherAppsController
 import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.TriggerKeyMapEvent
-import io.github.sds100.keymapper.base.detection.DetectKeyMapsUseCaseImpl
-import io.github.sds100.keymapper.base.detection.KeyMapDetectionController
-import io.github.sds100.keymapper.base.detection.TriggerKeyMapFromOtherAppsController
 import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.common.utils.firstBlocking
@@ -35,7 +35,6 @@ import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -408,35 +407,35 @@ abstract class BaseAccessibilityServiceController(
         }
 
         // TODO only run this code, and listen for these events if searching for a pairing code. Check that package name is settings app.
-        if (event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED) {
-            val pairingCodeRegex = Regex("^\\d{6}$")
-            val portRegex = Regex(".*:([0-9]{1,5})")
-            val pairingCodeNode =
-                service.rootInActiveWindow.findNodeRecursively {
-                    it.text != null && pairingCodeRegex.matches(it.text)
-                }
-
-            val portNode = service.rootInActiveWindow.findNodeRecursively {
-                it.text != null && portRegex.matches(it.text)
-            }
-
-            if (pairingCodeNode != null && portNode != null) {
-                val pairingCode = pairingCodeNode.text?.toString()?.toIntOrNull()
-                val port = portNode.text?.split(":")?.last()?.toIntOrNull()
-                Timber.e("PAIRING CODE = $pairingCode")
-                Timber.e("PORT = $port")
-
-                if (pairingCode != null && port != null) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        service.lifecycleScope.launch {
-                            systemBridgeSetupController.pairWirelessAdb(port, pairingCode)
-                            delay(1000)
-                            systemBridgeSetupController.startWithAdb()
-                        }
-                    }
-                }
-            }
-        }
+//        if (event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED) {
+//            val pairingCodeRegex = Regex("^\\d{6}$")
+//            val portRegex = Regex(".*:([0-9]{1,5})")
+//            val pairingCodeNode =
+//                service.rootInActiveWindow.findNodeRecursively {
+//                    it.text != null && pairingCodeRegex.matches(it.text)
+//                }
+//
+//            val portNode = service.rootInActiveWindow.findNodeRecursively {
+//                it.text != null && portRegex.matches(it.text)
+//            }
+//
+//            if (pairingCodeNode != null && portNode != null) {
+//                val pairingCode = pairingCodeNode.text?.toString()?.toIntOrNull()
+//                val port = portNode.text?.split(":")?.last()?.toIntOrNull()
+//                Timber.e("PAIRING CODE = $pairingCode")
+//                Timber.e("PORT = $port")
+//
+//                if (pairingCode != null && port != null) {
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//                        service.lifecycleScope.launch {
+//                            systemBridgeSetupController.pairWirelessAdb(port, pairingCode)
+//                            delay(1000)
+//                            systemBridgeSetupController.startWithAdb()
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 
     fun onFingerprintGesture(type: FingerprintGestureType) {

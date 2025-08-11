@@ -13,10 +13,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -76,6 +78,29 @@ class ProModeViewModel @Inject constructor(
 
     fun onStopServiceClick() {
         useCase.stopSystemBridge()
+    }
+
+    fun onShizukuButtonClick() {
+        viewModelScope.launch {
+            val shizukuState = useCase.shizukuSetupState.first()
+            when (shizukuState) {
+                ShizukuSetupState.NOT_FOUND -> {
+                    // Do nothing
+                }
+
+                ShizukuSetupState.INSTALLED -> {
+                    useCase.openShizukuApp()
+                }
+
+                ShizukuSetupState.STARTED -> {
+                    useCase.requestShizukuPermission()
+                }
+
+                ShizukuSetupState.PERMISSION_GRANTED -> {
+                    useCase.startSystemBridge()
+                }
+            }
+        }
     }
 
     private fun buildSetupState(

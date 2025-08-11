@@ -46,9 +46,6 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             adbConnectMdns = AdbMdns(ctx, AdbServiceType.TLS_CONNECT)
-
-            // TODO remove
-            startWithAdb()
         } else {
             adbConnectMdns = null
         }
@@ -64,7 +61,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
         coroutineScope.launch(Dispatchers.IO) {
 
-        adbConnectMdns.start()
+            adbConnectMdns.start()
 
             val host = "127.0.0.1"
             val port = withTimeout(1000L) { adbConnectMdns.port.first { it != null } }

@@ -51,7 +51,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
 
     override val shizukuSetupState: Flow<ShizukuSetupState> = combine(
         shizukuAdapter.isInstalled,
-        shizukuAdapter.isInstalled,
+        shizukuAdapter.isStarted,
         permissionAdapter.isGrantedFlow(Permission.SHIZUKU)
     ) { isInstalled, isStarted, isPermissionGranted ->
         when {
@@ -62,6 +62,9 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         }
     }
 
+    override fun openShizukuApp() {
+        shizukuAdapter.openShizukuApp()
+    }
 
     override fun requestShizukuPermission() {
         permissionAdapter.request(Permission.SHIZUKU)
@@ -108,6 +111,7 @@ interface SystemBridgeSetupUseCase {
     val isRootGranted: Flow<Boolean>
 
     val shizukuSetupState: Flow<ShizukuSetupState>
+    fun openShizukuApp()
     fun requestShizukuPermission()
 
     fun stopSystemBridge()
