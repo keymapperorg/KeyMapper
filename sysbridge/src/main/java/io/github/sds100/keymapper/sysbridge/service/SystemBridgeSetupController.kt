@@ -38,16 +38,19 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
     private val sb = StringBuilder()
 
-    @RequiresApi(Build.VERSION_CODES.R)
-    private val adbConnectMdns: AdbMdns = AdbMdns(ctx, AdbServiceType.TLS_CONNECT)
+    private val adbConnectMdns: AdbMdns?
 
     override val nextSetupStep: Flow<SystemBridgeSetupStep> =
         flowOf(SystemBridgeSetupStep.ACCESSIBILITY_SERVICE)
 
     init {
-        // TODO remove
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            adbConnectMdns = AdbMdns(ctx, AdbServiceType.TLS_CONNECT)
+
+            // TODO remove
             startWithAdb()
+        } else {
+            adbConnectMdns = null
         }
     }
 
@@ -55,8 +58,13 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     // TODO have lock so can only launch one start job at a time
     @RequiresApi(Build.VERSION_CODES.R)
     override fun startWithAdb() {
+        if (adbConnectMdns == null) {
+            return
+        }
+
         coroutineScope.launch(Dispatchers.IO) {
-            adbConnectMdns.start()
+
+        adbConnectMdns.start()
 
             val host = "127.0.0.1"
             val port = withTimeout(1000L) { adbConnectMdns.port.first { it != null } }

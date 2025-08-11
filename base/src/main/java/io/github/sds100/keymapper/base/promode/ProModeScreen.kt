@@ -1,6 +1,8 @@
 package io.github.sds100.keymapper.base.promode
 
+import android.os.Build
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,12 +14,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Checklist
 import androidx.compose.material.icons.rounded.Numbers
@@ -28,6 +30,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
@@ -40,7 +43,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -51,6 +53,9 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.FakeShizuku
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcon
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.common.utils.State
 
 @Composable
@@ -192,7 +197,13 @@ private fun SetupSection(
                             .fillMaxWidth()
                             .padding(horizontal = 8.dp),
                         color = LocalCustomColorsPalette.current.magiskTeal,
-                        icon = Icons.Rounded.Numbers,
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Rounded.Numbers,
+                                contentDescription = null,
+                                tint = LocalCustomColorsPalette.current.magiskTeal
+                            )
+                        },
                         title = stringResource(R.string.pro_mode_root_detected_title),
                         content = {
                             Text(
@@ -206,10 +217,9 @@ private fun SetupSection(
                             stringResource(R.string.pro_mode_root_detected_button_request_permission)
                         },
                     )
+
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
 
                 val shizukuButtonText: String? = when (state.shizukuSetupState) {
                     ShizukuSetupState.INSTALLED -> stringResource(R.string.pro_mode_shizuku_detected_button_start)
@@ -224,7 +234,12 @@ private fun SetupSection(
                             .fillMaxWidth()
                             .padding(horizontal = 8.dp),
                         color = LocalCustomColorsPalette.current.shizukuBlue,
-                        icon = Icons.Rounded.Android,
+                        icon = {
+                            Image(
+                                imageVector = KeyMapperIcons.FakeShizuku,
+                                contentDescription = null,
+                            )
+                        },
                         title = stringResource(R.string.pro_mode_shizuku_detected_title),
                         content = {
                             Text(
@@ -236,6 +251,40 @@ private fun SetupSection(
                         onButtonClick = onShizukuButtonClick
                     )
                 }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                val setupKeyMapperText: String = when {
+                    Build.VERSION.SDK_INT < Build.VERSION_CODES.R -> stringResource(R.string.pro_mode_set_up_with_key_mapper_button_incompatible)
+                    else -> stringResource(R.string.pro_mode_set_up_with_key_mapper_button)
+                }
+
+                SetupCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    icon = {
+                        Image(
+                            modifier = Modifier.padding(2.dp),
+                            imageVector = KeyMapperIcons.KeyMapperIcon,
+                            contentDescription = null,
+                        )
+                    },
+                    title = stringResource(R.string.pro_mode_set_up_with_key_mapper_title),
+                    content = {
+                        if (state.setupProgress < 1) {
+                            LinearProgressIndicator(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
+                                progress = { state.setupProgress })
+                        }
+                    },
+                    buttonText = setupKeyMapperText,
+                    onButtonClick = onShizukuButtonClick,
+                    enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                )
             }
         }
     }
@@ -353,20 +402,19 @@ private fun ProModeStartedCard(
 private fun SetupCard(
     modifier: Modifier = Modifier,
     color: Color,
-    icon: ImageVector,
+    icon: @Composable () -> Unit,
     title: String,
     content: @Composable () -> Unit,
     buttonText: String,
     onButtonClick: () -> Unit = {},
+    enabled: Boolean = true
 ) {
     OutlinedCard(modifier = modifier) {
         Spacer(modifier = Modifier.height(16.dp))
         Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = color,
-            )
+            Box(Modifier.size(24.dp)) {
+                icon()
+            }
 
             Spacer(modifier = Modifier.width(8.dp))
 
@@ -393,6 +441,7 @@ private fun SetupCard(
                 .align(Alignment.End)
                 .padding(horizontal = 16.dp),
             onClick = onButtonClick,
+            enabled = enabled,
             colors = ButtonDefaults.filledTonalButtonColors(
                 containerColor = color,
                 contentColor = LocalCustomColorsPalette.current.contentColorFor(color),

@@ -63,6 +63,10 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     }
 
 
+    override fun requestShizukuPermission() {
+        permissionAdapter.request(Permission.SHIZUKU)
+    }
+
     override fun stopSystemBridge() {
         systemBridgeManager.stopSystemBridge()
     }
@@ -102,7 +106,9 @@ interface SystemBridgeSetupUseCase {
 
     val isRootDetected: Flow<Boolean>
     val isRootGranted: Flow<Boolean>
+
     val shizukuSetupState: Flow<ShizukuSetupState>
+    fun requestShizukuPermission()
 
     fun stopSystemBridge()
     fun enableAccessibilityService()
