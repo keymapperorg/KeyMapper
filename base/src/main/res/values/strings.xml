@@ -1593,15 +1593,20 @@
     <string name="pro_mode_set_up_title">Set up</string>
     <string name="pro_mode_root_detected_title">Root detected</string>
     <string name="pro_mode_root_detected_text">You can skip the set up process by giving Key Mapper root permission. This will let Key Mapper auto start PRO mode on boot as well.</string>
-    <string name="pro_mode_root_detected_button">Use root</string>
+    <string name="pro_mode_root_detected_button_request_permission">Request permission</string>
+    <string name="pro_mode_root_detected_button_start_service">Start PRO mode</string>
     <string name="pro_mode_shizuku_detected_title">Shizuku detected</string>
     <string name="pro_mode_shizuku_detected_text">You can skip the set up process by giving Key Mapper Shizuku permission.</string>
-    <string name="pro_mode_shizuku_detected_button">Use Shizuku</string>
+    <string name="pro_mode_shizuku_detected_button_start">Start Shizuku</string>
+    <string name="pro_mode_shizuku_detected_button_request_permission">Request permission</string>
+    <string name="pro_mode_shizuku_detected_button_start_service">Start PRO mode</string>
     <string name="pro_mode_set_up_with_key_mapper_title">Set up with Key Mapper</string>
     <string name="pro_mode_set_up_with_key_mapper_button">Continue</string>
     <string name="pro_mode_options_title">Options</string>
     <string name="pro_mode_enable_for_all_key_maps_title">Enable PRO mode for all key maps</string>
     <string name="pro_mode_enable_for_all_key_maps_text">Key Mapper will use the ADB Shell for remapping</string>
     <string name="pro_mode_settings_unavailable_text">These settings are unavailable until you acknowledge the warning.</string>
+    <string name="pro_mode_service_started">PRO mode service is running</string>
+    <string name="pro_mode_stop_service_button">Stop</string>
 
 </resources>

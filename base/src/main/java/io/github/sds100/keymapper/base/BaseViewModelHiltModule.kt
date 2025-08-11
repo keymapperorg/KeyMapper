@@ -31,8 +31,8 @@ import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCaseImpl
 import io.github.sds100.keymapper.base.logging.DisplayLogUseCase
 import io.github.sds100.keymapper.base.logging.DisplayLogUseCaseImpl
-import io.github.sds100.keymapper.base.promode.ProModeSetupUseCase
-import io.github.sds100.keymapper.base.promode.ProModeSetupUseCaseImpl
+import io.github.sds100.keymapper.base.promode.SystemBridgeSetupUseCase
+import io.github.sds100.keymapper.base.promode.SystemBridgeSetupUseCaseImpl
 import io.github.sds100.keymapper.base.settings.ConfigSettingsUseCase
 import io.github.sds100.keymapper.base.settings.ConfigSettingsUseCaseImpl
 import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
@@ -131,7 +131,7 @@ abstract class BaseViewModelHiltModule {
 
     @Binds
     @ViewModelScoped
-    abstract fun bindProModeSetupUseCase(impl: ProModeSetupUseCaseImpl): ProModeSetupUseCase
+    abstract fun bindProModeSetupUseCase(impl: SystemBridgeSetupUseCaseImpl): SystemBridgeSetupUseCase
 
     @Binds
     @ViewModelScoped

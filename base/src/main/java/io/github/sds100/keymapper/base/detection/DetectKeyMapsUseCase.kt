@@ -140,7 +140,7 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
     override val detectScreenOffTriggers: Flow<Boolean> =
         combine(
             allKeyMapList,
-            suAdapter.isRooted,
+            suAdapter.isRootGranted,
         ) { keyMapList, isRootPermissionGranted ->
             keyMapList.any { it.keyMap.trigger.screenOffTrigger } && isRootPermissionGranted
         }.flowOn(Dispatchers.Default)

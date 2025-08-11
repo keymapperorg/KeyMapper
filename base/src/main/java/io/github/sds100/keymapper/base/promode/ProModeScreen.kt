@@ -23,6 +23,7 @@ import androidx.compose.material.icons.rounded.Checklist
 import androidx.compose.material.icons.rounded.Numbers
 import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -32,6 +33,7 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,6 +51,7 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
+import io.github.sds100.keymapper.common.utils.State
 
 @Composable
 fun ProModeScreen(
@@ -56,12 +59,15 @@ fun ProModeScreen(
     viewModel: ProModeViewModel,
     onNavigateBack: () -> Unit,
 ) {
-    val proModeWarningState by viewModel.proModeWarningState.collectAsStateWithLifecycle()
+    val proModeWarningState by viewModel.warningState.collectAsStateWithLifecycle()
+    val proModeSetupState by viewModel.setupState.collectAsStateWithLifecycle()
 
     ProModeScreen(modifier = modifier, onBackClick = onNavigateBack) {
         Content(
-            proModeWarningState = proModeWarningState,
+            warningState = proModeWarningState,
+            setupState = proModeSetupState,
             onWarningButtonClick = viewModel::onWarningButtonClick,
+            onStopServiceClick = viewModel::onStopServiceClick,
         )
     }
 }
@@ -111,62 +117,38 @@ private fun ProModeScreen(
 @Composable
 private fun Content(
     modifier: Modifier = Modifier,
-    proModeWarningState: ProModeWarningState,
+    warningState: ProModeWarningState,
+    setupState: State<ProModeSetupState>,
     onWarningButtonClick: () -> Unit = {},
+    onShizukuButtonClick: () -> Unit = {},
+    onStopServiceClick: () -> Unit = {},
 ) {
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         WarningCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp),
-            state = proModeWarningState,
+            state = warningState,
             onButtonClick = onWarningButtonClick,
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        if (proModeWarningState is ProModeWarningState.Understood) {
-            OptionsHeaderRow(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                icon = Icons.Rounded.Checklist,
-                text = stringResource(R.string.pro_mode_set_up_title),
-            )
+        if (warningState is ProModeWarningState.Understood) {
+            when (setupState) {
+                is State.Loading -> {
+                    CircularProgressIndicator()
+                }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            SetupCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                color = LocalCustomColorsPalette.current.magiskTeal,
-                icon = Icons.Rounded.Numbers,
-                title = stringResource(R.string.pro_mode_root_detected_title),
-                content = {
-                    Text(
-                        text = stringResource(R.string.pro_mode_root_detected_text),
-                        style = MaterialTheme.typography.bodyMedium,
+                is State.Data -> {
+                    SetupSection(
+                        modifier = Modifier.fillMaxWidth(),
+                        state = setupState.data,
+                        onShizukuButtonClick = onShizukuButtonClick,
+                        onStopServiceClick = onStopServiceClick
                     )
-                },
-                buttonText = stringResource(R.string.pro_mode_root_detected_button),
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            SetupCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                color = LocalCustomColorsPalette.current.shizukuBlue,
-                icon = Icons.Rounded.Android,
-                title = stringResource(R.string.pro_mode_shizuku_detected_title),
-                content = {
-                    Text(
-                        text = stringResource(R.string.pro_mode_shizuku_detected_text),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                },
-                buttonText = stringResource(R.string.pro_mode_shizuku_detected_button),
-            )
+                }
+            }
         } else {
             Text(
                 modifier = Modifier.padding(horizontal = 32.dp),
@@ -175,7 +157,87 @@ private fun Content(
             )
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
+private fun SetupSection(
+    modifier: Modifier,
+    state: ProModeSetupState,
+    onShizukuButtonClick: () -> Unit,
+    onStopServiceClick: () -> Unit
+) {
+    Column(modifier) {
+        OptionsHeaderRow(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            icon = Icons.Rounded.Checklist,
+            text = stringResource(R.string.pro_mode_set_up_title),
+        )
+
         Spacer(modifier = Modifier.height(8.dp))
+
+        when (state) {
+            ProModeSetupState.Started -> ProModeStartedCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                onStopClick = onStopServiceClick
+            )
+
+            is ProModeSetupState.Stopped -> {
+                if (state.isRootDetected) {
+                    SetupCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
+                        color = LocalCustomColorsPalette.current.magiskTeal,
+                        icon = Icons.Rounded.Numbers,
+                        title = stringResource(R.string.pro_mode_root_detected_title),
+                        content = {
+                            Text(
+                                text = stringResource(R.string.pro_mode_root_detected_text),
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        },
+                        buttonText = if (state.isRootGranted) {
+                            stringResource(R.string.pro_mode_root_detected_button_start_service)
+                        } else {
+                            stringResource(R.string.pro_mode_root_detected_button_request_permission)
+                        },
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+
+                val shizukuButtonText: String? = when (state.shizukuSetupState) {
+                    ShizukuSetupState.INSTALLED -> stringResource(R.string.pro_mode_shizuku_detected_button_start)
+                    ShizukuSetupState.STARTED -> stringResource(R.string.pro_mode_shizuku_detected_button_request_permission)
+                    ShizukuSetupState.PERMISSION_GRANTED -> stringResource(R.string.pro_mode_shizuku_detected_button_start_service)
+                    ShizukuSetupState.NOT_FOUND -> null
+                }
+
+                if (shizukuButtonText != null) {
+                    SetupCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
+                        color = LocalCustomColorsPalette.current.shizukuBlue,
+                        icon = Icons.Rounded.Android,
+                        title = stringResource(R.string.pro_mode_shizuku_detected_title),
+                        content = {
+                            Text(
+                                text = stringResource(R.string.pro_mode_shizuku_detected_text),
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        },
+                        buttonText = shizukuButtonText,
+                        onButtonClick = onShizukuButtonClick
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -250,6 +312,44 @@ private fun WarningCard(
 }
 
 @Composable
+private fun ProModeStartedCard(
+    modifier: Modifier = Modifier,
+    onStopClick: () -> Unit = {},
+) {
+    OutlinedCard(modifier) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Icon(
+                imageVector = Icons.Rounded.Check,
+                contentDescription = null,
+                tint = LocalCustomColorsPalette.current.green
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Text(
+                modifier = Modifier.weight(1f),
+                text = stringResource(R.string.pro_mode_service_started)
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            TextButton(
+                onClick = onStopClick,
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text(stringResource(R.string.pro_mode_stop_service_button))
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+        }
+    }
+}
+
+@Composable
 private fun SetupCard(
     modifier: Modifier = Modifier,
     color: Color,
@@ -311,7 +411,15 @@ private fun Preview() {
     KeyMapperTheme {
         ProModeScreen {
             Content(
-                proModeWarningState = ProModeWarningState.Understood,
+                warningState = ProModeWarningState.Understood,
+                setupState = State.Data(
+                    ProModeSetupState.Stopped(
+                        isRootDetected = true,
+                        isRootGranted = false,
+                        shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
+                        setupProgress = 0.5f
+                    )
+                )
             )
         }
     }
@@ -323,7 +431,8 @@ private fun PreviewDark() {
     KeyMapperTheme(darkTheme = true) {
         ProModeScreen {
             Content(
-                proModeWarningState = ProModeWarningState.Understood,
+                warningState = ProModeWarningState.Understood,
+                setupState = State.Data(ProModeSetupState.Started)
             )
         }
     }
@@ -335,9 +444,10 @@ private fun PreviewCountingDown() {
     KeyMapperTheme {
         ProModeScreen {
             Content(
-                proModeWarningState = ProModeWarningState.CountingDown(
+                warningState = ProModeWarningState.CountingDown(
                     seconds = 5,
                 ),
+                setupState = State.Loading
             )
         }
     }

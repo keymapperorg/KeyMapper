@@ -17,7 +17,9 @@ import io.github.sds100.keymapper.sysbridge.adb.PreferenceAdbKeyStore
 import io.github.sds100.keymapper.sysbridge.starter.Starter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import timber.log.Timber
@@ -38,6 +40,9 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.R)
     private val adbConnectMdns: AdbMdns = AdbMdns(ctx, AdbServiceType.TLS_CONNECT)
+
+    override val nextSetupStep: Flow<SystemBridgeSetupStep> =
+        flowOf(SystemBridgeSetupStep.ACCESSIBILITY_SERVICE)
 
     init {
         // TODO remove
@@ -203,6 +208,8 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 @SuppressLint("ObsoleteSdkInt")
 @RequiresApi(Build.VERSION_CODES.Q)
 interface SystemBridgeSetupController {
+    val nextSetupStep: Flow<SystemBridgeSetupStep>
+
     @RequiresApi(Build.VERSION_CODES.R)
     fun pairWirelessAdb(port: Int, code: Int)
 

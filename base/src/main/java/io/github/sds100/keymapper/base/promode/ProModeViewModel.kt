@@ -6,10 +6,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -18,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProModeViewModel @Inject constructor(
-    private val useCase: ProModeSetupUseCase,
+    private val useCase: SystemBridgeSetupUseCase,
     resourceProvider: ResourceProvider,
     dialogProvider: DialogProvider,
     navigationProvider: NavigationProvider,
@@ -32,30 +35,68 @@ class ProModeViewModel @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val proModeWarningState: StateFlow<ProModeWarningState> =
-        useCase.isWarningUnderstood.flatMapLatest { isUnderstood ->
-            if (isUnderstood) {
-                flowOf(ProModeWarningState.Understood)
-            } else {
-                flow<ProModeWarningState> {
-                    repeat(WARNING_COUNT_DOWN_SECONDS) {
-                        emit(ProModeWarningState.CountingDown(WARNING_COUNT_DOWN_SECONDS - it))
-                        delay(1000L)
-                    }
+    val warningState: StateFlow<ProModeWarningState> =
+        useCase.isWarningUnderstood
+            .flatMapLatest { isUnderstood -> createWarningStateFlow(isUnderstood) }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
+                ProModeWarningState.CountingDown(
+                    WARNING_COUNT_DOWN_SECONDS,
+                ),
+            )
 
-                    emit(ProModeWarningState.Idle)
+    val setupState: StateFlow<State<ProModeSetupState>> =
+        combine(
+            useCase.isSystemBridgeConnected,
+            useCase.setupProgress,
+            useCase.isRootDetected,
+            useCase.isRootGranted,
+            useCase.shizukuSetupState,
+            ::buildSetupState
+        ).stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
+
+    private fun createWarningStateFlow(isUnderstood: Boolean): Flow<ProModeWarningState> =
+        if (isUnderstood) {
+            flowOf(ProModeWarningState.Understood)
+        } else {
+            flow {
+                repeat(WARNING_COUNT_DOWN_SECONDS) {
+                    emit(ProModeWarningState.CountingDown(WARNING_COUNT_DOWN_SECONDS - it))
+                    delay(1000L)
                 }
+
+                emit(ProModeWarningState.Idle)
             }
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            ProModeWarningState.CountingDown(
-                WARNING_COUNT_DOWN_SECONDS,
-            ),
-        )
+        }
 
     fun onWarningButtonClick() {
         useCase.onUnderstoodWarning()
+    }
+
+    fun onStopServiceClick() {
+        useCase.stopSystemBridge()
+    }
+
+    private fun buildSetupState(
+        isSystemBridgeConnected: Boolean,
+        setupProgress: Float,
+        isRootDetected: Boolean,
+        isRootGranted: Boolean,
+        shizukuSetupState: ShizukuSetupState
+    ): State<ProModeSetupState> {
+        if (isSystemBridgeConnected) {
+            return State.Data(ProModeSetupState.Started)
+        } else {
+            return State.Data(
+                ProModeSetupState.Stopped(
+                    isRootDetected = isRootDetected,
+                    isRootGranted = isRootGranted,
+                    shizukuSetupState = shizukuSetupState,
+                    setupProgress = setupProgress
+                )
+            )
+        }
     }
 }
 
@@ -65,7 +106,13 @@ sealed class ProModeWarningState {
     data object Understood : ProModeWarningState()
 }
 
-data class ProModeSetupState(
-    val isRootDetected: Boolean,
-    val isShizukuDetected: Boolean,
-)
+sealed class ProModeSetupState {
+    data class Stopped(
+        val isRootDetected: Boolean,
+        val isRootGranted: Boolean,
+        val shizukuSetupState: ShizukuSetupState,
+        val setupProgress: Float
+    ) : ProModeSetupState()
+
+    data object Started : ProModeSetupState()
+}

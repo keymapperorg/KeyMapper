@@ -56,6 +56,7 @@ class LazyActionErrorSnapshot(
         }
     }
 
+    // TODO return system bridge errors
     override fun getErrors(actions: List<ActionData>): Map<ActionData, KMError?> {
         // Fixes #797 and #1719
         // Store which input method would be selected if the actions run successfully.

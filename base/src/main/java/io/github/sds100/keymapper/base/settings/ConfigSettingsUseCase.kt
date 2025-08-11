@@ -46,7 +46,7 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
         )
     }
 
-    override val isRootGranted: Flow<Boolean> = suAdapter.isRooted
+    override val isRootGranted: Flow<Boolean> = suAdapter.isRootGranted
 
     override val isWriteSecureSettingsGranted: Flow<Boolean> = channelFlow {
         send(permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS))

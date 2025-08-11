@@ -4,8 +4,13 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.os.IBinder
 import android.os.IBinder.DeathRecipient
+import android.os.RemoteException
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,14 +21,16 @@ import javax.inject.Singleton
 class SystemBridgeManagerImpl @Inject constructor() : SystemBridgeManager {
 
     private val systemBridgeLock: Any = Any()
-    private var systemBridge: ISystemBridge? = null
+    private var systemBridge: MutableStateFlow<ISystemBridge?> = MutableStateFlow(null)
+
+    override val isConnected: Flow<Boolean> = systemBridge.map { it != null }
 
     private val connectionsLock: Any = Any()
     private val connections: MutableSet<SystemBridgeConnection> = mutableSetOf()
 
     private val deathRecipient: DeathRecipient = DeathRecipient {
         synchronized(systemBridgeLock) {
-            systemBridge = null
+            systemBridge.update { null }
         }
 
         synchronized(connectionsLock) {
@@ -35,7 +42,7 @@ class SystemBridgeManagerImpl @Inject constructor() : SystemBridgeManager {
 
     fun pingBinder(): Boolean {
         synchronized(systemBridgeLock) {
-            return systemBridge?.asBinder()?.pingBinder() == true
+            return systemBridge.value?.asBinder()?.pingBinder() == true
         }
     }
 
@@ -47,7 +54,7 @@ class SystemBridgeManagerImpl @Inject constructor() : SystemBridgeManager {
 
         synchronized(systemBridgeLock) {
             systemBridge.asBinder().linkToDeath(deathRecipient, 0)
-            this.systemBridge = systemBridge
+            this.systemBridge.update { systemBridge }
         }
 
         synchronized(connectionsLock) {
@@ -82,13 +89,21 @@ class SystemBridgeManagerImpl @Inject constructor() : SystemBridgeManager {
     }
 
     override fun stopSystemBridge() {
-        TODO("Not yet implemented")
+        synchronized(systemBridgeLock) {
+            try {
+                systemBridge.value?.destroy()
+            } catch (_: RemoteException) {
+                deathRecipient.binderDied()
+            }
+        }
     }
 }
 
 @SuppressLint("ObsoleteSdkInt")
 @RequiresApi(Build.VERSION_CODES.Q)
 interface SystemBridgeManager {
+    val isConnected: Flow<Boolean>
+
     fun registerConnection(connection: SystemBridgeConnection)
     fun unregisterConnection(connection: SystemBridgeConnection)
 

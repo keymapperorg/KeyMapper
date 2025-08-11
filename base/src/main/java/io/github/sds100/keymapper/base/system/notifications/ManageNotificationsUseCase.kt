@@ -23,7 +23,7 @@ class ManageNotificationsUseCaseImpl @Inject constructor(
 
     override val showImePickerNotification: Flow<Boolean> =
         combine(
-            suAdapter.isRooted,
+            suAdapter.isRootGranted,
             preferences.get(Keys.showImePickerNotification),
         ) { hasRootPermission, show ->
             when {
