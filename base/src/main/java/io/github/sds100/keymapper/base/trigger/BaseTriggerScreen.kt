@@ -244,7 +244,7 @@ private fun TriggerScreenVertical(
                     )
 
                     if (configState.clickTypeButtons.isNotEmpty()) {
-                        ClickTypeRadioGroup(
+                        ClickTypeSegmentedButtons(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 8.dp),
@@ -260,7 +260,7 @@ private fun TriggerScreenVertical(
                     }
 
                     if (configState.triggerModeButtonsVisible) {
-                        TriggerModeRadioGroup(
+                        TriggerModeSegmentedButtons(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 8.dp),
@@ -394,7 +394,7 @@ private fun TriggerScreenHorizontal(
                     ) {
                         Spacer(modifier = Modifier.height(16.dp))
                         if (configState.clickTypeButtons.isNotEmpty()) {
-                            ClickTypeRadioGroup(
+                            ClickTypeSegmentedButtons(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 8.dp),
@@ -408,7 +408,7 @@ private fun TriggerScreenHorizontal(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         if (configState.triggerModeButtonsVisible) {
-                            TriggerModeRadioGroup(
+                            TriggerModeSegmentedButtons(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 8.dp),
@@ -519,7 +519,7 @@ private fun TriggerList(
 }
 
 @Composable
-private fun ClickTypeRadioGroup(
+private fun ClickTypeSegmentedButtons(
     modifier: Modifier = Modifier,
     clickTypes: Set<ClickType>,
     checkedClickType: ClickType?,
@@ -529,15 +529,30 @@ private fun ClickTypeRadioGroup(
     // Always put the buttons in the same order
     val clickTypeButtonContent: List<Pair<ClickType, String>> = buildList {
         if (clickTypes.contains(ClickType.SHORT_PRESS)) {
-            add(ClickType.SHORT_PRESS to stringResource(R.string.radio_button_short_press))
+            val text = if (isCompact) {
+                stringResource(R.string.radio_button_short)
+            } else {
+                stringResource(R.string.radio_button_short_press)
+            }
+            add(ClickType.SHORT_PRESS to text)
         }
 
         if (clickTypes.contains(ClickType.LONG_PRESS)) {
-            add(ClickType.LONG_PRESS to stringResource(R.string.radio_button_long_press))
+            val text = if (isCompact) {
+                stringResource(R.string.radio_button_long)
+            } else {
+                stringResource(R.string.radio_button_long_press)
+            }
+            add(ClickType.LONG_PRESS to text)
         }
 
         if (clickTypes.contains(ClickType.DOUBLE_PRESS)) {
-            add(ClickType.DOUBLE_PRESS to stringResource(R.string.radio_button_double_press))
+            val text = if (isCompact) {
+                stringResource(R.string.radio_button_double)
+            } else {
+                stringResource(R.string.radio_button_double_press)
+            }
+            add(ClickType.DOUBLE_PRESS to text)
         }
     }
 
@@ -551,7 +566,7 @@ private fun ClickTypeRadioGroup(
 }
 
 @Composable
-private fun TriggerModeRadioGroup(
+private fun TriggerModeSegmentedButtons(
     modifier: Modifier = Modifier,
     mode: TriggerMode,
     isEnabled: Boolean,
@@ -642,7 +657,7 @@ private fun VerticalPreview() {
     }
 }
 
-@Preview(heightDp = 400, widthDp = 300)
+@Preview(heightDp = 300, widthDp = 300)
 @Composable
 private fun VerticalPreviewTiny() {
     KeyMapperTheme {
