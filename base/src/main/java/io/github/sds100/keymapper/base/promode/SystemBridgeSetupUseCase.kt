@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupStep
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
+import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
@@ -30,6 +31,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     private val shizukuAdapter: ShizukuAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
+    private val networkAdapter: NetworkAdapter
 ) : SystemBridgeSetupUseCase {
     override val isWarningUnderstood: Flow<Boolean> =
         preferences.get(Keys.isProModeWarningUnderstood).map { it ?: false }
@@ -55,7 +57,8 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
 
     override val nextSetupStep: Flow<SystemBridgeSetupStep> = combine(
         accessibilityServiceAdapter.state,
-        systemBridgeConnectionManager.isConnected,
+        systemBridgeSetupController.isDeveloperOptionsEnabled,
+        networkAdapter.isWifiConnected,
         ::getNextStep
     )
 
@@ -95,11 +98,11 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     }
 
     override fun openDeveloperOptions() {
-        TODO("Not yet implemented")
+        systemBridgeSetupController.enableDeveloperOptions()
     }
 
     override fun connectWifiNetwork() {
-        TODO("Not yet implemented")
+        networkAdapter.connectWifiNetwork()
     }
 
     override fun enableWirelessDebugging() {
@@ -124,16 +127,14 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
 
     private fun getNextStep(
         accessibilityServiceState: AccessibilityServiceState,
-        isSystemBridgeStarted: Boolean
+        isDeveloperOptionsEnabled: Boolean,
+        isWifiConnected: Boolean,
     ): SystemBridgeSetupStep =
         when {
-            accessibilityServiceState != AccessibilityServiceState.ENABLED -> {
-                SystemBridgeSetupStep.ACCESSIBILITY_SERVICE
-            }
-
-            else -> {
-                SystemBridgeSetupStep.DEVELOPER_OPTIONS
-            }
+            accessibilityServiceState != AccessibilityServiceState.ENABLED -> SystemBridgeSetupStep.ACCESSIBILITY_SERVICE
+            !isDeveloperOptionsEnabled -> SystemBridgeSetupStep.DEVELOPER_OPTIONS
+            !isWifiConnected -> SystemBridgeSetupStep.WIFI_NETWORK
+            else -> SystemBridgeSetupStep.WIRELESS_DEBUGGING
         }
 
 }

@@ -1,15 +1,19 @@
 package io.github.sds100.keymapper.sysbridge.service
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Build
 import android.os.IBinder
 import android.os.RemoteException
 import android.preference.PreferenceManager
+import android.provider.Settings
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.os.bundleOf
 import com.topjohnwu.superuser.Shell
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.BuildConfigProvider
@@ -26,7 +30,10 @@ import io.github.sds100.keymapper.sysbridge.shizuku.ShizukuStarterService
 import io.github.sds100.keymapper.sysbridge.starter.SystemBridgeStarter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import rikka.shizuku.Shizuku
@@ -45,7 +52,14 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     private val buildConfigProvider: BuildConfigProvider
 ) : SystemBridgeSetupController {
 
-    private val sb = StringBuilder()
+    companion object {
+        private const val DEVELOPER_OPTIONS_SETTING = "development_settings_enabled"
+    }
+
+    override val isDeveloperOptionsEnabled: MutableStateFlow<Boolean> =
+        MutableStateFlow(getDeveloperOptionsEnabled())
+
+    val sb = StringBuilder()
 
     private val adbConnectMdns: AdbMdns?
 
@@ -291,11 +305,48 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 //            }
 //        }
     }
+
+    override fun enableDeveloperOptions() {
+        // TODO show notification after the actvitiy is to tap the Build Number repeatedly
+
+        val intent = Intent(Settings.ACTION_DEVICE_INFO_SETTINGS).apply {
+            val EXTRA_FRAGMENT_ARG_KEY = ":settings:fragment_args_key"
+            val EXTRA_SHOW_FRAGMENT_ARGUMENTS = ":settings:show_fragment_args"
+
+            putExtra(EXTRA_FRAGMENT_ARG_KEY, "build_number")
+
+            val bundle = bundleOf(EXTRA_FRAGMENT_ARG_KEY to "build_number")
+            putExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS, bundle)
+
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+
+        try {
+            ctx.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            Timber.e("Failed to start About Phone activity: $e")
+        }
+    }
+
+    fun updateDeveloperOptionsEnabled() {
+        isDeveloperOptionsEnabled.update { getDeveloperOptionsEnabled() }
+    }
+
+    private fun getDeveloperOptionsEnabled(): Boolean {
+        try {
+            return Settings.Global.getInt(ctx.contentResolver, DEVELOPER_OPTIONS_SETTING) == 1
+        } catch (e: Settings.SettingNotFoundException) {
+            return false
+        }
+    }
 }
 
 @SuppressLint("ObsoleteSdkInt")
 @RequiresApi(Build.VERSION_CODES.Q)
 interface SystemBridgeSetupController {
+    val isDeveloperOptionsEnabled: Flow<Boolean>
+    fun enableDeveloperOptions()
+
     @RequiresApi(Build.VERSION_CODES.R)
     fun pairWirelessAdb(port: Int, code: Int)
 

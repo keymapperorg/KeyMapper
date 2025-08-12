@@ -5,7 +5,6 @@ import android.content.Context
 import android.provider.Settings
 import androidx.annotation.RequiresPermission
 
-
 object SettingsUtils {
 
     /**
@@ -105,25 +104,6 @@ object SettingsUtils {
             String::class -> Settings.Secure.putString(contentResolver, name, value as String)
             Float::class -> Settings.Secure.putFloat(contentResolver, name, value as Float)
             Long::class -> Settings.Secure.putLong(contentResolver, name, value as Long)
-
-            else -> {
-                throw Exception("Setting type ${T::class} is not supported")
-            }
-        }
-    }
-
-    /**
-     * @return whether the setting was changed successfully
-     */
-    @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
-    inline fun <reified T> putGlobalSetting(ctx: Context, name: String, value: T): Boolean {
-        val contentResolver = ctx.contentResolver
-
-        return when (T::class) {
-            Int::class -> Settings.Global.putInt(contentResolver, name, value as Int)
-            String::class -> Settings.Global.putString(contentResolver, name, value as String)
-            Float::class -> Settings.Global.putFloat(contentResolver, name, value as Float)
-            Long::class -> Settings.Global.putLong(contentResolver, name, value as Long)
 
             else -> {
                 throw Exception("Setting type ${T::class} is not supported")

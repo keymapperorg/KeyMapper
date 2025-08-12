@@ -1,14 +1,21 @@
 package io.github.sds100.keymapper.system.network
 
+import android.content.ActivityNotFoundException
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.provider.Settings
 import android.telephony.TelephonyManager
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
@@ -25,7 +32,6 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okio.IOException
 import okio.use
 import timber.log.Timber
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -37,6 +43,8 @@ class AndroidNetworkAdapter @Inject constructor(
     private val ctx = context.applicationContext
     private val wifiManager: WifiManager by lazy { ctx.getSystemService()!! }
     private val telephonyManager: TelephonyManager by lazy { ctx.getSystemService()!! }
+    private val connectivityManager: ConnectivityManager by lazy { ctx.getSystemService()!! }
+
     private val httpClient: OkHttpClient by lazy { OkHttpClient() }
 
     private val broadcastReceiver = object : BroadcastReceiver() {
@@ -67,7 +75,35 @@ class AndroidNetworkAdapter @Inject constructor(
         }
 
     override val connectedWifiSSIDFlow = MutableStateFlow(connectedWifiSSID)
+    override val isWifiConnected: MutableStateFlow<Boolean> = MutableStateFlow(getIsWifiConnected())
+
     private val isWifiEnabled = MutableStateFlow(isWifiEnabled())
+
+    private val networkCallback: ConnectivityManager.NetworkCallback =
+        object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                isWifiConnected.update { getIsWifiConnected() }
+            }
+
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                // A network was lost. Check if we are still connected to *any* Wi-Fi.
+                // This is important because onLost is called for a specific network.
+                // If multiple Wi-Fi networks were available and one is lost,
+                // another might still be active.
+                isWifiConnected.update { getIsWifiConnected() }
+            }
+
+            override fun onCapabilitiesChanged(
+                network: Network,
+                networkCapabilities: NetworkCapabilities
+            ) {
+                super.onCapabilitiesChanged(network, networkCapabilities)
+
+                isWifiConnected.update { getIsWifiConnected() }
+            }
+        }
 
     init {
         IntentFilter().apply {
@@ -81,6 +117,12 @@ class AndroidNetworkAdapter @Inject constructor(
                 ContextCompat.RECEIVER_EXPORTED,
             )
         }
+
+        val networkRequest = NetworkRequest.Builder()
+            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+            .build()
+
+        connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
     }
 
     override fun isWifiEnabled(): Boolean = wifiManager.isWifiEnabled
@@ -174,5 +216,39 @@ class AndroidNetworkAdapter @Inject constructor(
         } catch (e: IllegalArgumentException) {
             return KMError.MalformedUrl
         }
+    }
+
+    override fun connectWifiNetwork() {
+        val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            Intent(Settings.Panel.ACTION_WIFI)
+        } else {
+            Intent(Settings.ACTION_WIFI_SETTINGS)
+        }
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        try {
+            ctx.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            Timber.e(e, "Failed to start Wi-Fi settings activity")
+        }
+    }
+
+    private fun getIsWifiConnected(): Boolean { // Add this to your NetworkAdapter interface too
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork ?: return false
+            val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+            return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+        } else {
+            @Suppress("DEPRECATION")
+            val networkInfo = connectivityManager.activeNetworkInfo ?: return false
+            @Suppress("DEPRECATION")
+            return networkInfo.isConnected && networkInfo.type == ConnectivityManager.TYPE_WIFI
+        }
+    }
+
+    fun invalidateState() {
+        connectedWifiSSIDFlow.update { connectedWifiSSID }
+        isWifiConnected.update { getIsWifiConnected() }
     }
 }

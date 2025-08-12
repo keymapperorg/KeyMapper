@@ -8,11 +8,14 @@ interface NetworkAdapter {
     val connectedWifiSSID: String?
     val connectedWifiSSIDFlow: Flow<String?>
 
+    val isWifiConnected: Flow<Boolean>
+
     fun isWifiEnabled(): Boolean
     fun isWifiEnabledFlow(): Flow<Boolean>
 
     fun enableWifi(): KMResult<*>
     fun disableWifi(): KMResult<*>
+    fun connectWifiNetwork()
 
     fun isMobileDataEnabled(): Boolean
 
