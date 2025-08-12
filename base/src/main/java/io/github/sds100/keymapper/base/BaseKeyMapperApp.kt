@@ -138,6 +138,8 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
     private fun init() {
         Log.i(tag, "KeyMapperApp: Init")
 
+        // TODO if autostart for PRO mode is turned on then start it here from boot.
+
         settingsRepository.get(Keys.darkTheme)
             .map { it?.toIntOrNull() }
             .map {

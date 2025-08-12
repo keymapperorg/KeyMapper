@@ -93,8 +93,16 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override fun startSystemBridge() {
-        systemBridgeSetupController.startService()
+    override fun startSystemBridgeWithRoot() {
+        systemBridgeSetupController.startWithRoot()
+    }
+
+    override fun startSystemBridgeWithShizuku() {
+        systemBridgeSetupController.startWithShizuku()
+    }
+
+    override fun startSystemBridgeWithAdb() {
+        systemBridgeSetupController.startWithAdb()
     }
 }
 
@@ -118,5 +126,7 @@ interface SystemBridgeSetupUseCase {
     fun connectWifiNetwork()
     fun enableWirelessDebugging()
     fun pairAdb()
-    fun startSystemBridge()
+    fun startSystemBridgeWithRoot()
+    fun startSystemBridgeWithShizuku()
+    fun startSystemBridgeWithAdb()
 }

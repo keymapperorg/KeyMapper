@@ -75,6 +75,7 @@ fun ProModeScreen(
             onStopServiceClick = viewModel::onStopServiceClick,
             onShizukuButtonClick = viewModel::onShizukuButtonClick,
             onRootButtonClick = viewModel::onRootButtonClick,
+            onSetupWithKeyMapperClick = viewModel::onSetupWithKeyMapperClick,
         )
     }
 }
@@ -130,6 +131,7 @@ private fun Content(
     onShizukuButtonClick: () -> Unit = {},
     onStopServiceClick: () -> Unit = {},
     onRootButtonClick: () -> Unit = {},
+    onSetupWithKeyMapperClick: () -> Unit = {},
 ) {
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         WarningCard(
@@ -155,6 +157,7 @@ private fun Content(
                         onShizukuButtonClick = onShizukuButtonClick,
                         onStopServiceClick = onStopServiceClick,
                         onRootButtonClick = onRootButtonClick,
+                        onSetupWithKeyMapperClick = onSetupWithKeyMapperClick,
                     )
                 }
             }
@@ -176,7 +179,8 @@ private fun SetupSection(
     state: ProModeSetupState,
     onRootButtonClick: () -> Unit = {},
     onShizukuButtonClick: () -> Unit,
-    onStopServiceClick: () -> Unit
+    onStopServiceClick: () -> Unit,
+    onSetupWithKeyMapperClick: () -> Unit
 ) {
     Column(modifier) {
         OptionsHeaderRow(
@@ -284,7 +288,7 @@ private fun SetupSection(
                         }
                     },
                     buttonText = setupKeyMapperText,
-                    onButtonClick = onShizukuButtonClick,
+                    onButtonClick = onSetupWithKeyMapperClick,
                     enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
                 )
             }

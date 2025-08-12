@@ -80,7 +80,7 @@ class ProModeViewModel @Inject constructor(
     }
 
     fun onRootButtonClick() {
-        useCase.startSystemBridge()
+        useCase.startSystemBridgeWithRoot()
     }
 
     fun onShizukuButtonClick() {
@@ -100,10 +100,14 @@ class ProModeViewModel @Inject constructor(
                 }
 
                 ShizukuSetupState.PERMISSION_GRANTED -> {
-                    useCase.startSystemBridge()
+                    useCase.startSystemBridgeWithShizuku()
                 }
             }
         }
+    }
+
+    fun onSetupWithKeyMapperClick() {
+        useCase.startSystemBridgeWithAdb()
     }
 
     private fun buildSetupState(

@@ -91,32 +91,30 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         }
     }
 
-    /**
-     * @return Whether it was started with root successfully.
-     */
-    private fun tryStartWithRoot(): Boolean {
+    override fun startWithRoot() {
         try {
             if (Shell.isAppGrantedRoot() != true) {
-                return false
-            }
-
-            if (scriptPath == null) {
-                return false
+                Timber.w("Root is not granted. Cannot start System Bridge with Root.")
+                return
             }
 
             val command =
-                SystemBridgeStarter.buildStartCommand(scriptPath!!, apkPath, libPath, packageName)
+                SystemBridgeStarter.buildStartCommand(scriptPath, apkPath, libPath, packageName)
 
             Timber.i("Starting System Bridge with root")
-            return Shell.cmd(command).exec().isSuccess
+            Shell.cmd(command).exec().isSuccess
 
         } catch (e: Exception) {
             Timber.e("Exception when starting System Bridge with Root: $e")
-            return false
         }
     }
 
-    private fun startWithShizuku() {
+    override fun startWithShizuku() {
+        if (!Shizuku.pingBinder()) {
+            Timber.w("Shizuku is not running. Cannot start System Bridge with Shizuku.")
+            return
+        }
+
         // Shizuku will start a service which will then start the System Bridge. Shizuku won't be
         // used to start the System Bridge directly because native libraries need to be used
         // and we want to limit the dependency on Shizuku as much as possible. Also, the System
@@ -141,17 +139,8 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     // TODO clean up
     // TODO have lock so can only launch one start job at a time
     @RequiresApi(Build.VERSION_CODES.R)
-    override fun startService() {
+    override fun startWithAdb() {
         // TODO kill the current service before starting it?
-
-        if (tryStartWithRoot()) {
-            return
-        }
-
-        if (Shizuku.pingBinder()) {
-            startWithShizuku()
-            return
-        }
 
         if (adbConnectMdns == null) {
             return
@@ -317,5 +306,7 @@ interface SystemBridgeSetupController {
     @RequiresApi(Build.VERSION_CODES.R)
     fun pairWirelessAdb(port: Int, code: Int)
 
-    fun startService()
+    fun startWithRoot()
+    fun startWithShizuku()
+    fun startWithAdb()
 }

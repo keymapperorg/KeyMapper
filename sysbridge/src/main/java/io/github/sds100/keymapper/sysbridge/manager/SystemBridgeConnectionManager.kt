@@ -20,6 +20,8 @@ import javax.inject.Singleton
 @Singleton
 class SystemBridgeConnectionManagerImpl @Inject constructor() : SystemBridgeConnectionManager {
 
+    // TODO if auto start is turned on, subscribe to Shizuku Binder listener and when bound, start the service. But only do this once per app process session. If the user stops the service it should remain stopped until key mapper is killed,
+
     private val systemBridgeLock: Any = Any()
     private var systemBridge: MutableStateFlow<ISystemBridge?> = MutableStateFlow(null)
 
