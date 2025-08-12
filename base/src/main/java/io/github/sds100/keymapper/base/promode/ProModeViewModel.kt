@@ -79,6 +79,10 @@ class ProModeViewModel @Inject constructor(
         useCase.stopSystemBridge()
     }
 
+    fun onRootButtonClick() {
+        useCase.startSystemBridge()
+    }
+
     fun onShizukuButtonClick() {
         viewModelScope.launch {
             val shizukuState = useCase.shizukuSetupState.first()

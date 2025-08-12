@@ -10,6 +10,7 @@ import android.os.RemoteException
 import android.preference.PreferenceManager
 import android.util.Log
 import androidx.annotation.RequiresApi
+import com.topjohnwu.superuser.Shell
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.sysbridge.BuildConfig
@@ -90,14 +91,32 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         }
     }
 
-    private fun startWithShizuku() {
-        if (!Shizuku.pingBinder()) {
-            Timber.e("Unable to start System Bridge with Shizuku. Shizuku Binder is not connected.")
-            return
+    /**
+     * @return Whether it was started with root successfully.
+     */
+    private fun tryStartWithRoot(): Boolean {
+        try {
+            if (Shell.isAppGrantedRoot() != true) {
+                return false
+            }
+
+            if (scriptPath == null) {
+                return false
+            }
+
+            val command =
+                SystemBridgeStarter.buildStartCommand(scriptPath!!, apkPath, libPath, packageName)
+
+            Timber.i("Starting System Bridge with root")
+            return Shell.cmd(command).exec().isSuccess
+
+        } catch (e: Exception) {
+            Timber.e("Exception when starting System Bridge with Root: $e")
+            return false
         }
+    }
 
-        preStart()
-
+    private fun startWithShizuku() {
         // Shizuku will start a service which will then start the System Bridge. Shizuku won't be
         // used to start the System Bridge directly because native libraries need to be used
         // and we want to limit the dependency on Shizuku as much as possible. Also, the System
@@ -123,6 +142,12 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     // TODO have lock so can only launch one start job at a time
     @RequiresApi(Build.VERSION_CODES.R)
     override fun startService() {
+        preStart()
+
+        if (tryStartWithRoot()) {
+            return
+        }
+
         // TODO check if shizuku permission is granted, and its running and start it that way
         if (Shizuku.pingBinder()) {
             startWithShizuku()

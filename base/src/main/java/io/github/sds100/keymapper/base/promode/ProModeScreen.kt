@@ -73,7 +73,8 @@ fun ProModeScreen(
             setupState = proModeSetupState,
             onWarningButtonClick = viewModel::onWarningButtonClick,
             onStopServiceClick = viewModel::onStopServiceClick,
-            onShizukuButtonClick = viewModel::onShizukuButtonClick
+            onShizukuButtonClick = viewModel::onShizukuButtonClick,
+            onRootButtonClick = viewModel::onRootButtonClick,
         )
     }
 }
@@ -128,6 +129,7 @@ private fun Content(
     onWarningButtonClick: () -> Unit = {},
     onShizukuButtonClick: () -> Unit = {},
     onStopServiceClick: () -> Unit = {},
+    onRootButtonClick: () -> Unit = {},
 ) {
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         WarningCard(
@@ -151,7 +153,8 @@ private fun Content(
                         modifier = Modifier.fillMaxWidth(),
                         state = setupState.data,
                         onShizukuButtonClick = onShizukuButtonClick,
-                        onStopServiceClick = onStopServiceClick
+                        onStopServiceClick = onStopServiceClick,
+                        onRootButtonClick = onRootButtonClick,
                     )
                 }
             }
@@ -171,6 +174,7 @@ private fun Content(
 private fun SetupSection(
     modifier: Modifier,
     state: ProModeSetupState,
+    onRootButtonClick: () -> Unit = {},
     onShizukuButtonClick: () -> Unit,
     onStopServiceClick: () -> Unit
 ) {
@@ -213,6 +217,7 @@ private fun SetupSection(
                             )
                         },
                         buttonText = stringResource(R.string.pro_mode_root_detected_button_start_service),
+                        onButtonClick = onRootButtonClick
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))

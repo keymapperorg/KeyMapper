@@ -91,7 +91,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.dagger.hilt.android)
     ksp(libs.dagger.hilt.android.compiler)
-
+    implementation(libs.github.topjohnwu.libsu)
     implementation(libs.rikka.shizuku.api)
     implementation(libs.rikka.shizuku.provider)
     implementation(libs.rikka.hidden.compat)
