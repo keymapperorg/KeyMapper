@@ -126,11 +126,11 @@ fun ProModeSetupScreen(
                                 state.data.stepNumber,
                                 state.data.stepCount
                             ),
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.titleLarge
                         )
                         Text(
                             text = stringResource(R.string.pro_mode_app_bar_title),
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.titleLarge
                         )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
@@ -268,7 +268,7 @@ private fun getStepContent(step: SystemBridgeSetupStep): StepContent {
             title = stringResource(R.string.pro_mode_setup_wizard_enable_accessibility_service_title),
             message = stringResource(R.string.pro_mode_setup_wizard_enable_accessibility_service_description),
             icon = Icons.Rounded.Accessibility,
-            buttonText = stringResource(R.string.pro_mode_setup_wizard_go_to_settings_button)
+            buttonText = stringResource(R.string.pro_mode_setup_wizard_enable_accessibility_service_button)
         )
 
         SystemBridgeSetupStep.DEVELOPER_OPTIONS -> StepContent(
