@@ -1,14 +1,17 @@
 package io.github.sds100.keymapper.sysbridge.service
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Build
 import android.os.IBinder
 import android.os.RemoteException
 import android.preference.PreferenceManager
 import android.provider.Settings
+import android.service.quicksettings.TileService
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.topjohnwu.superuser.Shell
@@ -38,6 +41,7 @@ import rikka.shizuku.Shizuku
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
+
 
 /**
  * This starter code is taken from the Shizuku project.
@@ -315,11 +319,32 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     }
 
     override fun enableWirelessDebugging() {
-        SettingsUtils.launchSettingsScreen(
-            ctx,
-            Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS,
-            "toggle_adb_wireless"
-        )
+        // This is the intent sent by the quick settings tile. Not all devices support this.
+        val quickSettingsIntent = Intent(TileService.ACTION_QS_TILE_PREFERENCES).apply {
+            // Set the package name because this action can also resolve to a "Permission Controller" activity.
+            val packageName = "com.android.settings"
+            setPackage(packageName)
+
+            putExtra(
+                Intent.EXTRA_COMPONENT_NAME,
+                ComponentName(
+                    packageName,
+                    "com.android.settings.development.qstile.DevelopmentTiles\$WirelessDebugging"
+                )
+            )
+
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        }
+
+        try {
+            ctx.startActivity(quickSettingsIntent)
+        } catch (e: ActivityNotFoundException) {
+            SettingsUtils.launchSettingsScreen(
+                ctx,
+                Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS,
+                "toggle_adb_wireless"
+            )
+        }
     }
 
     fun updateDeveloperOptionsEnabled() {
