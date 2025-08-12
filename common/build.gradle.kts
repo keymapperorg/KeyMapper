@@ -49,6 +49,7 @@ dependencies {
     // kotlin stuff
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.jakewharton.timber)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.dagger.hilt.android)

@@ -106,7 +106,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     }
 
     override fun enableWirelessDebugging() {
-        TODO("Not yet implemented")
+        systemBridgeSetupController.enableWirelessDebugging()
     }
 
     override fun pairAdb() {

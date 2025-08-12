@@ -1,10 +1,8 @@
 package io.github.sds100.keymapper.sysbridge.service
 
 import android.annotation.SuppressLint
-import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Build
 import android.os.IBinder
@@ -13,10 +11,10 @@ import android.preference.PreferenceManager
 import android.provider.Settings
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.core.os.bundleOf
 import com.topjohnwu.superuser.Shell
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.sysbridge.BuildConfig
 import io.github.sds100.keymapper.sysbridge.IShizukuStarterService
 import io.github.sds100.keymapper.sysbridge.adb.AdbClient
@@ -309,23 +307,19 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     override fun enableDeveloperOptions() {
         // TODO show notification after the actvitiy is to tap the Build Number repeatedly
 
-        val intent = Intent(Settings.ACTION_DEVICE_INFO_SETTINGS).apply {
-            val EXTRA_FRAGMENT_ARG_KEY = ":settings:fragment_args_key"
-            val EXTRA_SHOW_FRAGMENT_ARGUMENTS = ":settings:show_fragment_args"
+        SettingsUtils.launchSettingsScreen(
+            ctx,
+            Settings.ACTION_DEVICE_INFO_SETTINGS,
+            "build_number"
+        )
+    }
 
-            putExtra(EXTRA_FRAGMENT_ARG_KEY, "build_number")
-
-            val bundle = bundleOf(EXTRA_FRAGMENT_ARG_KEY to "build_number")
-            putExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS, bundle)
-
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        }
-
-        try {
-            ctx.startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
-            Timber.e("Failed to start About Phone activity: $e")
-        }
+    override fun enableWirelessDebugging() {
+        SettingsUtils.launchSettingsScreen(
+            ctx,
+            Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS,
+            "toggle_adb_wireless"
+        )
     }
 
     fun updateDeveloperOptionsEnabled() {
@@ -334,8 +328,8 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
     private fun getDeveloperOptionsEnabled(): Boolean {
         try {
-            return Settings.Global.getInt(ctx.contentResolver, DEVELOPER_OPTIONS_SETTING) == 1
-        } catch (e: Settings.SettingNotFoundException) {
+            return SettingsUtils.getGlobalSetting<Int>(ctx, DEVELOPER_OPTIONS_SETTING) == 1
+        } catch (_: Settings.SettingNotFoundException) {
             return false
         }
     }
@@ -346,6 +340,8 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 interface SystemBridgeSetupController {
     val isDeveloperOptionsEnabled: Flow<Boolean>
     fun enableDeveloperOptions()
+
+    fun enableWirelessDebugging()
 
     @RequiresApi(Build.VERSION_CODES.R)
     fun pairWirelessAdb(port: Int, code: Int)

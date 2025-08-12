@@ -2,11 +2,11 @@ package io.github.sds100.keymapper.system.airplanemode
 
 import android.content.Context
 import android.provider.Settings
-import io.github.sds100.keymapper.common.utils.KMResult
-import io.github.sds100.keymapper.common.utils.onSuccess
-import io.github.sds100.keymapper.system.SettingsUtils
-import io.github.sds100.keymapper.system.root.SuAdapter
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.SettingsUtils
+import io.github.sds100.keymapper.common.utils.onSuccess
+import io.github.sds100.keymapper.system.root.SuAdapter
 import javax.inject.Inject
 import javax.inject.Singleton
 

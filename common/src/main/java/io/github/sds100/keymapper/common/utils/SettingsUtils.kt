@@ -1,9 +1,13 @@
-package io.github.sds100.keymapper.system
+package io.github.sds100.keymapper.common.utils
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
 import android.provider.Settings
 import androidx.annotation.RequiresPermission
+import androidx.core.os.bundleOf
+import timber.log.Timber
 
 object SettingsUtils {
 
@@ -108,6 +112,28 @@ object SettingsUtils {
             else -> {
                 throw Exception("Setting type ${T::class} is not supported")
             }
+        }
+    }
+
+    fun launchSettingsScreen(ctx: Context, action: String, fragmentArg: String?) {
+        val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).apply {
+            if (fragmentArg != null) {
+                val fragmentArgKey = ":settings:fragment_args_key"
+                val showFragmentArgsKey = ":settings:show_fragment_args"
+
+                putExtra(fragmentArgKey, fragmentArg)
+
+                val bundle = bundleOf(fragmentArgKey to fragmentArg)
+                putExtra(showFragmentArgsKey, bundle)
+
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+        }
+
+        try {
+            ctx.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            Timber.e("Failed to start Settings activity: $e")
         }
     }
 }
