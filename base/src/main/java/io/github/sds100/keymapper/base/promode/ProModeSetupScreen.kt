@@ -1,6 +1,9 @@
 package io.github.sds100.keymapper.base.promode
 
 import android.content.res.Configuration
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.EaseInOut
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,7 +38,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -99,6 +104,32 @@ fun ProModeSetupScreen(
             is State.Data -> {
                 val stepContent = getStepContent(state.data.step)
 
+                // Create animated progress for entrance and updates
+                val progressAnimatable = remember { Animatable(0f) }
+                val targetProgress = state.data.stepNumber.toFloat() / (state.data.stepCount + 1)
+
+                // Animate progress when it changes
+                LaunchedEffect(targetProgress) {
+                    progressAnimatable.animateTo(
+                        targetValue = targetProgress,
+                        animationSpec = tween(
+                            durationMillis = 800,
+                            easing = EaseInOut
+                        )
+                    )
+                }
+
+                // Animate entrance when screen opens
+                LaunchedEffect(Unit) {
+                    progressAnimatable.animateTo(
+                        targetValue = targetProgress,
+                        animationSpec = tween(
+                            durationMillis = 1000,
+                            easing = EaseInOut
+                        )
+                    )
+                }
+
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -106,11 +137,9 @@ fun ProModeSetupScreen(
                         .padding(vertical = 16.dp, horizontal = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // TODO animate it when it changes
                     LinearProgressIndicator(
                         modifier = Modifier.fillMaxWidth(),
-                        // Add an extra step because its never done until you click start on the last step
-                        progress = { state.data.stepNumber.toFloat() / (state.data.stepCount + 1) }
+                        progress = { progressAnimatable.value }
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
