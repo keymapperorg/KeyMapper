@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManage
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupStep
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
@@ -28,7 +29,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     private val shizukuAdapter: ShizukuAdapter,
     private val permissionAdapter: PermissionAdapter,
-    private val accessibilityServiceAdapter: AccessibilityServiceAdapter
+    private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
 ) : SystemBridgeSetupUseCase {
     override val isWarningUnderstood: Flow<Boolean> =
         preferences.get(Keys.isProModeWarningUnderstood).map { it ?: false }
@@ -37,10 +38,26 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         preferences.set(Keys.isProModeWarningUnderstood, true)
     }
 
+    override val isSetupAssistantEnabled: Flow<Boolean> =
+        preferences.get(Keys.isProModeSetupAssistantEnabled).map { it ?: false }
+
+    override fun toggleSetupAssistant() {
+        preferences.update(Keys.isProModeSetupAssistantEnabled) {
+            if (it == null) {
+                true
+            } else {
+                !it
+            }
+        }
+    }
+
     override val isSystemBridgeConnected: Flow<Boolean> = systemBridgeConnectionManager.isConnected
 
-    override val nextSetupStep: Flow<SystemBridgeSetupStep> =
-        systemBridgeSetupController.nextSetupStep
+    override val nextSetupStep: Flow<SystemBridgeSetupStep> = combine(
+        accessibilityServiceAdapter.state,
+        systemBridgeConnectionManager.isConnected,
+        ::getNextStep
+    )
 
     override val setupProgress: Flow<Float> = nextSetupStep.map { step ->
         step.stepIndex.toFloat() / SystemBridgeSetupStep.entries.size
@@ -104,11 +121,29 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     override fun startSystemBridgeWithAdb() {
         systemBridgeSetupController.startWithAdb()
     }
+
+    private fun getNextStep(
+        accessibilityServiceState: AccessibilityServiceState,
+        isSystemBridgeStarted: Boolean
+    ): SystemBridgeSetupStep =
+        when {
+            accessibilityServiceState != AccessibilityServiceState.ENABLED -> {
+                SystemBridgeSetupStep.ACCESSIBILITY_SERVICE
+            }
+
+            else -> {
+                SystemBridgeSetupStep.DEVELOPER_OPTIONS
+            }
+        }
+
 }
 
 interface SystemBridgeSetupUseCase {
     val isWarningUnderstood: Flow<Boolean>
     fun onUnderstoodWarning()
+
+    val isSetupAssistantEnabled: Flow<Boolean>
+    fun toggleSetupAssistant()
 
     val isSystemBridgeConnected: Flow<Boolean>
     val nextSetupStep: Flow<SystemBridgeSetupStep>

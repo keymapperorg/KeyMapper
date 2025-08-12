@@ -26,6 +26,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -33,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -133,7 +135,12 @@ fun ProModeSetupScreen(
                     }
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    AssistantCheckBoxRow(onAssistantClick)
+                    AssistantCheckBoxRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        isEnabled = state.data.step != SystemBridgeSetupStep.ACCESSIBILITY_SERVICE,
+                        isChecked = state.data.isSetupAssistantChecked,
+                        onAssistantClick = onAssistantClick
+                    )
 
                     StepContent(
                         modifier = Modifier
@@ -206,19 +213,49 @@ private fun StepContent(
 }
 
 @Composable
-private fun AssistantCheckBoxRow(onAssistantClick: () -> Unit) {
-    Surface(onClick = onAssistantClick) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(checked = false, onCheckedChange = { onAssistantClick() })
-            Column {
-                Text(text = stringResource(R.string.pro_mode_setup_wizard_use_assistant))
-                Text(
-                    text = stringResource(R.string.pro_mode_setup_wizard_use_assistant_enable_accessibility_service),
-                    style = MaterialTheme.typography.bodySmall
-                )
+private fun AssistantCheckBoxRow(
+    modifier: Modifier,
+    isEnabled: Boolean,
+    isChecked: Boolean,
+    onAssistantClick: () -> Unit
+) {
+    Surface(
+        modifier = modifier, shape = MaterialTheme.shapes.medium,
+        enabled = isEnabled,
+        onClick = onAssistantClick
+    ) {
+        val contentColor = if (isEnabled) {
+            LocalContentColor.current
+        } else {
+            LocalContentColor.current.copy(alpha = 0.5f)
+        }
+
+        CompositionLocalProvider(LocalContentColor provides contentColor) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    enabled = isEnabled,
+                    checked = isChecked,
+                    onCheckedChange = { onAssistantClick() })
+                Column {
+                    Text(
+                        text = stringResource(R.string.pro_mode_setup_wizard_use_assistant),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+
+                    val text = if (isEnabled) {
+                        stringResource(R.string.pro_mode_setup_wizard_use_assistant_description)
+                    } else {
+                        stringResource(R.string.pro_mode_setup_wizard_use_assistant_enable_accessibility_service)
+                    }
+
+                    Text(
+                        text = text,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
         }
     }
@@ -289,7 +326,7 @@ private fun ProModeSetupScreenAccessibilityServicePreview() {
                     stepNumber = 1,
                     stepCount = 6,
                     step = SystemBridgeSetupStep.ACCESSIBILITY_SERVICE,
-                    isSetupAssistantEnabled = false
+                    isSetupAssistantChecked = false
                 )
             )
         )
@@ -306,7 +343,7 @@ private fun ProModeSetupScreenDeveloperOptionsPreview() {
                     stepNumber = 2,
                     stepCount = 6,
                     step = SystemBridgeSetupStep.DEVELOPER_OPTIONS,
-                    isSetupAssistantEnabled = false
+                    isSetupAssistantChecked = false
                 )
             )
         )
@@ -323,7 +360,7 @@ private fun ProModeSetupScreenWifiNetworkPreview() {
                     stepNumber = 3,
                     stepCount = 6,
                     step = SystemBridgeSetupStep.WIFI_NETWORK,
-                    isSetupAssistantEnabled = false
+                    isSetupAssistantChecked = false
                 )
             )
         )
@@ -340,7 +377,7 @@ private fun ProModeSetupScreenWirelessDebuggingPreview() {
                     stepNumber = 4,
                     stepCount = 6,
                     step = SystemBridgeSetupStep.WIRELESS_DEBUGGING,
-                    isSetupAssistantEnabled = false
+                    isSetupAssistantChecked = false
                 )
             )
         )
@@ -357,7 +394,7 @@ private fun ProModeSetupScreenAdbPairingPreview() {
                     stepNumber = 5,
                     stepCount = 6,
                     step = SystemBridgeSetupStep.ADB_PAIRING,
-                    isSetupAssistantEnabled = true
+                    isSetupAssistantChecked = true
                 )
             )
         )
@@ -374,7 +411,7 @@ private fun ProModeSetupScreenStartServicePreview() {
                     stepNumber = 6,
                     stepCount = 6,
                     step = SystemBridgeSetupStep.START_SERVICE,
-                    isSetupAssistantEnabled = true
+                    isSetupAssistantChecked = true
                 )
             )
         )

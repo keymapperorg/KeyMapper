@@ -113,4 +113,7 @@ object Keys {
 
     val isProModeWarningUnderstood =
         booleanPreferencesKey("key_is_pro_mode_warning_understood")
+
+    val isProModeSetupAssistantEnabled =
+        booleanPreferencesKey("key_is_pro_mode_setup_assistant_enabled")
 }

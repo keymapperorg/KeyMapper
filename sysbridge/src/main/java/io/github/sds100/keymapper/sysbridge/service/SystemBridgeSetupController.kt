@@ -26,9 +26,7 @@ import io.github.sds100.keymapper.sysbridge.shizuku.ShizukuStarterService
 import io.github.sds100.keymapper.sysbridge.starter.SystemBridgeStarter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import rikka.shizuku.Shizuku
@@ -50,9 +48,6 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     private val sb = StringBuilder()
 
     private val adbConnectMdns: AdbMdns?
-
-    override val nextSetupStep: Flow<SystemBridgeSetupStep> =
-        flowOf(SystemBridgeSetupStep.ACCESSIBILITY_SERVICE)
 
     private val scriptPath: String by lazy { SystemBridgeStarter.writeSdcardFiles(ctx) }
     private val apkPath = ctx.applicationInfo.sourceDir
@@ -301,8 +296,6 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 @SuppressLint("ObsoleteSdkInt")
 @RequiresApi(Build.VERSION_CODES.Q)
 interface SystemBridgeSetupController {
-    val nextSetupStep: Flow<SystemBridgeSetupStep>
-
     @RequiresApi(Build.VERSION_CODES.R)
     fun pairWirelessAdb(port: Int, code: Int)
 
