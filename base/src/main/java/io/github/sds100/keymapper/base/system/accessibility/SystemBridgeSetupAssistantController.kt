@@ -24,6 +24,7 @@ import io.github.sds100.keymapper.system.notifications.NotificationModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -181,6 +182,10 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
                                 bigTextStyle = true
                             )
                             manageNotifications.show(notification)
+
+                            delay(5000)
+
+                            manageNotifications.dismiss(notification.id)
                         } else {
                             // TODO Show notification
                             Timber.w("Failed to start system bridge after pairing.")
