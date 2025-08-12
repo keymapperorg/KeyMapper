@@ -5,7 +5,7 @@ import androidx.annotation.RequiresApi
 import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupStep
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
@@ -25,7 +25,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     private val preferences: PreferenceRepository,
     private val suAdapter: SuAdapter,
     private val systemBridgeSetupController: SystemBridgeSetupController,
-    private val systemBridgeManager: SystemBridgeManager,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     private val shizukuAdapter: ShizukuAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val accessibilityServiceAdapter: AccessibilityServiceAdapter
@@ -37,7 +37,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         preferences.set(Keys.isProModeWarningUnderstood, true)
     }
 
-    override val isSystemBridgeConnected: Flow<Boolean> = systemBridgeManager.isConnected
+    override val isSystemBridgeConnected: Flow<Boolean> = systemBridgeConnectionManager.isConnected
 
     override val nextSetupStep: Flow<SystemBridgeSetupStep> =
         systemBridgeSetupController.nextSetupStep
@@ -70,7 +70,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     }
 
     override fun stopSystemBridge() {
-        systemBridgeManager.stopSystemBridge()
+        systemBridgeConnectionManager.stopSystemBridge()
     }
 
     override fun enableAccessibilityService() {

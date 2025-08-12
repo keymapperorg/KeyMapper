@@ -10,7 +10,7 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
-import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeManagerImpl
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManagerImpl
 import timber.log.Timber
 
 /**
@@ -27,7 +27,7 @@ internal class SystemBridgeBinderProvider : ContentProvider() {
         const val EXTRA_BINDER = "io.github.sds100.keymapper.sysbridge.EXTRA_BINDER"
     }
 
-    private val systemBridgeManager: SystemBridgeManagerImpl by lazy {
+    private val systemBridgeManager: SystemBridgeConnectionManagerImpl by lazy {
         val appContext = context?.applicationContext ?: throw IllegalStateException()
         val hiltEntryPoint =
             EntryPointAccessors.fromApplication(
@@ -111,6 +111,6 @@ internal class SystemBridgeBinderProvider : ContentProvider() {
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     interface SystemBridgeProviderEntryPoint {
-        fun systemBridgeManager(): SystemBridgeManagerImpl
+        fun systemBridgeManager(): SystemBridgeConnectionManagerImpl
     }
 }

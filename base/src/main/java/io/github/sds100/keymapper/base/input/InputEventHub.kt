@@ -14,7 +14,7 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.IEvdevCallback
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnection
-import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
@@ -40,7 +40,7 @@ import javax.inject.Singleton
 @Singleton
 class InputEventHubImpl @Inject constructor(
     private val coroutineScope: CoroutineScope,
-    private val systemBridgeManager: SystemBridgeManager,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     private val imeInputEventInjector: ImeInputEventInjector,
     private val preferenceRepository: PreferenceRepository,
     private val devicesAdapter: DevicesAdapter,
@@ -93,7 +93,7 @@ class InputEventHubImpl @Inject constructor(
 
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            systemBridgeManager.registerConnection(systemBridgeConnection)
+            systemBridgeConnectionManager.registerConnection(systemBridgeConnection)
         }
 
         startKeyEventProcessingLoop()

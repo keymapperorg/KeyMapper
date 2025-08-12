@@ -21,7 +21,7 @@ import java.io.InputStreamReader
 import java.io.PrintWriter
 import java.util.zip.ZipFile
 
-// TODO clean up this code and move it to SystemBridgeManager, and if a lot of starter code in there then move it to a StarterDelegate
+// TODO clean up this code and move it to SystemBridgeConnectionManager, and if a lot of starter code in there then move it to a StarterDelegate
 internal object SystemBridgeStarter {
 
     private var commandInternal = arrayOfNulls<String>(2)
@@ -33,11 +33,7 @@ internal object SystemBridgeStarter {
     /**
      * @return the path to the script file.
      */
-    fun writeSdcardFiles(context: Context): String? {
-        if (commandInternal[1] != null) {
-            logd("already written")
-            return null
-        }
+    fun writeSdcardFiles(context: Context): String {
 
         val um = context.getSystemService(UserManager::class.java)!!
         val unlocked = Build.VERSION.SDK_INT < 24 || um.isUserUnlocked

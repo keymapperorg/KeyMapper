@@ -54,7 +54,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     override val nextSetupStep: Flow<SystemBridgeSetupStep> =
         flowOf(SystemBridgeSetupStep.ACCESSIBILITY_SERVICE)
 
-    private var scriptPath: String? = null
+    private val scriptPath: String by lazy { SystemBridgeStarter.writeSdcardFiles(ctx) }
     private val apkPath = ctx.applicationInfo.sourceDir
     private val libPath = ctx.applicationInfo.nativeLibraryDir
     private val packageName = ctx.applicationInfo.packageName
@@ -142,13 +142,12 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     // TODO have lock so can only launch one start job at a time
     @RequiresApi(Build.VERSION_CODES.R)
     override fun startService() {
-        preStart()
+        // TODO kill the current service before starting it?
 
         if (tryStartWithRoot()) {
             return
         }
 
-        // TODO check if shizuku permission is granted, and its running and start it that way
         if (Shizuku.pingBinder()) {
             startWithShizuku()
             return
@@ -307,10 +306,6 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 //                ctx.startService(intent)
 //            }
 //        }
-    }
-
-    private fun preStart() {
-        scriptPath = SystemBridgeStarter.writeSdcardFiles(ctx)
     }
 }
 
