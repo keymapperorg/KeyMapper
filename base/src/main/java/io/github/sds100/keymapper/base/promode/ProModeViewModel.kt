@@ -48,7 +48,7 @@ class ProModeViewModel @Inject constructor(
                 ),
             )
 
-    val setupState: StateFlow<State<ProModeSetupState>> =
+    val setupState: StateFlow<State<ProModeState>> =
         combine(
             useCase.isSystemBridgeConnected,
             useCase.setupProgress,
@@ -107,7 +107,7 @@ class ProModeViewModel @Inject constructor(
     }
 
     fun onSetupWithKeyMapperClick() {
-        useCase.startSystemBridgeWithAdb()
+        // TODO Settings screen will be refactored into compose and so NavigationProvider will work
     }
 
     private fun buildSetupState(
@@ -115,12 +115,12 @@ class ProModeViewModel @Inject constructor(
         setupProgress: Float,
         isRootGranted: Boolean,
         shizukuSetupState: ShizukuSetupState
-    ): State<ProModeSetupState> {
+    ): State<ProModeState> {
         if (isSystemBridgeConnected) {
-            return State.Data(ProModeSetupState.Started)
+            return State.Data(ProModeState.Started)
         } else {
             return State.Data(
-                ProModeSetupState.Stopped(
+                ProModeState.Stopped(
                     isRootGranted = isRootGranted,
                     shizukuSetupState = shizukuSetupState,
                     setupProgress = setupProgress
@@ -136,12 +136,12 @@ sealed class ProModeWarningState {
     data object Understood : ProModeWarningState()
 }
 
-sealed class ProModeSetupState {
+sealed class ProModeState {
     data class Stopped(
         val isRootGranted: Boolean,
         val shizukuSetupState: ShizukuSetupState,
         val setupProgress: Float
-    ) : ProModeSetupState()
+    ) : ProModeState()
 
-    data object Started : ProModeSetupState()
+    data object Started : ProModeState()
 }

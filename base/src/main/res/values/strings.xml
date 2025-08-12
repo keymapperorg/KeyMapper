@@ -1612,4 +1612,31 @@
     <string name="pro_mode_service_started">PRO mode service is running</string>
     <string name="pro_mode_stop_service_button">Stop</string>
 
+    <string name="pro_mode_setup_wizard_title">Setup wizard</string>
+    <string name="pro_mode_setup_wizard_step_n">Step %d of %d</string>
+    <string name="pro_mode_setup_wizard_use_assistant">Use setup assistant</string>
+    <string name="pro_mode_setup_wizard_use_assistant_enable_accessibility_service">Enable accessibility service first</string>
+    <string name="pro_mode_setup_wizard_watch_tutorial_button">Watch tutorial</string>
+    <string name="pro_mode_setup_wizard_go_to_settings_button">Go to settings</string>
+    <string name="pro_mode_setup_wizard_start_service_button">Start service</string>
+
+    <string name="pro_mode_setup_wizard_enable_accessibility_service_title">Enable accessibility service</string>
+    <string name="pro_mode_setup_wizard_enable_accessibility_service_description">Key Mapper uses a service to help you set up PRO mode. It\'s also useful for ordinary key maps.</string>
+
+    <string name="pro_mode_setup_wizard_enable_developer_options_title">Enable developer options</string>
+    <string name="pro_mode_setup_wizard_enable_developer_options_description">Key Mapper needs to use Android Debug Bridge to start PRO mode, and you need to enable developer options for that.</string>
+
+    <string name="pro_mode_setup_wizard_connect_wifi_title">Connect to a WiFi network</string>
+    <string name="pro_mode_setup_wizard_connect_wifi_description">Key Mapper needs a WiFi network to enable ADB. You do not need an internet connection.</string>
+
+    <string name="pro_mode_setup_wizard_enable_wireless_debugging_title">Enable wireless debugging</string>
+    <string name="pro_mode_setup_wizard_enable_wireless_debugging_description">Key Mapper uses wireless debugging to launch its remapping and input service.</string>
+
+    <string name="pro_mode_setup_wizard_pair_wireless_debugging_title">Pair wireless debugging</string>
+    <string name="pro_mode_setup_wizard_pair_wireless_debugging_description">Key Mapper needs to pair with wireless debugging before it can launch its remapping and input service.</string>
+
+    <string name="pro_mode_setup_wizard_start_service_title">Start service</string>
+    <string name="pro_mode_setup_wizard_start_service_description">Key Mapper needs to connect to the Android Debug Bridge to start the PRO mode service.</string>
+
+
 </resources>

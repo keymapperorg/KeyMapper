@@ -6,6 +6,5 @@ enum class SystemBridgeSetupStep(val stepIndex: Int) {
     WIFI_NETWORK(stepIndex = 2),
     WIRELESS_DEBUGGING(stepIndex = 3),
     ADB_PAIRING(stepIndex = 4),
-    ADB_CONNECT(stepIndex = 5),
-    START_SERVICE(stepIndex = 6)
+    START_SERVICE(stepIndex = 5)
 }

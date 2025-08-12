@@ -157,4 +157,10 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     data object ProMode : NavDestination<Unit>(isCompose = false) {
         override val id: String = ID_PRO_MODE
     }
+
+    @Serializable
+    data object ProModeSetup : NavDestination<Unit>(isCompose = true) {
+        const val ID_PRO_MODE_SETUP = "pro_mode_setup_wizard"
+        override val id: String = ID_PRO_MODE_SETUP
+    }
 }

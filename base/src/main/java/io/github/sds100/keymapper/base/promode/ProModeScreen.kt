@@ -63,6 +63,7 @@ fun ProModeScreen(
     modifier: Modifier = Modifier,
     viewModel: ProModeViewModel,
     onNavigateBack: () -> Unit,
+    onNavigateToSetup: () -> Unit
 ) {
     val proModeWarningState by viewModel.warningState.collectAsStateWithLifecycle()
     val proModeSetupState by viewModel.setupState.collectAsStateWithLifecycle()
@@ -75,7 +76,7 @@ fun ProModeScreen(
             onStopServiceClick = viewModel::onStopServiceClick,
             onShizukuButtonClick = viewModel::onShizukuButtonClick,
             onRootButtonClick = viewModel::onRootButtonClick,
-            onSetupWithKeyMapperClick = viewModel::onSetupWithKeyMapperClick,
+            onSetupWithKeyMapperClick = onNavigateToSetup,
         )
     }
 }
@@ -126,7 +127,7 @@ private fun ProModeScreen(
 private fun Content(
     modifier: Modifier = Modifier,
     warningState: ProModeWarningState,
-    setupState: State<ProModeSetupState>,
+    setupState: State<ProModeState>,
     onWarningButtonClick: () -> Unit = {},
     onShizukuButtonClick: () -> Unit = {},
     onStopServiceClick: () -> Unit = {},
@@ -176,7 +177,7 @@ private fun Content(
 @Composable
 private fun SetupSection(
     modifier: Modifier,
-    state: ProModeSetupState,
+    state: ProModeState,
     onRootButtonClick: () -> Unit = {},
     onShizukuButtonClick: () -> Unit,
     onStopServiceClick: () -> Unit,
@@ -192,14 +193,14 @@ private fun SetupSection(
         Spacer(modifier = Modifier.height(8.dp))
 
         when (state) {
-            ProModeSetupState.Started -> ProModeStartedCard(
+            ProModeState.Started -> ProModeStartedCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp),
                 onStopClick = onStopServiceClick
             )
 
-            is ProModeSetupState.Stopped -> {
+            is ProModeState.Stopped -> {
                 if (state.isRootGranted) {
                     SetupCard(
                         modifier = Modifier
@@ -469,7 +470,7 @@ private fun Preview() {
             Content(
                 warningState = ProModeWarningState.Understood,
                 setupState = State.Data(
-                    ProModeSetupState.Stopped(
+                    ProModeState.Stopped(
                         isRootGranted = false,
                         shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
                         setupProgress = 0.5f
@@ -487,7 +488,7 @@ private fun PreviewDark() {
         ProModeScreen {
             Content(
                 warningState = ProModeWarningState.Understood,
-                setupState = State.Data(ProModeSetupState.Started)
+                setupState = State.Data(ProModeState.Started)
             )
         }
     }
