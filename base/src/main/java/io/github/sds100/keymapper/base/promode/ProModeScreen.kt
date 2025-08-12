@@ -192,7 +192,7 @@ private fun SetupSection(
             )
 
             is ProModeSetupState.Stopped -> {
-                if (state.isRootDetected) {
+                if (state.isRootGranted) {
                     SetupCard(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -212,11 +212,7 @@ private fun SetupSection(
                                 style = MaterialTheme.typography.bodyMedium,
                             )
                         },
-                        buttonText = if (state.isRootGranted) {
-                            stringResource(R.string.pro_mode_root_detected_button_start_service)
-                        } else {
-                            stringResource(R.string.pro_mode_root_detected_button_request_permission)
-                        },
+                        buttonText = stringResource(R.string.pro_mode_root_detected_button_start_service),
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -465,7 +461,6 @@ private fun Preview() {
                 warningState = ProModeWarningState.Understood,
                 setupState = State.Data(
                     ProModeSetupState.Stopped(
-                        isRootDetected = true,
                         isRootGranted = false,
                         shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
                         setupProgress = 0.5f

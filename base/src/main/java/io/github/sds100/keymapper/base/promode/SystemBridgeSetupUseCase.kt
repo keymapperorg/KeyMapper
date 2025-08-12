@@ -46,7 +46,6 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         step.stepIndex.toFloat() / SystemBridgeSetupStep.entries.size
     }
 
-    override val isRootDetected: Flow<Boolean> = suAdapter.isRootDetected
     override val isRootGranted: Flow<Boolean> = suAdapter.isRootGranted
 
     override val shizukuSetupState: Flow<ShizukuSetupState> = combine(
@@ -107,7 +106,6 @@ interface SystemBridgeSetupUseCase {
     val nextSetupStep: Flow<SystemBridgeSetupStep>
     val setupProgress: Flow<Float>
 
-    val isRootDetected: Flow<Boolean>
     val isRootGranted: Flow<Boolean>
 
     val shizukuSetupState: Flow<ShizukuSetupState>

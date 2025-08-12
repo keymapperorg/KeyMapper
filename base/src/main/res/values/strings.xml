@@ -1596,7 +1596,6 @@
     <string name="pro_mode_set_up_title">Set up</string>
     <string name="pro_mode_root_detected_title">Root detected</string>
     <string name="pro_mode_root_detected_text">You can skip the set up process by giving Key Mapper root permission. This will let Key Mapper auto start PRO mode on boot as well.</string>
-    <string name="pro_mode_root_detected_button_request_permission">Request permission</string>
     <string name="pro_mode_root_detected_button_start_service">Start PRO mode</string>
     <string name="pro_mode_shizuku_detected_title">Shizuku detected</string>
     <string name="pro_mode_shizuku_detected_text">You can skip the set up process by giving Key Mapper Shizuku permission.</string>

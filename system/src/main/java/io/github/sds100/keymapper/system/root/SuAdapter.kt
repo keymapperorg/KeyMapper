@@ -10,23 +10,21 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.updateAndGet
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class SuAdapterImpl @Inject constructor() : SuAdapter {
     override val isRootGranted: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    override val isRootDetected: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     init {
         Shell.getShell()
         invalidateIsRooted()
     }
 
-    override fun requestPermission(): Boolean {
-        Shell.cmd("su").exec()
-        return isRootGranted.updateAndGet { Shell.isAppGrantedRoot() ?: false }
+    override fun requestPermission() {
+        invalidateIsRooted()
     }
 
     override fun execute(command: String, block: Boolean): KMResult<*> {
@@ -48,18 +46,26 @@ class SuAdapterImpl @Inject constructor() : SuAdapter {
     }
 
     fun invalidateIsRooted() {
-        isRootDetected.update { Shell.cmd("su").exec().isSuccess }
-        isRootGranted.update { Shell.isAppGrantedRoot() ?: false }
+        try {
+            // Close the shell so a new one is started without root permission.
+            Shell.getShell().waitAndClose()
+            val isRooted = Shell.isAppGrantedRoot() ?: false
+            isRootGranted.update { isRooted }
+
+            if (isRooted) {
+                Timber.i("Root access granted")
+            } else {
+                Timber.i("Root access denied")
+            }
+        } catch (e: Exception) {
+            Timber.e("Exception invalidating root detection: $e")
+        }
     }
 }
 
 interface SuAdapter {
     val isRootGranted: StateFlow<Boolean>
-    val isRootDetected: StateFlow<Boolean>
 
-    /**
-     * @return whether root permission was granted successfully
-     */
-    fun requestPermission(): Boolean
+    fun requestPermission()
     fun execute(command: String, block: Boolean = false): KMResult<*>
 }
