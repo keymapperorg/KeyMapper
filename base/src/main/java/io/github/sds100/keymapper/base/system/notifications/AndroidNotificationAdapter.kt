@@ -74,6 +74,8 @@ class AndroidNotificationAdapter @Inject constructor(
                     ),
                 )
             }
+
+            setSilent(notification.silent)
         }
 
         manager.notify(notification.id, builder.build())

@@ -27,6 +27,7 @@ data class NotificationModel(
      */
     val autoCancel: Boolean = false,
     val bigTextStyle: Boolean = false,
+    val silent: Boolean = false
 ) {
     data class Action(val text: String, val intentType: NotificationIntentType)
 }
