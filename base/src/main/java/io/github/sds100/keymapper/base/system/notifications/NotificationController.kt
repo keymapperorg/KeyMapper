@@ -55,6 +55,7 @@ class NotificationController @Inject constructor(
         private const val ID_KEYBOARD_HIDDEN = 747
         private const val ID_TOGGLE_MAPPINGS = 231
         private const val ID_TOGGLE_KEYBOARD = 143
+        const val ID_SETUP_ASSISTANT = 144
 
         //        private const val ID_FEATURE_ASSISTANT_TRIGGER = 900
         private const val ID_FEATURE_FLOATING_BUTTONS = 901
@@ -64,6 +65,7 @@ class NotificationController @Inject constructor(
         const val CHANNEL_KEYBOARD_HIDDEN = "channel_warning_keyboard_hidden"
         const val CHANNEL_TOGGLE_KEYBOARD = "channel_toggle_keymapper_keyboard"
         const val CHANNEL_NEW_FEATURES = "channel_new_features"
+        const val CHANNEL_SETUP_ASSISTANT = "channel_setup_assistant"
 
         @Deprecated("Removed in 2.0. This channel shouldn't exist")
         private const val CHANNEL_ID_WARNINGS = "channel_warnings"

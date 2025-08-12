@@ -5,16 +5,16 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCaseImpl
 import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCaseImpl
+import io.github.sds100.keymapper.base.detection.DetectKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
-import io.github.sds100.keymapper.base.detection.DetectKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeRecorder
 import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilityServiceController
+import io.github.sds100.keymapper.base.system.accessibility.SystemBridgeSetupAssistantController
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
 
 class AccessibilityServiceController @AssistedInject constructor(
@@ -28,10 +28,10 @@ class AccessibilityServiceController @AssistedInject constructor(
     fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
     pauseKeyMapsUseCase: PauseKeyMapsUseCase,
     settingsRepository: PreferenceRepository,
-    systemBridgeSetupController: SystemBridgeSetupController,
     keyEventRelayServiceWrapper: KeyEventRelayServiceWrapper,
     inputEventHub: InputEventHub,
     recordTriggerController: RecordTriggerController,
+    setupAssistantControllerFactory: SystemBridgeSetupAssistantController.Factory
 ) : BaseAccessibilityServiceController(
     service = service,
     rerouteKeyEventsControllerFactory = rerouteKeyEventsControllerFactory,
@@ -42,10 +42,10 @@ class AccessibilityServiceController @AssistedInject constructor(
     fingerprintGesturesSupported = fingerprintGesturesSupported,
     pauseKeyMapsUseCase = pauseKeyMapsUseCase,
     settingsRepository = settingsRepository,
-    systemBridgeSetupController = systemBridgeSetupController,
     keyEventRelayServiceWrapper = keyEventRelayServiceWrapper,
     inputEventHub = inputEventHub,
     recordTriggerController = recordTriggerController,
+    setupAssistantControllerFactory = setupAssistantControllerFactory
 ) {
     @AssistedFactory
     interface Factory {

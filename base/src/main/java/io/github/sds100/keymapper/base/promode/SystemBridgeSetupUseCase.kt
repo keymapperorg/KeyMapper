@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
@@ -41,12 +42,14 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     }
 
     override val isSetupAssistantEnabled: Flow<Boolean> =
-        preferences.get(Keys.isProModeSetupAssistantEnabled).map { it ?: false }
+        preferences.get(Keys.isProModeInteractiveSetupAssistantEnabled).map {
+            it ?: PreferenceDefaults.PRO_MODE_INTERACTIVE_SETUP_ASSISTANT
+        }
 
     override fun toggleSetupAssistant() {
-        preferences.update(Keys.isProModeSetupAssistantEnabled) {
+        preferences.update(Keys.isProModeInteractiveSetupAssistantEnabled) {
             if (it == null) {
-                true
+                !PreferenceDefaults.PRO_MODE_INTERACTIVE_SETUP_ASSISTANT
             } else {
                 !it
             }

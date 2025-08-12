@@ -17,7 +17,10 @@ import androidx.annotation.RequiresApi
 import com.topjohnwu.superuser.Shell
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.SettingsUtils
+import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.sysbridge.BuildConfig
 import io.github.sds100.keymapper.sysbridge.IShizukuStarterService
 import io.github.sds100.keymapper.sysbridge.adb.AdbClient
@@ -32,10 +35,12 @@ import io.github.sds100.keymapper.sysbridge.starter.SystemBridgeStarter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import rikka.shizuku.Shizuku
 import timber.log.Timber
@@ -61,9 +66,12 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     override val isDeveloperOptionsEnabled: MutableStateFlow<Boolean> =
         MutableStateFlow(getDeveloperOptionsEnabled())
 
+    override val startSetupAssistantRequest: MutableSharedFlow<SystemBridgeSetupStep> =
+        MutableSharedFlow()
+
     val sb = StringBuilder()
 
-    private val adbConnectMdns: AdbMdns?
+    private var adbConnectMdns: AdbMdns? = null
 
     private val scriptPath: String by lazy { SystemBridgeStarter.writeSdcardFiles(ctx) }
     private val apkPath = ctx.applicationInfo.sourceDir
@@ -91,14 +99,6 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         override fun onServiceDisconnected(name: ComponentName?) {
             // Do nothing. The service is supposed to immediately kill itself
             // after starting the command.
-        }
-    }
-
-    init {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            adbConnectMdns = AdbMdns(ctx, AdbServiceType.TLS_CONNECT)
-        } else {
-            adbConnectMdns = null
         }
     }
 
@@ -151,18 +151,17 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     // TODO have lock so can only launch one start job at a time
     @RequiresApi(Build.VERSION_CODES.R)
     override fun startWithAdb() {
-        // TODO kill the current service before starting it?
-
+        // TODO kill the current system bridge before starting it?
         if (adbConnectMdns == null) {
-            return
+            adbConnectMdns = AdbMdns(ctx, AdbServiceType.TLS_CONNECT)
         }
 
         coroutineScope.launch(Dispatchers.IO) {
 
-            adbConnectMdns.start()
+            adbConnectMdns!!.start()
 
             val host = "127.0.0.1"
-            val port = withTimeout(1000L) { adbConnectMdns.port.first { it != null } }
+            val port = withTimeout(1000L) { adbConnectMdns!!.port.first { it != null } }
 
             if (port == null) {
                 return@launch
@@ -229,7 +228,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
                 }
             }
 
-            adbConnectMdns.stop()
+            adbConnectMdns!!.stop()
 
         }
     }
@@ -253,9 +252,10 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
-    override fun pairWirelessAdb(port: Int, code: Int) {
-        // TODO move this to AdbManager class
-        coroutineScope.launch(Dispatchers.IO) {
+    override suspend fun pairWirelessAdb(port: Int, code: Int): KMResult<Unit> {
+        // TODO move this to AdbManager class and only allow one job at a time.
+        // TODO if a job is already running then this should return an error
+        return withContext(Dispatchers.IO) {
             val host = "127.0.0.1"
 
             val key = try {
@@ -263,19 +263,19 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
                     PreferenceAdbKeyStore(PreferenceManager.getDefaultSharedPreferences(ctx)),
                     "keymapper",
                 )
-            } catch (e: Throwable) {
+            } catch (e: Exception) {
                 e.printStackTrace()
-                return@launch
+                return@withContext KMError.Exception(e)
             }
 
-            AdbPairingClient(host, port, code.toString(), key).runCatching {
-                start()
-            }.onFailure {
-                Timber.d("Pairing failed: $it")
-//                handleResult(false, it)
-            }.onSuccess {
-                Timber.d("Pairing success")
-//                handleResult(it, null)
+            try {
+                AdbPairingClient(host, port, code.toString(), key).start()
+                Timber.i("Successfully paired with wireless ADB on port $port with code $code")
+                return@withContext Success(Unit)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Timber.e("Failed to pair with wireless ADB on port $port with code $code: $e")
+                return@withContext KMError.Exception(e)
             }
         }
 
@@ -345,6 +345,11 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
                 "toggle_adb_wireless"
             )
         }
+
+        // TODO send correct step
+        coroutineScope.launch {
+            startSetupAssistantRequest.emit(SystemBridgeSetupStep.ADB_PAIRING)
+        }
     }
 
     fun updateDeveloperOptionsEnabled() {
@@ -363,13 +368,18 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 @SuppressLint("ObsoleteSdkInt")
 @RequiresApi(Build.VERSION_CODES.Q)
 interface SystemBridgeSetupController {
+    /**
+     * The setup assistant should be launched for the given step.
+     */
+    val startSetupAssistantRequest: Flow<SystemBridgeSetupStep>
+
     val isDeveloperOptionsEnabled: Flow<Boolean>
     fun enableDeveloperOptions()
 
     fun enableWirelessDebugging()
 
     @RequiresApi(Build.VERSION_CODES.R)
-    fun pairWirelessAdb(port: Int, code: Int)
+    suspend fun pairWirelessAdb(port: Int, code: Int): KMResult<Unit>
 
     fun startWithRoot()
     fun startWithShizuku()

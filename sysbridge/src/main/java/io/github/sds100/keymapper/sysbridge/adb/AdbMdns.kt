@@ -29,7 +29,7 @@ internal class AdbMdns(
     private var serviceName: String? = null
     private val nsdManager: NsdManager = ctx.getSystemService(NsdManager::class.java)
 
-    private val _port: MutableStateFlow<Int?> = MutableStateFlow<Int?>(null)
+    private val _port: MutableStateFlow<Int?> = MutableStateFlow(null)
     val port: StateFlow<Int?> = _port.asStateFlow()
 
     private val discoveryListener: NsdManager.DiscoveryListener =

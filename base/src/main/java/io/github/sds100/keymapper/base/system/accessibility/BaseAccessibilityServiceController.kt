@@ -30,7 +30,6 @@ import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
@@ -63,10 +62,10 @@ abstract class BaseAccessibilityServiceController(
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
     private val pauseKeyMapsUseCase: PauseKeyMapsUseCase,
     private val settingsRepository: PreferenceRepository,
-    private val systemBridgeSetupController: SystemBridgeSetupController,
     private val keyEventRelayServiceWrapper: KeyEventRelayServiceWrapper,
     private val inputEventHub: InputEventHub,
     private val recordTriggerController: RecordTriggerController,
+    private val setupAssistantControllerFactory: SystemBridgeSetupAssistantController.Factory
 ) {
     companion object {
         private const val DEFAULT_NOTIFICATION_TIMEOUT = 200L
@@ -107,6 +106,13 @@ abstract class BaseAccessibilityServiceController(
         )
 
     val accessibilityNodeRecorder = accessibilityNodeRecorderFactory.create(service)
+
+    private val setupAssistantController: SystemBridgeSetupAssistantController? =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            setupAssistantControllerFactory.create(service.lifecycleScope, service)
+        } else {
+            null
+        }
 
     val isPaused: StateFlow<Boolean> =
         pauseKeyMapsUseCase.isPaused
@@ -342,6 +348,10 @@ abstract class BaseAccessibilityServiceController(
             CALLBACK_ID_ACCESSIBILITY_SERVICE,
             relayServiceCallback,
         )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            setupAssistantController?.onServiceConnected()
+        }
     }
 
     open fun onDestroy() {
@@ -349,6 +359,10 @@ abstract class BaseAccessibilityServiceController(
         keyEventRelayServiceWrapper.unregisterClient(CALLBACK_ID_ACCESSIBILITY_SERVICE)
         accessibilityNodeRecorder.teardown()
         rerouteKeyEventsController.teardown()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            setupAssistantController?.teardown()
+        }
     }
 
     open fun onConfigurationChanged(newConfig: Configuration) {
@@ -389,6 +403,10 @@ abstract class BaseAccessibilityServiceController(
     open fun onAccessibilityEvent(event: AccessibilityEvent) {
         accessibilityNodeRecorder.onAccessibilityEvent(event)
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            setupAssistantController?.onAccessibilityEvent(event)
+        }
+
         if (changeImeOnInputFocusFlow.value) {
             val focussedNode =
                 service.findFocussedNode(AccessibilityNodeInfo.FOCUS_INPUT)
@@ -405,37 +423,6 @@ abstract class BaseAccessibilityServiceController(
                 }
             }
         }
-
-        // TODO only run this code, and listen for these events if searching for a pairing code. Check that package name is settings app.
-//        if (event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED) {
-//            val pairingCodeRegex = Regex("^\\d{6}$")
-//            val portRegex = Regex(".*:([0-9]{1,5})")
-//            val pairingCodeNode =
-//                service.rootInActiveWindow.findNodeRecursively {
-//                    it.text != null && pairingCodeRegex.matches(it.text)
-//                }
-//
-//            val portNode = service.rootInActiveWindow.findNodeRecursively {
-//                it.text != null && portRegex.matches(it.text)
-//            }
-//
-//            if (pairingCodeNode != null && portNode != null) {
-//                val pairingCode = pairingCodeNode.text?.toString()?.toIntOrNull()
-//                val port = portNode.text?.split(":")?.last()?.toIntOrNull()
-//                Timber.e("PAIRING CODE = $pairingCode")
-//                Timber.e("PORT = $port")
-//
-//                if (pairingCode != null && port != null) {
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//                        service.lifecycleScope.launch {
-//                            systemBridgeSetupController.pairWirelessAdb(port, pairingCode)
-//                            delay(1000)
-//                            systemBridgeSetupController.startWithAdb()
-//                        }
-//                    }
-//                }
-//            }
-//        }
     }
 
     fun onFingerprintGesture(type: FingerprintGestureType) {

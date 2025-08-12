@@ -85,13 +85,13 @@ class AndroidNotificationAdapter @Inject constructor(
 
     override fun createChannel(channel: NotificationChannelModel) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            manager.createNotificationChannel(
-                NotificationChannel(
-                    channel.id,
-                    channel.name,
-                    channel.importance,
-                ),
+            val androidChannel = NotificationChannel(
+                channel.id,
+                channel.name,
+                channel.importance,
             )
+
+            manager.createNotificationChannel(androidChannel)
         }
     }
 

@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.system.notifications
 
 import androidx.annotation.DrawableRes
+import androidx.core.app.NotificationCompat
 
 
 data class NotificationModel(
@@ -15,8 +16,15 @@ data class NotificationModel(
     val onClickAction: NotificationIntentType? = null,
     val showOnLockscreen: Boolean,
     val onGoing: Boolean,
-    val priority: Int,
+    /**
+     * On Android Oreo and newer this does nothing because the channel priority is used.
+     */
+    val priority: Int = NotificationCompat.PRIORITY_DEFAULT,
     val actions: List<Action> = emptyList(),
+
+    /**
+     * Clicking on the notification will automatically dismiss it.
+     */
     val autoCancel: Boolean = false,
     val bigTextStyle: Boolean = false,
 ) {

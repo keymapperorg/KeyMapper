@@ -1614,7 +1614,7 @@
 
     <string name="pro_mode_setup_wizard_title">Setup wizard</string>
     <string name="pro_mode_setup_wizard_step_n">Step %d of %d</string>
-    <string name="pro_mode_setup_wizard_use_assistant">Use setup assistant</string>
+    <string name="pro_mode_setup_wizard_use_assistant">Use interactive setup assistant</string>
     <string name="pro_mode_setup_wizard_use_assistant_description">Automatically interact with settings</string>
     <string name="pro_mode_setup_wizard_use_assistant_enable_accessibility_service">Enable accessibility service first</string>
     <string name="pro_mode_setup_wizard_watch_tutorial_button">Watch tutorial</string>
@@ -1643,5 +1643,8 @@
     <string name="pro_mode_setup_wizard_enable_notification_permission_description">Key Mapper will use notifications to help guide you through the process</string>
     <string name="pro_mode_setup_wizard_enable_notification_permission_button">Give permission</string>
 
+    <string name="pro_mode_setup_assistant_notification_channel">Setup assistant</string>
+    <string name="pro_mode_setup_notification_started_success_title">PRO mode started!</string>
+    <string name="pro_mode_setup_notification_started_success_text">PRO mode is now running and you can remap more buttons</string>
 
 </resources>

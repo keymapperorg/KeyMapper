@@ -14,4 +14,6 @@ object PreferenceDefaults {
     const val REPEAT_RATE = 50
     const val SEQUENCE_TRIGGER_TIMEOUT = 1000
     const val HOLD_DOWN_DURATION = 1000
+
+    const val PRO_MODE_INTERACTIVE_SETUP_ASSISTANT = true
 }
