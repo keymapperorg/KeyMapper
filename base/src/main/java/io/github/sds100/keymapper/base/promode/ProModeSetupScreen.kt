@@ -21,6 +21,7 @@ import androidx.compose.material.icons.rounded.Accessibility
 import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.Link
+import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
@@ -66,7 +67,7 @@ fun ProModeSetupScreen(
     ProModeSetupScreen(
         state = state,
         onNavigateBack = onNavigateBack,
-        onButtonClick = viewModel::onButtonClick,
+        onStepButtonClick = viewModel::onStepButtonClick,
         onAssistantClick = viewModel::onAssistantClick,
         onWatchTutorialClick = { }
     )
@@ -77,7 +78,7 @@ fun ProModeSetupScreen(
 fun ProModeSetupScreen(
     state: State<ProModeSetupState>,
     onNavigateBack: () -> Unit = {},
-    onButtonClick: () -> Unit = {},
+    onStepButtonClick: () -> Unit = {},
     onAssistantClick: () -> Unit = {},
     onWatchTutorialClick: () -> Unit = {}
 ) {
@@ -177,7 +178,7 @@ fun ProModeSetupScreen(
                             .padding(horizontal = 16.dp),
                         stepContent,
                         onWatchTutorialClick,
-                        onButtonClick
+                        onStepButtonClick
                     )
                 }
             }
@@ -300,6 +301,13 @@ private fun getStepContent(step: SystemBridgeSetupStep): StepContent {
             buttonText = stringResource(R.string.pro_mode_setup_wizard_enable_accessibility_service_button)
         )
 
+        SystemBridgeSetupStep.NOTIFICATION_PERMISSION -> StepContent(
+            title = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_title),
+            message = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_description),
+            icon = Icons.Rounded.Notifications,
+            buttonText = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_button)
+        )
+
         SystemBridgeSetupStep.DEVELOPER_OPTIONS -> StepContent(
             title = stringResource(R.string.pro_mode_setup_wizard_enable_developer_options_title),
             message = stringResource(R.string.pro_mode_setup_wizard_enable_developer_options_description),
@@ -355,6 +363,23 @@ private fun ProModeSetupScreenAccessibilityServicePreview() {
                     stepNumber = 1,
                     stepCount = 6,
                     step = SystemBridgeSetupStep.ACCESSIBILITY_SERVICE,
+                    isSetupAssistantChecked = false
+                )
+            )
+        )
+    }
+}
+
+@Preview(name = "Notification Permission Step")
+@Composable
+private fun ProModeSetupScreenNotificationPermissionPreview() {
+    KeyMapperTheme {
+        ProModeSetupScreen(
+            state = State.Data(
+                ProModeSetupState(
+                    stepNumber = 2,
+                    stepCount = 6,
+                    step = SystemBridgeSetupStep.NOTIFICATION_PERMISSION,
                     isSetupAssistantChecked = false
                 )
             )

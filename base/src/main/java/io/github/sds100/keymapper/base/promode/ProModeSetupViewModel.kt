@@ -28,12 +28,13 @@ class ProModeSetupViewModel @Inject constructor(
             State.Loading
         )
 
-    fun onButtonClick() {
+    fun onStepButtonClick() {
         viewModelScope.launch {
             val currentStep = useCase.nextSetupStep.first()
 
             when (currentStep) {
                 SystemBridgeSetupStep.ACCESSIBILITY_SERVICE -> useCase.enableAccessibilityService()
+                SystemBridgeSetupStep.NOTIFICATION_PERMISSION -> useCase.requestNotificationPermission()
                 SystemBridgeSetupStep.DEVELOPER_OPTIONS -> useCase.openDeveloperOptions()
                 SystemBridgeSetupStep.WIFI_NETWORK -> useCase.connectWifiNetwork()
                 SystemBridgeSetupStep.WIRELESS_DEBUGGING -> useCase.enableWirelessDebugging()

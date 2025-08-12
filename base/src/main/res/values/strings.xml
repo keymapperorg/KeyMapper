@@ -1639,6 +1639,9 @@
 
     <string name="pro_mode_setup_wizard_start_service_title">Start service</string>
     <string name="pro_mode_setup_wizard_start_service_description">Key Mapper needs to connect to the Android Debug Bridge to start the PRO mode service.</string>
+    <string name="pro_mode_setup_wizard_enable_notification_permission_title">Notification permission</string>
+    <string name="pro_mode_setup_wizard_enable_notification_permission_description">Key Mapper will use notifications to help guide you through the process</string>
+    <string name="pro_mode_setup_wizard_enable_notification_permission_button">Give permission</string>
 
 
 </resources>

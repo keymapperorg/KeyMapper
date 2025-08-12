@@ -57,6 +57,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
 
     override val nextSetupStep: Flow<SystemBridgeSetupStep> = combine(
         accessibilityServiceAdapter.state,
+        permissionAdapter.isGrantedFlow(Permission.POST_NOTIFICATIONS),
         systemBridgeSetupController.isDeveloperOptionsEnabled,
         networkAdapter.isWifiConnected,
         ::getNextStep
@@ -87,6 +88,10 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
 
     override fun requestShizukuPermission() {
         permissionAdapter.request(Permission.SHIZUKU)
+    }
+
+    override fun requestNotificationPermission() {
+        permissionAdapter.request(Permission.POST_NOTIFICATIONS)
     }
 
     override fun stopSystemBridge() {
@@ -127,11 +132,13 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
 
     private fun getNextStep(
         accessibilityServiceState: AccessibilityServiceState,
+        isNotificationPermissionGranted: Boolean,
         isDeveloperOptionsEnabled: Boolean,
         isWifiConnected: Boolean,
     ): SystemBridgeSetupStep =
         when {
             accessibilityServiceState != AccessibilityServiceState.ENABLED -> SystemBridgeSetupStep.ACCESSIBILITY_SERVICE
+            !isNotificationPermissionGranted -> SystemBridgeSetupStep.NOTIFICATION_PERMISSION
             !isDeveloperOptionsEnabled -> SystemBridgeSetupStep.DEVELOPER_OPTIONS
             !isWifiConnected -> SystemBridgeSetupStep.WIFI_NETWORK
             else -> SystemBridgeSetupStep.WIRELESS_DEBUGGING
@@ -155,6 +162,7 @@ interface SystemBridgeSetupUseCase {
     val shizukuSetupState: Flow<ShizukuSetupState>
     fun openShizukuApp()
     fun requestShizukuPermission()
+    fun requestNotificationPermission()
 
     fun stopSystemBridge()
     fun enableAccessibilityService()
