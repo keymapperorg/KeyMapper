@@ -1,17 +1,22 @@
-package io.github.sds100.keymapper.base.system.accessibility
+package io.github.sds100.keymapper.base.promode
 
+import android.app.ActivityManager
 import android.os.Build
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.getSystemService
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilityService
+import io.github.sds100.keymapper.base.system.accessibility.findNodeRecursively
 import io.github.sds100.keymapper.base.system.notifications.ManageNotificationsUseCase
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.common.KeyMapperClassProvider
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
@@ -42,11 +47,11 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
     @Assisted
     private val accessibilityService: BaseAccessibilityService,
-
     private val manageNotifications: ManageNotificationsUseCase,
     private val setupController: SystemBridgeSetupController,
     private val preferenceRepository: PreferenceRepository,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
+    private val keyMapperClassProvider: KeyMapperClassProvider,
     resourceProvider: ResourceProvider
 ) : ResourceProvider by resourceProvider {
     @AssistedFactory
@@ -67,17 +72,20 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
         private val PORT_REGEX = Regex(".*:([0-9]{1,5})")
     }
 
+
     private enum class InteractionStep {
         WIRELESS_DEBUGGING_SWITCH,
         PAIR_DEVICE,
     }
+
+    private val activityManager: ActivityManager = accessibilityService.getSystemService()!!
 
     private val isInteractive: StateFlow<Boolean> =
         preferenceRepository.get(Keys.isProModeInteractiveSetupAssistantEnabled)
             .map { it ?: PreferenceDefaults.PRO_MODE_INTERACTIVE_SETUP_ASSISTANT }
             .stateIn(
                 coroutineScope,
-                SharingStarted.Lazily,
+                SharingStarted.Companion.Lazily,
                 PreferenceDefaults.PRO_MODE_INTERACTIVE_SETUP_ASSISTANT
             )
 
@@ -99,7 +107,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
     private fun createNotificationChannel() {
         val notificationChannel = NotificationChannelModel(
-            id = NotificationController.CHANNEL_SETUP_ASSISTANT,
+            id = NotificationController.Companion.CHANNEL_SETUP_ASSISTANT,
             name = getString(R.string.pro_mode_setup_assistant_notification_channel),
             importance = NotificationManagerCompat.IMPORTANCE_MAX
         )
@@ -107,7 +115,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
     }
 
     fun teardown() {
-        // TODO stop showing any notifications
+        dismissNotification()
         interactionStep = null
         interactionTimeoutJob?.cancel()
         interactionTimeoutJob = null
@@ -149,6 +157,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
     @RequiresApi(Build.VERSION_CODES.R)
     private fun doPairingInteractiveStep(rootNode: AccessibilityNodeInfo) {
+
         val pairingCodeText = findPairingCodeText(rootNode)
         val portText = findPortText(rootNode)
 
@@ -170,30 +179,46 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
                         }
 
                         if (isStarted) {
-                            val notification = NotificationModel(
-                                id = NotificationController.ID_SETUP_ASSISTANT,
-                                channel = NotificationController.CHANNEL_SETUP_ASSISTANT,
-                                title = getString(R.string.pro_mode_setup_notification_started_success_title),
-                                text = getString(R.string.pro_mode_setup_notification_started_success_text),
-                                icon = R.drawable.pro_mode,
-                                onGoing = false,
-                                showOnLockscreen = false,
-                                autoCancel = true,
-                                bigTextStyle = true
+                            showNotification(
+                                getString(R.string.pro_mode_setup_notification_started_success_title),
+                                getString(R.string.pro_mode_setup_notification_started_success_text)
                             )
-                            manageNotifications.show(notification)
+
+                            getKeyMapperAppTask()?.moveToFront()
 
                             delay(5000)
 
-                            manageNotifications.dismiss(notification.id)
+                            dismissNotification()
                         } else {
                             // TODO Show notification
-                            Timber.w("Failed to start system bridge after pairing.")
+                            Timber.Forest.w("Failed to start system bridge after pairing.")
                         }
                     }
                 }
             }
         }
+    }
+
+    private fun showNotification(title: String, text: String) {
+        val notification = NotificationModel(
+            // Use the same notification id for all so they overwrite each other.
+            id = NotificationController.Companion.ID_SETUP_ASSISTANT,
+            channel = NotificationController.Companion.CHANNEL_SETUP_ASSISTANT,
+            title = title,
+            text = text,
+            icon = R.drawable.pro_mode,
+            onGoing = false,
+            showOnLockscreen = false,
+            autoCancel = true,
+            bigTextStyle = true,
+            // Must not be silent so it is shown as a heads up notification
+            silent = false
+        )
+        manageNotifications.show(notification)
+    }
+
+    private fun dismissNotification() {
+        manageNotifications.dismiss(NotificationController.Companion.ID_SETUP_ASSISTANT)
     }
 
     private fun findPairingCodeText(rootNode: AccessibilityNodeInfo): String? {
@@ -209,7 +234,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
     }
 
     private fun startSetupStep(step: SystemBridgeSetupStep) {
-        Timber.d("Starting setup assistant step: $step")
+        Timber.i("Starting setup assistant step: $step")
 
         when (step) {
             SystemBridgeSetupStep.DEVELOPER_OPTIONS -> {
@@ -218,7 +243,15 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
             SystemBridgeSetupStep.WIRELESS_DEBUGGING -> {}
 
-            SystemBridgeSetupStep.ADB_PAIRING -> interactionStep = InteractionStep.PAIR_DEVICE
+            SystemBridgeSetupStep.ADB_PAIRING -> {
+                showNotification(
+                    "Pairing automatically",
+                    "Searching for pairing code and port..."
+                )
+
+
+                interactionStep = InteractionStep.PAIR_DEVICE
+            }
 
             SystemBridgeSetupStep.START_SERVICE -> {}
             else -> {} // Do nothing
@@ -227,5 +260,11 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
         // TODO if finding pairing node does not work, show a notification asking for the pairing code.
         // TODO do this in the timeout job too
+    }
+
+    private fun getKeyMapperAppTask(): ActivityManager.AppTask? {
+        val task = activityManager.appTasks
+            .firstOrNull { it.taskInfo.topActivity?.className == keyMapperClassProvider.getMainActivity().name }
+        return task
     }
 }

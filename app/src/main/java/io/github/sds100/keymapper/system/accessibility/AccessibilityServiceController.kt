@@ -9,10 +9,10 @@ import io.github.sds100.keymapper.base.detection.DetectKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
+import io.github.sds100.keymapper.base.promode.SystemBridgeSetupAssistantController
 import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeRecorder
 import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilityServiceController
-import io.github.sds100.keymapper.base.system.accessibility.SystemBridgeSetupAssistantController
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
