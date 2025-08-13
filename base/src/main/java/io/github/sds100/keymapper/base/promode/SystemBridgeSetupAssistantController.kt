@@ -116,9 +116,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
     fun teardown() {
         dismissNotification()
-        interactionStep = null
-        interactionTimeoutJob?.cancel()
-        interactionTimeoutJob = null
+        stopInteracting()
     }
 
     fun onAccessibilityEvent(event: AccessibilityEvent) {
@@ -157,7 +155,6 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
     @RequiresApi(Build.VERSION_CODES.R)
     private fun doPairingInteractiveStep(rootNode: AccessibilityNodeInfo) {
-
         val pairingCodeText = findPairingCodeText(rootNode)
         val portText = findPortText(rootNode)
 
@@ -167,36 +164,50 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
             if (pairingCode != null && port != null) {
                 coroutineScope.launch {
-                    setupController.pairWirelessAdb(port, pairingCode).onSuccess {
-                        setupController.startWithAdb()
-
-                        val isStarted = try {
-                            withTimeout(3000L) {
-                                systemBridgeConnectionManager.isConnected.first { it }
-                            }
-                        } catch (e: TimeoutCancellationException) {
-                            false
-                        }
-
-                        if (isStarted) {
-                            showNotification(
-                                getString(R.string.pro_mode_setup_notification_started_success_title),
-                                getString(R.string.pro_mode_setup_notification_started_success_text)
-                            )
-
-                            getKeyMapperAppTask()?.moveToFront()
-
-                            delay(5000)
-
-                            dismissNotification()
-                        } else {
-                            // TODO Show notification
-                            Timber.Forest.w("Failed to start system bridge after pairing.")
-                        }
-                    }
+                    onPairingCodeFound(port, pairingCode)
                 }
             }
+        } else {
+            clickPairWithCodeButton(rootNode)
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private suspend fun onPairingCodeFound(port: Int, pairingCode: Int) {
+        setupController.pairWirelessAdb(port, pairingCode).onSuccess {
+            setupController.startWithAdb()
+
+            stopInteracting()
+
+            val isStarted = try {
+                withTimeout(3000L) {
+                    systemBridgeConnectionManager.isConnected.first { it }
+                }
+            } catch (e: TimeoutCancellationException) {
+                false
+            }
+
+            if (isStarted) {
+                showNotification(
+                    getString(R.string.pro_mode_setup_notification_started_success_title),
+                    getString(R.string.pro_mode_setup_notification_started_success_text)
+                )
+
+                getKeyMapperAppTask()?.moveToFront()
+
+                delay(5000)
+
+                dismissNotification()
+            } else {
+                // TODO Show notification
+                Timber.w("Failed to start system bridge after pairing.")
+            }
+        }
+    }
+
+    private fun clickPairWithCodeButton(rootNode: AccessibilityNodeInfo) {
+        rootNode.findNodeRecursively { it.className == "androidx.recyclerview.widget.RecyclerView" }
+            ?.getChild(3)?.performAction(AccessibilityNodeInfo.ACTION_CLICK)
     }
 
     private fun showNotification(title: String, text: String) {
@@ -260,6 +271,12 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
         // TODO if finding pairing node does not work, show a notification asking for the pairing code.
         // TODO do this in the timeout job too
+    }
+
+    private fun stopInteracting() {
+        interactionStep = null
+        interactionTimeoutJob?.cancel()
+        interactionTimeoutJob = null
     }
 
     private fun getKeyMapperAppTask(): ActivityManager.AppTask? {
