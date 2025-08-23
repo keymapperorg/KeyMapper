@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Key Mapper</string>
+    <string name="slogan">释放你的按键！</string>
+
+    <string name="accessibility_service_explanation">Key Mapper 需要使用无障碍服务，以便在您在应用外部时检测和更改按键操作。只有在启用无障碍服务后，您的按键映射才会生效。创建触发器和测试操作时也必须开启该服务。</string>
+    <string name="selection_count">已选择</string>
+    <string name="ime_service_label" translatable="false">Key Mapper 基础输入法</string>
+    <string name="enable">启用</string>
+    <string name="shrug" translatable="false">¯\_(ツ)_/¯</string>
+    <string name="recyclerview_placeholder">¯\_(ツ)_/¯\n\n这里什么都没有！</string>
+    <string name="triggers_recyclerview_placeholder">第一步是添加一些将触发按键映射的按钮。\n\n首先点击“录制触发器”，然后按下您想要重新映射的按钮。它们会出现在这里。\n\n或者，您可以使用“高级触发器”来触发按键映射。\n\n您可以任意组合按键！</string>
+    <string name="choose_action_warning_requires_root">需要 Root 权限</string>
+    <string name="press_dot_dot_dot">按下…</string>
+    <string name="no_actions">无操作</string>
+    <string name="no_trigger">无触发器</string>
+    <string name="middot" translatable="false">•</string>
+    <string name="unknown_device_name">未知设备名称</string>
+    <string name="on">开启</string>
+    <string name="off">关闭</string>
+    <string name="follow_system">跟随系统</string>
+    <string name="this_device">此设备</string>
+    <string name="any_device">任何设备</string>
+    <string name="slider_default">默认</string>
+    <string name="button_enable_accessibility_service">启用无障碍服务</string>
+    <string name="button_restart_accessibility_service">重启无障碍服务</string>
+    <string name="share_backup">分享</string>
+    <string name="app_list_empty">这里什么都没有！</string>
+    <string name="ui_element_list_empty">Key Mapper 未检测到任何交互。尝试显示更多元素。</string>
+    <string name="stop_repeating_dot_dot_dot">停止重复当…</string>
+    <string name="stop_repeating_when_trigger_released">触发器被释放</string>
+    <string name="stop_repeating_trigger_pressed_again">触发器再次被按下</string>
+    <string name="stop_repeating_limit_reached">达到限制</string>
+
+    <string name="stop_holding_down_when_trigger_released">触发器被释放</string>
+    <string name="stop_holding_down_trigger_pressed_again">触发器再次被按下</string>
+
+    <string name="show_hidden_apps">显示隐藏应用</string>
+    <string name="modifiers">修饰键</string>
+    <string name="chip_play_store" translatable="false">Play Store</string>
+    <string name="chip_fdroid" translatable="false">F-Droid</string>
+    <string name="chip_github" translatable="false">GitHub</string>
+    <string name="tap_coordinate_screenshot_message">重要！！！这些坐标仅在您的显示屏与截图方向相同时才正确！此操作将取消您在屏幕上正在进行的任何触摸或手势。\n\n如果您需要帮助找到屏幕上某点的坐标，请截取屏幕截图，然后点击截图中您希望此操作按下的位置。</string>
+    <string name="pinch_screen_x_y_note">注意：使用“捏合放大”时，X 和 Y 是结束坐标；使用“捏合缩小”时，X 和 Y 是起始坐标。</string>
+    <string name="tap_actions_to_fix">点击操作以修复！</string>
+    <string name="tap_constraints_to_fix">点击约束以修复！</string>
+    <string name="shortcut_label_action">执行操作</string>
+    <string name="hold_down_until_trigger_is_dot_dot_dot">按住直到触发器…</string>
+    <string name="from_no_device">无设备</string>
+    <string name="intent_extras_recycler_view_placeholder">¯\_(ツ)_/¯\n\n没有附加信息！</string>
+    <string name="content_description_done_configuring_key_event">完成配置按键事件操作</string>
+    <string name="content_description_done_configuring_coordinate">完成选择坐标</string>
+    <string name="clip_key_mapper_log">Key Mapper 日志</string>
+
+    <string name="whats_new">新增功能</string>
+    <string name="caption_action_type_sound">您可以使用系统铃声或选择自定义声音文件。\n\n自定义声音文件将被复制到 Key Mapper 的私有数据文件夹中，这意味着即使文件被移动或删除，您的操作仍会正常工作。它也会随您的按键映射一起备份到 zip 文件夹中。您可以在设置中删除已保存的声音文件。</string>
+
+    <string name="caption_no_paired_bt_devices">找不到任何配对设备。蓝牙是否已开启？</string>
+    <string name="create_key_map_shortcut_footer">点击一个按键映射以用作快捷方式。</string>
+    <string name="create_key_map_shortcut_app_title">创建按键映射快捷方式</string>
+
+    <string name="switch_enabled">已启用</string>
+    <string name="switch_disabled">已禁用</string>
+
+    <string name="reset">重置</string>
+    <string name="enable_device_admin_message">启用设备管理员后，如果您想卸载 Key Mapper，必须先停用它。</string>
+
+    <string name="action_title_wait">等待 %sms</string>
+
+    <string name="action_title_intent_start_activity">启动活动：%s</string>
+    <string name="action_title_intent_start_service">启动服务：%s</string>
+    <string name="action_title_intent_send_broadcast">发送广播：%s</string>
+
+    <string name="clipboard_label_keymap_uid">按键映射 ID</string>
+    <string name="check_box_key_event_option_use_shell">使用 Shell（仅限 ROOT）</string>
+
+    <string name="trigger_error_dnd_access_denied">在勿扰模式下正常工作需要权限！</string>
+    <string name="trigger_error_screen_off_root_permission_denied">屏幕关闭时触发选项需要 Root 权限才能工作！</string>
+    <string name="trigger_error_cant_detect_in_phone_call">此触发器在响铃或通话中将无法工作！</string>
+    <string name="trigger_error_cant_detect_in_phone_call_explanation">Android 不允许无障碍服务在您的手机响铃或通话时检测音量键按下，但允许输入法服务检测它们。因此，如果您希望此触发器工作，必须使用其中一个 Key Mapper 键盘。</string>
+    <string name="trigger_error_gesture_stroke_count_too_high">由于 Android 限制，手势手指数量过多。</string>
+    <string name="trigger_error_gesture_duration_too_high">由于 Android 限制，手势持续时间过长。</string>
+    <string name="trigger_error_dpad_ime_not_selected">您必须使用 Key Mapper 键盘才能使 DPAD 触发器工作！</string>
+
+    <string name="home_error_is_battery_optimised">您的按键映射将随机停止工作！</string>
+    <string name="home_error_key_maps_paused">您的按键映射已暂停！</string>
+    <string name="home_error_key_maps_paused_button">恢复</string>
+    <string name="home_error_accessibility_service_is_disabled">需要开启无障碍服务才能使您的按键映射工作！</string>
+    <string name="home_error_accessibility_service_is_crashed">您的手机在后台杀死了 Key Mapper 或它已崩溃！</string>
+    <string name="home_success_accessibility_service_is_enabled">无障碍服务已启用！您的按键映射应该可以工作。</string>
+    <string name="home_error_logging_enabled">额外日志记录已开启！如果您不是在尝试修复问题，请关闭此功能。</string>
+    <string name="home_error_logging_enabled_button">关闭</string>
+    <string name="home_error_notification_permission">开启通知以获得更好的屏幕消息、更多操作和服
