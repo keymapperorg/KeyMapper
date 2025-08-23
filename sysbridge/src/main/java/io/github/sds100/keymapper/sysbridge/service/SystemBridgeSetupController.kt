@@ -13,6 +13,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.SettingsUtils
+import io.github.sds100.keymapper.common.utils.isSuccess
 import io.github.sds100.keymapper.sysbridge.adb.AdbManager
 import io.github.sds100.keymapper.sysbridge.starter.SystemBridgeStarter
 import kotlinx.coroutines.CoroutineScope
@@ -73,12 +74,21 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
+    override fun launchPairingAssistant() {
+        launchWirelessDebuggingActivity()
+
+        coroutineScope.launch {
+            startSetupAssistantRequest.emit(SystemBridgeSetupStep.ADB_PAIRING)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
     override suspend fun pairWirelessAdb(port: Int, code: Int): KMResult<Unit> {
         return adbManager.pair(port, code)
     }
 
     override fun enableDeveloperOptions() {
-        // TODO show notification after the actvitiy is to tap the Build Number repeatedly
+        // TODO show notification after the activity is to tap the Build Number repeatedly
 
         SettingsUtils.launchSettingsScreen(
             ctx,
@@ -87,8 +97,26 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         )
     }
 
-    override fun enableWirelessDebugging() {
+    override fun launchEnableWirelessDebuggingAssistant() {
         // This is the intent sent by the quick settings tile. Not all devices support this.
+        launchWirelessDebuggingActivity()
+
+        coroutineScope.launch {
+            startSetupAssistantRequest.emit(SystemBridgeSetupStep.WIRELESS_DEBUGGING)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    override suspend fun isAdbPaired(): Boolean {
+        if (!getWirelessDebuggingEnabled()) {
+            return false
+        }
+
+        // Try running a command to see if the pairing is working correctly.
+        return adbManager.executeCommand("sh").isSuccess
+    }
+
+    private fun launchWirelessDebuggingActivity() {
         val quickSettingsIntent = Intent(TileService.ACTION_QS_TILE_PREFERENCES).apply {
             // Set the package name because this action can also resolve to a "Permission Controller" activity.
             val packageName = "com.android.settings"
@@ -107,17 +135,12 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
         try {
             ctx.startActivity(quickSettingsIntent)
-        } catch (e: ActivityNotFoundException) {
+        } catch (_: ActivityNotFoundException) {
             SettingsUtils.launchSettingsScreen(
                 ctx,
                 Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS,
                 "toggle_adb_wireless"
             )
-        }
-
-        // TODO send correct step
-        coroutineScope.launch {
-            startSetupAssistantRequest.emit(SystemBridgeSetupStep.ADB_PAIRING)
         }
     }
 
@@ -155,7 +178,12 @@ interface SystemBridgeSetupController {
     fun enableDeveloperOptions()
 
     val isWirelessDebuggingEnabled: Flow<Boolean>
-    fun enableWirelessDebugging()
+    fun launchEnableWirelessDebuggingAssistant()
+
+    fun launchPairingAssistant()
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    suspend fun isAdbPaired(): Boolean
 
     @RequiresApi(Build.VERSION_CODES.R)
     suspend fun pairWirelessAdb(port: Int, code: Int): KMResult<Unit>

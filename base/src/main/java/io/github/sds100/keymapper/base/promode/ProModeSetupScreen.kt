@@ -20,6 +20,7 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Accessibility
 import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.Build
+import androidx.compose.material.icons.rounded.CheckCircleOutline
 import androidx.compose.material.icons.rounded.Link
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.PlayArrow
@@ -167,7 +168,8 @@ fun ProModeSetupScreen(
 
                     AssistantCheckBoxRow(
                         modifier = Modifier.fillMaxWidth(),
-                        isEnabled = state.data.step != SystemBridgeSetupStep.ACCESSIBILITY_SERVICE,
+                        isEnabled = state.data.step != SystemBridgeSetupStep.ACCESSIBILITY_SERVICE
+                            && state.data.step != SystemBridgeSetupStep.STARTED,
                         isChecked = state.data.isSetupAssistantChecked,
                         onAssistantClick = onAssistantClick
                     )
@@ -341,6 +343,13 @@ private fun getStepContent(step: SystemBridgeSetupStep): StepContent {
             message = stringResource(R.string.pro_mode_setup_wizard_start_service_description),
             icon = Icons.Rounded.PlayArrow,
             buttonText = stringResource(R.string.pro_mode_root_detected_button_start_service)
+        )
+
+        SystemBridgeSetupStep.STARTED -> StepContent(
+            title = stringResource(R.string.pro_mode_setup_wizard_complete_title),
+            message = stringResource(R.string.pro_mode_setup_wizard_complete_text),
+            icon = Icons.Rounded.CheckCircleOutline,
+            buttonText = stringResource(R.string.pro_mode_setup_wizard_complete_button)
         )
     }
 }

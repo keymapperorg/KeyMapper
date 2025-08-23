@@ -38,8 +38,9 @@ class ProModeSetupViewModel @Inject constructor(
                 SystemBridgeSetupStep.DEVELOPER_OPTIONS -> useCase.openDeveloperOptions()
                 SystemBridgeSetupStep.WIFI_NETWORK -> useCase.connectWifiNetwork()
                 SystemBridgeSetupStep.WIRELESS_DEBUGGING -> useCase.enableWirelessDebugging()
-                SystemBridgeSetupStep.ADB_PAIRING -> useCase.pairAdb()
+                SystemBridgeSetupStep.ADB_PAIRING -> useCase.pairWirelessAdb()
                 SystemBridgeSetupStep.START_SERVICE -> useCase.startSystemBridgeWithAdb()
+                SystemBridgeSetupStep.STARTED -> popBackStack()
             }
         }
     }

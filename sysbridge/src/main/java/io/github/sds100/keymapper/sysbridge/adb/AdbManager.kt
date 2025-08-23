@@ -33,42 +33,45 @@ class AdbManagerImpl @Inject constructor(
     private val commandMutex: Mutex = Mutex()
     private val pairMutex: Mutex = Mutex()
     private val adbConnectMdns: AdbMdns by lazy { AdbMdns(ctx, AdbServiceType.TLS_CONNECT) }
-    private var client: AdbClient? = null
 
     override suspend fun executeCommand(command: String): KMResult<String> {
+        Timber.i("Execute ADB command: $command")
+
         val result = withContext(Dispatchers.IO) {
-            return@withContext pairMutex.withLock {
+            return@withContext commandMutex.withLock {
                 adbConnectMdns.start()
 
-                if (client == null) {
+                val port = withTimeout(1000L) { adbConnectMdns.port.first { it != null } }
 
-                    val port = withTimeout(1000L) { adbConnectMdns.port.first { it != null } }
-
-                    if (port == null) {
-                        return@withLock AdbError.ServerNotFound
-                    }
-
-                    val adbKey = getAdbKey()
-
-                    when (adbKey) {
-                        is KMError -> return@withLock adbKey
-                        is Success<AdbKey> -> client = AdbClient(LOCALHOST, port, adbKey.value)
-                    }
+                if (port == null) {
+                    return@withLock AdbError.ServerNotFound
                 }
 
-                return@withLock with(client!!) {
-                    connect()
-                    try {
-                        client!!.shellCommand(command).success()
-                    } catch (e: Exception) {
-                        Timber.e(e)
-                        AdbError.Unknown(e)
+                val adbKey = getAdbKey()
+
+                // Recreate a new client every time in case the port changes during the lifetime
+                // of AdbManager
+                val client: AdbClient = when (adbKey) {
+                    is KMError -> return@withLock adbKey
+                    is Success<AdbKey> -> AdbClient(LOCALHOST, port, adbKey.value)
+                }
+
+                return@withLock with(client) {
+                    connect().then {
+                        try {
+                            client.shellCommand(command).success()
+                        } catch (e: Exception) {
+                            Timber.e(e)
+                            AdbError.Unknown(e)
+                        }
                     }
                 }.then { String(it).success() }
             }
         }
 
         adbConnectMdns.stop()
+
+        Timber.i("Execute command result: $result")
 
         return result
     }

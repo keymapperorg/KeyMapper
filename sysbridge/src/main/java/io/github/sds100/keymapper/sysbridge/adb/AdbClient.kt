@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.sysbridge.adb
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.ADB_AUTH_RSAPUBLICKEY
 import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.ADB_AUTH_SIGNATURE
 import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.A_AUTH
@@ -14,10 +14,12 @@ import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.A_STLS
 import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.A_STLS_VERSION
 import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.A_VERSION
 import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.A_WRTE
+import kotlinx.coroutines.delay
 import timber.log.Timber
 import java.io.Closeable
 import java.io.DataInputStream
 import java.io.DataOutputStream
+import java.net.ConnectException
 import java.net.Socket
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -25,11 +27,10 @@ import javax.net.ssl.SSLSocket
 
 private const val TAG = "AdbClient"
 
-@RequiresApi(Build.VERSION_CODES.M)
 internal class AdbClient(private val host: String, private val port: Int, private val key: AdbKey) :
     Closeable {
 
-    private lateinit var socket: Socket
+    private var socket: Socket? = null
     private lateinit var plainInputStream: DataInputStream
     private lateinit var plainOutputStream: DataOutputStream
 
@@ -42,11 +43,28 @@ internal class AdbClient(private val host: String, private val port: Int, privat
     private val inputStream get() = if (useTls) tlsInputStream else plainInputStream
     private val outputStream get() = if (useTls) tlsOutputStream else plainOutputStream
 
-    fun connect() {
-        socket = Socket(host, port)
-        socket.tcpNoDelay = true
-        plainInputStream = DataInputStream(socket.getInputStream())
-        plainOutputStream = DataOutputStream(socket.getOutputStream())
+    suspend fun connect(): KMResult<Unit> {
+        var connectAttemptCounter = 0
+
+        // Try to connect to the client multiple times in case the server hasn't started up
+        // yet
+        while (socket == null && connectAttemptCounter < 5) {
+            try {
+                socket = Socket(host, port)
+            } catch (_: ConnectException) {
+                delay(1000)
+                connectAttemptCounter++
+                continue
+            }
+        }
+
+        if (socket == null) {
+            return AdbError.ConnectionError
+        }
+
+        socket!!.tcpNoDelay = true
+        plainInputStream = DataInputStream(socket!!.getInputStream())
+        plainOutputStream = DataOutputStream(socket!!.getOutputStream())
 
         write(A_CNXN, A_VERSION, A_MAXDATA, "host::")
 
@@ -77,6 +95,8 @@ internal class AdbClient(private val host: String, private val port: Int, privat
         if (message.command != A_CNXN) {
             error("not A_CNXN")
         }
+
+        return Success(Unit)
     }
 
     fun shellCommand(command: String): ByteArray {
@@ -170,7 +190,7 @@ internal class AdbClient(private val host: String, private val port: Int, privat
         } catch (e: Throwable) {
         }
         try {
-            socket.close()
+            socket?.close()
         } catch (e: Exception) {
         }
 

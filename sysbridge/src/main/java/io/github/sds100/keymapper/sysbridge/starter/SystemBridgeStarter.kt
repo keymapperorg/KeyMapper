@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.sysbridge.BuildConfig
 import io.github.sds100.keymapper.sysbridge.IShizukuStarterService
@@ -120,7 +121,9 @@ class SystemBridgeStarter(
         }
 
         // Get the file that contains the external files
-        return startSystemBridge(executeCommand = adbManager::executeCommand)
+        return startSystemBridge(executeCommand = adbManager::executeCommand).onFailure { error ->
+            Timber.w("Failed to start system bridge with ADB: $error")
+        }
     }
 
     suspend fun startWithRoot() {
@@ -151,18 +154,19 @@ class SystemBridgeStarter(
         }
 
         val outputStarterBinary = File(externalFilesParent, "starter")
+        val outputStarterScript = File(externalFilesParent, "start.sh")
         withContext(Dispatchers.IO) {
             copyNativeLibrary(outputStarterBinary)
 
             // Create the start.sh shell script
             writeStarterScript(
-                File(externalFilesParent, "start.sh"),
+                outputStarterScript,
                 outputStarterBinary.absolutePath
             )
         }
 
-        var startCommand =
-            "sh ${outputStarterBinary.absolutePath} --apk=$apkPath --lib=$libPath --package=$packageName"
+        val startCommand =
+            "sh ${outputStarterScript.absolutePath} --apk=$apkPath --lib=$libPath --package=$packageName"
 
         return executeCommand(startCommand).then { output ->
 
@@ -174,51 +178,57 @@ class SystemBridgeStarter(
                     "ADB has no permission to access Android/data/${ctx.packageName}/start.sh. Trying to use /data/user_de instead..."
                 )
 
-                val protectedStorageDir =
-                    ctx.createDeviceProtectedStorageContext().filesDir.parentFile
-
-                try {
-                    Os.chmod(protectedStorageDir.absolutePath, 457 /* 0711 */)
-                } catch (e: ErrnoException) {
-                    e.printStackTrace()
-                }
-
-                try {
-                    val outputStarterBinary = File(protectedStorageDir, "starter")
-
-                    withContext(Dispatchers.IO) {
-                        copyNativeLibrary(outputStarterBinary)
-
-                        writeStarterScript(
-                            File(protectedStorageDir, "start.sh"),
-                            outputStarterBinary.absolutePath
-                        )
-                    }
-
-                    startCommand =
-                        "sh ${outputStarterBinary.absolutePath} --apk=$apkPath --lib=$libPath  --package=$packageName"
-
-                    try {
-                        Os.chmod(outputStarterBinary.absolutePath, 420 /* 0644 */)
-                    } catch (e: ErrnoException) {
-                        e.printStackTrace()
-                    }
-                    try {
-                        Os.chmod(outputStarterBinary.absolutePath, 420 /* 0644 */)
-                    } catch (e: ErrnoException) {
-                        e.printStackTrace()
-                    }
-
-
-                } catch (e: IOException) {
-                    loge("write files", e)
-                }
-
-                executeCommand(startCommand)
-
+                startSystemBridgeFromProtectedStorage(executeCommand)
             } else {
                 Success(output)
             }
+        }
+    }
+
+    private suspend fun startSystemBridgeFromProtectedStorage(
+        executeCommand: suspend (String) -> KMResult<String>
+    ): KMResult<String> {
+        val protectedStorageDir =
+            ctx.createDeviceProtectedStorageContext().filesDir.parentFile
+
+        try {
+            Os.chmod(protectedStorageDir.absolutePath, 457 /* 0711 */)
+        } catch (e: ErrnoException) {
+            e.printStackTrace()
+        }
+
+        try {
+            val outputStarterBinary = File(protectedStorageDir, "starter")
+            val outputStarterScript = File(protectedStorageDir, "start.sh")
+
+            withContext(Dispatchers.IO) {
+                copyNativeLibrary(outputStarterBinary)
+
+                writeStarterScript(
+                    outputStarterScript,
+                    outputStarterBinary.absolutePath
+                )
+            }
+
+            val startCommand =
+                "sh ${outputStarterScript.absolutePath} --apk=$apkPath --lib=$libPath  --package=$packageName"
+
+            try {
+                Os.chmod(outputStarterBinary.absolutePath, 420 /* 0644 */)
+            } catch (e: ErrnoException) {
+                e.printStackTrace()
+            }
+            try {
+                Os.chmod(outputStarterBinary.absolutePath, 420 /* 0644 */)
+            } catch (e: ErrnoException) {
+                e.printStackTrace()
+            }
+
+            return executeCommand(startCommand)
+
+        } catch (e: IOException) {
+            loge("write files", e)
+            return KMError.UnknownIOError
         }
     }
 
@@ -229,30 +239,31 @@ class SystemBridgeStarter(
         val expectedLibraryPath = "lib/${Build.SUPPORTED_ABIS[0]}/libsysbridge.so"
 
         // Open the apk so the library file can be found
-        val apk = ZipFile(apkPath)
-        val entries = apk.entries()
+        with(ZipFile(apkPath)) {
+            val entries = entries()
 
-        // Loop over all the file entries in the zip file
-        while (entries.hasMoreElements()) {
-            val entry = entries.nextElement() ?: break
+            // Loop over all the file entries in the zip file
+            while (entries.hasMoreElements()) {
+                val entry = entries.nextElement() ?: break
 
-            if (entry.name != expectedLibraryPath) {
-                continue
+                if (entry.name != expectedLibraryPath) {
+                    continue
+                }
+
+                val buf = ByteArray(entry.size.toInt())
+
+                // Read the native library into the buffer
+                with(DataInputStream(getInputStream(entry))) {
+                    readFully(buf)
+                }
+
+                // Copy the buffer to the output file
+                with(FileOutputStream(out)) {
+                    FileUtils.copy(ByteArrayInputStream(buf), this)
+                }
+
+                break
             }
-
-            val buf = ByteArray(entry.size.toInt())
-
-            // Read the native library into the buffer
-            with(DataInputStream(apk.getInputStream(entry))) {
-                readFully(buf)
-            }
-
-            // Copy the buffer to the output file
-            with(FileOutputStream(out)) {
-                FileUtils.copy(ByteArrayInputStream(buf), this)
-            }
-
-            break
         }
     }
 

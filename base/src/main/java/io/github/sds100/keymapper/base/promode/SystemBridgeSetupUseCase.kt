@@ -18,6 +18,8 @@ import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -58,15 +60,24 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
 
     override val isSystemBridgeConnected: Flow<Boolean> = systemBridgeConnectionManager.isConnected
 
-    override val nextSetupStep: Flow<SystemBridgeSetupStep> = combine(
-        accessibilityServiceAdapter.state,
-        permissionAdapter.isGrantedFlow(Permission.POST_NOTIFICATIONS),
-        systemBridgeSetupController.isDeveloperOptionsEnabled,
-        networkAdapter.isWifiConnected,
-        systemBridgeSetupController.isWirelessDebuggingEnabled,
-        ::getNextStep
-    )
+    @RequiresApi(Build.VERSION_CODES.R)
+    override val nextSetupStep: Flow<SystemBridgeSetupStep> =
+        isSystemBridgeConnected.flatMapLatest { isConnected ->
+            if (isConnected) {
+                flowOf(SystemBridgeSetupStep.STARTED)
+            } else {
+                combine(
+                    accessibilityServiceAdapter.state,
+                    permissionAdapter.isGrantedFlow(Permission.POST_NOTIFICATIONS),
+                    systemBridgeSetupController.isDeveloperOptionsEnabled,
+                    networkAdapter.isWifiConnected,
+                    systemBridgeSetupController.isWirelessDebuggingEnabled,
+                    ::getNextStep
+                )
+            }
+        }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override val setupProgress: Flow<Float> = nextSetupStep.map { step ->
         step.stepIndex.toFloat() / SystemBridgeSetupStep.entries.size
     }
@@ -115,11 +126,12 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     }
 
     override fun enableWirelessDebugging() {
-        systemBridgeSetupController.enableWirelessDebugging()
+        systemBridgeSetupController.launchEnableWirelessDebuggingAssistant()
     }
 
-    override fun pairAdb() {
-        TODO("Not yet implemented")
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun pairWirelessAdb() {
+        systemBridgeSetupController.launchPairingAssistant()
     }
 
     override fun startSystemBridgeWithRoot() {
@@ -134,7 +146,8 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         systemBridgeSetupController.startWithAdb()
     }
 
-    private fun getNextStep(
+    @RequiresApi(Build.VERSION_CODES.R)
+    private suspend fun getNextStep(
         accessibilityServiceState: AccessibilityServiceState,
         isNotificationPermissionGranted: Boolean,
         isDeveloperOptionsEnabled: Boolean,
@@ -147,7 +160,8 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
             !isDeveloperOptionsEnabled -> SystemBridgeSetupStep.DEVELOPER_OPTIONS
             !isWifiConnected -> SystemBridgeSetupStep.WIFI_NETWORK
             !isWirelessDebuggingEnabled -> SystemBridgeSetupStep.WIRELESS_DEBUGGING
-            else -> SystemBridgeSetupStep.ADB_PAIRING
+            isWirelessDebuggingEnabled && !systemBridgeSetupController.isAdbPaired() -> SystemBridgeSetupStep.ADB_PAIRING
+            else -> SystemBridgeSetupStep.START_SERVICE
         }
 
 }
@@ -175,7 +189,7 @@ interface SystemBridgeSetupUseCase {
     fun openDeveloperOptions()
     fun connectWifiNetwork()
     fun enableWirelessDebugging()
-    fun pairAdb()
+    fun pairWirelessAdb()
     fun startSystemBridgeWithRoot()
     fun startSystemBridgeWithShizuku()
     fun startSystemBridgeWithAdb()

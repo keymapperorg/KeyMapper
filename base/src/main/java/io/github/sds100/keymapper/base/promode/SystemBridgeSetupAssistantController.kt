@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.base.system.notifications.ManageNotificationsU
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.KeyMapperClassProvider
+import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
@@ -44,7 +45,6 @@ import timber.log.Timber
 class SystemBridgeSetupAssistantController @AssistedInject constructor(
     @Assisted
     private val coroutineScope: CoroutineScope,
-
     @Assisted
     private val accessibilityService: BaseAccessibilityService,
     private val manageNotifications: ManageNotificationsUseCase,
@@ -175,6 +175,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
     @RequiresApi(Build.VERSION_CODES.R)
     private suspend fun onPairingCodeFound(port: Int, pairingCode: Int) {
         setupController.pairWirelessAdb(port, pairingCode).onSuccess {
+            Timber.i("Pairing code found. Starting System Bridge with ADB...")
             setupController.startWithAdb()
 
             stopInteracting()
@@ -202,6 +203,9 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
                 // TODO Show notification
                 Timber.w("Failed to start system bridge after pairing.")
             }
+        }.onFailure {
+            Timber.e("Failed to pair with wireless ADB: $it")
+            // TODO show notification
         }
     }
 
