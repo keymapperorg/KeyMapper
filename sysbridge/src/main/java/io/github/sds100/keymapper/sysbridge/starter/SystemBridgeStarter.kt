@@ -1,15 +1,33 @@
 package io.github.sds100.keymapper.sysbridge.starter
 
+import android.content.ComponentName
 import android.content.Context
+import android.content.ServiceConnection
 import android.os.Build
+import android.os.IBinder
+import android.os.RemoteException
 import android.os.UserManager
 import android.system.ErrnoException
 import android.system.Os
+import androidx.annotation.RequiresApi
+import com.topjohnwu.superuser.Shell
+import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.then
+import io.github.sds100.keymapper.sysbridge.BuildConfig
+import io.github.sds100.keymapper.sysbridge.IShizukuStarterService
 import io.github.sds100.keymapper.sysbridge.R
-import io.github.sds100.keymapper.sysbridge.ktx.createDeviceProtectedStorageContextCompat
-import io.github.sds100.keymapper.sysbridge.ktx.logd
+import io.github.sds100.keymapper.sysbridge.adb.AdbManager
 import io.github.sds100.keymapper.sysbridge.ktx.loge
+import io.github.sds100.keymapper.sysbridge.shizuku.ShizukuStarterService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import rikka.core.os.FileUtils
+import rikka.shizuku.Shizuku
+import timber.log.Timber
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.DataInputStream
@@ -21,123 +39,246 @@ import java.io.InputStreamReader
 import java.io.PrintWriter
 import java.util.zip.ZipFile
 
-// TODO clean up this code and move it to SystemBridgeConnectionManager, and if a lot of starter code in there then move it to a StarterDelegate
-internal object SystemBridgeStarter {
+class SystemBridgeStarter(
+    private val ctx: Context,
+    private val adbManager: AdbManager,
+    private val buildConfigProvider: BuildConfigProvider
+) {
+    private val userManager by lazy { ctx.getSystemService(UserManager::class.java)!! }
 
-    private var commandInternal = arrayOfNulls<String>(2)
+    private val apkPath = ctx.applicationInfo.sourceDir
+    private val libPath = ctx.applicationInfo.nativeLibraryDir
+    private val packageName = ctx.applicationInfo.packageName
 
-    val dataCommand get() = commandInternal[0]!!
+    private val shizukuStarterConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(
+            name: ComponentName?,
+            binder: IBinder?
+        ) {
+            Timber.i("Shizuku starter service connected")
 
-    val sdcardCommand get() = commandInternal[1]!!
+            val service = IShizukuStarterService.Stub.asInterface(binder)
 
-    /**
-     * @return the path to the script file.
-     */
-    fun writeSdcardFiles(context: Context): String {
+            Timber.i("Starting System Bridge with Shizuku starter service")
+            try {
+                runBlocking {
+                    startSystemBridge(executeCommand = { command ->
+                        val output = service.executeCommand(command)
 
-        val um = context.getSystemService(UserManager::class.java)!!
-        val unlocked = Build.VERSION.SDK_INT < 24 || um.isUserUnlocked
-        if (!unlocked) {
-            throw IllegalStateException("User is locked")
+                        if (output == null) {
+                            KMError.UnknownIOError
+                        } else {
+                            Success(output)
+                        }
+                    })
+                }
+
+            } catch (e: RemoteException) {
+                Timber.e("Exception starting with Shizuku starter service: $e")
+            } finally {
+                service.destroy()
+            }
         }
 
-        val filesDir = context.getExternalFilesDir(null)
-            ?: throw IOException("getExternalFilesDir() returns null")
-        val dir = filesDir.parentFile ?: throw IOException("$filesDir parentFile returns null")
-        val starter = copyStarter(context, File(dir, "starter"))
-        val sh = writeScript(context, File(dir, "start.sh"), starter)
-        val apkPath = context.applicationInfo.sourceDir
-        val libPath = context.applicationInfo.nativeLibraryDir
-        val packageName = context.applicationInfo.packageName
-
-        commandInternal[1] = buildStartCommand(sh, apkPath, libPath, packageName)
-        logd(commandInternal[1]!!)
-
-        return sh
+        override fun onServiceDisconnected(name: ComponentName?) {
+            // Do nothing. The service is supposed to immediately kill itself
+            // after starting the command.
+        }
     }
 
-    fun buildStartCommand(
-        sh: String,
-        apkPath: String,
-        libPath: String,
-        packageName: String
-    ): String = "sh $sh --apk=$apkPath --lib=$libPath --package=$packageName"
-
-    fun writeDataFiles(context: Context, permission: Boolean = false) {
-        if (commandInternal[0] != null && !permission) {
-            logd("already written")
+    fun startWithShizuku() {
+        if (!Shizuku.pingBinder()) {
+            Timber.w("Shizuku is not running. Cannot start System Bridge with Shizuku.")
             return
         }
 
-        val dir = context.createDeviceProtectedStorageContextCompat().filesDir?.parentFile ?: return
-
-        if (permission) {
-            try {
-                Os.chmod(dir.absolutePath, 457 /* 0711 */)
-            } catch (e: ErrnoException) {
-                e.printStackTrace()
-            }
-        }
+        // Shizuku will start a service which will then start the System Bridge. Shizuku won't be
+        // used to start the System Bridge directly because native libraries need to be used
+        // and we want to limit the dependency on Shizuku as much as possible. Also, the System
+        // Bridge should still be running even if Shizuku dies.
+        val serviceComponentName = ComponentName(ctx, ShizukuStarterService::class.java)
+        val args = Shizuku.UserServiceArgs(serviceComponentName)
+            .daemon(false)
+            .processNameSuffix("service")
+            .debuggable(BuildConfig.DEBUG)
+            .version(buildConfigProvider.versionCode)
 
         try {
-            val starter = copyStarter(context, File(dir, "starter"))
-            val sh = writeScript(context, File(dir, "start.sh"), starter)
-
-            val apkPath = context.applicationInfo.sourceDir
-            val libPath = context.applicationInfo.nativeLibraryDir
-
-            commandInternal[0] = "sh $sh --apk=$apkPath --lib=$libPath"
-            logd(commandInternal[0]!!)
-
-            if (permission) {
-                try {
-                    Os.chmod(starter, 420 /* 0644 */)
-                } catch (e: ErrnoException) {
-                    e.printStackTrace()
-                }
-                try {
-                    Os.chmod(sh, 420 /* 0644 */)
-                } catch (e: ErrnoException) {
-                    e.printStackTrace()
-                }
-            }
-        } catch (e: IOException) {
-            loge("write files", e)
+            Shizuku.bindUserService(
+                args,
+                shizukuStarterConnection
+            )
+        } catch (e: Exception) {
+            Timber.e("Exception when starting System Bridge with Shizuku. $e")
         }
     }
 
-    private fun copyStarter(context: Context, out: File): String {
-        val so = "lib/${Build.SUPPORTED_ABIS[0]}/libsysbridge.so"
-        val ai = context.applicationInfo
+    @RequiresApi(Build.VERSION_CODES.R)
+    suspend fun startWithAdb(): KMResult<String> {
+        if (!userManager.isUserUnlocked) {
+            return KMError.Exception(IllegalStateException("User is locked"))
+        }
 
-        val fos = FileOutputStream(out)
-        val apk = ZipFile(ai.sourceDir)
+        // Get the file that contains the external files
+        return startSystemBridge(executeCommand = adbManager::executeCommand)
+    }
+
+    suspend fun startWithRoot() {
+        if (Shell.isAppGrantedRoot() != true) {
+            Timber.w("Root is not granted. Cannot start System Bridge with Root.")
+            return
+        }
+
+        Timber.i("Starting System Bridge with root")
+        startSystemBridge(executeCommand = { command ->
+            val output = withContext(Dispatchers.IO) {
+                Shell.cmd(command).exec()
+            }
+
+            if (output.isSuccess) {
+                Success(output.out.plus(output.err).joinToString("\n"))
+            } else {
+                KMError.UnknownIOError
+            }
+        })
+    }
+
+    private suspend fun startSystemBridge(executeCommand: suspend (String) -> KMResult<String>): KMResult<String> {
+        val externalFilesParent = try {
+            ctx.getExternalFilesDir(null)?.parentFile
+        } catch (e: IOException) {
+            return KMError.UnknownIOError
+        }
+
+        val outputStarterBinary = File(externalFilesParent, "starter")
+        withContext(Dispatchers.IO) {
+            copyNativeLibrary(outputStarterBinary)
+
+            // Create the start.sh shell script
+            writeStarterScript(
+                File(externalFilesParent, "start.sh"),
+                outputStarterBinary.absolutePath
+            )
+        }
+
+        var startCommand =
+            "sh ${outputStarterBinary.absolutePath} --apk=$apkPath --lib=$libPath --package=$packageName"
+
+        return executeCommand(startCommand).then { output ->
+
+            // According to Shizuku source code...
+            // Adb on MIUI Android 11 has no permission to access Android/data.
+            // Before MIUI Android 12, we can temporarily use /data/user_de.
+            if (output.contains("/Android/data/${ctx.packageName}/start.sh: Permission denied")) {
+                Timber.w(
+                    "ADB has no permission to access Android/data/${ctx.packageName}/start.sh. Trying to use /data/user_de instead..."
+                )
+
+                val protectedStorageDir =
+                    ctx.createDeviceProtectedStorageContext().filesDir.parentFile
+
+                try {
+                    Os.chmod(protectedStorageDir.absolutePath, 457 /* 0711 */)
+                } catch (e: ErrnoException) {
+                    e.printStackTrace()
+                }
+
+                try {
+                    val outputStarterBinary = File(protectedStorageDir, "starter")
+
+                    withContext(Dispatchers.IO) {
+                        copyNativeLibrary(outputStarterBinary)
+
+                        writeStarterScript(
+                            File(protectedStorageDir, "start.sh"),
+                            outputStarterBinary.absolutePath
+                        )
+                    }
+
+                    startCommand =
+                        "sh ${outputStarterBinary.absolutePath} --apk=$apkPath --lib=$libPath  --package=$packageName"
+
+                    try {
+                        Os.chmod(outputStarterBinary.absolutePath, 420 /* 0644 */)
+                    } catch (e: ErrnoException) {
+                        e.printStackTrace()
+                    }
+                    try {
+                        Os.chmod(outputStarterBinary.absolutePath, 420 /* 0644 */)
+                    } catch (e: ErrnoException) {
+                        e.printStackTrace()
+                    }
+
+
+                } catch (e: IOException) {
+                    loge("write files", e)
+                }
+
+                executeCommand(startCommand)
+
+            } else {
+                Success(output)
+            }
+        }
+    }
+
+    /**
+     * This extracts the library file from inside the apk and copies it to [out] File.
+     */
+    private fun copyNativeLibrary(out: File) {
+        val expectedLibraryPath = "lib/${Build.SUPPORTED_ABIS[0]}/libsysbridge.so"
+
+        // Open the apk so the library file can be found
+        val apk = ZipFile(apkPath)
         val entries = apk.entries()
+
+        // Loop over all the file entries in the zip file
         while (entries.hasMoreElements()) {
             val entry = entries.nextElement() ?: break
-            if (entry.name != so) continue
+
+            if (entry.name != expectedLibraryPath) {
+                continue
+            }
 
             val buf = ByteArray(entry.size.toInt())
-            val dis = DataInputStream(apk.getInputStream(entry))
-            dis.readFully(buf)
-            FileUtils.copy(ByteArrayInputStream(buf), fos)
+
+            // Read the native library into the buffer
+            with(DataInputStream(apk.getInputStream(entry))) {
+                readFully(buf)
+            }
+
+            // Copy the buffer to the output file
+            with(FileOutputStream(out)) {
+                FileUtils.copy(ByteArrayInputStream(buf), this)
+            }
+
             break
         }
-        return out.absolutePath
     }
 
-    private fun writeScript(context: Context, out: File, starter: String): String {
+    /**
+     * Write the start.sh shell script to the specified [out] file. The path to the starter
+     * binary will be substituted in the script with the [starterPath].
+     */
+    private fun writeStarterScript(out: File, starterPath: String) {
         if (!out.exists()) {
             out.createNewFile()
         }
-        val `is` = BufferedReader(InputStreamReader(context.resources.openRawResource(R.raw.start)))
-        val os = PrintWriter(FileWriter(out))
-        var line: String?
-        while (`is`.readLine().also { line = it } != null) {
-            os.println(line!!.replace("%%%STARTER_PATH%%%", starter))
+
+        val scriptInputStream = ctx.resources.openRawResource(R.raw.start)
+
+        with(scriptInputStream) {
+            val reader = BufferedReader(InputStreamReader(this))
+
+            val outputWriter = PrintWriter(FileWriter(out))
+            var line: String?
+
+            while (reader.readLine().also { line = it } != null) {
+                outputWriter.println(line!!.replace("%%%STARTER_PATH%%%", starterPath))
+            }
+
+            outputWriter.flush()
+            outputWriter.close()
         }
-        os.flush()
-        os.close()
-        return out.absolutePath
     }
 }

@@ -206,8 +206,10 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
     }
 
     private fun clickPairWithCodeButton(rootNode: AccessibilityNodeInfo) {
-        rootNode.findNodeRecursively { it.className == "androidx.recyclerview.widget.RecyclerView" }
-            ?.getChild(3)?.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+        rootNode
+            .findNodeRecursively { it.className == "androidx.recyclerview.widget.RecyclerView" }
+            ?.getChild(3)
+            ?.performAction(AccessibilityNodeInfo.ACTION_CLICK)
     }
 
     private fun showNotification(title: String, text: String) {

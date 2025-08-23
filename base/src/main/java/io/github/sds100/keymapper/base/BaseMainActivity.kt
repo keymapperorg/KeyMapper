@@ -210,7 +210,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
         permissionAdapter.onPermissionsChanged()
         serviceAdapter.invalidateState()
         suAdapter.invalidateIsRooted()
-        systemBridgeSetupController.updateDeveloperOptionsEnabled()
+        systemBridgeSetupController.invalidateSettings()
         networkAdapter.invalidateState()
     }
 

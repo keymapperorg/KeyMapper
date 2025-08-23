@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.logging
 
+import android.annotation.SuppressLint
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.system.files.FileUtils
 import java.text.SimpleDateFormat
@@ -7,8 +8,8 @@ import java.util.Date
 import java.util.Locale
 
 object LogUtils {
-    val DATE_FORMAT
-        get() = SimpleDateFormat("MM/dd HH:mm:ss.SSS", Locale.getDefault())
+    @SuppressLint("ConstantLocale")
+    val DATE_FORMAT = SimpleDateFormat("MM/dd HH:mm:ss.SSS", Locale.getDefault())
 
     fun createLogFileName(): String {
         val formattedDate = FileUtils.createFileDate()

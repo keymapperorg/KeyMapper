@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.ADB_AUTH_RSAPUBLICKEY
 import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.ADB_AUTH_SIGNATURE
-import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.ADB_AUTH_TOKEN
 import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.A_AUTH
 import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.A_CLSE
 import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.A_CNXN
@@ -53,9 +52,6 @@ internal class AdbClient(private val host: String, private val port: Int, privat
 
         var message = read()
         if (message.command == A_STLS) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                error("Connect to adb with TLS is not supported before Android 9")
-            }
             write(A_STLS, A_STLS_VERSION, 0)
 
             val sslContext = key.sslContext
@@ -69,7 +65,6 @@ internal class AdbClient(private val host: String, private val port: Int, privat
 
             message = read()
         } else if (message.command == A_AUTH) {
-            if (message.command != A_AUTH && message.arg0 != ADB_AUTH_TOKEN) error("not A_AUTH ADB_AUTH_TOKEN")
             write(A_AUTH, ADB_AUTH_SIGNATURE, 0, key.sign(message.data))
 
             message = read()
@@ -79,10 +74,12 @@ internal class AdbClient(private val host: String, private val port: Int, privat
             }
         }
 
-        if (message.command != A_CNXN) error("not A_CNXN")
+        if (message.command != A_CNXN) {
+            error("not A_CNXN")
+        }
     }
 
-    fun shellCommand(command: String, listener: ((ByteArray) -> Unit)?) {
+    fun shellCommand(command: String): ByteArray {
         val localId = 1
         write(A_OPEN, localId, 0, "shell:$command")
 
@@ -94,7 +91,7 @@ internal class AdbClient(private val host: String, private val port: Int, privat
                     val remoteId = message.arg0
                     if (message.command == A_WRTE) {
                         if (message.data_length > 0) {
-                            listener?.invoke(message.data!!)
+                            return message.data!!
                         }
                         write(A_OKAY, localId, remoteId)
                     } else if (message.command == A_CLSE) {
@@ -115,6 +112,8 @@ internal class AdbClient(private val host: String, private val port: Int, privat
                 error("not A_OKAY or A_CLSE")
             }
         }
+
+        error("No response from adb?")
     }
 
     private fun write(command: Int, arg0: Int, arg1: Int, data: ByteArray? = null) = write(
@@ -137,7 +136,8 @@ internal class AdbClient(private val host: String, private val port: Int, privat
     }
 
     private fun read(): AdbMessage {
-        val buffer = ByteBuffer.allocate(AdbMessage.Companion.HEADER_LENGTH).order(ByteOrder.LITTLE_ENDIAN)
+        val buffer =
+            ByteBuffer.allocate(AdbMessage.Companion.HEADER_LENGTH).order(ByteOrder.LITTLE_ENDIAN)
 
         inputStream.readFully(buffer.array(), 0, 24)
 

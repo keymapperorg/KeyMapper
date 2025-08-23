@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.sysbridge.shizuku
 import android.annotation.SuppressLint
 import android.util.Log
 import io.github.sds100.keymapper.sysbridge.IShizukuStarterService
-import io.github.sds100.keymapper.sysbridge.starter.SystemBridgeStarter
 import kotlin.system.exitProcess
 
 @SuppressLint("LogNotTimber")
@@ -19,24 +18,21 @@ class ShizukuStarterService : IShizukuStarterService.Stub() {
         exitProcess(0)
     }
 
-    override fun startSystemBridge(
-        scriptPath: String?,
-        apkPath: String?,
-        libPath: String?,
-        packageName: String?
-    ) {
-        if (scriptPath == null || apkPath == null || libPath == null || packageName == null) {
-            return
+    override fun executeCommand(command: String?): String? {
+        command ?: return null
+
+        val process = Runtime.getRuntime().exec(command)
+
+        val out = with(process.inputStream.bufferedReader()) {
+            readText()
         }
 
-        try {
-            val command =
-                SystemBridgeStarter.buildStartCommand(scriptPath, apkPath, libPath, packageName)
-            Runtime.getRuntime().exec(command).waitFor()
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to start system bridge", e)
-        } finally {
-            destroy()
+        val err = with(process.errorStream.bufferedReader()) {
+            readText()
         }
+
+        process.waitFor()
+
+        return "$out\n$err"
     }
 }

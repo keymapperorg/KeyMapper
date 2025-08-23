@@ -63,6 +63,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         permissionAdapter.isGrantedFlow(Permission.POST_NOTIFICATIONS),
         systemBridgeSetupController.isDeveloperOptionsEnabled,
         networkAdapter.isWifiConnected,
+        systemBridgeSetupController.isWirelessDebuggingEnabled,
         ::getNextStep
     )
 
@@ -138,13 +139,15 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         isNotificationPermissionGranted: Boolean,
         isDeveloperOptionsEnabled: Boolean,
         isWifiConnected: Boolean,
+        isWirelessDebuggingEnabled: Boolean
     ): SystemBridgeSetupStep =
         when {
             accessibilityServiceState != AccessibilityServiceState.ENABLED -> SystemBridgeSetupStep.ACCESSIBILITY_SERVICE
             !isNotificationPermissionGranted -> SystemBridgeSetupStep.NOTIFICATION_PERMISSION
             !isDeveloperOptionsEnabled -> SystemBridgeSetupStep.DEVELOPER_OPTIONS
             !isWifiConnected -> SystemBridgeSetupStep.WIFI_NETWORK
-            else -> SystemBridgeSetupStep.WIRELESS_DEBUGGING
+            !isWirelessDebuggingEnabled -> SystemBridgeSetupStep.WIRELESS_DEBUGGING
+            else -> SystemBridgeSetupStep.ADB_PAIRING
         }
 
 }
