@@ -58,6 +58,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.OptionPageButton
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.FolderManaged
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.ProModeIcon
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.WandStars
 import io.github.sds100.keymapper.system.files.FileUtils
 import kotlinx.coroutines.launch
@@ -131,6 +132,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
             onThemeSelected = viewModel::onThemeSelected,
             onPauseResumeNotificationClick = viewModel::onPauseResumeNotificationClick,
             onDefaultOptionsClick = viewModel::onDefaultOptionsClick,
+            onProModeClick = viewModel::onProModeClick,
             onAutomaticBackupClick = {
                 if (state.autoBackupLocation.isNullOrBlank()) {
                     automaticBackupLocationChooser.launch(BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME)
@@ -205,6 +207,7 @@ private fun Content(
     onPauseResumeNotificationClick: () -> Unit = { },
     onDefaultOptionsClick: () -> Unit = { },
     onAutomaticBackupClick: () -> Unit = { },
+    onProModeClick: () -> Unit = { },
 ) {
     Column(
         modifier
@@ -301,6 +304,13 @@ private fun Content(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        OptionPageButton(
+            title = stringResource(R.string.title_pref_pro_mode),
+            text = stringResource(R.string.summary_pref_pro_mode),
+            icon = KeyMapperIcons.ProModeIcon,
+            onClick = onProModeClick
+        )
+        Spacer(modifier = Modifier.height(8.dp))
         OptionsHeaderRow(
             modifier = Modifier.fillMaxWidth(),
             icon = Icons.Rounded.Code,
