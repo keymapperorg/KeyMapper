@@ -23,6 +23,7 @@ import java.net.ConnectException
 import java.net.Socket
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import javax.net.ssl.SSLProtocolException
 import javax.net.ssl.SSLSocket
 
 private const val TAG = "AdbClient"
@@ -66,34 +67,40 @@ internal class AdbClient(private val host: String, private val port: Int, privat
         plainInputStream = DataInputStream(socket!!.getInputStream())
         plainOutputStream = DataOutputStream(socket!!.getOutputStream())
 
-        write(A_CNXN, A_VERSION, A_MAXDATA, "host::")
+        try {
+            write(A_CNXN, A_VERSION, A_MAXDATA, "host::")
 
-        var message = read()
-        if (message.command == A_STLS) {
-            write(A_STLS, A_STLS_VERSION, 0)
+            var message = read()
+            if (message.command == A_STLS) {
+                write(A_STLS, A_STLS_VERSION, 0)
 
-            val sslContext = key.sslContext
-            tlsSocket = sslContext.socketFactory.createSocket(socket, host, port, true) as SSLSocket
-            tlsSocket.startHandshake()
-            Timber.d("Handshake succeeded.")
+                val sslContext = key.sslContext
+                tlsSocket =
+                    sslContext.socketFactory.createSocket(socket, host, port, true) as SSLSocket
+                tlsSocket.startHandshake()
+                Timber.d("Handshake succeeded.")
 
-            tlsInputStream = DataInputStream(tlsSocket.inputStream)
-            tlsOutputStream = DataOutputStream(tlsSocket.outputStream)
-            useTls = true
+                tlsInputStream = DataInputStream(tlsSocket.inputStream)
+                tlsOutputStream = DataOutputStream(tlsSocket.outputStream)
+                useTls = true
 
-            message = read()
-        } else if (message.command == A_AUTH) {
-            write(A_AUTH, ADB_AUTH_SIGNATURE, 0, key.sign(message.data))
-
-            message = read()
-            if (message.command != A_CNXN) {
-                write(A_AUTH, ADB_AUTH_RSAPUBLICKEY, 0, key.adbPublicKey)
                 message = read()
-            }
-        }
+            } else if (message.command == A_AUTH) {
+                write(A_AUTH, ADB_AUTH_SIGNATURE, 0, key.sign(message.data))
 
-        if (message.command != A_CNXN) {
-            error("not A_CNXN")
+                message = read()
+                if (message.command != A_CNXN) {
+                    write(A_AUTH, ADB_AUTH_RSAPUBLICKEY, 0, key.adbPublicKey)
+                    message = read()
+                }
+            }
+
+            if (message.command != A_CNXN) {
+                error("not A_CNXN")
+            }
+        } catch (e: SSLProtocolException) {
+            // This can be thrown if the encryption keys mismatch
+            return AdbError.SslHandshakeError
         }
 
         return Success(Unit)
@@ -152,7 +159,6 @@ internal class AdbClient(private val host: String, private val port: Int, privat
     private fun write(message: AdbMessage) {
         outputStream.write(message.toByteArray())
         outputStream.flush()
-        Timber.d("write ${message.toStringShort()}")
     }
 
     private fun read(): AdbMessage {
@@ -176,7 +182,6 @@ internal class AdbClient(private val host: String, private val port: Int, privat
         }
         val message = AdbMessage(command, arg0, arg1, dataLength, checksum, magic, data)
         message.validateOrThrow()
-        Timber.d("read ${message.toStringShort()}")
         return message
     }
 
