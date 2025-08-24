@@ -22,7 +22,6 @@ import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCa
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.TriggerKeyMapEvent
 import io.github.sds100.keymapper.base.promode.SystemBridgeSetupAssistantController
-import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.hasFlag
@@ -55,7 +54,6 @@ import timber.log.Timber
 
 abstract class BaseAccessibilityServiceController(
     private val service: BaseAccessibilityService,
-    private val rerouteKeyEventsControllerFactory: RerouteKeyEventsController.Factory,
     private val accessibilityNodeRecorderFactory: AccessibilityNodeRecorder.Factory,
     private val performActionsUseCaseFactory: PerformActionsUseCaseImpl.Factory,
     private val detectKeyMapsUseCaseFactory: DetectKeyMapsUseCaseImpl.Factory,
@@ -100,11 +98,6 @@ abstract class BaseAccessibilityServiceController(
         performActionsUseCase,
         detectConstraintsUseCase,
     )
-
-    val rerouteKeyEventsController: RerouteKeyEventsController =
-        rerouteKeyEventsControllerFactory.create(
-            service.lifecycleScope,
-        )
 
     val accessibilityNodeRecorder = accessibilityNodeRecorderFactory.create(service)
 
@@ -359,7 +352,6 @@ abstract class BaseAccessibilityServiceController(
         keyMapDetectionController.teardown()
         keyEventRelayServiceWrapper.unregisterClient(CALLBACK_ID_ACCESSIBILITY_SERVICE)
         accessibilityNodeRecorder.teardown()
-        rerouteKeyEventsController.teardown()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             setupAssistantController?.teardown()

@@ -370,7 +370,6 @@ private data class StepContent(
     val buttonText: String,
 )
 
-// Previews for each setup step
 @Preview(name = "Accessibility Service Step")
 @Composable
 private fun ProModeSetupScreenAccessibilityServicePreview() {

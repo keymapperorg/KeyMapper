@@ -153,8 +153,8 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         isDeveloperOptionsEnabled: Boolean,
         isWifiConnected: Boolean,
         isWirelessDebuggingEnabled: Boolean
-    ): SystemBridgeSetupStep =
-        when {
+    ): SystemBridgeSetupStep {
+        return when {
             accessibilityServiceState != AccessibilityServiceState.ENABLED -> SystemBridgeSetupStep.ACCESSIBILITY_SERVICE
             !isNotificationPermissionGranted -> SystemBridgeSetupStep.NOTIFICATION_PERMISSION
             !isDeveloperOptionsEnabled -> SystemBridgeSetupStep.DEVELOPER_OPTIONS
@@ -163,6 +163,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
             isWirelessDebuggingEnabled && !systemBridgeSetupController.isAdbPaired() -> SystemBridgeSetupStep.ADB_PAIRING
             else -> SystemBridgeSetupStep.START_SERVICE
         }
+    }
 
 }
 

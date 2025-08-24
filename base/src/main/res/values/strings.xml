@@ -655,27 +655,10 @@
     <string name="title_pref_show_device_descriptors">Show device IDs</string>
     <string name="summary_pref_show_device_descriptors">Differentiate devices with the same name</string>
 
-    <string name="title_pref_reroute_keyevents_link">Fix keyboards that are set to US English</string>
-    <string name="summary_pref_reroute_keyevents_link">This fixes keyboards that don\'t have the correct the keyboard layout when an accessibility service is enabled. Tap to read more and configure.</string>
-
-    <string name="title_pref_reroute_keyevents">Fix keyboards that are set to US English</string>
-    <string name="summary_pref_reroute_keyevents">There is a bug in Android 11 that turning on an accessibility service makes Android think all external devices are the same internal virtual device. Because it can\'t identify these devices correctly, it doesn\'t know which keyboard layout to use with them so it defaults to US English even if it is a German keyboard for example. You can use Key Mapper to work around this problem by following the steps below.</string>
-
-    <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Choose devices</string>
-
-    <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Install the Key Mapper GUI Keyboard (optional)</string>
-    <string name="title_pref_devices_to_reroute_keyevents_install_leanback_keyboard">1. Install the Key Mapper Leanback Keyboard (optional)</string>
-
-    <string name="title_pref_devices_to_reroute_keyevents_enable_ime_gui">2. Enable the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method</string>
-    <string name="title_pref_devices_to_reroute_keyevents_enable_ime_leanback">2. Enable the Key Mapper Leanback Keyboard or the Key Mapper Basic Input Method</string>
-
-    <string name="title_pref_devices_to_reroute_keyevents_choose_ime">3. Use the keyboard that you just enabled</string>
-    <string name="title_pref_devices_to_reroute_keyevents_guide">(Recommended) Read user guide for this setting.</string>
-
     <string name="title_pref_toggle_logging">Enable extra logging</string>
     <string name="summary_pref_toggle_logging">Record more detailed logs</string>
     <string name="title_pref_view_and_share_log">View log</string>
-    <string name="summary_pref_view_and_share_log">Share this with the developer if having issues</string>
+    <string name="summary_pref_view_and_share_log">Share this with the developer if you\'re having issues</string>
 
     <string name="title_pref_report_issue">Report issue</string>
 

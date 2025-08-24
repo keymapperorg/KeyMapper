@@ -46,31 +46,6 @@ class SettingsViewModel @Inject constructor(
     NavigationProvider by navigationProvider,
     DefaultOptionsSettingsCallback {
 
-    val isWriteSecureSettingsPermissionGranted: StateFlow<Boolean> =
-        useCase.isWriteSecureSettingsGranted
-            .stateIn(viewModelScope, SharingStarted.Eagerly, true)
-
-    val isShizukuInstalled: StateFlow<Boolean> =
-        useCase.isShizukuInstalled
-            .stateIn(viewModelScope, SharingStarted.Eagerly, true)
-
-    val isShizukuStarted: StateFlow<Boolean> =
-        useCase.isShizukuStarted
-            .stateIn(viewModelScope, SharingStarted.Eagerly, true)
-
-    val isShizukuPermissionGranted: StateFlow<Boolean> =
-        useCase.isShizukuPermissionGranted
-            .stateIn(viewModelScope, SharingStarted.Eagerly, true)
-
-    val rerouteKeyEvents: StateFlow<Boolean> = useCase.rerouteKeyEvents
-        .stateIn(viewModelScope, SharingStarted.Lazily, false)
-
-    val isCompatibleImeChosen: StateFlow<Boolean> = useCase.isCompatibleImeChosen
-        .stateIn(viewModelScope, SharingStarted.Lazily, false)
-
-    val isCompatibleImeEnabled: StateFlow<Boolean> = useCase.isCompatibleImeEnabled
-        .stateIn(viewModelScope, SharingStarted.Lazily, false)
-
     val defaultLongPressDelay: Flow<Int> = useCase.defaultLongPressDelay
     val defaultDoublePressDelay: Flow<Int> = useCase.defaultDoublePressDelay
     val defaultRepeatDelay: Flow<Int> = useCase.defaultRepeatDelay

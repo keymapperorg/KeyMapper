@@ -79,9 +79,6 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
         }
     }
 
-    override val rerouteKeyEvents: Flow<Boolean> =
-        preferences.get(Keys.rerouteKeyEvents).map { it ?: false }
-
     override val isCompatibleImeChosen: Flow<Boolean> = inputMethodAdapter.chosenIme.map {
         imeHelper.isCompatibleImeChosen()
     }
@@ -213,7 +210,6 @@ interface ConfigSettingsUseCase {
     fun downloadShizuku()
 
     fun openShizukuApp()
-    val rerouteKeyEvents: Flow<Boolean>
     val isCompatibleImeChosen: Flow<Boolean>
     val isCompatibleImeEnabled: Flow<Boolean>
     suspend fun enableCompatibleIme()

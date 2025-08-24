@@ -10,7 +10,6 @@ import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.promode.SystemBridgeSetupAssistantController
-import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsController
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeRecorder
 import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilityServiceController
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
@@ -20,7 +19,6 @@ import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
 class AccessibilityServiceController @AssistedInject constructor(
     @Assisted
     private val service: MyAccessibilityService,
-    rerouteKeyEventsControllerFactory: RerouteKeyEventsController.Factory,
     accessibilityNodeRecorderFactory: AccessibilityNodeRecorder.Factory,
     performActionsUseCaseFactory: PerformActionsUseCaseImpl.Factory,
     detectKeyMapsUseCaseFactory: DetectKeyMapsUseCaseImpl.Factory,
@@ -34,7 +32,6 @@ class AccessibilityServiceController @AssistedInject constructor(
     setupAssistantControllerFactory: SystemBridgeSetupAssistantController.Factory
 ) : BaseAccessibilityServiceController(
     service = service,
-    rerouteKeyEventsControllerFactory = rerouteKeyEventsControllerFactory,
     accessibilityNodeRecorderFactory = accessibilityNodeRecorderFactory,
     performActionsUseCaseFactory = performActionsUseCaseFactory,
     detectKeyMapsUseCaseFactory = detectKeyMapsUseCaseFactory,
