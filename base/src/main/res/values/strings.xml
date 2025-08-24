@@ -589,23 +589,23 @@
     <!-- Notification strings -->
 
     <!--Preference titles and summaries-->
-    <string name="title_pref_long_press_delay">Default long press delay (ms)</string>
+    <string name="title_pref_long_press_delay">Default long press delay</string>
     <string name="summary_pref_long_press_delay">How long a button should be pressed for it to be detected as a long press. Default is 500ms. Can be overridden in a key map\'s options.</string>
 
-    <string name="title_pref_double_press_delay">Default double press duration (ms)</string>
+    <string name="title_pref_double_press_delay">Default double press duration</string>
     <string name="summary_pref_double_press_delay">How fast does a button have to be double pressed for it to be detected as a double press. Default is 300ms. Can be overridden in a key map\'s options.</string>
 
     <string name="summary_pref_vibration_duration">How long to vibrate if vibrating is enabled for a key map. Default is 200ms. Can be overridden in a key map\'s options.</string>
-    <string name="title_pref_vibration_duration">Default vibrate duration (ms)</string>
+    <string name="title_pref_vibration_duration">Default vibrate duration</string>
 
     <string name="summary_pref_repeat_delay">How long the trigger needs to be held down for the action to start repeating. Default is 400ms. Can be overridden in a key map\'s options.</string>
-    <string name="title_pref_repeat_delay">Default delay until repeat (ms)</string>
+    <string name="title_pref_repeat_delay">Default delay until repeat</string>
 
     <string name="summary_pref_repeat_rate">The delay between every time an action is repeated. Default is 50ms. Can be overridden in a key map\'s options.</string>
-    <string name="title_pref_repeat_rate">Default delay between repeats (ms)</string>
+    <string name="title_pref_repeat_rate">Default delay between repeats</string>
 
     <string name="summary_pref_sequence_trigger_timeout">The time allowed to complete a sequence trigger. Default is 1000ms. Can be overridden in a key map\'s options.</string>
-    <string name="title_pref_sequence_trigger_timeout">Default sequence trigger timeout (ms)</string>
+    <string name="title_pref_sequence_trigger_timeout">Default sequence trigger timeout</string>
 
     <string name="title_pref_reset_defaults">Reset</string>
 
