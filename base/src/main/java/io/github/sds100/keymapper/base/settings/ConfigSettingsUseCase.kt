@@ -108,7 +108,7 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
     override fun <T> setPreference(key: Preferences.Key<T>, value: T?) = preferences.set(key, value)
 
     override val automaticBackupLocation =
-        preferences.get(Keys.automaticBackupLocation).map { it ?: "" }
+        preferences.get(Keys.automaticBackupLocation)
 
     override fun setAutomaticBackupLocation(uri: String) {
         preferences.set(Keys.automaticBackupLocation, uri)
@@ -196,12 +196,11 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
 }
 
 interface ConfigSettingsUseCase {
-    // TODO delete these
     fun <T> getPreference(key: Preferences.Key<T>): Flow<T?>
     fun <T> setPreference(key: Preferences.Key<T>, value: T?)
 
     val theme: Flow<Theme>
-    val automaticBackupLocation: Flow<String>
+    val automaticBackupLocation: Flow<String?>
     fun setAutomaticBackupLocation(uri: String)
     fun disableAutomaticBackup()
     val isRootGranted: Flow<Boolean>

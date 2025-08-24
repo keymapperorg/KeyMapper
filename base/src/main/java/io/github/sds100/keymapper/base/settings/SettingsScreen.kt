@@ -1,6 +1,10 @@
 package io.github.sds100.keymapper.base.settings
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -19,6 +23,7 @@ import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Construction
 import androidx.compose.material.icons.rounded.PlayCircleOutline
 import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,18 +31,27 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.backup.BackupUtils
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionPageButton
@@ -45,21 +59,85 @@ import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.FolderManaged
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.WandStars
+import io.github.sds100.keymapper.system.files.FileUtils
+import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) {
     val state by viewModel.mainScreenState.collectAsStateWithLifecycle()
+    val snackbarHostState = SnackbarHostState()
+    var showAutomaticBackupDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+
+    val automaticBackupLocationChooser =
+        rememberLauncherForActivityResult(CreateDocument(FileUtils.MIME_TYPE_ZIP)) { uri ->
+            uri ?: return@rememberLauncherForActivityResult
+            viewModel.setAutomaticBackupLocation(uri.toString())
+
+            val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+
+            context.contentResolver.takePersistableUriPermission(uri, takeFlags)
+        }
+
+    if (showAutomaticBackupDialog) {
+        val activityNotFoundText =
+            stringResource(R.string.dialog_message_no_app_found_to_create_file)
+
+        AlertDialog(
+            onDismissRequest = { showAutomaticBackupDialog = false },
+            title = { Text(stringResource(R.string.dialog_title_change_location_or_disable)) },
+            text = { Text(stringResource(R.string.dialog_message_change_location_or_disable)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showAutomaticBackupDialog = false
+
+                        try {
+                            automaticBackupLocationChooser.launch(BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME)
+                        } catch (e: ActivityNotFoundException) {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(activityNotFoundText)
+                            }
+                        }
+                    }
+                ) {
+                    Text(stringResource(R.string.pos_change_location))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showAutomaticBackupDialog = false
+                        viewModel.disableAutomaticBackup()
+                    }
+                ) {
+                    Text(stringResource(R.string.neg_turn_off))
+                }
+            }
+        )
+    }
 
     SettingsScreen(
         modifier,
         onBackClick = viewModel::onBackClick,
-        viewModel::onResetAllSettingsClick
+        viewModel::onResetAllSettingsClick,
+        snackbarHostState = snackbarHostState
     ) {
         Content(
             state = state,
             onThemeSelected = viewModel::onThemeSelected,
             onPauseResumeNotificationClick = viewModel::onPauseResumeNotificationClick,
-            onDefaultOptionsClick = viewModel::onDefaultOptionsClick
+            onDefaultOptionsClick = viewModel::onDefaultOptionsClick,
+            onAutomaticBackupClick = {
+                if (state.autoBackupLocation.isNullOrBlank()) {
+                    automaticBackupLocationChooser.launch(BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME)
+                } else {
+                    showAutomaticBackupDialog = true
+                }
+            }
         )
     }
 }
@@ -70,10 +148,12 @@ private fun SettingsScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onResetClick: () -> Unit = {},
+    snackbarHostState: SnackbarHostState = SnackbarHostState(),
     content: @Composable () -> Unit
 ) {
     Scaffold(
         modifier = modifier.displayCutoutPadding(),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.action_settings)) },
@@ -123,7 +203,8 @@ private fun Content(
     state: MainSettingsState,
     onThemeSelected: (Theme) -> Unit = { },
     onPauseResumeNotificationClick: () -> Unit = { },
-    onDefaultOptionsClick: () -> Unit = { }
+    onDefaultOptionsClick: () -> Unit = { },
+    onAutomaticBackupClick: () -> Unit = { },
 ) {
     Column(
         modifier
@@ -194,6 +275,20 @@ private fun Content(
             modifier = Modifier.fillMaxWidth(),
             icon = KeyMapperIcons.FolderManaged,
             text = stringResource(R.string.settings_section_data_management_title)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OptionPageButton(
+            title = if (state.autoBackupLocation == null) {
+                stringResource(R.string.title_pref_automatic_backup_location_disabled)
+            } else {
+                stringResource(R.string.title_pref_automatic_backup_location_enabled)
+            },
+            text = state.autoBackupLocation
+                ?: stringResource(R.string.summary_pref_automatic_backup_location_disabled),
+            icon = Icons.Rounded.Tune,
+            onClick = onAutomaticBackupClick
         )
 
         Spacer(modifier = Modifier.height(8.dp))

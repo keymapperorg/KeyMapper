@@ -46,8 +46,6 @@ class SettingsViewModel @Inject constructor(
     NavigationProvider by navigationProvider,
     DefaultOptionsSettingsCallback {
 
-    val automaticBackupLocation = useCase.automaticBackupLocation
-
     val isWriteSecureSettingsPermissionGranted: StateFlow<Boolean> =
         useCase.isWriteSecureSettingsGranted
             .stateIn(viewModelScope, SharingStarted.Eagerly, true)
@@ -83,9 +81,11 @@ class SettingsViewModel @Inject constructor(
     val mainScreenState: StateFlow<MainSettingsState> = combine(
         useCase.theme,
         useCase.getPreference(Keys.log),
-    ) { theme, loggingEnabled ->
+        useCase.automaticBackupLocation,
+    ) { theme, loggingEnabled, autoBackupLocation ->
         MainSettingsState(
-            theme = theme
+            theme = theme,
+            autoBackupLocation = autoBackupLocation
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, MainSettingsState())
 
@@ -114,6 +114,7 @@ class SettingsViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.Lazily, DefaultSettingsState())
 
     fun setAutomaticBackupLocation(uri: String) = useCase.setAutomaticBackupLocation(uri)
+
     fun disableAutomaticBackup() = useCase.disableAutomaticBackup()
 
     fun onChooseCompatibleImeClick() {
@@ -229,17 +230,6 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun onCreateBackupFileActivityNotFound() {
-        val dialog = DialogModel.Alert(
-            message = getString(R.string.dialog_message_no_app_found_to_create_file),
-            positiveButtonText = getString(R.string.pos_ok),
-        )
-
-        viewModelScope.launch {
-            showDialog("create_document_activity_not_found", dialog)
-        }
-    }
-
     fun onResetAllSettingsClick() {
         val dialog = DialogModel.Alert(
             title = getString(R.string.dialog_title_reset_settings),
@@ -338,7 +328,8 @@ class SettingsViewModel @Inject constructor(
 }
 
 data class MainSettingsState(
-    val theme: Theme = Theme.AUTO
+    val theme: Theme = Theme.AUTO,
+    val autoBackupLocation: String? = null
 )
 
 data class DefaultSettingsState(

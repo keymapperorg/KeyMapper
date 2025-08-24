@@ -1,12 +1,9 @@
 package io.github.sds100.keymapper.base.settings
 
 import android.annotation.SuppressLint
-import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
@@ -15,21 +12,14 @@ import androidx.preference.PreferenceCategory
 import androidx.preference.SwitchPreferenceCompat
 import androidx.preference.isEmpty
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.base.backup.BackupUtils
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
-import io.github.sds100.keymapper.base.utils.ui.str
 import io.github.sds100.keymapper.base.utils.ui.viewLifecycleScope
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.data.Keys
-import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.notifications.NotificationUtils
 import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
 import kotlinx.coroutines.flow.collectLatest
-import splitties.alertdialog.appcompat.alertDialog
-import splitties.alertdialog.appcompat.messageResource
-import splitties.alertdialog.appcompat.negativeButton
-import splitties.alertdialog.appcompat.positiveButton
 
 class MainSettingsFragment : BaseSettingsFragment() {
 
@@ -42,18 +32,6 @@ class MainSettingsFragment : BaseSettingsFragment() {
             "pref_automatically_change_ime_link"
     }
 
-    private val chooseAutomaticBackupLocationLauncher =
-        registerForActivityResult(CreateDocument(FileUtils.MIME_TYPE_ZIP)) {
-            it ?: return@registerForActivityResult
-
-            viewModel.setAutomaticBackupLocation(it.toString())
-
-            val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-
-            requireContext().contentResolver.takePersistableUriPermission(it, takeFlags)
-        }
-
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = viewModel.sharedPrefsDataStoreWrapper
         addPreferencesFromResource(R.xml.preferences_empty)
@@ -65,19 +43,6 @@ class MainSettingsFragment : BaseSettingsFragment() {
         viewLifecycleScope.launchWhenResumed {
             if (preferenceScreen.isEmpty()) {
                 populatePreferenceScreen()
-            }
-        }
-
-        viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.automaticBackupLocation.collectLatest { backupLocation ->
-                val preference =
-                    findPreference<Preference>(Keys.automaticBackupLocation.name)
-                        ?: return@collectLatest
-                preference.summary = if (backupLocation.isBlank()) {
-                    str(R.string.summary_pref_automatic_backup_location_disabled)
-                } else {
-                    backupLocation
-                }
             }
         }
 
@@ -151,42 +116,6 @@ class MainSettingsFragment : BaseSettingsFragment() {
 //        }
 
         // automatic backup location
-        Preference(requireContext()).apply {
-            key = Keys.automaticBackupLocation.name
-            setDefaultValue("")
-
-            setTitle(R.string.title_pref_automatic_backup_location)
-            isSingleLineTitle = false
-
-            setOnPreferenceClickListener {
-                val backupLocation = viewModel.automaticBackupLocation.firstBlocking()
-
-                if (backupLocation.isBlank()) {
-                    try {
-                        chooseAutomaticBackupLocationLauncher.launch(BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME)
-                    } catch (e: ActivityNotFoundException) {
-                        viewModel.onCreateBackupFileActivityNotFound()
-                    }
-                } else {
-                    requireContext().alertDialog {
-                        messageResource = R.string.dialog_message_change_location_or_disable
-
-                        positiveButton(R.string.pos_change_location) {
-                            chooseAutomaticBackupLocationLauncher.launch(BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME)
-                        }
-
-                        negativeButton(R.string.neg_turn_off) {
-                            viewModel.disableAutomaticBackup()
-                        }
-
-                        show()
-                    }
-                }
-
-                true
-            }
-            addPreference(this)
-        }
 
         // hide home screen alerts
         SwitchPreferenceCompat(requireContext()).apply {
