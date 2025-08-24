@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <application>
+    <application android:extractNativeLibs="true">
         <!-- The provider requires the INTERACT_ACROSS_USERS_FULL permission as a crude way
                 to ensure only the system bridge can write to it. This permission is only granted
                 to system apps, such as the Shell package, so 3rd party apps can never connect.. -->
