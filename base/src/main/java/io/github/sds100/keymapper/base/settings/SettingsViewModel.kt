@@ -1,10 +1,12 @@
 package io.github.sds100.keymapper.base.settings
 
+import android.os.Build
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
@@ -19,10 +21,12 @@ import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.otherwise
+import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.utils.SharedPrefsDataStoreWrapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -73,6 +77,16 @@ class SettingsViewModel @Inject constructor(
     val defaultSequenceTriggerTimeout: Flow<Int> = useCase.defaultSequenceTriggerTimeout
     val defaultVibrateDuration: Flow<Int> = useCase.defaultVibrateDuration
     val defaultRepeatRate: Flow<Int> = useCase.defaultRepeatRate
+
+    val mainScreenState: StateFlow<SettingsState> = combine(
+        useCase.theme,
+        useCase.getPreference(Keys.log),
+    ) { theme, loggingEnabled ->
+        SettingsState(
+            theme = theme
+        )
+    }.stateIn(viewModelScope, SharingStarted.Lazily, SettingsState())
+
 
     fun setAutomaticBackupLocation(uri: String) = useCase.setAutomaticBackupLocation(uri)
     fun disableAutomaticBackup() = useCase.disableAutomaticBackup()
@@ -233,4 +247,29 @@ class SettingsViewModel @Inject constructor(
             popBackStack()
         }
     }
+
+    fun onThemeSelected(theme: Theme) {
+        viewModelScope.launch {
+            useCase.setPreference(Keys.darkTheme, theme.value.toString())
+        }
+    }
+
+    fun onPauseResumeNotificationClick() {
+        onNotificationSettingsClick(NotificationController.CHANNEL_TOGGLE_KEYMAPS)
+    }
+
+    private fun onNotificationSettingsClick(channel: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            !useCase.isNotificationsPermissionGranted()
+        ) {
+            useCase.requestNotificationsPermission()
+            return
+        }
+
+        useCase.openNotificationChannelSettings(channel)
+    }
 }
+
+data class SettingsState(
+    val theme: Theme = Theme.AUTO
+)

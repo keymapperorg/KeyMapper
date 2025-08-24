@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.android.material.color.DynamicColors
@@ -99,6 +100,17 @@ class AndroidNotificationAdapter @Inject constructor(
 
     override fun deleteChannel(channelId: String) {
         manager.deleteNotificationChannel(channelId)
+    }
+
+    override fun openChannelSettings(channelId: String) {
+        Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS).apply {
+            putExtra(Settings.EXTRA_APP_PACKAGE, ctx.packageName)
+            putExtra(Settings.EXTRA_CHANNEL_ID, channelId)
+
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+            ctx.startActivity(this)
+        }
     }
 
     fun onReceiveNotificationActionIntent(intent: Intent) {

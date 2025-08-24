@@ -10,7 +10,6 @@ import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.preference.DropDownPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.SwitchPreferenceCompat
@@ -20,11 +19,9 @@ import io.github.sds100.keymapper.base.backup.BackupUtils
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.base.utils.ui.str
-import io.github.sds100.keymapper.base.utils.ui.strArray
 import io.github.sds100.keymapper.base.utils.ui.viewLifecycleScope
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.data.Keys
-import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.notifications.NotificationUtils
 import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
@@ -140,18 +137,18 @@ class MainSettingsFragment : BaseSettingsFragment() {
         }
 
         // dark theme
-        DropDownPreference(requireContext()).apply {
-            key = Keys.darkTheme.name
-            setDefaultValue(PreferenceDefaults.DARK_THEME)
-            isSingleLineTitle = false
-
-            setTitle(R.string.title_pref_dark_theme)
-            setSummary(R.string.summary_pref_dark_theme)
-            entries = strArray(R.array.pref_dark_theme_entries)
-            entryValues = ThemeUtils.THEMES.map { it.toString() }.toTypedArray()
-
-            addPreference(this)
-        }
+//        DropDownPreference(requireContext()).apply {
+//            key = Keys.darkTheme.name
+//            setDefaultValue(PreferenceDefaults.DARK_THEME)
+//            isSingleLineTitle = false
+//
+//            setTitle(R.string.title_pref_dark_theme)
+//            setSummary(R.string.summary_pref_dark_theme)
+//            entries = strArray(R.array.pref_dark_theme_entries)
+//            entryValues = Theme.THEMES.map { it.toString() }.toTypedArray()
+//
+//            addPreference(this)
+//        }
 
         // automatic backup location
         Preference(requireContext()).apply {

@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
@@ -37,6 +38,7 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
     private val shizukuAdapter: ShizukuAdapter,
     private val devicesAdapter: DevicesAdapter,
     private val buildConfigProvider: BuildConfigProvider,
+    private val notificationAdapter: NotificationAdapter
 ) : ConfigSettingsUseCase {
 
     private val imeHelper by lazy {
@@ -45,6 +47,11 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
             buildConfigProvider.packageName,
         )
     }
+
+    override val theme: Flow<Theme> =
+        preferences.get(Keys.darkTheme).map { it ?: PreferenceDefaults.DARK_THEME }.map { value ->
+            Theme.entries.single { it.value == value.toInt() }
+        }
 
     override val isRootGranted: Flow<Boolean> = suAdapter.isRootGranted
 
@@ -90,9 +97,11 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
         imeHelper.enableCompatibleInputMethods()
     }
 
-    override suspend fun chooseCompatibleIme(): KMResult<ImeInfo> = imeHelper.chooseCompatibleInputMethod()
+    override suspend fun chooseCompatibleIme(): KMResult<ImeInfo> =
+        imeHelper.chooseCompatibleInputMethod()
 
-    override suspend fun showImePicker(): KMResult<*> = inputMethodAdapter.showImePicker(fromForeground = true)
+    override suspend fun showImePicker(): KMResult<*> =
+        inputMethodAdapter.showImePicker(fromForeground = true)
 
     override fun <T> getPreference(key: Preferences.Key<T>) = preferences.get(key)
 
@@ -166,7 +175,8 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
         suAdapter.requestPermission()
     }
 
-    override fun isNotificationsPermissionGranted(): Boolean = permissionAdapter.isGranted(Permission.POST_NOTIFICATIONS)
+    override fun isNotificationsPermissionGranted(): Boolean =
+        permissionAdapter.isGranted(Permission.POST_NOTIFICATIONS)
 
     override fun getSoundFiles(): List<SoundFileInfo> = soundsManager.soundFiles.value
 
@@ -179,11 +189,18 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
     override fun resetAllSettings() {
         preferences.deleteAll()
     }
+
+    override fun openNotificationChannelSettings(channelId: String) {
+        notificationAdapter.openChannelSettings(channelId)
+    }
 }
 
 interface ConfigSettingsUseCase {
+    // TODO delete these
     fun <T> getPreference(key: Preferences.Key<T>): Flow<T?>
     fun <T> setPreference(key: Preferences.Key<T>, value: T?)
+
+    val theme: Flow<Theme>
     val automaticBackupLocation: Flow<String>
     fun setAutomaticBackupLocation(uri: String)
     fun disableAutomaticBackup()
@@ -217,6 +234,7 @@ interface ConfigSettingsUseCase {
     fun requestWriteSecureSettingsPermission()
     fun requestNotificationsPermission()
     fun isNotificationsPermissionGranted(): Boolean
+    fun openNotificationChannelSettings(channelId: String)
 
     fun requestShizukuPermission()
 

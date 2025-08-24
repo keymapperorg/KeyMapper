@@ -614,8 +614,8 @@
     <string name="title_pref_show_ime_picker_notification">Keyboard picker notification</string>
     <string name="summary_pref_show_ime_picker_notification">Show a persistent notification to allow you to pick a keyboard.</string>
 
-    <string name="title_pref_show_toggle_keymaps_notification">Pause/resume key maps notification</string>
-    <string name="summary_pref_show_toggle_keymaps_notification">Show a persistent notification which starts/pauses your key maps.</string>
+    <string name="title_pref_show_toggle_keymaps_notification">Show pause/resume notification</string>
+    <string name="summary_pref_show_toggle_keymaps_notification">Toggle your key maps on and off.</string>
 
     <string name="title_pref_automatic_backup_location">Automatically back up key maps to a specified location</string>
     <string name="summary_pref_automatic_backup_location_disabled">No location chosen.</string>
@@ -690,12 +690,18 @@
     <string name="title_pref_default_options">Default mapping options</string>
     <string name="summary_pref_default_options">Change the default options for your key maps.</string>
 
-    <string name="title_pref_reset_settings">Reset all settings</string>
+    <string name="title_pref_reset_settings">Reset all</string>
     <string name="summary_pref_reset_settings">DANGER! Reset all settings in the app to the default. Your key maps will NOT be reset.</string>
     <string name="dialog_title_reset_settings">DANGER!</string>
     <string name="dialog_message_reset_settings">Are you sure you want to reset all settings in the app to the default? Your key maps will NOT be reset. The introduction screen and all warning pop ups will show again.</string>
     <string name="pos_button_reset_settings">Yes, reset</string>
 
+    <string name="settings_reset_app_bar_button">Reset all</string>
+    <string name="settings_section_customize_experience_title">Customize your experience</string>
+    <string name="settings_section_key_maps_title">Key maps</string>
+    <string name="settings_section_data_management_title">Data management</string>
+    <string name="settings_section_power_user_title">Power user options</string>
+    <string name="settings_section_debugging_title">Debugging</string>
 
     <!--Preference titles and summaries-->
 
@@ -719,18 +725,13 @@
     <string name="title_pref_category_log">Logging</string>
     <string name="summary_pref_category_log">This may add latency to your key maps so only turn this on if you are trying to debug the app or have been asked to by the developer.</string>
 
-    <string name="title_pref_pro_mode">PRO mode</string>
+    <string name="title_pref_pro_mode">Use PRO mode</string>
     <string name="summary_pref_pro_mode">Advanced detection of key events and more.</string>
+
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_system">System</string>
     <!--Preference categories-->
-
-    <!-- About activity-->
-    <!-- About activity-->
-
-    <string-array name="pref_dark_theme_entries" translatable="false">
-        <item>Light</item>
-        <item>Dark</item>
-        <item>Follow system</item>
-    </string-array>
 
     <!--flags-->
     <string name="flag_show_volume_dialog">Show volume dialog</string>

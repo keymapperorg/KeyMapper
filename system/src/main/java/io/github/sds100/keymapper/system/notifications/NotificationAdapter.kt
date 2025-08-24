@@ -13,4 +13,5 @@ interface NotificationAdapter {
     fun dismissNotification(notificationId: Int)
     fun createChannel(channel: NotificationChannelModel)
     fun deleteChannel(channelId: String)
+    fun openChannelSettings(channelId: String)
 }

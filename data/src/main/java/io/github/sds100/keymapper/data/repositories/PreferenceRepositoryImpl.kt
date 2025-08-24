@@ -14,7 +14,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SettingsPreferenceRepository @Inject constructor(
+class PreferenceRepositoryImpl @Inject constructor(
     @ApplicationContext context: Context,
     private val coroutineScope: CoroutineScope,
 ) : PreferenceRepository {

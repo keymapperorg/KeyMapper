@@ -90,13 +90,13 @@ fun <T> KeyMapperSegmentedButtonRow(
                         index = buttonStates.indexOf(content),
                         count = buttonStates.size,
                     ),
-                    colors = colors
+                    colors = colors,
                 ) {
                     Text(
+                        modifier = if (isUnselectedDisabled) Modifier.alpha(0.5f) else Modifier,
                         text = label,
                         maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = if (isUnselectedDisabled) Modifier.alpha(0.5f) else Modifier
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }

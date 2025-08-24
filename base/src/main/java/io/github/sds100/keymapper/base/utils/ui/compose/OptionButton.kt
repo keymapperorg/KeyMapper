@@ -4,14 +4,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,7 +16,7 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 
 @Composable
-fun PageLinkButton(
+fun OptionButton(
     modifier: Modifier = Modifier,
     title: String,
     text: String,
@@ -40,12 +36,6 @@ fun PageLinkButton(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-
-            Icon(
-                modifier = Modifier.align(Alignment.CenterVertically),
-                imageVector = Icons.Rounded.ChevronRight,
-                contentDescription = null,
-            )
         }
     }
 }
@@ -54,7 +44,7 @@ fun PageLinkButton(
 @Composable
 private fun Preview() {
     KeyMapperTheme {
-        PageLinkButton(
+        OptionButton(
             modifier = Modifier.fillMaxWidth(),
             title = stringResource(R.string.title_pref_pro_mode),
             text = stringResource(R.string.summary_pref_pro_mode),
