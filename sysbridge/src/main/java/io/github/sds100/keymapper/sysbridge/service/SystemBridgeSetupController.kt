@@ -17,12 +17,13 @@ import io.github.sds100.keymapper.common.KeyMapperClassProvider
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.isSuccess
+import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.sysbridge.adb.AdbManager
 import io.github.sds100.keymapper.sysbridge.starter.SystemBridgeStarter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -59,16 +60,28 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     override val isWirelessDebuggingEnabled: MutableStateFlow<Boolean> =
         MutableStateFlow(getWirelessDebuggingEnabled())
 
-    override val startSetupAssistantRequest: MutableSharedFlow<SystemBridgeSetupStep> =
-        MutableSharedFlow()
+    override val setupAssistantStep: MutableStateFlow<SystemBridgeSetupStep?> =
+        MutableStateFlow(null)
 
     init {
+        // Automatically go back to the Key Mapper app when turning on wireless debugging
         coroutineScope.launch {
             val uri = Settings.Global.getUriFor(ADB_WIRELESS_SETTING)
             SettingsUtils.settingsCallbackFlow(ctx, uri).collect {
-                val value = getWirelessDebuggingEnabled()
+                val isEnabled = getWirelessDebuggingEnabled()
 
-                if (value) {
+                if (isEnabled && setupAssistantStep.value == SystemBridgeSetupStep.WIRELESS_DEBUGGING) {
+                    getKeyMapperAppTask()?.moveToFront()
+                }
+            }
+        }
+
+        coroutineScope.launch {
+            val uri = Settings.Global.getUriFor(DEVELOPER_OPTIONS_SETTING)
+            SettingsUtils.settingsCallbackFlow(ctx, uri).collect {
+                val isEnabled = getDeveloperOptionsEnabled()
+
+                if (isEnabled && setupAssistantStep.value == SystemBridgeSetupStep.DEVELOPER_OPTIONS) {
                     getKeyMapperAppTask()?.moveToFront()
                 }
             }
@@ -97,13 +110,21 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         launchWirelessDebuggingActivity()
 
         coroutineScope.launch {
-            startSetupAssistantRequest.emit(SystemBridgeSetupStep.ADB_PAIRING)
+            setupAssistantStep.emit(SystemBridgeSetupStep.ADB_PAIRING)
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
     override suspend fun pairWirelessAdb(port: Int, code: Int): KMResult<Unit> {
-        return adbManager.pair(port, code)
+        return adbManager.pair(port, code).onSuccess {
+            setupAssistantStep.update { value ->
+                if (value == SystemBridgeSetupStep.ADB_PAIRING) {
+                    null
+                } else {
+                    value
+                }
+            }
+        }
     }
 
     override fun enableDeveloperOptions() {
@@ -114,7 +135,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         )
 
         coroutineScope.launch {
-            startSetupAssistantRequest.emit(SystemBridgeSetupStep.DEVELOPER_OPTIONS)
+            setupAssistantStep.emit(SystemBridgeSetupStep.DEVELOPER_OPTIONS)
         }
     }
 
@@ -123,7 +144,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         launchWirelessDebuggingActivity()
 
         coroutineScope.launch {
-            startSetupAssistantRequest.emit(SystemBridgeSetupStep.WIRELESS_DEBUGGING)
+            setupAssistantStep.emit(SystemBridgeSetupStep.WIRELESS_DEBUGGING)
         }
     }
 
@@ -151,7 +172,12 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
                 )
             )
 
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_NO_HISTORY or
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                    Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+            )
         }
 
         try {
@@ -196,10 +222,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 @SuppressLint("ObsoleteSdkInt")
 @RequiresApi(Build.VERSION_CODES.Q)
 interface SystemBridgeSetupController {
-    /**
-     * The setup assistant should be launched for the given step.
-     */
-    val startSetupAssistantRequest: Flow<SystemBridgeSetupStep>
+    val setupAssistantStep: StateFlow<SystemBridgeSetupStep?>
 
     val isDeveloperOptionsEnabled: Flow<Boolean>
     fun enableDeveloperOptions()

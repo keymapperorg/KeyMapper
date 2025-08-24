@@ -66,7 +66,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
         /**
          * The max time to spend searching for an accessibility node.
          */
-        const val NODE_SEARCH_TIMEOUT = 30000L
+        const val INTERACTION_TIMEOUT = 30000L
 
         private val PAIRING_CODE_REGEX = Regex("^\\d{6}$")
         private val PORT_REGEX = Regex(".*:([0-9]{1,5})")
@@ -102,7 +102,14 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
         createNotificationChannel()
 
         coroutineScope.launch {
-            setupController.startSetupAssistantRequest.collect(::startSetupStep)
+            setupController.setupAssistantStep.collect { step ->
+                if (step == null) {
+                    stopInteracting()
+                    dismissNotification()
+                } else {
+                    startSetupStep(step)
+                }
+            }
         }
     }
 
@@ -212,7 +219,8 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
     private fun clickPairWithCodeButton(rootNode: AccessibilityNodeInfo) {
         rootNode
             .findNodeRecursively { it.className == "androidx.recyclerview.widget.RecyclerView" }
-            ?.getChild(3)
+            ?.runCatching { getChild(3) }
+            ?.getOrNull()
             ?.performAction(AccessibilityNodeInfo.ACTION_CLICK)
     }
 
@@ -252,6 +260,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
     private fun startSetupStep(step: SystemBridgeSetupStep) {
         Timber.i("Starting setup assistant step: $step")
+        startInteractionTimeoutJob()
 
         when (step) {
             SystemBridgeSetupStep.DEVELOPER_OPTIONS -> {
@@ -276,6 +285,14 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
         // TODO if finding pairing node does not work, show a notification asking for the pairing code.
         // TODO do this in the timeout job too
+    }
+
+    private fun startInteractionTimeoutJob() {
+        interactionTimeoutJob?.cancel()
+        interactionTimeoutJob = coroutineScope.launch {
+            delay(INTERACTION_TIMEOUT)
+            interactionStep = null
+        }
     }
 
     private fun stopInteracting() {

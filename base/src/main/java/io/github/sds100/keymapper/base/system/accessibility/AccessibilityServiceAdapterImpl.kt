@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.base.system.accessibility
 
 import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.Intent
 import android.database.ContentObserver
 import android.net.Uri
 import android.os.Build
@@ -178,17 +177,7 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
 
     private fun launchAccessibilitySettings(): Boolean {
         try {
-            val settingsIntent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-
-            settingsIntent.addFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK
-                    or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
-                    // Add this flag so user only has to press back once.
-                    or Intent.FLAG_ACTIVITY_NO_HISTORY,
-            )
-
-            ctx.startActivity(settingsIntent)
+            SettingsUtils.launchSettingsScreen(ctx, Settings.ACTION_ACCESSIBILITY_SETTINGS)
 
             return true
         } catch (e: ActivityNotFoundException) {
@@ -197,15 +186,12 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
     }
 
     private suspend fun disableServiceSuspend() {
-        // disableSelf method only exists in 7.0.0+
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            send(AccessibilityServiceEvent.DisableService).onSuccess {
-                Timber.i("Disabling service by calling disableSelf()")
+        send(AccessibilityServiceEvent.DisableService).onSuccess {
+            Timber.i("Disabling service by calling disableSelf()")
 
-                return
-            }.onFailure {
-                Timber.i("Failed to disable service by calling disableSelf()")
-            }
+            return
+        }.onFailure {
+            Timber.i("Failed to disable service by calling disableSelf()")
         }
 
         if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {

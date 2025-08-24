@@ -45,6 +45,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -53,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
+import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.SignalWifiNotConnected
 import io.github.sds100.keymapper.common.utils.State
@@ -107,7 +109,7 @@ fun ProModeSetupScreen(
 
                 // Create animated progress for entrance and updates
                 val progressAnimatable = remember { Animatable(0f) }
-                val targetProgress = state.data.stepNumber.toFloat() / (state.data.stepCount + 1)
+                val targetProgress = state.data.stepNumber.toFloat() / (state.data.stepCount)
 
                 // Animate progress when it changes
                 LaunchedEffect(targetProgress) {
@@ -172,13 +174,20 @@ fun ProModeSetupScreen(
                         onAssistantClick = onAssistantClick
                     )
 
+                    val iconTint = if (state.data.step == SystemBridgeSetupStep.STARTED) {
+                        LocalCustomColorsPalette.current.green
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    }
+
                     StepContent(
                         modifier = Modifier
                             .weight(1f)
                             .padding(horizontal = 16.dp),
                         stepContent,
                         onWatchTutorialClick,
-                        onStepButtonClick
+                        onStepButtonClick,
+                        iconTint = iconTint
                     )
                 }
             }
@@ -191,7 +200,8 @@ private fun StepContent(
     modifier: Modifier = Modifier,
     stepContent: StepContent,
     onWatchTutorialClick: () -> Unit,
-    onButtonClick: () -> Unit
+    onButtonClick: () -> Unit,
+    iconTint: Color = Color.Unspecified,
 ) {
     Column(
         modifier,
@@ -207,6 +217,7 @@ private fun StepContent(
                 modifier = Modifier.size(64.dp),
                 imageVector = stepContent.icon,
                 contentDescription = null,
+                tint = iconTint
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -478,6 +489,25 @@ private fun ProModeSetupScreenStartServicePreview() {
                     stepNumber = 6,
                     stepCount = 6,
                     step = SystemBridgeSetupStep.START_SERVICE,
+                    isSetupAssistantChecked = true,
+                    isSetupAssistantButtonEnabled = true
+                )
+            )
+        )
+    }
+}
+
+
+@Preview(name = "Started", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun ProModeSetupScreenStartedPreview() {
+    KeyMapperTheme {
+        ProModeSetupScreen(
+            state = State.Data(
+                ProModeSetupState(
+                    stepNumber = 8,
+                    stepCount = 8,
+                    step = SystemBridgeSetupStep.STARTED,
                     isSetupAssistantChecked = true,
                     isSetupAssistantButtonEnabled = true
                 )

@@ -281,7 +281,7 @@ private fun SetupSection(
                     },
                     title = stringResource(R.string.pro_mode_set_up_with_key_mapper_title),
                     content = {
-                        if (state.setupProgress < 1) {
+                        if (state.setupProgress < 1 && state.setupProgress > 0) {
                             LinearProgressIndicator(
                                 modifier = Modifier
                                     .fillMaxWidth()

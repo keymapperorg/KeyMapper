@@ -122,7 +122,7 @@ object SettingsUtils {
         }
     }
 
-    fun launchSettingsScreen(ctx: Context, action: String, fragmentArg: String?) {
+    fun launchSettingsScreen(ctx: Context, action: String, fragmentArg: String? = null) {
         val intent = Intent(action).apply {
             if (fragmentArg != null) {
                 val fragmentArgKey = ":settings:fragment_args_key"
@@ -132,9 +132,12 @@ object SettingsUtils {
 
                 val bundle = bundleOf(fragmentArgKey to fragmentArg)
                 putExtra(showFragmentArgsKey, bundle)
-
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
+
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                Intent.FLAG_ACTIVITY_NO_HISTORY or
+                Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
         }
 
         try {

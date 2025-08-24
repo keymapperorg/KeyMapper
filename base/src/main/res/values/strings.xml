@@ -1661,7 +1661,7 @@
     <string name="pro_mode_setup_notification_started_success_text">PRO mode is now running and you can remap more buttons</string>
     <string name="pro_mode_setup_wizard_complete_title">PRO mode is running</string>
     <string name="pro_mode_setup_wizard_complete_text">You can now remap buttons when the screen is off and use more actions.</string>
-    <string name="pro_mode_setup_wizard_complete_button">Go back</string>
+    <string name="pro_mode_setup_wizard_complete_button">Finish</string>
 
     <string name="pro_mode_setup_notification_tap_build_number_title">Enable developer options</string>
     <string name="pro_mode_setup_notification_tap_build_number_text">Tap build number repeatedly</string>
