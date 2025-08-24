@@ -18,6 +18,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.BugReport
+import androidx.compose.material.icons.outlined.FindInPage
 import androidx.compose.material.icons.outlined.Gamepad
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Construction
@@ -138,6 +140,8 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
             onProModeClick = viewModel::onProModeClick,
             onAutomaticChangeImeClick = viewModel::onAutomaticChangeImeClick,
             onForceVibrateToggled = viewModel::onForceVibrateToggled,
+            onLoggingToggled = viewModel::onLoggingToggled,
+            onViewLogClick = viewModel::onViewLogClick,
             onAutomaticBackupClick = {
                 if (state.autoBackupLocation.isNullOrBlank()) {
                     automaticBackupLocationChooser.launch(BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME)
@@ -215,6 +219,8 @@ private fun Content(
     onProModeClick: () -> Unit = { },
     onAutomaticChangeImeClick: () -> Unit = { },
     onForceVibrateToggled: (Boolean) -> Unit = { },
+    onLoggingToggled: (Boolean) -> Unit = { },
+    onViewLogClick: () -> Unit = { },
 ) {
     Column(
         modifier
@@ -341,6 +347,25 @@ private fun Content(
             modifier = Modifier.fillMaxWidth(),
             icon = Icons.Rounded.Code,
             text = stringResource(R.string.settings_section_debugging_title)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        SwitchPreferenceCompose(
+            title = stringResource(R.string.title_pref_toggle_logging),
+            text = stringResource(R.string.summary_pref_toggle_logging),
+            icon = Icons.Outlined.BugReport,
+            isChecked = state.loggingEnabled,
+            onCheckedChange = onLoggingToggled
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OptionPageButton(
+            title = stringResource(R.string.title_pref_view_and_share_log),
+            text = stringResource(R.string.summary_pref_view_and_share_log),
+            icon = Icons.Outlined.FindInPage,
+            onClick = onViewLogClick
         )
 
         Spacer(modifier = Modifier.height(8.dp))

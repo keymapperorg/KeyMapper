@@ -37,6 +37,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
         const val ID_CONFIG_KEY_MAP = "config_key_map"
         const val ID_INTERACT_UI_ELEMENT_ACTION = "interact_ui_element_action"
         const val ID_PRO_MODE = "pro_mode"
+        const val ID_LOG = "log"
     }
 
     @Serializable
@@ -169,5 +170,10 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     data object ProModeSetup : NavDestination<Unit>(isCompose = true) {
         const val ID_PRO_MODE_SETUP = "pro_mode_setup_wizard"
         override val id: String = ID_PRO_MODE_SETUP
+    }
+
+    @Serializable
+    data object Log : NavDestination<Unit>(isCompose = true) {
+        override val id: String = ID_LOG
     }
 }

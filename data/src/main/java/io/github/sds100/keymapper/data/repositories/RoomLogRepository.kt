@@ -1,18 +1,14 @@
 package io.github.sds100.keymapper.data.repositories
 
-import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.data.db.dao.LogEntryDao
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -22,15 +18,8 @@ class RoomLogRepository @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val dao: LogEntryDao,
 ) : LogRepository {
-    override val log: Flow<State<List<LogEntryEntity>>> = dao.getAll()
-        .map { entityList -> State.Data(entityList) }
+    override val log: Flow<List<LogEntryEntity>> = dao.getAll()
         .flowOn(Dispatchers.Default)
-        .stateIn(
-            coroutineScope,
-            // save memory by only caching the log when necessary
-            SharingStarted.WhileSubscribed(replayExpirationMillis = 1000L),
-            State.Loading,
-        )
 
     init {
         dao.getIds()

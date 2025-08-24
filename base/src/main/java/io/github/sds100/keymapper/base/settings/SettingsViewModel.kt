@@ -87,7 +87,8 @@ class SettingsViewModel @Inject constructor(
         MainSettingsState(
             theme = theme,
             autoBackupLocation = autoBackupLocation,
-            forceVibrate = forceVibrate ?: false
+            forceVibrate = forceVibrate ?: false,
+            loggingEnabled = loggingEnabled ?: false
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, MainSettingsState())
 
@@ -382,6 +383,18 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun onLoggingToggled(enabled: Boolean) {
+        viewModelScope.launch {
+            useCase.setPreference(Keys.log, enabled)
+        }
+    }
+
+    fun onViewLogClick() {
+        viewModelScope.launch {
+            navigate("log", NavDestination.Log)
+        }
+    }
+
     private fun onNotificationSettingsClick(channel: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             !useCase.isNotificationsPermissionGranted()
@@ -397,7 +410,8 @@ class SettingsViewModel @Inject constructor(
 data class MainSettingsState(
     val theme: Theme = Theme.AUTO,
     val autoBackupLocation: String? = null,
-    val forceVibrate: Boolean = false
+    val forceVibrate: Boolean = false,
+    val loggingEnabled: Boolean = false
 )
 
 data class DefaultSettingsState(

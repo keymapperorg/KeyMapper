@@ -6,6 +6,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
+import io.github.sds100.keymapper.base.compose.ComposeColors.onOrangeContainerDark
+import io.github.sds100.keymapper.base.compose.ComposeColors.onOrangeContainerLight
+import io.github.sds100.keymapper.base.compose.ComposeColors.onOrangeDark
+import io.github.sds100.keymapper.base.compose.ComposeColors.onOrangeLight
+import io.github.sds100.keymapper.base.compose.ComposeColors.orangeContainerDark
+import io.github.sds100.keymapper.base.compose.ComposeColors.orangeContainerLight
+import io.github.sds100.keymapper.base.compose.ComposeColors.orangeDark
+import io.github.sds100.keymapper.base.compose.ComposeColors.orangeLight
 
 /**
  * Stores the custom colors in a palette that changes
@@ -25,6 +33,10 @@ data class ComposeCustomColors(
     val onMagiskTeal: Color = Color.Unspecified,
     val shizukuBlue: Color = Color.Unspecified,
     val onShizukuBlue: Color = Color.Unspecified,
+    val orange: Color = Color.Unspecified,
+    val onOrange: Color = Color.Unspecified,
+    val orangeContainer: Color = Color.Unspecified,
+    val onOrangeContainer: Color = Color.Unspecified,
 ) {
     companion object {
         val LightPalette = ComposeCustomColors(
@@ -38,6 +50,10 @@ data class ComposeCustomColors(
             onMagiskTeal = ComposeColors.onMagiskTealLight,
             shizukuBlue = ComposeColors.shizukuBlueLight,
             onShizukuBlue = ComposeColors.onShizukuBlueLight,
+            orange = orangeLight,
+            onOrange = onOrangeLight,
+            orangeContainer = orangeContainerLight,
+            onOrangeContainer = onOrangeContainerLight,
         )
 
         val DarkPalette = ComposeCustomColors(
@@ -51,6 +67,10 @@ data class ComposeCustomColors(
             onMagiskTeal = ComposeColors.onMagiskTealDark,
             shizukuBlue = ComposeColors.shizukuBlueDark,
             onShizukuBlue = ComposeColors.onShizukuBlueDark,
+            orange = orangeDark,
+            onOrange = onOrangeDark,
+            orangeContainer = orangeContainerDark,
+            onOrangeContainer = onOrangeContainerDark,
         )
     }
 

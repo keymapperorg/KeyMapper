@@ -49,6 +49,10 @@ object ComposeColors {
     val onMagiskTealLight = Color(0xFFFFFFFF)
     val shizukuBlueLight = Color(0xFF4556B7)
     val onShizukuBlueLight = Color(0xFFFFFFFF)
+    val orangeLight = Color(0xFF8B5000)
+    val onOrangeLight = Color(0xFFFFFFFF)
+    val orangeContainerLight = Color(0xFFFFA643)
+    val onOrangeContainerLight = Color(0xFF452500)
 
     val primaryDark = Color(0xFFAAC7FF)
     val onPrimaryDark = Color(0xFF0A305F)
@@ -95,4 +99,8 @@ object ComposeColors {
     val onMagiskTealDark = Color(0xFFFFFFFF)
     val shizukuBlueDark = Color(0xFFB7C4F4)
     val onShizukuBlueDark = Color(0xFF0A305F)
+    val orangeDark = Color(0xFFFFCA97)
+    val onOrangeDark = Color(0xFF4A2800)
+    val orangeContainerDark = Color(0xFFF69300)
+    val onOrangeContainerDark = Color(0xFF331A00)
 }
