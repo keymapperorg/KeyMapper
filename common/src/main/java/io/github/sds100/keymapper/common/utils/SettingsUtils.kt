@@ -4,9 +4,16 @@ import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.database.ContentObserver
+import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import androidx.annotation.RequiresPermission
 import androidx.core.os.bundleOf
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import timber.log.Timber
 
 object SettingsUtils {
@@ -116,7 +123,7 @@ object SettingsUtils {
     }
 
     fun launchSettingsScreen(ctx: Context, action: String, fragmentArg: String?) {
-        val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).apply {
+        val intent = Intent(action).apply {
             if (fragmentArg != null) {
                 val fragmentArgKey = ":settings:fragment_args_key"
                 val showFragmentArgsKey = ":settings:show_fragment_args"
@@ -135,5 +142,20 @@ object SettingsUtils {
         } catch (e: ActivityNotFoundException) {
             Timber.e("Failed to start Settings activity: $e")
         }
+    }
+
+    fun settingsCallbackFlow(ctx: Context, uri: Uri): Flow<Unit> = callbackFlow {
+        val observer =
+            object : ContentObserver(Handler(Looper.getMainLooper())) {
+                override fun onChange(selfChange: Boolean, uri: Uri?) {
+                    super.onChange(selfChange, uri)
+
+                    trySend(Unit)
+                }
+            }
+
+        ctx.contentResolver.registerContentObserver(uri, false, observer)
+
+        this.awaitClose { ctx.contentResolver.unregisterContentObserver(observer) }
     }
 }

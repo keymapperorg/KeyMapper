@@ -167,8 +167,7 @@ fun ProModeSetupScreen(
 
                     AssistantCheckBoxRow(
                         modifier = Modifier.fillMaxWidth(),
-                        isEnabled = state.data.step != SystemBridgeSetupStep.ACCESSIBILITY_SERVICE
-                            && state.data.step != SystemBridgeSetupStep.STARTED,
+                        isEnabled = state.data.isSetupAssistantButtonEnabled,
                         isChecked = state.data.isSetupAssistantChecked,
                         onAssistantClick = onAssistantClick
                     )
@@ -371,7 +370,8 @@ private fun ProModeSetupScreenAccessibilityServicePreview() {
                     stepNumber = 1,
                     stepCount = 6,
                     step = SystemBridgeSetupStep.ACCESSIBILITY_SERVICE,
-                    isSetupAssistantChecked = false
+                    isSetupAssistantChecked = false,
+                    isSetupAssistantButtonEnabled = false
                 )
             )
         )
@@ -388,7 +388,8 @@ private fun ProModeSetupScreenNotificationPermissionPreview() {
                     stepNumber = 2,
                     stepCount = 6,
                     step = SystemBridgeSetupStep.NOTIFICATION_PERMISSION,
-                    isSetupAssistantChecked = false
+                    isSetupAssistantChecked = false,
+                    isSetupAssistantButtonEnabled = true
                 )
             )
         )
@@ -405,7 +406,8 @@ private fun ProModeSetupScreenDeveloperOptionsPreview() {
                     stepNumber = 2,
                     stepCount = 6,
                     step = SystemBridgeSetupStep.DEVELOPER_OPTIONS,
-                    isSetupAssistantChecked = false
+                    isSetupAssistantChecked = false,
+                    isSetupAssistantButtonEnabled = true
                 )
             )
         )
@@ -422,7 +424,8 @@ private fun ProModeSetupScreenWifiNetworkPreview() {
                     stepNumber = 3,
                     stepCount = 6,
                     step = SystemBridgeSetupStep.WIFI_NETWORK,
-                    isSetupAssistantChecked = false
+                    isSetupAssistantChecked = false,
+                    isSetupAssistantButtonEnabled = true
                 )
             )
         )
@@ -439,7 +442,8 @@ private fun ProModeSetupScreenWirelessDebuggingPreview() {
                     stepNumber = 4,
                     stepCount = 6,
                     step = SystemBridgeSetupStep.WIRELESS_DEBUGGING,
-                    isSetupAssistantChecked = false
+                    isSetupAssistantChecked = false,
+                    isSetupAssistantButtonEnabled = true
                 )
             )
         )
@@ -456,7 +460,8 @@ private fun ProModeSetupScreenAdbPairingPreview() {
                     stepNumber = 5,
                     stepCount = 6,
                     step = SystemBridgeSetupStep.ADB_PAIRING,
-                    isSetupAssistantChecked = true
+                    isSetupAssistantChecked = true,
+                    isSetupAssistantButtonEnabled = true
                 )
             )
         )
@@ -473,7 +478,8 @@ private fun ProModeSetupScreenStartServicePreview() {
                     stepNumber = 6,
                     stepCount = 6,
                     step = SystemBridgeSetupStep.START_SERVICE,
-                    isSetupAssistantChecked = true
+                    isSetupAssistantChecked = true,
+                    isSetupAssistantButtonEnabled = true
                 )
             )
         )

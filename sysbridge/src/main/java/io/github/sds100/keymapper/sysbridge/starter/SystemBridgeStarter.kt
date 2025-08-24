@@ -120,6 +120,7 @@ class SystemBridgeStarter(
             return KMError.Exception(IllegalStateException("User is locked"))
         }
 
+        // TODO enable usb debugging and disable authorization timeout
         // Get the file that contains the external files
         return startSystemBridge(executeCommand = adbManager::executeCommand).onFailure { error ->
             Timber.w("Failed to start system bridge with ADB: $error")

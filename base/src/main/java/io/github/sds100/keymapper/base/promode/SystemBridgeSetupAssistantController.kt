@@ -74,7 +74,8 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
 
     private enum class InteractionStep {
-        WIRELESS_DEBUGGING_SWITCH,
+        // Do not automatically turn on the wireless debugging switch. When the user turns it on,
+        // Key Mapper will automatically pair.
         PAIR_DEVICE,
     }
 
@@ -144,7 +145,6 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
     private fun doInteractiveStep(step: InteractionStep, rootNode: AccessibilityNodeInfo) {
         when (step) {
-            InteractionStep.WIRELESS_DEBUGGING_SWITCH -> TODO()
             InteractionStep.PAIR_DEVICE -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     doPairingInteractiveStep(rootNode)
@@ -255,22 +255,21 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
         when (step) {
             SystemBridgeSetupStep.DEVELOPER_OPTIONS -> {
-
+                showNotification(
+                    getString(R.string.pro_mode_setup_notification_tap_build_number_title),
+                    getString(R.string.pro_mode_setup_notification_tap_build_number_text),
+                )
             }
-
-            SystemBridgeSetupStep.WIRELESS_DEBUGGING -> {}
 
             SystemBridgeSetupStep.ADB_PAIRING -> {
                 showNotification(
-                    "Pairing automatically",
-                    "Searching for pairing code and port..."
+                    getString(R.string.pro_mode_setup_notification_pairing_title),
+                    getString(R.string.pro_mode_setup_notification_pairing_text),
                 )
-
 
                 interactionStep = InteractionStep.PAIR_DEVICE
             }
 
-            SystemBridgeSetupStep.START_SERVICE -> {}
             else -> {} // Do nothing
         }
 

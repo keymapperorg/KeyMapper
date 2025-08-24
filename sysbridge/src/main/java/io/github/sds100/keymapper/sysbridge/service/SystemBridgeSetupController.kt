@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.sysbridge.service
 
 import android.annotation.SuppressLint
+import android.app.ActivityManager
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
@@ -9,8 +10,10 @@ import android.os.Build
 import android.provider.Settings
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
+import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.common.KeyMapperClassProvider
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.isSuccess
@@ -35,13 +38,16 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     @ApplicationContext private val ctx: Context,
     private val coroutineScope: CoroutineScope,
     private val buildConfigProvider: BuildConfigProvider,
-    private val adbManager: AdbManager
+    private val adbManager: AdbManager,
+    private val keyMapperClassProvider: KeyMapperClassProvider
 ) : SystemBridgeSetupController {
 
     companion object {
         private const val DEVELOPER_OPTIONS_SETTING = "development_settings_enabled"
         private const val ADB_WIRELESS_SETTING = "adb_wifi_enabled"
     }
+
+    private val activityManager: ActivityManager by lazy { ctx.getSystemService()!! }
 
     private val starter: SystemBridgeStarter by lazy {
         SystemBridgeStarter(ctx, adbManager, buildConfigProvider)
@@ -55,6 +61,19 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
     override val startSetupAssistantRequest: MutableSharedFlow<SystemBridgeSetupStep> =
         MutableSharedFlow()
+
+    init {
+        coroutineScope.launch {
+            val uri = Settings.Global.getUriFor(ADB_WIRELESS_SETTING)
+            SettingsUtils.settingsCallbackFlow(ctx, uri).collect {
+                val value = getWirelessDebuggingEnabled()
+
+                if (value) {
+                    getKeyMapperAppTask()?.moveToFront()
+                }
+            }
+        }
+    }
 
     override fun startWithRoot() {
         coroutineScope.launch {
@@ -88,13 +107,15 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     }
 
     override fun enableDeveloperOptions() {
-        // TODO show notification after the activity is to tap the Build Number repeatedly
-
         SettingsUtils.launchSettingsScreen(
             ctx,
             Settings.ACTION_DEVICE_INFO_SETTINGS,
             "build_number"
         )
+
+        coroutineScope.launch {
+            startSetupAssistantRequest.emit(SystemBridgeSetupStep.DEVELOPER_OPTIONS)
+        }
     }
 
     override fun launchEnableWirelessDebuggingAssistant() {
@@ -163,6 +184,12 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         } catch (_: Settings.SettingNotFoundException) {
             return false
         }
+    }
+
+    private fun getKeyMapperAppTask(): ActivityManager.AppTask? {
+        val task = activityManager.appTasks
+            .firstOrNull { it.taskInfo.topActivity?.className == keyMapperClassProvider.getMainActivity().name }
+        return task
     }
 }
 

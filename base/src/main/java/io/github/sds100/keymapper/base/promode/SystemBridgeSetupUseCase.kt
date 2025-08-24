@@ -117,7 +117,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         accessibilityServiceAdapter.start()
     }
 
-    override fun openDeveloperOptions() {
+    override fun enableDeveloperOptions() {
         systemBridgeSetupController.enableDeveloperOptions()
     }
 
@@ -186,7 +186,7 @@ interface SystemBridgeSetupUseCase {
 
     fun stopSystemBridge()
     fun enableAccessibilityService()
-    fun openDeveloperOptions()
+    fun enableDeveloperOptions()
     fun connectWifiNetwork()
     fun enableWirelessDebugging()
     fun pairWirelessAdb()

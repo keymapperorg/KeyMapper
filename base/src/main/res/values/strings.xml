@@ -1651,8 +1651,9 @@
 
     <string name="pro_mode_setup_wizard_start_service_title">Start service</string>
     <string name="pro_mode_setup_wizard_start_service_description">Key Mapper needs to connect to the Android Debug Bridge to start the PRO mode service.</string>
-    <string name="pro_mode_setup_wizard_enable_notification_permission_title">Notification permission</string>
-    <string name="pro_mode_setup_wizard_enable_notification_permission_description">Key Mapper will use notifications to help guide you through the process</string>
+
+    <string name="pro_mode_setup_wizard_enable_notification_permission_title">Allow notifications</string>
+    <string name="pro_mode_setup_wizard_enable_notification_permission_description">Key Mapper needs permission to notify you if there are any issues with the set up process.</string>
     <string name="pro_mode_setup_wizard_enable_notification_permission_button">Give permission</string>
 
     <string name="pro_mode_setup_assistant_notification_channel">Setup assistant</string>
@@ -1661,5 +1662,11 @@
     <string name="pro_mode_setup_wizard_complete_title">PRO mode is running</string>
     <string name="pro_mode_setup_wizard_complete_text">You can now remap buttons when the screen is off and use more actions.</string>
     <string name="pro_mode_setup_wizard_complete_button">Go back</string>
+
+    <string name="pro_mode_setup_notification_tap_build_number_title">Enable developer options</string>
+    <string name="pro_mode_setup_notification_tap_build_number_text">Tap build number repeatedly</string>
+
+    <string name="pro_mode_setup_notification_pairing_title">Pairing automatically</string>
+    <string name="pro_mode_setup_notification_pairing_text">Searching for pairing code and port…</string>
 
 </resources>
