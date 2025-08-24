@@ -14,7 +14,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.Gamepad
+import androidx.compose.material.icons.rounded.Code
+import androidx.compose.material.icons.rounded.Construction
 import androidx.compose.material.icons.rounded.PlayCircleOutline
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -38,6 +42,7 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionPageButton
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.FolderManaged
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.WandStars
 
@@ -53,7 +58,8 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
         Content(
             state = state,
             onThemeSelected = viewModel::onThemeSelected,
-            onPauseResumeNotificationClick = viewModel::onPauseResumeNotificationClick
+            onPauseResumeNotificationClick = viewModel::onPauseResumeNotificationClick,
+            onDefaultOptionsClick = viewModel::onDefaultOptionsClick
         )
     }
 }
@@ -114,9 +120,10 @@ private fun SettingsScreen(
 @Composable
 private fun Content(
     modifier: Modifier = Modifier,
-    state: SettingsState,
+    state: MainSettingsState,
     onThemeSelected: (Theme) -> Unit = { },
     onPauseResumeNotificationClick: () -> Unit = { },
+    onDefaultOptionsClick: () -> Unit = { }
 ) {
     Column(
         modifier
@@ -166,6 +173,47 @@ private fun Content(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        OptionsHeaderRow(
+            modifier = Modifier.fillMaxWidth(),
+            icon = Icons.Outlined.Gamepad,
+            text = stringResource(R.string.settings_section_key_maps_title)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OptionPageButton(
+            title = stringResource(R.string.title_pref_default_options),
+            text = stringResource(R.string.summary_pref_default_options),
+            icon = Icons.Rounded.Tune,
+            onClick = onDefaultOptionsClick
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OptionsHeaderRow(
+            modifier = Modifier.fillMaxWidth(),
+            icon = KeyMapperIcons.FolderManaged,
+            text = stringResource(R.string.settings_section_data_management_title)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OptionsHeaderRow(
+            modifier = Modifier.fillMaxWidth(),
+            icon = Icons.Rounded.Construction,
+            text = stringResource(R.string.settings_section_power_user_title)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OptionsHeaderRow(
+            modifier = Modifier.fillMaxWidth(),
+            icon = Icons.Rounded.Code,
+            text = stringResource(R.string.settings_section_debugging_title)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
     }
 }
 
@@ -175,7 +223,7 @@ private fun Preview() {
     KeyMapperTheme {
         SettingsScreen(modifier = Modifier.fillMaxSize(), onBackClick = {}) {
             Content(
-                state = SettingsState()
+                state = MainSettingsState()
             )
         }
     }

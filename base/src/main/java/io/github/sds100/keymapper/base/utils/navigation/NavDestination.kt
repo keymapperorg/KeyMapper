@@ -31,6 +31,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
         const val ID_CHOOSE_CONSTRAINT = "choose_constraint"
         const val ID_CHOOSE_BLUETOOTH_DEVICE = "choose_bluetooth_device"
         const val ID_SETTINGS = "settings"
+        const val ID_DEFAULT_OPTIONS_SETTINGS = "default_options_settings"
         const val ID_ABOUT = "about"
         const val ID_CONFIG_KEY_MAP = "config_key_map"
         const val ID_INTERACT_UI_ELEMENT_ACTION = "interact_ui_element_action"
@@ -120,6 +121,11 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     @Serializable
     data object Settings : NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_SETTINGS
+    }
+
+    @Serializable
+    data object DefaultOptionsSettings : NavDestination<Unit>(isCompose = true) {
+        override val id: String = ID_DEFAULT_OPTIONS_SETTINGS
     }
 
     @Serializable

@@ -687,8 +687,8 @@
     <string name="title_pref_grant_shizuku_not_granted">3. Key Mapper does not have permission to use Shizuku. Tap to grant this permission.</string>
     <string name="title_pref_grant_shizuku_granted">3. Key Mapper will automatically use Shizuku. Tap to read which Key Mapper features use Shizuku.</string>
 
-    <string name="title_pref_default_options">Default mapping options</string>
-    <string name="summary_pref_default_options">Change the default options for your key maps.</string>
+    <string name="title_pref_default_options">Change default options</string>
+    <string name="summary_pref_default_options">For triggers and actions</string>
 
     <string name="title_pref_reset_settings">Reset all</string>
     <string name="summary_pref_reset_settings">DANGER! Reset all settings in the app to the default. Your key maps will NOT be reset.</string>

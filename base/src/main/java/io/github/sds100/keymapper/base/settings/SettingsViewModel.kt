@@ -22,6 +22,7 @@ import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.otherwise
 import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.utils.SharedPrefsDataStoreWrapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -78,15 +79,26 @@ class SettingsViewModel @Inject constructor(
     val defaultVibrateDuration: Flow<Int> = useCase.defaultVibrateDuration
     val defaultRepeatRate: Flow<Int> = useCase.defaultRepeatRate
 
-    val mainScreenState: StateFlow<SettingsState> = combine(
+    val mainScreenState: StateFlow<MainSettingsState> = combine(
         useCase.theme,
         useCase.getPreference(Keys.log),
     ) { theme, loggingEnabled ->
-        SettingsState(
+        MainSettingsState(
             theme = theme
         )
-    }.stateIn(viewModelScope, SharingStarted.Lazily, SettingsState())
+    }.stateIn(viewModelScope, SharingStarted.Lazily, MainSettingsState())
 
+    val defaultSettingsScreenState: StateFlow<DefaultSettingsState> = combine(
+        useCase.getPreference(Keys.defaultLongPressDelay),
+        useCase.getPreference(Keys.defaultDoublePressDelay),
+    ) { longPressDelay, doublePressDelay ->
+        DefaultSettingsState(
+            longPressDelay = longPressDelay ?: PreferenceDefaults.LONG_PRESS_DELAY,
+            defaultLongPressDelay = PreferenceDefaults.LONG_PRESS_DELAY,
+            doublePressDelay = doublePressDelay ?: PreferenceDefaults.DOUBLE_PRESS_DELAY,
+            defaultDoublePressDelay = PreferenceDefaults.DOUBLE_PRESS_DELAY,
+        )
+    }.stateIn(viewModelScope, SharingStarted.Lazily, DefaultSettingsState())
 
     fun setAutomaticBackupLocation(uri: String) = useCase.setAutomaticBackupLocation(uri)
     fun disableAutomaticBackup() = useCase.disableAutomaticBackup()
@@ -258,6 +270,18 @@ class SettingsViewModel @Inject constructor(
         onNotificationSettingsClick(NotificationController.CHANNEL_TOGGLE_KEYMAPS)
     }
 
+    fun onDefaultOptionsClick() {
+        viewModelScope.launch {
+            navigate("default_options", NavDestination.DefaultOptionsSettings)
+        }
+    }
+
+    fun onLongPressDelayChanged(newValue: Int) {
+        viewModelScope.launch {
+            useCase.setPreference(Keys.defaultLongPressDelay, newValue)
+        }
+    }
+
     private fun onNotificationSettingsClick(channel: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             !useCase.isNotificationsPermissionGranted()
@@ -270,6 +294,14 @@ class SettingsViewModel @Inject constructor(
     }
 }
 
-data class SettingsState(
+data class MainSettingsState(
     val theme: Theme = Theme.AUTO
+)
+
+data class DefaultSettingsState(
+    val longPressDelay: Int = PreferenceDefaults.LONG_PRESS_DELAY,
+    val defaultLongPressDelay: Int = PreferenceDefaults.LONG_PRESS_DELAY,
+
+    val doublePressDelay: Int = PreferenceDefaults.DOUBLE_PRESS_DELAY,
+    val defaultDoublePressDelay: Int = PreferenceDefaults.DOUBLE_PRESS_DELAY,
 )
