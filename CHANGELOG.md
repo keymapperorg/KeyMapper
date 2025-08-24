@@ -11,6 +11,8 @@
 
 - The key event relay service is now also used on all Android versions below Android 14. The
   broadcast receiver method is no longer used.
+- Minimum supported Android version is now 8.0. Less than 1% of users are on older versions than
+  this and dropping support simplifies the codebase and maintenance.
 
 ## [3.2.0](https://github.com/sds100/KeyMapper/releases/tag/v3.2.0)
 
