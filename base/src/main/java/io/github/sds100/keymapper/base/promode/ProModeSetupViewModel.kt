@@ -45,6 +45,16 @@ class ProModeSetupViewModel @Inject constructor(
         }
     }
 
+    fun onBackClick() {
+        viewModelScope.launch {
+            popBackStack()
+        }
+    }
+
+    fun onAssistantClick() {
+        useCase.toggleSetupAssistant()
+    }
+
     private fun buildState(
         step: SystemBridgeSetupStep,
         isSetupAssistantEnabled: Boolean
@@ -56,10 +66,6 @@ class ProModeSetupViewModel @Inject constructor(
             isSetupAssistantChecked = isSetupAssistantEnabled
         )
     )
-
-    fun onAssistantClick() {
-        useCase.toggleSetupAssistant()
-    }
 }
 
 data class ProModeSetupState(

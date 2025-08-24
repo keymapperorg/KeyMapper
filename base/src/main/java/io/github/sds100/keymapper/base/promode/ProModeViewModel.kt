@@ -3,7 +3,9 @@ package io.github.sds100.keymapper.base.promode
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
+import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.State
@@ -106,8 +108,16 @@ class ProModeViewModel @Inject constructor(
         }
     }
 
+    fun onBackClick() {
+        viewModelScope.launch {
+            popBackStack()
+        }
+    }
+
     fun onSetupWithKeyMapperClick() {
-        // TODO Settings screen will be refactored into compose and so NavigationProvider will work
+        viewModelScope.launch {
+            navigate("setup_pro_mode_with_key_mapper", NavDestination.ProModeSetup)
+        }
     }
 
     private fun buildSetupState(

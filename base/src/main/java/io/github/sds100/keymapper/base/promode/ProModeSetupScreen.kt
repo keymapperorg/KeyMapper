@@ -61,16 +61,15 @@ import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupStep
 @Composable
 fun ProModeSetupScreen(
     viewModel: ProModeSetupViewModel,
-    onNavigateBack: () -> Unit,
 ) {
     val state by viewModel.setupState.collectAsStateWithLifecycle()
 
     ProModeSetupScreen(
         state = state,
-        onNavigateBack = onNavigateBack,
         onStepButtonClick = viewModel::onStepButtonClick,
         onAssistantClick = viewModel::onAssistantClick,
-        onWatchTutorialClick = { }
+        onWatchTutorialClick = { }, //TODO
+        onBackClick = viewModel::onBackClick
     )
 }
 
@@ -78,7 +77,7 @@ fun ProModeSetupScreen(
 @Composable
 fun ProModeSetupScreen(
     state: State<ProModeSetupState>,
-    onNavigateBack: () -> Unit = {},
+    onBackClick: () -> Unit = {},
     onStepButtonClick: () -> Unit = {},
     onAssistantClick: () -> Unit = {},
     onWatchTutorialClick: () -> Unit = {}
@@ -88,7 +87,7 @@ fun ProModeSetupScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.pro_mode_setup_wizard_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = stringResource(id = R.string.action_go_back)

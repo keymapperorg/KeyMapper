@@ -24,6 +24,7 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Checklist
 import androidx.compose.material.icons.rounded.Numbers
 import androidx.compose.material.icons.rounded.WarningAmber
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -62,13 +63,11 @@ import io.github.sds100.keymapper.common.utils.State
 fun ProModeScreen(
     modifier: Modifier = Modifier,
     viewModel: ProModeViewModel,
-    onNavigateBack: () -> Unit,
-    onNavigateToSetup: () -> Unit
 ) {
     val proModeWarningState by viewModel.warningState.collectAsStateWithLifecycle()
     val proModeSetupState by viewModel.setupState.collectAsStateWithLifecycle()
 
-    ProModeScreen(modifier = modifier, onBackClick = onNavigateBack) {
+    ProModeScreen(modifier = modifier, onBackClick = viewModel::onBackClick) {
         Content(
             warningState = proModeWarningState,
             setupState = proModeSetupState,
@@ -76,7 +75,7 @@ fun ProModeScreen(
             onStopServiceClick = viewModel::onStopServiceClick,
             onShizukuButtonClick = viewModel::onShizukuButtonClick,
             onRootButtonClick = viewModel::onRootButtonClick,
-            onSetupWithKeyMapperClick = onNavigateToSetup,
+            onSetupWithKeyMapperClick = viewModel::onSetupWithKeyMapperClick,
         )
     }
 }
@@ -93,15 +92,17 @@ private fun ProModeScreen(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.pro_mode_app_bar_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.action_go_back),
-                        )
-                    }
-                },
             )
+        },
+        bottomBar = {
+            BottomAppBar {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                        contentDescription = stringResource(R.string.action_go_back),
+                    )
+                }
+            }
         },
     ) { innerPadding ->
         val layoutDirection = LocalLayoutDirection.current

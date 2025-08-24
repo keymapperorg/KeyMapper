@@ -313,6 +313,7 @@ class ConfigActionsViewModel @Inject constructor(
         }
     }
 
+    // TODO stop advertising the GUI keyboard, and ask them to use PRO mode?
     private suspend fun promptToInstallShizukuOrGuiKeyboard() {
         if (onboarding.isTvDevice()) {
             val chooseSolutionDialog = DialogModel.Alert(
@@ -329,8 +330,8 @@ class ConfigActionsViewModel @Inject constructor(
             when (chooseSolutionResponse) {
                 // install shizuku
                 DialogResponse.POSITIVE -> {
-                    navigate("shizuku", NavDestination.ShizukuSettings)
-                    onboarding.neverShowGuiKeyboardPromptsAgain()
+//                    navigate("shizuku", NavDestination.ShizukuSettings)
+//                    onboarding.neverShowGuiKeyboardPromptsAgain()
 
                     return
                 }
@@ -374,8 +375,8 @@ class ConfigActionsViewModel @Inject constructor(
             when (chooseSolutionResponse) {
                 // install shizuku
                 DialogResponse.POSITIVE -> {
-                    navigate("shizuku_error", NavDestination.ShizukuSettings)
-                    onboarding.neverShowGuiKeyboardPromptsAgain()
+//                    navigate("shizuku_error", NavDestination.ShizukuSettings)
+//                    onboarding.neverShowGuiKeyboardPromptsAgain()
 
                     return
                 }

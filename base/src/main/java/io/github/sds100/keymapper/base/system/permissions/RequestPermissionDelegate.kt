@@ -14,7 +14,6 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
-import io.github.sds100.keymapper.base.NavBaseAppDirections
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.ui.str
 import io.github.sds100.keymapper.common.BuildConfigProvider
@@ -190,6 +189,7 @@ class RequestPermissionDelegate(
         }
     }
 
+    // TODO show prompt requesting root permission. If not found then show a dialog explaining to grant permission manually in their root management app such as Magisk.
     private fun requestRootPermission(navController: NavController) {
         if (showDialogs) {
             activity.materialAlertDialog {
@@ -198,7 +198,7 @@ class RequestPermissionDelegate(
                 setIcon(R.drawable.ic_baseline_warning_24)
 
                 okButton {
-                    navController.navigate(NavBaseAppDirections.toSettingsFragment())
+//                    navController.navigate(NavBaseAppDirections.toSettingsFragment())
                 }
 
                 negativeButton(R.string.neg_cancel) { it.cancel() }
@@ -206,7 +206,7 @@ class RequestPermissionDelegate(
                 show()
             }
         } else {
-            navController.navigate(NavBaseAppDirections.toSettingsFragment())
+//            navController.navigate(NavBaseAppDirections.toSettingsFragment())
         }
     }
 

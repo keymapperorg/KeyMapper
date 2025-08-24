@@ -351,11 +351,6 @@ private fun getDirection(destination: NavDestination<*>, requestKey: String): Na
         )
 
         NavDestination.About -> NavBaseAppDirections.actionGlobalAboutFragment()
-        NavDestination.Settings -> NavBaseAppDirections.toSettingsFragment()
-
-        NavDestination.ShizukuSettings -> NavBaseAppDirections.toShizukuSettingsFragment()
-
-        NavDestination.ProMode -> NavBaseAppDirections.toProModeFragment()
 
         else -> throw IllegalArgumentException("Can not find a direction for this destination: $destination")
     }

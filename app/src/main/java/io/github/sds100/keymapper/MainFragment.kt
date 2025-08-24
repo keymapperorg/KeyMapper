@@ -25,8 +25,6 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.BaseMainNavHost
 import io.github.sds100.keymapper.base.actions.ActionsScreen
-import io.github.sds100.keymapper.base.actions.ChooseActionScreen
-import io.github.sds100.keymapper.base.actions.ChooseActionViewModel
 import io.github.sds100.keymapper.base.actions.ConfigActionsViewModel
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.constraints.ConfigConstraintsViewModel
@@ -188,15 +186,6 @@ class MainFragment : Fragment() {
                         triggerViewModel.optionsViewModel,
                     )
                 },
-            )
-        }
-
-        composable<NavDestination.ChooseAction> {
-            val viewModel: ChooseActionViewModel = hiltViewModel()
-
-            ChooseActionScreen(
-                modifier = Modifier.fillMaxSize(),
-                viewModel = viewModel,
             )
         }
     }

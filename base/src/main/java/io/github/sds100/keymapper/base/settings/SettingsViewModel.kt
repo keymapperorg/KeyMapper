@@ -107,7 +107,10 @@ class SettingsViewModel @Inject constructor(
             val soundFiles = useCase.getSoundFiles()
 
             if (soundFiles.isEmpty()) {
-                showDialog("no sound files", DialogModel.Toast(getString(R.string.toast_no_sound_files)))
+                showDialog(
+                    "no sound files",
+                    DialogModel.Toast(getString(R.string.toast_no_sound_files))
+                )
                 return@launch
             }
 
@@ -222,6 +225,12 @@ class SettingsViewModel @Inject constructor(
     fun onProModeClick() {
         viewModelScope.launch {
             navigate("pro_mode_settings", NavDestination.ProMode)
+        }
+    }
+
+    fun onBackClick() {
+        viewModelScope.launch {
+            popBackStack()
         }
     }
 }
