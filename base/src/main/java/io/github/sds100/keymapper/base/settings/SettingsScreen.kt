@@ -23,6 +23,7 @@ import androidx.compose.material.icons.outlined.FindInPage
 import androidx.compose.material.icons.outlined.Gamepad
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Construction
+import androidx.compose.material.icons.rounded.Devices
 import androidx.compose.material.icons.rounded.Keyboard
 import androidx.compose.material.icons.rounded.PlayCircleOutline
 import androidx.compose.material.icons.rounded.Tune
@@ -144,6 +145,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
             onLoggingToggled = viewModel::onLoggingToggled,
             onViewLogClick = viewModel::onViewLogClick,
             onHideHomeScreenAlertsToggled = viewModel::onHideHomeScreenAlertsToggled,
+            onShowDeviceDescriptorsToggled = viewModel::onShowDeviceDescriptorsToggled,
             onAutomaticBackupClick = {
                 if (state.autoBackupLocation.isNullOrBlank()) {
                     automaticBackupLocationChooser.launch(BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME)
@@ -224,6 +226,7 @@ private fun Content(
     onLoggingToggled: (Boolean) -> Unit = { },
     onViewLogClick: () -> Unit = { },
     onHideHomeScreenAlertsToggled: (Boolean) -> Unit = { },
+    onShowDeviceDescriptorsToggled: (Boolean) -> Unit = { },
 ) {
     Column(
         modifier
@@ -300,6 +303,26 @@ private fun Content(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        SwitchPreferenceCompose(
+            title = stringResource(R.string.title_pref_force_vibrate),
+            text = stringResource(R.string.summary_pref_force_vibrate),
+            icon = Icons.Rounded.Vibration,
+            isChecked = state.forceVibrate,
+            onCheckedChange = onForceVibrateToggled
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        SwitchPreferenceCompose(
+            title = stringResource(R.string.title_pref_show_device_descriptors),
+            text = stringResource(R.string.summary_pref_show_device_descriptors),
+            icon = Icons.Rounded.Devices,
+            isChecked = state.showDeviceDescriptors,
+            onCheckedChange = onShowDeviceDescriptorsToggled
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         OptionsHeaderRow(
             modifier = Modifier.fillMaxWidth(),
             icon = KeyMapperIcons.FolderManaged,
@@ -342,16 +365,6 @@ private fun Content(
             text = stringResource(R.string.summary_pref_automatically_change_ime),
             icon = Icons.Rounded.Keyboard,
             onClick = onAutomaticChangeImeClick
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        SwitchPreferenceCompose(
-            title = stringResource(R.string.title_pref_force_vibrate),
-            text = stringResource(R.string.summary_pref_force_vibrate),
-            icon = Icons.Rounded.Vibration,
-            isChecked = state.forceVibrate,
-            onCheckedChange = onForceVibrateToggled
         )
 
         Spacer(modifier = Modifier.height(8.dp))

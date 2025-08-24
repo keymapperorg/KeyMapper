@@ -265,8 +265,7 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
 
             val showDeviceDescriptors = showDeviceDescriptors.firstBlocking()
 
-            inputDevices.forEach { device ->
-
+            for (device in inputDevices) {
                 if (device.isExternal) {
                     val name = if (showDeviceDescriptors) {
                         InputDeviceUtils.appendDeviceDescriptorToName(

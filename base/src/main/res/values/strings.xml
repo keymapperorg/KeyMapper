@@ -651,8 +651,8 @@
     <string name="title_pref_hide_home_screen_alerts">Hide home screen alerts</string>
     <string name="summary_pref_hide_home_screen_alerts">Hide the alerts at the top of the home screen.</string>
 
-    <string name="title_pref_show_device_descriptors">Show the first 5 characters of the device id for device specific triggers</string>
-    <string name="summary_pref_show_device_descriptors">This is useful to differentiate between devices that have the same name.</string>
+    <string name="title_pref_show_device_descriptors">Show device IDs</string>
+    <string name="summary_pref_show_device_descriptors">Differentiate devices with the same name</string>
 
     <string name="title_pref_reroute_keyevents_link">Fix keyboards that are set to US English</string>
     <string name="summary_pref_reroute_keyevents_link">This fixes keyboards that don\'t have the correct the keyboard layout when an accessibility service is enabled. Tap to read more and configure.</string>
