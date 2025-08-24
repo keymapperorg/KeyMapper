@@ -61,7 +61,11 @@ class NotificationController @Inject constructor(
         private const val ID_FEATURE_FLOATING_BUTTONS = 901
 
         const val CHANNEL_TOGGLE_KEYMAPS = "channel_toggle_remaps"
+
+        // TODO delete all ime picker notifications and auto showing logic.
+        @Deprecated("Removed in 4.0.0")
         const val CHANNEL_IME_PICKER = "channel_ime_picker"
+
         const val CHANNEL_KEYBOARD_HIDDEN = "channel_warning_keyboard_hidden"
         const val CHANNEL_TOGGLE_KEYBOARD = "channel_toggle_keymapper_keyboard"
         const val CHANNEL_NEW_FEATURES = "channel_new_features"

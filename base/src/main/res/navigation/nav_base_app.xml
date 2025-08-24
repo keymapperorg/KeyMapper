@@ -5,8 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_base_app">
 
-    <include app:graph="@navigation/nav_settings" />
-
     <fragment
         android:id="@+id/aboutFragment"
         android:name="io.github.sds100.keymapper.base.about.AboutFragment"

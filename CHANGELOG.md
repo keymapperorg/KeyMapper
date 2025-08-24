@@ -13,6 +13,10 @@
   broadcast receiver method is no longer used.
 - Minimum supported Android version is now 8.0. Less than 1% of users are on older versions than
   this and dropping support simplifies the codebase and maintenance.
+- Dropped support for showing a keyboard picker notification and automatically showing it when a
+  device connects. This is only supported on Android 8.1 and is extra work to maintain it.
+- Dropped support for rerouting key events on Android 11. This was a workaround for a specific bug
+  in Android 11 which fewer than 10% of users are using and less are probably using that feature.
 
 ## [3.2.0](https://github.com/sds100/KeyMapper/releases/tag/v3.2.0)
 

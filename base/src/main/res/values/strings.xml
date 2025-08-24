@@ -622,7 +622,8 @@
     <string name="title_pref_automatic_backup_location_disabled">Turn on automatic backup</string>
     <string name="summary_pref_automatic_backup_location_disabled">Periodically back up your key maps</string>
 
-    <string name="title_pref_choose_devices">Choose devices</string>
+    <string name="title_pref_show_ime_picker_choose_devices">Choose devices</string>
+    <string name="summary_pref_show_ime_picker_choose_devices">Choose which devices will show the input method picker</string>
 
     <string name="title_pref_auto_show_ime_picker">Automatically show keyboard picker</string>
     <string name="summary_pref_auto_show_ime_picker">When a device that you have chosen connects or disconnects the keyboard picker will show automatically. Choose the devices below.</string>
@@ -713,7 +714,7 @@
     <!--Preference titles and summaries-->
 
     <!--Preference categories-->
-    <string name="title_pref_category_ime_picker">Automatically show the keyboard picker</string>
+    <string name="title_pref_category_ime_picker">Keyboard picker</string>
     <string name="summary_pref_category_ime_picker">Tap to see the settings that allow you to automatically show the keyboard picker.</string>
 
     <string name="title_pref_category_root">Root settings</string>
