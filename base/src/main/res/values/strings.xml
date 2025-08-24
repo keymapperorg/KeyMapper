@@ -650,7 +650,7 @@
     <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Automatically select the Key Mapper keyboard when you resume your key maps and select your default keyboard when pausing them.</string>
 
     <string name="title_pref_hide_home_screen_alerts">Hide home screen alerts</string>
-    <string name="summary_pref_hide_home_screen_alerts">Hide the alerts at the top of the home screen.</string>
+    <string name="summary_pref_hide_home_screen_alerts">Hide the alerts at the top of the home screen</string>
 
     <string name="title_pref_show_device_descriptors">Show device IDs</string>
     <string name="summary_pref_show_device_descriptors">Differentiate devices with the same name</string>
@@ -698,9 +698,8 @@
     <string name="summary_pref_default_options">For triggers and actions</string>
 
     <string name="title_pref_reset_settings">Reset all</string>
-    <string name="summary_pref_reset_settings">DANGER! Reset all settings in the app to the default. Your key maps will NOT be reset.</string>
     <string name="dialog_title_reset_settings">DANGER!</string>
-    <string name="dialog_message_reset_settings">Are you sure you want to reset all settings in the app to the default? Your key maps will NOT be reset. The introductions and warning pop ups will show again.</string>
+    <string name="dialog_message_reset_settings">Are you sure you want to reset all settings in the app to the default? Your existing key maps will not be affected. The introductions and warning pop ups will show again.</string>
     <string name="pos_button_reset_settings">Yes, reset</string>
 
     <string name="settings_reset_app_bar_button">Reset all</string>
@@ -737,7 +736,7 @@
     <string name="summary_pref_category_log">This may add latency to your key maps so only turn this on if you are trying to debug the app or have been asked to by the developer.</string>
 
     <string name="title_pref_pro_mode">Use PRO mode</string>
-    <string name="summary_pref_pro_mode">Advanced detection of key events and more.</string>
+    <string name="summary_pref_pro_mode">Advanced detection of key events and more</string>
 
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
