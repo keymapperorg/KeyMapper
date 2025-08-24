@@ -43,7 +43,8 @@ class SettingsViewModel @Inject constructor(
 ) : ViewModel(),
     DialogProvider by dialogProvider,
     ResourceProvider by resourceProvider,
-    NavigationProvider by navigationProvider {
+    NavigationProvider by navigationProvider,
+    DefaultOptionsSettingsCallback {
 
     val automaticBackupLocation = useCase.automaticBackupLocation
 
@@ -91,12 +92,24 @@ class SettingsViewModel @Inject constructor(
     val defaultSettingsScreenState: StateFlow<DefaultSettingsState> = combine(
         useCase.getPreference(Keys.defaultLongPressDelay),
         useCase.getPreference(Keys.defaultDoublePressDelay),
-    ) { longPressDelay, doublePressDelay ->
+        useCase.getPreference(Keys.defaultVibrateDuration),
+        useCase.getPreference(Keys.defaultRepeatDelay),
+        useCase.getPreference(Keys.defaultRepeatRate),
+        useCase.getPreference(Keys.defaultSequenceTriggerTimeout),
+    ) { values ->
         DefaultSettingsState(
-            longPressDelay = longPressDelay ?: PreferenceDefaults.LONG_PRESS_DELAY,
+            longPressDelay = values[0] ?: PreferenceDefaults.LONG_PRESS_DELAY,
             defaultLongPressDelay = PreferenceDefaults.LONG_PRESS_DELAY,
-            doublePressDelay = doublePressDelay ?: PreferenceDefaults.DOUBLE_PRESS_DELAY,
+            doublePressDelay = values[1] ?: PreferenceDefaults.DOUBLE_PRESS_DELAY,
             defaultDoublePressDelay = PreferenceDefaults.DOUBLE_PRESS_DELAY,
+            vibrateDuration = values[2] ?: PreferenceDefaults.VIBRATION_DURATION,
+            defaultVibrateDuration = PreferenceDefaults.VIBRATION_DURATION,
+            repeatDelay = values[3] ?: PreferenceDefaults.REPEAT_DELAY,
+            defaultRepeatDelay = PreferenceDefaults.REPEAT_DELAY,
+            repeatRate = values[4] ?: PreferenceDefaults.REPEAT_RATE,
+            defaultRepeatRate = PreferenceDefaults.REPEAT_RATE,
+            sequenceTriggerTimeout = values[5] ?: PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT,
+            defaultSequenceTriggerTimeout = PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT,
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, DefaultSettingsState())
 
@@ -276,9 +289,39 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun onLongPressDelayChanged(newValue: Int) {
+    override fun onLongPressDelayChanged(delay: Int) {
         viewModelScope.launch {
-            useCase.setPreference(Keys.defaultLongPressDelay, newValue)
+            useCase.setPreference(Keys.defaultLongPressDelay, delay)
+        }
+    }
+
+    override fun onDoublePressDelayChanged(delay: Int) {
+        viewModelScope.launch {
+            useCase.setPreference(Keys.defaultDoublePressDelay, delay)
+        }
+    }
+
+    override fun onVibrateDurationChanged(duration: Int) {
+        viewModelScope.launch {
+            useCase.setPreference(Keys.defaultVibrateDuration, duration)
+        }
+    }
+
+    override fun onRepeatDelayChanged(delay: Int) {
+        viewModelScope.launch {
+            useCase.setPreference(Keys.defaultRepeatDelay, delay)
+        }
+    }
+
+    override fun onRepeatRateChanged(rate: Int) {
+        viewModelScope.launch {
+            useCase.setPreference(Keys.defaultRepeatRate, rate)
+        }
+    }
+
+    override fun onSequenceTriggerTimeoutChanged(timeout: Int) {
+        viewModelScope.launch {
+            useCase.setPreference(Keys.defaultSequenceTriggerTimeout, timeout)
         }
     }
 
@@ -304,4 +347,16 @@ data class DefaultSettingsState(
 
     val doublePressDelay: Int = PreferenceDefaults.DOUBLE_PRESS_DELAY,
     val defaultDoublePressDelay: Int = PreferenceDefaults.DOUBLE_PRESS_DELAY,
+
+    val vibrateDuration: Int = PreferenceDefaults.VIBRATION_DURATION,
+    val defaultVibrateDuration: Int = PreferenceDefaults.VIBRATION_DURATION,
+
+    val repeatDelay: Int = PreferenceDefaults.REPEAT_DELAY,
+    val defaultRepeatDelay: Int = PreferenceDefaults.REPEAT_DELAY,
+
+    val repeatRate: Int = PreferenceDefaults.REPEAT_RATE,
+    val defaultRepeatRate: Int = PreferenceDefaults.REPEAT_RATE,
+
+    val sequenceTriggerTimeout: Int = PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT,
+    val defaultSequenceTriggerTimeout: Int = PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT,
 )
