@@ -555,9 +555,6 @@
     <string name="notification_channel_toggle_keyboard">Toggle Key Mapper keyboard</string>
     <string name="notification_channel_new_features">New features</string>
 
-    <string name="notification_ime_persistent_text">Tap to change your keyboard.</string>
-    <string name="notification_ime_persistent_title">Keyboard picker</string>
-
     <string name="notification_keymaps_resumed_title">Running</string>
     <string name="notification_keymaps_resumed_text">Tap to open Key Mapper.</string>
     <string name="notification_action_pause">Pause</string>
@@ -612,21 +609,12 @@
     <string name="title_pref_force_vibrate">Make all key maps vibrate</string>
     <string name="summary_pref_force_vibrate">Every time a key map is triggered</string>
 
-    <string name="title_pref_show_ime_picker_notification">Keyboard picker notification</string>
-    <string name="summary_pref_show_ime_picker_notification">Show a persistent notification to allow you to pick a keyboard.</string>
-
     <string name="title_pref_show_toggle_keymaps_notification">Show pause/resume notification</string>
     <string name="summary_pref_show_toggle_keymaps_notification">Toggle your key maps on and off</string>
 
     <string name="title_pref_automatic_backup_location_enabled">Change automatic backup location</string>
     <string name="title_pref_automatic_backup_location_disabled">Turn on automatic backup</string>
     <string name="summary_pref_automatic_backup_location_disabled">Periodically back up your key maps</string>
-
-    <string name="title_pref_show_ime_picker_choose_devices">Choose devices</string>
-    <string name="summary_pref_show_ime_picker_choose_devices">Choose which devices will show the input method picker</string>
-
-    <string name="title_pref_auto_show_ime_picker">Automatically show keyboard picker</string>
-    <string name="summary_pref_auto_show_ime_picker">When a device that you have chosen connects or disconnects the keyboard picker will show automatically. Choose the devices below.</string>
 
     <string name="title_pref_auto_change_ime_on_connection">Automatically change the on-screen keyboard when a device (e.g a keyboard) connects/disconnects</string>
     <string name="summary_pref_auto_change_ime_on_connection">The last used Key Mapper keyboard will be automatically selected when a chosen device is connected. Your normal keyboard will be automatically selected when the device disconnects.</string>
@@ -696,9 +684,6 @@
     <!--Preference titles and summaries-->
 
     <!--Preference categories-->
-    <string name="title_pref_category_ime_picker">Keyboard picker</string>
-    <string name="summary_pref_category_ime_picker">Tap to see the settings that allow you to automatically show the keyboard picker.</string>
-
     <string name="title_pref_category_root">Root settings</string>
     <string name="summary_pref_category_root">These options will only work on root devices! If you don\'t know what root is or whether your device is rooted, please don\'t leave a poor review if they don\'t work. :)</string>
 

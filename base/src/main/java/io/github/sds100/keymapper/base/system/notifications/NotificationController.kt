@@ -51,7 +51,7 @@ class NotificationController @Inject constructor(
 ) : ResourceProvider by resourceProvider {
 
     companion object {
-        private const val ID_IME_PICKER = 123
+        //        private const val ID_IME_PICKER = 123
         private const val ID_KEYBOARD_HIDDEN = 747
         private const val ID_TOGGLE_MAPPINGS = 231
         private const val ID_TOGGLE_KEYBOARD = 143
@@ -115,6 +115,7 @@ class NotificationController @Inject constructor(
     fun init() {
         manageNotifications.deleteChannel(CHANNEL_ID_WARNINGS)
         manageNotifications.deleteChannel(CHANNEL_ID_PERSISTENT)
+        manageNotifications.deleteChannel(CHANNEL_IME_PICKER)
 
         manageNotifications.createChannel(
             NotificationChannelModel(
@@ -125,28 +126,10 @@ class NotificationController @Inject constructor(
         )
 
         combine(
-            manageNotifications.showToggleMappingsNotification,
             controlAccessibilityService.serviceState,
             pauseMappings.isPaused,
-        ) { show, serviceState, areMappingsPaused ->
-            invalidateToggleMappingsNotification(show, serviceState, areMappingsPaused)
-        }.flowOn(dispatchers.default()).launchIn(coroutineScope)
-
-        manageNotifications.showImePickerNotification.onEach { show ->
-            if (show) {
-                manageNotifications.createChannel(
-                    NotificationChannelModel(
-                        id = CHANNEL_IME_PICKER,
-                        name = getString(R.string.notification_channel_ime_picker),
-                        NotificationManagerCompat.IMPORTANCE_MIN,
-                    ),
-                )
-
-                manageNotifications.show(imePickerNotification())
-            } else {
-                // don't delete the channel because then the user's notification config is lost
-                manageNotifications.dismiss(ID_IME_PICKER)
-            }
+        ) { serviceState, areMappingsPaused ->
+            invalidateToggleMappingsNotification(serviceState, areMappingsPaused)
         }.flowOn(dispatchers.default()).launchIn(coroutineScope)
 
         toggleCompatibleIme.sufficientPermissions.onEach { canToggleIme ->
@@ -221,7 +204,6 @@ class NotificationController @Inject constructor(
 
         coroutineScope.launch {
             invalidateToggleMappingsNotification(
-                show = manageNotifications.showToggleMappingsNotification.first(),
                 serviceState = controlAccessibilityService.serviceState.first(),
                 areMappingsPaused = pauseMappings.isPaused.first(),
             )
@@ -245,7 +227,6 @@ class NotificationController @Inject constructor(
     }
 
     private fun invalidateToggleMappingsNotification(
-        show: Boolean,
         serviceState: AccessibilityServiceState,
         areMappingsPaused: Boolean,
     ) {
@@ -256,11 +237,6 @@ class NotificationController @Inject constructor(
                 NotificationManagerCompat.IMPORTANCE_MIN,
             ),
         )
-
-        if (!show) {
-            manageNotifications.dismiss(ID_TOGGLE_MAPPINGS)
-            return
-        }
 
         when (serviceState) {
             AccessibilityServiceState.ENABLED -> {
@@ -408,18 +384,6 @@ class NotificationController @Inject constructor(
             ),
         )
     }
-
-    private fun imePickerNotification(): NotificationModel = NotificationModel(
-        id = ID_IME_PICKER,
-        channel = CHANNEL_IME_PICKER,
-        title = getString(R.string.notification_ime_persistent_title),
-        text = getString(R.string.notification_ime_persistent_text),
-        icon = R.drawable.ic_notification_keyboard,
-        onClickAction = NotificationIntentType.Broadcast(actionShowImePicker),
-        showOnLockscreen = false,
-        onGoing = true,
-        priority = NotificationCompat.PRIORITY_MIN,
-    )
 
     private fun toggleImeNotification(): NotificationModel = NotificationModel(
         id = ID_TOGGLE_KEYBOARD,

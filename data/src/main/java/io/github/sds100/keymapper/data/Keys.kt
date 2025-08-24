@@ -12,7 +12,7 @@ object Keys {
     val hasRootPermission = booleanPreferencesKey("pref_allow_root_features")
 
     val shownAppIntro = booleanPreferencesKey("pref_first_time")
-    val showImePickerNotification = booleanPreferencesKey("pref_show_ime_notification")
+
     val showToggleKeyMapsNotification = booleanPreferencesKey("pref_show_remappings_notification")
     val showToggleKeyboardNotification =
         booleanPreferencesKey("pref_toggle_key_mapper_keyboard_notification")
