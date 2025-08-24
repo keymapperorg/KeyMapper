@@ -82,10 +82,12 @@ class SettingsViewModel @Inject constructor(
         useCase.theme,
         useCase.getPreference(Keys.log),
         useCase.automaticBackupLocation,
-    ) { theme, loggingEnabled, autoBackupLocation ->
+        useCase.getPreference(Keys.forceVibrate),
+    ) { theme, loggingEnabled, autoBackupLocation, forceVibrate ->
         MainSettingsState(
             theme = theme,
-            autoBackupLocation = autoBackupLocation
+            autoBackupLocation = autoBackupLocation,
+            forceVibrate = forceVibrate ?: false
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, MainSettingsState())
 
@@ -374,6 +376,12 @@ class SettingsViewModel @Inject constructor(
         onNotificationSettingsClick(NotificationController.CHANNEL_TOGGLE_KEYBOARD)
     }
 
+    fun onForceVibrateToggled(enabled: Boolean) {
+        viewModelScope.launch {
+            useCase.setPreference(Keys.forceVibrate, enabled)
+        }
+    }
+
     private fun onNotificationSettingsClick(channel: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             !useCase.isNotificationsPermissionGranted()
@@ -388,7 +396,8 @@ class SettingsViewModel @Inject constructor(
 
 data class MainSettingsState(
     val theme: Theme = Theme.AUTO,
-    val autoBackupLocation: String? = null
+    val autoBackupLocation: String? = null,
+    val forceVibrate: Boolean = false
 )
 
 data class DefaultSettingsState(

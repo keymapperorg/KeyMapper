@@ -609,8 +609,8 @@
 
     <string name="title_pref_reset_defaults">Reset</string>
 
-    <string name="summary_pref_force_vibrate">Force all key maps to vibrate.</string>
-    <string name="title_pref_force_vibrate">Force vibrate</string>
+    <string name="title_pref_force_vibrate">Make all key maps vibrate</string>
+    <string name="summary_pref_force_vibrate">Every time a key map is triggered</string>
 
     <string name="title_pref_show_ime_picker_notification">Keyboard picker notification</string>
     <string name="summary_pref_show_ime_picker_notification">Show a persistent notification to allow you to pick a keyboard.</string>

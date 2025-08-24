@@ -24,6 +24,7 @@ import androidx.compose.material.icons.rounded.Construction
 import androidx.compose.material.icons.rounded.Keyboard
 import androidx.compose.material.icons.rounded.PlayCircleOutline
 import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material.icons.rounded.Vibration
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -57,6 +58,7 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionPageButton
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
+import io.github.sds100.keymapper.base.utils.ui.compose.SwitchPreferenceCompose
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.FolderManaged
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.ProModeIcon
@@ -135,6 +137,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
             onDefaultOptionsClick = viewModel::onDefaultOptionsClick,
             onProModeClick = viewModel::onProModeClick,
             onAutomaticChangeImeClick = viewModel::onAutomaticChangeImeClick,
+            onForceVibrateToggled = viewModel::onForceVibrateToggled,
             onAutomaticBackupClick = {
                 if (state.autoBackupLocation.isNullOrBlank()) {
                     automaticBackupLocationChooser.launch(BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME)
@@ -211,6 +214,7 @@ private fun Content(
     onAutomaticBackupClick: () -> Unit = { },
     onProModeClick: () -> Unit = { },
     onAutomaticChangeImeClick: () -> Unit = { },
+    onForceVibrateToggled: (Boolean) -> Unit = { },
 ) {
     Column(
         modifier
@@ -319,6 +323,16 @@ private fun Content(
             text = stringResource(R.string.summary_pref_automatically_change_ime),
             icon = Icons.Rounded.Keyboard,
             onClick = onAutomaticChangeImeClick
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        SwitchPreferenceCompose(
+            title = stringResource(R.string.title_pref_force_vibrate),
+            text = stringResource(R.string.summary_pref_force_vibrate),
+            icon = Icons.Rounded.Vibration,
+            isChecked = state.forceVibrate,
+            onCheckedChange = onForceVibrateToggled
         )
 
         Spacer(modifier = Modifier.height(8.dp))
