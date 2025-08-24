@@ -27,6 +27,7 @@ import androidx.compose.material.icons.rounded.Keyboard
 import androidx.compose.material.icons.rounded.PlayCircleOutline
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.Vibration
+import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -142,6 +143,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
             onForceVibrateToggled = viewModel::onForceVibrateToggled,
             onLoggingToggled = viewModel::onLoggingToggled,
             onViewLogClick = viewModel::onViewLogClick,
+            onHideHomeScreenAlertsToggled = viewModel::onHideHomeScreenAlertsToggled,
             onAutomaticBackupClick = {
                 if (state.autoBackupLocation.isNullOrBlank()) {
                     automaticBackupLocationChooser.launch(BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME)
@@ -221,6 +223,7 @@ private fun Content(
     onForceVibrateToggled: (Boolean) -> Unit = { },
     onLoggingToggled: (Boolean) -> Unit = { },
     onViewLogClick: () -> Unit = { },
+    onHideHomeScreenAlertsToggled: (Boolean) -> Unit = { },
 ) {
     Column(
         modifier
@@ -265,6 +268,16 @@ private fun Content(
                 text = stringResource(R.string.summary_pref_show_toggle_keymaps_notification),
                 icon = Icons.Rounded.PlayCircleOutline,
                 onClick = onPauseResumeNotificationClick
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            SwitchPreferenceCompose(
+                title = stringResource(R.string.title_pref_hide_home_screen_alerts),
+                text = stringResource(R.string.summary_pref_hide_home_screen_alerts),
+                icon = Icons.Rounded.VisibilityOff,
+                isChecked = state.hideHomeScreenAlerts,
+                onCheckedChange = onHideHomeScreenAlertsToggled
             )
         }
 

@@ -83,12 +83,14 @@ class SettingsViewModel @Inject constructor(
         useCase.getPreference(Keys.log),
         useCase.automaticBackupLocation,
         useCase.getPreference(Keys.forceVibrate),
-    ) { theme, loggingEnabled, autoBackupLocation, forceVibrate ->
+        useCase.getPreference(Keys.hideHomeScreenAlerts),
+    ) { theme, loggingEnabled, autoBackupLocation, forceVibrate, hideHomeScreenAlerts ->
         MainSettingsState(
             theme = theme,
             autoBackupLocation = autoBackupLocation,
             forceVibrate = forceVibrate ?: false,
-            loggingEnabled = loggingEnabled ?: false
+            loggingEnabled = loggingEnabled ?: false,
+            hideHomeScreenAlerts = hideHomeScreenAlerts ?: false
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, MainSettingsState())
 
@@ -395,6 +397,12 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun onHideHomeScreenAlertsToggled(enabled: Boolean) {
+        viewModelScope.launch {
+            useCase.setPreference(Keys.hideHomeScreenAlerts, enabled)
+        }
+    }
+
     private fun onNotificationSettingsClick(channel: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             !useCase.isNotificationsPermissionGranted()
@@ -411,7 +419,8 @@ data class MainSettingsState(
     val theme: Theme = Theme.AUTO,
     val autoBackupLocation: String? = null,
     val forceVibrate: Boolean = false,
-    val loggingEnabled: Boolean = false
+    val loggingEnabled: Boolean = false,
+    val hideHomeScreenAlerts: Boolean = false
 )
 
 data class DefaultSettingsState(
