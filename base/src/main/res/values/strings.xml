@@ -616,7 +616,7 @@
     <string name="summary_pref_show_ime_picker_notification">Show a persistent notification to allow you to pick a keyboard.</string>
 
     <string name="title_pref_show_toggle_keymaps_notification">Show pause/resume notification</string>
-    <string name="summary_pref_show_toggle_keymaps_notification">Toggle your key maps on and off.</string>
+    <string name="summary_pref_show_toggle_keymaps_notification">Toggle your key maps on and off</string>
 
     <string name="title_pref_automatic_backup_location_enabled">Change automatic backup location</string>
     <string name="title_pref_automatic_backup_location_disabled">Turn on automatic backup</string>
@@ -633,7 +633,8 @@
     <string name="title_pref_auto_change_ime_on_input_focus">Automatically change the on-screen keyboard when you start inputting text</string>
     <string name="summary_pref_auto_change_ime_on_input_focus">The last used non Key Mapper keyboard will be automatically selected when you try to open the keyboard. Your Key Mapper keyboard will be automatically selected once you stop using the keyboard.</string>
 
-    <string name="title_pref_show_toast_when_auto_changing_ime">Show an on-screen message when automatically changing the keyboard</string>
+    <string name="title_pref_show_toast_when_auto_changing_ime">On-screen message</string>
+    <string name="summary_pref_show_toast_when_auto_changing_ime">Show when automatically changing the keyboard</string>
 
     <string name="title_pref_root_permission">Request root permission</string>
     <string name="summary_pref_root_permission">If your device is rooted then this will show the root permission pop up from Magisk or your root app.</string>
@@ -704,6 +705,7 @@
     <string name="settings_section_data_management_title">Data management</string>
     <string name="settings_section_power_user_title">Power user options</string>
     <string name="settings_section_debugging_title">Debugging</string>
+    <string name="settings_section_notifications">Notifications</string>
 
     <!--Preference titles and summaries-->
 
@@ -719,10 +721,13 @@
 
     <string name="title_pref_category_shizuku">Shizuku support</string>
     <string name="summary_pref_category_shizuku">Shizuku is an app that allows Key Mapper to do things that only system apps can do. You don\'t need to use the Key Mapper keyboard for example. Tap to learn how to set this up.</string>
-    <string name="summary_pref_category_shizuku_follow_steps">Follow these steps to set up Shizuku.</string>
+    <string name="summary_pref_category_shizuku_follow_steps">Follow these steps to set up Shizuku</string>
 
-    <string name="title_pref_automatically_change_ime">Automatically change the keyboard</string>
-    <string name="summary_pref_automatically_change_ime">These are really useful settings and you are recommended to check them out!</string>
+    <string name="title_pref_automatically_change_ime">Automatically switch keyboard</string>
+    <string name="summary_pref_automatically_change_ime">Switch when needed then switch back</string>
+
+    <string name="title_pref_automatically_change_ime_choose_devices">Choose devices</string>
+    <string name="summary_pref_automatically_change_ime_choose_devices">Choose which devices trigger automatic keyboard switching</string>
 
     <string name="title_pref_category_log">Logging</string>
     <string name="summary_pref_category_log">This may add latency to your key maps so only turn this on if you are trying to debug the app or have been asked to by the developer.</string>

@@ -32,6 +32,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
         const val ID_CHOOSE_BLUETOOTH_DEVICE = "choose_bluetooth_device"
         const val ID_SETTINGS = "settings"
         const val ID_DEFAULT_OPTIONS_SETTINGS = "default_options_settings"
+        const val ID_AUTOMATIC_CHANGE_IME_SETTINGS = "automatic_change_ime_settings"
         const val ID_ABOUT = "about"
         const val ID_CONFIG_KEY_MAP = "config_key_map"
         const val ID_INTERACT_UI_ELEMENT_ACTION = "interact_ui_element_action"
@@ -126,6 +127,11 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     @Serializable
     data object DefaultOptionsSettings : NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_DEFAULT_OPTIONS_SETTINGS
+    }
+
+    @Serializable
+    data object AutomaticChangeImeSettings : NavDestination<Unit>(isCompose = true) {
+        override val id: String = ID_AUTOMATIC_CHANGE_IME_SETTINGS
     }
 
     @Serializable

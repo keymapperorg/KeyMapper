@@ -113,6 +113,21 @@ class SettingsViewModel @Inject constructor(
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, DefaultSettingsState())
 
+    val automaticChangeImeSettingsState: StateFlow<AutomaticChangeImeSettingsState> = combine(
+        useCase.getPreference(Keys.showToastWhenAutoChangingIme),
+        useCase.getPreference(Keys.changeImeOnInputFocus),
+        useCase.getPreference(Keys.changeImeOnDeviceConnect),
+        useCase.getPreference(Keys.toggleKeyboardOnToggleKeymaps),
+    ) { values ->
+        AutomaticChangeImeSettingsState(
+            showToastWhenAutoChangingIme = values[0]
+                ?: PreferenceDefaults.SHOW_TOAST_WHEN_AUTO_CHANGE_IME,
+            changeImeOnInputFocus = values[1] ?: PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS,
+            changeImeOnDeviceConnect = values[2] ?: false,
+            toggleKeyboardOnToggleKeymaps = values[3] ?: false,
+        )
+    }.stateIn(viewModelScope, SharingStarted.Lazily, AutomaticChangeImeSettingsState())
+
     fun setAutomaticBackupLocation(uri: String) = useCase.setAutomaticBackupLocation(uri)
 
     fun disableAutomaticBackup() = useCase.disableAutomaticBackup()
@@ -257,6 +272,12 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun onAutomaticChangeImeClick() {
+        viewModelScope.launch {
+            navigate("automatic_change_ime", NavDestination.AutomaticChangeImeSettings)
+        }
+    }
+
     fun onBackClick() {
         viewModelScope.launch {
             popBackStack()
@@ -315,6 +336,44 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun onAutomaticChangeImeSettingsClick() {
+        viewModelScope.launch {
+            navigate("automatic_change_ime", NavDestination.AutomaticChangeImeSettings)
+        }
+    }
+
+    fun onShowToastWhenAutoChangingImeToggled(enabled: Boolean) {
+        viewModelScope.launch {
+            useCase.setPreference(Keys.showToastWhenAutoChangingIme, enabled)
+        }
+    }
+
+    fun onChangeImeOnInputFocusToggled(enabled: Boolean) {
+        viewModelScope.launch {
+            useCase.setPreference(Keys.changeImeOnInputFocus, enabled)
+        }
+    }
+
+    fun onChangeImeOnDeviceConnectToggled(enabled: Boolean) {
+        viewModelScope.launch {
+            useCase.setPreference(Keys.changeImeOnDeviceConnect, enabled)
+        }
+    }
+
+    fun onDevicesThatChangeImeClick() {
+        chooseDevicesForPreference(Keys.devicesThatChangeIme)
+    }
+
+    fun onToggleKeyboardOnToggleKeymapsToggled(enabled: Boolean) {
+        viewModelScope.launch {
+            useCase.setPreference(Keys.toggleKeyboardOnToggleKeymaps, enabled)
+        }
+    }
+
+    fun onShowToggleKeyboardNotificationClick() {
+        onNotificationSettingsClick(NotificationController.CHANNEL_TOGGLE_KEYBOARD)
+    }
+
     private fun onNotificationSettingsClick(channel: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             !useCase.isNotificationsPermissionGranted()
@@ -350,4 +409,11 @@ data class DefaultSettingsState(
 
     val sequenceTriggerTimeout: Int = PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT,
     val defaultSequenceTriggerTimeout: Int = PreferenceDefaults.SEQUENCE_TRIGGER_TIMEOUT,
+)
+
+data class AutomaticChangeImeSettingsState(
+    val showToastWhenAutoChangingIme: Boolean = PreferenceDefaults.SHOW_TOAST_WHEN_AUTO_CHANGE_IME,
+    val changeImeOnInputFocus: Boolean = PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS,
+    val changeImeOnDeviceConnect: Boolean = false,
+    val toggleKeyboardOnToggleKeymaps: Boolean = false,
 )

@@ -21,6 +21,7 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.Gamepad
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Construction
+import androidx.compose.material.icons.rounded.Keyboard
 import androidx.compose.material.icons.rounded.PlayCircleOutline
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.AlertDialog
@@ -133,6 +134,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
             onPauseResumeNotificationClick = viewModel::onPauseResumeNotificationClick,
             onDefaultOptionsClick = viewModel::onDefaultOptionsClick,
             onProModeClick = viewModel::onProModeClick,
+            onAutomaticChangeImeClick = viewModel::onAutomaticChangeImeClick,
             onAutomaticBackupClick = {
                 if (state.autoBackupLocation.isNullOrBlank()) {
                     automaticBackupLocationChooser.launch(BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME)
@@ -208,6 +210,7 @@ private fun Content(
     onDefaultOptionsClick: () -> Unit = { },
     onAutomaticBackupClick: () -> Unit = { },
     onProModeClick: () -> Unit = { },
+    onAutomaticChangeImeClick: () -> Unit = { },
 ) {
     Column(
         modifier
@@ -310,7 +313,16 @@ private fun Content(
             icon = KeyMapperIcons.ProModeIcon,
             onClick = onProModeClick
         )
+
+        OptionPageButton(
+            title = stringResource(R.string.title_pref_automatically_change_ime),
+            text = stringResource(R.string.summary_pref_automatically_change_ime),
+            icon = Icons.Rounded.Keyboard,
+            onClick = onAutomaticChangeImeClick
+        )
+
         Spacer(modifier = Modifier.height(8.dp))
+
         OptionsHeaderRow(
             modifier = Modifier.fillMaxWidth(),
             icon = Icons.Rounded.Code,
