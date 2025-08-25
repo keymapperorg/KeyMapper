@@ -219,6 +219,8 @@ bool onEpollEvdevEvent(DeviceContext *deviceContext, IEvdevCallback *callback) {
             uint32_t outFlags = -1;
             deviceContext->keyLayoutMap.mapKey(inputEvent.code, 0, &outKeycode, &outFlags);
 
+            // TODO if power button (matching scancode OR key code) is pressed for more than 10 seconds, stop the systembridge process. Call kill from here
+
             bool returnValue;
             ndk::ScopedAStatus callbackResult = callback->onEvdevEvent(deviceContext->devicePath,
                                                                        inputEvent.time.tv_sec,

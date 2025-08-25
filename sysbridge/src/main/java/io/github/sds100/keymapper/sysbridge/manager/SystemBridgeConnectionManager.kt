@@ -10,11 +10,14 @@ import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
+import io.github.sds100.keymapper.sysbridge.starter.SystemBridgeStarter
 import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,9 +25,10 @@ import javax.inject.Singleton
  * This class handles starting, stopping and (dis)connecting to the system bridge.
  */
 @Singleton
-class SystemBridgeConnectionManagerImpl @Inject constructor() : SystemBridgeConnectionManager {
-
-    // TODO if auto start is turned on, subscribe to Shizuku Binder listener and when bound, start the service. But only do this once per app process session. If the user stops the service it should remain stopped until key mapper is killed,
+class SystemBridgeConnectionManagerImpl @Inject constructor(
+    private val coroutineScope: CoroutineScope,
+    private val starter: SystemBridgeStarter,
+) : SystemBridgeConnectionManager {
 
     private val systemBridgeLock: Any = Any()
     private var systemBridgeFlow: MutableStateFlow<ISystemBridge?> = MutableStateFlow(null)
@@ -75,6 +79,22 @@ class SystemBridgeConnectionManagerImpl @Inject constructor() : SystemBridgeConn
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun startWithAdb() {
+        coroutineScope.launch {
+            starter.startWithAdb()
+        }
+    }
+
+    override fun startWithRoot() {
+        coroutineScope.launch {
+            starter.startWithRoot()
+        }
+    }
+
+    override fun startWithShizuku() {
+        starter.startWithShizuku()
+    }
 }
 
 @SuppressLint("ObsoleteSdkInt")
@@ -84,4 +104,8 @@ interface SystemBridgeConnectionManager {
 
     fun <T> run(block: (ISystemBridge) -> T): KMResult<T>
     fun stopSystemBridge()
+
+    fun startWithRoot()
+    fun startWithShizuku()
+    fun startWithAdb()
 }

@@ -14,6 +14,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
 import io.github.sds100.keymapper.base.logging.KeyMapperLoggingTree
+import io.github.sds100.keymapper.base.promode.SystemBridgeAutoStarter
 import io.github.sds100.keymapper.base.settings.Theme
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.inputmethod.AutoSwitchImeController
@@ -82,6 +83,9 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
 
     @Inject
     lateinit var keyEventRelayServiceWrapper: KeyEventRelayServiceWrapperImpl
+
+    @Inject
+    lateinit var systemBridgeAutoStarter: SystemBridgeAutoStarter
 
     private val processLifecycleOwner by lazy { ProcessLifecycleOwner.get() }
 
@@ -190,8 +194,11 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
         }.launchIn(appCoroutineScope)
 
         autoGrantPermissionController.start()
-
         keyEventRelayServiceWrapper.bind()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            systemBridgeAutoStarter.autoStart()
+        }
     }
 
     abstract fun getMainActivityClass(): Class<*>

@@ -12,14 +12,13 @@ import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.KeyMapperClassProvider
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.isSuccess
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.sysbridge.adb.AdbManager
-import io.github.sds100.keymapper.sysbridge.starter.SystemBridgeStarter
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,18 +28,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
-/**
- * This starter code is taken from the Shizuku project.
- */
-
 @Singleton
 class SystemBridgeSetupControllerImpl @Inject constructor(
     @ApplicationContext private val ctx: Context,
     private val coroutineScope: CoroutineScope,
-    private val buildConfigProvider: BuildConfigProvider,
     private val adbManager: AdbManager,
-    private val keyMapperClassProvider: KeyMapperClassProvider
+    private val keyMapperClassProvider: KeyMapperClassProvider,
+    private val connectionManager: SystemBridgeConnectionManager
 ) : SystemBridgeSetupController {
 
     companion object {
@@ -49,10 +43,6 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     }
 
     private val activityManager: ActivityManager by lazy { ctx.getSystemService()!! }
-
-    private val starter: SystemBridgeStarter by lazy {
-        SystemBridgeStarter(ctx, adbManager, buildConfigProvider)
-    }
 
     override val isDeveloperOptionsEnabled: MutableStateFlow<Boolean> =
         MutableStateFlow(getDeveloperOptionsEnabled())
@@ -70,6 +60,9 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
             SettingsUtils.settingsCallbackFlow(ctx, uri).collect {
                 val isEnabled = getWirelessDebuggingEnabled()
 
+                // Only go back if the user is currently setting up the wireless debugging step.
+                // This stops Key Mapper going back if they are turning on wireless debugging
+                // for another reason.
                 if (isEnabled && setupAssistantStep.value == SystemBridgeSetupStep.WIRELESS_DEBUGGING) {
                     getKeyMapperAppTask()?.moveToFront()
                 }
@@ -90,19 +83,17 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
     override fun startWithRoot() {
         coroutineScope.launch {
-            starter.startWithRoot()
+            connectionManager.startWithRoot()
         }
     }
 
     override fun startWithShizuku() {
-        starter.startWithShizuku()
+        connectionManager.startWithShizuku()
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun startWithAdb() {
-        coroutineScope.launch {
-            starter.startWithAdb()
-        }
+        connectionManager.startWithAdb()
     }
 
     @RequiresApi(Build.VERSION_CODES.R)

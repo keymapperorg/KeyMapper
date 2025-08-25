@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.ServiceConnection
 import android.os.Build
+import android.os.DeadObjectException
 import android.os.IBinder
 import android.os.RemoteException
 import android.os.UserManager
@@ -11,6 +12,7 @@ import android.system.ErrnoException
 import android.system.Os
 import androidx.annotation.RequiresApi
 import com.topjohnwu.superuser.Shell
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -39,9 +41,12 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.io.PrintWriter
 import java.util.zip.ZipFile
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class SystemBridgeStarter(
-    private val ctx: Context,
+@Singleton
+class SystemBridgeStarter @Inject constructor(
+    @ApplicationContext private val ctx: Context,
     private val adbManager: AdbManager,
     private val buildConfigProvider: BuildConfigProvider
 ) {
@@ -77,7 +82,11 @@ class SystemBridgeStarter(
             } catch (e: RemoteException) {
                 Timber.e("Exception starting with Shizuku starter service: $e")
             } finally {
-                service.destroy()
+                try {
+                    service.destroy()
+                } catch (_: DeadObjectException) {
+                    // Do nothing. Service is already dead.
+                }
             }
         }
 

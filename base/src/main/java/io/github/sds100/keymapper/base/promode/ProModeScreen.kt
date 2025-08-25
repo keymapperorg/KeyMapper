@@ -221,6 +221,8 @@ private fun Content(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        // TODO show options for safety and autostart. Show different autostart text for root vs shizuku
     }
 }
 

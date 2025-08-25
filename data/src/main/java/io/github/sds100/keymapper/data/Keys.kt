@@ -118,4 +118,7 @@ object Keys {
 
     val isProModeInfoDismissed =
         booleanPreferencesKey("key_is_pro_mode_info_dismissed")
+
+    val isProModeAutoStartEnabled =
+        booleanPreferencesKey("key_is_pro_mode_auto_start_enabled")
 }
