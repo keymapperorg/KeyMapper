@@ -1,6 +1,11 @@
 package io.github.sds100.keymapper.base.promode
 
 import android.os.Build
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -20,8 +25,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Checklist
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Numbers
 import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material3.BottomAppBar
@@ -41,6 +48,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -66,11 +76,19 @@ fun ProModeScreen(
 ) {
     val proModeWarningState by viewModel.warningState.collectAsStateWithLifecycle()
     val proModeSetupState by viewModel.setupState.collectAsStateWithLifecycle()
+    var showInfoCard by remember { mutableStateOf(true) }
 
-    ProModeScreen(modifier = modifier, onBackClick = viewModel::onBackClick) {
+    ProModeScreen(
+        modifier = modifier,
+        onBackClick = viewModel::onBackClick,
+        onHelpClick = { showInfoCard = true },
+        showHelpIcon = !showInfoCard
+    ) {
         Content(
             warningState = proModeWarningState,
             setupState = proModeSetupState,
+            showInfoCard = showInfoCard,
+            onInfoCardDismiss = { showInfoCard = false },
             onWarningButtonClick = viewModel::onWarningButtonClick,
             onStopServiceClick = viewModel::onStopServiceClick,
             onShizukuButtonClick = viewModel::onShizukuButtonClick,
@@ -85,6 +103,8 @@ fun ProModeScreen(
 private fun ProModeScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
+    onHelpClick: () -> Unit = {},
+    showHelpIcon: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     Scaffold(
@@ -92,6 +112,20 @@ private fun ProModeScreen(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.pro_mode_app_bar_title)) },
+                actions = {
+                    AnimatedVisibility(
+                        visible = showHelpIcon,
+                        enter = fadeIn() + expandVertically(),
+                        exit = fadeOut() + shrinkVertically()
+                    ) {
+                        IconButton(onClick = onHelpClick) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Rounded.HelpOutline,
+                                contentDescription = stringResource(R.string.pro_mode_info_card_show_content_description)
+                            )
+                        }
+                    }
+                }
             )
         },
         bottomBar = {
@@ -129,6 +163,8 @@ private fun Content(
     modifier: Modifier = Modifier,
     warningState: ProModeWarningState,
     setupState: State<ProModeState>,
+    showInfoCard: Boolean,
+    onInfoCardDismiss: () -> Unit = {},
     onWarningButtonClick: () -> Unit = {},
     onShizukuButtonClick: () -> Unit = {},
     onStopServiceClick: () -> Unit = {},
@@ -136,6 +172,23 @@ private fun Content(
     onSetupWithKeyMapperClick: () -> Unit = {},
 ) {
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
+        AnimatedVisibility(
+            visible = showInfoCard,
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically()
+        ) {
+            ProModeInfoCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                onDismiss = onInfoCardDismiss
+            )
+        }
+
+        if (showInfoCard) {
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+        
         WarningCard(
             modifier = Modifier
                 .fillMaxWidth()
@@ -463,6 +516,62 @@ private fun SetupCard(
     }
 }
 
+@Composable
+private fun ProModeInfoCard(
+    modifier: Modifier = Modifier,
+    onDismiss: () -> Unit = {}
+) {
+    OutlinedCard(
+        modifier = modifier,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Row {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.HelpOutline,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = stringResource(R.string.pro_mode_info_card_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = stringResource(R.string.pro_mode_info_card_description),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier.size(24.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Close,
+                    contentDescription = stringResource(R.string.pro_mode_info_card_dismiss_content_description),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun Preview() {
@@ -476,7 +585,9 @@ private fun Preview() {
                         shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
                         setupProgress = 0.5f
                     )
-                )
+                ),
+                showInfoCard = true,
+                onInfoCardDismiss = {}
             )
         }
     }
@@ -489,7 +600,9 @@ private fun PreviewDark() {
         ProModeScreen {
             Content(
                 warningState = ProModeWarningState.Understood,
-                setupState = State.Data(ProModeState.Started)
+                setupState = State.Data(ProModeState.Started),
+                showInfoCard = false,
+                onInfoCardDismiss = {}
             )
         }
     }
@@ -504,7 +617,9 @@ private fun PreviewCountingDown() {
                 warningState = ProModeWarningState.CountingDown(
                     seconds = 5,
                 ),
-                setupState = State.Loading
+                setupState = State.Loading,
+                showInfoCard = true,
+                onInfoCardDismiss = {}
             )
         }
     }
