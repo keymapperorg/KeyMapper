@@ -1636,6 +1636,9 @@
     <string name="pro_mode_setup_notification_pairing_title">Pairing automatically</string>
     <string name="pro_mode_setup_notification_pairing_text">Searching for pairing code and port…</string>
 
+    <string name="pro_mode_setup_notification_pairing_button_not_found_title">Unable to find pairing port and code</string>
+    <string name="pro_mode_setup_notification_pairing_button_not_found_text">Tap on the button to pair with pairing code and type it in here</string>
+
     <string name="pro_mode_info_card_title">What can I do with PRO mode?</string>
     <string name="pro_mode_info_card_description">📲 You can remap more buttons, such as your power button.\n⌨️ Use any keyboard with key code actions.\n⭐️ The following actions are unlocked: Wi-Fi, Bluetooth, mobile data, NFC, and airplane mode, collapse status bar, and sleep/wake device.</string>
     <string name="pro_mode_info_card_show_content_description">Show PRO mode info</string>

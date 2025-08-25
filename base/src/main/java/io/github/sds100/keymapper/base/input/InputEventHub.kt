@@ -143,9 +143,6 @@ class InputEventHubImpl @Inject constructor(
 
         for (clientContext in clients.values) {
             if (event is KMEvdevEvent) {
-                // TODO maybe flatmap all the client event types into one Set so this check
-                // can be done in onEvdevEvent. Hundreds of events may be sent per second synchronously so important to be as fast as possible.
-                // This client can ignore this event.
                 if (!clientContext.evdevEventTypes.contains(event.type) ||
                     clientContext.grabbedEvdevDevices.isEmpty()
                 ) {
@@ -252,7 +249,6 @@ class InputEventHubImpl @Inject constructor(
         invalidateGrabbedEvdevDevices()
     }
 
-    // TODO invalidate when the input devices change. Or NOT because could be an infinite loop?
     private fun invalidateGrabbedEvdevDevices() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             return

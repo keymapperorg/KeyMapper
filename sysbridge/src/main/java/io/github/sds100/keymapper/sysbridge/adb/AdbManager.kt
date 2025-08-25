@@ -32,7 +32,9 @@ class AdbManagerImpl @Inject constructor(
 
     private val commandMutex: Mutex = Mutex()
     private val pairMutex: Mutex = Mutex()
+
     private val adbConnectMdns: AdbMdns by lazy { AdbMdns(ctx, AdbServiceType.TLS_CONNECT) }
+    private val adbPairMdns: AdbMdns by lazy { AdbMdns(ctx, AdbServiceType.TLS_PAIR) }
 
     override suspend fun executeCommand(command: String): KMResult<String> {
         Timber.i("Execute ADB command: $command")
@@ -42,6 +44,7 @@ class AdbManagerImpl @Inject constructor(
                 adbConnectMdns.start()
 
                 val port = withTimeout(1000L) { adbConnectMdns.port.first { it != null } }
+                adbConnectMdns.stop()
 
                 if (port == null) {
                     return@withLock AdbError.ServerNotFound
@@ -69,15 +72,21 @@ class AdbManagerImpl @Inject constructor(
             }
         }
 
-        adbConnectMdns.stop()
-
         Timber.i("Execute command result: $result")
 
         return result
     }
 
-    override suspend fun pair(port: Int, code: Int): KMResult<Unit> {
+    override suspend fun pair(code: Int): KMResult<Unit> {
         return pairMutex.withLock {
+            adbPairMdns.start()
+            val port = withTimeout(1000L) { adbPairMdns.port.first { it != null } }
+            adbPairMdns.stop()
+
+            if (port == null) {
+                return@withLock AdbError.ServerNotFound
+            }
+
             return@withLock getAdbKey().then { key ->
                 val pairingClient = AdbPairingClient(LOCALHOST, port, code.toString(), key)
 
@@ -119,5 +128,5 @@ interface AdbManager {
     suspend fun executeCommand(command: String): KMResult<String>
 
     @RequiresApi(Build.VERSION_CODES.R)
-    suspend fun pair(port: Int, code: Int): KMResult<Unit>
+    suspend fun pair(code: Int): KMResult<Unit>
 }

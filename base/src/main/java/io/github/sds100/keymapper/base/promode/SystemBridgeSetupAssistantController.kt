@@ -167,11 +167,10 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
         if (pairingCodeText != null && portText != null) {
             val pairingCode = pairingCodeText.toIntOrNull()
-            val port = portText.split(":").last().toIntOrNull()
 
-            if (pairingCode != null && port != null) {
+            if (pairingCode != null) {
                 coroutineScope.launch {
-                    onPairingCodeFound(port, pairingCode)
+                    onPairingCodeFound(pairingCode)
                 }
             }
         } else {
@@ -180,8 +179,8 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
-    private suspend fun onPairingCodeFound(port: Int, pairingCode: Int) {
-        setupController.pairWirelessAdb(port, pairingCode).onSuccess {
+    private suspend fun onPairingCodeFound(pairingCode: Int) {
+        setupController.pairWirelessAdb(pairingCode).onSuccess {
             Timber.i("Pairing code found. Starting System Bridge with ADB...")
             setupController.startWithAdb()
 

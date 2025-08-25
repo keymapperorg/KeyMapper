@@ -115,8 +115,8 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
-    override suspend fun pairWirelessAdb(port: Int, code: Int): KMResult<Unit> {
-        return adbManager.pair(port, code).onSuccess {
+    override suspend fun pairWirelessAdb(code: Int): KMResult<Unit> {
+        return adbManager.pair(code).onSuccess {
             setupAssistantStep.update { value ->
                 if (value == SystemBridgeSetupStep.ADB_PAIRING) {
                     null
@@ -236,7 +236,7 @@ interface SystemBridgeSetupController {
     suspend fun isAdbPaired(): Boolean
 
     @RequiresApi(Build.VERSION_CODES.R)
-    suspend fun pairWirelessAdb(port: Int, code: Int): KMResult<Unit>
+    suspend fun pairWirelessAdb(code: Int): KMResult<Unit>
 
     fun startWithRoot()
     fun startWithShizuku()
