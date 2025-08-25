@@ -115,4 +115,7 @@ object Keys {
 
     val isProModeInteractiveSetupAssistantEnabled =
         booleanPreferencesKey("key_is_pro_mode_setup_assistant_enabled")
+
+    val isProModeInfoDismissed =
+        booleanPreferencesKey("key_is_pro_mode_info_dismissed")
 }

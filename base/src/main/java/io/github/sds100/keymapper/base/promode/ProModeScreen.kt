@@ -48,9 +48,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -77,20 +74,17 @@ fun ProModeScreen(
     val proModeWarningState by viewModel.warningState.collectAsStateWithLifecycle()
     val proModeSetupState by viewModel.setupState.collectAsStateWithLifecycle()
 
-    // TODO save this to preference repository
-    var showInfoCard by remember { mutableStateOf(true) }
-
     ProModeScreen(
         modifier = modifier,
         onBackClick = viewModel::onBackClick,
-        onHelpClick = { showInfoCard = true },
-        showHelpIcon = !showInfoCard
+        onHelpClick = { viewModel.showInfoCard() },
+        showHelpIcon = !viewModel.showInfoCard
     ) {
         Content(
             warningState = proModeWarningState,
             setupState = proModeSetupState,
-            showInfoCard = showInfoCard,
-            onInfoCardDismiss = { showInfoCard = false },
+            showInfoCard = viewModel.showInfoCard,
+            onInfoCardDismiss = { viewModel.hideInfoCard() },
             onWarningButtonClick = viewModel::onWarningButtonClick,
             onStopServiceClick = viewModel::onStopServiceClick,
             onShizukuButtonClick = viewModel::onShizukuButtonClick,
@@ -190,7 +184,7 @@ private fun Content(
         if (showInfoCard) {
             Spacer(modifier = Modifier.height(8.dp))
         }
-        
+
         WarningCard(
             modifier = Modifier
                 .fillMaxWidth()

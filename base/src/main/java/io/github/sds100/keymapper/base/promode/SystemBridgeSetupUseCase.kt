@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.base.promode
 import android.os.Build
 import androidx.annotation.RequiresApi
 import dagger.hilt.android.scopes.ViewModelScoped
+import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -146,6 +147,14 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         systemBridgeSetupController.startWithAdb()
     }
 
+    override fun isInfoDismissed(): Boolean {
+        return preferences.get(Keys.isProModeInfoDismissed).map { it ?: false }.firstBlocking()
+    }
+
+    override fun dismissInfo() {
+        preferences.set(Keys.isProModeInfoDismissed, true)
+    }
+
     @RequiresApi(Build.VERSION_CODES.R)
     private suspend fun getNextStep(
         accessibilityServiceState: AccessibilityServiceState,
@@ -170,6 +179,9 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
 interface SystemBridgeSetupUseCase {
     val isWarningUnderstood: Flow<Boolean>
     fun onUnderstoodWarning()
+
+    fun isInfoDismissed(): Boolean
+    fun dismissInfo()
 
     val isSetupAssistantEnabled: Flow<Boolean>
     fun toggleSetupAssistant()

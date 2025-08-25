@@ -1,5 +1,8 @@
 package io.github.sds100.keymapper.base.promode
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -58,6 +61,20 @@ class ProModeViewModel @Inject constructor(
             useCase.shizukuSetupState,
             ::buildSetupState
         ).stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
+
+    var showInfoCard by mutableStateOf(!useCase.isInfoDismissed())
+        private set
+
+    fun hideInfoCard() {
+        showInfoCard = false
+        // Save that they've dismissed the card so it is not shown by default the next
+        // time they visit the PRO mode page.
+        useCase.dismissInfo()
+    }
+
+    fun showInfoCard() {
+        showInfoCard = true
+    }
 
     private fun createWarningStateFlow(isUnderstood: Boolean): Flow<ProModeWarningState> =
         if (isUnderstood) {
