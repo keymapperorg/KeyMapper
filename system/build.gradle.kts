@@ -40,6 +40,7 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":data"))
     implementation(project(":systemstubs"))
+    implementation(project(":sysbridge"))
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)

@@ -23,4 +23,6 @@ interface ISystemBridge {
    boolean injectInputEvent(in InputEvent event, int mode) = 8;
 
    EvdevDeviceHandle[] getEvdevInputDevices() = 9;
+
+   boolean setWifiEnabled(boolean enable) = 10;
 }

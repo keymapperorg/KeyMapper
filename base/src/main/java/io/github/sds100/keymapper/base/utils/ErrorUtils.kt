@@ -173,7 +173,8 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         KMError.InvalidBackup -> resourceProvider.getString(R.string.error_invalid_backup)
         KMError.MalformedUrl -> resourceProvider.getString(R.string.error_malformed_url)
         KMError.UiElementNotFound -> resourceProvider.getString(R.string.error_ui_element_not_found)
-        else -> throw IllegalArgumentException("Unknown error $this")
+
+        else -> this.toString()
     }
 }
 

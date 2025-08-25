@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.IContentProvider
 import android.ddm.DdmHandleAppName
 import android.hardware.input.IInputManager
+import android.net.wifi.IWifiManager
 import android.os.Binder
 import android.os.Bundle
 import android.os.Handler
@@ -58,6 +59,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
     companion object {
         private const val TAG: String = "KeyMapperSystemBridge"
         private val packageName: String? = System.getProperty("keymapper_sysbridge.package")
+        private const val SHELL_PACKAGE = "com.android.shell"
 
         @JvmStatic
         fun main(args: Array<String>) {
@@ -166,7 +168,6 @@ internal class SystemBridge : ISystemBridge.Stub() {
         }
     }
 
-    private val inputManager: IInputManager
     private val coroutineScope: CoroutineScope = MainScope()
     private val mainHandler = Handler(Looper.myLooper()!!)
 
@@ -178,6 +179,9 @@ internal class SystemBridge : ISystemBridge.Stub() {
             stopEvdevEventLoop()
         }
     }
+
+    private val inputManager: IInputManager
+    private val wifiManager: IWifiManager
 
     init {
         val libraryPath = System.getProperty("keymapper_sysbridge.library.path")
@@ -194,6 +198,8 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
         inputManager =
             IInputManager.Stub.asInterface(ServiceManager.getService(Context.INPUT_SERVICE))
+        wifiManager =
+            IWifiManager.Stub.asInterface(ServiceManager.getService(Context.WIFI_SERVICE))
 
         // TODO check that the key mapper app is installed, otherwise end the process.
 //        val ai: ApplicationInfo? = rikka.shizuku.server.ShizukuService.getManagerApplicationInfo()
@@ -280,6 +286,10 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
     override fun getEvdevInputDevices(): Array<out EvdevDeviceHandle?>? {
         return getEvdevDevicesNative()
+    }
+
+    override fun setWifiEnabled(enable: Boolean): Boolean {
+        return wifiManager.setWifiEnabled(SHELL_PACKAGE, enable)
     }
 
     override fun writeEvdevEvent(devicePath: String?, type: Int, code: Int, value: Int): Boolean {

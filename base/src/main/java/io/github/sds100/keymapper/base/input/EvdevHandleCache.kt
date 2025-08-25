@@ -1,9 +1,12 @@
 package io.github.sds100.keymapper.base.input
 
-import android.os.RemoteException
+import android.os.Build
+import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.common.models.EvdevDeviceHandle
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
-import io.github.sds100.keymapper.sysbridge.ISystemBridge
+import io.github.sds100.keymapper.common.utils.onFailure
+import io.github.sds100.keymapper.common.utils.valueIfFailure
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,24 +17,27 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
+@RequiresApi(Build.VERSION_CODES.Q)
 class EvdevHandleCache(
     private val coroutineScope: CoroutineScope,
     private val devicesAdapter: DevicesAdapter,
-    private val systemBridge: StateFlow<ISystemBridge?>,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager
 ) {
     private val devicesByPath: StateFlow<Map<String, EvdevDeviceHandle>> =
-        combine(devicesAdapter.connectedInputDevices, systemBridge) { _, systemBridge ->
-            systemBridge ?: return@combine emptyMap<String, EvdevDeviceHandle>()
-
-            try {
-                // Do it on a separate thread in case there is deadlock
-                withContext(Dispatchers.IO) {
-                    systemBridge.evdevInputDevices.associateBy { it.path }
-                }
-            } catch (e: RemoteException) {
-                Timber.e("Failed to get evdev input devices from system bridge $e")
-                emptyMap()
+        combine(
+            devicesAdapter.connectedInputDevices,
+            systemBridgeConnectionManager.isConnected
+        ) { _, isConnected ->
+            if (!isConnected) {
+                return@combine emptyMap()
             }
+
+            // Do it on a separate thread in case there is deadlock
+            withContext(Dispatchers.IO) {
+                systemBridgeConnectionManager.run { bridge -> bridge.evdevInputDevices.associateBy { it.path } }
+            }.onFailure { error ->
+                Timber.e("Failed to get evdev input devices from system bridge $error")
+            }.valueIfFailure { emptyMap() }
         }.stateIn(coroutineScope, SharingStarted.Eagerly, emptyMap())
 
     fun getDevices(): List<EvdevDeviceInfo> {

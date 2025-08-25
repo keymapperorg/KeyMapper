@@ -6,7 +6,11 @@ import android.os.IBinder
 import android.os.IBinder.DeathRecipient
 import android.os.RemoteException
 import androidx.annotation.RequiresApi
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
+import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -23,28 +27,19 @@ class SystemBridgeConnectionManagerImpl @Inject constructor() : SystemBridgeConn
     // TODO if auto start is turned on, subscribe to Shizuku Binder listener and when bound, start the service. But only do this once per app process session. If the user stops the service it should remain stopped until key mapper is killed,
 
     private val systemBridgeLock: Any = Any()
-    private var systemBridge: MutableStateFlow<ISystemBridge?> = MutableStateFlow(null)
+    private var systemBridgeFlow: MutableStateFlow<ISystemBridge?> = MutableStateFlow(null)
 
-    override val isConnected: Flow<Boolean> = systemBridge.map { it != null }
-
-    private val connectionsLock: Any = Any()
-    private val connections: MutableSet<SystemBridgeConnection> = mutableSetOf()
+    override val isConnected: Flow<Boolean> = systemBridgeFlow.map { it != null }
 
     private val deathRecipient: DeathRecipient = DeathRecipient {
         synchronized(systemBridgeLock) {
-            systemBridge.update { null }
-        }
-
-        synchronized(connectionsLock) {
-            for (connection in connections) {
-                connection.onBindingDied()
-            }
+            systemBridgeFlow.update { null }
         }
     }
 
     fun pingBinder(): Boolean {
         synchronized(systemBridgeLock) {
-            return systemBridge.value?.asBinder()?.pingBinder() == true
+            return systemBridgeFlow.value?.asBinder()?.pingBinder() == true
         }
     }
 
@@ -56,32 +51,24 @@ class SystemBridgeConnectionManagerImpl @Inject constructor() : SystemBridgeConn
 
         synchronized(systemBridgeLock) {
             systemBridge.asBinder().linkToDeath(deathRecipient, 0)
-            this.systemBridge.update { systemBridge }
-        }
-
-        synchronized(connectionsLock) {
-            for (connection in connections) {
-                connection.onServiceConnected(systemBridge)
-            }
+            this.systemBridgeFlow.update { systemBridge }
         }
     }
 
-    override fun registerConnection(connection: SystemBridgeConnection) {
-        synchronized(connectionsLock) {
-            connections.add(connection)
-        }
-    }
+    override fun <T> run(block: (ISystemBridge) -> T): KMResult<T> {
+        try {
+            val systemBridge = systemBridgeFlow.value ?: return SystemBridgeError.Disconnected
 
-    override fun unregisterConnection(connection: SystemBridgeConnection) {
-        synchronized(connectionsLock) {
-            connections.remove(connection)
+            return Success(block(systemBridge))
+        } catch (e: RemoteException) {
+            return KMError.Exception(e)
         }
     }
 
     override fun stopSystemBridge() {
         synchronized(systemBridgeLock) {
             try {
-                systemBridge.value?.destroy()
+                systemBridgeFlow.value?.destroy()
             } catch (_: RemoteException) {
                 deathRecipient.binderDied()
             }
@@ -95,8 +82,6 @@ class SystemBridgeConnectionManagerImpl @Inject constructor() : SystemBridgeConn
 interface SystemBridgeConnectionManager {
     val isConnected: Flow<Boolean>
 
-    fun registerConnection(connection: SystemBridgeConnection)
-    fun unregisterConnection(connection: SystemBridgeConnection)
-
+    fun <T> run(block: (ISystemBridge) -> T): KMResult<T>
     fun stopSystemBridge()
 }

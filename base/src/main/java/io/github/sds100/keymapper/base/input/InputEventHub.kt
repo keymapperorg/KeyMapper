@@ -3,19 +3,21 @@ package io.github.sds100.keymapper.base.input
 import android.os.Build
 import android.os.RemoteException
 import android.view.KeyEvent
+import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.base.BuildConfig
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.firstBlocking
+import io.github.sds100.keymapper.common.utils.isError
+import io.github.sds100.keymapper.common.utils.onSuccess
+import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.IEvdevCallback
-import io.github.sds100.keymapper.sysbridge.ISystemBridge
-import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnection
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
-import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
@@ -24,12 +26,11 @@ import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -40,7 +41,7 @@ import javax.inject.Singleton
 @Singleton
 class InputEventHubImpl @Inject constructor(
     private val coroutineScope: CoroutineScope,
-    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
+    private val systemBridgeConnManager: SystemBridgeConnectionManager,
     private val imeInputEventInjector: ImeInputEventInjector,
     private val preferenceRepository: PreferenceRepository,
     private val devicesAdapter: DevicesAdapter,
@@ -52,34 +53,14 @@ class InputEventHubImpl @Inject constructor(
 
     private val clients: ConcurrentHashMap<String, ClientContext> = ConcurrentHashMap()
 
-    private var systemBridgeFlow: MutableStateFlow<ISystemBridge?> = MutableStateFlow(null)
-
     // Event queue for processing key events asynchronously in order
     private val keyEventQueue = Channel<InjectKeyEventModel>(capacity = 100)
 
-    private val systemBridgeConnection: SystemBridgeConnection = object : SystemBridgeConnection {
-        override fun onServiceConnected(service: ISystemBridge) {
-            Timber.i("InputEventHub connected to SystemBridge")
-
-            systemBridgeFlow.update { service }
-            service.registerEvdevCallback(this@InputEventHubImpl)
-        }
-
-        override fun onServiceDisconnected(service: ISystemBridge) {
-            Timber.i("InputEventHub disconnected from SystemBridge")
-
-            systemBridgeFlow.update { null }
-        }
-
-        override fun onBindingDied() {
-            Timber.i("SystemBridge connection died")
-        }
-    }
-
+    @RequiresApi(Build.VERSION_CODES.Q)
     private val evdevHandles: EvdevHandleCache = EvdevHandleCache(
         coroutineScope,
         devicesAdapter,
-        systemBridgeFlow,
+        systemBridgeConnManager,
     )
 
     private val logInputEventsEnabled: StateFlow<Boolean> =
@@ -92,11 +73,19 @@ class InputEventHubImpl @Inject constructor(
         }.stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     init {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            systemBridgeConnectionManager.registerConnection(systemBridgeConnection)
-        }
-
         startKeyEventProcessingLoop()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            coroutineScope.launch {
+                systemBridgeConnManager.isConnected.collect { connected ->
+                    if (connected) {
+                        systemBridgeConnManager.run { bridge ->
+                            bridge.registerEvdevCallback(this@InputEventHubImpl)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -114,8 +103,9 @@ class InputEventHubImpl @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun isSystemBridgeConnected(): Boolean {
-        return systemBridgeFlow.value != null
+        return systemBridgeConnManager.isConnected.firstBlocking()
     }
 
     override fun onEvdevEventLoopStarted() {
@@ -123,6 +113,7 @@ class InputEventHubImpl @Inject constructor(
         invalidateGrabbedEvdevDevices()
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onEvdevEvent(
         devicePath: String?,
         timeSec: Long,
@@ -249,6 +240,7 @@ class InputEventHubImpl @Inject constructor(
         invalidateGrabbedEvdevDevices()
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun grabAllEvdevDevices(clientId: String) {
         if (!clients.containsKey(clientId)) {
             throw IllegalArgumentException("This client $clientId is not registered when trying to grab devices!")
@@ -260,31 +252,31 @@ class InputEventHubImpl @Inject constructor(
         invalidateGrabbedEvdevDevices()
     }
 
-    // TODO invalidate when the input devices change
+    // TODO invalidate when the input devices change. Or NOT because could be an infinite loop?
     private fun invalidateGrabbedEvdevDevices() {
-        val evdevDevices: Set<EvdevDeviceInfo> =
-            clients.values.flatMap { it.grabbedEvdevDevices }.toSet()
-
-        val systemBridge = systemBridgeFlow.value
-
-        if (systemBridge == null) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             return
         }
+
+        val evdevDevices: Set<EvdevDeviceInfo> =
+            clients.values.flatMap { it.grabbedEvdevDevices }.toSet()
 
         // Grabbing can block if there are other grabbing or event loop start/stop operations happening.
         coroutineScope.launch(Dispatchers.IO) {
             try {
-                val ungrabResult = systemBridge.ungrabAllEvdevDevices()
+                val ungrabResult =
+                    systemBridgeConnManager.run { bridge -> bridge.ungrabAllEvdevDevices() }
                 Timber.i("Ungrabbed all evdev devices: $ungrabResult")
 
-                if (!ungrabResult) {
+                if (ungrabResult.isError) {
                     Timber.e("Failed to ungrab all evdev devices before grabbing.")
                     return@launch
                 }
 
                 for (device in evdevDevices) {
                     val handle = evdevHandles.getByInfo(device) ?: continue
-                    val grabResult = systemBridge.grabEvdevDevice(handle.path)
+                    val grabResult =
+                        systemBridgeConnManager.run { bridge -> bridge.grabEvdevDevice(handle.path) }
 
                     Timber.i("Grabbed evdev device ${device.name}: $grabResult")
                 }
@@ -294,63 +286,49 @@ class InputEventHubImpl @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun injectEvdevEvent(
         devicePath: String,
         type: Int,
         code: Int,
         value: Int,
     ): KMResult<Boolean> {
-        val systemBridge = this.systemBridgeFlow.value
-
-        if (systemBridge == null) {
-            Timber.w("System bridge is not connected, cannot inject evdev event.")
-            return SystemBridgeError.Disconnected
-        }
-
-        try {
-            val result = systemBridge.writeEvdevEvent(
+        return systemBridgeConnManager.run { bridge ->
+            bridge.writeEvdevEvent(
                 devicePath,
                 type,
                 code,
                 value,
             )
-
-            Timber.d("Injected evdev event: $result")
-
-            return Success(result)
-        } catch (e: RemoteException) {
-            Timber.e(e, "Failed to inject evdev event")
-            return KMError.Exception(e)
+        }.onSuccess {
+            Timber.d("Injected evdev event: $it")
         }
     }
 
     override suspend fun injectKeyEvent(event: InjectKeyEventModel): KMResult<Unit> {
-        val systemBridge = this.systemBridgeFlow.value
+        val isSysBridgeConnected = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+            systemBridgeConnManager.isConnected.first()
 
-        if (systemBridge == null) {
-            imeInputEventInjector.inputKeyEvent(event)
-            return Success(Unit)
-        } else {
-            try {
-                val androidKeyEvent = event.toAndroidKeyEvent(flags = KeyEvent.FLAG_FROM_SYSTEM)
+        if (isSysBridgeConnected) {
+            val androidKeyEvent = event.toAndroidKeyEvent(flags = KeyEvent.FLAG_FROM_SYSTEM)
 
-                if (logInputEventsEnabled.value) {
-                    Timber.d("Injecting key event $androidKeyEvent with system bridge")
-                }
+            if (logInputEventsEnabled.value) {
+                Timber.d("Injecting key event $androidKeyEvent with system bridge")
+            }
 
-                withContext(Dispatchers.IO) {
-                    // All injected events have their device id set to -1 (VIRTUAL_KEYBOARD_ID)
-                    // in InputDispatcher.cpp injectInputEvent.
-                    systemBridge.injectInputEvent(
+            return withContext(Dispatchers.IO) {
+                // All injected events have their device id set to -1 (VIRTUAL_KEYBOARD_ID)
+                // in InputDispatcher.cpp injectInputEvent.
+                systemBridgeConnManager.run { bridge ->
+                    bridge.injectInputEvent(
                         androidKeyEvent,
                         INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH,
                     )
-                }
-
-                return Success(Unit)
-            } catch (e: RemoteException) {
-                return KMError.Exception(e)
+                }.then { Success(Unit) }
             }
+        } else {
+            imeInputEventInjector.inputKeyEvent(event)
+            return Success(Unit)
         }
     }
 

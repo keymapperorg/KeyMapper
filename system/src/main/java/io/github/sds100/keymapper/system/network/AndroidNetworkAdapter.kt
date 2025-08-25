@@ -19,6 +19,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.system.root.SuAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -39,6 +40,7 @@ import javax.inject.Singleton
 class AndroidNetworkAdapter @Inject constructor(
     @ApplicationContext private val context: Context,
     private val suAdapter: SuAdapter,
+    private val systemBridgeConnManager: SystemBridgeConnectionManager
 ) : NetworkAdapter {
     private val ctx = context.applicationContext
     private val wifiManager: WifiManager by lazy { ctx.getSystemService()!! }
@@ -131,7 +133,7 @@ class AndroidNetworkAdapter @Inject constructor(
 
     override fun enableWifi(): KMResult<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return suAdapter.execute("svc wifi enable")
+            return systemBridgeConnManager.run { bridge -> bridge.setWifiEnabled(true) }
         } else {
             wifiManager.isWifiEnabled = true
             return Success(Unit)
@@ -140,7 +142,7 @@ class AndroidNetworkAdapter @Inject constructor(
 
     override fun disableWifi(): KMResult<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return suAdapter.execute("svc wifi disable")
+            return systemBridgeConnManager.run { bridge -> bridge.setWifiEnabled(false) }
         } else {
             wifiManager.isWifiEnabled = false
             return Success(Unit)

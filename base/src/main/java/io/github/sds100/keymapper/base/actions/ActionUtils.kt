@@ -572,12 +572,13 @@ object ActionUtils {
 
     fun getRequiredPermissions(id: ActionId): List<Permission> {
         when (id) {
-            ActionId.TOGGLE_WIFI,
-            ActionId.ENABLE_WIFI,
-            ActionId.DISABLE_WIFI,
-            -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                return listOf(Permission.ROOT)
-            }
+            // TODO show action error if pro mode is not started
+//            ActionId.TOGGLE_WIFI,
+//            ActionId.ENABLE_WIFI,
+//            ActionId.DISABLE_WIFI,
+//            -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//                return listOf(Permission.ROOT)
+//            }
 
             ActionId.TOGGLE_MOBILE_DATA,
             ActionId.ENABLE_MOBILE_DATA,
