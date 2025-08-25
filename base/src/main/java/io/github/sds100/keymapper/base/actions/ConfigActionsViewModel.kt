@@ -186,10 +186,11 @@ class ConfigActionsViewModel @Inject constructor(
     override fun onReplaceClick() {
         val actionUid = actionOptionsUid.value ?: return
         viewModelScope.launch {
+            actionOptionsUid.update { null }
+
             val newActionData =
                 navigate("replace_action", NavDestination.ChooseAction) ?: return@launch
 
-            actionOptionsUid.update { null }
             config.setActionData(actionUid, newActionData)
         }
     }

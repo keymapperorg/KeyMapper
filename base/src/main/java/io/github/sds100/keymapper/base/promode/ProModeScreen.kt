@@ -76,6 +76,8 @@ fun ProModeScreen(
 ) {
     val proModeWarningState by viewModel.warningState.collectAsStateWithLifecycle()
     val proModeSetupState by viewModel.setupState.collectAsStateWithLifecycle()
+
+    // TODO save this to preference repository
     var showInfoCard by remember { mutableStateOf(true) }
 
     ProModeScreen(
