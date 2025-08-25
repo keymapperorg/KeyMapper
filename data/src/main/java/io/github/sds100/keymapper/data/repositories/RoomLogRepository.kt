@@ -19,7 +19,7 @@ class RoomLogRepository @Inject constructor(
     private val dao: LogEntryDao,
 ) : LogRepository {
     override val log: Flow<List<LogEntryEntity>> = dao.getAll()
-        .flowOn(Dispatchers.Default)
+        .flowOn(Dispatchers.IO)
 
     init {
         dao.getIds()
@@ -27,18 +27,18 @@ class RoomLogRepository @Inject constructor(
             .onEach { log ->
                 val middleId = log.getOrNull(500) ?: return@onEach
                 dao.deleteRowsWithIdLessThan(middleId)
-            }.flowOn(Dispatchers.Default)
+            }.flowOn(Dispatchers.IO)
             .launchIn(coroutineScope)
     }
 
     override fun deleteAll() {
-        coroutineScope.launch(Dispatchers.Default) {
+        coroutineScope.launch(Dispatchers.IO) {
             dao.deleteAll()
         }
     }
 
     override fun insert(entry: LogEntryEntity) {
-        coroutineScope.launch(Dispatchers.Default) {
+        coroutineScope.launch(Dispatchers.IO) {
             dao.insert(entry)
         }
     }
