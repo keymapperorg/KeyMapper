@@ -36,6 +36,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
     override val isConnected: Flow<Boolean> = systemBridgeFlow.map { it != null }
 
     private val deathRecipient: DeathRecipient = DeathRecipient {
+        // TODO show notification when pro mode is stopped for an unexpected reason. Do not show it if the user stopped it
         synchronized(systemBridgeLock) {
             systemBridgeFlow.update { null }
         }

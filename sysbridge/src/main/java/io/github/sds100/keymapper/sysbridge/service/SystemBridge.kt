@@ -6,7 +6,6 @@ import android.content.IContentProvider
 import android.ddm.DdmHandleAppName
 import android.hardware.input.IInputManager
 import android.net.wifi.IWifiManager
-import android.os.Binder
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
@@ -26,10 +25,11 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import rikka.hidden.compat.ActivityManagerApis
 import rikka.hidden.compat.DeviceIdleControllerApis
+import rikka.hidden.compat.PackageManagerApis
 import rikka.hidden.compat.UserManagerApis
 import rikka.hidden.compat.adapter.ProcessObserverAdapter
-import timber.log.Timber
 import kotlin.system.exitProcess
+
 
 @SuppressLint("LogNotTimber")
 internal class SystemBridge : ISystemBridge.Stub() {
@@ -58,12 +58,13 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
     companion object {
         private const val TAG: String = "KeyMapperSystemBridge"
-        private val packageName: String? = System.getProperty("keymapper_sysbridge.package")
+        private val systemBridgePackageName: String? =
+            System.getProperty("keymapper_sysbridge.package")
         private const val SHELL_PACKAGE = "com.android.shell"
 
         @JvmStatic
         fun main(args: Array<String>) {
-            Log.i(TAG, "Sysbridge package name = $packageName")
+            Log.i(TAG, "Sysbridge package name = $systemBridgePackageName")
             DdmHandleAppName.setAppName("keymapper_sysbridge", 0)
             @Suppress("DEPRECATION")
             Looper.prepareMainLooper()
@@ -81,92 +82,40 @@ internal class SystemBridge : ISystemBridge.Stub() {
                 }
             }
         }
-
-        fun sendBinderToApp(
-            binder: Binder?,
-            packageName: String?,
-            userId: Int,
-        ) {
-            try {
-                DeviceIdleControllerApis.addPowerSaveTempWhitelistApp(
-                    packageName,
-                    30 * 1000,
-                    userId,
-                    316,  /* PowerExemptionManager#REASON_SHELL */"shell"
-                )
-                Timber.d(
-                    "Add $userId:$packageName to power save temp whitelist for 30s",
-                    userId,
-                    packageName
-                )
-            } catch (tr: Throwable) {
-                Timber.e(tr)
-            }
-
-            val providerName = "$packageName.sysbridge"
-            var provider: IContentProvider? = null
-
-            val token: IBinder? = null
-
-            try {
-                provider = ActivityManagerApis.getContentProviderExternal(
-                    providerName,
-                    userId,
-                    token,
-                    providerName
-                )
-                if (provider == null) {
-                    Log.e(TAG, "provider is null $providerName $userId")
-                    return
-                }
-
-                if (!provider.asBinder().pingBinder()) {
-                    Log.e(TAG, "provider is dead $providerName $userId")
-                    return
-                }
-
-                val extra = Bundle()
-                extra.putParcelable(
-                    SystemBridgeBinderProvider.EXTRA_BINDER,
-                    BinderContainer(binder)
-                )
-
-                val reply: Bundle? = IContentProviderUtils.callCompat(
-                    provider,
-                    null,
-                    providerName,
-                    "sendBinder",
-                    null,
-                    extra
-                )
-                if (reply != null) {
-                    Log.i(TAG, "Send binder to user app $packageName in user $userId")
-                } else {
-                    Log.w(TAG, "Failed to send binder to user app $packageName in user $userId")
-                }
-            } catch (tr: Throwable) {
-                Log.e(TAG, "Failed to send binder to user app $packageName in user $userId", tr)
-            } finally {
-                if (provider != null) {
-                    try {
-                        ActivityManagerApis.removeContentProviderExternal(providerName, token)
-                    } catch (tr: Throwable) {
-                        Log.w(TAG, "Failed to remove content provider $providerName", tr)
-                    }
-                }
-            }
-        }
     }
 
     private val processObserver = object : ProcessObserverAdapter() {
-        override fun onProcessStateChanged(pid: Int, uid: Int, procState: Int) {
 
+        // This is used as a proxy for detecting the Key Mapper process has started.
+        override fun onForegroundActivitiesChanged(
+            pid: Int,
+            uid: Int,
+            foregroundActivities: Boolean
+        ) {
+            // Do not send the binder if the binder is already sent to the user or
+            // the app is not in the foreground.
+            if (isBinderSent || !foregroundActivities) {
+                return
+            }
+
+            val packages: List<String> =
+                PackageManagerApis.getPackagesForUidNoThrow(uid).filterNotNull()
+
+            if (packages.contains(systemBridgePackageName)) {
+                synchronized(sendBinderLock) {
+                    Log.i(TAG, "Key Mapper process started, send binder to app")
+
+                    sendBinderToApp()
+                }
+            }
         }
 
         override fun onProcessDied(pid: Int, uid: Int) {
-
         }
     }
+
+    private val sendBinderLock: Any = Any()
+    private var isBinderSent: Boolean = false
 
     private val coroutineScope: CoroutineScope = MainScope()
     private val mainHandler = Handler(Looper.myLooper()!!)
@@ -175,6 +124,10 @@ internal class SystemBridge : ISystemBridge.Stub() {
     private var evdevCallback: IEvdevCallback? = null
     private val evdevCallbackDeathRecipient: IBinder.DeathRecipient = IBinder.DeathRecipient {
         Log.i(TAG, "EvdevCallback binder died")
+        synchronized(sendBinderLock) {
+            isBinderSent = false
+        }
+
         coroutineScope.launch(Dispatchers.Default) {
             stopEvdevEventLoop()
         }
@@ -194,10 +147,12 @@ internal class SystemBridge : ISystemBridge.Stub() {
         waitSystemService(Context.ACTIVITY_SERVICE)
         waitSystemService(Context.USER_SERVICE)
         waitSystemService(Context.APP_OPS_SERVICE)
-        waitSystemService(Context.INPUT_SERVICE)
 
+        waitSystemService(Context.INPUT_SERVICE)
         inputManager =
             IInputManager.Stub.asInterface(ServiceManager.getService(Context.INPUT_SERVICE))
+
+        waitSystemService(Context.WIFI_SERVICE)
         wifiManager =
             IWifiManager.Stub.asInterface(ServiceManager.getService(Context.WIFI_SERVICE))
 
@@ -215,13 +170,11 @@ internal class SystemBridge : ISystemBridge.Stub() {
 //            }
 //        })
 
-        // TODO use the process observer to rebind when key mapper starts
+        ActivityManagerApis.registerProcessObserver(processObserver)
 
-
+        // Try sending the binder to the app when its started.
         mainHandler.post {
-            for (userId in UserManagerApis.getUserIdsNoThrow()) {
-                sendBinderToApp(this, packageName, userId)
-            }
+            sendBinderToApp()
         }
     }
 
@@ -263,7 +216,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
         }
     }
 
-    // TODO passthrough a timeout that will automatically ungrab after that time. Use this when recording.
+    // TODO passthrough an optional timeout that will automatically ungrab after that time. Use this when recording.
     override fun grabEvdevDevice(devicePath: String?): Boolean {
         devicePath ?: return false
         return grabEvdevDeviceNative(devicePath)
@@ -295,5 +248,101 @@ internal class SystemBridge : ISystemBridge.Stub() {
     override fun writeEvdevEvent(devicePath: String?, type: Int, code: Int, value: Int): Boolean {
         devicePath ?: return false
         return writeEvdevEventNative(devicePath, type, code, value)
+    }
+
+    private fun sendBinderToApp(): Boolean {
+        // Only support Key Mapper running in a single Android user for now so just send
+        // it to the first user that accepts the binder.
+        for (userId in UserManagerApis.getUserIdsNoThrow()) {
+            if (sendBinderToAppInUser(userId)) {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    /**
+     * @return Whether it was sent successfully with a reply from the app.
+     */
+    private fun sendBinderToAppInUser(userId: Int): Boolean {
+        try {
+            DeviceIdleControllerApis.addPowerSaveTempWhitelistApp(
+                systemBridgePackageName,
+                30 * 1000,
+                userId,
+                316,  /* PowerExemptionManager#REASON_SHELL */"shell"
+            )
+            Log.d(
+                TAG,
+                "Add $userId:$systemBridgePackageName to power save temp whitelist for 30s"
+            )
+        } catch (tr: Throwable) {
+            Log.e(TAG, tr.toString())
+        }
+
+        val providerName = "$systemBridgePackageName.sysbridge"
+        var provider: IContentProvider? = null
+
+        val token: IBinder? = null
+
+        try {
+            provider = ActivityManagerApis.getContentProviderExternal(
+                providerName,
+                userId,
+                token,
+                providerName
+            )
+            if (provider == null) {
+                Log.e(TAG, "provider is null $providerName $userId")
+                return false
+            }
+
+            if (!provider.asBinder().pingBinder()) {
+                Log.e(TAG, "provider is dead $providerName $userId")
+                return false
+            }
+
+            val extra = Bundle()
+            extra.putParcelable(
+                SystemBridgeBinderProvider.EXTRA_BINDER,
+                BinderContainer(this)
+            )
+
+            val reply: Bundle? = IContentProviderUtils.callCompat(
+                provider,
+                null,
+                providerName,
+                "sendBinder",
+                null,
+                extra
+            )
+            if (reply != null) {
+                Log.i(TAG, "Send binder to user app $systemBridgePackageName in user $userId")
+                isBinderSent = true
+                return true
+            } else {
+                Log.w(
+                    TAG,
+                    "Failed to send binder to user app $systemBridgePackageName in user $userId"
+                )
+            }
+        } catch (tr: Throwable) {
+            Log.e(
+                TAG,
+                "Failed to send binder to user app $systemBridgePackageName in user $userId",
+                tr
+            )
+        } finally {
+            if (provider != null) {
+                try {
+                    ActivityManagerApis.removeContentProviderExternal(providerName, token)
+                } catch (tr: Throwable) {
+                    Log.w(TAG, "Failed to remove content provider $providerName", tr)
+                }
+            }
+        }
+
+        return false
     }
 }

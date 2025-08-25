@@ -388,7 +388,9 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLo
 
     evdevDevices->clear();
     close(commandEventFd);
+    commandEventFd = -1;
     close(epollFd);
+    epollFd = -1;
 
     LOGI("Stopped evdev event loop");
 }
@@ -450,6 +452,10 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stopEvdevEventLoop(JNIEnv *env,
                                                                                   jobject thiz) {
+    if (commandEventFd == -1) {
+        return;
+    }
+
     Command cmd = {STOP};
 
     std::lock_guard<std::mutex> lock(commandMutex);
