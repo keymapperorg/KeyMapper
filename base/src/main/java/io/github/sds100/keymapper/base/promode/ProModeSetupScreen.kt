@@ -224,7 +224,8 @@ private fun StepContent(
 
             Text(
                 text = stepContent.title,
-                style = MaterialTheme.typography.headlineSmall
+                style = MaterialTheme.typography.headlineSmall,
+                textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(16.dp))

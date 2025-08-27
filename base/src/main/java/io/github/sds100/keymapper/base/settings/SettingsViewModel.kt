@@ -273,7 +273,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun onPauseResumeNotificationClick() {
-        onNotificationSettingsClick(NotificationController.CHANNEL_TOGGLE_KEYMAPS)
+        onNotificationSettingsClick(NotificationController.CHANNEL_TOGGLE_KEY_MAPS)
     }
 
     fun onDefaultOptionsClick() {

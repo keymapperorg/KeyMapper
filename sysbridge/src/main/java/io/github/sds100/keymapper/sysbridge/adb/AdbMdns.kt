@@ -70,6 +70,9 @@ internal class AdbMdns(
         }
 
     fun start() {
+        // Reset the port so searching starts again.
+        _port.update { null }
+
         if (running) {
             return
         }

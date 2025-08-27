@@ -236,17 +236,13 @@ class AndroidNetworkAdapter @Inject constructor(
         }
     }
 
-    private fun getIsWifiConnected(): Boolean { // Add this to your NetworkAdapter interface too
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val network = connectivityManager.activeNetwork ?: return false
-            val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
-            return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-        } else {
-            @Suppress("DEPRECATION")
-            val networkInfo = connectivityManager.activeNetworkInfo ?: return false
-            @Suppress("DEPRECATION")
-            return networkInfo.isConnected && networkInfo.type == ConnectivityManager.TYPE_WIFI
-        }
+    // TODO this does not return true if the device is connected to a wifi network but there is no internet connection on it.
+    //  Perhaps use connectivityManager.allNetworks and check them all for a transport.
+    //  .activeNetwork gets the current one used to connect to the internet i think
+    private fun getIsWifiConnected(): Boolean {
+        val network = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
     }
 
     fun invalidateState() {

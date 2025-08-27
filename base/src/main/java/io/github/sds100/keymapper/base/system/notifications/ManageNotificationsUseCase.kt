@@ -1,8 +1,10 @@
 package io.github.sds100.keymapper.base.system.notifications
 
+import io.github.sds100.keymapper.common.notifications.KMNotificationAction
 import io.github.sds100.keymapper.system.notifications.NotificationAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationChannelModel
 import io.github.sds100.keymapper.system.notifications.NotificationModel
+import io.github.sds100.keymapper.system.notifications.NotificationRemoteInput
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import kotlinx.coroutines.flow.Flow
@@ -13,7 +15,10 @@ class ManageNotificationsUseCaseImpl @Inject constructor(
     private val permissionAdapter: PermissionAdapter,
 ) : ManageNotificationsUseCase {
 
-    override val onActionClick: Flow<String> = notificationAdapter.onNotificationActionClick
+    override val onNotificationTextInput: Flow<NotificationRemoteInput> =
+        notificationAdapter.onNotificationRemoteInput
+    override val onActionClick: Flow<KMNotificationAction.IntentAction> =
+        notificationAdapter.onNotificationActionClick
 
     override fun show(notification: NotificationModel) {
         notificationAdapter.showNotification(notification)
@@ -37,10 +42,13 @@ class ManageNotificationsUseCaseImpl @Inject constructor(
 }
 
 interface ManageNotificationsUseCase {
+
     /**
-     * The string is the ID of the action.
+     * Emits text input from notification actions that support RemoteInput.
      */
-    val onActionClick: Flow<String>
+    val onNotificationTextInput: Flow<NotificationRemoteInput>
+
+    val onActionClick: Flow<KMNotificationAction.IntentAction>
 
     fun isPermissionGranted(): Boolean
     fun show(notification: NotificationModel)

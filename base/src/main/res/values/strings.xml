@@ -1637,7 +1637,14 @@
     <string name="pro_mode_setup_notification_pairing_text">Searching for pairing code and port…</string>
 
     <string name="pro_mode_setup_notification_pairing_button_not_found_title">Unable to find pairing port and code</string>
-    <string name="pro_mode_setup_notification_pairing_button_not_found_text">Tap on the button to pair with pairing code and type it in here</string>
+    <string name="pro_mode_setup_notification_pairing_button_not_found_text">Tap on the button to pair with pairing code and type the code in here</string>
+
+    <string name="pro_mode_setup_notification_start_system_bridge_failed_title">Starting PRO Mode failed</string>
+    <string name="pro_mode_setup_notification_start_system_bridge_failed_text">Please try again</string>
+
+    <string name="pro_mode_setup_notification_invalid_pairing_code_title">Pairing failed</string>
+    <string name="pro_mode_setup_notification_invalid_pairing_code_text">Keep the pairing code popup on-screen when submitting the pairing code</string>
+    <string name="pro_mode_setup_notification_action_input_pairing_code">Input pairing code</string>
 
     <string name="pro_mode_info_card_title">What can I do with PRO mode?</string>
     <string name="pro_mode_info_card_description">📲 You can remap more buttons, such as your power button.\n⌨️ Use any keyboard with key code actions.\n⭐️ The following actions are unlocked: Wi-Fi, Bluetooth, mobile data, NFC, and airplane mode, collapse status bar, and sleep/wake device.</string>

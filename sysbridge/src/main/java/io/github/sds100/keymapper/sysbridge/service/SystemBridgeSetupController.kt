@@ -21,8 +21,10 @@ import io.github.sds100.keymapper.sysbridge.adb.AdbManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -50,8 +52,10 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     override val isWirelessDebuggingEnabled: MutableStateFlow<Boolean> =
         MutableStateFlow(getWirelessDebuggingEnabled())
 
-    override val setupAssistantStep: MutableStateFlow<SystemBridgeSetupStep?> =
-        MutableStateFlow(null)
+    // Use a SharedFlow so that the same value can be emitted repeatedly.
+    override val setupAssistantStep: MutableSharedFlow<SystemBridgeSetupStep?> = MutableSharedFlow()
+    private val setupAssistantStepState =
+        setupAssistantStep.stateIn(coroutineScope, SharingStarted.Eagerly, null)
 
     init {
         // Automatically go back to the Key Mapper app when turning on wireless debugging
@@ -63,7 +67,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
                 // Only go back if the user is currently setting up the wireless debugging step.
                 // This stops Key Mapper going back if they are turning on wireless debugging
                 // for another reason.
-                if (isEnabled && setupAssistantStep.value == SystemBridgeSetupStep.WIRELESS_DEBUGGING) {
+                if (isEnabled && setupAssistantStepState.value == SystemBridgeSetupStep.WIRELESS_DEBUGGING) {
                     getKeyMapperAppTask()?.moveToFront()
                 }
             }
@@ -74,7 +78,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
             SettingsUtils.settingsCallbackFlow(ctx, uri).collect {
                 val isEnabled = getDeveloperOptionsEnabled()
 
-                if (isEnabled && setupAssistantStep.value == SystemBridgeSetupStep.DEVELOPER_OPTIONS) {
+                if (isEnabled && setupAssistantStepState.value == SystemBridgeSetupStep.DEVELOPER_OPTIONS) {
                     getKeyMapperAppTask()?.moveToFront()
                 }
             }
@@ -106,14 +110,11 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
-    override suspend fun pairWirelessAdb(code: Int): KMResult<Unit> {
+    override suspend fun pairWirelessAdb(code: String): KMResult<Unit> {
         return adbManager.pair(code).onSuccess {
-            setupAssistantStep.update { value ->
-                if (value == SystemBridgeSetupStep.ADB_PAIRING) {
-                    null
-                } else {
-                    value
-                }
+            // Clear the step if still at the pairing step.
+            if (setupAssistantStepState.value == SystemBridgeSetupStep.ADB_PAIRING) {
+                setupAssistantStep.emit(null)
             }
         }
     }
@@ -213,7 +214,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 @SuppressLint("ObsoleteSdkInt")
 @RequiresApi(Build.VERSION_CODES.Q)
 interface SystemBridgeSetupController {
-    val setupAssistantStep: StateFlow<SystemBridgeSetupStep?>
+    val setupAssistantStep: Flow<SystemBridgeSetupStep?>
 
     val isDeveloperOptionsEnabled: Flow<Boolean>
     fun enableDeveloperOptions()
@@ -227,7 +228,7 @@ interface SystemBridgeSetupController {
     suspend fun isAdbPaired(): Boolean
 
     @RequiresApi(Build.VERSION_CODES.R)
-    suspend fun pairWirelessAdb(code: Int): KMResult<Unit>
+    suspend fun pairWirelessAdb(code: String): KMResult<Unit>
 
     fun startWithRoot()
     fun startWithShizuku()

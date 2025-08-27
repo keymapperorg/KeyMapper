@@ -130,7 +130,7 @@ class SystemBridgeStarter @Inject constructor(
         }
 
         // TODO enable usb debugging and disable authorization timeout
-        // Get the file that contains the external files
+        // TODO disable wireless debugging when started
         return startSystemBridge(executeCommand = adbManager::executeCommand).onFailure { error ->
             Timber.w("Failed to start system bridge with ADB: $error")
         }

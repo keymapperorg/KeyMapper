@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.common.utils.then
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -42,8 +43,11 @@ class AdbManagerImpl @Inject constructor(
         val result = withContext(Dispatchers.IO) {
             return@withContext commandMutex.withLock {
                 adbConnectMdns.start()
-
-                val port = withTimeout(1000L) { adbConnectMdns.port.first { it != null } }
+                val port = try {
+                    withTimeout(1000L) { adbConnectMdns.port.first { it != null } }
+                } catch (_: TimeoutCancellationException) {
+                    null
+                }
                 adbConnectMdns.stop()
 
                 if (port == null) {
@@ -77,10 +81,14 @@ class AdbManagerImpl @Inject constructor(
         return result
     }
 
-    override suspend fun pair(code: Int): KMResult<Unit> {
+    override suspend fun pair(code: String): KMResult<Unit> {
         return pairMutex.withLock {
             adbPairMdns.start()
-            val port = withTimeout(1000L) { adbPairMdns.port.first { it != null } }
+            val port = try {
+                withTimeout(1000L) { adbPairMdns.port.first { it != null } }
+            } catch (_: TimeoutCancellationException) {
+                null
+            }
             adbPairMdns.stop()
 
             if (port == null) {
@@ -128,5 +136,5 @@ interface AdbManager {
     suspend fun executeCommand(command: String): KMResult<String>
 
     @RequiresApi(Build.VERSION_CODES.R)
-    suspend fun pair(code: Int): KMResult<Unit>
+    suspend fun pair(code: String): KMResult<Unit>
 }

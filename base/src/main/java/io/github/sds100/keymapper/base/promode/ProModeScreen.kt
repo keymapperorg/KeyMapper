@@ -33,6 +33,7 @@ import androidx.compose.material.icons.rounded.Numbers
 import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -358,6 +359,7 @@ private fun WarningCard(
     OutlinedCard(
         modifier = modifier,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+        elevation = CardDefaults.elevatedCardElevation()
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         Row(modifier = Modifier.padding(horizontal = 16.dp)) {
@@ -439,7 +441,9 @@ private fun ProModeStartedCard(
             Spacer(modifier = Modifier.width(16.dp))
 
             Text(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 8.dp),
                 text = stringResource(R.string.pro_mode_service_started),
                 style = MaterialTheme.typography.titleMedium
             )
@@ -522,6 +526,7 @@ private fun ProModeInfoCard(
     OutlinedCard(
         modifier = modifier,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+        elevation = CardDefaults.elevatedCardElevation()
     ) {
         Row(
             modifier = Modifier
