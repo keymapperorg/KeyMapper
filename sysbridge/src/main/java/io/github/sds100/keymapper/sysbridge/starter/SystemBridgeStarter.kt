@@ -129,11 +129,10 @@ class SystemBridgeStarter @Inject constructor(
             return KMError.Exception(IllegalStateException("User is locked"))
         }
 
-        // TODO enable usb debugging and disable authorization timeout
-        // TODO disable wireless debugging when started
-        return startSystemBridge(executeCommand = adbManager::executeCommand).onFailure { error ->
-            Timber.w("Failed to start system bridge with ADB: $error")
-        }
+        return startSystemBridge(executeCommand = adbManager::executeCommand)
+            .onFailure { error ->
+                Timber.w("Failed to start system bridge with ADB: $error")
+            }
     }
 
     suspend fun startWithRoot() {

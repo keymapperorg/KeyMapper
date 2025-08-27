@@ -8,7 +8,6 @@ interface ISystemBridge {
    // Destroy method defined by Shizuku server. This is required
    // for Shizuku user services.
    // See demo/service/UserService.java in the Shizuku-API repository.
-   // TODO use this from Key Mapper to kill the system bridge
    void destroy() = 16777114;
 
    boolean grabEvdevDevice(String devicePath) = 1;
@@ -25,4 +24,6 @@ interface ISystemBridge {
    EvdevDeviceHandle[] getEvdevInputDevices() = 9;
 
    boolean setWifiEnabled(boolean enable) = 10;
+
+   void putGlobalSetting(String name, String value) = 11;
 }

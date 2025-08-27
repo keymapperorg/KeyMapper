@@ -10,9 +10,13 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.os.Process
 import android.os.ServiceManager
+import android.os.UserHandle
+import android.provider.Settings
 import android.util.Log
 import android.view.InputEvent
+import androidx.core.os.bundleOf
 import io.github.sds100.keymapper.common.models.EvdevDeviceHandle
 import io.github.sds100.keymapper.sysbridge.IEvdevCallback
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
@@ -248,6 +252,48 @@ internal class SystemBridge : ISystemBridge.Stub() {
     override fun writeEvdevEvent(devicePath: String?, type: Int, code: Int, value: Int): Boolean {
         devicePath ?: return false
         return writeEvdevEventNative(devicePath, type, code, value)
+    }
+
+    override fun putGlobalSetting(name: String, value: String) {
+        val providerName = "settings"
+
+        val token: IBinder? = null
+        val userId: Int = UserHandle::class.java.getMethod("getCallingUserId").invoke(null) as Int
+
+        Log.d(TAG, "Putting global setting $name = $value for user $userId")
+
+        val settingsProvider = ActivityManagerApis.getContentProviderExternal(
+            providerName,
+            userId,
+            token,
+            providerName
+        )
+
+        if (settingsProvider == null) {
+            Log.w(TAG, "Failed to get settings provider")
+            return
+        }
+
+        val bundle = bundleOf(
+            Settings.NameValueTable.VALUE to value
+        )
+
+        val packageName = if (Process.myUid() == Process.ROOT_UID) {
+            "root"
+        } else {
+            "com.android.shell"
+        }
+
+        IContentProviderUtils.callCompat(
+            settingsProvider,
+            packageName,
+            providerName,
+            "PUT_global",
+            name,
+            bundle
+        )
+
+        Log.i(TAG, "Put global setting $name = $value")
     }
 
     private fun sendBinderToApp(): Boolean {
