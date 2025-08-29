@@ -12,6 +12,7 @@ import android.os.Build
 import android.provider.Settings
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -97,6 +99,27 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
     override fun startWithShizuku() {
         connectionManager.startWithShizuku()
+    }
+
+    /**
+     * If Key Mapper has WRITE_SECURE_SETTINGS permission then it can turn on wireless debugging
+     * and ADB and then start the system bridge.
+     */
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun autoStartWithAdb() {
+        coroutineScope.launch {
+            if (!canWriteGlobalSettings()) {
+                return@launch
+            }
+
+            Timber.i("Auto starting system bridge with ADB")
+            enableDeveloperOptions()
+            enableWirelessDebugging()
+
+            if (isAdbPaired()) {
+                startWithAdb()
+            }
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -261,4 +284,7 @@ interface SystemBridgeSetupController {
     fun startWithRoot()
     fun startWithShizuku()
     fun startWithAdb()
+
+    @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
+    fun autoStartWithAdb()
 }

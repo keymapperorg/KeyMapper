@@ -1,9 +1,7 @@
 package io.github.sds100.keymapper.base.promode
 
-import android.Manifest
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.annotation.RequiresPermission
 import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
@@ -116,7 +114,10 @@ class SystemBridgeAutoStarter @Inject constructor(
             showAutoStartNotification(getString(R.string.pro_mode_setup_notification_auto_start_system_bridge_shizuku_text))
             connectionManager.startWithShizuku()
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && isAdbAutoStartAllowed) {
-            autoStartWithAdb()
+            Timber.i("Auto starting system bridge with ADB")
+            showAutoStartNotification(getString(R.string.pro_mode_setup_notification_auto_start_system_bridge_adb_text))
+
+            setupController.autoStartWithAdb()
         } else {
             return true
         }
@@ -136,19 +137,6 @@ class SystemBridgeAutoStarter @Inject constructor(
             dismissNotification()
         }
         return false
-    }
-
-    @RequiresApi(Build.VERSION_CODES.R)
-    @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
-    private suspend fun autoStartWithAdb() {
-        Timber.i("Auto starting system bridge with ADB")
-        showAutoStartNotification(getString(R.string.pro_mode_setup_notification_auto_start_system_bridge_adb_text))
-
-        setupController.enableWirelessDebugging()
-
-        if (setupController.isAdbPaired()) {
-            setupController.startWithAdb()
-        }
     }
 
     private fun showAutoStartNotification(text: String) {

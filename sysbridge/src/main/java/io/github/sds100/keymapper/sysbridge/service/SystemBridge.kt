@@ -304,6 +304,10 @@ internal class SystemBridge : ISystemBridge.Stub() {
         return writeEvdevEventNative(devicePath, type, code, value)
     }
 
+    override fun getProcessUid(): Int {
+        return Process.myUid()
+    }
+
     override fun grantPermission(permission: String?, deviceId: Int) {
         val userId = UserHandleUtils.getCallingUserId()
 

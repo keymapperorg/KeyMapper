@@ -93,7 +93,7 @@ class AdbManagerImpl @Inject constructor(
         return pairMutex.withLock {
             adbPairMdns.start()
             val port = try {
-                withTimeout(1000L) { adbPairMdns.port.first { it != null } }
+                withTimeout(10000L) { adbPairMdns.port.first { it != null } }
             } catch (_: TimeoutCancellationException) {
                 null
             }

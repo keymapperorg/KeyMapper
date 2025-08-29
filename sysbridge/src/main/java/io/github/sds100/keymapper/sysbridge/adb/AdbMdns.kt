@@ -52,6 +52,7 @@ internal class AdbMdns(
             override fun onDiscoveryStarted(serviceType: String) {
                 Timber.d("onDiscoveryStarted: $serviceType")
 
+                services.clear()
                 registered = true
             }
 
@@ -62,6 +63,7 @@ internal class AdbMdns(
             override fun onDiscoveryStopped(serviceType: String) {
                 Timber.d("onDiscoveryStopped: $serviceType")
 
+                services.clear()
                 registered = false
             }
 

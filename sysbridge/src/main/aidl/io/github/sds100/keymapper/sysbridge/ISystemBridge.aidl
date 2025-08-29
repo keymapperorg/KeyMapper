@@ -5,9 +5,6 @@ import io.github.sds100.keymapper.common.models.EvdevDeviceHandle;
 import android.view.InputEvent;
 
 interface ISystemBridge {
-   // Destroy method defined by Shizuku server. This is required
-   // for Shizuku user services.
-   // See demo/service/UserService.java in the Shizuku-API repository.
    void destroy() = 16777114;
 
    boolean grabEvdevDevice(String devicePath) = 1;
@@ -26,4 +23,5 @@ interface ISystemBridge {
    boolean setWifiEnabled(boolean enable) = 10;
 
    void grantPermission(String permission, int deviceId) = 12;
+   int getProcessUid() = 13;
 }

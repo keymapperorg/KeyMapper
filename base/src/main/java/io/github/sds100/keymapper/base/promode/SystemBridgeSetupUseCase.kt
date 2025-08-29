@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -40,6 +41,16 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     override val isWarningUnderstood: Flow<Boolean> =
         preferences.get(Keys.isProModeWarningUnderstood).map { it ?: false }
 
+    private val isAdbAutoStartAllowed: Flow<Boolean> =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            combine(
+                permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS),
+                networkAdapter.isWifiConnected
+            ) { isWriteSecureSettingsGranted, isWifiConnected -> isWriteSecureSettingsGranted && isWifiConnected }
+        } else {
+            flowOf(false)
+        }
+
     override fun onUnderstoodWarning() {
         preferences.set(Keys.isProModeWarningUnderstood, true)
     }
@@ -61,20 +72,27 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
 
     override val isSystemBridgeConnected: Flow<Boolean> = systemBridgeConnectionManager.isConnected
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @RequiresApi(Build.VERSION_CODES.R)
     override val nextSetupStep: Flow<SystemBridgeSetupStep> =
         isSystemBridgeConnected.flatMapLatest { isConnected ->
             if (isConnected) {
                 flowOf(SystemBridgeSetupStep.STARTED)
             } else {
-                combine(
-                    accessibilityServiceAdapter.state,
-                    permissionAdapter.isGrantedFlow(Permission.POST_NOTIFICATIONS),
-                    systemBridgeSetupController.isDeveloperOptionsEnabled,
-                    networkAdapter.isWifiConnected,
-                    systemBridgeSetupController.isWirelessDebuggingEnabled,
-                    ::getNextStep
-                )
+                isAdbAutoStartAllowed.flatMapLatest { isAdbAutoStartAllowed ->
+                    if (isAdbAutoStartAllowed) {
+                        flowOf(SystemBridgeSetupStep.START_SERVICE)
+                    } else {
+                        combine(
+                            accessibilityServiceAdapter.state,
+                            permissionAdapter.isGrantedFlow(Permission.POST_NOTIFICATIONS),
+                            systemBridgeSetupController.isDeveloperOptionsEnabled,
+                            networkAdapter.isWifiConnected,
+                            systemBridgeSetupController.isWirelessDebuggingEnabled,
+                            ::getNextStep
+                        )
+                    }
+                }
             }
         }
 
@@ -144,7 +162,11 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     }
 
     override fun startSystemBridgeWithAdb() {
-        systemBridgeSetupController.startWithAdb()
+        if (isAdbAutoStartAllowed.firstBlocking()) {
+            systemBridgeSetupController.autoStartWithAdb()
+        } else {
+            systemBridgeSetupController.startWithAdb()
+        }
     }
 
     override fun isInfoDismissed(): Boolean {
@@ -161,7 +183,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         isNotificationPermissionGranted: Boolean,
         isDeveloperOptionsEnabled: Boolean,
         isWifiConnected: Boolean,
-        isWirelessDebuggingEnabled: Boolean
+        isWirelessDebuggingEnabled: Boolean,
     ): SystemBridgeSetupStep {
         return when {
             accessibilityServiceState != AccessibilityServiceState.ENABLED -> SystemBridgeSetupStep.ACCESSIBILITY_SERVICE
