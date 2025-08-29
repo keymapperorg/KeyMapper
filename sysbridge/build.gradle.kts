@@ -85,8 +85,7 @@ dependencies {
 
     implementation(libs.jakewharton.timber)
 
-    // TODO use version catalog
-    implementation("org.conscrypt:conscrypt-android:2.5.3")
+    implementation(libs.conscrypt.android)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.dagger.hilt.android)
@@ -98,11 +97,11 @@ dependencies {
     compileOnly(libs.rikka.hidden.stub)
 
     // From Shizuku :manager module build.gradle file.
-    implementation("io.github.vvb2060.ndk:boringssl:20250114")
-    implementation("org.lsposed.hiddenapibypass:hiddenapibypass:6.1")
-    implementation("org.bouncycastle:bcpkix-jdk15on:1.70")
-    implementation("me.zhanghai.android.appiconloader:appiconloader:1.5.0")
-    implementation("dev.rikka.rikkax.core:core-ktx:1.4.1")
+    implementation(libs.vvb2060.ndk.boringssl)
+    implementation(libs.lsposed.hiddenapibypass.updated)
+    implementation(libs.bouncycastle.bcpkix)
+    implementation(libs.zhanghai.appiconloader)
+    implementation(libs.rikka.rikkax.core)
 }
 
 tasks.named("preBuild") {

@@ -1,6 +1,6 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -36,6 +36,5 @@ android {
 }
 
 dependencies {
-    // TODO use version catalogs
-    implementation("androidx.annotation:annotation-jvm:1.9.1")
+    implementation(libs.androidx.annotation.jvm)
 }
