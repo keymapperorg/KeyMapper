@@ -9,6 +9,7 @@ import android.os.IBinder
 import android.os.IBinder.DeathRecipient
 import android.os.Process
 import android.os.RemoteException
+import android.os.SystemClock
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -21,10 +22,8 @@ import io.github.sds100.keymapper.sysbridge.starter.SystemBridgeStarter
 import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -44,18 +43,25 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
     private val systemBridgeLock: Any = Any()
     private var systemBridgeFlow: MutableStateFlow<ISystemBridge?> = MutableStateFlow(null)
 
-    override val isConnected: Flow<Boolean> = systemBridgeFlow.map { it != null }
-    override val onUnexpectedDeath: Channel<Unit> = Channel()
+    override val connectionState: MutableStateFlow<SystemBridgeConnectionState> =
+        MutableStateFlow<SystemBridgeConnectionState>(
+            SystemBridgeConnectionState.Disconnected(
+                time = SystemClock.elapsedRealtime(), isExpected = true
+            )
+        )
     private var isExpectedDeath: Boolean = false
 
     private val deathRecipient: DeathRecipient = DeathRecipient {
         synchronized(systemBridgeLock) {
+            Timber.e("System Bridge has died")
+
             systemBridgeFlow.update { null }
 
-            if (!isExpectedDeath) {
-                coroutineScope.launch {
-                    onUnexpectedDeath.send(Unit)
-                }
+            connectionState.update {
+                SystemBridgeConnectionState.Disconnected(
+                    time = SystemClock.elapsedRealtime(),
+                    isExpected = isExpectedDeath
+                )
             }
 
             isExpectedDeath = false
@@ -79,6 +85,12 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
         synchronized(systemBridgeLock) {
             systemBridge.asBinder().linkToDeath(deathRecipient, 0)
             this.systemBridgeFlow.update { systemBridge }
+
+            connectionState.update {
+                SystemBridgeConnectionState.Connected(
+                    time = SystemClock.elapsedRealtime(),
+                )
+            }
 
             // Only turn on the ADB options to prevent killing if it is running under
             // the ADB shell user
@@ -175,8 +187,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
 @SuppressLint("ObsoleteSdkInt")
 @RequiresApi(Build.VERSION_CODES.Q)
 interface SystemBridgeConnectionManager {
-    val isConnected: Flow<Boolean>
-    val onUnexpectedDeath: Channel<Unit>
+    val connectionState: StateFlow<SystemBridgeConnectionState>
 
     fun <T> run(block: (ISystemBridge) -> T): KMResult<T>
     fun stopSystemBridge()

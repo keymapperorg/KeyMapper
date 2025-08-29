@@ -39,7 +39,7 @@ class AdbManagerImpl @Inject constructor(
     private val adbPairMdns: AdbMdns by lazy { AdbMdns(ctx, AdbServiceType.TLS_PAIR) }
 
     override suspend fun executeCommand(command: String): KMResult<String> {
-        Timber.i("Execute ADB command: $command")
+        Timber.d("Execute ADB command: $command")
 
         val result = withContext(Dispatchers.IO) {
             return@withContext commandMutex.withLock {

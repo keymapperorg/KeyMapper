@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.IEvdevCallback
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
@@ -28,7 +29,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -77,13 +78,13 @@ class InputEventHubImpl @Inject constructor(
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             coroutineScope.launch {
-                systemBridgeConnManager.isConnected.collect { connected ->
-                    if (connected) {
+                systemBridgeConnManager.connectionState
+                    .filterIsInstance<SystemBridgeConnectionState.Connected>()
+                    .collect {
                         systemBridgeConnManager.run { bridge ->
                             bridge.registerEvdevCallback(this@InputEventHubImpl)
                         }
                     }
-                }
             }
         }
     }
@@ -105,7 +106,7 @@ class InputEventHubImpl @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun isSystemBridgeConnected(): Boolean {
-        return systemBridgeConnManager.isConnected.firstBlocking()
+        return systemBridgeConnManager.connectionState.firstBlocking() is SystemBridgeConnectionState.Connected
     }
 
     override fun onEvdevEventLoopStarted() {
@@ -303,7 +304,7 @@ class InputEventHubImpl @Inject constructor(
 
     override suspend fun injectKeyEvent(event: InjectKeyEventModel): KMResult<Unit> {
         val isSysBridgeConnected = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-            systemBridgeConnManager.isConnected.first()
+            systemBridgeConnManager.connectionState.value is SystemBridgeConnectionState.Connected
 
         if (isSysBridgeConnected) {
             val androidKeyEvent = event.toAndroidKeyEvent(flags = KeyEvent.FLAG_FROM_SYSTEM)

@@ -1624,10 +1624,10 @@
     <string name="pro_mode_setup_wizard_enable_notification_permission_button">Give permission</string>
 
     <string name="pro_mode_setup_assistant_notification_channel">Setup assistant</string>
-    <string name="pro_mode_setup_notification_started_success_title">PRO mode started!</string>
-    <string name="pro_mode_setup_notification_started_success_text">PRO mode is now running and you can remap more buttons</string>
+
     <string name="pro_mode_setup_wizard_complete_title">PRO mode is running</string>
     <string name="pro_mode_setup_wizard_complete_text">You can now remap buttons when the screen is off and use more actions.</string>
+
     <string name="pro_mode_setup_wizard_complete_button">Finish</string>
 
     <string name="pro_mode_setup_notification_tap_build_number_title">Enable developer options</string>
@@ -1659,7 +1659,7 @@
     <string name="pro_mode_info_card_show_content_description">Show PRO mode info</string>
     <string name="pro_mode_info_card_dismiss_content_description">Dismiss</string>
 
-    <string name="system_bridge_died_notification_title">PRO Mode stopped unexpectedly</string>
-    <string name="system_bridge_died_notification_text">Tap to restart PRO Mode</string>
+    <string name="system_bridge_died_notification_title">PRO mode stopped unexpectedly</string>
+    <string name="system_bridge_died_notification_text">Automatically restarting…</string>
 
 </resources>

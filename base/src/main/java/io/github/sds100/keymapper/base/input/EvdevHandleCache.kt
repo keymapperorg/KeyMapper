@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.valueIfFailure
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,9 +27,9 @@ class EvdevHandleCache(
     private val devicesByPath: StateFlow<Map<String, EvdevDeviceHandle>> =
         combine(
             devicesAdapter.connectedInputDevices,
-            systemBridgeConnectionManager.isConnected
-        ) { _, isConnected ->
-            if (!isConnected) {
+            systemBridgeConnectionManager.connectionState
+        ) { _, connectionState ->
+            if (connectionState !is SystemBridgeConnectionState.Connected) {
                 return@combine emptyMap()
             }
 

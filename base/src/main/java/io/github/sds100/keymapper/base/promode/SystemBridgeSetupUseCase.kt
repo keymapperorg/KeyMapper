@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupStep
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
@@ -70,7 +71,9 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         }
     }
 
-    override val isSystemBridgeConnected: Flow<Boolean> = systemBridgeConnectionManager.isConnected
+    override val isSystemBridgeConnected: Flow<Boolean> =
+        systemBridgeConnectionManager.connectionState
+            .map { it is SystemBridgeConnectionState.Connected }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @RequiresApi(Build.VERSION_CODES.R)

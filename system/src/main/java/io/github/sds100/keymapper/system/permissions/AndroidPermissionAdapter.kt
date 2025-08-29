@@ -28,6 +28,7 @@ import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import io.github.sds100.keymapper.system.DeviceAdmin
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
@@ -149,8 +150,11 @@ class AndroidPermissionAdapter @Inject constructor(
             -1
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && systemBridgeConnectionManager.isConnected.firstBlocking()) {
+        val isSystemBridgeConnected =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+                systemBridgeConnectionManager.connectionState.firstBlocking() is SystemBridgeConnectionState.Connected
 
+        if (isSystemBridgeConnected) {
             result = systemBridgeConnectionManager.run { bridge ->
                 bridge.grantPermission(permissionName, deviceId)
             }.then {

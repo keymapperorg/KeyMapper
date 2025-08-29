@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationAdapter
@@ -20,11 +21,15 @@ import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -55,6 +60,10 @@ class SystemBridgeAutoStarter @Inject constructor(
         preferences.get(Keys.isProModeAutoStartEnabled)
             .map { it ?: PreferenceDefaults.PRO_MODE_AUTOSTART }
 
+    enum class AutoStartType {
+        ADB, SHIZUKU, ROOT
+    }
+
     private val isAdbAutoStartAllowed: Flow<Boolean> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             combine(
@@ -65,78 +74,85 @@ class SystemBridgeAutoStarter @Inject constructor(
             flowOf(false)
         }
 
+    private val autoStartFlow: Flow<AutoStartType?> =
+        isAutoStartEnabled.flatMapLatest { autoStartEnabled ->
+            if (autoStartEnabled) {
+                combine(
+                    suAdapter.isRootGranted,
+                    shizukuAdapter.isStarted,
+                    isAdbAutoStartAllowed.distinctUntilChanged(),
+                    connectionManager.connectionState,
+                    ::getAutoStartType
+                )
+            } else {
+                flowOf(null)
+            }
+        }
+
+    private fun getAutoStartType(
+        isRooted: Boolean,
+        isShizukuStarted: Boolean,
+        isAdbAutoStartAllowed: Boolean,
+        connectionState: SystemBridgeConnectionState,
+    ): AutoStartType? {
+        // Do not autostart if it is connected or it was killed from the user
+        if (connectionState !is SystemBridgeConnectionState.Disconnected || connectionState.isExpected) {
+            return null
+        }
+
+        return when {
+            isRooted -> AutoStartType.ROOT
+            isShizukuStarted -> AutoStartType.SHIZUKU
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && isAdbAutoStartAllowed -> AutoStartType.ADB
+            else -> null
+        }
+    }
+
     /**
      * This must only be called once in the application lifecycle
      */
+    @OptIn(FlowPreview::class)
     fun init() {
         coroutineScope.launch {
-            // TODO autostart when system bridge disconnects. Create ConnectionState sealed class for system bridge that stores whether is due to user or not
-            combine(
-                isAutoStartEnabled,
-                suAdapter.isRootGranted,
-                shizukuAdapter.isStarted,
-                isAdbAutoStartAllowed
-            ) { isAutoStartEnabled, isRooted, isShizukuStarted, isAdbAutoStartAllowed ->
-
-                // Do not listen to changes in the connection state to prevent
-                // auto starting straight after it has stopped
-                if (autoStart(
-                        isAutoStartEnabled,
-                        isRooted,
-                        isShizukuStarted,
-                        isAdbAutoStartAllowed
-                    )
-                ) return@combine
-
-            }.collect()
+            autoStartFlow
+                .distinctUntilChanged() // Must come before the filterNotNull
+                .filterNotNull()
+                .collectLatest { type ->
+                    autoStart(type)
+                }
         }
-
     }
 
-    private suspend fun autoStart(
-        isAutoStartEnabled: Boolean,
-        isRooted: Boolean,
-        isShizukuStarted: Boolean,
-        isAdbAutoStartAllowed: Boolean
-    ): Boolean {
-        val isSystemBridgeConnected = connectionManager.isConnected.first()
+    private suspend fun autoStart(type: AutoStartType) {
+        when (type) {
+            AutoStartType.ADB -> {
+                Timber.i("Auto starting system bridge with ADB")
+                showAutoStartNotification(getString(R.string.pro_mode_setup_notification_auto_start_system_bridge_adb_text))
 
-        if (!isAutoStartEnabled || isSystemBridgeConnected) {
-            return true
-        }
-
-        if (isRooted) {
-            Timber.i("Auto starting system bridge with root")
-            showAutoStartNotification(getString(R.string.pro_mode_setup_notification_auto_start_system_bridge_root_text))
-            connectionManager.startWithRoot()
-        } else if (isShizukuStarted) {
-            Timber.i("Auto starting system bridge with Shizuku")
-            showAutoStartNotification(getString(R.string.pro_mode_setup_notification_auto_start_system_bridge_shizuku_text))
-            connectionManager.startWithShizuku()
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && isAdbAutoStartAllowed) {
-            Timber.i("Auto starting system bridge with ADB")
-            showAutoStartNotification(getString(R.string.pro_mode_setup_notification_auto_start_system_bridge_adb_text))
-
-            setupController.autoStartWithAdb()
-        } else {
-            return true
-        }
-
-        // Wait 10 seconds for it to start, and if not then show failed notification.
-        try {
-            val isConnected = withTimeout(10000L) {
-                connectionManager.isConnected.first { it }
+                setupController.autoStartWithAdb()
             }
 
-            if (isConnected) {
-                showStartedNotification()
+            AutoStartType.SHIZUKU -> {
+                Timber.i("Auto starting system bridge with Shizuku")
+                showAutoStartNotification(getString(R.string.pro_mode_setup_notification_auto_start_system_bridge_shizuku_text))
+                connectionManager.startWithShizuku()
+            }
+
+            AutoStartType.ROOT -> {
+                Timber.i("Auto starting system bridge with root")
+                showAutoStartNotification(getString(R.string.pro_mode_setup_notification_auto_start_system_bridge_root_text))
+                connectionManager.startWithRoot()
+            }
+        }
+
+        // Wait 30 seconds for it to start, and if not then show failed notification.
+        try {
+            withTimeout(30000L) {
+                connectionManager.connectionState.first { it is SystemBridgeConnectionState.Connected }
             }
         } catch (_: TimeoutCancellationException) {
             showAutoStartFailedNotification()
-        } finally {
-            dismissNotification()
         }
-        return false
     }
 
     private fun showAutoStartNotification(text: String) {
@@ -162,28 +178,9 @@ class SystemBridgeAutoStarter @Inject constructor(
             icon = R.drawable.pro_mode,
             onGoing = false,
             showOnLockscreen = false,
-            onClickAction = KMNotificationAction.Activity.MainActivity(BaseMainActivity.ACTION_START_SYSTEM_BRIDGE)
+            onClickAction = KMNotificationAction.Activity.MainActivity(BaseMainActivity.ACTION_START_SYSTEM_BRIDGE),
         )
 
         notificationAdapter.showNotification(model)
-    }
-
-    private fun showStartedNotification() {
-        val model = NotificationModel(
-            id = NotificationController.ID_SYSTEM_BRIDGE_STATUS,
-            title = getString(R.string.pro_mode_setup_notification_system_bridge_started_title),
-            text = getString(R.string.pro_mode_setup_notification_system_bridge_started_text),
-            channel = NotificationController.CHANNEL_SETUP_ASSISTANT,
-            icon = R.drawable.pro_mode,
-            onGoing = false,
-            showOnLockscreen = false,
-            autoCancel = true
-        )
-
-        notificationAdapter.showNotification(model)
-    }
-
-    private fun dismissNotification() {
-        notificationAdapter.dismissNotification(NotificationController.ID_SYSTEM_BRIDGE_STATUS)
     }
 }

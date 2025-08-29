@@ -33,6 +33,7 @@ data class NotificationModel(
     val autoCancel: Boolean = false,
     val bigTextStyle: Boolean = false,
     val silent: Boolean = false,
-    val showIndeterminateProgress: Boolean = false
+    val showIndeterminateProgress: Boolean = false,
+    val timeout: Long? = null
 )
 

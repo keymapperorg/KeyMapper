@@ -33,6 +33,7 @@ internal class AdbMdns(
     private val _port: MutableStateFlow<Int?> = MutableStateFlow(null)
     val port: StateFlow<Int?> = _port.asStateFlow()
 
+    private val servicesLock: Any = Any()
     private var services = LinkedList<NsdServiceInfo>()
 
     private val resolveListener: NsdManager.ResolveListener = object : NsdManager.ResolveListener {
@@ -42,7 +43,7 @@ internal class AdbMdns(
             Timber.d("onServiceResolved: ${nsdServiceInfo.serviceName} ${nsdServiceInfo.host} ${nsdServiceInfo.port}")
             this@AdbMdns.onServiceResolved(nsdServiceInfo)
 
-            val nextService = services.removeFirstOrNull() ?: return
+            val nextService = synchronized(servicesLock) { services.removeFirstOrNull() } ?: return
             nsdManager.resolveService(nextService, resolveListener)
         }
     }
@@ -52,7 +53,10 @@ internal class AdbMdns(
             override fun onDiscoveryStarted(serviceType: String) {
                 Timber.d("onDiscoveryStarted: $serviceType")
 
-                services.clear()
+                synchronized(servicesLock) {
+                    services.clear()
+                }
+
                 registered = true
             }
 
@@ -63,7 +67,10 @@ internal class AdbMdns(
             override fun onDiscoveryStopped(serviceType: String) {
                 Timber.d("onDiscoveryStopped: $serviceType")
 
-                services.clear()
+                synchronized(servicesLock) {
+                    services.clear()
+                }
+
                 registered = false
             }
 
@@ -74,9 +81,13 @@ internal class AdbMdns(
             override fun onServiceFound(serviceInfo: NsdServiceInfo) {
                 Timber.d("onServiceFound: ${serviceInfo.serviceName} ${serviceInfo.host} ${serviceInfo.port} ${serviceInfo.serviceType}")
 
-                services.addLast(serviceInfo)
+                val startResolveService = synchronized(servicesLock) {
+                    services.addLast(serviceInfo)
+                    services.size == 1
+                }
 
-                if (services.size == 1) {
+                // You can only resolve one service at a time and they can take some time to resolve.
+                if (startResolveService) {
                     nsdManager.resolveService(serviceInfo, resolveListener)
                 }
             }

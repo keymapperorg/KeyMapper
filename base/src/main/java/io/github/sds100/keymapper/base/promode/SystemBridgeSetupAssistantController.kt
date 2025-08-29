@@ -25,6 +25,7 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupStep
 import io.github.sds100.keymapper.system.notifications.NotificationChannelModel
@@ -36,6 +37,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -217,24 +219,19 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
         stopInteracting()
 
         val isStarted = try {
-            withTimeout(3000L) {
-                systemBridgeConnectionManager.isConnected.first { it }
+            withTimeout(10000L) {
+                systemBridgeConnectionManager.connectionState
+                    .filterIsInstance<SystemBridgeConnectionState.Connected>()
+                    .first()
             }
+
+            true
         } catch (_: TimeoutCancellationException) {
             false
         }
 
         if (isStarted) {
-            showNotification(
-                getString(R.string.pro_mode_setup_notification_started_success_title),
-                getString(R.string.pro_mode_setup_notification_started_success_text)
-            )
-
             getKeyMapperAppTask()?.moveToFront()
-
-            delay(5000)
-
-            dismissNotification()
         } else {
             Timber.e("Failed to start system bridge after pairing.")
             showNotification(

@@ -18,11 +18,11 @@ import io.github.sds100.keymapper.common.utils.DispatcherProvider
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.notifications.NotificationChannelModel
 import io.github.sds100.keymapper.system.notifications.NotificationModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -179,21 +179,14 @@ class NotificationController @Inject constructor(
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             coroutineScope.launch {
-                systemBridgeConnectionManager.onUnexpectedDeath.consumeEach {
-                    val model = NotificationModel(
-                        id = ID_SYSTEM_BRIDGE_STATUS,
-                        channel = CHANNEL_SETUP_ASSISTANT,
-                        title = getString(R.string.system_bridge_died_notification_title),
-                        text = getString(R.string.system_bridge_died_notification_text),
-                        icon = R.drawable.pro_mode,
-                        onClickAction = KMNotificationAction.Activity.MainActivity(BaseMainActivity.ACTION_START_SYSTEM_BRIDGE),
-                        showOnLockscreen = true,
-                        onGoing = false,
-                        priority = NotificationCompat.PRIORITY_HIGH,
-                        autoCancel = true
-                    )
-                    manageNotifications.show(model)
-                }
+                systemBridgeConnectionManager.connectionState
+                    .collect { connectionState ->
+                        if (connectionState is SystemBridgeConnectionState.Connected) {
+                            showSystemBridgeStartedNotification()
+                        } else if (connectionState is SystemBridgeConnectionState.Disconnected && !connectionState.isExpected) {
+                            showSystemBridgeKilledNotification()
+                        }
+                    }
             }
         }
     }
@@ -403,4 +396,38 @@ class NotificationController @Inject constructor(
         showOnLockscreen = false,
         bigTextStyle = true,
     )
+
+
+    private fun showSystemBridgeKilledNotification() {
+        val model = NotificationModel(
+            id = ID_SYSTEM_BRIDGE_STATUS,
+            channel = CHANNEL_SETUP_ASSISTANT,
+            title = getString(R.string.system_bridge_died_notification_title),
+            text = getString(R.string.system_bridge_died_notification_text),
+            icon = R.drawable.pro_mode,
+            showOnLockscreen = true,
+            onGoing = false,
+            priority = NotificationCompat.PRIORITY_HIGH,
+            autoCancel = true,
+            timeout = 5000
+        )
+        manageNotifications.show(model)
+    }
+
+    private fun showSystemBridgeStartedNotification() {
+        val model = NotificationModel(
+            id = ID_SYSTEM_BRIDGE_STATUS,
+            title = getString(R.string.pro_mode_setup_notification_system_bridge_started_title),
+            text = getString(R.string.pro_mode_setup_notification_system_bridge_started_text),
+            channel = CHANNEL_SETUP_ASSISTANT,
+            icon = R.drawable.pro_mode,
+            onGoing = false,
+            showOnLockscreen = false,
+            autoCancel = true,
+            timeout = 5000
+        )
+
+        manageNotifications.show(model)
+    }
+
 }
