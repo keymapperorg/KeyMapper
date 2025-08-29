@@ -106,6 +106,10 @@ class AndroidNotificationAdapter @Inject constructor(
                 setStyle(NotificationCompat.BigTextStyle())
             }
 
+            if (notification.showIndeterminateProgress) {
+                setProgress(1, 1, true)
+            }
+
             setSmallIcon(notification.icon)
 
             if (!notification.showOnLockscreen) {

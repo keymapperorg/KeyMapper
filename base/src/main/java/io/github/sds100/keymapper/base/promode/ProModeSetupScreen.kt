@@ -182,6 +182,7 @@ fun ProModeSetupScreen(
 
                     StepContent(
                         modifier = Modifier
+                            .fillMaxWidth()
                             .weight(1f)
                             .padding(horizontal = 16.dp),
                         stepContent,
@@ -209,6 +210,7 @@ private fun StepContent(
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
+                .fillMaxWidth()
                 .weight(1f),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally

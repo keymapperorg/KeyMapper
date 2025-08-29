@@ -10,6 +10,7 @@ import androidx.core.content.getSystemService
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilityService
 import io.github.sds100.keymapper.base.system.accessibility.findNodeRecursively
@@ -89,7 +90,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
             .map { it ?: PreferenceDefaults.PRO_MODE_INTERACTIVE_SETUP_ASSISTANT }
             .stateIn(
                 coroutineScope,
-                SharingStarted.Companion.Lazily,
+                SharingStarted.Eagerly,
                 PreferenceDefaults.PRO_MODE_INTERACTIVE_SETUP_ASSISTANT
             )
 
@@ -178,6 +179,8 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
     @RequiresApi(Build.VERSION_CODES.R)
     private fun doPairingInteractiveStep(rootNode: AccessibilityNodeInfo) {
+        // TODO add more checks that the nodes are actually the correct ones
+
         val pairingCodeText = findPairingCodeText(rootNode)
 
         if (pairingCodeText == null) {
@@ -237,6 +240,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
             showNotification(
                 getString(R.string.pro_mode_setup_notification_start_system_bridge_failed_title),
                 getString(R.string.pro_mode_setup_notification_start_system_bridge_failed_text),
+                onClickAction = KMNotificationAction.Activity.MainActivity(BaseMainActivity.ACTION_START_SYSTEM_BRIDGE)
             )
         }
     }
@@ -252,6 +256,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
     private fun showNotification(
         title: String,
         text: String,
+        onClickAction: KMNotificationAction? = null,
         actions: List<Pair<KMNotificationAction, String>> = emptyList()
     ) {
         val notification = NotificationModel(
@@ -264,7 +269,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
             onGoing = false,
             showOnLockscreen = false,
             autoCancel = true,
-            bigTextStyle = true,
+            onClickAction = onClickAction,
             // Must not be silent so it is shown as a heads up notification
             silent = false,
             actions = actions

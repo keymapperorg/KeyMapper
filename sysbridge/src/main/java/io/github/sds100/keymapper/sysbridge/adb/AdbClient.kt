@@ -45,6 +45,7 @@ internal class AdbClient(private val host: String, private val port: Int, privat
     private val outputStream get() = if (useTls) tlsOutputStream else plainOutputStream
 
     suspend fun connect(): KMResult<Unit> {
+        Timber.d("Connecting to ADB at $host:$port")
         var connectAttemptCounter = 0
 
         // Try to connect to the client multiple times in case the server hasn't started up

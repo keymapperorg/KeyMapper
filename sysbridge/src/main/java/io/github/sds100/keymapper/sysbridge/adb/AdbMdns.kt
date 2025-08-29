@@ -14,6 +14,7 @@ import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.NetworkInterface
 import java.net.ServerSocket
+import java.util.LinkedList
 
 /**
  * This uses mDNS to scan for the ADB pairing and connection ports.
@@ -31,6 +32,20 @@ internal class AdbMdns(
 
     private val _port: MutableStateFlow<Int?> = MutableStateFlow(null)
     val port: StateFlow<Int?> = _port.asStateFlow()
+
+    private var services = LinkedList<NsdServiceInfo>()
+
+    private val resolveListener: NsdManager.ResolveListener = object : NsdManager.ResolveListener {
+        override fun onResolveFailed(nsdServiceInfo: NsdServiceInfo, i: Int) {}
+
+        override fun onServiceResolved(nsdServiceInfo: NsdServiceInfo) {
+            Timber.d("onServiceResolved: ${nsdServiceInfo.serviceName} ${nsdServiceInfo.host} ${nsdServiceInfo.port}")
+            this@AdbMdns.onServiceResolved(nsdServiceInfo)
+
+            val nextService = services.removeFirstOrNull() ?: return
+            nsdManager.resolveService(nextService, resolveListener)
+        }
+    }
 
     private val discoveryListener: NsdManager.DiscoveryListener =
         object : NsdManager.DiscoveryListener {
@@ -55,9 +70,13 @@ internal class AdbMdns(
             }
 
             override fun onServiceFound(serviceInfo: NsdServiceInfo) {
-                Timber.d("onServiceFound: ${serviceInfo.serviceName}")
+                Timber.d("onServiceFound: ${serviceInfo.serviceName} ${serviceInfo.host} ${serviceInfo.port} ${serviceInfo.serviceType}")
 
-                nsdManager.resolveService(serviceInfo, ResolveListener(this@AdbMdns))
+                services.addLast(serviceInfo)
+
+                if (services.size == 1) {
+                    nsdManager.resolveService(serviceInfo, resolveListener)
+                }
             }
 
             override fun onServiceLost(serviceInfo: NsdServiceInfo) {
@@ -101,15 +120,17 @@ internal class AdbMdns(
     }
 
     private fun onServiceResolved(resolvedService: NsdServiceInfo) {
-        if (running && NetworkInterface.getNetworkInterfaces()
-                .asSequence()
-                .any { networkInterface ->
-                    networkInterface.inetAddresses
-                        .asSequence()
-                        .any { resolvedService.host.hostAddress == it.hostAddress }
-                }
-            && isPortAvailable(resolvedService.port)
-        ) {
+        Timber.d("onServiceResolved: ${resolvedService.serviceName} ${resolvedService.host} ${resolvedService.port}")
+
+        val isLocalNetwork = NetworkInterface.getNetworkInterfaces()
+            .asSequence()
+            .any { networkInterface ->
+                networkInterface.inetAddresses
+                    .asSequence()
+                    .any { resolvedService.host.hostAddress == it.hostAddress }
+            }
+
+        if (running && isLocalNetwork && isPortAvailable(resolvedService.port)) {
             serviceName = resolvedService.serviceName
             _port.update { resolvedService.port }
         }
@@ -122,13 +143,5 @@ internal class AdbMdns(
         }
     } catch (e: IOException) {
         true
-    }
-
-    internal class ResolveListener(private val adbMdns: AdbMdns) : NsdManager.ResolveListener {
-        override fun onResolveFailed(nsdServiceInfo: NsdServiceInfo, i: Int) {}
-
-        override fun onServiceResolved(nsdServiceInfo: NsdServiceInfo) {
-            adbMdns.onServiceResolved(nsdServiceInfo)
-        }
     }
 }

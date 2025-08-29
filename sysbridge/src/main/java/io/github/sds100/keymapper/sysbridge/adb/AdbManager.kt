@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.sysbridge.adb
 
 import android.content.Context
 import android.os.Build
+import android.os.SystemProperties
 import android.preference.PreferenceManager
 import androidx.annotation.RequiresApi
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -44,13 +45,20 @@ class AdbManagerImpl @Inject constructor(
             return@withContext commandMutex.withLock {
                 adbConnectMdns.start()
                 val port = try {
-                    withTimeout(1000L) { adbConnectMdns.port.first { it != null } }
+                    withTimeout(10000L) { adbConnectMdns.port.first { it != null } }
                 } catch (_: TimeoutCancellationException) {
-                    null
+                    SystemProperties.getInt("service.adb.tcp.port", -1).let { sysPropPort ->
+                        if (sysPropPort == -1) {
+                            SystemProperties.getInt("persist.adb.tcp.port", -1)
+                        } else {
+                            sysPropPort
+                        }
+                    }
                 }
+
                 adbConnectMdns.stop()
 
-                if (port == null) {
+                if (port == null || port == -1) {
                     return@withLock AdbError.ServerNotFound
                 }
 
@@ -96,7 +104,7 @@ class AdbManagerImpl @Inject constructor(
             }
 
             return@withLock getAdbKey().then { key ->
-                val pairingClient = AdbPairingClient(LOCALHOST, port, code.toString(), key)
+                val pairingClient = AdbPairingClient(LOCALHOST, port, code, key)
 
                 with(pairingClient) {
                     try {

@@ -199,7 +199,7 @@ private fun Content(
         if (warningState is ProModeWarningState.Understood) {
             when (setupState) {
                 is State.Loading -> {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
 
                 is State.Data -> {

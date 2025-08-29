@@ -197,7 +197,7 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
         keyEventRelayServiceWrapper.bind()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            systemBridgeAutoStarter.autoStart()
+            systemBridgeAutoStarter.init()
         }
     }
 

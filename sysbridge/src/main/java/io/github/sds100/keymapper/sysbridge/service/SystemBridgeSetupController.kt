@@ -71,6 +71,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
                 // This stops Key Mapper going back if they are turning on wireless debugging
                 // for another reason.
                 if (isWirelessDebuggingEnabled.value && setupAssistantStepState.value == SystemBridgeSetupStep.WIRELESS_DEBUGGING) {
+                    // TODO only go back if the ADB server is actually running. The first time wireless debugging is turned on in a new network, it shows a dialog
                     getKeyMapperAppTask()?.moveToFront()
                 }
             }
@@ -163,7 +164,11 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         return adbManager.executeCommand("sh").isSuccess
     }
 
-    private fun launchWirelessDebuggingActivity() {
+    /**
+     * @return whether it opened the wireless debugging activity successfully. If it is
+     * false then developer options was launched.
+     */
+    private fun launchWirelessDebuggingActivity(): Boolean {
         val quickSettingsIntent = Intent(TileService.ACTION_QS_TILE_PREFERENCES).apply {
             // Set the package name because this action can also resolve to a "Permission Controller" activity.
             val packageName = "com.android.settings"
@@ -187,12 +192,15 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
         try {
             ctx.startActivity(quickSettingsIntent)
+            return true
         } catch (_: ActivityNotFoundException) {
             SettingsUtils.launchSettingsScreen(
                 ctx,
                 Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS,
                 "toggle_adb_wireless"
             )
+
+            return false
         }
     }
 

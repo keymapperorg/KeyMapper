@@ -1640,7 +1640,15 @@
     <string name="pro_mode_setup_notification_pairing_button_not_found_text">Tap on the button to pair with pairing code and type the code in here</string>
 
     <string name="pro_mode_setup_notification_start_system_bridge_failed_title">Starting PRO Mode failed</string>
-    <string name="pro_mode_setup_notification_start_system_bridge_failed_text">Please try again</string>
+    <string name="pro_mode_setup_notification_start_system_bridge_failed_text">Tap to set up again. Try rebooting your phone if it repeatedly fails.</string>
+
+    <string name="pro_mode_setup_notification_auto_start_system_bridge_title">Auto starting PRO mode</string>
+    <string name="pro_mode_setup_notification_auto_start_system_bridge_root_text">Using root</string>
+    <string name="pro_mode_setup_notification_auto_start_system_bridge_shizuku_text">Using shizuku</string>
+    <string name="pro_mode_setup_notification_auto_start_system_bridge_adb_text">Using ADB over Wi-Fi</string>
+
+    <string name="pro_mode_setup_notification_system_bridge_started_title">PRO mode started</string>
+    <string name="pro_mode_setup_notification_system_bridge_started_text">Have fun remapping! ❤️</string>
 
     <string name="pro_mode_setup_notification_invalid_pairing_code_title">Pairing failed</string>
     <string name="pro_mode_setup_notification_invalid_pairing_code_text">Keep the pairing code popup on-screen when submitting the pairing code</string>

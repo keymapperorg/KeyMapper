@@ -6,11 +6,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupStep
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,19 +29,19 @@ class ProModeSetupViewModel @Inject constructor(
         )
 
     fun onStepButtonClick() {
-        viewModelScope.launch {
-            val currentStep = useCase.nextSetupStep.first()
+        // Do not check the latest value in the use case because there is significant latency
+        // when it is checking whether it is paired
+        val currentStep = setupState.value.dataOrNull()?.step ?: return
 
-            when (currentStep) {
-                SystemBridgeSetupStep.ACCESSIBILITY_SERVICE -> useCase.enableAccessibilityService()
-                SystemBridgeSetupStep.NOTIFICATION_PERMISSION -> useCase.requestNotificationPermission()
-                SystemBridgeSetupStep.DEVELOPER_OPTIONS -> useCase.enableDeveloperOptions()
-                SystemBridgeSetupStep.WIFI_NETWORK -> useCase.connectWifiNetwork()
-                SystemBridgeSetupStep.WIRELESS_DEBUGGING -> useCase.enableWirelessDebugging()
-                SystemBridgeSetupStep.ADB_PAIRING -> useCase.pairWirelessAdb()
-                SystemBridgeSetupStep.START_SERVICE -> useCase.startSystemBridgeWithAdb()
-                SystemBridgeSetupStep.STARTED -> popBackStack()
-            }
+        when (currentStep) {
+            SystemBridgeSetupStep.ACCESSIBILITY_SERVICE -> useCase.enableAccessibilityService()
+            SystemBridgeSetupStep.NOTIFICATION_PERMISSION -> useCase.requestNotificationPermission()
+            SystemBridgeSetupStep.DEVELOPER_OPTIONS -> useCase.enableDeveloperOptions()
+            SystemBridgeSetupStep.WIFI_NETWORK -> useCase.connectWifiNetwork()
+            SystemBridgeSetupStep.WIRELESS_DEBUGGING -> useCase.enableWirelessDebugging()
+            SystemBridgeSetupStep.ADB_PAIRING -> useCase.pairWirelessAdb()
+            SystemBridgeSetupStep.START_SERVICE -> useCase.startSystemBridgeWithAdb()
+            SystemBridgeSetupStep.STARTED -> viewModelScope.launch { popBackStack() }
         }
     }
 

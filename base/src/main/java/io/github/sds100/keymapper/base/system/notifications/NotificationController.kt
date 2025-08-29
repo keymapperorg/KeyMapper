@@ -55,7 +55,7 @@ class NotificationController @Inject constructor(
         private const val ID_TOGGLE_MAPPINGS = 231
         private const val ID_TOGGLE_KEYBOARD = 143
         const val ID_SETUP_ASSISTANT = 144
-        const val ID_SYSTEM_BRIDGE_DIED = 145
+        const val ID_SYSTEM_BRIDGE_STATUS = 145
 
         //        private const val ID_FEATURE_ASSISTANT_TRIGGER = 900
         private const val ID_FEATURE_FLOATING_BUTTONS = 901
@@ -181,7 +181,7 @@ class NotificationController @Inject constructor(
             coroutineScope.launch {
                 systemBridgeConnectionManager.onUnexpectedDeath.consumeEach {
                     val model = NotificationModel(
-                        id = ID_SYSTEM_BRIDGE_DIED,
+                        id = ID_SYSTEM_BRIDGE_STATUS,
                         channel = CHANNEL_SETUP_ASSISTANT,
                         title = getString(R.string.system_bridge_died_notification_title),
                         text = getString(R.string.system_bridge_died_notification_text),
