@@ -122,6 +122,25 @@ object SettingsUtils {
         }
     }
 
+    /**
+     * @return whether the setting was changed successfully
+     */
+    @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
+    inline fun <reified T> putGlobalSetting(ctx: Context, name: String, value: T): Boolean {
+        val contentResolver = ctx.contentResolver
+
+        return when (T::class) {
+            Int::class -> Settings.Global.putInt(contentResolver, name, value as Int)
+            String::class -> Settings.Global.putString(contentResolver, name, value as String)
+            Float::class -> Settings.Global.putFloat(contentResolver, name, value as Float)
+            Long::class -> Settings.Global.putLong(contentResolver, name, value as Long)
+
+            else -> {
+                throw Exception("Setting type ${T::class} is not supported")
+            }
+        }
+    }
+
     fun launchSettingsScreen(ctx: Context, action: String, fragmentArg: String? = null) {
         val intent = Intent(action).apply {
             if (fragmentArg != null) {

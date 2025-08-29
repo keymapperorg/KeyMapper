@@ -1,43 +1,44 @@
 package io.github.sds100.keymapper.base.system.permissions
 
 import android.Manifest
-import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
-import io.github.sds100.keymapper.system.popup.ToastAdapter
+import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
+import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AutoGrantPermissionController @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val permissionAdapter: PermissionAdapter,
-    private val popupAdapter: ToastAdapter,
-    private val resourceProvider: ResourceProvider,
+    private val shizukuAdapter: ShizukuAdapter,
 ) {
 
     fun start() {
         // automatically grant WRITE_SECURE_SETTINGS if Key Mapper has root or shizuku permission
-        combine(
-            permissionAdapter.isGrantedFlow(Permission.ROOT),
-            permissionAdapter.isGrantedFlow(Permission.SHIZUKU),
-            permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS),
-        ) { isRootGranted, isShizukuGranted, isWriteSecureSettingsGranted ->
+        permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS)
+            .flatMapLatest { isGranted ->
+                if (isGranted) {
+                    emptyFlow()
+                } else {
+                    combine(
+                        permissionAdapter.isGrantedFlow(Permission.ROOT),
+                        permissionAdapter.isGrantedFlow(Permission.SHIZUKU),
+                        shizukuAdapter.isStarted,
+                    ) { isRootGranted, isShizukuGranted, isShizukuStarted ->
 
-            if (!isWriteSecureSettingsGranted && (isRootGranted || isShizukuGranted)) {
-                permissionAdapter.grant(Manifest.permission.WRITE_SECURE_SETTINGS).onSuccess {
-                    val stringRes = if (isRootGranted) {
-                        R.string.toast_granted_itself_write_secure_settings_with_root
-                    } else {
-                        R.string.toast_granted_itself_write_secure_settings_with_shizuku
+                        if (isRootGranted || (isShizukuGranted && isShizukuStarted)) {
+                            Timber.i("Auto-granting WRITE_SECURE_SETTINGS permission")
+                            permissionAdapter.grant(Manifest.permission.WRITE_SECURE_SETTINGS)
+                        }
                     }
-
-                    popupAdapter.show(resourceProvider.getString(stringRes))
                 }
-            }
-        }.launchIn(coroutineScope)
+            }.launchIn(coroutineScope)
     }
 }

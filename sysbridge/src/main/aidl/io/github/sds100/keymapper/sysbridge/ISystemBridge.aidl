@@ -25,5 +25,5 @@ interface ISystemBridge {
 
    boolean setWifiEnabled(boolean enable) = 10;
 
-   void putGlobalSetting(String name, String value) = 11;
+   void grantPermission(String permission, int deviceId) = 12;
 }

@@ -1,19 +1,26 @@
 package io.github.sds100.keymapper.sysbridge.manager
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Build
 import android.os.IBinder
 import android.os.IBinder.DeathRecipient
 import android.os.RemoteException
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
 import io.github.sds100.keymapper.sysbridge.starter.SystemBridgeStarter
 import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -23,6 +30,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -31,6 +39,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class SystemBridgeConnectionManagerImpl @Inject constructor(
+    @ApplicationContext private val ctx: Context,
     private val coroutineScope: CoroutineScope,
     private val starter: SystemBridgeStarter,
 ) : SystemBridgeConnectionManager {
@@ -55,6 +64,8 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
             isExpectedDeath = false
         }
     }
+
+    private var startJob: Job? = null
 
     fun pingBinder(): Boolean {
         synchronized(systemBridgeLock) {
@@ -99,7 +110,12 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun startWithAdb() {
-        coroutineScope.launch {
+        if (startJob?.isActive == true) {
+            Timber.i("System Bridge is already starting")
+            return
+        }
+
+        startJob = coroutineScope.launch {
             starter.startWithAdb().onSuccess {
                 // Wait for the system bridge to connect
                 try {
@@ -108,26 +124,53 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
                     return@launch
                 }
 
-                this@SystemBridgeConnectionManagerImpl.run { bridge ->
-                    // Disable automatic revoking of ADB pairings
-                    bridge.putGlobalSetting(
-                        "adb_allowed_connection_time",
-                        "0"
-                    )
+                preventSystemBridgeKilling()
+            }
+        }
+    }
 
-                    // Enable USB debugging so the Shell user can keep running in the background
-                    // even when disconnected from the WiFi network
-                    bridge.putGlobalSetting(
-                        "adb_enabled",
-                        "1"
-                    )
+    private fun preventSystemBridgeKilling() {
+        this@SystemBridgeConnectionManagerImpl.run { bridge ->
+            val deviceId: Int =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    ctx.deviceId
+                } else {
+                    -1
                 }
+
+            bridge.grantPermission(Manifest.permission.WRITE_SECURE_SETTINGS, deviceId)
+            Timber.i("Granted WRITE_SECURE_SETTINGS permission with System Bridge")
+
+            if (ContextCompat.checkSelfPermission(
+                    ctx,
+                    Manifest.permission.WRITE_SECURE_SETTINGS
+                ) == PERMISSION_GRANTED
+            ) {
+                // Disable automatic revoking of ADB pairings
+                SettingsUtils.putGlobalSetting(
+                    ctx,
+                    "adb_allowed_connection_time",
+                    0
+                )
+
+                // Enable USB debugging so the Shell user can keep running in the background
+                // even when disconnected from the WiFi network
+                SettingsUtils.putGlobalSetting(
+                    ctx,
+                    "adb_enabled",
+                    1
+                )
             }
         }
     }
 
     override fun startWithRoot() {
-        coroutineScope.launch {
+        if (startJob?.isActive == true) {
+            Timber.i("System Bridge is already starting")
+            return
+        }
+
+        startJob = coroutineScope.launch {
             starter.startWithRoot()
         }
     }

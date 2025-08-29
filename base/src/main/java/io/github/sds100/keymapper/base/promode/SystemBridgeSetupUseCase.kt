@@ -127,7 +127,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     }
 
     override fun enableWirelessDebugging() {
-        systemBridgeSetupController.launchEnableWirelessDebuggingAssistant()
+        systemBridgeSetupController.enableWirelessDebugging()
     }
 
     @RequiresApi(Build.VERSION_CODES.R)

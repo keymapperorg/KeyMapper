@@ -1,15 +1,18 @@
 package io.github.sds100.keymapper.sysbridge.service
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.KeyMapperClassProvider
@@ -36,7 +39,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val adbManager: AdbManager,
     private val keyMapperClassProvider: KeyMapperClassProvider,
-    private val connectionManager: SystemBridgeConnectionManager
+    private val connectionManager: SystemBridgeConnectionManager,
 ) : SystemBridgeSetupController {
 
     companion object {
@@ -62,12 +65,12 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         coroutineScope.launch {
             val uri = Settings.Global.getUriFor(ADB_WIRELESS_SETTING)
             SettingsUtils.settingsCallbackFlow(ctx, uri).collect {
-                val isEnabled = getWirelessDebuggingEnabled()
+                isWirelessDebuggingEnabled.update { getWirelessDebuggingEnabled() }
 
                 // Only go back if the user is currently setting up the wireless debugging step.
                 // This stops Key Mapper going back if they are turning on wireless debugging
                 // for another reason.
-                if (isEnabled && setupAssistantStepState.value == SystemBridgeSetupStep.WIRELESS_DEBUGGING) {
+                if (isWirelessDebuggingEnabled.value && setupAssistantStepState.value == SystemBridgeSetupStep.WIRELESS_DEBUGGING) {
                     getKeyMapperAppTask()?.moveToFront()
                 }
             }
@@ -76,9 +79,9 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
         coroutineScope.launch {
             val uri = Settings.Global.getUriFor(DEVELOPER_OPTIONS_SETTING)
             SettingsUtils.settingsCallbackFlow(ctx, uri).collect {
-                val isEnabled = getDeveloperOptionsEnabled()
+                isDeveloperOptionsEnabled.update { getDeveloperOptionsEnabled() }
 
-                if (isEnabled && setupAssistantStepState.value == SystemBridgeSetupStep.DEVELOPER_OPTIONS) {
+                if (isDeveloperOptionsEnabled.value && setupAssistantStepState.value == SystemBridgeSetupStep.DEVELOPER_OPTIONS) {
                     getKeyMapperAppTask()?.moveToFront()
                 }
             }
@@ -120,23 +123,33 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     }
 
     override fun enableDeveloperOptions() {
-        SettingsUtils.launchSettingsScreen(
-            ctx,
-            Settings.ACTION_DEVICE_INFO_SETTINGS,
-            "build_number"
-        )
+        if (canWriteGlobalSettings()) {
+            SettingsUtils.putGlobalSetting(ctx, DEVELOPER_OPTIONS_SETTING, 1)
+            invalidateSettings()
+        } else {
+            SettingsUtils.launchSettingsScreen(
+                ctx,
+                Settings.ACTION_DEVICE_INFO_SETTINGS,
+                "build_number"
+            )
 
-        coroutineScope.launch {
-            setupAssistantStep.emit(SystemBridgeSetupStep.DEVELOPER_OPTIONS)
+            coroutineScope.launch {
+                setupAssistantStep.emit(SystemBridgeSetupStep.DEVELOPER_OPTIONS)
+            }
         }
     }
 
-    override fun launchEnableWirelessDebuggingAssistant() {
-        // This is the intent sent by the quick settings tile. Not all devices support this.
-        launchWirelessDebuggingActivity()
+    override fun enableWirelessDebugging() {
+        if (canWriteGlobalSettings()) {
+            SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 1)
+            invalidateSettings()
+        } else {
+            // This is the intent sent by the quick settings tile. Not all devices support this.
+            launchWirelessDebuggingActivity()
 
-        coroutineScope.launch {
-            setupAssistantStep.emit(SystemBridgeSetupStep.WIRELESS_DEBUGGING)
+            coroutineScope.launch {
+                setupAssistantStep.emit(SystemBridgeSetupStep.WIRELESS_DEBUGGING)
+            }
         }
     }
 
@@ -209,6 +222,13 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
             .firstOrNull { it.taskInfo.topActivity?.className == keyMapperClassProvider.getMainActivity().name }
         return task
     }
+
+    private fun canWriteGlobalSettings(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            ctx,
+            Manifest.permission.WRITE_SECURE_SETTINGS
+        ) == PackageManager.PERMISSION_GRANTED
+    }
 }
 
 @SuppressLint("ObsoleteSdkInt")
@@ -220,7 +240,7 @@ interface SystemBridgeSetupController {
     fun enableDeveloperOptions()
 
     val isWirelessDebuggingEnabled: Flow<Boolean>
-    fun launchEnableWirelessDebuggingAssistant()
+    fun enableWirelessDebugging()
 
     fun launchPairingAssistant()
 

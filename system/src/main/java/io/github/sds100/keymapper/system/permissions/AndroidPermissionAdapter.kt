@@ -5,12 +5,12 @@ import android.app.NotificationManager
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
-import android.content.pm.IPackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Build
 import android.os.PowerManager
 import android.os.Process
 import android.permission.IPermissionManager
+import android.permission.PermissionManagerApis
 import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -19,17 +19,20 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.getIdentifier
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.success
+import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import io.github.sds100.keymapper.system.DeviceAdmin
-import io.github.sds100.keymapper.system.SystemError
-import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
+import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -59,16 +62,12 @@ class AndroidPermissionAdapter @Inject constructor(
     private val suAdapter: SuAdapter,
     private val notificationReceiverAdapter: NotificationReceiverAdapter,
     private val preferenceRepository: PreferenceRepository,
-    private val packageManagerAdapter: PackageManagerAdapter,
     private val buildConfigProvider: BuildConfigProvider,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
+    private val shizukuAdapter: ShizukuAdapter
 ) : PermissionAdapter {
     companion object {
         const val REQUEST_CODE_SHIZUKU_PERMISSION = 1
-    }
-
-    private val shizukuPackageManager: IPackageManager by lazy {
-        val binder = ShizukuBinderWrapper(SystemServiceHelper.getSystemService("package"))
-        IPackageManager.Stub.asInterface(binder)
     }
 
     private val shizukuPermissionManager: IPermissionManager by lazy {
@@ -144,32 +143,52 @@ class AndroidPermissionAdapter @Inject constructor(
             return success()
         }
 
-        if (isGranted(Permission.SHIZUKU)) {
-            result = try {
-                grantPermissionWithShizuku(permissionName)
+        val deviceId: Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            ctx.deviceId
+        } else {
+            -1
+        }
 
-                // if successfully granted
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && systemBridgeConnectionManager.isConnected.firstBlocking()) {
+
+            result = systemBridgeConnectionManager.run { bridge ->
+                bridge.grantPermission(permissionName, deviceId)
+            }.then {
                 if (ContextCompat.checkSelfPermission(ctx, permissionName) == PERMISSION_GRANTED) {
                     success()
                 } else {
-                    KMError.Exception(Exception("Failed to grant permission with Shizuku."))
+                    KMError.Exception(Exception("Failed to grant permission with system bridge"))
                 }
-            } catch (e: Exception) {
-                KMError.Exception(e)
+            }
+        } else if (shizukuAdapter.isStarted.value) {
+            val userId = Process.myUserHandle()!!.getIdentifier()
+
+            PermissionManagerApis.grantPermission(
+                shizukuPermissionManager, buildConfigProvider.packageName,
+                permissionName, deviceId, userId
+            )
+
+            if (ContextCompat.checkSelfPermission(ctx, permissionName) == PERMISSION_GRANTED) {
+                result = success()
+            } else {
+                result =
+                    KMError.Exception(Exception("Failed to grant permission with Shizuku."))
             }
         } else if (isGranted(Permission.ROOT)) {
             suAdapter.execute(
                 "pm grant ${buildConfigProvider.packageName} $permissionName",
                 block = true,
             )
+
             if (ContextCompat.checkSelfPermission(ctx, permissionName) == PERMISSION_GRANTED) {
                 result = success()
             } else {
                 result =
-                    KMError.Exception(Exception("Failed to grant permission with root. Key Mapper may not actually have root permission."))
+                    KMError.Exception(Exception("Failed to grant permission with root."))
             }
         } else {
-            result = SystemError.PermissionDenied(Permission.SHIZUKU)
+            // The system bridge should be the default way to grant permissions.
+            result = SystemBridgeError.NotStarted
         }
 
         result.onSuccess {
@@ -181,63 +200,8 @@ class AndroidPermissionAdapter @Inject constructor(
         return result
     }
 
-    private fun grantPermissionWithShizuku(permissionName: String) {
-        val userId = Process.myUserHandle()!!.getIdentifier()
-
-        try {
-            // In revisions of Android 14 the method to grant permissions changed
-            // so try them all.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                try {
-                    shizukuPermissionManager.grantRuntimePermission(
-                        buildConfigProvider.packageName,
-                        permissionName,
-                        ctx.deviceId,
-                        userId,
-                    )
-                } catch (_: NoSuchMethodError) {
-                    try {
-                        shizukuPermissionManager.grantRuntimePermission(
-                            buildConfigProvider.packageName,
-                            permissionName,
-                            "0",
-                            userId,
-                        )
-                    } catch (_: NoSuchMethodError) {
-                        shizukuPermissionManager.grantRuntimePermission(
-                            buildConfigProvider.packageName,
-                            permissionName,
-                            userId,
-                        )
-                    }
-                }
-                // In Android 11 this method was moved from IPackageManager to IPermissionManager.
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                shizukuPermissionManager.grantRuntimePermission(
-                    buildConfigProvider.packageName,
-                    permissionName,
-                    userId,
-                )
-            } else {
-                shizukuPackageManager.grantRuntimePermission(
-                    buildConfigProvider.packageName,
-                    permissionName,
-                    userId,
-                )
-            }
-            // The API may change in future Android versions so don't crash the whole app
-            // just for this shizuku permission feature.
-        } catch (_: NoSuchMethodError) {
-        }
-    }
-
     override fun isGranted(permission: Permission): Boolean = when (permission) {
-        Permission.WRITE_SETTINGS ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Settings.System.canWrite(ctx)
-            } else {
-                true
-            }
+        Permission.WRITE_SETTINGS -> Settings.System.canWrite(ctx)
 
         Permission.CAMERA ->
             ContextCompat.checkSelfPermission(
@@ -257,11 +221,11 @@ class AndroidPermissionAdapter @Inject constructor(
             ) == PERMISSION_GRANTED
 
         Permission.ACCESS_NOTIFICATION_POLICY ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !neverRequestDndPermission.value) {
+            if (neverRequestDndPermission.value) {
+                true
+            } else {
                 val notificationManager: NotificationManager = ctx.getSystemService()!!
                 notificationManager.isNotificationPolicyAccessGranted
-            } else {
-                true
             }
 
         Permission.WRITE_SECURE_SETTINGS -> {

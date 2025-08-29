@@ -13,12 +13,12 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.Process
 import android.os.ServiceManager
-import android.os.UserHandle
-import android.provider.Settings
+import android.permission.IPermissionManager
+import android.permission.PermissionManagerApis
 import android.util.Log
 import android.view.InputEvent
-import androidx.core.os.bundleOf
 import io.github.sds100.keymapper.common.models.EvdevDeviceHandle
+import io.github.sds100.keymapper.common.utils.UserHandleUtils
 import io.github.sds100.keymapper.sysbridge.IEvdevCallback
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
 import io.github.sds100.keymapper.sysbridge.provider.BinderContainer
@@ -142,6 +142,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
     private val inputManager: IInputManager
     private val wifiManager: IWifiManager
+    private val permissionManager: IPermissionManager
 
     private val processPackageName = if (Process.myUid() == Process.ROOT_UID) {
         "root"
@@ -160,6 +161,9 @@ internal class SystemBridge : ISystemBridge.Stub() {
         waitSystemService(Context.ACTIVITY_SERVICE)
         waitSystemService(Context.USER_SERVICE)
         waitSystemService(Context.APP_OPS_SERVICE)
+        waitSystemService("permissionmgr")
+        permissionManager =
+            IPermissionManager.Stub.asInterface(ServiceManager.getService("permissionmgr"))
 
         waitSystemService(Context.INPUT_SERVICE)
         inputManager =
@@ -269,7 +273,6 @@ internal class SystemBridge : ISystemBridge.Stub() {
         }
     }
 
-    // TODO passthrough an optional timeout that will automatically ungrab after that time. Use this when recording.
     override fun grabEvdevDevice(devicePath: String?): Boolean {
         devicePath ?: return false
         return grabEvdevDeviceNative(devicePath)
@@ -303,44 +306,16 @@ internal class SystemBridge : ISystemBridge.Stub() {
         return writeEvdevEventNative(devicePath, type, code, value)
     }
 
-    // TODO If Key Mapper has WRITE_SECURE_SETTINGS permission it can write to Global settings itself.
-    // Replace with a method to request permissions for Key Mapper. If Key Mapper does not have WRITE_SECURE_SETTINGS permission
-    // then the action will show an error that it needs WRITE_SECURE_SETTINGS. The action will explain that Key Mapper can grant itself if they start PRO Mode one-time.
-    // Everytime PRO mode is started, Key Mapper should grant itself WRITE_SECURE_SETTINGS
-    override fun putGlobalSetting(name: String, value: String) {
-        val providerName = "settings"
+    override fun grantPermission(permission: String?, deviceId: Int) {
+        val userId = UserHandleUtils.getCallingUserId()
 
-        val token: IBinder? = null
-        val userId: Int = UserHandle::class.java.getMethod("getCallingUserId").invoke(null) as Int
-
-        Log.d(TAG, "Putting global setting $name = $value for user $userId")
-
-        val settingsProvider = ActivityManagerApis.getContentProviderExternal(
-            providerName,
-            userId,
-            token,
-            providerName
+        PermissionManagerApis.grantPermission(
+            permissionManager,
+            systemBridgePackageName ?: return,
+            permission ?: return,
+            deviceId,
+            userId
         )
-
-        if (settingsProvider == null) {
-            Log.w(TAG, "Failed to get settings provider")
-            return
-        }
-
-        val bundle = bundleOf(
-            Settings.NameValueTable.VALUE to value
-        )
-
-        IContentProviderUtils.callCompat(
-            settingsProvider,
-            processPackageName,
-            providerName,
-            "PUT_global",
-            name,
-            bundle
-        )
-
-        Log.i(TAG, "Put global setting $name = $value")
     }
 
     private fun sendBinderToApp(): Boolean {

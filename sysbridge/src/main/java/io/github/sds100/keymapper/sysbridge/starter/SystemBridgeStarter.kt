@@ -27,6 +27,8 @@ import io.github.sds100.keymapper.sysbridge.ktx.loge
 import io.github.sds100.keymapper.sysbridge.shizuku.ShizukuStarterService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import rikka.core.os.FileUtils
 import rikka.shizuku.Shizuku
@@ -55,6 +57,7 @@ class SystemBridgeStarter @Inject constructor(
     private val apkPath = ctx.applicationInfo.sourceDir
     private val libPath = ctx.applicationInfo.nativeLibraryDir
     private val packageName = ctx.applicationInfo.packageName
+    private val startMutex: Mutex = Mutex()
 
     private val shizukuStarterConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(
@@ -156,40 +159,42 @@ class SystemBridgeStarter @Inject constructor(
     }
 
     private suspend fun startSystemBridge(executeCommand: suspend (String) -> KMResult<String>): KMResult<String> {
-        val externalFilesParent = try {
-            ctx.getExternalFilesDir(null)?.parentFile
-        } catch (e: IOException) {
-            return KMError.UnknownIOError
-        }
+        startMutex.withLock {
+            val externalFilesParent = try {
+                ctx.getExternalFilesDir(null)?.parentFile
+            } catch (e: IOException) {
+                return KMError.UnknownIOError
+            }
 
-        val outputStarterBinary = File(externalFilesParent, "starter")
-        val outputStarterScript = File(externalFilesParent, "start.sh")
-        withContext(Dispatchers.IO) {
-            copyNativeLibrary(outputStarterBinary)
+            val outputStarterBinary = File(externalFilesParent, "starter")
+            val outputStarterScript = File(externalFilesParent, "start.sh")
+            withContext(Dispatchers.IO) {
+                copyNativeLibrary(outputStarterBinary)
 
-            // Create the start.sh shell script
-            writeStarterScript(
-                outputStarterScript,
-                outputStarterBinary.absolutePath
-            )
-        }
-
-        val startCommand =
-            "sh ${outputStarterScript.absolutePath} --apk=$apkPath --lib=$libPath --package=$packageName"
-
-        return executeCommand(startCommand).then { output ->
-
-            // According to Shizuku source code...
-            // Adb on MIUI Android 11 has no permission to access Android/data.
-            // Before MIUI Android 12, we can temporarily use /data/user_de.
-            if (output.contains("/Android/data/${ctx.packageName}/start.sh: Permission denied")) {
-                Timber.w(
-                    "ADB has no permission to access Android/data/${ctx.packageName}/start.sh. Trying to use /data/user_de instead..."
+                // Create the start.sh shell script
+                writeStarterScript(
+                    outputStarterScript,
+                    outputStarterBinary.absolutePath
                 )
+            }
 
-                startSystemBridgeFromProtectedStorage(executeCommand)
-            } else {
-                Success(output)
+            val startCommand =
+                "sh ${outputStarterScript.absolutePath} --apk=$apkPath --lib=$libPath --package=$packageName"
+
+            return executeCommand(startCommand).then { output ->
+
+                // According to Shizuku source code...
+                // Adb on MIUI Android 11 has no permission to access Android/data.
+                // Before MIUI Android 12, we can temporarily use /data/user_de.
+                if (output.contains("/Android/data/${ctx.packageName}/start.sh: Permission denied")) {
+                    Timber.w(
+                        "ADB has no permission to access Android/data/${ctx.packageName}/start.sh. Trying to use /data/user_de instead..."
+                    )
+
+                    startSystemBridgeFromProtectedStorage(executeCommand)
+                } else {
+                    Success(output)
+                }
             }
         }
     }
