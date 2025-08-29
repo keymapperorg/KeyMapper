@@ -183,9 +183,7 @@ class SystemBridgeStarter @Inject constructor(
 
             return executeCommand(startCommand).then { output ->
 
-                // According to Shizuku source code...
-                // Adb on MIUI Android 11 has no permission to access Android/data.
-                // Before MIUI Android 12, we can temporarily use /data/user_de.
+                // Adb on Android 11 has no permission to access Android/data so use /data/user_de.
                 if (output.contains("/Android/data/${ctx.packageName}/start.sh: Permission denied")) {
                     Timber.w(
                         "ADB has no permission to access Android/data/${ctx.packageName}/start.sh. Trying to use /data/user_de instead..."
@@ -227,13 +225,16 @@ class SystemBridgeStarter @Inject constructor(
             val startCommand =
                 "sh ${outputStarterScript.absolutePath} --apk=$apkPath --lib=$libPath  --package=$packageName"
 
+            // Make starter binary executable
             try {
                 Os.chmod(outputStarterBinary.absolutePath, 420 /* 0644 */)
             } catch (e: ErrnoException) {
                 e.printStackTrace()
             }
+
+            // Make starter script executable
             try {
-                Os.chmod(outputStarterBinary.absolutePath, 420 /* 0644 */)
+                Os.chmod(outputStarterScript.absolutePath, 420 /* 0644 */)
             } catch (e: ErrnoException) {
                 e.printStackTrace()
             }
