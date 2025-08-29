@@ -3,11 +3,15 @@ package io.github.sds100.keymapper.base.promode
 import android.os.Build
 import android.os.SystemClock
 import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
 import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
+import io.github.sds100.keymapper.base.system.notifications.NotificationController.Companion.CHANNEL_SETUP_ASSISTANT
+import io.github.sds100.keymapper.base.system.notifications.NotificationController.Companion.ID_SYSTEM_BRIDGE_STATUS
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.notifications.KMNotificationAction
+import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -30,7 +34,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -57,10 +60,6 @@ class SystemBridgeAutoStarter @Inject constructor(
     private val notificationAdapter: NotificationAdapter,
     private val resourceProvider: ResourceProvider
 ) : ResourceProvider by resourceProvider {
-    private val isAutoStartEnabled: Flow<Boolean> =
-        preferences.get(Keys.isProModeAutoStartEnabled)
-            .map { it ?: PreferenceDefaults.PRO_MODE_AUTOSTART }
-
     enum class AutoStartType {
         ADB, SHIZUKU, ROOT
     }
@@ -75,20 +74,13 @@ class SystemBridgeAutoStarter @Inject constructor(
             flowOf(false)
         }
 
-    private val autoStartFlow: Flow<AutoStartType?> =
-        isAutoStartEnabled.flatMapLatest { autoStartEnabled ->
-            if (autoStartEnabled) {
-                combine(
-                    suAdapter.isRootGranted,
-                    shizukuAdapter.isStarted,
-                    isAdbAutoStartAllowed.distinctUntilChanged(),
-                    connectionManager.connectionState,
-                    ::getAutoStartType
-                )
-            } else {
-                flowOf(null)
-            }
-        }
+    private val autoStartFlow: Flow<AutoStartType?> = combine(
+        suAdapter.isRootGranted,
+        shizukuAdapter.isStarted,
+        isAdbAutoStartAllowed.distinctUntilChanged(),
+        connectionManager.connectionState,
+        ::getAutoStartType
+    )
 
     private var lastAutoStartTime: Long? = null
 
@@ -103,11 +95,12 @@ class SystemBridgeAutoStarter @Inject constructor(
             return null
         }
 
-        // Do not autostart if the system bridge was killed less than a minute after.
+        // Do not autostart if the system bridge was killed shortly after.
         // This prevents infinite loops happening.
         lastAutoStartTime?.let { lastAutoStartTime ->
-            if (connectionState.time - lastAutoStartTime < 60000) {
-                Timber.w("Not auto starting the system bridge because it was last auto started less than one minute ago")
+            if (connectionState.time - lastAutoStartTime < 30000) {
+                Timber.w("Not auto starting the system bridge because it was last auto started less than 30 secs ago")
+                showSystemBridgeKilledNotification(getString(R.string.system_bridge_died_notification_not_restarting_text))
                 return null
             }
         }
@@ -125,6 +118,28 @@ class SystemBridgeAutoStarter @Inject constructor(
      */
     @OptIn(FlowPreview::class)
     fun init() {
+        val isBootAutoStartEnabled = preferences.get(Keys.isProModeAutoStartBootEnabled)
+            .map { it ?: PreferenceDefaults.PRO_MODE_AUTOSTART_BOOT }
+            .firstBlocking()
+
+        val isConnected =
+            connectionManager.connectionState.value is SystemBridgeConnectionState.Connected
+
+        if (isBootAutoStartEnabled && !isConnected) {
+            val autoStartType = when {
+                suAdapter.isRootGranted.value -> AutoStartType.ROOT
+                shizukuAdapter.isStarted.value -> AutoStartType.SHIZUKU
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && isAdbAutoStartAllowed.firstBlocking() -> AutoStartType.ADB
+                else -> null
+            }
+
+            if (autoStartType != null) {
+                coroutineScope.launch {
+                    autoStart(autoStartType)
+                }
+            }
+        }
+
         coroutineScope.launch {
             autoStartFlow
                 .distinctUntilChanged() // Must come before the filterNotNull
@@ -137,6 +152,7 @@ class SystemBridgeAutoStarter @Inject constructor(
 
     private suspend fun autoStart(type: AutoStartType) {
         lastAutoStartTime = SystemClock.elapsedRealtime()
+        showAutoStartNotification(getString(R.string.system_bridge_died_notification_restarting_text))
 
         when (type) {
             AutoStartType.ADB -> {
@@ -169,12 +185,28 @@ class SystemBridgeAutoStarter @Inject constructor(
         }
     }
 
+    private fun showSystemBridgeKilledNotification(text: String) {
+        val model = NotificationModel(
+            id = ID_SYSTEM_BRIDGE_STATUS,
+            channel = CHANNEL_SETUP_ASSISTANT,
+            title = getString(R.string.system_bridge_died_notification_title),
+            text = text,
+            icon = R.drawable.pro_mode,
+            showOnLockscreen = true,
+            onGoing = false,
+            priority = NotificationCompat.PRIORITY_HIGH,
+            autoCancel = true,
+            timeout = 5000
+        )
+        notificationAdapter.showNotification(model)
+    }
+
     private fun showAutoStartNotification(text: String) {
         val model = NotificationModel(
-            id = NotificationController.ID_SYSTEM_BRIDGE_STATUS,
+            id = ID_SYSTEM_BRIDGE_STATUS,
             title = getString(R.string.pro_mode_setup_notification_auto_start_system_bridge_title),
             text = text,
-            channel = NotificationController.CHANNEL_SETUP_ASSISTANT,
+            channel = CHANNEL_SETUP_ASSISTANT,
             icon = R.drawable.pro_mode,
             onGoing = true,
             showOnLockscreen = false
@@ -185,10 +217,10 @@ class SystemBridgeAutoStarter @Inject constructor(
 
     private fun showAutoStartFailedNotification() {
         val model = NotificationModel(
-            id = NotificationController.ID_SYSTEM_BRIDGE_STATUS,
+            id = ID_SYSTEM_BRIDGE_STATUS,
             title = getString(R.string.pro_mode_setup_notification_start_system_bridge_failed_title),
             text = getString(R.string.pro_mode_setup_notification_start_system_bridge_failed_text),
-            channel = NotificationController.CHANNEL_SETUP_ASSISTANT,
+            channel = CHANNEL_SETUP_ASSISTANT,
             icon = R.drawable.pro_mode,
             onGoing = false,
             showOnLockscreen = false,

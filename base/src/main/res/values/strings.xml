@@ -1660,6 +1660,7 @@
     <string name="pro_mode_info_card_dismiss_content_description">Dismiss</string>
 
     <string name="system_bridge_died_notification_title">PRO mode stopped unexpectedly</string>
-    <string name="system_bridge_died_notification_text">Automatically restarting…</string>
+    <string name="system_bridge_died_notification_restarting_text">Automatically restarting…</string>
+    <string name="system_bridge_died_notification_not_restarting_text">It is crashing too much. Report the issue to the developer.</string>
 
 </resources>

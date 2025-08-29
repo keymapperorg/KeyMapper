@@ -183,8 +183,6 @@ class NotificationController @Inject constructor(
                     .collect { connectionState ->
                         if (connectionState is SystemBridgeConnectionState.Connected) {
                             showSystemBridgeStartedNotification()
-                        } else if (connectionState is SystemBridgeConnectionState.Disconnected && !connectionState.isExpected) {
-                            showSystemBridgeKilledNotification()
                         }
                     }
             }
@@ -397,22 +395,6 @@ class NotificationController @Inject constructor(
         bigTextStyle = true,
     )
 
-
-    private fun showSystemBridgeKilledNotification() {
-        val model = NotificationModel(
-            id = ID_SYSTEM_BRIDGE_STATUS,
-            channel = CHANNEL_SETUP_ASSISTANT,
-            title = getString(R.string.system_bridge_died_notification_title),
-            text = getString(R.string.system_bridge_died_notification_text),
-            icon = R.drawable.pro_mode,
-            showOnLockscreen = true,
-            onGoing = false,
-            priority = NotificationCompat.PRIORITY_HIGH,
-            autoCancel = true,
-            timeout = 5000
-        )
-        manageNotifications.show(model)
-    }
 
     private fun showSystemBridgeStartedNotification() {
         val model = NotificationModel(
