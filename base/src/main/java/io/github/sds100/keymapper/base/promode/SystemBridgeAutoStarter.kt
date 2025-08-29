@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.promode
 
 import android.os.Build
+import android.os.SystemClock
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.base.R
@@ -89,6 +90,8 @@ class SystemBridgeAutoStarter @Inject constructor(
             }
         }
 
+    private var lastAutoStartTime: Long? = null
+
     private fun getAutoStartType(
         isRooted: Boolean,
         isShizukuStarted: Boolean,
@@ -98,6 +101,15 @@ class SystemBridgeAutoStarter @Inject constructor(
         // Do not autostart if it is connected or it was killed from the user
         if (connectionState !is SystemBridgeConnectionState.Disconnected || connectionState.isExpected) {
             return null
+        }
+
+        // Do not autostart if the system bridge was killed less than a minute after.
+        // This prevents infinite loops happening.
+        lastAutoStartTime?.let { lastAutoStartTime ->
+            if (connectionState.time - lastAutoStartTime < 60000) {
+                Timber.w("Not auto starting the system bridge because it was last auto started less than one minute ago")
+                return null
+            }
         }
 
         return when {
@@ -124,6 +136,8 @@ class SystemBridgeAutoStarter @Inject constructor(
     }
 
     private suspend fun autoStart(type: AutoStartType) {
+        lastAutoStartTime = SystemClock.elapsedRealtime()
+
         when (type) {
             AutoStartType.ADB -> {
                 Timber.i("Auto starting system bridge with ADB")
