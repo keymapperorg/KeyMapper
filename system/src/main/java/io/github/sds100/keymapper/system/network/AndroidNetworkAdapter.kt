@@ -125,6 +125,8 @@ class AndroidNetworkAdapter @Inject constructor(
             .build()
 
         connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
+
+        Timber.e("Is wifi connected: ${isWifiConnected.value}")
     }
 
     override fun isWifiEnabled(): Boolean = wifiManager.isWifiEnabled
@@ -236,13 +238,11 @@ class AndroidNetworkAdapter @Inject constructor(
         }
     }
 
-    // TODO this does not return true if the device is connected to a wifi network but there is no internet connection on it.
-    //  Perhaps use connectivityManager.allNetworks and check them all for a transport.
-    //  .activeNetwork gets the current one used to connect to the internet i think
     private fun getIsWifiConnected(): Boolean {
-        val network = connectivityManager.activeNetwork ?: return false
-        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
-        return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+        return connectivityManager.allNetworks.any { network ->
+            connectivityManager.getNetworkCapabilities(network)
+                ?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ?: false
+        }
     }
 
     fun invalidateState() {
