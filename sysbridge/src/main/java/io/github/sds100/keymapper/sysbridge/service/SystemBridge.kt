@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.IContentProvider
 import android.content.pm.ApplicationInfo
-import android.ddm.DdmHandleAppName
 import android.hardware.input.IInputManager
 import android.net.wifi.IWifiManager
 import android.os.Bundle
@@ -67,7 +66,6 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
         @JvmStatic
         fun main(args: Array<String>) {
-            DdmHandleAppName.setAppName("keymapper_sysbridge", 0)
             @Suppress("DEPRECATION")
             Looper.prepareMainLooper()
             SystemBridge()

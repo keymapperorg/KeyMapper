@@ -81,7 +81,7 @@ android {
 
 dependencies {
     compileOnly(project(":systemstubs"))
-    compileOnly(project(":common"))
+    implementation(project(":common"))
 
     implementation(libs.jakewharton.timber)
 
