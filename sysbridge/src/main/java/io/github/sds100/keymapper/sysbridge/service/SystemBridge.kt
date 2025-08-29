@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.sysbridge.service
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.IContentProvider
+import android.content.pm.ApplicationInfo
 import android.ddm.DdmHandleAppName
 import android.hardware.input.IInputManager
 import android.net.wifi.IWifiManager
@@ -25,7 +26,9 @@ import io.github.sds100.keymapper.sysbridge.provider.SystemBridgeBinderProvider
 import io.github.sds100.keymapper.sysbridge.utils.IContentProviderUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import rikka.hidden.compat.ActivityManagerApis
 import rikka.hidden.compat.DeviceIdleControllerApis
@@ -37,12 +40,6 @@ import kotlin.system.exitProcess
 
 @SuppressLint("LogNotTimber")
 internal class SystemBridge : ISystemBridge.Stub() {
-
-    // TODO observe if Key Mapper is uninstalled and stop the process. Look at ApkChangedObservers in Shizuku code.
-    // TODO every minute ping key mapper and if no response then stop the process.
-    // TODO if no response when sending to the callback, stop the process.
-
-    // TODO return error code and map this to a SystemBridgeError in key mapper
 
     external fun grabEvdevDeviceNative(devicePath: String): Boolean
 
@@ -66,9 +63,10 @@ internal class SystemBridge : ISystemBridge.Stub() {
             System.getProperty("keymapper_sysbridge.package")
         private const val SHELL_PACKAGE = "com.android.shell"
 
+        private const val KEYMAPPER_CHECK_INTERVAL_MS = 60 * 1000L // 1 minute
+
         @JvmStatic
         fun main(args: Array<String>) {
-            Log.i(TAG, "Sysbridge package name = $systemBridgePackageName")
             DdmHandleAppName.setAppName("keymapper_sysbridge", 0)
             @Suppress("DEPRECATION")
             Looper.prepareMainLooper()
@@ -79,7 +77,6 @@ internal class SystemBridge : ISystemBridge.Stub() {
         private fun waitSystemService(name: String?) {
             while (ServiceManager.getService(name) == null) {
                 try {
-                    Log.i(TAG, "service $name is not started, wait 1s.")
                     Thread.sleep(1000)
                 } catch (e: InterruptedException) {
                     Log.w(TAG, e.message, e)
@@ -96,25 +93,24 @@ internal class SystemBridge : ISystemBridge.Stub() {
             uid: Int,
             foregroundActivities: Boolean
         ) {
-            // Do not send the binder if the binder is already sent to the user or
-            // the app is not in the foreground.
-            if (isBinderSent || !foregroundActivities) {
+            // Do not send the binder if the app is not in the foreground.
+            if (!foregroundActivities) {
                 return
             }
 
-            val packages: List<String> =
-                PackageManagerApis.getPackagesForUidNoThrow(uid).filterNotNull()
-
-            if (packages.contains(systemBridgePackageName)) {
+            if (getKeyMapperPackageInfo() == null) {
+                Log.i(TAG, "Key Mapper app not installed - exiting")
+                destroy()
+            } else {
                 synchronized(sendBinderLock) {
-                    Log.i(TAG, "Key Mapper process started, send binder to app")
-
-                    sendBinderToApp()
+                    if (!isBinderSent) {
+                        Log.i(TAG, "Key Mapper process started, send binder to app")
+                        mainHandler.post {
+                            sendBinderToApp()
+                        }
+                    }
                 }
             }
-        }
-
-        override fun onProcessDied(pid: Int, uid: Int) {
         }
     }
 
@@ -124,10 +120,14 @@ internal class SystemBridge : ISystemBridge.Stub() {
     private val coroutineScope: CoroutineScope = MainScope()
     private val mainHandler = Handler(Looper.myLooper()!!)
 
+    private val keyMapperCheckLock: Any = Any()
+    private var keyMapperCheckJob: Job? = null
+
     private val evdevCallbackLock: Any = Any()
     private var evdevCallback: IEvdevCallback? = null
     private val evdevCallbackDeathRecipient: IBinder.DeathRecipient = IBinder.DeathRecipient {
         Log.i(TAG, "EvdevCallback binder died")
+
         synchronized(sendBinderLock) {
             isBinderSent = false
         }
@@ -135,10 +135,19 @@ internal class SystemBridge : ISystemBridge.Stub() {
         coroutineScope.launch(Dispatchers.Default) {
             stopEvdevEventLoop()
         }
+
+        // Start periodic check for Key Mapper installation
+        startKeyMapperPeriodicCheck()
     }
 
     private val inputManager: IInputManager
     private val wifiManager: IWifiManager
+
+    private val processPackageName = if (Process.myUid() == Process.ROOT_UID) {
+        "root"
+    } else {
+        "com.android.shell"
+    }
 
     init {
         val libraryPath = System.getProperty("keymapper_sysbridge.library.path")
@@ -160,19 +169,11 @@ internal class SystemBridge : ISystemBridge.Stub() {
         wifiManager =
             IWifiManager.Stub.asInterface(ServiceManager.getService(Context.WIFI_SERVICE))
 
-        // TODO check that the key mapper app is installed, otherwise end the process.
-//        val ai: ApplicationInfo? = rikka.shizuku.server.ShizukuService.getManagerApplicationInfo()
-//        if (ai == null) {
-//            System.exit(ServerConstants.MANAGER_APP_NOT_FOUND)
-//        }
+        val applicationInfo = getKeyMapperPackageInfo()
 
-        // TODO listen for key mapper being uninstalled, and stop the process
-//        ApkChangedObservers.start(ai.sourceDir, {
-//            if (rikka.shizuku.server.ShizukuService.getManagerApplicationInfo() == null) {
-//                LOGGER.w("manager app is uninstalled in user 0, exiting...")
-//                System.exit(ServerConstants.MANAGER_APP_NOT_FOUND)
-//            }
-//        })
+        if (applicationInfo == null) {
+            destroy()
+        }
 
         ActivityManagerApis.registerProcessObserver(processObserver)
 
@@ -182,8 +183,53 @@ internal class SystemBridge : ISystemBridge.Stub() {
         }
     }
 
+    private fun getKeyMapperPackageInfo(): ApplicationInfo? =
+        PackageManagerApis.getApplicationInfoNoThrow(systemBridgePackageName, 0, 0)
+
+    private fun startKeyMapperPeriodicCheck() {
+        synchronized(keyMapperCheckLock) {
+            keyMapperCheckJob?.cancel()
+
+            Log.i(TAG, "Starting periodic Key Mapper installation check")
+
+            keyMapperCheckJob = coroutineScope.launch(Dispatchers.Default) {
+                try {
+                    while (true) {
+                        if (getKeyMapperPackageInfo() == null) {
+                            Log.i(TAG, "Key Mapper not installed - exiting")
+                            destroy()
+                            break
+                        } else {
+                            // While Key Mapper is still installed but not bound, then periodically
+                            // check if it has uninstalled
+                            delay(KEYMAPPER_CHECK_INTERVAL_MS)
+                        }
+                    }
+                } finally {
+                    // Clear the job reference when the coroutine completes
+                    synchronized(keyMapperCheckLock) {
+                        if (keyMapperCheckJob?.isCompleted == true) {
+                            keyMapperCheckJob = null
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun stopKeyMapperPeriodicCheck() {
+        synchronized(keyMapperCheckLock) {
+            keyMapperCheckJob?.cancel()
+            keyMapperCheckJob = null
+            Log.i(TAG, "Stopped periodic Key Mapper installation check")
+        }
+    }
+
     override fun destroy() {
         Log.i(TAG, "SystemBridge destroyed")
+
+        // Clean up periodic check job
+        stopKeyMapperPeriodicCheck()
 
         // Must be last line in this method because it halts the JVM.
         exitProcess(0)
@@ -193,6 +239,9 @@ internal class SystemBridge : ISystemBridge.Stub() {
         callback ?: return
 
         Log.i(TAG, "Register evdev callback")
+
+        // Stop periodic check since Key Mapper has reconnected
+        stopKeyMapperPeriodicCheck()
 
         val binder = callback.asBinder()
 
@@ -254,6 +303,10 @@ internal class SystemBridge : ISystemBridge.Stub() {
         return writeEvdevEventNative(devicePath, type, code, value)
     }
 
+    // TODO If Key Mapper has WRITE_SECURE_SETTINGS permission it can write to Global settings itself.
+    // Replace with a method to request permissions for Key Mapper. If Key Mapper does not have WRITE_SECURE_SETTINGS permission
+    // then the action will show an error that it needs WRITE_SECURE_SETTINGS. The action will explain that Key Mapper can grant itself if they start PRO Mode one-time.
+    // Everytime PRO mode is started, Key Mapper should grant itself WRITE_SECURE_SETTINGS
     override fun putGlobalSetting(name: String, value: String) {
         val providerName = "settings"
 
@@ -278,15 +331,9 @@ internal class SystemBridge : ISystemBridge.Stub() {
             Settings.NameValueTable.VALUE to value
         )
 
-        val packageName = if (Process.myUid() == Process.ROOT_UID) {
-            "root"
-        } else {
-            "com.android.shell"
-        }
-
         IContentProviderUtils.callCompat(
             settingsProvider,
-            packageName,
+            processPackageName,
             providerName,
             "PUT_global",
             name,
@@ -318,10 +365,6 @@ internal class SystemBridge : ISystemBridge.Stub() {
                 30 * 1000,
                 userId,
                 316,  /* PowerExemptionManager#REASON_SHELL */"shell"
-            )
-            Log.d(
-                TAG,
-                "Add $userId:$systemBridgePackageName to power save temp whitelist for 30s"
             )
         } catch (tr: Throwable) {
             Log.e(TAG, tr.toString())
@@ -366,6 +409,8 @@ internal class SystemBridge : ISystemBridge.Stub() {
             if (reply != null) {
                 Log.i(TAG, "Send binder to user app $systemBridgePackageName in user $userId")
                 isBinderSent = true
+                // Stop periodic check since connection is successful
+                stopKeyMapperPeriodicCheck()
                 return true
             } else {
                 Log.w(

@@ -125,8 +125,6 @@ class AndroidNetworkAdapter @Inject constructor(
             .build()
 
         connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
-
-        Timber.e("Is wifi connected: ${isWifiConnected.value}")
     }
 
     override fun isWifiEnabled(): Boolean = wifiManager.isWifiEnabled
