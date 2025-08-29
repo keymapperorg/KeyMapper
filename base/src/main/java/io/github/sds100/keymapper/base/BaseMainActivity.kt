@@ -31,7 +31,6 @@ import io.github.sds100.keymapper.base.system.accessibility.AccessibilityService
 import io.github.sds100.keymapper.base.system.permissions.RequestPermissionDelegate
 import io.github.sds100.keymapper.base.trigger.RecordTriggerControllerImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
-import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupControllerImpl
 import io.github.sds100.keymapper.system.devices.AndroidDevicesAdapter
@@ -60,6 +59,9 @@ abstract class BaseMainActivity : AppCompatActivity() {
 
         const val ACTION_SAVE_FILE = "${BuildConfig.LIBRARY_PACKAGE_NAME}.ACTION_SAVE_FILE"
         const val EXTRA_FILE_URI = "${BuildConfig.LIBRARY_PACKAGE_NAME}.EXTRA_FILE_URI"
+
+        const val ACTION_START_SYSTEM_BRIDGE =
+            "${BuildConfig.LIBRARY_PACKAGE_NAME}.ACTION_START_SYSTEM_BRIDGE"
     }
 
     @Inject
@@ -171,21 +173,6 @@ abstract class BaseMainActivity : AppCompatActivity() {
             }
             .launchIn(lifecycleScope)
 
-        // Must launch when the activity is resumed
-        // so the nav controller can be found
-        launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
-            if (viewModel.handledActivityLaunchIntent) {
-                return@launchRepeatOnLifecycle
-            }
-
-            when (intent?.action) {
-                ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG -> {
-                    viewModel.onCantFindAccessibilitySettings()
-                    viewModel.handledActivityLaunchIntent = true
-                }
-            }
-        }
-
         IntentFilter().apply {
             addAction(ACTION_SAVE_FILE)
 
@@ -196,6 +183,8 @@ abstract class BaseMainActivity : AppCompatActivity() {
                 ContextCompat.RECEIVER_EXPORTED,
             )
         }
+
+        handleIntent(intent)
     }
 
     override fun onResume() {
@@ -234,6 +223,29 @@ abstract class BaseMainActivity : AppCompatActivity() {
         } else {
             // IMPORTANT! return super so that the back navigation button still works.
             super.onGenericMotionEvent(event)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        when (intent?.action) {
+            ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG -> {
+                viewModel.onCantFindAccessibilitySettings()
+                // Only clear the intent if it is handled in case it is used elsewhere
+                this.intent = null
+            }
+
+            ACTION_START_SYSTEM_BRIDGE -> {
+                viewModel.launchProModeSetup()
+
+                // Only clear the intent if it is handled in case it is used elsewhere
+                this.intent = null
+            }
         }
     }
 

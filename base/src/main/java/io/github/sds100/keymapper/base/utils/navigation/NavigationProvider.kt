@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.utils.navigation
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -172,8 +173,9 @@ fun SetupNavigation(
     navigationProvider: NavigationProviderImpl,
     navController: NavHostController,
 ) {
+    @SuppressLint("StateFlowValueCalledInComposition")
     val navEvent: NavigateEvent? by navigationProvider.onNavigate
-        .collectAsStateWithLifecycle(null)
+        .collectAsStateWithLifecycle(navigationProvider.onNavigate.value)
 
     val returnResult: String? by navigationProvider.onReturnResult
         .collectAsStateWithLifecycle(null)

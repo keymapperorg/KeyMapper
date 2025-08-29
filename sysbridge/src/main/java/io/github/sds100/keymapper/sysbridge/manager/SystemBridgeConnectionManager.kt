@@ -1,13 +1,11 @@
 package io.github.sds100.keymapper.sysbridge.manager
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Build
 import android.os.IBinder
 import android.os.IBinder.DeathRecipient
 import android.os.RemoteException
 import androidx.annotation.RequiresApi
-import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
@@ -17,6 +15,7 @@ import io.github.sds100.keymapper.sysbridge.starter.SystemBridgeStarter
 import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -32,7 +31,6 @@ import javax.inject.Singleton
  */
 @Singleton
 class SystemBridgeConnectionManagerImpl @Inject constructor(
-    @ApplicationContext private val ctx: Context,
     private val coroutineScope: CoroutineScope,
     private val starter: SystemBridgeStarter,
 ) : SystemBridgeConnectionManager {
@@ -41,11 +39,20 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
     private var systemBridgeFlow: MutableStateFlow<ISystemBridge?> = MutableStateFlow(null)
 
     override val isConnected: Flow<Boolean> = systemBridgeFlow.map { it != null }
+    override val onUnexpectedDeath: Channel<Unit> = Channel()
+    private var isExpectedDeath: Boolean = false
 
     private val deathRecipient: DeathRecipient = DeathRecipient {
-        // TODO show notification when pro mode is stopped for an unexpected reason. Do not show it if the user stopped it. Add action to open the set up screen through MainActivity action.
         synchronized(systemBridgeLock) {
             systemBridgeFlow.update { null }
+
+            if (!isExpectedDeath) {
+                coroutineScope.launch {
+                    onUnexpectedDeath.send(Unit)
+                }
+            }
+
+            isExpectedDeath = false
         }
     }
 
@@ -79,10 +86,13 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
 
     override fun stopSystemBridge() {
         synchronized(systemBridgeLock) {
+            isExpectedDeath = true
+
             try {
                 systemBridgeFlow.value?.destroy()
-            } catch (_: RemoteException) {
-                deathRecipient.binderDied()
+            } catch (e: RemoteException) {
+                // This is expected to throw an exception because the destroy() method kills
+                // the process.
             }
         }
     }
@@ -131,6 +141,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
 @RequiresApi(Build.VERSION_CODES.Q)
 interface SystemBridgeConnectionManager {
     val isConnected: Flow<Boolean>
+    val onUnexpectedDeath: Channel<Unit>
 
     fun <T> run(block: (ISystemBridge) -> T): KMResult<T>
     fun stopSystemBridge()
