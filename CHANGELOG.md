@@ -18,6 +18,10 @@
 - Dropped support for rerouting key events on Android 11. This was a workaround for a specific bug
   in Android 11 which fewer than 10% of users are using and less are probably using that feature.
 
+## Fixed
+
+- Restoring subgroups works and does not freeze Key Mapper
+
 ## [3.2.0](https://github.com/sds100/KeyMapper/releases/tag/v3.2.0)
 
 #### TO BE RELEASED
