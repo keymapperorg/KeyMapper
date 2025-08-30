@@ -160,14 +160,17 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     }
 
     override fun startSystemBridgeWithRoot() {
+        preferences.set(Keys.isSystemBridgeEmergencyKilled, false)
         systemBridgeSetupController.startWithRoot()
     }
 
     override fun startSystemBridgeWithShizuku() {
+        preferences.set(Keys.isSystemBridgeEmergencyKilled, false)
         systemBridgeSetupController.startWithShizuku()
     }
 
     override suspend fun startSystemBridgeWithAdb() {
+        preferences.set(Keys.isSystemBridgeEmergencyKilled, false)
         if (isAdbAutoStartAllowed.first()) {
             systemBridgeSetupController.autoStartWithAdb()
         } else {

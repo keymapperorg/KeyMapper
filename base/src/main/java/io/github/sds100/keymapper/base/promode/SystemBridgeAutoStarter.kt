@@ -146,13 +146,19 @@ class SystemBridgeAutoStarter @Inject constructor(
                 .distinctUntilChanged() // Must come before the filterNotNull
                 .filterNotNull()
                 .collectLatest { type ->
-                    showAutoStartNotification(getString(R.string.system_bridge_died_notification_restarting_text))
                     autoStart(type)
                 }
         }
     }
 
     private suspend fun autoStart(type: AutoStartType) {
+        if (isSystemBridgeEmergencyKilled()) {
+            Timber.w("Not auto starting the system bridge because it was emergency killed by the user")
+            return
+        }
+
+        showAutoStartNotification(getString(R.string.system_bridge_died_notification_restarting_text))
+
         lastAutoStartTime = SystemClock.elapsedRealtime()
 
         when (type) {
@@ -184,6 +190,10 @@ class SystemBridgeAutoStarter @Inject constructor(
         } catch (_: TimeoutCancellationException) {
             showAutoStartFailedNotification()
         }
+    }
+
+    private suspend fun isSystemBridgeEmergencyKilled(): Boolean {
+        return preferences.get(Keys.isSystemBridgeEmergencyKilled).first() == true
     }
 
     private fun showSystemBridgeKilledNotification(text: String) {

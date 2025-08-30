@@ -83,8 +83,6 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
         // Do not automatically turn on the wireless debugging switch. When the user turns it on,
         // Key Mapper will automatically pair.
         PAIR_DEVICE,
-
-        // TODO add tap build number many times
     }
 
     private val activityManager: ActivityManager = accessibilityService.getSystemService()!!

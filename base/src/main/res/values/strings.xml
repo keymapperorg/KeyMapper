@@ -549,7 +549,6 @@
     <!-- Dialog stuff -->
 
     <!-- Notification strings -->
-    <string name="notification_channel_ime_picker">Keyboard picker</string>
     <string name="notification_channel_toggle_mappings">Pause/Resume key maps</string>
     <string name="notification_channel_keyboard_hidden">Keyboard is hidden warning</string>
     <string name="notification_channel_toggle_keyboard">Toggle Key Mapper keyboard</string>

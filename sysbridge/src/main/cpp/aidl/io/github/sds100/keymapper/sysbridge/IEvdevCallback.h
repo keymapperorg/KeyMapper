@@ -31,6 +31,7 @@ public:
 
   static constexpr uint32_t TRANSACTION_onEvdevEventLoopStarted = FIRST_CALL_TRANSACTION + 0;
   static constexpr uint32_t TRANSACTION_onEvdevEvent = FIRST_CALL_TRANSACTION + 1;
+    static constexpr uint32_t TRANSACTION_onEmergencyKillSystemBridge = FIRST_CALL_TRANSACTION + 2;
 
   static std::shared_ptr<IEvdevCallback> fromBinder(const ::ndk::SpAIBinder& binder);
   static binder_status_t writeToParcel(AParcel* parcel, const std::shared_ptr<IEvdevCallback>& instance);
@@ -39,6 +40,8 @@ public:
   static const std::shared_ptr<IEvdevCallback>& getDefaultImpl();
   virtual ::ndk::ScopedAStatus onEvdevEventLoopStarted() = 0;
   virtual ::ndk::ScopedAStatus onEvdevEvent(const std::string& in_devicePath, int64_t in_timeSec, int64_t in_timeUsec, int32_t in_type, int32_t in_code, int32_t in_value, int32_t in_androidCode, bool* _aidl_return) = 0;
+
+    virtual ::ndk::ScopedAStatus onEmergencyKillSystemBridge() = 0;
 private:
   static std::shared_ptr<IEvdevCallback> default_impl;
 };
@@ -46,6 +49,8 @@ class IEvdevCallbackDefault : public IEvdevCallback {
 public:
   ::ndk::ScopedAStatus onEvdevEventLoopStarted() override;
   ::ndk::ScopedAStatus onEvdevEvent(const std::string& in_devicePath, int64_t in_timeSec, int64_t in_timeUsec, int32_t in_type, int32_t in_code, int32_t in_value, int32_t in_androidCode, bool* _aidl_return) override;
+
+    ::ndk::ScopedAStatus onEmergencyKillSystemBridge() override;
   ::ndk::SpAIBinder asBinder() override;
   bool isRemote() override;
 };

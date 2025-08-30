@@ -198,6 +198,8 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDeviceNa
     return result;
 }
 
+struct timeval powerButtonDownTime = {0, 0};
+
 /**
  * @return Whether the events were all handled by the callback. If the callback dies then this
  * returns false.
@@ -218,9 +220,24 @@ bool onEpollEvdevEvent(DeviceContext *deviceContext, IEvdevCallback *callback) {
         if (rc == LIBEVDEV_READ_STATUS_SUCCESS) { // rc == 0
             int32_t outKeycode = -1;
             uint32_t outFlags = -1;
+
             deviceContext->keyLayoutMap.mapKey(inputEvent.code, 0, &outKeycode, &outFlags);
 
-            // TODO if power button (matching scancode OR key code) is pressed for more than 10 seconds, stop the systembridge process. Call kill from here
+            // 26 = KEYCODE_POWER
+            if (inputEvent.code == KEY_POWER || outKeycode == 26) {
+                if (inputEvent.value == 1) {
+                    // Down click
+                    powerButtonDownTime = inputEvent.time;
+                } else if (inputEvent.value == 0) {
+                    // Up click
+
+                    // If held down for 10 seconds or more, kill system bridge.
+                    if (inputEvent.time.tv_sec - powerButtonDownTime.tv_sec >= 10) {
+                        callback->onEmergencyKillSystemBridge();
+                        exit(0);
+                    }
+                }
+            }
 
             bool returnValue;
             ndk::ScopedAStatus callbackResult = callback->onEvdevEvent(deviceContext->devicePath,

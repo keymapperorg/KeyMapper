@@ -121,4 +121,7 @@ object Keys {
 
     val isProModeAutoStartBootEnabled =
         booleanPreferencesKey("key_is_pro_mode_auto_start_boot_enabled")
+
+    val isSystemBridgeEmergencyKilled =
+        booleanPreferencesKey("key_is_system_bridge_emergency_killed")
 }

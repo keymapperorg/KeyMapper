@@ -62,7 +62,6 @@ class NotificationController @Inject constructor(
 
         const val CHANNEL_TOGGLE_KEY_MAPS = "channel_toggle_remaps"
 
-        // TODO delete all ime picker notifications and auto showing logic.
         @Deprecated("Removed in 4.0.0")
         const val CHANNEL_IME_PICKER = "channel_ime_picker"
 
