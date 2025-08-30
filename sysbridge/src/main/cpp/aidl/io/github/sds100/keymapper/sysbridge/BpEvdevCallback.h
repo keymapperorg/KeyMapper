@@ -21,8 +21,7 @@ public:
 
   ::ndk::ScopedAStatus onEvdevEventLoopStarted() override;
   ::ndk::ScopedAStatus onEvdevEvent(const std::string& in_devicePath, int64_t in_timeSec, int64_t in_timeUsec, int32_t in_type, int32_t in_code, int32_t in_value, int32_t in_androidCode, bool* _aidl_return) override;
-
-    ::ndk::ScopedAStatus onEmergencyKillSystemBridge() override;
+  ::ndk::ScopedAStatus onEmergencyKillSystemBridge() override;
 };
 }  // namespace sysbridge
 }  // namespace keymapper
