@@ -142,12 +142,6 @@ internal class SystemBridge : ISystemBridge.Stub() {
     private val wifiManager: IWifiManager
     private val permissionManager: IPermissionManager
 
-    private val processPackageName = if (Process.myUid() == Process.ROOT_UID) {
-        "root"
-    } else {
-        "com.android.shell"
-    }
-
     init {
         val libraryPath = System.getProperty("keymapper_sysbridge.library.path")
         @SuppressLint("UnsafeDynamicallyLoadedCode")
@@ -274,6 +268,18 @@ internal class SystemBridge : ISystemBridge.Stub() {
     override fun grabEvdevDevice(devicePath: String?): Boolean {
         devicePath ?: return false
         return grabEvdevDeviceNative(devicePath)
+    }
+
+    override fun grabEvdevDeviceArray(devicePath: Array<out String>?): Boolean {
+        devicePath ?: return false
+
+        for (path in devicePath) {
+            Log.i(TAG, "Grabbing evdev device $path")
+            grabEvdevDeviceNative(path)
+
+        }
+
+        return true
     }
 
     override fun ungrabEvdevDevice(devicePath: String?): Boolean {

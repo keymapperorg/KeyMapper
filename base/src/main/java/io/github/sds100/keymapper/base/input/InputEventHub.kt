@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.base.input
 
 import android.os.Build
-import android.os.RemoteException
 import android.view.KeyEvent
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.base.BuildConfig
@@ -11,9 +10,10 @@ import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.firstBlocking
-import io.github.sds100.keymapper.common.utils.isError
+import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.then
+import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.IEvdevCallback
@@ -29,7 +29,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -58,7 +61,7 @@ class InputEventHubImpl @Inject constructor(
     private val keyEventQueue = Channel<InjectKeyEventModel>(capacity = 100)
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    private val evdevHandles: EvdevHandleCache = EvdevHandleCache(
+    private val evdevHandlesCache: EvdevHandleCache = EvdevHandleCache(
         coroutineScope,
         devicesAdapter,
         systemBridgeConnManager,
@@ -73,6 +76,8 @@ class InputEventHubImpl @Inject constructor(
             }
         }.stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
+    private val invalidateGrabbedDevicesChannel: Channel<Unit> = Channel(capacity = 10)
+
     init {
         startKeyEventProcessingLoop()
 
@@ -84,6 +89,18 @@ class InputEventHubImpl @Inject constructor(
                         systemBridgeConnManager.run { bridge ->
                             bridge.registerEvdevCallback(this@InputEventHubImpl)
                         }
+                    }
+            }
+
+            coroutineScope.launch {
+                invalidateGrabbedDevicesChannel
+                    .consumeAsFlow()
+                    .map {
+                        clients.values.flatMap { it.grabbedEvdevDevices }.toSet().toList()
+                    }
+                    .flowOn(Dispatchers.Default)
+                    .collectLatest { devices ->
+                        invalidateGrabbedEvdevDevices(devices)
                     }
             }
         }
@@ -111,7 +128,10 @@ class InputEventHubImpl @Inject constructor(
 
     override fun onEvdevEventLoopStarted() {
         Timber.i("On evdev event loop started")
-        invalidateGrabbedEvdevDevices()
+
+        coroutineScope.launch {
+            invalidateGrabbedDevicesChannel.send(Unit)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -126,7 +146,7 @@ class InputEventHubImpl @Inject constructor(
     ): Boolean {
         devicePath ?: return false
 
-        val handle = evdevHandles.getByPath(devicePath) ?: return false
+        val handle = evdevHandlesCache.getByPath(devicePath) ?: return false
         val evdevEvent = KMEvdevEvent(handle, type, code, value, androidCode, timeSec, timeUsec)
 
         return onInputEvent(evdevEvent, InputEventDetectionSource.EVDEV)
@@ -216,6 +236,7 @@ class InputEventHubImpl @Inject constructor(
         callback: InputEventHubCallback,
         eventTypes: List<Int>,
     ) {
+        Timber.d("InputEventHub: Registering client $clientId")
         if (clients.containsKey(clientId)) {
             throw IllegalArgumentException("This client already has a callback registered!")
         }
@@ -224,8 +245,9 @@ class InputEventHubImpl @Inject constructor(
     }
 
     override fun unregisterClient(clientId: String) {
+        Timber.d("InputEventHub: Unregistering client $clientId")
         clients.remove(clientId)
-        invalidateGrabbedEvdevDevices()
+        invalidateGrabbedDevicesChannel.trySend(Unit)
     }
 
     override fun setGrabbedEvdevDevices(clientId: String, devices: List<EvdevDeviceInfo>) {
@@ -235,7 +257,7 @@ class InputEventHubImpl @Inject constructor(
 
         clients[clientId] = clients[clientId]!!.copy(grabbedEvdevDevices = devices.toSet())
 
-        invalidateGrabbedEvdevDevices()
+        invalidateGrabbedDevicesChannel.trySend(Unit)
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -244,43 +266,37 @@ class InputEventHubImpl @Inject constructor(
             throw IllegalArgumentException("This client $clientId is not registered when trying to grab devices!")
         }
 
-        val devices = evdevHandles.getDevices().toSet()
+        val devices = evdevHandlesCache.getDevices().toSet()
         clients[clientId] = clients[clientId]!!.copy(grabbedEvdevDevices = devices)
 
-        invalidateGrabbedEvdevDevices()
+        invalidateGrabbedDevicesChannel.trySend(Unit)
     }
 
-    private fun invalidateGrabbedEvdevDevices() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            return
-        }
-
-        val evdevDevices: Set<EvdevDeviceInfo> =
-            clients.values.flatMap { it.grabbedEvdevDevices }.toSet()
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private suspend fun invalidateGrabbedEvdevDevices(evdevDevices: List<EvdevDeviceInfo>) {
+        // Invalidate the cache first to make sure it is up to date.
+        evdevHandlesCache.invalidate()
 
         // Grabbing can block if there are other grabbing or event loop start/stop operations happening.
-        coroutineScope.launch(Dispatchers.IO) {
-            try {
-                val ungrabResult =
-                    systemBridgeConnManager.run { bridge -> bridge.ungrabAllEvdevDevices() }
-                Timber.i("Ungrabbed all evdev devices: $ungrabResult")
+        systemBridgeConnManager.run { bridge -> bridge.ungrabAllEvdevDevices() }
+            .onSuccess { Timber.i("Ungrabbed all evdev devices: $it") }
+            .then {
+                val handles: Array<String> =
+                    evdevDevices.mapNotNull { evdevHandlesCache.getByInfo(it)?.path }.toTypedArray()
 
-                if (ungrabResult.isError) {
-                    Timber.e("Failed to ungrab all evdev devices before grabbing.")
-                    return@launch
+                val result =
+                    systemBridgeConnManager.run { bridge -> bridge.grabEvdevDeviceArray(handles) }
+
+                if (result.valueOrNull() == true) {
+                    Success(Unit)
+                } else {
+                    KMError.Exception(Exception("Failed to grab"))
                 }
-
-                for (device in evdevDevices) {
-                    val handle = evdevHandles.getByInfo(device) ?: continue
-                    val grabResult =
-                        systemBridgeConnManager.run { bridge -> bridge.grabEvdevDevice(handle.path) }
-
-                    Timber.i("Grabbed evdev device ${device.name}: $grabResult")
-                }
-            } catch (_: RemoteException) {
-                Timber.e("Failed to invalidate grabbed device. Is the system bridge dead?")
             }
-        }
+            .onSuccess { result -> Timber.i("Grabbed evdev devices [${evdevDevices.joinToString { it.name }}]") }
+            .onFailure {
+                Timber.e("Failed to grab evdev devices.")
+            }
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)

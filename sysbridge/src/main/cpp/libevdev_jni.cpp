@@ -61,6 +61,7 @@ JNIEXPORT jboolean JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDeviceNative(JNIEnv *env,
                                                                                      jobject thiz,
                                                                                      jstring jDevicePath) {
+
     const char *devicePath = env->GetStringUTFChars(jDevicePath, nullptr);
     if (devicePath == nullptr) {
         return false;
@@ -187,8 +188,8 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDeviceNa
         }
 
         evdevDevices->insert_or_assign(devicePath, context);
-        result = true;
         fdToDevicePath->insert_or_assign(fd, devicePath);
+        result = true;
 
         LOGI("Grabbed device %s, %s", libevdev_get_name(dev), context.devicePath);
     }

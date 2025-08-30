@@ -23,11 +23,7 @@ static binder_status_t _aidl_io_github_sds100_keymapper_sysbridge_IEvdevCallback
     case (FIRST_CALL_TRANSACTION + 0 /*onEvdevEventLoopStarted*/): {
 
       ::ndk::ScopedAStatus _aidl_status = _aidl_impl->onEvdevEventLoopStarted();
-      _aidl_ret_status = AParcel_writeStatusHeader(_aidl_out, _aidl_status.get());
-      if (_aidl_ret_status != STATUS_OK) break;
-
-      if (!AStatus_isOk(_aidl_status.get())) break;
-
+        _aidl_ret_status = STATUS_OK;
       break;
     }
     case (FIRST_CALL_TRANSACTION + 1 /*onEvdevEvent*/): {
@@ -95,7 +91,7 @@ BpEvdevCallback::~BpEvdevCallback() {}
     (FIRST_CALL_TRANSACTION + 0 /*onEvdevEventLoopStarted*/),
     _aidl_in.getR(),
     _aidl_out.getR(),
-    0
+    FLAG_ONEWAY
     #ifdef BINDER_STABILITY_SUPPORT
     | FLAG_PRIVATE_LOCAL
     #endif  // BINDER_STABILITY_SUPPORT
@@ -106,10 +102,6 @@ BpEvdevCallback::~BpEvdevCallback() {}
   }
   if (_aidl_ret_status != STATUS_OK) goto _aidl_error;
 
-  _aidl_ret_status = AParcel_readStatusHeader(_aidl_out.get(), _aidl_status.getR());
-  if (_aidl_ret_status != STATUS_OK) goto _aidl_error;
-
-  if (!AStatus_isOk(_aidl_status.get())) goto _aidl_status_return;
   _aidl_error:
   _aidl_status.set(AStatus_fromStatus(_aidl_ret_status));
   _aidl_status_return:
