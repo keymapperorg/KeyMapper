@@ -112,10 +112,8 @@ internal class AdbMdns(
         var port: Int? = null
 
         if (isDiscovering.value) {
-            try {
+            runCatching {
                 nsdManager.stopServiceDiscovery(discoveryListener)
-            } catch (_: Exception) {
-
             }
         }
 
@@ -158,13 +156,14 @@ internal class AdbMdns(
         } catch (e: Exception) {
             Timber.e(e, "Failed to discover ADB port")
         } finally {
-            try {
+            runCatching {
                 if (SdkExtensions.getExtensionVersion(Build.VERSION_CODES.TIRAMISU) >= 7) {
                     nsdManager.stopServiceResolution(resolveListener)
                 }
-                nsdManager.stopServiceDiscovery(discoveryListener)
-            } catch (_: Exception) {
+            }
 
+            runCatching {
+                nsdManager.stopServiceDiscovery(discoveryListener)
             }
 
             // Clear the resolve channel if there is anything left.

@@ -24,6 +24,7 @@ import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
@@ -32,6 +33,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -62,59 +64,56 @@ class SystemBridgeAutoStarter @Inject constructor(
         ADB, SHIZUKU, ROOT
     }
 
-    private val isAdbAutoStartAllowed: Flow<Boolean> =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            combine(
-                permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS),
-                networkAdapter.isWifiConnected
-            ) { isWriteSecureSettingsGranted, isWifiConnected ->
-                isWriteSecureSettingsGranted && isWifiConnected && setupController.isAdbPaired()
+    // Use flatMapLatest so that any calls to ADB are only done if strictly necessary.
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val autoStartTypeFlow: Flow<AutoStartType?> =
+        suAdapter.isRootGranted.flatMapLatest { isRooted ->
+            if (isRooted) {
+                flowOf(AutoStartType.ROOT)
+            } else {
+                shizukuAdapter.isStarted.flatMapLatest { isShizukuStarted ->
+                    if (isShizukuStarted) {
+                        flowOf(AutoStartType.SHIZUKU)
+                    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        combine(
+                            permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS),
+                            networkAdapter.isWifiConnected
+                        ) { isWriteSecureSettingsGranted, isWifiConnected ->
+                            isWriteSecureSettingsGranted && isWifiConnected && setupController.isAdbPaired()
+                        }.distinctUntilChanged()
+                            .map { isAdbAutoStartAllowed ->
+                                if (isAdbAutoStartAllowed) AutoStartType.ADB else null
+                            }.filterNotNull()
+                    } else {
+                        flowOf(null)
+                    }
+                }
             }
-        } else {
-            flowOf(false)
         }
 
     /**
      * This emits values when the system bridge needs restarting after it being killed.
      */
-    private val restartFlow: Flow<AutoStartType?> = combine(
-        suAdapter.isRootGranted,
-        shizukuAdapter.isStarted,
-        isAdbAutoStartAllowed.distinctUntilChanged(),
-        connectionManager.connectionState,
-        ::getAutoStartType
-    )
-
-    private var lastAutoStartTime: Long? = null
-
-    private fun getAutoStartType(
-        isRooted: Boolean,
-        isShizukuStarted: Boolean,
-        isAdbAutoStartAllowed: Boolean,
-        connectionState: SystemBridgeConnectionState,
-    ): AutoStartType? {
-        // Do not autostart if it is connected or it was killed from the user
-        if (connectionState !is SystemBridgeConnectionState.Disconnected || connectionState.isExpected) {
-            return null
-        }
-
-        // Do not autostart if the system bridge was killed shortly after.
-        // This prevents infinite loops happening.
-        lastAutoStartTime?.let { lastAutoStartTime ->
-            if (connectionState.time - lastAutoStartTime < 30000) {
-                Timber.w("Not auto starting the system bridge because it was last auto started less than 30 secs ago")
-                showSystemBridgeKilledNotification(getString(R.string.system_bridge_died_notification_not_restarting_text))
-                return null
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val restartFlow: Flow<AutoStartType?> =
+        connectionManager.connectionState.flatMapLatest { connectionState ->
+            // Do not autostart if it is connected or it was killed from the user
+            if (connectionState !is SystemBridgeConnectionState.Disconnected || connectionState.isExpected) {
+                flowOf(null)
+            } else {
+                // Do not autostart if the system bridge was killed shortly after.
+                // This prevents infinite loops happening.
+                if (lastAutoStartTime != null && connectionState.time - lastAutoStartTime!! < 30000) {
+                    Timber.w("Not auto starting the system bridge because it was last auto started less than 30 secs ago")
+                    showSystemBridgeKilledNotification(getString(R.string.system_bridge_died_notification_not_restarting_text))
+                    flowOf(null)
+                } else {
+                    autoStartTypeFlow
+                }
             }
         }
 
-        return when {
-            isRooted -> AutoStartType.ROOT
-            isShizukuStarted -> AutoStartType.SHIZUKU
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && isAdbAutoStartAllowed -> AutoStartType.ADB
-            else -> null
-        }
-    }
+    private var lastAutoStartTime: Long? = null
 
     /**
      * This must only be called once in the application lifecycle
@@ -130,12 +129,7 @@ class SystemBridgeAutoStarter @Inject constructor(
                 connectionManager.connectionState.value is SystemBridgeConnectionState.Connected
 
             if (isBootAutoStartEnabled && !isConnected) {
-                val autoStartType = when {
-                    suAdapter.isRootGranted.value -> AutoStartType.ROOT
-                    shizukuAdapter.isStarted.value -> AutoStartType.SHIZUKU
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && isAdbAutoStartAllowed.first() -> AutoStartType.ADB
-                    else -> null
-                }
+                val autoStartType = autoStartTypeFlow.first()
 
                 if (autoStartType != null) {
                     coroutineScope.launch {
