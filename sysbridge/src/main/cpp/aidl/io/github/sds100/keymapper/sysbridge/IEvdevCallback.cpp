@@ -23,7 +23,7 @@ static binder_status_t _aidl_io_github_sds100_keymapper_sysbridge_IEvdevCallback
     case (FIRST_CALL_TRANSACTION + 0 /*onEvdevEventLoopStarted*/): {
 
       ::ndk::ScopedAStatus _aidl_status = _aidl_impl->onEvdevEventLoopStarted();
-        _aidl_ret_status = STATUS_OK;
+      _aidl_ret_status = STATUS_OK;
       break;
     }
     case (FIRST_CALL_TRANSACTION + 1 /*onEvdevEvent*/): {
