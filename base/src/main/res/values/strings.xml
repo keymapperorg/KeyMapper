@@ -1590,6 +1590,12 @@
     <string name="pro_mode_service_started">PRO mode service is running</string>
     <string name="pro_mode_stop_service_button">Stop</string>
 
+    <string name="title_pref_pro_mode_auto_start_at_boot">Automatically start at boot</string>
+    <string name="summary_pref_pro_mode_auto_start_at_boot">PRO Mode will start itself whenever you turn on or restart your device</string>
+
+    <string name="pro_mode_emergency_tip_title">Emergency tip</string>
+    <string name="pro_mode_emergency_tip_text">If your buttons stop working, hold down the power button for 10 seconds and release to disable PRO Mode.</string>
+
     <string name="pro_mode_setup_wizard_title">Setup wizard</string>
     <string name="pro_mode_setup_wizard_step_n">Step %d of %d</string>
     <string name="pro_mode_setup_wizard_use_assistant">Use interactive setup assistant</string>

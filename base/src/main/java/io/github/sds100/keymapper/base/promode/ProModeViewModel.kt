@@ -62,6 +62,10 @@ class ProModeViewModel @Inject constructor(
             ::buildSetupState
         ).stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
 
+    val autoStartBootEnabled: StateFlow<Boolean> =
+        useCase.isAutoStartBootEnabled
+            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     var showInfoCard by mutableStateOf(!useCase.isInfoDismissed())
         private set
 
@@ -139,6 +143,10 @@ class ProModeViewModel @Inject constructor(
 
     fun onRequestNotificationPermissionClick() {
         useCase.requestNotificationPermission()
+    }
+
+    fun onAutoStartBootToggled() {
+        useCase.toggleAutoStartBoot()
     }
 
     private fun buildSetupState(

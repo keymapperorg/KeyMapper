@@ -9,13 +9,13 @@ object Keys {
     val darkTheme = stringPreferencesKey("pref_dark_theme_mode")
 
     @Deprecated("Now use the libsu library to detect whether the device is rooted.")
-    val hasRootPermission = booleanPreferencesKey("pref_allow_root_features")
+//    val hasRootPermission = booleanPreferencesKey("pref_allow_root_features")
 
     val shownAppIntro = booleanPreferencesKey("pref_first_time")
 
-    val showToggleKeyMapsNotification = booleanPreferencesKey("pref_show_remappings_notification")
-    val showToggleKeyboardNotification =
-        booleanPreferencesKey("pref_toggle_key_mapper_keyboard_notification")
+//    val showToggleKeyMapsNotification = booleanPreferencesKey("pref_show_remappings_notification")
+//    val showToggleKeyboardNotification =
+//        booleanPreferencesKey("pref_toggle_key_mapper_keyboard_notification")
 
     val devicesThatChangeIme = stringSetPreferencesKey("pref_devices_that_change_ime")
     val changeImeOnDeviceConnect =

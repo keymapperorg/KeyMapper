@@ -29,8 +29,11 @@ import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Checklist
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Numbers
+import androidx.compose.material.icons.rounded.RestartAlt
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ButtonDefaults
@@ -62,6 +65,7 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
+import io.github.sds100.keymapper.base.utils.ui.compose.SwitchPreferenceCompose
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.FakeShizuku
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcon
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
@@ -74,6 +78,7 @@ fun ProModeScreen(
 ) {
     val proModeWarningState by viewModel.warningState.collectAsStateWithLifecycle()
     val proModeSetupState by viewModel.setupState.collectAsStateWithLifecycle()
+    val autoStartBootEnabled by viewModel.autoStartBootEnabled.collectAsStateWithLifecycle()
 
     ProModeScreen(
         modifier = modifier,
@@ -92,6 +97,8 @@ fun ProModeScreen(
             onRootButtonClick = viewModel::onRootButtonClick,
             onSetupWithKeyMapperClick = viewModel::onSetupWithKeyMapperClick,
             onRequestNotificationPermissionClick = viewModel::onRequestNotificationPermissionClick,
+            autoStartAtBoot = autoStartBootEnabled,
+            onAutoStartAtBootToggled = { viewModel.onAutoStartBootToggled() },
         )
     }
 }
@@ -169,6 +176,8 @@ private fun Content(
     onRootButtonClick: () -> Unit = {},
     onSetupWithKeyMapperClick: () -> Unit = {},
     onRequestNotificationPermissionClick: () -> Unit = {},
+    autoStartAtBoot: Boolean,
+    onAutoStartAtBootToggled: (Boolean) -> Unit = {},
 ) {
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         AnimatedVisibility(
@@ -213,6 +222,8 @@ private fun Content(
                         onRootButtonClick = onRootButtonClick,
                         onSetupWithKeyMapperClick = onSetupWithKeyMapperClick,
                         onRequestNotificationPermissionClick = onRequestNotificationPermissionClick,
+                        autoStartAtBoot = autoStartAtBoot,
+                        onAutoStartAtBootToggled = onAutoStartAtBootToggled,
                     )
                 }
             }
@@ -238,7 +249,9 @@ private fun SetupSection(
     onShizukuButtonClick: () -> Unit,
     onStopServiceClick: () -> Unit,
     onSetupWithKeyMapperClick: () -> Unit,
-    onRequestNotificationPermissionClick: () -> Unit = {}
+    onRequestNotificationPermissionClick: () -> Unit = {},
+    autoStartAtBoot: Boolean,
+    onAutoStartAtBootToggled: (Boolean) -> Unit = {}
 ) {
     Column(modifier) {
         OptionsHeaderRow(
@@ -277,12 +290,22 @@ private fun SetupSection(
         }
 
         when (state) {
-            ProModeState.Started -> ProModeStartedCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                onStopClick = onStopServiceClick
-            )
+            ProModeState.Started -> {
+                EmergencyTipCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                ProModeStartedCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    onStopClick = onStopServiceClick
+                )
+            }
 
             is ProModeState.Stopped -> {
                 if (state.isRootGranted) {
@@ -372,6 +395,26 @@ private fun SetupSection(
                 )
             }
         }
+
+        // Options section
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OptionsHeaderRow(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            icon = Icons.Rounded.Tune,
+            text = stringResource(R.string.pro_mode_options_title),
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        SwitchPreferenceCompose(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            title = stringResource(R.string.title_pref_pro_mode_auto_start_at_boot),
+            text = stringResource(R.string.summary_pref_pro_mode_auto_start_at_boot),
+            icon = Icons.Rounded.RestartAlt,
+            isChecked = autoStartAtBoot,
+            onCheckedChange = onAutoStartAtBootToggled
+        )
     }
 }
 
@@ -381,9 +424,15 @@ private fun WarningCard(
     state: ProModeWarningState,
     onButtonClick: () -> Unit = {},
 ) {
+    val borderStroke = if (state is ProModeWarningState.Understood) {
+        CardDefaults.outlinedCardBorder()
+    } else {
+        BorderStroke(1.dp, MaterialTheme.colorScheme.error)
+    }
+
     OutlinedCard(
         modifier = modifier,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+        border = borderStroke,
         elevation = CardDefaults.elevatedCardElevation()
     ) {
         Spacer(modifier = Modifier.height(16.dp))
@@ -544,6 +593,44 @@ private fun SetupCard(
 }
 
 @Composable
+private fun EmergencyTipCard(
+    modifier: Modifier = Modifier
+) {
+    OutlinedCard(
+        modifier = modifier,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
+        elevation = CardDefaults.elevatedCardElevation()
+    ) {
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+            Icon(
+                imageVector = Icons.Rounded.Info,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.tertiary,
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(
+                text = stringResource(R.string.pro_mode_emergency_tip_title),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            text = stringResource(R.string.pro_mode_emergency_tip_text),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
 private fun ProModeInfoCard(
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit = {}
@@ -615,7 +702,9 @@ private fun Preview() {
                     )
                 ),
                 showInfoCard = true,
-                onInfoCardDismiss = {}
+                onInfoCardDismiss = {},
+                autoStartAtBoot = false,
+                onAutoStartAtBootToggled = {}
             )
         }
     }
@@ -630,7 +719,9 @@ private fun PreviewDark() {
                 warningState = ProModeWarningState.Understood,
                 setupState = State.Data(ProModeState.Started),
                 showInfoCard = false,
-                onInfoCardDismiss = {}
+                onInfoCardDismiss = {},
+                autoStartAtBoot = true,
+                onAutoStartAtBootToggled = {}
             )
         }
     }
@@ -647,13 +738,32 @@ private fun PreviewCountingDown() {
                 ),
                 setupState = State.Loading,
                 showInfoCard = true,
-                onInfoCardDismiss = {}
+                onInfoCardDismiss = {},
+                autoStartAtBoot = false,
+                onAutoStartAtBootToggled = {}
             )
         }
     }
 }
 
-@Preview(name = "Notification Permission Not Granted")
+@Preview
+@Composable
+private fun PreviewStarted() {
+    KeyMapperTheme {
+        ProModeScreen {
+            Content(
+                warningState = ProModeWarningState.Understood,
+                setupState = State.Data(ProModeState.Started),
+                showInfoCard = false,
+                onInfoCardDismiss = {},
+                autoStartAtBoot = false,
+                onAutoStartAtBootToggled = {}
+            )
+        }
+    }
+}
+
+@Preview
 @Composable
 private fun PreviewNotificationPermissionNotGranted() {
     KeyMapperTheme {
@@ -668,7 +778,9 @@ private fun PreviewNotificationPermissionNotGranted() {
                     )
                 ),
                 showInfoCard = false,
-                onInfoCardDismiss = {}
+                onInfoCardDismiss = {},
+                autoStartAtBoot = false,
+                onAutoStartAtBootToggled = {}
             )
         }
     }

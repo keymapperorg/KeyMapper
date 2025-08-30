@@ -186,6 +186,16 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         preferences.set(Keys.isProModeInfoDismissed, true)
     }
 
+    override val isAutoStartBootEnabled: Flow<Boolean> =
+        preferences.get(Keys.isProModeAutoStartBootEnabled)
+            .map { it ?: PreferenceDefaults.PRO_MODE_AUTOSTART_BOOT }
+
+    override fun toggleAutoStartBoot() {
+        preferences.update(Keys.isProModeAutoStartBootEnabled) {
+            !(it ?: PreferenceDefaults.PRO_MODE_AUTOSTART_BOOT)
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.R)
     private fun getNextStep(
         accessibilityServiceState: AccessibilityServiceState,
@@ -213,6 +223,9 @@ interface SystemBridgeSetupUseCase {
 
     fun isInfoDismissed(): Boolean
     fun dismissInfo()
+
+    val isAutoStartBootEnabled: Flow<Boolean>
+    fun toggleAutoStartBoot()
 
     val isSetupAssistantEnabled: Flow<Boolean>
     fun toggleSetupAssistant()
