@@ -18,12 +18,10 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -41,9 +39,6 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperTapTarget
-import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
-import io.github.sds100.keymapper.base.utils.ui.compose.icons.ProModeIcon
-import io.github.sds100.keymapper.base.utils.ui.compose.icons.ProModeIconDisabled
 import io.github.sds100.keymapper.base.utils.ui.compose.keyMapperShowcaseStyle
 
 @Composable
@@ -57,17 +52,8 @@ fun RecordTriggerButtonRow(
     onSkipTapTarget: () -> Unit = {},
     showAdvancedTriggerTapTarget: Boolean = false,
     onAdvancedTriggerTapTargetCompleted: () -> Unit = {},
-    isProModeSelected: Boolean = false // TODO
 ) {
     Column {
-//        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-//            Text(
-//                text = stringResource(R.string.trigger_record_with_pro_mode),
-//                overflow = TextOverflow.Ellipsis
-//            )
-//            Spacer(modifier = Modifier.width(16.dp))
-//
-//        }
         Row(modifier, verticalAlignment = Alignment.CenterVertically) {
             IntroShowcase(
                 showIntroShowCase = showRecordTriggerTapTarget,
@@ -90,39 +76,24 @@ fun RecordTriggerButtonRow(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            Switch(
-                checked = isProModeSelected,
-                onCheckedChange = {},
-                enabled = recordTriggerState !is RecordTriggerState.CountingDown,
-                thumbContent = {
-                    if (isProModeSelected) {
-                        Icon(imageVector = KeyMapperIcons.ProModeIcon, contentDescription = null)
-                    } else {
-                        Icon(
-                            imageVector = KeyMapperIcons.ProModeIconDisabled,
-                            contentDescription = null
-                        )
-
-                    }
-                })
-//            IntroShowcase(
-//                showIntroShowCase = showAdvancedTriggerTapTarget,
-//                onShowCaseCompleted = onAdvancedTriggerTapTargetCompleted,
-//                dismissOnClickOutside = true,
-//            ) {
-//                AdvancedTriggersButton(
-//                    modifier = Modifier
-//                        .weight(1f)
-//                        .introShowCaseTarget(0, style = keyMapperShowcaseStyle()) {
-//                            KeyMapperTapTarget(
-//                                OnboardingTapTarget.ADVANCED_TRIGGERS,
-//                                showSkipButton = false,
-//                            )
-//                        },
-//                    isEnabled = recordTriggerState !is RecordTriggerState.CountingDown,
-//                    onClick = onAdvancedTriggersClick,
-//                )
-//            }
+            IntroShowcase(
+                showIntroShowCase = showAdvancedTriggerTapTarget,
+                onShowCaseCompleted = onAdvancedTriggerTapTargetCompleted,
+                dismissOnClickOutside = true,
+            ) {
+                AdvancedTriggersButton(
+                    modifier = Modifier
+                        .weight(1f)
+                        .introShowCaseTarget(0, style = keyMapperShowcaseStyle()) {
+                            KeyMapperTapTarget(
+                                OnboardingTapTarget.ADVANCED_TRIGGERS,
+                                showSkipButton = false,
+                            )
+                        },
+                    isEnabled = recordTriggerState !is RecordTriggerState.CountingDown,
+                    onClick = onAdvancedTriggersClick,
+                )
+            }
         }
     }
 }
@@ -229,7 +200,6 @@ private fun PreviewCountingDown() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.CountingDown(3),
-                isProModeSelected = true
             )
         }
     }
@@ -243,7 +213,6 @@ private fun PreviewStopped() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.Idle,
-                isProModeSelected = false
             )
         }
     }
@@ -257,7 +226,6 @@ private fun PreviewStoppedCompact() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.Idle,
-                isProModeSelected = true
             )
         }
     }
