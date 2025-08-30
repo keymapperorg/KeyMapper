@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.display.DisplayManager
 import android.provider.Settings
+import android.view.Display
 import android.view.Surface
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
@@ -95,6 +96,10 @@ class AndroidDisplayAdapter @Inject constructor(
 
                 override fun onDisplayChanged(displayId: Int) {
                     _orientation.update { getDisplayOrientation() }
+
+                    // This listener API has lower latency than the broadcast receiver so also use this.
+                    val isScreenStateOn = displayManager.displays.first().state == Display.STATE_ON
+                    isScreenOn.update { isScreenStateOn }
                 }
             },
             null,
@@ -112,7 +117,8 @@ class AndroidDisplayAdapter @Inject constructor(
         )
     }
 
-    override fun isAutoRotateEnabled(): Boolean = SettingsUtils.getSystemSetting<Int>(ctx, Settings.System.ACCELEROMETER_ROTATION) == 1
+    override fun isAutoRotateEnabled(): Boolean =
+        SettingsUtils.getSystemSetting<Int>(ctx, Settings.System.ACCELEROMETER_ROTATION) == 1
 
     override fun enableAutoRotate(): KMResult<*> {
         val success = SettingsUtils.putSystemSetting(ctx, Settings.System.ACCELEROMETER_ROTATION, 1)
@@ -213,9 +219,11 @@ class AndroidDisplayAdapter @Inject constructor(
         }
     }
 
-    override fun enableAutoBrightness(): KMResult<*> = setBrightnessMode(Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
+    override fun enableAutoBrightness(): KMResult<*> =
+        setBrightnessMode(Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
 
-    override fun disableAutoBrightness(): KMResult<*> = setBrightnessMode(Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL)
+    override fun disableAutoBrightness(): KMResult<*> =
+        setBrightnessMode(Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL)
 
     private fun setBrightnessMode(mode: Int): KMResult<*> {
         val success =
@@ -232,14 +240,15 @@ class AndroidDisplayAdapter @Inject constructor(
         return _orientation.updateAndGet { getDisplayOrientation() }
     }
 
-    private fun getDisplayOrientation(): Orientation = when (val sdkRotation = displayManager.displays[0].rotation) {
-        Surface.ROTATION_0 -> Orientation.ORIENTATION_0
-        Surface.ROTATION_90 -> Orientation.ORIENTATION_90
-        Surface.ROTATION_180 -> Orientation.ORIENTATION_180
-        Surface.ROTATION_270 -> Orientation.ORIENTATION_270
+    private fun getDisplayOrientation(): Orientation =
+        when (val sdkRotation = displayManager.displays[0].rotation) {
+            Surface.ROTATION_0 -> Orientation.ORIENTATION_0
+            Surface.ROTATION_90 -> Orientation.ORIENTATION_90
+            Surface.ROTATION_180 -> Orientation.ORIENTATION_180
+            Surface.ROTATION_270 -> Orientation.ORIENTATION_270
 
-        else -> throw Exception("Don't know how to convert $sdkRotation to Orientation")
-    }
+            else -> throw Exception("Don't know how to convert $sdkRotation to Orientation")
+        }
 
     private fun isAodEnabled(): Boolean {
         return SettingsUtils.getSecureSetting<Int>(ctx, "doze_always_on") == 1
