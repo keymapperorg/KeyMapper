@@ -58,6 +58,7 @@ class ProModeViewModel @Inject constructor(
             useCase.isSystemBridgeConnected,
             useCase.isRootGranted,
             useCase.shizukuSetupState,
+            useCase.isNotificationPermissionGranted,
             ::buildSetupState
         ).stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
 
@@ -136,10 +137,15 @@ class ProModeViewModel @Inject constructor(
         }
     }
 
+    fun onRequestNotificationPermissionClick() {
+        useCase.requestNotificationPermission()
+    }
+
     private fun buildSetupState(
         isSystemBridgeConnected: Boolean,
         isRootGranted: Boolean,
-        shizukuSetupState: ShizukuSetupState
+        shizukuSetupState: ShizukuSetupState,
+        isNotificationPermissionGranted: Boolean
     ): State<ProModeState> {
         if (isSystemBridgeConnected) {
             return State.Data(ProModeState.Started)
@@ -148,6 +154,7 @@ class ProModeViewModel @Inject constructor(
                 ProModeState.Stopped(
                     isRootGranted = isRootGranted,
                     shizukuSetupState = shizukuSetupState,
+                    isNotificationPermissionGranted = isNotificationPermissionGranted,
                 )
             )
         }
@@ -164,6 +171,7 @@ sealed class ProModeState {
     data class Stopped(
         val isRootGranted: Boolean,
         val shizukuSetupState: ShizukuSetupState,
+        val isNotificationPermissionGranted: Boolean,
     ) : ProModeState()
 
     data object Started : ProModeState()

@@ -80,6 +80,9 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         systemBridgeConnectionManager.connectionState
             .map { it is SystemBridgeConnectionState.Connected }
 
+    override val isNotificationPermissionGranted: Flow<Boolean> =
+        permissionAdapter.isGrantedFlow(Permission.POST_NOTIFICATIONS)
+
     @OptIn(ExperimentalCoroutinesApi::class)
     @RequiresApi(Build.VERSION_CODES.R)
     override val nextSetupStep: Flow<SystemBridgeSetupStep> =
@@ -93,7 +96,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
                     } else {
                         combine(
                             accessibilityServiceAdapter.state,
-                            permissionAdapter.isGrantedFlow(Permission.POST_NOTIFICATIONS),
+                            isNotificationPermissionGranted,
                             systemBridgeSetupController.isDeveloperOptionsEnabled,
                             networkAdapter.isWifiConnected,
                             systemBridgeSetupController.isWirelessDebuggingEnabled,
@@ -219,6 +222,8 @@ interface SystemBridgeSetupUseCase {
     val shizukuSetupState: Flow<ShizukuSetupState>
     fun openShizukuApp()
     fun requestShizukuPermission()
+
+    val isNotificationPermissionGranted: Flow<Boolean>
     fun requestNotificationPermission()
 
     fun stopSystemBridge()

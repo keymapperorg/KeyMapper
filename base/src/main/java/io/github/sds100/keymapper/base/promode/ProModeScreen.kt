@@ -29,6 +29,7 @@ import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Checklist
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Numbers
 import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material3.BottomAppBar
@@ -90,6 +91,7 @@ fun ProModeScreen(
             onShizukuButtonClick = viewModel::onShizukuButtonClick,
             onRootButtonClick = viewModel::onRootButtonClick,
             onSetupWithKeyMapperClick = viewModel::onSetupWithKeyMapperClick,
+            onRequestNotificationPermissionClick = viewModel::onRequestNotificationPermissionClick,
         )
     }
 }
@@ -166,6 +168,7 @@ private fun Content(
     onStopServiceClick: () -> Unit = {},
     onRootButtonClick: () -> Unit = {},
     onSetupWithKeyMapperClick: () -> Unit = {},
+    onRequestNotificationPermissionClick: () -> Unit = {},
 ) {
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         AnimatedVisibility(
@@ -209,6 +212,7 @@ private fun Content(
                         onStopServiceClick = onStopServiceClick,
                         onRootButtonClick = onRootButtonClick,
                         onSetupWithKeyMapperClick = onSetupWithKeyMapperClick,
+                        onRequestNotificationPermissionClick = onRequestNotificationPermissionClick,
                     )
                 }
             }
@@ -233,7 +237,8 @@ private fun SetupSection(
     onRootButtonClick: () -> Unit = {},
     onShizukuButtonClick: () -> Unit,
     onStopServiceClick: () -> Unit,
-    onSetupWithKeyMapperClick: () -> Unit
+    onSetupWithKeyMapperClick: () -> Unit,
+    onRequestNotificationPermissionClick: () -> Unit = {}
 ) {
     Column(modifier) {
         OptionsHeaderRow(
@@ -243,6 +248,33 @@ private fun SetupSection(
         )
 
         Spacer(modifier = Modifier.height(8.dp))
+
+        // Show notification permission warning if permission not granted
+        if (state is ProModeState.Stopped && !state.isNotificationPermissionGranted) {
+            SetupCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                color = MaterialTheme.colorScheme.errorContainer,
+                icon = {
+                    Icon(
+                        imageVector = Icons.Rounded.Notifications,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
+                },
+                title = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_title),
+                content = {
+                    Text(
+                        text = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_description),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                },
+                buttonText = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_button),
+                onButtonClick = onRequestNotificationPermissionClick
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
 
         when (state) {
             ProModeState.Started -> ProModeStartedCard(
@@ -274,7 +306,8 @@ private fun SetupSection(
                             )
                         },
                         buttonText = stringResource(R.string.pro_mode_root_detected_button_start_service),
-                        onButtonClick = onRootButtonClick
+                        onButtonClick = onRootButtonClick,
+                        enabled = state.isNotificationPermissionGranted
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -307,7 +340,8 @@ private fun SetupSection(
                             )
                         },
                         buttonText = shizukuButtonText,
-                        onButtonClick = onShizukuButtonClick
+                        onButtonClick = onShizukuButtonClick,
+                        enabled = state.isNotificationPermissionGranted
                     )
                 }
 
@@ -334,7 +368,7 @@ private fun SetupSection(
                     content = {},
                     buttonText = setupKeyMapperText,
                     onButtonClick = onSetupWithKeyMapperClick,
-                    enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                    enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && state.isNotificationPermissionGranted
                 )
             }
         }
@@ -577,6 +611,7 @@ private fun Preview() {
                     ProModeState.Stopped(
                         isRootGranted = false,
                         shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
+                        isNotificationPermissionGranted = true,
                     )
                 ),
                 showInfoCard = true,
@@ -612,6 +647,27 @@ private fun PreviewCountingDown() {
                 ),
                 setupState = State.Loading,
                 showInfoCard = true,
+                onInfoCardDismiss = {}
+            )
+        }
+    }
+}
+
+@Preview(name = "Notification Permission Not Granted")
+@Composable
+private fun PreviewNotificationPermissionNotGranted() {
+    KeyMapperTheme {
+        ProModeScreen {
+            Content(
+                warningState = ProModeWarningState.Understood,
+                setupState = State.Data(
+                    ProModeState.Stopped(
+                        isRootGranted = true,
+                        shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
+                        isNotificationPermissionGranted = false,
+                    )
+                ),
+                showInfoCard = false,
                 onInfoCardDismiss = {}
             )
         }
