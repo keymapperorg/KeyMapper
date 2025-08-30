@@ -38,6 +38,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -125,21 +126,22 @@ class SystemBridgeAutoStarter @Inject constructor(
                 .map { it ?: PreferenceDefaults.PRO_MODE_AUTOSTART_BOOT }
                 .first()
 
+            // Wait 5 seconds for the system bridge to potentially connect itself to Key Mapper
+            // before starting it
             val isConnected =
-                connectionManager.connectionState.value is SystemBridgeConnectionState.Connected
+                withTimeoutOrNull(5000L) {
+                    connectionManager.connectionState.value is SystemBridgeConnectionState.Connected
+                } ?: false
 
             if (isBootAutoStartEnabled && !isConnected) {
                 val autoStartType = autoStartTypeFlow.first()
 
                 if (autoStartType != null) {
-                    coroutineScope.launch {
-                        autoStart(autoStartType)
-                    }
+                    autoStart(autoStartType)
                 }
             }
-        }
 
-        coroutineScope.launch {
+            // Only start collecting the restart flow after potentially auto starting it for the first time.
             restartFlow
                 .distinctUntilChanged() // Must come before the filterNotNull
                 .filterNotNull()
