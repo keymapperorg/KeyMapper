@@ -40,7 +40,7 @@ class KeyMapDetectionController(
         KeyMapAlgorithm(coroutineScope, detectUseCase, performActionsUseCase, detectConstraints)
 
     private val isPaused: StateFlow<Boolean> =
-        pauseKeyMapsUseCase.isPaused.stateIn(coroutineScope, SharingStarted.Eagerly, true)
+        pauseKeyMapsUseCase.isPaused.stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     init {
         // Must first register before collecting anything that may call reset()

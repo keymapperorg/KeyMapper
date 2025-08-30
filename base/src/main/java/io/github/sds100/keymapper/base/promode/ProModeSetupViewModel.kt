@@ -40,7 +40,7 @@ class ProModeSetupViewModel @Inject constructor(
             SystemBridgeSetupStep.WIFI_NETWORK -> useCase.connectWifiNetwork()
             SystemBridgeSetupStep.WIRELESS_DEBUGGING -> useCase.enableWirelessDebugging()
             SystemBridgeSetupStep.ADB_PAIRING -> useCase.pairWirelessAdb()
-            SystemBridgeSetupStep.START_SERVICE -> useCase.startSystemBridgeWithAdb()
+            SystemBridgeSetupStep.START_SERVICE -> viewModelScope.launch { useCase.startSystemBridgeWithAdb() }
             SystemBridgeSetupStep.STARTED -> viewModelScope.launch { popBackStack() }
         }
     }

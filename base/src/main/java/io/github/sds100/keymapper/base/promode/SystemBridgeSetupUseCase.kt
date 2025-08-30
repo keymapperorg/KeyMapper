@@ -18,11 +18,14 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -47,7 +50,9 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
             combine(
                 permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS),
                 networkAdapter.isWifiConnected
-            ) { isWriteSecureSettingsGranted, isWifiConnected -> isWriteSecureSettingsGranted && isWifiConnected }
+            ) { isWriteSecureSettingsGranted, isWifiConnected ->
+                isWriteSecureSettingsGranted && isWifiConnected && systemBridgeSetupController.isAdbPaired()
+            }.flowOn(Dispatchers.IO)
         } else {
             flowOf(false)
         }
@@ -98,11 +103,6 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
                 }
             }
         }
-
-    @RequiresApi(Build.VERSION_CODES.R)
-    override val setupProgress: Flow<Float> = nextSetupStep.map { step ->
-        step.stepIndex.toFloat() / SystemBridgeSetupStep.entries.size
-    }
 
     override val isRootGranted: Flow<Boolean> = suAdapter.isRootGranted
 
@@ -164,8 +164,8 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         systemBridgeSetupController.startWithShizuku()
     }
 
-    override fun startSystemBridgeWithAdb() {
-        if (isAdbAutoStartAllowed.firstBlocking()) {
+    override suspend fun startSystemBridgeWithAdb() {
+        if (isAdbAutoStartAllowed.first()) {
             systemBridgeSetupController.autoStartWithAdb()
         } else {
             systemBridgeSetupController.startWithAdb()
@@ -181,7 +181,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
-    private suspend fun getNextStep(
+    private fun getNextStep(
         accessibilityServiceState: AccessibilityServiceState,
         isNotificationPermissionGranted: Boolean,
         isDeveloperOptionsEnabled: Boolean,
@@ -194,7 +194,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
             !isDeveloperOptionsEnabled -> SystemBridgeSetupStep.DEVELOPER_OPTIONS
             !isWifiConnected -> SystemBridgeSetupStep.WIFI_NETWORK
             !isWirelessDebuggingEnabled -> SystemBridgeSetupStep.WIRELESS_DEBUGGING
-            isWirelessDebuggingEnabled && !systemBridgeSetupController.isAdbPaired() -> SystemBridgeSetupStep.ADB_PAIRING
+            isWirelessDebuggingEnabled -> SystemBridgeSetupStep.ADB_PAIRING
             else -> SystemBridgeSetupStep.START_SERVICE
         }
     }
@@ -213,7 +213,6 @@ interface SystemBridgeSetupUseCase {
 
     val isSystemBridgeConnected: Flow<Boolean>
     val nextSetupStep: Flow<SystemBridgeSetupStep>
-    val setupProgress: Flow<Float>
 
     val isRootGranted: Flow<Boolean>
 
@@ -230,5 +229,5 @@ interface SystemBridgeSetupUseCase {
     fun pairWirelessAdb()
     fun startSystemBridgeWithRoot()
     fun startSystemBridgeWithShizuku()
-    fun startSystemBridgeWithAdb()
+    suspend fun startSystemBridgeWithAdb()
 }

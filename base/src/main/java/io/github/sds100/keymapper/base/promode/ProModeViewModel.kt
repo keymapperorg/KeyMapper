@@ -56,7 +56,6 @@ class ProModeViewModel @Inject constructor(
     val setupState: StateFlow<State<ProModeState>> =
         combine(
             useCase.isSystemBridgeConnected,
-            useCase.setupProgress,
             useCase.isRootGranted,
             useCase.shizukuSetupState,
             ::buildSetupState
@@ -139,7 +138,6 @@ class ProModeViewModel @Inject constructor(
 
     private fun buildSetupState(
         isSystemBridgeConnected: Boolean,
-        setupProgress: Float,
         isRootGranted: Boolean,
         shizukuSetupState: ShizukuSetupState
     ): State<ProModeState> {
@@ -150,7 +148,6 @@ class ProModeViewModel @Inject constructor(
                 ProModeState.Stopped(
                     isRootGranted = isRootGranted,
                     shizukuSetupState = shizukuSetupState,
-                    setupProgress = setupProgress
                 )
             )
         }
@@ -167,7 +164,6 @@ sealed class ProModeState {
     data class Stopped(
         val isRootGranted: Boolean,
         val shizukuSetupState: ShizukuSetupState,
-        val setupProgress: Float
     ) : ProModeState()
 
     data object Started : ProModeState()

@@ -72,9 +72,11 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
         /**
          * The max time to spend searching for an accessibility node.
          */
-        const val INTERACTION_TIMEOUT = 5000L
+        const val INTERACTION_TIMEOUT = 10000L
 
         private val PAIRING_CODE_REGEX = Regex("^\\d{6}$")
+        private val IPV4_REGEX =
+            Regex("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
     }
 
     private enum class InteractionStep {
@@ -103,6 +105,9 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
      * ask the user to do the steps manually if it failed to do them automatically.
      */
     private var interactionTimeoutJob: Job? = null
+
+    // Store the pairing code so only one request to pair is sent per pairing code.
+    private var foundPairingCode: String? = null
 
     fun onServiceConnected() {
         createNotificationChannel()
@@ -181,8 +186,6 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
     @RequiresApi(Build.VERSION_CODES.R)
     private fun doPairingInteractiveStep(rootNode: AccessibilityNodeInfo) {
-        // TODO add more checks that the nodes are actually the correct ones
-
         val pairingCodeText = findPairingCodeText(rootNode)
 
         if (pairingCodeText == null) {
@@ -198,8 +201,15 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
     @RequiresApi(Build.VERSION_CODES.R)
     private suspend fun onPairingCodeFound(pairingCode: String) {
+        // Only pair once per pairing code.
+        if (foundPairingCode == pairingCode) {
+            return
+        }
+
+        foundPairingCode = pairingCode
+
+        Timber.i("Pairing code found ${pairingCode}. Pairing ADB...")
         setupController.pairWirelessAdb(pairingCode).onSuccess {
-            Timber.i("Pairing code found. Starting System Bridge with ADB...")
             onPairingSuccess()
         }.onFailure {
             Timber.e("Failed to pair with wireless ADB: $it")
@@ -245,6 +255,19 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
     private fun clickPairWithCodeButton(rootNode: AccessibilityNodeInfo) {
         rootNode
             .findNodeRecursively { it.className == "androidx.recyclerview.widget.RecyclerView" }
+            ?.takeIf { recyclerView ->
+                // There are many settings screens with RecyclerViews so make sure
+                // the correct page is showing before clicking. It is not as simple
+                // as checking the words on the screen due to different languages.
+                val ipAddressPortText: CharSequence? =
+                    runCatching {
+                        // RecyclerView -> LinearLayout -> RelativeLayout -> TextView
+                        recyclerView.getChild(1).getChild(0).getChild(1)
+                    }.getOrNull()?.text
+
+                val ipText = ipAddressPortText?.split(":")?.firstOrNull()
+                ipText != null && IPV4_REGEX.matches(ipText)
+            }
             ?.runCatching { getChild(3) }
             ?.getOrNull()
             ?.performAction(AccessibilityNodeInfo.ACTION_CLICK)

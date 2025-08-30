@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.sysbridge.adb
 
 import android.content.Context
 import android.os.Build
-import android.os.SystemProperties
 import android.preference.PreferenceManager
 import androidx.annotation.RequiresApi
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -12,12 +11,9 @@ import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.common.utils.then
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -43,20 +39,7 @@ class AdbManagerImpl @Inject constructor(
 
         val result = withContext(Dispatchers.IO) {
             return@withContext commandMutex.withLock {
-                adbConnectMdns.start()
-                val port = try {
-                    withTimeout(10000L) { adbConnectMdns.port.first { it != null } }
-                } catch (_: TimeoutCancellationException) {
-                    SystemProperties.getInt("service.adb.tcp.port", -1).let { sysPropPort ->
-                        if (sysPropPort == -1) {
-                            SystemProperties.getInt("persist.adb.tcp.port", -1)
-                        } else {
-                            sysPropPort
-                        }
-                    }
-                }
-
-                adbConnectMdns.stop()
+                val port = adbConnectMdns.discoverPort()
 
                 if (port == null || port == -1) {
                     return@withLock AdbError.ServerNotFound
@@ -91,13 +74,7 @@ class AdbManagerImpl @Inject constructor(
 
     override suspend fun pair(code: String): KMResult<Unit> {
         return pairMutex.withLock {
-            adbPairMdns.start()
-            val port = try {
-                withTimeout(10000L) { adbPairMdns.port.first { it != null } }
-            } catch (_: TimeoutCancellationException) {
-                null
-            }
-            adbPairMdns.stop()
+            val port = adbPairMdns.discoverPort()
 
             if (port == null) {
                 return@withLock AdbError.ServerNotFound

@@ -5,6 +5,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -101,7 +102,14 @@ fun ProModeSetupScreen(
     ) { paddingValues ->
         when (state) {
             State.Loading -> {
-                CircularProgressIndicator()
+                Box(
+                    Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
 
             is State.Data -> {
@@ -514,6 +522,17 @@ private fun ProModeSetupScreenStartedPreview() {
                     isSetupAssistantButtonEnabled = true
                 )
             )
+        )
+    }
+}
+
+
+@Preview(name = "Loading", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun ProModeSetupScreenLoadingPreview() {
+    KeyMapperTheme {
+        ProModeSetupScreen(
+            state = State.Loading
         )
     }
 }

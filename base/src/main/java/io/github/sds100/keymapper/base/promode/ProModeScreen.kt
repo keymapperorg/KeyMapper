@@ -39,7 +39,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
@@ -332,15 +331,7 @@ private fun SetupSection(
                         )
                     },
                     title = stringResource(R.string.pro_mode_set_up_with_key_mapper_title),
-                    content = {
-                        if (state.setupProgress < 1 && state.setupProgress > 0) {
-                            LinearProgressIndicator(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 8.dp),
-                                progress = { state.setupProgress })
-                        }
-                    },
+                    content = {},
                     buttonText = setupKeyMapperText,
                     onButtonClick = onSetupWithKeyMapperClick,
                     enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
@@ -586,7 +577,6 @@ private fun Preview() {
                     ProModeState.Stopped(
                         isRootGranted = false,
                         shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
-                        setupProgress = 0.5f
                     )
                 ),
                 showInfoCard = true,

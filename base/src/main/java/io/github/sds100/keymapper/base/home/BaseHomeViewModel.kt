@@ -56,6 +56,10 @@ abstract class BaseHomeViewModel(
 
     init {
         viewModelScope.launch {
+
+            // TODO remove
+            navigate("promode", NavDestination.ProModeSetup)
+
             onboarding.showWhatsNew.collect { showWhatsNew ->
                 if (showWhatsNew) {
                     showWhatsNewDialog()

@@ -47,7 +47,7 @@ private class PeerInfo(
             put(data)
         }
 
-        Log.d(TAG, "write PeerInfo ${toStringShort()}")
+//        Log.d(TAG, "write PeerInfo ${toStringShort()}")
     }
 
     override fun toString(): String {
@@ -87,7 +87,7 @@ private class PairingPacketHeader(
             putInt(payload)
         }
 
-        Log.d(TAG, "write PairingPacketHeader ${toStringShort()}")
+//        Log.d(TAG, "write PairingPacketHeader ${toStringShort()}")
     }
 
     override fun toString(): String {
@@ -218,7 +218,7 @@ internal class AdbPairingClient(
 
         val sslSocket = sslContext.socketFactory.createSocket(socket, host, port, true) as SSLSocket
         sslSocket.startHandshake()
-        Log.d(TAG, "Handshake succeeded.")
+//        Log.d(TAG, "Handshake succeeded.")
 
         inputStream = DataInputStream(sslSocket.inputStream)
         outputStream = DataOutputStream(sslSocket.outputStream)
@@ -254,7 +254,7 @@ internal class AdbPairingClient(
 
         outputStream.write(buffer.array())
         outputStream.write(payload)
-        Log.d(TAG, "write payload, size=${payload.size}")
+//        Log.d(TAG, "write payload, size=${payload.size}")
     }
 
     private fun doExchangeMsgs(): Boolean {
@@ -291,11 +291,11 @@ internal class AdbPairingClient(
         val decrypted =
             pairingContext.decrypt(theirMessage) ?: throw AdbInvalidPairingCodeException()
         if (decrypted.size != kMaxPeerInfoSize) {
-            Log.e(TAG, "Got size=${decrypted.size} PeerInfo.size=$kMaxPeerInfoSize")
+//            Log.e(TAG, "Got size=${decrypted.size} PeerInfo.size=$kMaxPeerInfoSize")
             return false
         }
-        val theirPeerInfo = PeerInfo.readFrom(ByteBuffer.wrap(decrypted))
-        Log.d(TAG, theirPeerInfo.toString())
+        PeerInfo.readFrom(ByteBuffer.wrap(decrypted))
+//        Log.d(TAG, theirPeerInfo.toString())
         return true
     }
 

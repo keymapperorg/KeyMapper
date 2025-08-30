@@ -31,11 +31,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -65,6 +69,9 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
     override val setupAssistantStep: MutableSharedFlow<SystemBridgeSetupStep?> = MutableSharedFlow()
     private val setupAssistantStepState =
         setupAssistantStep.stateIn(coroutineScope, SharingStarted.Eagerly, null)
+
+    private val isAdbPairedResult: MutableStateFlow<Boolean?> = MutableStateFlow(null)
+    private var isAdbPairedJob: Job? = null
 
     private var autoStartJob: Job? = null
 
@@ -117,14 +124,16 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
         autoStartJob = coroutineScope.launch {
             if (!canWriteGlobalSettings()) {
+                Timber.w("Cannot auto start with ADB. WRITE_SECURE_SETTINGS permission not granted")
                 return@launch
             }
 
             if (connectionManager.connectionState.value !is SystemBridgeConnectionState.Disconnected) {
+                Timber.w("Not auto starting. System Bridge is already connected.")
                 return@launch
             }
 
-            enableDeveloperOptions()
+            SettingsUtils.putGlobalSetting(ctx, DEVELOPER_OPTIONS_SETTING, 1)
 
             try {
                 withTimeout(5000L) { isDeveloperOptionsEnabled.first { it } }
@@ -132,21 +141,33 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
                 return@launch
             }
 
-            // This is IMPORTANT. First turn on ADB before enabling wireless debugging because
-            // turning on developer options just before can cause the Shell to be killed once
-            // the system bridge is started.
-            SettingsUtils.putGlobalSetting(ctx, Settings.Global.ADB_ENABLED, 1)
-            enableWirelessDebugging()
-
-            // Wait for wireless debugging to be enabled before starting with ADB
-            try {
-                withTimeout(5000L) { isWirelessDebuggingEnabled.first { it } }
-            } catch (_: TimeoutCancellationException) {
-                return@launch
-            }
-
             if (isAdbPaired()) {
+                // This is IMPORTANT. First turn on ADB before enabling wireless debugging because
+                // turning on developer options just before can cause the Shell to be killed once
+                // the system bridge is started.
+                SettingsUtils.putGlobalSetting(ctx, Settings.Global.ADB_ENABLED, 1)
+                SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 1)
+
+                // Wait for wireless debugging to be enabled before starting with ADB
+                try {
+                    withTimeout(5000L) { isWirelessDebuggingEnabled.first { it } }
+                } catch (_: TimeoutCancellationException) {
+                    return@launch
+                }
+
                 startWithAdb()
+
+                // Wait for the service to connect before turning off wireless debugging
+                withTimeoutOrNull(5000L) {
+                    connectionManager.connectionState
+                        .filterIsInstance<SystemBridgeConnectionState.Connected>()
+                        .first()
+                }
+
+                // Disable wireless debugging when done
+                SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 0)
+            } else {
+                Timber.e("Autostart failed. ADB not paired successfully.")
             }
         }
     }
@@ -206,12 +227,24 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.R)
     override suspend fun isAdbPaired(): Boolean {
-        if (!getWirelessDebuggingEnabled()) {
-            return false
+        // Sometimes multiple calls to this function can happen in a short space of time
+        // so only run one job to check whether it is paired.
+        if (isAdbPairedJob == null || isAdbPairedJob?.isCompleted == true) {
+            isAdbPairedJob?.cancel()
+            isAdbPairedResult.value = null
+
+            isAdbPairedJob = coroutineScope.launch {
+                if (!getWirelessDebuggingEnabled()) {
+                    SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 1)
+                }
+
+                // Try running a command to see if the pairing is working correctly.
+                isAdbPairedResult.value = adbManager.executeCommand("sh").isSuccess
+            }
         }
 
-        // Try running a command to see if the pairing is working correctly.
-        return adbManager.executeCommand("sh").isSuccess
+        // Wait for the next result
+        return isAdbPairedResult.filterNotNull().first()
     }
 
     /**
