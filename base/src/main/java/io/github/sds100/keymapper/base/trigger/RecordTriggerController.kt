@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
+import io.github.sds100.keymapper.system.inputevents.Scancode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -44,8 +45,8 @@ class RecordTriggerControllerImpl @Inject constructor(
         private const val INPUT_EVENT_HUB_ID = "record_trigger"
 
         private val SCAN_CODES_BLACKLIST = setOf(
-            // BTN_TOUCH
-            330,
+            Scancode.BTN_TOUCH,
+            Scancode.BTN_TOOL_FINGER,
         )
     }
 
@@ -67,28 +68,15 @@ class RecordTriggerControllerImpl @Inject constructor(
     private val downEvdevEvents: MutableSet<KMEvdevEvent> = mutableSetOf()
     private val dpadMotionEventTracker: DpadMotionEventTracker = DpadMotionEventTracker()
 
-    // TODO update when system bridge is (dis)connected
-    override val isEvdevRecordingPermitted: MutableStateFlow<Boolean> =
-        MutableStateFlow(getIsEvdevRecordingPermitted())
-
     // TODO set to false by default and turn into a flow
     private var isEvdevRecordingEnabled: Boolean = true
 
     override fun setEvdevRecordingEnabled(enabled: Boolean) {
-        if (!isEvdevRecordingPermitted.value) {
-            return
-        }
-
         if (state.value is RecordTriggerState.CountingDown) {
             return
         }
 
         isEvdevRecordingEnabled = enabled
-    }
-
-    private fun getIsEvdevRecordingPermitted(): Boolean {
-        // TODO check if the preference enabling pro mode key maps is turned on
-        return inputEventHub.isSystemBridgeConnected()
     }
 
     override fun onInputEvent(
@@ -101,10 +89,9 @@ class RecordTriggerControllerImpl @Inject constructor(
 
         when (event) {
             is KMEvdevEvent -> {
-                // TODO check
-//                if (!isEvdevRecordingEnabled || !isEvdevRecordingPermitted.value) {
-//                    return false
-//                }
+                if (!isEvdevRecordingEnabled) {
+                    return false
+                }
 
                 // Do not record evdev events that are not key events.
                 if (event.type != KMEvdevEvent.TYPE_KEY_EVENT) {
@@ -114,8 +101,6 @@ class RecordTriggerControllerImpl @Inject constructor(
                 if (SCAN_CODES_BLACKLIST.contains(event.code)) {
                     return false
                 }
-
-                Timber.d("Recorded evdev event ${event.code} ${KeyEvent.keyCodeToString(event.androidCode)}")
 
                 // Must also remove old down events if a new down even is received.
                 val matchingDownEvent: KMEvdevEvent? = downEvdevEvents.find {
@@ -130,13 +115,14 @@ class RecordTriggerControllerImpl @Inject constructor(
                     downEvdevEvents.add(event)
                 } else if (event.isUpEvent) {
                     onRecordKey(createEvdevRecordedKey(event))
+                    Timber.d("Recorded evdev event ${event.code} ${KeyEvent.keyCodeToString(event.androidCode)}")
                 }
 
                 return true
             }
 
             is KMGamePadEvent -> {
-                if (isEvdevRecordingEnabled && isEvdevRecordingPermitted.value) {
+                if (isEvdevRecordingEnabled) {
                     return false
                 }
 
@@ -144,20 +130,19 @@ class RecordTriggerControllerImpl @Inject constructor(
 
                 for (keyEvent in dpadKeyEvents) {
                     if (keyEvent.action == KeyEvent.ACTION_DOWN) {
-                        Timber.d("Recorded motion event ${KeyEvent.keyCodeToString(keyEvent.keyCode)}")
-
                         val recordedKey = createKeyEventRecordedKey(
                             keyEvent,
                             detectionSource,
                         )
                         onRecordKey(recordedKey)
+                        Timber.d("Recorded motion event ${KeyEvent.keyCodeToString(keyEvent.keyCode)}")
                     }
                 }
                 return true
             }
 
             is KMKeyEvent -> {
-                if (isEvdevRecordingEnabled && isEvdevRecordingPermitted.value) {
+                if (isEvdevRecordingEnabled) {
                     return false
                 }
 
@@ -182,6 +167,7 @@ class RecordTriggerControllerImpl @Inject constructor(
                     if (matchingDownEvent != null) {
                         val recordedKey = createKeyEventRecordedKey(event, detectionSource)
                         onRecordKey(recordedKey)
+                        Timber.d("Recorded key event ${KeyEvent.keyCodeToString(event.keyCode)}")
                     }
                 }
                 return true
@@ -227,7 +213,7 @@ class RecordTriggerControllerImpl @Inject constructor(
             return false
         }
 
-        if (isEvdevRecordingEnabled && isEvdevRecordingPermitted.value) {
+        if (isEvdevRecordingEnabled) {
             return false
         }
 
@@ -315,7 +301,6 @@ interface RecordTriggerController {
     val state: StateFlow<RecordTriggerState>
     val onRecordKey: Flow<RecordedKey>
 
-    val isEvdevRecordingPermitted: Flow<Boolean>
     fun setEvdevRecordingEnabled(enabled: Boolean)
 
     /**
