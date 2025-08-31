@@ -14,7 +14,6 @@ import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
-import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
 import io.github.sds100.keymapper.system.inputevents.Scancode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -68,7 +67,6 @@ class RecordTriggerControllerImpl @Inject constructor(
     private val downEvdevEvents: MutableSet<KMEvdevEvent> = mutableSetOf()
     private val dpadMotionEventTracker: DpadMotionEventTracker = DpadMotionEventTracker()
 
-    // TODO set to false by default and turn into a flow
     private var isEvdevRecordingEnabled: Boolean = true
 
     override fun setEvdevRecordingEnabled(enabled: Boolean) {
@@ -200,40 +198,6 @@ class RecordTriggerControllerImpl @Inject constructor(
         state.update { RecordTriggerState.Completed(recordedKeys) }
 
         return Success(Unit)
-    }
-
-    /**
-     * Process motion events from the activity so that DPAD buttons can be recorded
-     * even when the Key Mapper IME is not being used. DO NOT record the key events because
-     * these are sent from the joy sticks.
-     * @return Whether the motion event is consumed.
-     */
-    fun onActivityMotionEvent(event: KMGamePadEvent): Boolean {
-        if (state.value !is RecordTriggerState.CountingDown) {
-            return false
-        }
-
-        if (isEvdevRecordingEnabled) {
-            return false
-        }
-
-        val keyEvent =
-            dpadMotionEventTracker.convertMotionEvent(event).firstOrNull() ?: return false
-
-        if (!KeyEventUtils.isDpadKeyCode(keyEvent.keyCode)) {
-            return false
-        }
-
-        if (keyEvent.action == KeyEvent.ACTION_UP) {
-            val recordedKey = createKeyEventRecordedKey(
-                keyEvent,
-                InputEventDetectionSource.INPUT_METHOD,
-            )
-
-            onRecordKey(recordedKey)
-        }
-
-        return true
     }
 
     private fun onRecordKey(recordedKey: RecordedKey) {

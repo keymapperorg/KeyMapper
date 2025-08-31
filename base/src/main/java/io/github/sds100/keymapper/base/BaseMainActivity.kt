@@ -26,6 +26,8 @@ import com.anggrayudi.storage.extension.openInputStream
 import com.anggrayudi.storage.extension.openOutputStream
 import com.anggrayudi.storage.extension.toDocumentFile
 import io.github.sds100.keymapper.base.compose.ComposeColors
+import io.github.sds100.keymapper.base.input.InputEventDetectionSource
+import io.github.sds100.keymapper.base.input.InputEventHubImpl
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.permissions.RequestPermissionDelegate
@@ -99,6 +101,9 @@ abstract class BaseMainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var networkAdapter: AndroidNetworkAdapter
+
+    @Inject
+    lateinit var inputEventHub: InputEventHubImpl
 
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
 
@@ -211,12 +216,19 @@ abstract class BaseMainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    /**
+     * Process motion events from the activity so that DPAD buttons can be recorded
+     * even when the Key Mapper IME is not being used. DO NOT record the key events because
+     * these are sent from the joy sticks.
+     */
     override fun onGenericMotionEvent(event: MotionEvent?): Boolean {
         event ?: return super.onGenericMotionEvent(event)
 
-        // TODO send this to inputeventhub
         val gamepadEvent = KMGamePadEvent.fromMotionEvent(event) ?: return false
-        val consume = recordTriggerController.onActivityMotionEvent(gamepadEvent)
+        val consume = inputEventHub.onInputEvent(
+            gamepadEvent,
+            detectionSource = InputEventDetectionSource.INPUT_METHOD
+        )
 
         return if (consume) {
             true
