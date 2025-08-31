@@ -44,7 +44,8 @@
 #endif
 
 static void run_server(const char *apk_path, const char *lib_path, const char *main_class,
-        const char *process_name, const char *package_name) {
+                       const char *process_name, const char *package_name,
+                       const char *version_code) {
     if (setenv("CLASSPATH", apk_path, true)) {
         LOGE("can't set CLASSPATH\n");
         exit(EXIT_FATAL_SET_CLASSPATH);
@@ -96,6 +97,7 @@ v_current = (uintptr_t) v + v_size - sizeof(char *); \
     ARG_PUSH_FMT(argv, "-Djava.class.path=%s", apk_path)
     ARG_PUSH_FMT(argv, "-Dkeymapper_sysbridge.library.path=%s", lib_path)
     ARG_PUSH_FMT(argv, "-Dkeymapper_sysbridge.package=%s", package_name)
+    ARG_PUSH_FMT(argv, "-Dkeymapper_sysbridge.version_code=%s", version_code)
     ARG_PUSH_DEBUG_VM_PARAMS(argv)
     ARG_PUSH(argv, "/system/bin")
     ARG_PUSH_FMT(argv, "--nice-name=%s", process_name)
@@ -111,11 +113,12 @@ v_current = (uintptr_t) v + v_size - sizeof(char *); \
 }
 
 static void start_server(const char *apk_path, const char *lib_path, const char *main_class,
-        const char *process_name, const char *package_name) {
+                         const char *process_name, const char *package_name,
+                         const char *version_code) {
 
     if (daemon(false, false) == 0) {
         LOGD("child");
-        run_server(apk_path, lib_path, main_class, process_name, package_name);
+        run_server(apk_path, lib_path, main_class, process_name, package_name, version_code);
     } else {
         perrorf("fatal: can't fork\n");
         exit(EXIT_FATAL_FORK);
@@ -171,6 +174,7 @@ int starter_main(int argc, char *argv[]) {
     char *apk_path = nullptr;
     char *lib_path = nullptr;
     char *package_name = nullptr;
+    char *version_code = nullptr;
 
     // Get the apk path from the program arguments. This gets the path by setting the
     // start of the apk path array to after the "--apk=" by offsetting by 6 characters.
@@ -181,12 +185,15 @@ int starter_main(int argc, char *argv[]) {
             lib_path = argv[i] + 6;
         } else if (strncmp(argv[i], "--package=", 10) == 0) {
             package_name = argv[i] + 10;
+        } else if (strncmp(argv[i], "--version_code=", 15) == 0) {
+            version_code = argv[i] + 15;
         }
     }
 
     printf("info: apk path = %s\n", apk_path);
     printf("info: lib path = %s\n", lib_path);
     printf("info: package name = %s\n", package_name);
+    printf("info: version code = %s\n", version_code);
 
     int uid = getuid();
     if (uid != 0 && uid != 2000) {
@@ -199,7 +206,7 @@ int starter_main(int argc, char *argv[]) {
     if (uid == 0) {
         chown("/data/local/tmp/keymapper_sysbridge_starter", 2000, 2000);
         se::setfilecon("/data/local/tmp/keymapper_sysbridge_starter",
-                "u:object_r:shell_data_file:s0");
+                       "u:object_r:shell_data_file:s0");
         switch_cgroup();
 
         int sdkLevel = 0;
@@ -292,7 +299,7 @@ int starter_main(int argc, char *argv[]) {
     printf("info: starting server...\n");
     fflush(stdout);
     LOGD("start_server");
-    start_server(apk_path, lib_path, SERVER_CLASS_PATH, SERVER_NAME, package_name);
+    start_server(apk_path, lib_path, SERVER_CLASS_PATH, SERVER_NAME, package_name, version_code);
     exit(EXIT_SUCCESS);
 }
 

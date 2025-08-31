@@ -127,10 +127,11 @@ class SystemBridgeAutoStarter @Inject constructor(
                 .first()
 
             // Wait 5 seconds for the system bridge to potentially connect itself to Key Mapper
-            // before starting it
+            // before starting it.
             val isConnected =
                 withTimeoutOrNull(5000L) {
-                    connectionManager.connectionState.value is SystemBridgeConnectionState.Connected
+                    connectionManager.connectionState.first { it is SystemBridgeConnectionState.Connected }
+                    true
                 } ?: false
 
             if (isBootAutoStartEnabled && !isConnected) {
@@ -156,8 +157,6 @@ class SystemBridgeAutoStarter @Inject constructor(
             Timber.w("Not auto starting the system bridge because it was emergency killed by the user")
             return
         }
-
-        showAutoStartNotification(getString(R.string.system_bridge_died_notification_restarting_text))
 
         lastAutoStartTime = SystemClock.elapsedRealtime()
 
@@ -222,6 +221,7 @@ class SystemBridgeAutoStarter @Inject constructor(
             icon = R.drawable.pro_mode,
             priority = NotificationCompat.PRIORITY_MAX,
             onGoing = true,
+            showIndeterminateProgress = true,
             showOnLockscreen = false
         )
 

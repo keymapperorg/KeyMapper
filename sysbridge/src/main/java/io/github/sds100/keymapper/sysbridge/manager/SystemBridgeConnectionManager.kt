@@ -5,22 +5,29 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Build
+import android.os.DeadObjectException
 import android.os.IBinder
 import android.os.IBinder.DeathRecipient
 import android.os.Process
 import android.os.RemoteException
 import android.os.SystemClock
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.onFailure
+import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
+import io.github.sds100.keymapper.sysbridge.ktx.TAG
 import io.github.sds100.keymapper.sysbridge.starter.SystemBridgeStarter
 import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,6 +45,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
     @ApplicationContext private val ctx: Context,
     private val coroutineScope: CoroutineScope,
     private val starter: SystemBridgeStarter,
+    private val buildConfigProvider: BuildConfigProvider
 ) : SystemBridgeConnectionManager {
 
     private val systemBridgeLock: Any = Any()
@@ -79,24 +87,58 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
     /**
      * This is called by the SystemBridgeBinderProvider content provider.
      */
+    @SuppressLint("LogNotTimber")
     fun onBinderReceived(binder: IBinder) {
         val systemBridge = ISystemBridge.Stub.asInterface(binder)
 
         synchronized(systemBridgeLock) {
-            systemBridge.asBinder().linkToDeath(deathRecipient, 0)
-            this.systemBridgeFlow.update { systemBridge }
+            if (systemBridge.versionCode == buildConfigProvider.versionCode) {
+                // Only link to death if it is the same version code so restarting it
+                // doesn't send a death message
+                systemBridge.asBinder().linkToDeath(deathRecipient, 0)
 
-            connectionState.update {
-                SystemBridgeConnectionState.Connected(
-                    time = SystemClock.elapsedRealtime(),
-                )
-            }
+                this.systemBridgeFlow.update { systemBridge }
 
-            // Only turn on the ADB options to prevent killing if it is running under
-            // the ADB shell user
-            if (systemBridge.processUid == Process.SHELL_UID) {
-                preventSystemBridgeKilling(systemBridge)
+                // Only turn on the ADB options to prevent killing if it is running under
+                // the ADB shell user
+                if (systemBridge.processUid == Process.SHELL_UID) {
+                    preventSystemBridgeKilling(systemBridge)
+                }
+
+                connectionState.update {
+                    SystemBridgeConnectionState.Connected(
+                        time = SystemClock.elapsedRealtime(),
+                    )
+                }
+            } else {
+                coroutineScope.launch(Dispatchers.IO) {
+                    // Can not use Timber because the content provider is called before the application's
+                    // onCreate where the Timber Tree is installed. The content provider then
+                    // calls this message.
+                    Log.w(
+                        TAG,
+                        "System Bridge version mismatch! Restarting it. App: ${buildConfigProvider.versionCode}, System Bridge: ${systemBridge.versionCode}"
+                    )
+
+                    restartSystemBridge(systemBridge)
+                }
             }
+        }
+    }
+
+    @SuppressLint("LogNotTimber")
+    private suspend fun restartSystemBridge(systemBridge: ISystemBridge) {
+        starter.startSystemBridge(executeCommand = { command ->
+            try {
+                systemBridge.executeCommand(command)!!.success()
+            } catch (_: DeadObjectException) {
+                // This exception is expected since it is killing the system bridge
+                Success("")
+            } catch (e: Exception) {
+                KMError.Exception(e)
+            }
+        }).onFailure { error ->
+            Log.e(TAG, "Failed to restart System Bridge: $error")
         }
     }
 

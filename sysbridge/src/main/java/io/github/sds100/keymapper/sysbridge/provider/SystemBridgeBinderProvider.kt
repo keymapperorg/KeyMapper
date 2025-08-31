@@ -11,7 +11,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManagerImpl
-import timber.log.Timber
 
 /**
  * Taken from the ShizukuProvider class.
@@ -62,7 +61,6 @@ internal class SystemBridgeBinderProvider : ContentProvider() {
 
     private fun handleSendBinder(extras: Bundle) {
         if (systemBridgeManager.pingBinder()) {
-            Timber.d("sendBinder is called when there is already a Binder from the system bridge.")
             return
         }
 

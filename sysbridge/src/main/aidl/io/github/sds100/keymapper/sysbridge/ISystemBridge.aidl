@@ -6,6 +6,9 @@ import android.view.InputEvent;
 
 interface ISystemBridge {
    void destroy() = 16777114;
+   int getProcessUid() = 16777113;
+   int getVersionCode() = 16777112;
+   String executeCommand(String command) = 16777111;
 
    boolean grabEvdevDevice(String devicePath) = 1;
    boolean grabEvdevDeviceArray(in String[] devicePath) = 2;
@@ -24,5 +27,4 @@ interface ISystemBridge {
    boolean setWifiEnabled(boolean enable) = 10;
 
    void grantPermission(String permission, int deviceId) = 12;
-   int getProcessUid() = 13;
 }

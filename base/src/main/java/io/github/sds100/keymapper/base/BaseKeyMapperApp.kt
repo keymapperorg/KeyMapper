@@ -24,6 +24,7 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.data.repositories.LogRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepositoryImpl
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManagerImpl
 import io.github.sds100.keymapper.system.apps.AndroidPackageManagerAdapter
 import io.github.sds100.keymapper.system.devices.AndroidDevicesAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapperImpl
@@ -87,6 +88,9 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
     @Inject
     lateinit var systemBridgeAutoStarter: SystemBridgeAutoStarter
 
+    @Inject
+    lateinit var systemBridgeConnectionManager: SystemBridgeConnectionManagerImpl
+
     private val processLifecycleOwner by lazy { ProcessLifecycleOwner.get() }
 
     private val userManager: UserManager? by lazy { getSystemService<UserManager>() }
@@ -141,8 +145,6 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
 
     private fun init() {
         Log.i(tag, "KeyMapperApp: Init")
-
-        // TODO if autostart for PRO mode is turned on then start it here from boot.
 
         settingsRepository.get(Keys.darkTheme)
             .map { it?.toIntOrNull() }

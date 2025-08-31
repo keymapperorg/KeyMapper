@@ -60,6 +60,10 @@ internal class SystemBridge : ISystemBridge.Stub() {
         private const val TAG: String = "KeyMapperSystemBridge"
         private val systemBridgePackageName: String? =
             System.getProperty("keymapper_sysbridge.package")
+
+        private val systemBridgeVersionCode: Int =
+            System.getProperty("keymapper_sysbridge.version_code")!!.toInt()
+
         private const val SHELL_PACKAGE = "com.android.shell"
 
         private const val KEYMAPPER_CHECK_INTERVAL_MS = 60 * 1000L // 1 minute
@@ -86,11 +90,17 @@ internal class SystemBridge : ISystemBridge.Stub() {
     private val processObserver = object : ProcessObserverAdapter() {
 
         // This is used as a proxy for detecting the Key Mapper process has started.
+        // It is called when ANY foreground activities check so don't execute anything
+        // long running.
         override fun onForegroundActivitiesChanged(
             pid: Int,
             uid: Int,
             foregroundActivities: Boolean
         ) {
+            if (evdevCallback?.asBinder()?.pingBinder() != true) {
+                evdevCallbackDeathRecipient.binderDied()
+            }
+
             // Do not send the binder if the app is not in the foreground.
             if (!foregroundActivities) {
                 return
@@ -101,7 +111,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
                 destroy()
             } else {
                 synchronized(sendBinderLock) {
-                    if (!isBinderSent) {
+                    if (evdevCallback == null) {
                         Log.i(TAG, "Key Mapper process started, send binder to app")
                         mainHandler.post {
                             sendBinderToApp()
@@ -113,7 +123,6 @@ internal class SystemBridge : ISystemBridge.Stub() {
     }
 
     private val sendBinderLock: Any = Any()
-    private var isBinderSent: Boolean = false
 
     private val coroutineScope: CoroutineScope = MainScope()
     private val mainHandler = Handler(Looper.myLooper()!!)
@@ -125,10 +134,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
     private var evdevCallback: IEvdevCallback? = null
     private val evdevCallbackDeathRecipient: IBinder.DeathRecipient = IBinder.DeathRecipient {
         Log.i(TAG, "EvdevCallback binder died")
-
-        synchronized(sendBinderLock) {
-            isBinderSent = false
-        }
+        evdevCallback = null
 
         coroutineScope.launch(Dispatchers.Default) {
             stopEvdevEventLoop()
@@ -147,7 +153,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
         @SuppressLint("UnsafeDynamicallyLoadedCode")
         System.load("$libraryPath/libevdev.so")
 
-        Log.i(TAG, "SystemBridge started")
+        Log.i(TAG, "SystemBridge started. Version code $versionCode")
 
         waitSystemService("package")
         waitSystemService(Context.ACTIVITY_SERVICE)
@@ -202,12 +208,6 @@ internal class SystemBridge : ISystemBridge.Stub() {
                         }
                     }
                 } finally {
-                    // Clear the job reference when the coroutine completes
-                    synchronized(keyMapperCheckLock) {
-                        if (keyMapperCheckJob?.isCompleted == true) {
-                            keyMapperCheckJob = null
-                        }
-                    }
                 }
             }
         }
@@ -223,9 +223,6 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
     override fun destroy() {
         Log.i(TAG, "SystemBridge destroyed")
-
-        // Clean up periodic check job
-        stopKeyMapperPeriodicCheck()
 
         // Must be last line in this method because it halts the JVM.
         exitProcess(0)
@@ -391,7 +388,6 @@ internal class SystemBridge : ISystemBridge.Stub() {
             )
             if (reply != null) {
                 Log.i(TAG, "Send binder to user app $systemBridgePackageName in user $userId")
-                isBinderSent = true
                 // Stop periodic check since connection is successful
                 stopKeyMapperPeriodicCheck()
                 return true
@@ -418,5 +414,29 @@ internal class SystemBridge : ISystemBridge.Stub() {
         }
 
         return false
+    }
+
+    override fun executeCommand(command: String?): String {
+        command ?: throw IllegalArgumentException("command is null")
+
+        Log.i(TAG, "Executing command: $command")
+
+        val process = Runtime.getRuntime().exec(command)
+
+        val out = with(process.inputStream.bufferedReader()) {
+            readText()
+        }
+
+        val err = with(process.errorStream.bufferedReader()) {
+            readText()
+        }
+
+        process.waitFor()
+
+        return "$out\n$err"
+    }
+
+    override fun getVersionCode(): Int {
+        return systemBridgeVersionCode
     }
 }

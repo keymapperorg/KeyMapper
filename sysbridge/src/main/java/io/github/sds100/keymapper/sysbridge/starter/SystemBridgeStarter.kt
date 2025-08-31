@@ -158,7 +158,7 @@ class SystemBridgeStarter @Inject constructor(
         })
     }
 
-    private suspend fun startSystemBridge(executeCommand: suspend (String) -> KMResult<String>): KMResult<String> {
+    suspend fun startSystemBridge(executeCommand: suspend (String) -> KMResult<String>): KMResult<String> {
         startMutex.withLock {
             val externalFilesParent = try {
                 ctx.getExternalFilesDir(null)?.parentFile
@@ -179,7 +179,7 @@ class SystemBridgeStarter @Inject constructor(
             }
 
             val startCommand =
-                "sh ${outputStarterScript.absolutePath} --apk=$apkPath --lib=$libPath --package=$packageName"
+                "sh ${outputStarterScript.absolutePath} --apk=$apkPath --lib=$libPath --package=$packageName --version_code=${buildConfigProvider.versionCode}"
 
             return executeCommand(startCommand).then { output ->
 
@@ -223,7 +223,7 @@ class SystemBridgeStarter @Inject constructor(
             }
 
             val startCommand =
-                "sh ${outputStarterScript.absolutePath} --apk=$apkPath --lib=$libPath  --package=$packageName"
+                "sh ${outputStarterScript.absolutePath} --apk=$apkPath --lib=$libPath  --package=$packageName --version_code=${buildConfigProvider.versionCode}"
 
             // Make starter binary executable
             try {
