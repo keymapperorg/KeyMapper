@@ -70,6 +70,8 @@ import io.github.sds100.keymapper.base.utils.ui.compose.icons.WandStars
 import io.github.sds100.keymapper.system.files.FileUtils
 import kotlinx.coroutines.launch
 
+private val isProModeSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+
 @Composable
 fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) {
     val state by viewModel.mainScreenState.collectAsStateWithLifecycle()
@@ -77,7 +79,6 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
     var showAutomaticBackupDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-
 
     val automaticBackupLocationChooser =
         rememberLauncherForActivityResult(CreateDocument(FileUtils.MIME_TYPE_ZIP)) { uri ->
@@ -139,7 +140,20 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
             onThemeSelected = viewModel::onThemeSelected,
             onPauseResumeNotificationClick = viewModel::onPauseResumeNotificationClick,
             onDefaultOptionsClick = viewModel::onDefaultOptionsClick,
-            onProModeClick = viewModel::onProModeClick,
+            onProModeClick = {
+                if (isProModeSupported) {
+                    viewModel.onProModeClick()
+                } else {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            context.getString(
+                                R.string.error_sdk_version_too_low,
+                                "Android 10"
+                            )
+                        )
+                    }
+                }
+            },
             onAutomaticChangeImeClick = viewModel::onAutomaticChangeImeClick,
             onForceVibrateToggled = viewModel::onForceVibrateToggled,
             onLoggingToggled = viewModel::onLoggingToggled,
@@ -265,24 +279,22 @@ private fun Content(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            OptionPageButton(
-                title = stringResource(R.string.title_pref_show_toggle_keymaps_notification),
-                text = stringResource(R.string.summary_pref_show_toggle_keymaps_notification),
-                icon = Icons.Rounded.PlayCircleOutline,
-                onClick = onPauseResumeNotificationClick
-            )
+        OptionPageButton(
+            title = stringResource(R.string.title_pref_show_toggle_keymaps_notification),
+            text = stringResource(R.string.summary_pref_show_toggle_keymaps_notification),
+            icon = Icons.Rounded.PlayCircleOutline,
+            onClick = onPauseResumeNotificationClick
+        )
 
-            Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-            SwitchPreferenceCompose(
-                title = stringResource(R.string.title_pref_hide_home_screen_alerts),
-                text = stringResource(R.string.summary_pref_hide_home_screen_alerts),
-                icon = Icons.Rounded.VisibilityOff,
-                isChecked = state.hideHomeScreenAlerts,
-                onCheckedChange = onHideHomeScreenAlertsToggled
-            )
-        }
+        SwitchPreferenceCompose(
+            title = stringResource(R.string.title_pref_hide_home_screen_alerts),
+            text = stringResource(R.string.summary_pref_hide_home_screen_alerts),
+            icon = Icons.Rounded.VisibilityOff,
+            isChecked = state.hideHomeScreenAlerts,
+            onCheckedChange = onHideHomeScreenAlertsToggled
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -354,8 +366,16 @@ private fun Content(
         Spacer(modifier = Modifier.height(8.dp))
 
         OptionPageButton(
-            title = stringResource(R.string.title_pref_pro_mode),
-            text = stringResource(R.string.summary_pref_pro_mode),
+            title = if (isProModeSupported) {
+                stringResource(R.string.title_pref_pro_mode)
+            } else {
+                stringResource(R.string.title_pref_pro_mode)
+            },
+            text = if (isProModeSupported) {
+                stringResource(R.string.summary_pref_pro_mode)
+            } else {
+                stringResource(R.string.error_sdk_version_too_low, "Android 10")
+            },
             icon = KeyMapperIcons.ProModeIcon,
             onClick = onProModeClick
         )
