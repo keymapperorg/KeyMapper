@@ -45,7 +45,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
     @ApplicationContext private val ctx: Context,
     private val coroutineScope: CoroutineScope,
     private val starter: SystemBridgeStarter,
-    private val buildConfigProvider: BuildConfigProvider
+    private val buildConfigProvider: BuildConfigProvider,
 ) : SystemBridgeConnectionManager {
 
     private val systemBridgeLock: Any = Any()

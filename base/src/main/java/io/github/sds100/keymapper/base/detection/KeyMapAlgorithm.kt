@@ -589,7 +589,6 @@ class KeyMapAlgorithm(
         return consume
     }
 
-    // TODO detect by scancode if the keycode is unknown.
     /**
      * @return whether to consume the [KeyEvent].
      */

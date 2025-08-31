@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.base.actions
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.DrawableRes
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -85,6 +86,8 @@ import io.github.sds100.keymapper.base.utils.ui.compose.icons.TopPanelOpen
 import io.github.sds100.keymapper.system.permissions.Permission
 
 object ActionUtils {
+
+    val isSystemBridgeSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
     @StringRes
     fun getCategoryLabel(category: ActionCategory): Int = when (category) {
@@ -492,26 +495,26 @@ object ActionUtils {
         ActionId.TOGGLE_DND_MODE,
         ActionId.ENABLE_DND_MODE,
         ActionId.DISABLE_DND_MODE,
-        -> Build.VERSION_CODES.M
+            -> Build.VERSION_CODES.M
 
         ActionId.DISABLE_FLASHLIGHT,
         ActionId.ENABLE_FLASHLIGHT,
         ActionId.TOGGLE_FLASHLIGHT,
-        -> Build.VERSION_CODES.M
+            -> Build.VERSION_CODES.M
 
         ActionId.CHANGE_FLASHLIGHT_STRENGTH,
-        -> Build.VERSION_CODES.TIRAMISU
+            -> Build.VERSION_CODES.TIRAMISU
 
         ActionId.TOGGLE_KEYBOARD,
         ActionId.SHOW_KEYBOARD,
         ActionId.HIDE_KEYBOARD,
-        -> Build.VERSION_CODES.N
+            -> Build.VERSION_CODES.N
 
         ActionId.TEXT_CUT,
         ActionId.TEXT_COPY,
         ActionId.TEXT_PASTE,
         ActionId.SELECT_WORD_AT_CURSOR,
-        -> Build.VERSION_CODES.JELLY_BEAN_MR2
+            -> Build.VERSION_CODES.JELLY_BEAN_MR2
 
         ActionId.SHOW_POWER_MENU -> Build.VERSION_CODES.LOLLIPOP
         ActionId.DEVICE_CONTROLS -> Build.VERSION_CODES.S
@@ -528,7 +531,7 @@ object ActionUtils {
         ActionId.ENABLE_BLUETOOTH,
         ActionId.DISABLE_BLUETOOTH,
         ActionId.TOGGLE_BLUETOOTH,
-        -> Build.VERSION_CODES.S_V2
+            -> Build.VERSION_CODES.S_V2
 
         // See https://issuetracker.google.com/issues/225186417. The global action
         // is not marked as deprecated even though it doesn't work.
@@ -541,49 +544,73 @@ object ActionUtils {
         ActionId.END_PHONE_CALL,
         ActionId.ANSWER_PHONE_CALL,
         ActionId.PHONE_CALL,
-        -> listOf(PackageManager.FEATURE_TELEPHONY)
+            -> listOf(PackageManager.FEATURE_TELEPHONY)
 
         ActionId.SECURE_LOCK_DEVICE,
-        -> listOf(PackageManager.FEATURE_DEVICE_ADMIN)
+            -> listOf(PackageManager.FEATURE_DEVICE_ADMIN)
 
         ActionId.TOGGLE_WIFI,
         ActionId.ENABLE_WIFI,
         ActionId.DISABLE_WIFI,
-        -> listOf(PackageManager.FEATURE_WIFI)
+            -> listOf(PackageManager.FEATURE_WIFI)
 
         ActionId.TOGGLE_NFC,
         ActionId.ENABLE_NFC,
         ActionId.DISABLE_NFC,
-        -> listOf(PackageManager.FEATURE_NFC)
+            -> listOf(PackageManager.FEATURE_NFC)
 
         ActionId.TOGGLE_BLUETOOTH,
         ActionId.ENABLE_BLUETOOTH,
         ActionId.DISABLE_BLUETOOTH,
-        -> listOf(PackageManager.FEATURE_BLUETOOTH)
+            -> listOf(PackageManager.FEATURE_BLUETOOTH)
 
         ActionId.TOGGLE_FLASHLIGHT,
         ActionId.ENABLE_FLASHLIGHT,
         ActionId.DISABLE_FLASHLIGHT,
         ActionId.CHANGE_FLASHLIGHT_STRENGTH,
-        -> listOf(PackageManager.FEATURE_CAMERA_FLASH)
+            -> listOf(PackageManager.FEATURE_CAMERA_FLASH)
 
         else -> emptyList()
     }
 
-    fun getRequiredPermissions(id: ActionId): List<Permission> {
-        when (id) {
-            // TODO show action error if pro mode is not started
-//            ActionId.TOGGLE_WIFI,
-//            ActionId.ENABLE_WIFI,
-//            ActionId.DISABLE_WIFI,
-//            -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//                return listOf(Permission.ROOT)
-//            }
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun isSystemBridgeRequired(id: ActionId): Boolean {
+        return when (id) {
+            ActionId.ENABLE_WIFI,
+            ActionId.DISABLE_WIFI,
+            ActionId.TOGGLE_WIFI -> true
 
             ActionId.TOGGLE_MOBILE_DATA,
             ActionId.ENABLE_MOBILE_DATA,
             ActionId.DISABLE_MOBILE_DATA,
-            -> return listOf(Permission.ROOT)
+                -> true
+
+            ActionId.ENABLE_NFC,
+            ActionId.DISABLE_NFC,
+            ActionId.TOGGLE_NFC,
+                -> true
+
+            ActionId.TOGGLE_AIRPLANE_MODE,
+            ActionId.ENABLE_AIRPLANE_MODE,
+            ActionId.DISABLE_AIRPLANE_MODE,
+                -> true
+
+            ActionId.POWER_ON_OFF_DEVICE -> true
+
+            else -> false
+        }
+    }
+
+    fun getRequiredPermissions(id: ActionId): List<Permission> {
+        when (id) {
+            ActionId.TOGGLE_MOBILE_DATA,
+            ActionId.ENABLE_MOBILE_DATA,
+            ActionId.DISABLE_MOBILE_DATA,
+                -> return if (isSystemBridgeSupported) {
+                emptyList()
+            } else {
+                listOf(Permission.ROOT)
+            }
 
             ActionId.PLAY_PAUSE_MEDIA_PACKAGE,
             ActionId.PAUSE_MEDIA_PACKAGE,
@@ -592,7 +619,7 @@ object ActionUtils {
             ActionId.PREVIOUS_TRACK_PACKAGE,
             ActionId.FAST_FORWARD_PACKAGE,
             ActionId.REWIND_PACKAGE,
-            -> return listOf(Permission.NOTIFICATION_LISTENER)
+                -> return listOf(Permission.NOTIFICATION_LISTENER)
 
             ActionId.VOLUME_UP,
             ActionId.VOLUME_DOWN,
@@ -608,7 +635,7 @@ object ActionUtils {
             ActionId.TOGGLE_DND_MODE,
             ActionId.DISABLE_DND_MODE,
             ActionId.ENABLE_DND_MODE,
-            -> return listOf(Permission.ACCESS_NOTIFICATION_POLICY)
+                -> return listOf(Permission.ACCESS_NOTIFICATION_POLICY)
 
             ActionId.TOGGLE_AUTO_ROTATE,
             ActionId.ENABLE_AUTO_ROTATE,
@@ -617,25 +644,29 @@ object ActionUtils {
             ActionId.LANDSCAPE_MODE,
             ActionId.SWITCH_ORIENTATION,
             ActionId.CYCLE_ROTATIONS,
-            -> return listOf(Permission.WRITE_SETTINGS)
+                -> return listOf(Permission.WRITE_SETTINGS)
 
             ActionId.TOGGLE_AUTO_BRIGHTNESS,
             ActionId.ENABLE_AUTO_BRIGHTNESS,
             ActionId.DISABLE_AUTO_BRIGHTNESS,
             ActionId.INCREASE_BRIGHTNESS,
             ActionId.DECREASE_BRIGHTNESS,
-            -> return listOf(Permission.WRITE_SETTINGS)
+                -> return listOf(Permission.WRITE_SETTINGS)
 
             ActionId.TOGGLE_FLASHLIGHT,
             ActionId.ENABLE_FLASHLIGHT,
             ActionId.DISABLE_FLASHLIGHT,
             ActionId.CHANGE_FLASHLIGHT_STRENGTH,
-            -> return listOf(Permission.CAMERA)
+                -> return listOf(Permission.CAMERA)
 
             ActionId.ENABLE_NFC,
             ActionId.DISABLE_NFC,
             ActionId.TOGGLE_NFC,
-            -> return listOf(Permission.ROOT)
+                -> return if (isSystemBridgeSupported) {
+                emptyList()
+            } else {
+                listOf(Permission.ROOT)
+            }
 
             ActionId.SHOW_KEYBOARD_PICKER ->
                 if (Build.VERSION.SDK_INT in Build.VERSION_CODES.O_MR1..Build.VERSION_CODES.P) {
@@ -649,7 +680,11 @@ object ActionUtils {
             ActionId.TOGGLE_AIRPLANE_MODE,
             ActionId.ENABLE_AIRPLANE_MODE,
             ActionId.DISABLE_AIRPLANE_MODE,
-            -> return listOf(Permission.ROOT)
+                -> return if (isSystemBridgeSupported) {
+                emptyList()
+            } else {
+                listOf(Permission.ROOT)
+            }
 
             ActionId.SCREENSHOT -> if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
                 return listOf(Permission.ROOT)
@@ -660,15 +695,19 @@ object ActionUtils {
             }
 
             ActionId.SECURE_LOCK_DEVICE -> return listOf(Permission.DEVICE_ADMIN)
-            ActionId.POWER_ON_OFF_DEVICE -> return listOf(Permission.ROOT)
+            ActionId.POWER_ON_OFF_DEVICE -> return if (isSystemBridgeSupported) {
+                emptyList()
+            } else {
+                listOf(Permission.ROOT)
+            }
 
             ActionId.DISMISS_ALL_NOTIFICATIONS,
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION,
-            -> return listOf(Permission.NOTIFICATION_LISTENER)
+                -> return listOf(Permission.NOTIFICATION_LISTENER)
 
             ActionId.ANSWER_PHONE_CALL,
             ActionId.END_PHONE_CALL,
-            -> return listOf(Permission.ANSWER_PHONE_CALL)
+                -> return listOf(Permission.ANSWER_PHONE_CALL)
 
             ActionId.PHONE_CALL -> return listOf(Permission.CALL_PHONE)
 
@@ -804,7 +843,6 @@ object ActionUtils {
 
 fun ActionData.canBeHeldDown(): Boolean = when (this) {
     is ActionData.InputKeyEvent -> !useShell
-    is ActionData.TapScreen -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
     else -> false
 }
 
@@ -814,7 +852,7 @@ fun ActionData.canUseImeToPerform(): Boolean = when (this) {
     else -> false
 }
 
-fun ActionData.canUseShizukuToPerform(): Boolean = when (this) {
+fun ActionData.canUseSystemBridgeToPerform(): Boolean = when (this) {
     is ActionData.InputKeyEvent -> true
     else -> false
 }
@@ -850,7 +888,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.HttpRequest,
     is ActionData.InteractUiElement,
     is ActionData.MoveCursor,
-    -> true
+        -> true
 
     else -> false
 }

@@ -9,7 +9,7 @@ object Keys {
     val darkTheme = stringPreferencesKey("pref_dark_theme_mode")
 
     @Deprecated("Now use the libsu library to detect whether the device is rooted.")
-//    val hasRootPermission = booleanPreferencesKey("pref_allow_root_features")
+    val hasRootPermission = booleanPreferencesKey("pref_allow_root_features")
 
     val shownAppIntro = booleanPreferencesKey("pref_first_time")
 
@@ -124,4 +124,9 @@ object Keys {
 
     val isSystemBridgeEmergencyKilled =
         booleanPreferencesKey("key_is_system_bridge_emergency_killed")
+
+    /**
+     * Whether the user has started the system bridge before.
+     */
+    val isSystemBridgeUsed = booleanPreferencesKey("key_is_system_bridge_used")
 }

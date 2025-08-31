@@ -214,7 +214,7 @@ private fun Content(
                 }
 
                 is State.Data -> {
-                    SetupSection(
+                    LoadedContent(
                         modifier = Modifier.fillMaxWidth(),
                         state = setupState.data,
                         onShizukuButtonClick = onShizukuButtonClick,
@@ -234,15 +234,11 @@ private fun Content(
                 textAlign = TextAlign.Center,
             )
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // TODO show options for safety and autostart. Show different autostart text for root vs shizuku
     }
 }
 
 @Composable
-private fun SetupSection(
+private fun LoadedContent(
     modifier: Modifier,
     state: ProModeState,
     onRootButtonClick: () -> Unit = {},

@@ -1,12 +1,19 @@
 package io.github.sds100.keymapper.base.actions
 
+import android.os.Build
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.valueOrNull
+import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
+import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.camera.CameraAdapter
@@ -17,7 +24,6 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
-import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 
 class LazyActionErrorSnapshot(
     private val packageManager: PackageManagerAdapter,
@@ -26,9 +32,10 @@ class LazyActionErrorSnapshot(
     systemFeatureAdapter: SystemFeatureAdapter,
     cameraAdapter: CameraAdapter,
     private val soundsManager: SoundsManager,
-    shizukuAdapter: ShizukuAdapter,
     private val ringtoneAdapter: RingtoneAdapter,
     private val buildConfigProvider: BuildConfigProvider,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
+    private val preferenceRepository: PreferenceRepository
 ) : ActionErrorSnapshot,
     IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(
         systemFeatureAdapter,
@@ -40,8 +47,6 @@ class LazyActionErrorSnapshot(
 
     private val isCompatibleImeEnabled by lazy { keyMapperImeHelper.isCompatibleImeEnabled() }
     private val isCompatibleImeChosen by lazy { keyMapperImeHelper.isCompatibleImeChosen() }
-    private val isShizukuInstalled by lazy { shizukuAdapter.isInstalled.value }
-    private val isShizukuStarted by lazy { shizukuAdapter.isStarted.value }
     private val isVoiceAssistantInstalled by lazy { packageManager.isVoiceAssistantInstalled() }
     private val grantedPermissions: MutableMap<Permission, Boolean> = mutableMapOf()
     private val flashLenses by lazy {
@@ -56,7 +61,22 @@ class LazyActionErrorSnapshot(
         }
     }
 
-    // TODO return system bridge errors
+    private val isSystemBridgeConnected: Boolean by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            systemBridgeConnectionManager.connectionState.value is SystemBridgeConnectionState.Connected
+        } else {
+            false
+        }
+    }
+
+    private val isSystemBridgeUsed: Boolean by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            preferenceRepository.get(Keys.isSystemBridgeUsed).firstBlocking() ?: false
+        } else {
+            false
+        }
+    }
+
     override fun getErrors(actions: List<ActionData>): Map<ActionData, KMError?> {
         // Fixes #797 and #1719
         // Store which input method would be selected if the actions run successfully.
@@ -97,15 +117,10 @@ class LazyActionErrorSnapshot(
             return isSupportedError
         }
 
-        if (action.canUseShizukuToPerform() && isShizukuInstalled) {
-            if (!(action.canUseImeToPerform() && isCompatibleImeChosen)) {
-                when {
-                    !isShizukuStarted -> return KMError.ShizukuNotStarted
-
-                    !isPermissionGranted(Permission.SHIZUKU) -> return SystemError.PermissionDenied(
-                        Permission.SHIZUKU,
-                    )
-                }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && action.canUseSystemBridgeToPerform() && isSystemBridgeUsed) {
+            // Only throw an error if they aren't using another compatible back up option
+            if (!(action.canUseImeToPerform() && isCompatibleImeChosen) && !isSystemBridgeConnected) {
+                return SystemBridgeError.Disconnected
             }
         } else if (action.canUseImeToPerform()) {
             if (!isCompatibleImeEnabled) {
@@ -115,6 +130,13 @@ class LazyActionErrorSnapshot(
             if (!isCompatibleImeChosen) {
                 return KMError.NoCompatibleImeChosen
             }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+            ActionUtils.isSystemBridgeRequired(action.id) &&
+            !isSystemBridgeConnected
+        ) {
+            return SystemBridgeError.Disconnected
         }
 
         for (permission in ActionUtils.getRequiredPermissions(action.id)) {

@@ -139,14 +139,10 @@ class ConfigActionsViewModel @Inject constructor(
         viewModelScope.launch {
             val actionData = navigate("add_action", NavDestination.ChooseAction) ?: return@launch
 
-            val showInstallShizukuPrompt = onboarding.showInstallShizukuPrompt(actionData)
             val showInstallGuiKeyboardPrompt =
                 onboarding.showInstallGuiKeyboardPrompt(actionData)
 
             when {
-                showInstallShizukuPrompt && showInstallGuiKeyboardPrompt ->
-                    promptToInstallShizukuOrGuiKeyboard()
-
                 showInstallGuiKeyboardPrompt -> promptToInstallGuiKeyboard()
             }
 
@@ -310,103 +306,6 @@ class ConfigActionsViewModel @Inject constructor(
 
             if (response == DialogResponse.POSITIVE) {
                 onboarding.neverShowGuiKeyboardPromptsAgain()
-            }
-        }
-    }
-
-    // TODO stop advertising the GUI keyboard, and ask them to use PRO mode?
-    private suspend fun promptToInstallShizukuOrGuiKeyboard() {
-        if (onboarding.isTvDevice()) {
-            val chooseSolutionDialog = DialogModel.Alert(
-                title = getText(R.string.dialog_title_install_shizuku_or_leanback_keyboard),
-                message = getText(R.string.dialog_message_install_shizuku_or_leanback_keyboard),
-                positiveButtonText = getString(R.string.dialog_button_install_shizuku),
-                negativeButtonText = getString(R.string.dialog_button_install_leanback_keyboard),
-                neutralButtonText = getString(R.string.dialog_button_install_nothing),
-            )
-
-            val chooseSolutionResponse =
-                showDialog("choose_solution", chooseSolutionDialog) ?: return
-
-            when (chooseSolutionResponse) {
-                // install shizuku
-                DialogResponse.POSITIVE -> {
-//                    navigate("shizuku", NavDestination.ShizukuSettings)
-//                    onboarding.neverShowGuiKeyboardPromptsAgain()
-
-                    return
-                }
-                // do nothing
-                DialogResponse.NEUTRAL -> {
-                    onboarding.neverShowGuiKeyboardPromptsAgain()
-                    return
-                }
-
-                // download leanback keyboard
-                DialogResponse.NEGATIVE -> {
-                    val chooseAppStoreDialog = DialogModel.ChooseAppStore(
-                        title = getString(R.string.dialog_title_choose_download_leanback_keyboard),
-                        message = getString(R.string.dialog_message_choose_download_leanback_keyboard),
-                        model = ChooseAppStoreModel(
-                            githubLink = getString(R.string.url_github_keymapper_leanback_keyboard),
-                        ),
-                        positiveButtonText = getString(R.string.pos_never_show_again),
-                        negativeButtonText = getString(R.string.neg_cancel),
-                    )
-
-                    val response = showDialog("install_leanback_keyboard", chooseAppStoreDialog)
-
-                    if (response == DialogResponse.POSITIVE) {
-                        onboarding.neverShowGuiKeyboardPromptsAgain()
-                    }
-                }
-            }
-        } else {
-            val chooseSolutionDialog = DialogModel.Alert(
-                title = getText(R.string.dialog_title_install_shizuku_or_gui_keyboard),
-                message = getText(R.string.dialog_message_install_shizuku_or_gui_keyboard),
-                positiveButtonText = getString(R.string.dialog_button_install_shizuku),
-                negativeButtonText = getString(R.string.dialog_button_install_gui_keyboard),
-                neutralButtonText = getString(R.string.dialog_button_install_nothing),
-            )
-
-            val chooseSolutionResponse =
-                showDialog("choose_solution", chooseSolutionDialog) ?: return
-
-            when (chooseSolutionResponse) {
-                // install shizuku
-                DialogResponse.POSITIVE -> {
-//                    navigate("shizuku_error", NavDestination.ShizukuSettings)
-//                    onboarding.neverShowGuiKeyboardPromptsAgain()
-
-                    return
-                }
-                // do nothing
-                DialogResponse.NEUTRAL -> {
-                    onboarding.neverShowGuiKeyboardPromptsAgain()
-                    return
-                }
-
-                // download gui keyboard
-                DialogResponse.NEGATIVE -> {
-                    val chooseAppStoreDialog = DialogModel.ChooseAppStore(
-                        title = getString(R.string.dialog_title_choose_download_gui_keyboard),
-                        message = getString(R.string.dialog_message_choose_download_gui_keyboard),
-                        model = ChooseAppStoreModel(
-                            playStoreLink = getString(R.string.url_play_store_keymapper_gui_keyboard),
-                            fdroidLink = getString(R.string.url_fdroid_keymapper_gui_keyboard),
-                            githubLink = getString(R.string.url_github_keymapper_gui_keyboard),
-                        ),
-                        positiveButtonText = getString(R.string.pos_never_show_again),
-                        negativeButtonText = getString(R.string.neg_cancel),
-                    )
-
-                    val response = showDialog("install_gui_keyboard", chooseAppStoreDialog)
-
-                    if (response == DialogResponse.POSITIVE) {
-                        onboarding.neverShowGuiKeyboardPromptsAgain()
-                    }
-                }
             }
         }
     }

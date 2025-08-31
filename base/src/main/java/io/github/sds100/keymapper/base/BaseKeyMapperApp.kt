@@ -25,6 +25,7 @@ import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.data.repositories.LogRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepositoryImpl
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManagerImpl
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.system.apps.AndroidPackageManagerAdapter
 import io.github.sds100.keymapper.system.devices.AndroidDevicesAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapperImpl
@@ -200,6 +201,14 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             systemBridgeAutoStarter.init()
+
+            appCoroutineScope.launch {
+                systemBridgeConnectionManager.connectionState.collect { state ->
+                    if (state is SystemBridgeConnectionState.Connected) {
+                        settingsRepository.set(Keys.isSystemBridgeUsed, true)
+                    }
+                }
+            }
         }
     }
 

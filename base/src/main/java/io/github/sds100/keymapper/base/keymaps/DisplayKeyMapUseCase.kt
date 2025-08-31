@@ -12,6 +12,9 @@ import io.github.sds100.keymapper.base.purchasing.PurchasingManager
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.base.trigger.TriggerError
 import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
+import io.github.sds100.keymapper.base.utils.navigation.NavDestination
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
+import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -23,6 +26,7 @@ import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.common.utils.valueIfFailure
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
@@ -54,6 +58,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
     private val getActionErrorUseCase: GetActionErrorUseCase,
     private val getConstraintErrorUseCase: GetConstraintErrorUseCase,
     private val buildConfigProvider: BuildConfigProvider,
+    private val navigationProvider: NavigationProvider
 ) : DisplayKeyMapUseCase,
     GetActionErrorUseCase by getActionErrorUseCase,
     GetConstraintErrorUseCase by getConstraintErrorUseCase {
@@ -158,9 +163,11 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
         }
     }
 
-    override fun getAppName(packageName: String): KMResult<String> = packageManagerAdapter.getAppName(packageName)
+    override fun getAppName(packageName: String): KMResult<String> =
+        packageManagerAdapter.getAppName(packageName)
 
-    override fun getAppIcon(packageName: String): KMResult<Drawable> = packageManagerAdapter.getAppIcon(packageName)
+    override fun getAppIcon(packageName: String): KMResult<Drawable> =
+        packageManagerAdapter.getAppIcon(packageName)
 
     override fun getInputMethodLabel(imeId: String): KMResult<String> =
         inputMethodAdapter.getInfoById(imeId).then { Success(it.label) }
@@ -190,6 +197,11 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
                     inputMethodAdapter.showImePicker(fromForeground = true)
                 }
             }
+
+            is SystemBridgeError.Disconnected -> navigationProvider.navigate(
+                "fix_system_bridge",
+                NavDestination.ProMode
+            )
 
             else -> Unit
         }

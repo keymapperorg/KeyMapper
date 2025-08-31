@@ -22,7 +22,6 @@ import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapt
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
-import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.url.UrlUtils
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.negativeButton
@@ -77,14 +76,9 @@ class RequestPermissionDelegate(
             }
 
             Permission.IGNORE_BATTERY_OPTIMISATION ->
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    requestIgnoreBatteryOptimisations()
-                }
+                requestIgnoreBatteryOptimisations()
 
-            Permission.SHIZUKU ->
-                if (ShizukuUtils.isSupportedForSdkVersion()) {
-                    shizukuAdapter.requestPermission()
-                }
+            Permission.SHIZUKU -> shizukuAdapter.requestPermission()
 
             Permission.ACCESS_FINE_LOCATION ->
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -112,10 +106,32 @@ class RequestPermissionDelegate(
     }
 
     private fun requestAccessNotificationPolicy() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+        val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
 
-            intent.addFlags(
+        intent.addFlags(
+            Intent.FLAG_ACTIVITY_NEW_TASK
+                or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                // Add this flag so user only has to press back once.
+                or Intent.FLAG_ACTIVITY_NO_HISTORY,
+        )
+
+        try {
+            startActivityForResultLauncher.launch(intent)
+        } catch (e: Exception) {
+            Toast.makeText(
+                activity,
+                R.string.error_cant_find_dnd_access_settings,
+                Toast.LENGTH_SHORT,
+            ).show()
+        }
+    }
+
+    private fun requestWriteSettings() {
+        Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
+            data = Uri.parse("package:${buildConfigProvider.packageName}")
+
+            addFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK
                     or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
@@ -124,39 +140,13 @@ class RequestPermissionDelegate(
             )
 
             try {
-                startActivityForResultLauncher.launch(intent)
+                activity.startActivity(this)
             } catch (e: Exception) {
                 Toast.makeText(
                     activity,
-                    R.string.error_cant_find_dnd_access_settings,
+                    R.string.error_cant_find_write_settings_page,
                     Toast.LENGTH_SHORT,
                 ).show()
-            }
-        }
-    }
-
-    private fun requestWriteSettings() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
-                data = Uri.parse("package:${buildConfigProvider.packageName}")
-
-                addFlags(
-                    Intent.FLAG_ACTIVITY_NEW_TASK
-                        or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
-                        // Add this flag so user only has to press back once.
-                        or Intent.FLAG_ACTIVITY_NO_HISTORY,
-                )
-
-                try {
-                    activity.startActivity(this)
-                } catch (e: Exception) {
-                    Toast.makeText(
-                        activity,
-                        R.string.error_cant_find_write_settings_page,
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                }
             }
         }
     }

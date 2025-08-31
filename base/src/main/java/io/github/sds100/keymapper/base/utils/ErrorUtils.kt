@@ -6,6 +6,7 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.BuildUtils
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.data.DataError
+import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
 
@@ -83,7 +84,11 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         is KMError.Exception -> exception.toString()
         is KMError.EmptyJson -> resourceProvider.getString(R.string.error_empty_json)
         is KMError.InvalidNumber -> resourceProvider.getString(R.string.error_invalid_number)
-        is KMError.NumberTooSmall -> resourceProvider.getString(R.string.error_number_too_small, min)
+        is KMError.NumberTooSmall -> resourceProvider.getString(
+            R.string.error_number_too_small,
+            min
+        )
+
         is KMError.NumberTooBig -> resourceProvider.getString(R.string.error_number_too_big, max)
         is KMError.EmptyText -> resourceProvider.getString(R.string.error_cant_be_empty)
         KMError.BackupVersionTooNew -> resourceProvider.getString(R.string.error_backup_version_too_new)
@@ -173,6 +178,7 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         KMError.InvalidBackup -> resourceProvider.getString(R.string.error_invalid_backup)
         KMError.MalformedUrl -> resourceProvider.getString(R.string.error_malformed_url)
         KMError.UiElementNotFound -> resourceProvider.getString(R.string.error_ui_element_not_found)
+        is SystemBridgeError.Disconnected -> resourceProvider.getString(R.string.error_system_bridge_disconnected)
 
         else -> this.toString()
     }
@@ -190,8 +196,7 @@ val KMError.isFixable: Boolean
         is SystemError.PermissionDenied,
         is KMError.ShizukuNotStarted,
         is KMError.CantDetectKeyEventsInPhoneCall,
-
-        -> true
+        is SystemBridgeError.Disconnected -> true
 
         else -> false
     }

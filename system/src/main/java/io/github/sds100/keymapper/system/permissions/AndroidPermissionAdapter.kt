@@ -34,7 +34,6 @@ import io.github.sds100.keymapper.system.DeviceAdmin
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
-import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -192,7 +191,7 @@ class AndroidPermissionAdapter @Inject constructor(
             }
         } else {
             // The system bridge should be the default way to grant permissions.
-            result = SystemBridgeError.NotStarted
+            result = SystemBridgeError.Disconnected
         }
 
         result.onSuccess {
@@ -252,18 +251,11 @@ class AndroidPermissionAdapter @Inject constructor(
         Permission.ROOT -> suAdapter.isRootGranted.value
 
         Permission.IGNORE_BATTERY_OPTIMISATION ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                val ignoringOptimisations =
-                    powerManager?.isIgnoringBatteryOptimizations(buildConfigProvider.packageName)
-
-                ignoringOptimisations ?: false
-            } else {
-                true
-            }
+            powerManager?.isIgnoringBatteryOptimizations(buildConfigProvider.packageName) ?: false
 
         // this check is super quick (~0ms) so this doesn't need to be cached.
         Permission.SHIZUKU -> {
-            if (ShizukuUtils.isSupportedForSdkVersion() && Shizuku.getBinder() != null) {
+            if (Shizuku.getBinder() != null) {
                 Shizuku.checkSelfPermission() == PERMISSION_GRANTED
             } else {
                 false
