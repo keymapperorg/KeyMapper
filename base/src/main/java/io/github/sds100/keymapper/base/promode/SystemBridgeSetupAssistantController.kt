@@ -288,6 +288,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
             showOnLockscreen = false,
             autoCancel = true,
             onClickAction = onClickAction,
+            bigTextStyle = true,
             // Must not be silent so it is shown as a heads up notification
             silent = false,
             actions = actions

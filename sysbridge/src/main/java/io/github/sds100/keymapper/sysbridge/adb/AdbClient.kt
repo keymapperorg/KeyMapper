@@ -21,6 +21,7 @@ import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.net.ConnectException
 import java.net.Socket
+import java.net.SocketException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import javax.net.ssl.SSLProtocolException
@@ -102,6 +103,8 @@ internal class AdbClient(private val host: String, private val port: Int, privat
         } catch (e: SSLProtocolException) {
             // This can be thrown if the encryption keys mismatch
             return AdbError.SslHandshakeError
+        } catch (e: SocketException) {
+            return AdbError.ConnectionError
         }
 
         return Success(Unit)

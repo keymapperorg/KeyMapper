@@ -9,6 +9,7 @@ import androidx.annotation.RequiresApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
@@ -47,12 +48,24 @@ internal class AdbMdns(
 
     private val resolveListener: NsdManager.ResolveListener = object : NsdManager.ResolveListener {
         override fun onResolveFailed(nsdServiceInfo: NsdServiceInfo, i: Int) {
-            serviceResolvedChannel.trySend(null)
+            serviceResolvedChannel.trySendBlocking(null)
         }
 
         override fun onServiceResolved(nsdServiceInfo: NsdServiceInfo) {
             Timber.d("onServiceResolved: ${nsdServiceInfo.serviceName} ${nsdServiceInfo.host} ${nsdServiceInfo.port} ${nsdServiceInfo.serviceType}")
-            serviceResolvedChannel.trySend(nsdServiceInfo)
+            serviceResolvedChannel.trySendBlocking(nsdServiceInfo)
+        }
+
+        override fun onResolutionStopped(serviceInfo: NsdServiceInfo) {
+            super.onResolutionStopped(serviceInfo)
+
+            serviceResolvedChannel.trySendBlocking(null)
+        }
+
+        override fun onStopResolutionFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
+            super.onStopResolutionFailed(serviceInfo, errorCode)
+
+            serviceResolvedChannel.trySendBlocking(null)
         }
     }
 
@@ -112,9 +125,7 @@ internal class AdbMdns(
         var port: Int? = null
 
         if (isDiscovering.value) {
-            runCatching {
-                nsdManager.stopServiceDiscovery(discoveryListener)
-            }
+            cleanup()
         }
 
         // Wait for it to stop discovering
@@ -156,28 +167,33 @@ internal class AdbMdns(
         } catch (e: Exception) {
             Timber.e(e, "Failed to discover ADB port")
         } finally {
-            runCatching {
-                if (SdkExtensions.getExtensionVersion(Build.VERSION_CODES.TIRAMISU) >= 7) {
-                    nsdManager.stopServiceResolution(resolveListener)
-                }
-            }
-
-            runCatching {
-                nsdManager.stopServiceDiscovery(discoveryListener)
-            }
-
-            // Clear the resolve channel if there is anything left.
-            while (!serviceResolvedChannel.isEmpty) {
-                serviceResolvedChannel.tryReceive()
-            }
-
-            // Clear the discovered channel if there is anything left.
-            while (!serviceDiscoveredChannel.isEmpty) {
-                serviceDiscoveredChannel.tryReceive()
-            }
+            cleanup()
         }
 
         return port
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun cleanup() {
+        runCatching {
+            if (SdkExtensions.getExtensionVersion(Build.VERSION_CODES.TIRAMISU) >= 7) {
+                nsdManager.stopServiceResolution(resolveListener)
+            }
+        }
+
+        runCatching {
+            nsdManager.stopServiceDiscovery(discoveryListener)
+        }
+
+        // Clear the resolve channel if there is anything left.
+        while (!serviceResolvedChannel.isEmpty) {
+            serviceResolvedChannel.tryReceive()
+        }
+
+        // Clear the discovered channel if there is anything left.
+        while (!serviceDiscoveredChannel.isEmpty) {
+            serviceDiscoveredChannel.tryReceive()
+        }
     }
 
     private fun isPortAvailable(port: Int): Boolean {
