@@ -27,6 +27,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -38,7 +39,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
-import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -122,19 +122,22 @@ class SystemBridgeAutoStarter @Inject constructor(
     @OptIn(FlowPreview::class)
     fun init() {
         coroutineScope.launch {
+            // The Key Mapper process may not necessarily be started on boot due to the
+            // on boot receiver so assume if it is started within 30 seconds of boot that
+            // it should be auto started.
+            val isBoot = SystemClock.uptimeMillis() < 30000
+
             val isBootAutoStartEnabled = preferences.get(Keys.isProModeAutoStartBootEnabled)
                 .map { it ?: PreferenceDefaults.PRO_MODE_AUTOSTART_BOOT }
                 .first()
 
             // Wait 5 seconds for the system bridge to potentially connect itself to Key Mapper
             // before starting it.
-            val isConnected =
-                withTimeoutOrNull(5000L) {
-                    connectionManager.connectionState.first { it is SystemBridgeConnectionState.Connected }
-                    true
-                } ?: false
+            delay(5000)
 
-            if (isBootAutoStartEnabled && !isConnected) {
+            val connectionState = connectionManager.connectionState.value
+
+            if (isBoot && isBootAutoStartEnabled && connectionState !is SystemBridgeConnectionState.Connected) {
                 val autoStartType = autoStartTypeFlow.first()
 
                 if (autoStartType != null) {
