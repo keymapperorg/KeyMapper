@@ -67,6 +67,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.icons.FolderManaged
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.ProModeIcon
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.WandStars
+import io.github.sds100.keymapper.common.utils.BuildUtils
 import io.github.sds100.keymapper.system.files.FileUtils
 import kotlinx.coroutines.launch
 
@@ -148,7 +149,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                         snackbarHostState.showSnackbar(
                             context.getString(
                                 R.string.error_sdk_version_too_low,
-                                "Android 10"
+                                BuildUtils.getSdkVersionName(Build.VERSION_CODES.Q)
                             )
                         )
                     }
@@ -374,7 +375,10 @@ private fun Content(
             text = if (isProModeSupported) {
                 stringResource(R.string.summary_pref_pro_mode)
             } else {
-                stringResource(R.string.error_sdk_version_too_low, "Android 10")
+                stringResource(
+                    R.string.error_sdk_version_too_low,
+                    BuildUtils.getSdkVersionName(Build.VERSION_CODES.Q)
+                )
             },
             icon = KeyMapperIcons.ProModeIcon,
             onClick = onProModeClick

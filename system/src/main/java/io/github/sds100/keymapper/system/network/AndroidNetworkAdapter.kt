@@ -12,6 +12,7 @@ import android.net.NetworkRequest
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.provider.Settings
+import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
@@ -150,16 +151,36 @@ class AndroidNetworkAdapter @Inject constructor(
     }
 
     override fun isMobileDataEnabled(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return telephonyManager.isDataEnabled
+        return telephonyManager.isDataEnabled
+    }
+
+    override fun enableMobileData(): KMResult<*> {
+        val subId = SubscriptionManager.getDefaultSubscriptionId()
+
+        if (subId == SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
+            throw IllegalStateException("No valid subscription ID")
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return systemBridgeConnManager.run { bridge -> bridge.setDataEnabled(subId, true) }
         } else {
-            return telephonyManager.dataState == TelephonyManager.DATA_CONNECTED
+            return suAdapter.execute("svc data enable")
         }
     }
 
-    override fun enableMobileData(): KMResult<*> = suAdapter.execute("svc data enable")
+    override fun disableMobileData(): KMResult<*> {
+        val subId = SubscriptionManager.getDefaultSubscriptionId()
 
-    override fun disableMobileData(): KMResult<*> = suAdapter.execute("svc data disable")
+        if (subId == SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
+            throw IllegalStateException("No valid subscription ID")
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return systemBridgeConnManager.run { bridge -> bridge.setDataEnabled(subId, false) }
+        } else {
+            return suAdapter.execute("svc data disable")
+        }
+    }
 
     /**
      * @return Null on Android 10+ because there is no API to do this anymore.

@@ -6,6 +6,7 @@ import android.content.IContentProvider
 import android.content.pm.ApplicationInfo
 import android.hardware.input.IInputManager
 import android.net.wifi.IWifiManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
@@ -16,6 +17,7 @@ import android.permission.IPermissionManager
 import android.permission.PermissionManagerApis
 import android.util.Log
 import android.view.InputEvent
+import com.android.internal.telephony.ITelephony
 import io.github.sds100.keymapper.common.models.EvdevDeviceHandle
 import io.github.sds100.keymapper.common.utils.UserHandleUtils
 import io.github.sds100.keymapper.sysbridge.IEvdevCallback
@@ -64,9 +66,8 @@ internal class SystemBridge : ISystemBridge.Stub() {
         private val systemBridgeVersionCode: Int =
             System.getProperty("keymapper_sysbridge.version_code")!!.toInt()
 
-        private const val SHELL_PACKAGE = "com.android.shell"
-
         private const val KEYMAPPER_CHECK_INTERVAL_MS = 60 * 1000L // 1 minute
+        private const val DATA_ENABLED_REASON_USER: Int = 0
 
         @JvmStatic
         fun main(args: Array<String>) {
@@ -147,6 +148,13 @@ internal class SystemBridge : ISystemBridge.Stub() {
     private val inputManager: IInputManager
     private val wifiManager: IWifiManager
     private val permissionManager: IPermissionManager
+    private val telephonyManager: ITelephony
+
+    private val processPackageName: String = when (Process.myUid()) {
+        Process.ROOT_UID -> "root"
+        Process.SHELL_UID -> "com.android.shell"
+        else -> throw IllegalStateException("SystemBridge must run as root or shell user")
+    }
 
     init {
         val libraryPath = System.getProperty("keymapper_sysbridge.library.path")
@@ -170,6 +178,10 @@ internal class SystemBridge : ISystemBridge.Stub() {
         waitSystemService(Context.WIFI_SERVICE)
         wifiManager =
             IWifiManager.Stub.asInterface(ServiceManager.getService(Context.WIFI_SERVICE))
+
+        waitSystemService(Context.TELEPHONY_SERVICE)
+        telephonyManager =
+            ITelephony.Stub.asInterface(ServiceManager.getService(Context.TELEPHONY_SERVICE))
 
         val applicationInfo = getKeyMapperPackageInfo()
 
@@ -299,7 +311,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
     }
 
     override fun setWifiEnabled(enable: Boolean): Boolean {
-        return wifiManager.setWifiEnabled(SHELL_PACKAGE, enable)
+        return wifiManager.setWifiEnabled(processPackageName, enable)
     }
 
     override fun writeEvdevEvent(devicePath: String?, type: Int, code: Int, value: Int): Boolean {
@@ -438,5 +450,18 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
     override fun getVersionCode(): Int {
         return systemBridgeVersionCode
+    }
+
+    override fun setDataEnabled(subId: Int, enable: Boolean) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            telephonyManager.setDataEnabledForReason(
+                subId,
+                DATA_ENABLED_REASON_USER,
+                enable,
+                processPackageName
+            )
+        } else {
+            telephonyManager.setUserDataEnabled(subId, enable)
+        }
     }
 }

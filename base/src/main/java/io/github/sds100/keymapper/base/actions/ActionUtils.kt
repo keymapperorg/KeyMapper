@@ -528,6 +528,7 @@ object ActionUtils {
         // The global action still fails even though the API exists in SDK 34.
         ActionId.COLLAPSE_STATUS_BAR -> Build.VERSION_CODES.TIRAMISU
 
+        // TODO support system bridge
         ActionId.ENABLE_BLUETOOTH,
         ActionId.DISABLE_BLUETOOTH,
         ActionId.TOGGLE_BLUETOOTH,
@@ -553,6 +554,15 @@ object ActionUtils {
         ActionId.ENABLE_WIFI,
         ActionId.DISABLE_WIFI,
             -> listOf(PackageManager.FEATURE_WIFI)
+
+        ActionId.TOGGLE_MOBILE_DATA,
+        ActionId.ENABLE_MOBILE_DATA,
+        ActionId.DISABLE_MOBILE_DATA,
+            -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            listOf(PackageManager.FEATURE_TELEPHONY_DATA)
+        } else {
+            listOf(PackageManager.FEATURE_TELEPHONY)
+        }
 
         ActionId.TOGGLE_NFC,
         ActionId.ENABLE_NFC,

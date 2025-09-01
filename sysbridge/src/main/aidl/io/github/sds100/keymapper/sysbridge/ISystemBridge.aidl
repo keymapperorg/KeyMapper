@@ -26,5 +26,7 @@ interface ISystemBridge {
 
    boolean setWifiEnabled(boolean enable) = 10;
 
-   void grantPermission(String permission, int deviceId) = 12;
+   void grantPermission(String permission, int deviceId) = 11;
+
+   void setDataEnabled(int subId, boolean enable) = 12;
 }
