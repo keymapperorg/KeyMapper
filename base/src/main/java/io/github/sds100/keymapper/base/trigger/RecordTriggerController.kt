@@ -120,10 +120,6 @@ class RecordTriggerControllerImpl @Inject constructor(
             }
 
             is KMGamePadEvent -> {
-                if (isEvdevRecordingEnabled) {
-                    return false
-                }
-
                 val dpadKeyEvents = dpadMotionEventTracker.convertMotionEvent(event)
 
                 for (keyEvent in dpadKeyEvents) {
@@ -140,10 +136,6 @@ class RecordTriggerControllerImpl @Inject constructor(
             }
 
             is KMKeyEvent -> {
-                if (isEvdevRecordingEnabled) {
-                    return false
-                }
-
                 val matchingDownEvent: KMKeyEvent? = downKeyEvents.find {
                     it.keyCode == event.keyCode &&
                         it.scanCode == event.scanCode &&
