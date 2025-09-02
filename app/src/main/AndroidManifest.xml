@@ -2,77 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-    <uses-permission android:name="android.permission.REORDER_TASKS" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
-    <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
-
-    <uses-permission
-        android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="QueryAllPackagesPermission" />
-
-
-    <uses-permission
-        android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="QueryAllPackagesPermission" />
-
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-
-    <uses-permission
-        android:name="android.permission.WRITE_SETTINGS"
-        tools:ignore="ProtectedPermissions" />
-
-    <uses-permission
-        android:name="android.permission.WRITE_SECURE_SETTINGS"
-        tools:ignore="ProtectedPermissions" />
-
-    <uses-feature
-        android:name="android.hardware.camera"
-        android:required="false" />
-
     <uses-feature
         android:name="android.software.leanback"
         android:required="false" />
-
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
-
-    <uses-feature
-        android:name="android.hardware.wifi"
-        android:required="false" />
-
-    <uses-feature
-        android:name="android.hardware.telephony"
-        android:required="false" />
-
-    <uses-feature
-        android:name="android.hardware.bluetooth"
-        android:required="false" />
-
-    <uses-feature
-        android:name="android.hardware.location.gps"
-        android:required="false" />
-
-    <uses-sdk tools:overrideLibrary="rikka.shizuku.provider, rikka.shizuku.api, rikka.shizuku.shared, rikka.shizuku.aidl" />
 
     <application
         android:name="io.github.sds100.keymapper.KeyMapperApp"
@@ -84,7 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning,MissingTvBanner">
         <!--  Allow clear text traffic due to the HTTP Request Action. -->
 
         <activity
@@ -110,117 +45,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Use a different task affinity so this activity doesn't close other activities -->
-        <activity
-            android:name=".api.LaunchKeyMapShortcutActivity"
-            android:excludeFromRecents="true"
-            android:exported="true"
-            android:finishOnTaskLaunch="true"
-            android:launchMode="singleInstance"
-            android:taskAffinity=""
-            android:theme="@android:style/Theme.NoDisplay">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
-
-        <!-- Use a different task affinity so this activity can be opened at the same time as others -->
-        <activity
-            android:name=".mappings.keymaps.CreateKeyMapShortcutActivity"
-            android:exported="true"
-            android:label="@string/shortcut_label_action"
-            android:taskAffinity="">
-            <intent-filter>
-                <action android:name="android.intent.action.CREATE_SHORTCUT" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".backup.RestoreKeyMapsActivity"
-            android:excludeFromRecents="true"
-            android:exported="true"
-            android:launchMode="singleInstance"
-            android:taskAffinity="io.github.sds100.keymapper.restore_key_maps"
-            android:theme="@style/AppTheme.DialogActivity"
-            android:windowSoftInputMode="adjustResize">
-
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:mimeType="application/zip"
-                    android:scheme="content" />
-
-                <data
-                    android:mimeType="application/json"
-                    android:scheme="content" />
-
-            </intent-filter>
-        </activity>
-
-        <receiver
-            android:name=".system.notifications.NotificationClickReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.hardware.input.action.QUERY_KEYBOARD_LAYOUTS" />
-            </intent-filter>
-            <meta-data
-                android:name="android.hardware.input.metadata.KEYBOARD_LAYOUTS"
-                android:resource="@xml/keyboard_layouts" />
-        </receiver>
-
-        <receiver
-            android:name=".system.BootBroadcastReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name=".api.PauseMappingsBroadcastReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="io.github.sds100.keymapper.ACTION_PAUSE_MAPPINGS" />
-                <action android:name="io.github.sds100.keymapper.ACTION_RESUME_MAPPINGS" />
-                <action android:name="io.github.sds100.keymapper.ACTION_TOGGLE_MAPPINGS" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name=".api.TriggerKeyMapsBroadcastReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="io.github.sds100.keymapper.ACTION_TRIGGER_KEYMAP_BY_UID" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name=".system.bluetooth.BluetoothBroadcastReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
-                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name=".system.DeviceAdmin"
-            android:exported="true"
-            android:permission="android.permission.BIND_DEVICE_ADMIN">
-            <meta-data
-                android:name="android.app.device_admin"
-                android:resource="@xml/device_admin" />
-
-            <intent-filter>
-                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
-            </intent-filter>
-        </receiver>
-
         <service
             android:name=".system.accessibility.MyAccessibilityService"
             android:configChanges="orientation|screenSize"
@@ -235,91 +59,5 @@
                 android:resource="@xml/config_accessibility_service" />
         </service>
 
-        <!--  IMPORTANT! Must be direct boot aware so it can automatically choose a proper keyboard when the user wants to unlock their phone.  -->
-        <service
-            android:name=".system.inputmethod.KeyMapperImeService"
-            android:directBootAware="true"
-            android:exported="true"
-            android:label="@string/ime_service_label"
-            android:permission="android.permission.BIND_INPUT_METHOD">
-            <intent-filter>
-                <action android:name="android.view.InputMethod" />
-            </intent-filter>
-            <meta-data
-                android:name="android.view.im"
-                android:resource="@xml/input_method" />
-        </service>
-
-        <service
-            android:name=".system.tiles.ToggleMappingsTile"
-            android:exported="true"
-            android:icon="@drawable/ic_tile_pause"
-            android:label="@string/tile_pause_title"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
-            tools:targetApi="24">
-            <intent-filter>
-                <action android:name="android.service.quicksettings.action.QS_TILE" />
-            </intent-filter>
-        </service>
-
-        <service
-            android:name=".system.tiles.ToggleKeyMapperKeyboardTile"
-            android:exported="true"
-            android:icon="@drawable/ic_tile_keyboard"
-            android:label="@string/tile_toggle_keymapper_keyboard"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
-            tools:targetApi="24">
-            <intent-filter>
-                <action android:name="android.service.quicksettings.action.QS_TILE" />
-            </intent-filter>
-        </service>
-
-        <service
-            android:name="io.github.sds100.keymapper.system.notifications.NotificationReceiver"
-            android:exported="true"
-            android:label="Key Mapper Notification Receiver"
-            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
-            <intent-filter>
-                <action android:name="android.service.notification.NotificationListenerService" />
-            </intent-filter>
-        </service>
-
-        <service
-            android:name=".system.accessibility.ObserveEnabledAccessibilityServicesJob"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
-        <!-- Don't require a permission because we want other apps to bind
-         to this service. The permission wouldn't be signature-level so
-         if a nefarious app wants to talk to Key Mapper they could add the permission anyway. -->
-        <service
-            android:name=".api.KeyEventRelayService"
-            android:exported="true"
-            tools:ignore="ExportedService" />
-
-        <service
-            android:name=".system.inputmethod.ObserveInputMethodsJob"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
-        <service
-            android:name=".system.notifications.ObserveNotificationListenersJob"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
-        <provider
-            android:name="rikka.shizuku.ShizukuProvider"
-            android:authorities="${applicationId}.shizuku"
-            android:enabled="true"
-            android:exported="true"
-            android:multiprocess="false"
-            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
-
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
-        </provider>
     </application>
 </manifest>

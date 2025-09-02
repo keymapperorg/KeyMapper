@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_base_app">
+
+    <action
+        android:id="@+id/to_settingsFragment"
+        app:destination="@id/nav_settings"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
+
+    <action
+        android:id="@+id/to_shizukuSettingsFragment"
+        app:destination="@id/shizukuSettingsFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
+
+    <include app:graph="@navigation/nav_settings" />
+
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="io.github.sds100.keymapper.base.about.AboutFragment"
+        android:label="fragment_about" />
+
+    <action
+        android:id="@+id/action_global_aboutFragment"
+        app:destination="@id/aboutFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
+
+    <action
+        android:id="@+id/chooseApp"
+        app:destination="@id/chooseAppFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right">
+
+        <argument
+            android:name="allowHiddenApps"
+            app:argType="boolean" />
+
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+    </action>
+
+    <fragment
+        android:id="@+id/chooseAppFragment"
+        android:name="io.github.sds100.keymapper.base.system.apps.ChooseAppFragment"
+        tools:layout="@layout/fragment_simple_recyclerview">
+
+        <argument
+            android:name="allowHiddenApps"
+            app:argType="boolean" />
+
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+    </fragment>
+
+    <action
+        android:id="@+id/chooseAppShortcut"
+        app:destination="@id/chooseAppShortcutFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
+
+    <fragment
+        android:id="@+id/chooseAppShortcutFragment"
+        android:name="io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutFragment"
+        tools:layout="@layout/fragment_simple_recyclerview">
+
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+    </fragment>
+
+    <action
+        android:id="@+id/chooseKeyCode"
+        app:destination="@id/chooseKeyCodeFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
+
+    <fragment
+        android:id="@+id/chooseKeyCodeFragment"
+        android:name="io.github.sds100.keymapper.base.actions.keyevent.ChooseKeyCodeFragment"
+        tools:layout="@layout/fragment_simple_recyclerview">
+
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+    </fragment>
+
+    <action
+        android:id="@+id/configKeyEvent"
+        app:destination="@id/configKeyEventFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
+
+    <fragment
+        android:id="@+id/configKeyEventFragment"
+        android:name="io.github.sds100.keymapper.base.actions.keyevent.ConfigKeyEventActionFragment"
+        tools:layout="@layout/fragment_simple_recyclerview">
+
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+
+        <argument
+            android:name="keyEventAction"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+
+    <action
+        android:id="@+id/pickDisplayCoordinate"
+        app:destination="@id/pickDisplayCoordinateFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
+
+    <fragment
+        android:id="@+id/pickDisplayCoordinateFragment"
+        android:name="io.github.sds100.keymapper.base.actions.tapscreen.PickDisplayCoordinateFragment"
+        tools:layout="@layout/fragment_simple_recyclerview">
+
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+
+        <argument
+            android:name="result"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+
+    <action
+        android:id="@+id/swipePickDisplayCoordinate"
+        app:destination="@id/swipeDisplayCoordinateFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
+
+    <fragment
+        android:id="@+id/swipeDisplayCoordinateFragment"
+        android:name="io.github.sds100.keymapper.base.actions.swipescreen.SwipePickDisplayCoordinateFragment"
+        tools:layout="@layout/fragment_simple_recyclerview">
+
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+
+        <argument
+            android:name="result"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+
+    <action
+        android:id="@+id/pinchPickDisplayCoordinate"
+        app:destination="@id/pinchDisplayCoordinateFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
+
+    <fragment
+        android:id="@+id/pinchDisplayCoordinateFragment"
+        android:name="io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickDisplayCoordinateFragment"
+        tools:layout="@layout/fragment_simple_recyclerview">
+
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+
+        <argument
+            android:name="result"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+
+    <action
+        android:id="@+id/configIntent"
+        app:destination="@id/configIntentFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
+
+    <fragment
+        android:id="@+id/configIntentFragment"
+        android:name="io.github.sds100.keymapper.base.system.intents.ConfigIntentFragment"
+        tools:layout="@layout/fragment_simple_recyclerview">
+
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+
+        <argument
+            android:name="result"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+
+    <action
+        android:id="@+id/chooseActivity"
+        app:destination="@id/chooseActivityFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
+
+    <fragment
+        android:id="@+id/chooseActivityFragment"
+        android:name="io.github.sds100.keymapper.base.system.apps.ChooseActivityFragment"
+        tools:layout="@layout/fragment_simple_recyclerview">
+
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/bluetoothDevicesFragment"
+        android:name="io.github.sds100.keymapper.base.system.bluetooth.ChooseBluetoothDeviceFragment"
+        tools:layout="@layout/fragment_simple_recyclerview">
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+    </fragment>
+
+    <action
+        android:id="@+id/chooseSoundFile"
+        app:destination="@id/chooseSoundFileFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
+
+    <fragment
+        android:id="@+id/chooseSoundFileFragment"
+        android:name="io.github.sds100.keymapper.base.actions.sound.ChooseSoundFileFragment"
+        tools:layout="@layout/fragment_simple_recyclerview">
+
+        <argument
+            android:name="requestKey"
+            app:argType="string" />
+    </fragment>
+
+    <action
+        android:id="@+id/chooseBluetoothDevice"
+        app:destination="@+id/bluetoothDevicesFragment"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right" />
+
+    <fragment
+        android:id="@+id/shizukuSettingsFragment"
+        android:name="io.github.sds100.keymapper.base.settings.ShizukuSettingsFragment"
+        android:label="ShizukuSettingsFragment" />
+
+</navigation>

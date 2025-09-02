@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_settings"
+    app:startDestination="@id/mainSettingsFragment">
+
+    <fragment
+        android:id="@+id/mainSettingsFragment"
+        android:name="io.github.sds100.keymapper.base.settings.MainSettingsFragment"
+        android:label="MainSettingsFragment">
+        <action
+            android:id="@+id/to_defaultOptionsSettingsFragment"
+            app:destination="@id/defaultOptionsSettingsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/to_android11BugWorkaroundSettingsFragment"
+            app:destination="@id/android11BugWorkaroundSettingsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/toAutomaticallyChangeImeSettings"
+            app:destination="@id/automaticallyChangeImeSettings"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/to_imePickerSettingsFragment"
+            app:destination="@id/imePickerSettingsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/to_logFragment"
+            app:destination="@id/logFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/to_shizukuSettingsFragment"
+            app:destination="@id/shizukuSettingsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/defaultOptionsSettingsFragment"
+        android:name="io.github.sds100.keymapper.base.settings.DefaultOptionsSettingsFragment"
+        android:label="DefaultOptionsSettingsFragment" />
+    <fragment
+        android:id="@+id/android11BugWorkaroundSettingsFragment"
+        android:name="io.github.sds100.keymapper.base.settings.Android11BugWorkaroundSettingsFragment"
+        android:label="Android11BugWorkaroundSettingsFragment" />
+    <fragment
+        android:id="@+id/automaticallyChangeImeSettings"
+        android:name="io.github.sds100.keymapper.base.settings.AutomaticallyChangeImeSettings" />
+    <fragment
+        android:id="@+id/imePickerSettingsFragment"
+        android:name="io.github.sds100.keymapper.base.settings.ImePickerSettingsFragment"
+        android:label="ImePickerSettingsFragment" />
+    <fragment
+        android:id="@+id/logFragment"
+        android:name="io.github.sds100.keymapper.base.logging.LogFragment"
+        android:label="LogFragment" />
+    <fragment
+        android:id="@+id/shizukuSettingsFragment"
+        android:name="io.github.sds100.keymapper.base.settings.ShizukuSettingsFragment"
+        android:label="ShizukuSettingsFragment" />
+</navigation>

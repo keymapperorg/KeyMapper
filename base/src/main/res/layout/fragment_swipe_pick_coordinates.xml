@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="io.github.sds100.keymapper.base.actions.swipescreen.SwipePickDisplayCoordinateViewModel" />
+
+        <variable
+            name="onSelectScreenshotClick"
+            type="View.OnClickListener" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/bottom_app_bar_height"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/startLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:baselineAligned="true"
+                    android:orientation="horizontal"
+                    android:weightSum="1.0"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutXStart"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".5"
+                        android:hint="@string/hint_coordinate_x_start"
+                        android:padding="8dp"
+                        app:errorWhenEmpty="@{true}">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:onTextChanged="@{(string, start, before, count) -> viewModel.setXStart(string.toString())}"
+                            android:text="@{viewModel.xStartString}"
+                            tools:text="241" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutYStart"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".5"
+                        android:hint="@string/hint_coordinate_y_start"
+                        android:padding="8dp"
+                        app:errorWhenEmpty="@{true}">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:onTextChanged="@{(string, start, before, count) -> viewModel.setYStart(string.toString())}"
+                            android:text="@{viewModel.yStartString}"
+                            tools:text="241" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/endLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:baselineAligned="true"
+                    android:orientation="horizontal"
+                    android:weightSum="1.0"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/startLayout">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutXEnd"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".5"
+                        android:hint="@string/hint_coordinate_x_end"
+                        android:padding="8dp"
+                        app:errorWhenEmpty="@{true}">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:onTextChanged="@{(string, start, before, count) -> viewModel.setXEnd(string.toString())}"
+                            android:text="@{viewModel.xEndString}"
+                            tools:text="241" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutYEnd"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".5"
+                        android:hint="@string/hint_coordinate_y_end"
+                        android:padding="8dp"
+                        app:errorWhenEmpty="@{true}">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:onTextChanged="@{(string, start, before, count) -> viewModel.setYEnd(string.toString())}"
+                            android:text="@{viewModel.yEndString}"
+                            tools:text="241" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/optionsLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:baselineAligned="true"
+                    android:orientation="horizontal"
+                    android:weightSum="1.0"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/endLayout">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutDuration"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:hint="@string/extra_label_swipe_duration"
+                        android:padding="8dp"
+                        app:error="@{viewModel.durationError}"
+                        app:errorWhenEmpty="@{true}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="parent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:onTextChanged="@{(string, start, before, count) -> viewModel.setDuration(string.toString())}"
+                            android:text="@{viewModel.durationString}"
+                            tools:text="250" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayoutFingerCount"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:hint="@string/extra_label_swipe_finger_count"
+                        android:padding="8dp"
+                        app:error="@{viewModel.fingerCountError}"
+                        app:errorWhenEmpty="@{true}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="parent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:onTextChanged="@{(string, start, before, count) -> viewModel.setFingerCount(string.toString())}"
+                            android:text="@{viewModel.fingerCountString}"
+                            tools:text="1" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/buttonSelectScreenshotStart"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:onClick="@{onSelectScreenshotClick}"
+                    android:text="@string/button_pick_coordinate_select_screenshot"
+                    app:layout_constraintBottom_toTopOf="@+id/screenshotOptionsLayout"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/optionsLayout" />
+
+                <LinearLayout
+                    android:id="@+id/screenshotOptionsLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:baselineAligned="true"
+                    android:orientation="vertical"
+                    android:weightSum="1.0"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/buttonSelectScreenshotStart">
+
+                    <TextView
+                        android:id="@+id/startEndCoordinatesRadioGroupLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="@string/extra_label_swipe_select_start_end_label" />
+
+                    <RadioGroup
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_weight="1"
+                        android:checkedButton="@id/radioButtonStartCoordinates"
+                        android:orientation="horizontal"
+                        android:weightSum="1.0">
+
+                        <RadioButton
+                            android:id="@+id/radioButtonStartCoordinates"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:enabled="@{viewModel.isSelectStartEndSwitchEnabled()}"
+                            android:onCheckedChanged="@{(switchButton, isChecked) -> viewModel.setStartOrEndCoordinates(isChecked, viewModel.screenshotTouchTypeStart)}"
+                            android:text="@string/extra_label_swipe_select_start_end_start"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <RadioButton
+                            android:id="@+id/radioButtonEndCoordinates"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:enabled="@{viewModel.isSelectStartEndSwitchEnabled()}"
+                            android:onCheckedChanged="@{(switchButton, isChecked) -> viewModel.setStartOrEndCoordinates(isChecked, viewModel.screenshotTouchTypeEnd)}"
+                            android:text="@string/extra_label_swipe_select_start_end_end"
+                            app:layout_constraintTop_toBottomOf="@+id/startEndCoordinatesRadioGroupLabel" />
+                    </RadioGroup>
+                </LinearLayout>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/tap_coordinate_screenshot_message"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/screenshotOptionsLayout" />
+
+                <io.github.sds100.keymapper.base.actions.tapscreen.PickCoordinateImageView
+                    android:id="@+id/imageViewScreenshot"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="32dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitStart"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textView"
+                    tools:srcCompat="@tools:sample/backgrounds/scenic[1]" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/appBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:fabAlignmentMode="end"
+            app:fabAnimationMode="slide"
+            app:menuAlignmentMode="auto"
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/content_description_done_configuring_coordinate"
+            android:enabled="@{viewModel.isDoneButtonEnabled()}"
+            android:onClick="@{() -> viewModel.onDoneClick()}"
+            android:src="@drawable/ic_baseline_done_24"
+            app:layout_anchor="@id/appBar" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</layout>

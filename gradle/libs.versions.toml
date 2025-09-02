@@ -1,0 +1,216 @@
+[versions]
+compile-sdk = "36"
+hilt-navigation-compose = "1.2.0"
+min-sdk = "21"
+build-tools = "36.0.0"
+target-sdk = "36"
+
+android-gradle-plugin = "8.9.1"
+androidx-activity = "1.10.1"
+androidx-appcompat = "1.7.0"
+androidx-arch-core-testing = "2.2.0"
+androidx-constraintlayout = "2.2.1"
+androidx-core-ktx = "1.16.0"
+androidx-core-splashscreen = "1.0.1"
+androidx-datastore-preferences = "1.2.0-alpha02"
+androidx-fragment = "1.8.6"
+androidx-junit = "1.2.1" # formerly androidXTestExtKotlinRunnerVersion
+androidx-legacy-support-core-ui = "1.0.0"
+androidx-lifecycle = "2.9.0"
+androidx-lifecycle-extensions = "2.2.0" # Note: lifecycle-extensions is deprecated
+androidx-multidex = "2.0.1"
+androidx-navigation = "2.9.0" # App level nav_version
+androidx-navigation-safeargs-gradle-plugin = "2.6.0" # Project level nav_version
+androidx-preference-ktx = "1.2.1"
+androidx-recyclerview = "1.4.0"
+androidx-room = "2.7.1" # room_version for dependencies
+androidx-room-gradle-plugin = "2.6.1" # For plugin
+androidx-test-core = "1.6.1"
+androidx-viewpager2 = "1.1.0"
+
+dagger-hilt-android = "2.56.2"
+
+compose-bom = "2025.05.01"
+compose-compiler = "1.5.10" # kotlinCompilerExtensionVersion
+
+desugar-jdk-libs = "2.1.5"
+epoxy = "4.6.2"
+flexbox = "3.0.0"
+google-accompanist-drawablepainter = "0.35.0-alpha"
+hiddenapibypass = "4.3"
+introshowcaseview = "2.0.2"
+junit = "4.13.2"
+junit-params = "1.1.1"
+
+kotlin = "2.1.0"
+kotlin-serialization-json = "1.8.0"
+coroutines = "1.9.0"
+
+kotson = "2.5.0"
+ksp-gradle-plugin = "2.1.0-1.0.28"
+ktlint-gradle = "12.1.0"
+#leakcanary = "2.6" # Commented out in original file
+lingala-zip4j = "2.8.0"
+material = "1.13.0-alpha13"
+
+mflisar-dragselectrecyclerview = "0.3"
+mockito-android = "4.6.1"
+mockito-core = "5.15.2"
+mockito-inline = "5.2.0"
+mockito-kotlin = "4.0.0"
+
+okhttp = "4.12.0"
+robolectric = "4.14.1"
+shizuku = "13.1.5"
+splitties = "3.0.0"
+storage-anggrayudi = "0.8.1"
+timber = "5.0.1"
+room-testing-legacy = "1.1.1"
+espresso-core = "3.6.1"
+ui-tooling = "1.8.1" # android.arch.persistence.room:testing
+
+[libraries]
+# Kotlin
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
+dagger-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "dagger-hilt-android" }
+dagger-hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "dagger-hilt-android" }
+kotlin-stdlib-jdk8 = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlin" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlin-serialization-json" }
+
+# AndroidX
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity" }
+androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "androidx-activity" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
+androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidx-arch-core-testing" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraintlayout" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidx-core-splashscreen" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidx-datastore-preferences" }
+androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "androidx-fragment" }
+androidx-fragment-testing = { group = "androidx.fragment", name = "fragment-testing", version.ref = "androidx-fragment" }
+androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidx-junit" } # Combines ext:junit and -ktx
+androidx-legacy-support-core-ui = { group = "androidx.legacy", name = "legacy-support-core-ui", version.ref = "androidx-legacy-support-core-ui" }
+androidx-lifecycle-extensions = { group = "androidx.lifecycle", name = "lifecycle-extensions", version.ref = "androidx-lifecycle-extensions" }
+androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
+androidx-multidex = { group = "androidx.multidex", name = "multidex", version.ref = "androidx-multidex" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidx-navigation" }
+androidx-navigation-fragment-compose = { module = "androidx.navigation:navigation-fragment-compose", version.ref = "androidx-navigation" } # Custom example if needed
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "androidx-navigation" }
+androidx-navigation-testing = { group = "androidx.navigation", name = "navigation-testing", version.ref = "androidx-navigation" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "androidx-navigation" }
+androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "androidx-preference-ktx" }
+androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "androidx-recyclerview" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidx-room" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
+androidx-room-testing-legacy = { group = "android.arch.persistence.room", name = "testing", version.ref = "room-testing-legacy" }
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidx-test-core" }
+androidx-test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidx-test-core" }
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-junit" }
+androidx-viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "androidx-viewpager2" }
+
+# Compose
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
+androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended-android" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3-android" }
+androidx-compose-material3-adaptive = { group = "androidx.compose.material3.adaptive", name = "adaptive-android" }
+androidx-compose-material3-adaptive-navigation = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation" }
+androidx-compose-ui-android = { group = "androidx.compose.ui", name = "ui-android" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview-android" }
+
+# Google
+google-accompanist-drawablepainter = { group = "com.google.accompanist", name = "accompanist-drawablepainter", version.ref = "google-accompanist-drawablepainter" }
+google-android-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+google-flexbox = { group = "com.google.android.flexbox", name = "flexbox", version.ref = "flexbox" }
+
+# Square
+squareup-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+#squareup-leakcanary-android = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcanary" } # Commented out
+
+# Airbnb
+airbnb-epoxy = { group = "com.airbnb.android", name = "epoxy", version.ref = "epoxy" }
+airbnb-epoxy-databinding = { group = "com.airbnb.android", name = "epoxy-databinding", version.ref = "epoxy" }
+airbnb-epoxy-processor = { group = "com.airbnb.android", name = "epoxy-processor", version.ref = "epoxy" }
+
+# Splitties
+splitties-alertdialog-appcompat-coroutines = { group = "com.louiscad.splitties", name = "splitties-alertdialog-appcompat-coroutines", version.ref = "splitties" }
+splitties-alertdialog-material = { group = "com.louiscad.splitties", name = "splitties-alertdialog-material", version.ref = "splitties" }
+splitties-bitflags = { group = "com.louiscad.splitties", name = "splitties-bitflags", version.ref = "splitties" }
+splitties-mainthread = { group = "com.louiscad.splitties", name = "splitties-mainthread", version.ref = "splitties" }
+splitties-snackbar = { group = "com.louiscad.splitties", name = "splitties-snackbar", version.ref = "splitties" }
+splitties-toast = { group = "com.louiscad.splitties", name = "splitties-toast", version.ref = "splitties" }
+
+# Rikka Shizuku
+rikka-shizuku-api = { group = "dev.rikka.shizuku", name = "api", version.ref = "shizuku" }
+rikka-shizuku-provider = { group = "dev.rikka.shizuku", name = "provider", version.ref = "shizuku" }
+
+# Testing
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+junit-params = { group = "pl.pragmatists", name = "JUnitParams", version.ref = "junit-params" }
+mockito-android = { group = "org.mockito", name = "mockito-android", version.ref = "mockito-android" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito-core" }
+mockito-inline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito-inline" }
+mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito-kotlin" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+hamcrest-all = { group = "org.hamcrest", name = "hamcrest-all", version = "1.3" } # No version variable
+
+# Other
+anggrayudi-storage = { group = "com.anggrayudi", name = "storage", version.ref = "storage-anggrayudi" }
+canopas-introshowcaseview = { group = "com.canopas.intro-showcase-view", name = "introshowcaseview", version.ref = "introshowcaseview" }
+desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar-jdk-libs" }
+github-mflisar-dragselectrecyclerview = { group = "com.github.MFlisar", name = "DragSelectRecyclerView", version.ref = "mflisar-dragselectrecyclerview" }
+jakewharton-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+kotson = { group = "com.github.salomonbrys.kotson", name = "kotson", version.ref = "kotson" }
+lsposed-hiddenapibypass = { group = "org.lsposed.hiddenapibypass", name = "hiddenapibypass", version.ref = "hiddenapibypass" }
+net-lingala-zip4j = { group = "net.lingala.zip4j", name = "zip4j", version.ref = "lingala-zip4j" }
+
+# Gradle Plugins - Aliases for buildscript dependencies / plugins block
+# These are referenced in build.gradle.kts files' plugins blocks by their ID.
+# Versions defined here can be used by plugins {} block in settings.gradle.kts if needed.
+android-gradleplugin = { group = "com.android.tools.build", name = "gradle", version.ref = "android-gradle-plugin" }
+kotlin-gradleplugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-serialization-gradleplugin = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "kotlin" }
+ksp-gradleplugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp-gradle-plugin" }
+navigation-safeargs-gradleplugin = { group = "androidx.navigation", name = "navigation-safe-args-gradle-plugin", version.ref = "androidx-navigation-safeargs-gradle-plugin" }
+ktlint-gradleplugin = { group = "org.jlleitschuh.gradle", name = "ktlint-gradle", version.ref = "ktlint-gradle" }
+kotlin-compose-compiler-gradleplugin = { group = "org.jetbrains.kotlin.plugin.compose", name = "org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" } # Using kotlin version for compose plugin as per original setup
+room-gradleplugin = { group = "androidx.room", name = "androidx.room.gradle.plugin", version.ref = "androidx-room-gradle-plugin" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "ui-tooling" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
+androidx-navigation-safeargs-kotlin = { id = "androidx.navigation.safeargs.kotlin", version.ref = "androidx-navigation-safeargs-gradle-plugin" }
+androidx-room = { id = "androidx.room", version.ref = "androidx-room-gradle-plugin" }
+google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-gradle-plugin" }
+jlleitschuh-gradle-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+android-library = { id = "com.android.library", version.ref = "android-gradle-plugin" }
+dagger-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "dagger-hilt-android" }
+
+[bundles]
+splitties = [
+    "splitties-alertdialog-appcompat-coroutines",
+    "splitties-alertdialog-material",
+]
+androidx-lifecycle = [
+    "androidx-lifecycle-viewmodel-ktx",
+    "androidx-lifecycle-runtime-ktx",
+    "androidx-lifecycle-livedata-ktx",
+]
+androidx-navigation = [
+    "androidx-navigation-fragment-ktx",
+    "androidx-navigation-ui-ktx",
+    "androidx-navigation-compose",
+    "androidx-navigation-fragment-compose",
+]

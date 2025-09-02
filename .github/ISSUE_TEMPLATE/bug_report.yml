@@ -1,0 +1,79 @@
+name: Bug report
+description: Use this template if there is a technical fault in the app
+labels: ["bug", "needs triage"]
+assignees:
+  - sds100
+
+body:
+  - type: checkboxes
+    id: screening
+    attributes:
+      label: Have you checked if an issue already exists for this bug?
+      description: Please search to see if someone has already reported this bug. If they have, you can speed up fixing the bug by commenting on that issue.
+      options:
+        - label: Nobody else has reported this bug before
+          required: true
+
+  - type: checkboxes
+    id: restart
+    attributes:
+      label: Have you tried restarting your device?
+      description: This can occasionally be necessary.
+      options:
+        - label: I have tried restarting my device and that did not help
+          required: false
+
+  - type: textarea
+    id: unexpected_behaviour
+    attributes:
+      label: What happened that you did not expect?
+      description: |
+        What behaviour were you experiencing that you think is a bug (not intended)
+        **It will help if you upload your key maps or logs**
+      placeholder: I was doing X, and then Y happened that I did not expect.
+
+  - type: textarea
+    id: expected_behaviour
+    attributes:
+      label: What did you expect to happen?
+      description: If the app was working properly, what would have happened instead?
+      placeholder: When I pressed X, I should have seen Y
+
+  - type: textarea
+    id: how_to_reproduce
+    attributes:
+      label: What would the developer need to do to reproduce the bug?
+      description: Imagine the developer has the same device as you, and has just installed the app. What steps should they follow to see the same unexpected behaviour?
+      placeholder: |
+        1. Make a key map with volume up trigger
+        2. Add the flashlight action
+        3. Save the key map and close the app
+        4. Press the volume up trigger
+        5. See error message
+
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: You can find the app version on the About page
+      placeholder: 3.2.1 999
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Device model and manufacturer
+      description: What model is your device? Be as specific as you can
+      placeholder: Xiaomi, Samsung Galaxy, etc.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: extras
+    attributes:
+      label: Extra info
+      description: It would help us even more if you could check the boxes that apply to you.
+      options:
+        - label: My device is rooted
+          required: false

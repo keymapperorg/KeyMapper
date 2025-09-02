@@ -1,0 +1,51 @@
+name: Feature request
+description: Use this template if you have an idea for a new feature to be added to the app
+labels: ["enhancement", "needs triage"]
+assignees:
+  - sds100
+
+body:
+  - type: checkboxes
+    id: screening
+    attributes:
+      label: Have you checked if an issue already exists for this feature request?
+      description: Please search to see if someone has already requested this feature. If they have, you can speed up implementing the feature by commenting on that issue.
+      options:
+        - label: Nobody else has requested this feature before
+          required: true
+
+  - type: textarea
+    id: enhancement
+    attributes:
+      label: What feature would you like added?
+      description: |
+        Please explain the feature in as much detail as you can to help us imagine what you are looking for. Imagine how someone might use the feature, who would it benefit?
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: You can find the app version on the About page
+      placeholder: 3.2.1 999
+    validations:
+      required: false
+
+  - type: input
+    id: device
+    attributes:
+      label: Device model and manufacturer
+      description: What model is your device? Be as specific as you can
+      placeholder: Xiaomi, Samsung Galaxy, etc.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: extras
+    attributes:
+      label: Extra info
+      description: It would help us even more if you could check the boxes that apply to you.
+      options:
+        - label: My device is rooted
+          required: false

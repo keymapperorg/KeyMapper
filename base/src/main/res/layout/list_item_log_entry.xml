@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="io.github.sds100.keymapper.base.utils.ui.TintType" />
+
+        <variable
+            name="model"
+            type="io.github.sds100.keymapper.base.logging.LogEntryListItem" />
+
+        <variable
+            name="onLongClick"
+            type="View.OnLongClickListener" />
+
+        <variable
+            name="onClick"
+            type="View.OnClickListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:onLongClick="@{onLongClick}"
+        android:onClick="@{onClick}"
+        android:background="@{model.isSelected ? @color/backgroundSelected : 0}"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textViewTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="@{model.time}"
+            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="2021-05-14 11:09:75:773" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textViewMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:scrollHorizontally="true"
+            android:text="@{model.message}"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textViewTime"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tintType="@{model.textTint}"
+            tools:text="I am a log message!fsdfsdfwerwlkrjwelr\nfffffffffffffffffffffffffffffffff" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
