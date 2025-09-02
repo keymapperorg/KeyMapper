@@ -66,25 +66,25 @@ lane :production do
 
     # First release to google play so any errors with the descriptions are resolved before
     # creating the git tag.
-#     supply(
-#         aab: "../app/build/outputs/bundle/release/app-pro-release.aab",
-#         track: "internal",
-#         skip_upload_apk: true
-#     )
-#
-#     whats_new = File.read("../app/src/main/assets/whats-new.txt")
-#
-#     github_release = set_github_release(
-#       repository_name: "keymapperorg/KeyMapper",
-#       api_bearer: github_token,
-#       name: version_name,
-#       tag_name: "v" + version_name,
-#       description: whats_new,
-#       commitish: "master",
-#       upload_assets: [apk_path_release],
-#       is_draft: false,
-#       is_prerelease: false
-#     )
+    supply(
+        aab: "../app/build/outputs/bundle/release/app-pro-release.aab",
+        track: "internal",
+        skip_upload_apk: true
+    )
+
+    whats_new = File.read("../app/src/main/assets/whats-new.txt")
+
+    github_release = set_github_release(
+      repository_name: "keymapperorg/KeyMapper",
+      api_bearer: github_token,
+      name: version_name,
+      tag_name: "v" + version_name,
+      description: whats_new,
+      commitish: "master",
+      upload_assets: [apk_path_release],
+      is_draft: false,
+      is_prerelease: false
+    )
 end
 
 desc "Create and deploy internal testing release"
