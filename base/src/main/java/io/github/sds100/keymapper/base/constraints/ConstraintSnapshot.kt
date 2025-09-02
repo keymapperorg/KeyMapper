@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.base.constraints
 
 import android.media.AudioManager
-import android.os.Build
 import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.firstBlocking
@@ -41,25 +40,17 @@ class LazyConstraintSnapshot(
     private val appsPlayingMedia: List<String> by lazy { mediaAdapter.getActiveMediaSessionPackages() }
 
     private val audioVolumeStreams: Set<Int> by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mediaAdapter.getActiveAudioVolumeStreams()
-        } else {
-            emptySet()
-        }
+        mediaAdapter.getActiveAudioVolumeStreams()
     }
 
     private val isWifiEnabled: Boolean by lazy { networkAdapter.isWifiEnabled() }
-    private val connectedWifiSSID: String? by lazy { networkAdapter.connectedWifiSSID }
+    private val connectedWifiSSID: String? by lazy { networkAdapter.connectedWifiSSIDFlow.firstBlocking() }
     private val chosenImeId: String? by lazy { inputMethodAdapter.chosenIme.value?.id }
     private val callState: CallState by lazy { phoneAdapter.getCallState() }
     private val isCharging: Boolean by lazy { powerAdapter.isCharging.value }
 
     private val isLocked: Boolean by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            lockScreenAdapter.isLocked()
-        } else {
-            false
-        }
+        lockScreenAdapter.isLocked()
     }
 
     private val isLockscreenShowing: Boolean by lazy {

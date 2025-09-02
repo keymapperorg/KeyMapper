@@ -175,10 +175,12 @@ internal class SystemBridge : ISystemBridge.Stub() {
         inputManager =
             IInputManager.Stub.asInterface(ServiceManager.getService(Context.INPUT_SERVICE))
 
+        // TODO check that system supports wifi feature
         waitSystemService(Context.WIFI_SERVICE)
         wifiManager =
             IWifiManager.Stub.asInterface(ServiceManager.getService(Context.WIFI_SERVICE))
 
+        // TODO check that the system supports telephony feature
         waitSystemService(Context.TELEPHONY_SERVICE)
         telephonyManager =
             ITelephony.Stub.asInterface(ServiceManager.getService(Context.TELEPHONY_SERVICE))

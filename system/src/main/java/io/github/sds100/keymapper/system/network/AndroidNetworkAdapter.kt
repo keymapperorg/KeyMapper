@@ -62,22 +62,13 @@ class AndroidNetworkAdapter @Inject constructor(
                 }
 
                 WifiManager.NETWORK_STATE_CHANGED_ACTION -> {
-                    connectedWifiSSIDFlow.update { connectedWifiSSID }
+                    connectedWifiSSIDFlow.update { getWifiSSID() }
                 }
             }
         }
     }
 
-    override val connectedWifiSSID: String?
-        get() = wifiManager.connectionInfo?.ssid?.let { ssid ->
-            if (ssid == WifiManager.UNKNOWN_SSID) {
-                null
-            } else {
-                ssid.removeSurrounding("\"")
-            }
-        }
-
-    override val connectedWifiSSIDFlow = MutableStateFlow(connectedWifiSSID)
+    override val connectedWifiSSIDFlow = MutableStateFlow(getWifiSSID())
     override val isWifiConnected: MutableStateFlow<Boolean> = MutableStateFlow(getIsWifiConnected())
 
     private val isWifiEnabled = MutableStateFlow(isWifiEnabled())
@@ -264,8 +255,18 @@ class AndroidNetworkAdapter @Inject constructor(
         }
     }
 
+    private fun getWifiSSID(): String? {
+        return wifiManager.connectionInfo?.ssid?.let { ssid ->
+            if (ssid == WifiManager.UNKNOWN_SSID) {
+                null
+            } else {
+                ssid.removeSurrounding("\"")
+            }
+        }
+    }
+
     fun invalidateState() {
-        connectedWifiSSIDFlow.update { connectedWifiSSID }
+        connectedWifiSSIDFlow.update { getWifiSSID() }
         isWifiConnected.update { getIsWifiConnected() }
     }
 }

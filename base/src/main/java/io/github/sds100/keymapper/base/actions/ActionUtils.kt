@@ -528,12 +528,6 @@ object ActionUtils {
         // The global action still fails even though the API exists in SDK 34.
         ActionId.COLLAPSE_STATUS_BAR -> Build.VERSION_CODES.TIRAMISU
 
-        // TODO support system bridge
-        ActionId.ENABLE_BLUETOOTH,
-        ActionId.DISABLE_BLUETOOTH,
-        ActionId.TOGGLE_BLUETOOTH,
-            -> Build.VERSION_CODES.S_V2
-
         // See https://issuetracker.google.com/issues/225186417. The global action
         // is not marked as deprecated even though it doesn't work.
         ActionId.TOGGLE_SPLIT_SCREEN -> Build.VERSION_CODES.S
@@ -604,6 +598,11 @@ object ActionUtils {
             ActionId.ENABLE_AIRPLANE_MODE,
             ActionId.DISABLE_AIRPLANE_MODE,
                 -> true
+
+            ActionId.TOGGLE_BLUETOOTH,
+            ActionId.ENABLE_BLUETOOTH,
+            ActionId.DISABLE_BLUETOOTH,
+                -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2
 
             ActionId.POWER_ON_OFF_DEVICE -> true
 
@@ -722,7 +721,8 @@ object ActionUtils {
             ActionId.PHONE_CALL -> return listOf(Permission.CALL_PHONE)
 
             ActionId.ENABLE_BLUETOOTH, ActionId.DISABLE_BLUETOOTH, ActionId.TOGGLE_BLUETOOTH ->
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                // On S_V2 and newer, the system bridge is used which means no permissions are required
+                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.S) {
                     return listOf(Permission.FIND_NEARBY_DEVICES)
                 }
 

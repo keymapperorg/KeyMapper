@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 
 interface NetworkAdapter {
-    val connectedWifiSSID: String?
     val connectedWifiSSIDFlow: Flow<String?>
 
     val isWifiConnected: Flow<Boolean>
