@@ -80,7 +80,7 @@ Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="description_keyevent">%s%s gir</string>
     <string name="description_keyevent_through_shell">Kabuk üzerinden %s gir</string>
     <string name="description_keyevent_from_device">%s cihazından %s%s gir</string>
-    <string name="description_url">%s aç</string>
+    <string name="description_url">%s uygulamasını aç</string>
     <string name="description_tap_coordinate_default">Ekrana dokun (%d, %d)</string>
     <string name="description_tap_coordinate_with_description">Ekrana dokun (%s)</string>
     <string name="description_swipe_coordinate_default">%d parmakla %d/%d koordinatlarından %d/%d koordinatlarına %dms içinde kaydır</string>
@@ -307,7 +307,7 @@ Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="button_record_trigger">Tetikleyici kaydet</string>
     <string name="button_advanced_triggers">Gelişmiş tetikleyiciler</string>
     <string name="button_advanced_triggers_badge">YENİ!</string>
-    <string name="button_done">Tamam</string>
+    <string name="button_done">Bitti</string>
     <string name="button_fix">Düzelt</string>
     <string name="button_recording_trigger_countdown">Kaydediyor (%d…)</string>
     <string name="button_add_constraint">Kısıtlama ekle</string>
@@ -398,7 +398,9 @@ Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="show_example">Örnek göster</string>
     <string name="dialog_title_keycode_to_scancode_trigger_explanation">Tanınmayan tuş kodu</string>
     <string name="dialog_message_keycode_to_scancode_trigger_explanation">Basılı düğme, giriş sistemi tarafından tanınmadı. Geçmişte Key Mapper bu tür düğmeleri tek bir düğme olarak algılıyordu. Şu anda uygulama, düğmeyi tarama koduna göre ayırt etmeye çalışıyor; bu, daha benzersiz olmalıdır. Ancak bu, benzersizliği garanti etmeyen geçici ve eksik bir çözümdür.</string>
-    <string name="pos_done">Tamam</string>
+    <string name="dialog_title_request_notification_permission">Bildirimleri aç</string>
+    <string name="dialog_message_request_notification_permission">Bazı eylemler ve seçenekler bu izni gerektirir. Ayrıca uygulama hakkında önemli haberler olduğunda bildirim alabilirsiniz.</string>
+    <string name="pos_done">Bitti</string>
     <string name="pos_grant_write_secure_settings_guide">Kılavuz</string>
     <string name="pos_start_service_with_adb_guide">Kılavuz</string>
     <string name="pos_change_location">Değiştir</string>
@@ -410,10 +412,12 @@ Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="pos_discard_changes">Değişiklikleri iptal et</string>
     <string name="pos_save">Kaydet</string>
     <string name="pos_understood">Anladım</string>
+    <string name="pos_turn_on">Aç</string>
     <string name="neg_turn_off">Kapat</string>
     <string name="neg_cancel">İptal</string>
     <string name="neg_dont_show_again">Tekrar gösterme</string>
     <string name="neg_keep_editing">Düzenlemeye devam et</string>
+    <string name="neg_no_thanks">Hayır, teşekkürler</string>
     <string name="neutral_hide">Gizle</string>
     <string name="neutral_go_to_dont_kill_my_app">Çevrimiçi kılavuz</string>
     <string name="neutral_go_to_settings">Ayarlar</string>
@@ -575,7 +579,7 @@ Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="stream_system">Sistem</string>
     <string name="stream_voice_call">Sesli arama</string>
     <string name="ringer_mode_normal">Normal</string>
-    <string name="ringer_mode_vibrate">Titreşim</string>
+    <string name="ringer_mode_vibrate">Titre</string>
     <string name="ringer_mode_silent">Sessiz</string>
     <string name="lens_front">Ön</string>
     <string name="lens_back">Arka</string>
@@ -723,7 +727,7 @@ Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="action_volume_mute">Sesi kapat</string>
     <string name="action_toggle_mute">Sesi aç/kapat</string>
     <string name="action_volume_unmute">Sesi aç</string>
-    <string name="action_volume_show_dialog">Ses kontrol panelini göster</string>
+    <string name="action_volume_show_dialog">Ses diyaloğunu göster</string>
     <string name="action_increase_stream">Akışı artır</string>
     <string name="action_increase_stream_formatted">%s akışını artır</string>
     <string name="action_decrease_stream">Akışı azalt</string>
@@ -828,8 +832,17 @@ Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="action_power_on_off_device">Cihazı uyut/uyandır</string>
     <string name="action_power_on_off_device_message">Ekran kapalıyken tetikleyiciyi algılama seçeneğini açmanız gerekiyor!</string>
     <string name="action_consume_keyevent">Hiçbir şey yapma</string>
-    <string name="action_move_cursor">İmleci sona taşı</string>
-    <string name="action_move_to_end_of_text_message">Bu eylem bazı uygulamalarda beklendiği gibi çalışmayabilir.</string>
+    <string name="action_move_cursor">İmleci taşı</string>
+    <string name="action_move_cursor_prev_character">Önceki karaktere git</string>
+    <string name="action_move_cursor_next_character">Sonraki karaktere git</string>
+    <string name="action_move_cursor_start_word">Önceki kelimeye git</string>
+    <string name="action_move_cursor_end_word">Sonraki kelimeye git</string>
+    <string name="action_move_cursor_start_line">Önceki satıra git</string>
+    <string name="action_move_cursor_end_line">Sonraki satıra git</string>
+    <string name="action_move_cursor_start_paragraph">Paragrafın başına git</string>
+    <string name="action_move_cursor_end_paragraph">Paragrafın sonuna git</string>
+    <string name="action_move_cursor_start_page">Sayfanın başına git</string>
+    <string name="action_move_cursor_end_page">Sayfanın sonuna git</string>
     <string name="action_toggle_keyboard">Klavyeyi aç/kapat</string>
     <string name="action_toggle_keyboard_message">Bu eylem yalnızca klavyenin gösterilmesi gereken bir giriş alanına dokunduğunuzda çalışır.</string>
     <string name="action_show_keyboard">Klavyeyi göster</string>
@@ -921,12 +934,13 @@ Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="action_cat_keyboard">Klavye</string>
     <string name="action_cat_apps">Uygulamalar</string>
     <string name="action_cat_input">Giriş</string>
+    <string name="action_cat_flashlight">El feneri</string>
     <string name="action_cat_connectivity">Bağlantı</string>
-    <string name="action_cat_content">İçerik</string>
     <string name="action_cat_interface">Arayüz</string>
     <string name="action_cat_telephony">Telefon</string>
     <string name="action_cat_display">Ekran</string>
     <string name="action_cat_notifications">Bildirimler</string>
+    <string name="action_cat_special">Özel</string>
     <!-- action category labels -->
     <!--  Intent action type strings  -->
     <string name="intent_type_bool_header">Boolean</string>
@@ -969,7 +983,17 @@ Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="intent_flags_example">Intent bayrakları bit bayrakları olarak saklanır. Bu bayraklar Intent\'in nasıl işleneceğini değiştirir. Bir Etkinlik Intent\'i için bu alan boş bırakılırsa, Key Mapper varsayılan olarak FLAG_ACTIVITY_NEW_TASK kullanır. Daha fazla bilgi için Android geliştirici belgelerini görmek üzere \'dokümanlar\'a dokunun.</string>
     <!--  Intent action type strings  -->
     <!--  Tap targets  -->
+    <string name="tap_target_skip_tutorial_button">Öğreticiyi geç</string>
+    <string name="tap_target_create_key_map_title">İlk anahtar haritanı oluştur!</string>
+    <string name="tap_target_create_key_map_message">Bir anahtar haritası, bir düğmeye basıldığında cihazınızın ne yapacağını belirten bir kuraldır.</string>
+    <string name="tap_target_record_trigger_title">Tetikleyiciyi kaydet</string>
+    <string name="tap_target_record_trigger_message">Kaydet\'e dokun ve ardından değiştirmek istediğin fiziksel düğmelere bas.</string>
+    <string name="tap_target_advanced_triggers_title">Key Mapper\'ı seviyor musunuz? ❤️</string>
+    <string name="tap_target_advanced_triggers_message">Uygun bir fiyata, ekran üstü yüzen düğmelerle güçlü anahtar haritaları oluşturun ve daha harika özelliklerin geliştirilmesini destekleyin 👨‍💻.</string>
     <string name="tap_target_choose_action_title">Bir eylem seçin</string>
+    <string name="tap_target_choose_action_message">Bir eylem, tetikleyiciye bastığınızda olması gereken şeydir.</string>
+    <string name="tap_target_choose_constraint_title">Bir kısıtlama seç (isteğe bağlı)</string>
+    <string name="tap_target_choose_constraint_message">Anahtar haritasının yalnızca belirli durumlarda çalışmasını istiyorsanız, örneğin, bir uygulama açıkken.</string>
     <!--  Tap targets  -->
     <!--  About  -->
     <string name="about_link_github">GitHub</string>
@@ -977,7 +1001,7 @@ Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="about_link_translations">Çeviriler</string>
     <string name="about_version">Sürüm %s</string>
     <string name="about_link_rate">Oyla</string>
-    <string name="about_link_changelog">Değişiklik Günlüğü</string>
+    <string name="about_link_changelog">Değişiklik günlüğü</string>
     <string name="about_link_discord">Discord</string>
     <string name="about_header_boring_stuff">Sıkıcı şeyler</string>
     <string name="about_license_title">Lisans</string>
@@ -1042,7 +1066,7 @@ Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="setup_gui_keyboard_install_keyboard_button_disabled">Yüklendi</string>
     <string name="setup_gui_keyboard_enable_keyboard_text">2. Klavyeyi etkinleştir</string>
     <string name="setup_gui_keyboard_enable_keyboard_button">Etkinleştir</string>
-    <string name="setup_gui_keyboard_enable_keyboard_button_disabled">Etkinleştirildi</string>
+    <string name="setup_gui_keyboard_enable_keyboard_button_disabled">Etkin</string>
     <string name="setup_gui_keyboard_choose_keyboard_text">3. Klavyeyi kullan</string>
     <string name="setup_gui_keyboard_choose_keyboard_button">Klavyeyi değiştir</string>
     <string name="setup_gui_keyboard_choose_keyboard_button_disabled">Klavye seçildi</string>
@@ -1080,7 +1104,7 @@ Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="floating_buttons_all_done_constraints_dialog_title">Kısıtlamalar</string>
     <string name="floating_buttons_all_done_constraints_dialog_message">Bu düğmenin yalnızca bazı uygulamalarda ekranda olmasını ister misiniz? Bu tuş eşlemesi için “Kısıtlamalar” sekmesinde bir “Ön plandaki uygulama” kısıtlaması ekleyin.</string>
     <string name="choose_floating_layout_title">Bir düzen seçin</string>
-    <string name="bottom_app_bar_back_content_description">Geri</string>
+    <string name="bottom_app_bar_back_content_description">Arka</string>
     <string name="bottom_app_bar_help_content_description">Yardım</string>
     <string name="floating_menu_done_dialog_title">Yardım mı lazım?</string>
     <string name="floating_menu_done_dialog_create_button">Düğme oluştur</string>
