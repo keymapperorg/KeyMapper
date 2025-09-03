@@ -34,7 +34,6 @@ lane :production do
 
     Dir.chdir("..") do
       gradle(task: "testDebugUnitTest")
-      gradle(task: "testDebugUnitTest")
     end
 
     github_token = prompt(
@@ -52,27 +51,24 @@ lane :production do
                     secure_text: true
                    )
 
-#   Do not release a debug build for pro version.
-#   gradle(task: "assembleDebug")
-
 #   Release the free build to GitHub because billing only works if signed by Google Play
     gradle(task: "assembleRelease")
 
     Dir.chdir("..") do
-      gradle(task: "bundleRelease")
+      gradle(task: "app:bundleRelease")
     end
 
-    apk_path_release="app/build/outputs/apk/release/keymapper-foss-" + version_name + ".apk"
+    apk_path_release="app/build/outputs/apk/release/keymapper-" + version_name + "-foss.apk"
 
     # First release to google play so any errors with the descriptions are resolved before
     # creating the git tag.
     supply(
-        aab: "../app/build/outputs/bundle/release/app-pro-release.aab",
+        aab: "../app/build/outputs/bundle/release/app-release.aab",
         track: "internal",
         skip_upload_apk: true
     )
 
-    whats_new = File.read("../app/src/main/assets/whats-new.txt")
+    whats_new = File.read("../base/src/main/assets/whats-new.txt")
 
     github_release = set_github_release(
       repository_name: "keymapperorg/KeyMapper",
