@@ -29,4 +29,6 @@ interface ISystemBridge {
    void grantPermission(String permission, int deviceId) = 11;
 
    void setDataEnabled(int subId, boolean enable) = 12;
+
+   void setBluetoothEnabled(boolean enable) = 13;
 }

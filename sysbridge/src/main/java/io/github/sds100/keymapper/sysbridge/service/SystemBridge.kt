@@ -1,9 +1,13 @@
 package io.github.sds100.keymapper.sysbridge.service
 
 import android.annotation.SuppressLint
+import android.bluetooth.IBluetoothManager
+import android.content.AttributionSource
 import android.content.Context
 import android.content.IContentProvider
 import android.content.pm.ApplicationInfo
+import android.content.pm.IPackageManager
+import android.content.pm.PackageManager
 import android.hardware.input.IInputManager
 import android.net.wifi.IWifiManager
 import android.os.Build
@@ -78,9 +82,16 @@ internal class SystemBridge : ISystemBridge.Stub() {
         }
 
         private fun waitSystemService(name: String?) {
+            var count = 0
+
             while (ServiceManager.getService(name) == null) {
+                if (count == 5) {
+                    throw IllegalStateException("Failed to get $name system service")
+                }
+
                 try {
                     Thread.sleep(1000)
+                    count++
                 } catch (e: InterruptedException) {
                     Log.w(TAG, e.message, e)
                 }
@@ -146,9 +157,11 @@ internal class SystemBridge : ISystemBridge.Stub() {
     }
 
     private val inputManager: IInputManager
-    private val wifiManager: IWifiManager
+    private val wifiManager: IWifiManager?
     private val permissionManager: IPermissionManager
-    private val telephonyManager: ITelephony
+    private val telephonyManager: ITelephony?
+    private val packageManager: IPackageManager
+    private val bluetoothManager: IBluetoothManager?
 
     private val processPackageName: String = when (Process.myUid()) {
         Process.ROOT_UID -> "root"
@@ -161,9 +174,11 @@ internal class SystemBridge : ISystemBridge.Stub() {
         @SuppressLint("UnsafeDynamicallyLoadedCode")
         System.load("$libraryPath/libevdev.so")
 
-        Log.i(TAG, "SystemBridge started. Version code $versionCode")
+        Log.i(TAG, "SystemBridge starting... Version code $versionCode")
 
         waitSystemService("package")
+        packageManager = IPackageManager.Stub.asInterface(ServiceManager.getService("package"))
+
         waitSystemService(Context.ACTIVITY_SERVICE)
         waitSystemService(Context.USER_SERVICE)
         waitSystemService(Context.APP_OPS_SERVICE)
@@ -175,15 +190,29 @@ internal class SystemBridge : ISystemBridge.Stub() {
         inputManager =
             IInputManager.Stub.asInterface(ServiceManager.getService(Context.INPUT_SERVICE))
 
-        // TODO check that system supports wifi feature
-        waitSystemService(Context.WIFI_SERVICE)
-        wifiManager =
-            IWifiManager.Stub.asInterface(ServiceManager.getService(Context.WIFI_SERVICE))
+        if (hasSystemFeature(PackageManager.FEATURE_WIFI)) {
+            waitSystemService(Context.WIFI_SERVICE)
+            wifiManager =
+                IWifiManager.Stub.asInterface(ServiceManager.getService(Context.WIFI_SERVICE))
+        } else {
+            wifiManager = null
+        }
 
-        // TODO check that the system supports telephony feature
-        waitSystemService(Context.TELEPHONY_SERVICE)
-        telephonyManager =
-            ITelephony.Stub.asInterface(ServiceManager.getService(Context.TELEPHONY_SERVICE))
+        if (hasSystemFeature(PackageManager.FEATURE_TELEPHONY)) {
+            waitSystemService(Context.TELEPHONY_SERVICE)
+            telephonyManager =
+                ITelephony.Stub.asInterface(ServiceManager.getService(Context.TELEPHONY_SERVICE))
+        } else {
+            telephonyManager = null
+        }
+
+        if (hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
+            waitSystemService("bluetooth_manager")
+            bluetoothManager =
+                IBluetoothManager.Stub.asInterface(ServiceManager.getService("bluetooth_manager"))
+        } else {
+            bluetoothManager = null
+        }
 
         val applicationInfo = getKeyMapperPackageInfo()
 
@@ -197,6 +226,12 @@ internal class SystemBridge : ISystemBridge.Stub() {
         mainHandler.post {
             sendBinderToApp()
         }
+
+        Log.i(TAG, "SystemBridge started complete. Version code $versionCode")
+    }
+
+    private fun hasSystemFeature(name: String): Boolean {
+        return packageManager.hasSystemFeature(name, 0)
     }
 
     private fun getKeyMapperPackageInfo(): ApplicationInfo? =
@@ -313,6 +348,10 @@ internal class SystemBridge : ISystemBridge.Stub() {
     }
 
     override fun setWifiEnabled(enable: Boolean): Boolean {
+        if (wifiManager == null) {
+            throw UnsupportedOperationException("WiFi not supported")
+        }
+
         return wifiManager.setWifiEnabled(processPackageName, enable)
     }
 
@@ -455,6 +494,10 @@ internal class SystemBridge : ISystemBridge.Stub() {
     }
 
     override fun setDataEnabled(subId: Int, enable: Boolean) {
+        if (telephonyManager == null) {
+            throw UnsupportedOperationException("Telephony not supported")
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             telephonyManager.setDataEnabledForReason(
                 subId,
@@ -464,6 +507,32 @@ internal class SystemBridge : ISystemBridge.Stub() {
             )
         } else {
             telephonyManager.setUserDataEnabled(subId, enable)
+        }
+    }
+
+    override fun setBluetoothEnabled(enable: Boolean) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            throw UnsupportedOperationException("Bluetooth enable/disable requires Android 12 or higher. Otherwise use the SDK's BluetoothAdapter which allows enable/disable.")
+        }
+
+        if (bluetoothManager == null) {
+            throw UnsupportedOperationException("Bluetooth not supported")
+        }
+
+        val attributionSourceBuilder = AttributionSource.Builder(Process.myUid())
+            .setAttributionTag("KeyMapperSystemBridge")
+            .setPackageName(processPackageName)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            attributionSourceBuilder.setPid(Process.myPid())
+        }
+
+        val attributionSource = attributionSourceBuilder.build()
+
+        if (enable) {
+            bluetoothManager.enable(attributionSource)
+        } else {
+            bluetoothManager.disable(attributionSource, true)
         }
     }
 }
