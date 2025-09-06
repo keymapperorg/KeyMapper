@@ -151,7 +151,7 @@
     <string name="hint_intent_description">Description for Key Mapper (required)</string>
     <string name="hint_intent_flags">Flags</string>
     <string name="hint_sound_file_description">Sound file description</string>
-    <string name="hint_wifi_ssid">Wi-Fi network SSID</string>
+    <string name="hint_wifi_ssid">WiFi network SSID</string>
     <!--  Hints  -->
 
     <!--  Radio buttons  -->
@@ -259,18 +259,18 @@
     <string name="constraint_flashlight_on">Flashlight is on</string>
     <string name="constraint_flashlight_off">Flashlight is off</string>
 
-    <string name="constraint_wifi_on">Wi-Fi is on</string>
-    <string name="constraint_wifi_off">Wi-Fi is off</string>
-    <string name="constraint_wifi_connected">Connected to a Wi-Fi network</string>
-    <string name="constraint_wifi_disconnected">Disconnected from a Wi-Fi network</string>
-    <string name="constraint_wifi_message_cant_list_networks">You will have to type the SSID manually because apps aren\'t allowed to query the list of known Wi-Fi networks on Android 10 and newer.
+    <string name="constraint_wifi_on">WiFi is on</string>
+    <string name="constraint_wifi_off">WiFi is off</string>
+    <string name="constraint_wifi_connected">Connected to a WiFi network</string>
+    <string name="constraint_wifi_disconnected">Disconnected from a WiFi network</string>
+    <string name="constraint_wifi_message_cant_list_networks">You will have to type the SSID manually because apps aren\'t allowed to query the list of known WiFi networks on Android 10 and newer.
 
-    Leave it empty if any Wi-Fi network should be matched.</string>
+    Leave it empty if any WiFi network should be matched.</string>
     <string name="constraint_wifi_pick_network_any">Any</string>
-    <string name="constraint_wifi_connected_description">Connected to %s Wi-Fi</string>
-    <string name="constraint_wifi_disconnected_description">Disconnected from %s Wi-Fi</string>
-    <string name="constraint_wifi_connected_any_description">Connected to any Wi-Fi</string>
-    <string name="constraint_wifi_disconnected_any_description">Disconnected to no Wi-Fi</string>
+    <string name="constraint_wifi_connected_description">Connected to %s WiFi</string>
+    <string name="constraint_wifi_disconnected_description">Disconnected from %s WiFi</string>
+    <string name="constraint_wifi_connected_any_description">Connected to any WiFi</string>
+    <string name="constraint_wifi_disconnected_any_description">Disconnected to no WiFi</string>
 
     <string name="constraint_ime_chosen">Input method is chosen</string>
     <string name="constraint_ime_chosen_description">%s is chosen</string>
@@ -804,7 +804,7 @@
     <string name="error_system_feature_camera_unsupported">Your device doesn\'t have a camera.</string>
     <string name="error_system_feature_nfc_unsupported">Your device doesn\'t support NFC.</string>
     <string name="error_system_feature_fingerprint_unsupported">Your device doesn\'t have a fingerprint reader.</string>
-    <string name="error_system_feature_wifi_unsupported">Your device doesn\'t support Wi-Fi.</string>
+    <string name="error_system_feature_wifi_unsupported">Your device doesn\'t support WiFi.</string>
     <string name="error_system_feature_bluetooth_unsupported">Your device doesn\'t support Bluetooth.</string>
     <string name="error_system_feature_device_admin_unsupported">Your device doesn\'t support device policy enforcement.</string>
     <string name="error_system_feature_camera_flash_unsupported">Your device doesn\'t have a camera flash.</string>
@@ -902,9 +902,9 @@
     <!-- Error messages -->
 
     <!-- action labels -->
-    <string name="action_toggle_wifi">Toggle Wi-Fi</string>
-    <string name="action_enable_wifi">Enable Wi-Fi</string>
-    <string name="action_disable_wifi">Disable Wi-Fi</string>
+    <string name="action_toggle_wifi">Toggle WiFi</string>
+    <string name="action_enable_wifi">Enable WiFi</string>
+    <string name="action_disable_wifi">Disable WiFi</string>
 
     <string name="action_toggle_bluetooth">Toggle Bluetooth</string>
     <string name="action_enable_bluetooth">Enable Bluetooth</string>
@@ -1613,8 +1613,8 @@
     <string name="pro_mode_setup_wizard_enable_developer_options_title">Enable developer options</string>
     <string name="pro_mode_setup_wizard_enable_developer_options_description">Key Mapper needs to use Android Debug Bridge to start PRO mode, and you need to enable developer options for that.</string>
 
-    <string name="pro_mode_setup_wizard_connect_wifi_title">Connect to a Wi-Fi network</string>
-    <string name="pro_mode_setup_wizard_connect_wifi_description">Key Mapper needs a Wi-Fi network to enable ADB. You do not need an internet connection.\n\nNo Wi-Fi network? Use a hotspot from someone else\'s phone.</string>
+    <string name="pro_mode_setup_wizard_connect_wifi_title">Connect to a WiFi network</string>
+    <string name="pro_mode_setup_wizard_connect_wifi_description">Key Mapper needs a WiFi network to enable ADB. You do not need an internet connection.\n\nNo WiFi network? Use a hotspot from someone else\'s phone.</string>
 
     <string name="pro_mode_setup_wizard_enable_wireless_debugging_title">Enable wireless debugging</string>
     <string name="pro_mode_setup_wizard_enable_wireless_debugging_description">Key Mapper uses wireless debugging to launch its remapping and input service.</string>
@@ -1651,7 +1651,7 @@
     <string name="pro_mode_setup_notification_auto_start_system_bridge_title">Auto starting PRO mode</string>
     <string name="pro_mode_setup_notification_auto_start_system_bridge_root_text">Using root</string>
     <string name="pro_mode_setup_notification_auto_start_system_bridge_shizuku_text">Using shizuku</string>
-    <string name="pro_mode_setup_notification_auto_start_system_bridge_adb_text">Using ADB over Wi-Fi</string>
+    <string name="pro_mode_setup_notification_auto_start_system_bridge_adb_text">Using ADB over WiFi</string>
 
     <string name="pro_mode_setup_notification_system_bridge_started_title">PRO mode started</string>
     <string name="pro_mode_setup_notification_system_bridge_started_text">Have fun remapping! ❤️</string>
@@ -1661,7 +1661,7 @@
     <string name="pro_mode_setup_notification_action_input_pairing_code">Input pairing code</string>
 
     <string name="pro_mode_info_card_title">What can I do with PRO mode?</string>
-    <string name="pro_mode_info_card_description">📲 You can remap more buttons, such as your power button.\n⌨️ Use any keyboard with key code actions.\n⭐️ The following actions are unlocked: Wi-Fi, Bluetooth, mobile data, NFC, and airplane mode, collapse status bar, and sleep/wake device.</string>
+    <string name="pro_mode_info_card_description">📲 You can remap more buttons, such as your power button.\n⌨️ Use any keyboard with key code actions.\n⭐️ The following actions are unlocked: WiFi, Bluetooth, mobile data, NFC, and airplane mode, collapse status bar, and sleep/wake device.</string>
     <string name="pro_mode_info_card_show_content_description">Show PRO mode info</string>
     <string name="pro_mode_info_card_dismiss_content_description">Dismiss</string>
 
