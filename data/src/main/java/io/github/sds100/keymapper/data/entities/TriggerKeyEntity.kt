@@ -132,7 +132,7 @@ sealed class TriggerKeyEntity : Parcelable {
             uid: String,
         ): KeyEventTriggerKeyEntity {
             val keyCode by json.byInt(KeyEventTriggerKeyEntity.NAME_KEYCODE)
-            val scanCode by json.byInt(KeyEventTriggerKeyEntity.NAME_SCANCODE)
+            val scanCode by json.byNullableInt(KeyEventTriggerKeyEntity.NAME_SCANCODE)
             val deviceId by json.byString(KeyEventTriggerKeyEntity.NAME_DEVICE_ID)
             val deviceName by json.byNullableString(KeyEventTriggerKeyEntity.NAME_DEVICE_NAME)
             val clickType by json.byInt(NAME_CLICK_TYPE)

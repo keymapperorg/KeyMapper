@@ -254,7 +254,6 @@ class PerformActionsUseCaseTest {
             val action = ActionData.InputKeyEvent(
                 keyCode = 1,
                 metaState = 0,
-                useShell = false,
                 device = ActionData.InputKeyEvent.Device(
                     descriptor = descriptor,
                     name = "fake_name_2",
@@ -316,7 +315,6 @@ class PerformActionsUseCaseTest {
             val action = ActionData.InputKeyEvent(
                 keyCode = 1,
                 metaState = 0,
-                useShell = false,
                 device = ActionData.InputKeyEvent.Device(descriptor = descriptor, name = ""),
             )
 
