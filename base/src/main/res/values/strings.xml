@@ -420,8 +420,7 @@
     <string name="dialog_title_cant_find_accessibility_settings_page">Can\'t find the accessibility settings page</string>
     <string name="dialog_title_unsaved_changes">Unsaved changes</string>
     <string name="dialog_message_unsaved_changes"> You have unsaved changes. If you discard them, your edits will be lost.</string>
-    <string name="dialog_message_root_prompt">If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices. When you tap \'OK\', you will be taken to the settings.
-            In the settings, scroll to the bottom and tap \'Key Mapper has root permission\' so you can use root features/actions.</string>
+    <string name="dialog_message_root_prompt">Please grant Key Mapper root permission in your root management app, such as Magisk.</string>
 
     <string name="dialog_title_write_secure_settings">Grant WRITE_SECURE_SETTINGS permission</string>
     <string name="dialog_message_write_secure_settings">A PC/Mac is required to grant this permission. Read the online guide.</string>

@@ -37,7 +37,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -71,7 +70,7 @@ fun ProModeSetupScreen(
         state = state,
         onStepButtonClick = viewModel::onStepButtonClick,
         onAssistantClick = viewModel::onAssistantClick,
-        onWatchTutorialClick = { }, //TODO
+        onWatchTutorialClick = { },
         onBackClick = viewModel::onBackClick
     )
 }
@@ -251,12 +250,12 @@ private fun StepContent(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextButton(onClick = onWatchTutorialClick) {
-                Text(text = stringResource(R.string.pro_mode_setup_wizard_watch_tutorial_button))
-            }
+//            TextButton(onClick = onWatchTutorialClick) {
+//                Text(text = stringResource(R.string.pro_mode_setup_wizard_watch_tutorial_button))
+//            }
             Button(onClick = onButtonClick) {
                 Text(text = stepContent.buttonText)
             }

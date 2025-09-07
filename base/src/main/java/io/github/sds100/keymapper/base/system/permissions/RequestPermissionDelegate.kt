@@ -70,10 +70,7 @@ class RequestPermissionDelegate(
             Permission.CALL_PHONE -> requestPermissionLauncher.launch(Manifest.permission.CALL_PHONE)
             Permission.ANSWER_PHONE_CALL -> requestPermissionLauncher.launch(Manifest.permission.ANSWER_PHONE_CALLS)
             Permission.FIND_NEARBY_DEVICES -> requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
-            Permission.ROOT -> {
-                require(navController != null) { "nav controller can't be null!" }
-                requestRootPermission(navController)
-            }
+            Permission.ROOT -> requestRootPermission()
 
             Permission.IGNORE_BATTERY_OPTIMISATION ->
                 requestIgnoreBatteryOptimisations()
@@ -179,24 +176,18 @@ class RequestPermissionDelegate(
         }
     }
 
-    // TODO show prompt requesting root permission. If not found then show a dialog explaining to grant permission manually in their root management app such as Magisk.
-    private fun requestRootPermission(navController: NavController) {
+    private fun requestRootPermission() {
         if (showDialogs) {
             activity.materialAlertDialog {
                 titleResource = R.string.dialog_title_root_prompt
                 messageResource = R.string.dialog_message_root_prompt
                 setIcon(R.drawable.ic_baseline_warning_24)
 
-                okButton {
-//                    navController.navigate(NavBaseAppDirections.toSettingsFragment())
-                }
-
+                okButton()
                 negativeButton(R.string.neg_cancel) { it.cancel() }
 
                 show()
             }
-        } else {
-//            navController.navigate(NavBaseAppDirections.toSettingsFragment())
         }
     }
 
