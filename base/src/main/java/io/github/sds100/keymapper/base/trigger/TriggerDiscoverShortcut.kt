@@ -4,6 +4,7 @@ enum class TriggerDiscoverShortcut {
     VOLUME,
     ASSISTANT,
     POWER,
+    FINGERPRINT_GESTURE,
     KEYBOARD,
     MOUSE,
     GAMEPAD,

@@ -1666,6 +1666,7 @@
     <string name="trigger_discover_shortcut_volume">Volume</string>
     <string name="trigger_discover_shortcut_assistant">Assistant</string>
     <string name="trigger_discover_shortcut_power">Power</string>
+    <string name="trigger_discover_shortcut_fingerprint_gesture">Fingerprint gesture</string>
     <string name="trigger_discover_shortcut_keyboard">Keyboard</string>
     <string name="trigger_discover_shortcut_mouse">Mouse</string>
     <string name="trigger_discover_shortcut_gamepad">Gamepad</string>

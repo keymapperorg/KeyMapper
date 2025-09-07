@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.outlined.BubbleChart
 import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material.icons.outlined.Mouse
+import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -86,6 +87,13 @@ fun TriggerDiscoverScreen(
                     TriggerDiscoverShortcut.POWER,
                     stringResource(R.string.trigger_discover_shortcut_power),
                     KeyMapperIcons.ModeOffOn
+                ),
+
+                // TODO only show this if fingerprint gestures supported
+                ShortcutData(
+                    TriggerDiscoverShortcut.FINGERPRINT_GESTURE,
+                    stringResource(R.string.trigger_discover_shortcut_fingerprint_gesture),
+                    Icons.Rounded.Fingerprint
                 )
             ),
             onShortcutClick = onShortcutClick,
