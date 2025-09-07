@@ -10,6 +10,8 @@ import android.content.pm.IPackageManager
 import android.content.pm.PackageManager
 import android.hardware.input.IInputManager
 import android.net.wifi.IWifiManager
+import android.nfc.INfcAdapter
+import android.nfc.NfcAdapterApis
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -162,6 +164,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
     private val telephonyManager: ITelephony?
     private val packageManager: IPackageManager
     private val bluetoothManager: IBluetoothManager?
+    private val nfcAdapter: INfcAdapter?
 
     private val processPackageName: String = when (Process.myUid()) {
         Process.ROOT_UID -> "root"
@@ -212,6 +215,14 @@ internal class SystemBridge : ISystemBridge.Stub() {
                 IBluetoothManager.Stub.asInterface(ServiceManager.getService("bluetooth_manager"))
         } else {
             bluetoothManager = null
+        }
+
+        if (hasSystemFeature(PackageManager.FEATURE_NFC)) {
+            waitSystemService(Context.NFC_SERVICE)
+            nfcAdapter =
+                INfcAdapter.Stub.asInterface(ServiceManager.getService(Context.NFC_SERVICE))
+        } else {
+            nfcAdapter = null
         }
 
         val applicationInfo = getKeyMapperPackageInfo()
@@ -533,6 +544,22 @@ internal class SystemBridge : ISystemBridge.Stub() {
             bluetoothManager.enable(attributionSource)
         } else {
             bluetoothManager.disable(attributionSource, true)
+        }
+    }
+
+    override fun setNfcEnabled(enable: Boolean) {
+        if (nfcAdapter == null) {
+            throw UnsupportedOperationException("NFC not supported")
+        }
+
+        if (enable) {
+            NfcAdapterApis.enable(nfcAdapter, processPackageName)
+        } else {
+            NfcAdapterApis.disable(
+                adapter = nfcAdapter,
+                saveState = true,
+                packageName = processPackageName
+            )
         }
     }
 }

@@ -6,6 +6,7 @@
 
 - #761 Detect keys with scancodes. Key Mapper will do this automatically if the key code is unknown
   or you record different physical keys from the same device with the same key code.
+- Redesign the Settings screen
 
 ## Removed
 

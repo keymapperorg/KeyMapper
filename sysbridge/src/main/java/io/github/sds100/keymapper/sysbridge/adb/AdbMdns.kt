@@ -124,9 +124,7 @@ internal class AdbMdns(
     private suspend fun discoverPortInternal(): Int? {
         var port: Int? = null
 
-        if (isDiscovering.value) {
-            cleanup()
-        }
+        cleanup()
 
         // Wait for it to stop discovering
         isDiscovering.first { !it }

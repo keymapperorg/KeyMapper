@@ -31,4 +31,6 @@ interface ISystemBridge {
    void setDataEnabled(int subId, boolean enable) = 12;
 
    void setBluetoothEnabled(boolean enable) = 13;
+
+   void setNfcEnabled(boolean enable) = 14;
 }
