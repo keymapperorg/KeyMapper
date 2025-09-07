@@ -14,7 +14,8 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.multidex.MultiDexApplication
 import io.github.sds100.keymapper.base.logging.KeyMapperLoggingTree
-import io.github.sds100.keymapper.base.settings.ThemeUtils
+import io.github.sds100.keymapper.base.promode.SystemBridgeAutoStarter
+import io.github.sds100.keymapper.base.settings.Theme
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.inputmethod.AutoSwitchImeController
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
@@ -22,9 +23,12 @@ import io.github.sds100.keymapper.base.system.permissions.AutoGrantPermissionCon
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.data.repositories.LogRepository
-import io.github.sds100.keymapper.data.repositories.SettingsPreferenceRepository
+import io.github.sds100.keymapper.data.repositories.PreferenceRepositoryImpl
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManagerImpl
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.system.apps.AndroidPackageManagerAdapter
 import io.github.sds100.keymapper.system.devices.AndroidDevicesAdapter
+import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapperImpl
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.root.SuAdapterImpl
@@ -74,10 +78,19 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
     lateinit var loggingTree: KeyMapperLoggingTree
 
     @Inject
-    lateinit var settingsRepository: SettingsPreferenceRepository
+    lateinit var settingsRepository: PreferenceRepositoryImpl
 
     @Inject
     lateinit var logRepository: LogRepository
+
+    @Inject
+    lateinit var keyEventRelayServiceWrapper: KeyEventRelayServiceWrapperImpl
+
+    @Inject
+    lateinit var systemBridgeAutoStarter: SystemBridgeAutoStarter
+
+    @Inject
+    lateinit var systemBridgeConnectionManager: SystemBridgeConnectionManagerImpl
 
     private val processLifecycleOwner by lazy { ProcessLifecycleOwner.get() }
 
@@ -138,8 +151,8 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
             .map { it?.toIntOrNull() }
             .map {
                 when (it) {
-                    ThemeUtils.DARK -> AppCompatDelegate.MODE_NIGHT_YES
-                    ThemeUtils.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+                    Theme.DARK.value -> AppCompatDelegate.MODE_NIGHT_YES
+                    Theme.LIGHT.value -> AppCompatDelegate.MODE_NIGHT_NO
                     else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
                 }
             }
@@ -184,6 +197,19 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
         }.launchIn(appCoroutineScope)
 
         autoGrantPermissionController.start()
+        keyEventRelayServiceWrapper.bind()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            systemBridgeAutoStarter.init()
+
+            appCoroutineScope.launch {
+                systemBridgeConnectionManager.connectionState.collect { state ->
+                    if (state is SystemBridgeConnectionState.Connected) {
+                        settingsRepository.set(Keys.isSystemBridgeUsed, true)
+                    }
+                }
+            }
+        }
     }
 
     abstract fun getMainActivityClass(): Class<*>

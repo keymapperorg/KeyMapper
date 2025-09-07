@@ -116,14 +116,8 @@ class KeyMapperImeService : InputMethodService() {
             }
         }
 
-    private val keyEventRelayServiceWrapper: KeyEventRelayServiceWrapperImpl by lazy {
-        KeyEventRelayServiceWrapperImpl(
-            ctx = this,
-            id = CALLBACK_ID_INPUT_METHOD,
-            servicePackageName = buildConfigProvider.packageName,
-            callback = keyEventReceiverCallback,
-        )
-    }
+    @Inject
+    lateinit var keyEventRelayServiceWrapper: KeyEventRelayServiceWrapper
 
     override fun onCreate() {
         super.onCreate()
@@ -141,7 +135,10 @@ class KeyMapperImeService : InputMethodService() {
             ContextCompat.RECEIVER_NOT_EXPORTED,
         )
 
-        keyEventRelayServiceWrapper.onCreate()
+        keyEventRelayServiceWrapper.registerClient(
+            CALLBACK_ID_INPUT_METHOD,
+            keyEventReceiverCallback
+        )
     }
 
     override fun onStartInput(attribute: EditorInfo?, restarting: Boolean) {
@@ -211,7 +208,7 @@ class KeyMapperImeService : InputMethodService() {
 
     override fun onDestroy() {
         unregisterReceiver(broadcastReceiver)
-        keyEventRelayServiceWrapper.onDestroy()
+        keyEventRelayServiceWrapper.unregisterClient(CALLBACK_ID_INPUT_METHOD)
 
         super.onDestroy()
     }

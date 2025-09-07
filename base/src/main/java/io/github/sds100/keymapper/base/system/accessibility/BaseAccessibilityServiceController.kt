@@ -4,24 +4,25 @@ import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.res.Configuration
 import android.os.Build
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.lifecycle.lifecycleScope
+import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCaseImpl
 import io.github.sds100.keymapper.base.actions.TestActionEvent
 import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCaseImpl
+import io.github.sds100.keymapper.base.detection.DetectKeyMapsUseCaseImpl
+import io.github.sds100.keymapper.base.detection.KeyMapDetectionController
+import io.github.sds100.keymapper.base.detection.TriggerKeyMapFromOtherAppsController
+import io.github.sds100.keymapper.base.input.InputEventDetectionSource
+import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.TriggerKeyMapEvent
-import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCaseImpl
-import io.github.sds100.keymapper.base.keymaps.detection.DetectScreenOffKeyEventsController
-import io.github.sds100.keymapper.base.keymaps.detection.DpadMotionEventTracker
-import io.github.sds100.keymapper.base.keymaps.detection.KeyMapController
-import io.github.sds100.keymapper.base.keymaps.detection.TriggerKeyMapFromOtherAppsController
-import io.github.sds100.keymapper.base.reroutekeyevents.RerouteKeyEventsController
-import io.github.sds100.keymapper.base.trigger.KeyEventDetectionSource
-import io.github.sds100.keymapper.base.trigger.RecordTriggerEvent
+import io.github.sds100.keymapper.base.promode.SystemBridgeSetupAssistantController
+import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.minusFlag
@@ -30,14 +31,9 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
-import io.github.sds100.keymapper.system.devices.DevicesAdapter
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils
-import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
-import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
-import io.github.sds100.keymapper.system.root.SuAdapter
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
+import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
+import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -53,51 +49,47 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 abstract class BaseAccessibilityServiceController(
     private val service: BaseAccessibilityService,
-    private val rerouteKeyEventsControllerFactory: RerouteKeyEventsController.Factory,
     private val accessibilityNodeRecorderFactory: AccessibilityNodeRecorder.Factory,
     private val performActionsUseCaseFactory: PerformActionsUseCaseImpl.Factory,
     private val detectKeyMapsUseCaseFactory: DetectKeyMapsUseCaseImpl.Factory,
     private val detectConstraintsUseCaseFactory: DetectConstraintsUseCaseImpl.Factory,
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
     private val pauseKeyMapsUseCase: PauseKeyMapsUseCase,
-    private val devicesAdapter: DevicesAdapter,
-    private val suAdapter: SuAdapter,
     private val settingsRepository: PreferenceRepository,
+    private val keyEventRelayServiceWrapper: KeyEventRelayServiceWrapper,
+    private val inputEventHub: InputEventHub,
+    private val recordTriggerController: RecordTriggerController,
+    private val setupAssistantControllerFactory: SystemBridgeSetupAssistantController.Factory,
 ) {
     companion object {
-
-        /**
-         * How long should the accessibility service record a trigger in seconds.
-         */
-        private const val RECORD_TRIGGER_TIMER_LENGTH = 5
         private const val DEFAULT_NOTIFICATION_TIMEOUT = 200L
+        private const val CALLBACK_ID_ACCESSIBILITY_SERVICE = "accessibility_service"
     }
 
     private val performActionsUseCase = performActionsUseCaseFactory.create(
         accessibilityService = service,
-        imeInputEventInjector = service.imeInputEventInjector,
     )
 
     private val detectKeyMapsUseCase = detectKeyMapsUseCaseFactory.create(
         accessibilityService = service,
         coroutineScope = service.lifecycleScope,
-        imeInputEventInjector = service.imeInputEventInjector,
     )
 
     val detectConstraintsUseCase = detectConstraintsUseCaseFactory.create(service)
 
-    val keyMapController = KeyMapController(
+    val keyMapDetectionController = KeyMapDetectionController(
         service.lifecycleScope,
         detectKeyMapsUseCase,
         performActionsUseCase,
         detectConstraintsUseCase,
+        inputEventHub,
+        pauseKeyMapsUseCase,
+        recordTriggerController,
     )
 
     val triggerKeyMapFromOtherAppsController = TriggerKeyMapFromOtherAppsController(
@@ -107,38 +99,17 @@ abstract class BaseAccessibilityServiceController(
         detectConstraintsUseCase,
     )
 
-    val rerouteKeyEventsController = rerouteKeyEventsControllerFactory.create(
-        service.lifecycleScope,
-        service.imeInputEventInjector,
-    )
-
     val accessibilityNodeRecorder = accessibilityNodeRecorderFactory.create(service)
 
-    private val detectScreenOffKeyEventsController = DetectScreenOffKeyEventsController(
-        suAdapter,
-        devicesAdapter,
-    ) { event ->
-        if (!isPaused.value) {
-            withContext(Dispatchers.Main.immediate) {
-                keyMapController.onKeyEvent(event)
-            }
+    private val setupAssistantController: SystemBridgeSetupAssistantController? =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            setupAssistantControllerFactory.create(service.lifecycleScope, service)
+        } else {
+            null
         }
-    }
-
-    private var recordingTriggerJob: Job? = null
-
-    private val recordingTrigger: Boolean
-        get() = recordingTriggerJob != null && recordingTriggerJob?.isActive == true
-
-    private val recordDpadMotionEventTracker: DpadMotionEventTracker =
-        DpadMotionEventTracker()
 
     val isPaused: StateFlow<Boolean> =
         pauseKeyMapsUseCase.isPaused
-            .stateIn(service.lifecycleScope, SharingStarted.Eagerly, false)
-
-    private val screenOffTriggersEnabled: StateFlow<Boolean> =
-        detectKeyMapsUseCase.detectScreenOffTriggers
             .stateIn(service.lifecycleScope, SharingStarted.Eagerly, false)
 
     private val changeImeOnInputFocusFlow: StateFlow<Boolean> =
@@ -190,8 +161,27 @@ abstract class BaseAccessibilityServiceController(
 
     private val inputEvents: SharedFlow<AccessibilityServiceEvent> =
         service.accessibilityServiceAdapter.eventsToService
+
     private val outputEvents: MutableSharedFlow<AccessibilityServiceEvent> =
         service.accessibilityServiceAdapter.eventReceiver
+
+    private val relayServiceCallback: IKeyEventRelayServiceCallback =
+        object : IKeyEventRelayServiceCallback.Stub() {
+            override fun onKeyEvent(event: KeyEvent?): Boolean {
+                event ?: return false
+
+                val kmKeyEvent = KMKeyEvent.fromAndroidKeyEvent(event) ?: return false
+                return onKeyEventFromIme(kmKeyEvent)
+            }
+
+            override fun onMotionEvent(event: MotionEvent?): Boolean {
+                event ?: return false
+
+                val gamePadEvent = KMGamePadEvent.fromMotionEvent(event)
+                    ?: return false
+                return onMotionEventFromIme(gamePadEvent)
+            }
+        }
 
     init {
         serviceFlags.onEach { flags ->
@@ -236,18 +226,7 @@ abstract class BaseAccessibilityServiceController(
         }
 
         pauseKeyMapsUseCase.isPaused.distinctUntilChanged().onEach {
-            keyMapController.reset()
             triggerKeyMapFromOtherAppsController.reset()
-        }.launchIn(service.lifecycleScope)
-
-        detectKeyMapsUseCase.isScreenOn.onEach { isScreenOn ->
-            if (!isScreenOn) {
-                if (screenOffTriggersEnabled.value) {
-                    detectScreenOffKeyEventsController.startListening(service.lifecycleScope)
-                }
-            } else {
-                detectScreenOffKeyEventsController.stopListening()
-            }
         }.launchIn(service.lifecycleScope)
 
         inputEvents.onEach {
@@ -358,95 +337,38 @@ abstract class BaseAccessibilityServiceController(
                 denyFingerprintGestureDetection()
             }
         }
+
+        keyEventRelayServiceWrapper.registerClient(
+            CALLBACK_ID_ACCESSIBILITY_SERVICE,
+            relayServiceCallback,
+        )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            setupAssistantController?.onServiceConnected()
+        }
     }
 
     open fun onDestroy() {
+        keyMapDetectionController.teardown()
+        keyEventRelayServiceWrapper.unregisterClient(CALLBACK_ID_ACCESSIBILITY_SERVICE)
         accessibilityNodeRecorder.teardown()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            setupAssistantController?.teardown()
+        }
     }
 
     open fun onConfigurationChanged(newConfig: Configuration) {
     }
 
-    /**
-     * Returns an MyKeyEvent which is either the same or more unique
-     */
-    private fun getUniqueEvent(event: MyKeyEvent): MyKeyEvent {
-        // Guard to ignore processing when not applicable
-        if (event.keyCode != KeyEvent.KEYCODE_UNKNOWN) return event
-
-        // Don't offset negative values
-        val scanCodeOffset: Int = if (event.scanCode >= 0) {
-            InputEventUtils.KEYCODE_TO_SCANCODE_OFFSET
-        } else {
-            0
-        }
-
-        val eventProxy = event.copy(
-            // Fallback to scanCode when keyCode is unknown as it's typically more unique
-            // Add offset to go past possible keyCode values
-            keyCode = event.scanCode + scanCodeOffset,
-        )
-
-        return eventProxy
-    }
-
     fun onKeyEvent(
-        event: MyKeyEvent,
-        detectionSource: KeyEventDetectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+        event: KMKeyEvent,
+        detectionSource: InputEventDetectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
     ): Boolean {
-        val detailedLogInfo = event.toString()
-
-        if (recordingTrigger) {
-            if (event.action == KeyEvent.ACTION_DOWN) {
-                Timber.d("Recorded key ${KeyEvent.keyCodeToString(event.keyCode)}, $detailedLogInfo")
-
-                val uniqueEvent: MyKeyEvent = getUniqueEvent(event)
-
-                service.lifecycleScope.launch {
-                    outputEvents.emit(
-                        RecordTriggerEvent.RecordedTriggerKey(
-                            uniqueEvent.keyCode,
-                            uniqueEvent.device,
-                            detectionSource,
-                        ),
-                    )
-                }
-            }
-
-            return true
-        }
-
-        if (isPaused.value) {
-            when (event.action) {
-                KeyEvent.ACTION_DOWN -> Timber.d("Down ${KeyEvent.keyCodeToString(event.keyCode)} - not filtering because paused, $detailedLogInfo")
-                KeyEvent.ACTION_UP -> Timber.d("Up ${KeyEvent.keyCodeToString(event.keyCode)} - not filtering because paused, $detailedLogInfo")
-            }
-        } else {
-            try {
-                var consume: Boolean
-                val uniqueEvent: MyKeyEvent = getUniqueEvent(event)
-
-                consume = keyMapController.onKeyEvent(uniqueEvent)
-
-                if (!consume) {
-                    consume = rerouteKeyEventsController.onKeyEvent(uniqueEvent)
-                }
-
-                when (uniqueEvent.action) {
-                    KeyEvent.ACTION_DOWN -> Timber.d("Down ${KeyEvent.keyCodeToString(uniqueEvent.keyCode)} - consumed: $consume, $detailedLogInfo")
-                    KeyEvent.ACTION_UP -> Timber.d("Up ${KeyEvent.keyCodeToString(uniqueEvent.keyCode)} - consumed: $consume, $detailedLogInfo")
-                }
-
-                return consume
-            } catch (e: Exception) {
-                Timber.e(e)
-            }
-        }
-
-        return false
+        return inputEventHub.onInputEvent(event, detectionSource)
     }
 
-    fun onKeyEventFromIme(event: MyKeyEvent): Boolean {
+    fun onKeyEventFromIme(event: KMKeyEvent): Boolean {
         /*
         Issue #850
         If a volume key is sent while the phone is ringing or in a call
@@ -455,64 +377,28 @@ abstract class BaseAccessibilityServiceController(
         before returning the UP key event.
          */
         if (event.action == KeyEvent.ACTION_UP && (event.keyCode == KeyEvent.KEYCODE_VOLUME_UP || event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
-            onKeyEvent(
+            inputEventHub.onInputEvent(
                 event.copy(action = KeyEvent.ACTION_DOWN),
-                detectionSource = KeyEventDetectionSource.INPUT_METHOD,
+                detectionSource = InputEventDetectionSource.INPUT_METHOD,
             )
         }
 
-        return onKeyEvent(
-            event,
-            detectionSource = KeyEventDetectionSource.INPUT_METHOD,
-        )
+        return inputEventHub.onInputEvent(event, InputEventDetectionSource.INPUT_METHOD)
     }
 
-    fun onMotionEventFromIme(event: MyMotionEvent): Boolean {
-        if (isPaused.value) {
-            return false
-        }
-
-        if (recordingTrigger) {
-            val dpadKeyEvents = recordDpadMotionEventTracker.convertMotionEvent(event)
-
-            var consume = false
-
-            for (keyEvent in dpadKeyEvents) {
-                if (keyEvent.action == KeyEvent.ACTION_DOWN) {
-                    Timber.d("Recorded motion event ${KeyEvent.keyCodeToString(keyEvent.keyCode)}")
-
-                    service.lifecycleScope.launch {
-                        outputEvents.emit(
-                            RecordTriggerEvent.RecordedTriggerKey(
-                                keyEvent.keyCode,
-                                keyEvent.device,
-                                KeyEventDetectionSource.INPUT_METHOD,
-                            ),
-                        )
-                    }
-                }
-
-                // Consume the key event if it is an DOWN or UP.
-                consume = true
-            }
-
-            if (consume) {
-                return true
-            }
-        }
-
-        try {
-            val consume = keyMapController.onMotionEvent(event)
-
-            return consume
-        } catch (e: Exception) {
-            Timber.e(e)
-            return false
-        }
+    fun onMotionEventFromIme(event: KMGamePadEvent): Boolean {
+        return inputEventHub.onInputEvent(
+            event,
+            detectionSource = InputEventDetectionSource.INPUT_METHOD,
+        )
     }
 
     open fun onAccessibilityEvent(event: AccessibilityEvent) {
         accessibilityNodeRecorder.onAccessibilityEvent(event)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            setupAssistantController?.onAccessibilityEvent(event)
+        }
 
         if (changeImeOnInputFocusFlow.value) {
             val focussedNode =
@@ -533,7 +419,7 @@ abstract class BaseAccessibilityServiceController(
     }
 
     fun onFingerprintGesture(type: FingerprintGestureType) {
-        keyMapController.onFingerprintGesture(type)
+        keyMapDetectionController.onFingerprintGesture(type)
     }
 
     private fun triggerKeyMapFromIntent(uid: String) {
@@ -542,27 +428,8 @@ abstract class BaseAccessibilityServiceController(
 
     open fun onEventFromUi(event: AccessibilityServiceEvent) {
         Timber.d("Service received event from UI: $event")
+
         when (event) {
-            is RecordTriggerEvent.StartRecordingTrigger ->
-                if (!recordingTrigger) {
-                    recordDpadMotionEventTracker.reset()
-                    recordingTriggerJob = recordTriggerJob()
-                }
-
-            is RecordTriggerEvent.StopRecordingTrigger -> {
-                val wasRecordingTrigger = recordingTrigger
-
-                recordingTriggerJob?.cancel()
-                recordingTriggerJob = null
-                recordDpadMotionEventTracker.reset()
-
-                if (wasRecordingTrigger) {
-                    service.lifecycleScope.launch {
-                        outputEvents.emit(RecordTriggerEvent.OnStoppedRecordingTrigger)
-                    }
-                }
-            }
-
             is TestActionEvent -> service.lifecycleScope.launch {
                 performActionsUseCase.perform(
                     event.action,
@@ -596,19 +463,6 @@ abstract class BaseAccessibilityServiceController(
 
             else -> Unit
         }
-    }
-
-    private fun recordTriggerJob() = service.lifecycleScope.launch {
-        repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
-            if (isActive) {
-                val timeLeft = RECORD_TRIGGER_TIMER_LENGTH - iteration
-                outputEvents.emit(RecordTriggerEvent.OnIncrementRecordTriggerTimer(timeLeft))
-
-                delay(1000)
-            }
-        }
-
-        outputEvents.emit(RecordTriggerEvent.OnStoppedRecordingTrigger)
     }
 
     private fun requestFingerprintGestureDetection() {

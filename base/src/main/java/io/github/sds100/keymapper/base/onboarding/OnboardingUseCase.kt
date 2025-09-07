@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.base.onboarding
 import androidx.datastore.preferences.core.Preferences
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.canUseImeToPerform
-import io.github.sds100.keymapper.base.actions.canUseShizukuToPerform
 import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
@@ -23,7 +22,6 @@ import io.github.sds100.keymapper.system.leanback.LeanbackAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
-import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
@@ -61,10 +59,6 @@ class OnboardingUseCaseImpl @Inject constructor(
             action.canUseImeToPerform()
     }
 
-    override suspend fun showInstallShizukuPrompt(action: ActionData): Boolean = !shizukuAdapter.isInstalled.value &&
-        ShizukuUtils.isRecommendedForSdkVersion() &&
-        action.canUseShizukuToPerform()
-
     override fun neverShowGuiKeyboardPromptsAgain() {
         settingsRepository.set(Keys.acknowledgedGuiKeyboard, true)
     }
@@ -77,11 +71,6 @@ class OnboardingUseCaseImpl @Inject constructor(
         Keys.shownSequenceTriggerExplanation,
         false,
     )
-    override var shownKeyCodeToScanCodeTriggerExplanation by PrefDelegate(
-        Keys.shownKeyCodeToScanCodeTriggerExplanation,
-        false,
-    )
-
     override val showWhatsNew = get(Keys.lastInstalledVersionCodeHomeScreen)
         .map { (it ?: -1) < buildConfigProvider.versionCode }
 
@@ -240,18 +229,11 @@ interface OnboardingUseCase {
      */
     suspend fun showInstallGuiKeyboardPrompt(action: ActionData): Boolean
 
-    /**
-     * @return whether to prompt the user to install Shizuku after adding
-     * this action
-     */
-    suspend fun showInstallShizukuPrompt(action: ActionData): Boolean
-
     fun isTvDevice(): Boolean
     fun neverShowGuiKeyboardPromptsAgain()
 
     var shownParallelTriggerOrderExplanation: Boolean
     var shownSequenceTriggerExplanation: Boolean
-    var shownKeyCodeToScanCodeTriggerExplanation: Boolean
 
     val showFloatingButtonFeatureNotification: Flow<Boolean>
     fun showedFloatingButtonFeatureNotification()

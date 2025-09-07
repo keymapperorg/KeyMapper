@@ -79,11 +79,6 @@ object ActionDataEntityMapper {
                     entity.extras.getData(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME)
                         .valueOrNull() ?: ""
 
-                val useShell =
-                    entity.extras.getData(ActionEntity.EXTRA_KEY_EVENT_USE_SHELL).then {
-                        (it == "true").success()
-                    }.valueOrNull() ?: false
-
                 val device = if (deviceDescriptor != null) {
                     ActionData.InputKeyEvent.Device(deviceDescriptor, deviceName)
                 } else {
@@ -93,7 +88,6 @@ object ActionDataEntityMapper {
                 ActionData.InputKeyEvent(
                     keyCode = entity.data.toInt(),
                     metaState = metaState,
-                    useShell = useShell,
                     device = device,
                 )
             }
@@ -724,15 +718,6 @@ object ActionDataEntityMapper {
             )
 
         is ActionData.InputKeyEvent -> sequence {
-            if (data.useShell) {
-                val string = if (data.useShell) {
-                    "true"
-                } else {
-                    "false"
-                }
-                yield(EntityExtra(ActionEntity.EXTRA_KEY_EVENT_USE_SHELL, string))
-            }
-
             if (data.metaState != 0) {
                 yield(
                     EntityExtra(

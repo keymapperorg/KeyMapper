@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.base.actions.sound.SoundFileInfo
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.data.Keys
@@ -12,9 +13,9 @@ import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
-import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
@@ -37,6 +38,7 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
     private val shizukuAdapter: ShizukuAdapter,
     private val devicesAdapter: DevicesAdapter,
     private val buildConfigProvider: BuildConfigProvider,
+    private val notificationAdapter: NotificationAdapter,
 ) : ConfigSettingsUseCase {
 
     private val imeHelper by lazy {
@@ -46,7 +48,12 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
         )
     }
 
-    override val isRootGranted: Flow<Boolean> = suAdapter.isGranted
+    override val theme: Flow<Theme> =
+        preferences.get(Keys.darkTheme).map { it ?: PreferenceDefaults.DARK_THEME }.map { value ->
+            Theme.entries.single { it.value == value.toInt() }
+        }
+
+    override val isRootGranted: Flow<Boolean> = suAdapter.isRootGranted
 
     override val isWriteSecureSettingsGranted: Flow<Boolean> = channelFlow {
         send(permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS))
@@ -72,9 +79,6 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
         }
     }
 
-    override val rerouteKeyEvents: Flow<Boolean> =
-        preferences.get(Keys.rerouteKeyEvents).map { it ?: false }
-
     override val isCompatibleImeChosen: Flow<Boolean> = inputMethodAdapter.chosenIme.map {
         imeHelper.isCompatibleImeChosen()
     }
@@ -90,16 +94,18 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
         imeHelper.enableCompatibleInputMethods()
     }
 
-    override suspend fun chooseCompatibleIme(): KMResult<ImeInfo> = imeHelper.chooseCompatibleInputMethod()
+    override suspend fun chooseCompatibleIme(): KMResult<ImeInfo> =
+        imeHelper.chooseCompatibleInputMethod()
 
-    override suspend fun showImePicker(): KMResult<*> = inputMethodAdapter.showImePicker(fromForeground = true)
+    override suspend fun showImePicker(): KMResult<*> =
+        inputMethodAdapter.showImePicker(fromForeground = true)
 
     override fun <T> getPreference(key: Preferences.Key<T>) = preferences.get(key)
 
     override fun <T> setPreference(key: Preferences.Key<T>, value: T?) = preferences.set(key, value)
 
     override val automaticBackupLocation =
-        preferences.get(Keys.automaticBackupLocation).map { it ?: "" }
+        preferences.get(Keys.automaticBackupLocation)
 
     override fun setAutomaticBackupLocation(uri: String) {
         preferences.set(Keys.automaticBackupLocation, uri)
@@ -162,7 +168,12 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
         permissionAdapter.request(Permission.POST_NOTIFICATIONS)
     }
 
-    override fun isNotificationsPermissionGranted(): Boolean = permissionAdapter.isGranted(Permission.POST_NOTIFICATIONS)
+    override fun requestRootPermission() {
+        suAdapter.requestPermission()
+    }
+
+    override fun isNotificationsPermissionGranted(): Boolean =
+        permissionAdapter.isGranted(Permission.POST_NOTIFICATIONS)
 
     override fun getSoundFiles(): List<SoundFileInfo> = soundsManager.soundFiles.value
 
@@ -175,24 +186,30 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
     override fun resetAllSettings() {
         preferences.deleteAll()
     }
+
+    override fun openNotificationChannelSettings(channelId: String) {
+        notificationAdapter.openChannelSettings(channelId)
+    }
 }
 
 interface ConfigSettingsUseCase {
     fun <T> getPreference(key: Preferences.Key<T>): Flow<T?>
     fun <T> setPreference(key: Preferences.Key<T>, value: T?)
-    val automaticBackupLocation: Flow<String>
+
+    val theme: Flow<Theme>
+    val automaticBackupLocation: Flow<String?>
     fun setAutomaticBackupLocation(uri: String)
     fun disableAutomaticBackup()
     val isRootGranted: Flow<Boolean>
-    val isWriteSecureSettingsGranted: Flow<Boolean>
+    fun requestRootPermission()
 
+    val isWriteSecureSettingsGranted: Flow<Boolean>
     val isShizukuInstalled: Flow<Boolean>
     val isShizukuStarted: Flow<Boolean>
     val isShizukuPermissionGranted: Flow<Boolean>
     fun downloadShizuku()
-    fun openShizukuApp()
 
-    val rerouteKeyEvents: Flow<Boolean>
+    fun openShizukuApp()
     val isCompatibleImeChosen: Flow<Boolean>
     val isCompatibleImeEnabled: Flow<Boolean>
     suspend fun enableCompatibleIme()
@@ -204,17 +221,18 @@ interface ConfigSettingsUseCase {
     val defaultRepeatDelay: Flow<Int>
     val defaultSequenceTriggerTimeout: Flow<Int>
     val defaultVibrateDuration: Flow<Int>
-    val defaultRepeatRate: Flow<Int>
 
+    val defaultRepeatRate: Flow<Int>
     fun getSoundFiles(): List<SoundFileInfo>
     fun deleteSoundFiles(uid: List<String>)
     fun resetDefaultMappingOptions()
     fun requestWriteSecureSettingsPermission()
     fun requestNotificationsPermission()
     fun isNotificationsPermissionGranted(): Boolean
+    fun openNotificationChannelSettings(channelId: String)
+
     fun requestShizukuPermission()
 
     val connectedInputDevices: StateFlow<State<List<InputDeviceInfo>>>
-
     fun resetAllSettings()
 }

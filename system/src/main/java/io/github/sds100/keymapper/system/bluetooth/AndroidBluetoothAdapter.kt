@@ -8,12 +8,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +28,7 @@ import javax.inject.Singleton
 class AndroidBluetoothAdapter @Inject constructor(
     @ApplicationContext private val context: Context,
     private val coroutineScope: CoroutineScope,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager
 ) : io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter {
 
     private val bluetoothManager: BluetoothManager? = context.getSystemService()
@@ -45,6 +48,7 @@ class AndroidBluetoothAdapter @Inject constructor(
             onReceiveIntent(intent)
         }
     }
+
     init {
         IntentFilter().apply {
             // these broadcasts can't be received from a manifest declared receiver on Android 8.0+
@@ -65,7 +69,6 @@ class AndroidBluetoothAdapter @Inject constructor(
     fun onReceiveIntent(intent: Intent) {
         when (intent.action) {
             BluetoothDevice.ACTION_ACL_CONNECTED -> {
-
                 val device =
                     intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                         ?: return
@@ -144,9 +147,13 @@ class AndroidBluetoothAdapter @Inject constructor(
             return KMError.SystemFeatureNotSupported(PackageManager.FEATURE_BLUETOOTH)
         }
 
-        adapter.enable()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
+            return systemBridgeConnectionManager.run { bridge -> bridge.setBluetoothEnabled(true) }
+        } else {
+            adapter.enable()
+            return Success(Unit)
+        }
 
-        return Success(Unit)
     }
 
     override fun disable(): KMResult<*> {
@@ -154,8 +161,11 @@ class AndroidBluetoothAdapter @Inject constructor(
             return KMError.SystemFeatureNotSupported(PackageManager.FEATURE_BLUETOOTH)
         }
 
-        adapter.disable()
-
-        return Success(Unit)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
+            return systemBridgeConnectionManager.run { bridge -> bridge.setBluetoothEnabled(false) }
+        } else {
+            adapter.disable()
+            return Success(Unit)
+        }
     }
 }

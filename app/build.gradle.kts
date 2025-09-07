@@ -141,6 +141,7 @@ dependencies {
     implementation(project(":base"))
     implementation(project(":api"))
     implementation(project(":data"))
+    implementation(project(":sysbridge"))
     implementation(project(":system"))
     compileOnly(project(":systemstubs"))
 

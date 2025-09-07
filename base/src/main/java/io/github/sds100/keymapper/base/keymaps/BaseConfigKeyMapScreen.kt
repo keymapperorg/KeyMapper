@@ -66,7 +66,7 @@ fun BaseConfigKeyMapScreen(
     isKeyMapEnabled: Boolean,
     onKeyMapEnabledChange: (Boolean) -> Unit = {},
     triggerScreen: @Composable () -> Unit,
-    actionScreen: @Composable () -> Unit,
+    actionsScreen: @Composable () -> Unit,
     constraintsScreen: @Composable () -> Unit,
     optionsScreen: @Composable () -> Unit,
     onBackClick: () -> Unit = {},
@@ -202,7 +202,7 @@ fun BaseConfigKeyMapScreen(
                 ) { pageIndex ->
                     when (tabs[pageIndex]) {
                         ConfigKeyMapTab.TRIGGER -> triggerScreen()
-                        ConfigKeyMapTab.ACTIONS -> actionScreen()
+                        ConfigKeyMapTab.ACTIONS -> actionsScreen()
                         ConfigKeyMapTab.CONSTRAINTS -> constraintsScreen()
                         ConfigKeyMapTab.OPTIONS -> optionsScreen()
                         ConfigKeyMapTab.TRIGGER_AND_ACTIONS -> {
@@ -213,7 +213,7 @@ fun BaseConfigKeyMapScreen(
                                     topScreen = triggerScreen,
                                     bottomTitle = stringResource(R.string.tab_actions),
                                     bottomHelpUrl = actionsHelpUrl,
-                                    bottomScreen = actionScreen,
+                                    bottomScreen = actionsScreen,
                                 )
                             } else {
                                 HorizontalTwoScreens(
@@ -222,7 +222,7 @@ fun BaseConfigKeyMapScreen(
                                     leftScreen = triggerScreen,
                                     rightTitle = stringResource(R.string.tab_actions),
                                     rightHelpUrl = actionsHelpUrl,
-                                    rightScreen = actionScreen,
+                                    rightScreen = actionsScreen,
                                 )
                             }
                         }
@@ -255,7 +255,7 @@ fun BaseConfigKeyMapScreen(
                             topLeftScreen = triggerScreen,
                             topRightTitle = stringResource(R.string.tab_actions),
                             topRightHelpUrl = actionsHelpUrl,
-                            topRightScreen = actionScreen,
+                            topRightScreen = actionsScreen,
                             bottomLeftTitle = stringResource(R.string.tab_constraints),
                             bottomLeftHelpUrl = constraintsHelpUrl,
                             bottomLeftScreen = constraintsScreen,
@@ -557,7 +557,7 @@ private fun SmallScreenPreview() {
             modifier = Modifier.fillMaxSize(),
             isKeyMapEnabled = false,
             triggerScreen = {},
-            actionScreen = {},
+            actionsScreen = {},
             constraintsScreen = {},
             optionsScreen = {},
         )
@@ -572,7 +572,7 @@ private fun MediumScreenPreview() {
             modifier = Modifier.fillMaxSize(),
             isKeyMapEnabled = true,
             triggerScreen = {},
-            actionScreen = {},
+            actionsScreen = {},
             constraintsScreen = {},
             optionsScreen = {},
         )
@@ -587,7 +587,7 @@ private fun MediumScreenLandscapePreview() {
             modifier = Modifier.fillMaxSize(),
             isKeyMapEnabled = true,
             triggerScreen = {},
-            actionScreen = {},
+            actionsScreen = {},
             constraintsScreen = {},
             optionsScreen = {},
         )
@@ -602,7 +602,7 @@ private fun LargeScreenPreview() {
             modifier = Modifier.fillMaxSize(),
             isKeyMapEnabled = true,
             triggerScreen = {},
-            actionScreen = {},
+            actionsScreen = {},
             constraintsScreen = {},
             optionsScreen = {},
         )

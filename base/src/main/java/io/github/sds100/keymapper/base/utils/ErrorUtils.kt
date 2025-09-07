@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.BuildUtils
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.data.DataError
+import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
 
@@ -55,7 +56,10 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
             PackageManager.FEATURE_BLUETOOTH -> resourceProvider.getString(R.string.error_system_feature_bluetooth_unsupported)
             PackageManager.FEATURE_DEVICE_ADMIN -> resourceProvider.getString(R.string.error_system_feature_device_admin_unsupported)
             PackageManager.FEATURE_CAMERA_FLASH -> resourceProvider.getString(R.string.error_system_feature_camera_flash_unsupported)
-            PackageManager.FEATURE_TELEPHONY -> resourceProvider.getString(R.string.error_system_feature_telephony_unsupported)
+            PackageManager.FEATURE_TELEPHONY, PackageManager.FEATURE_TELEPHONY_DATA -> resourceProvider.getString(
+                R.string.error_system_feature_telephony_unsupported,
+            )
+
             else -> throw Exception("Don't know how to get error message for this system feature ${this.feature}")
         }
 
@@ -85,7 +89,11 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         is KMError.Exception -> exception.toString()
         is KMError.EmptyJson -> resourceProvider.getString(R.string.error_empty_json)
         is KMError.InvalidNumber -> resourceProvider.getString(R.string.error_invalid_number)
-        is KMError.NumberTooSmall -> resourceProvider.getString(R.string.error_number_too_small, min)
+        is KMError.NumberTooSmall -> resourceProvider.getString(
+            R.string.error_number_too_small,
+            min,
+        )
+
         is KMError.NumberTooBig -> resourceProvider.getString(R.string.error_number_too_big, max)
         is KMError.EmptyText -> resourceProvider.getString(R.string.error_cant_be_empty)
         KMError.BackupVersionTooNew -> resourceProvider.getString(R.string.error_backup_version_too_new)
@@ -175,6 +183,7 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         KMError.InvalidBackup -> resourceProvider.getString(R.string.error_invalid_backup)
         KMError.MalformedUrl -> resourceProvider.getString(R.string.error_malformed_url)
         KMError.UiElementNotFound -> resourceProvider.getString(R.string.error_ui_element_not_found)
+        is SystemBridgeError.Disconnected -> resourceProvider.getString(R.string.error_system_bridge_disconnected)
 
         PurchasingError.PurchasingProcessError.Cancelled -> resourceProvider.getString(
             R.string.purchasing_error_cancelled,
@@ -208,7 +217,7 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         }
 
         PurchasingError.PurchasingNotImplemented -> resourceProvider.getString(R.string.purchasing_error_not_implemented)
-        else -> throw IllegalArgumentException("Unknown error $this")
+        else -> this.toString()
     }
 }
 
@@ -224,7 +233,7 @@ val KMError.isFixable: Boolean
         is SystemError.PermissionDenied,
         is KMError.ShizukuNotStarted,
         is KMError.CantDetectKeyEventsInPhoneCall,
-
+        is SystemBridgeError.Disconnected,
         -> true
 
         else -> false

@@ -14,4 +14,10 @@ object PreferenceDefaults {
     const val REPEAT_RATE = 50
     const val SEQUENCE_TRIGGER_TIMEOUT = 1000
     const val HOLD_DOWN_DURATION = 1000
+
+    const val PRO_MODE_INTERACTIVE_SETUP_ASSISTANT = true
+
+    // Enable this by default so that key maps will still work for root users
+    // who upgrade to version 4.0.
+    const val PRO_MODE_AUTOSTART_BOOT = true
 }

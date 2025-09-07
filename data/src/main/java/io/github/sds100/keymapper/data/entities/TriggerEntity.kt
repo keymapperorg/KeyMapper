@@ -39,7 +39,10 @@ data class TriggerEntity(
         // DON'T CHANGE THESE AND THEY MUST BE POWERS OF 2!!
         const val TRIGGER_FLAG_VIBRATE = 1
         const val TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION = 2
+
+        @Deprecated("This is now on by default for evdev trigger keys")
         const val TRIGGER_FLAG_SCREEN_OFF_TRIGGERS = 4
+
         const val TRIGGER_FLAG_FROM_OTHER_APPS = 8
         const val TRIGGER_FLAG_SHOW_TOAST = 16
 

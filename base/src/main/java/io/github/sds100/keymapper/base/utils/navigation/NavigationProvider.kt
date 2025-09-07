@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.utils.navigation
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,6 +43,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -106,6 +108,7 @@ class NavigationProviderImpl @Inject constructor() : NavigationProvider {
         // wait for the view to collect so navigating can happen
         _onNavigate.subscriptionCount.first { it > 0 }
 
+        Timber.d("Navigation: Navigating to ${event.destination} with key ${event.key}")
         _onNavigate.emit(event)
     }
 
@@ -114,6 +117,7 @@ class NavigationProviderImpl @Inject constructor() : NavigationProvider {
     }
 
     override suspend fun popBackStack() {
+        Timber.d("Navigation: Popping back stack")
         _popBackStack.value = Unit
     }
 
@@ -122,6 +126,8 @@ class NavigationProviderImpl @Inject constructor() : NavigationProvider {
      */
     override suspend fun popBackStackWithResult(data: String) {
         _onReturnResult.subscriptionCount.first { it > 0 }
+
+        Timber.d("Navigation: Popping back stack with result")
         _onReturnResult.emit(data)
     }
 }
@@ -167,8 +173,9 @@ fun SetupNavigation(
     navigationProvider: NavigationProviderImpl,
     navController: NavHostController,
 ) {
+    @SuppressLint("StateFlowValueCalledInComposition")
     val navEvent: NavigateEvent? by navigationProvider.onNavigate
-        .collectAsStateWithLifecycle(null)
+        .collectAsStateWithLifecycle(navigationProvider.onNavigate.value)
 
     val returnResult: String? by navigationProvider.onReturnResult
         .collectAsStateWithLifecycle(null)
@@ -351,9 +358,6 @@ private fun getDirection(destination: NavDestination<*>, requestKey: String): Na
         )
 
         NavDestination.About -> NavBaseAppDirections.actionGlobalAboutFragment()
-        NavDestination.Settings -> NavBaseAppDirections.toSettingsFragment()
-
-        NavDestination.ShizukuSettings -> NavBaseAppDirections.toShizukuSettingsFragment()
 
         else -> throw IllegalArgumentException("Can not find a direction for this destination: $destination")
     }

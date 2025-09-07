@@ -7,12 +7,15 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 
 object Keys {
     val darkTheme = stringPreferencesKey("pref_dark_theme_mode")
+
+    @Deprecated("Now use the libsu library to detect whether the device is rooted.")
     val hasRootPermission = booleanPreferencesKey("pref_allow_root_features")
+
     val shownAppIntro = booleanPreferencesKey("pref_first_time")
-    val showImePickerNotification = booleanPreferencesKey("pref_show_ime_notification")
-    val showToggleKeyMapsNotification = booleanPreferencesKey("pref_show_remappings_notification")
-    val showToggleKeyboardNotification =
-        booleanPreferencesKey("pref_toggle_key_mapper_keyboard_notification")
+
+//    val showToggleKeyMapsNotification = booleanPreferencesKey("pref_show_remappings_notification")
+//    val showToggleKeyboardNotification =
+//        booleanPreferencesKey("pref_toggle_key_mapper_keyboard_notification")
 
     val devicesThatChangeIme = stringSetPreferencesKey("pref_devices_that_change_ime")
     val changeImeOnDeviceConnect =
@@ -49,8 +52,6 @@ object Keys {
         booleanPreferencesKey("key_shown_parallel_trigger_order_warning")
     val shownSequenceTriggerExplanation =
         booleanPreferencesKey("key_shown_sequence_trigger_explanation_dialog")
-    val shownKeyCodeToScanCodeTriggerExplanation =
-        booleanPreferencesKey("key_shown_keycode_to_scancode_trigger_explanation_dialog")
     val lastInstalledVersionCodeHomeScreen =
         intPreferencesKey("last_installed_version_home_screen")
     val lastInstalledVersionCodeBackground =
@@ -59,9 +60,8 @@ object Keys {
     val fingerprintGesturesAvailable =
         booleanPreferencesKey("fingerprint_gestures_available")
 
-    val rerouteKeyEvents = booleanPreferencesKey("key_reroute_key_events_from_specified_devices")
-    val devicesToRerouteKeyEvents =
-        stringSetPreferencesKey("key_devices_to_reroute_key_events")
+//    val rerouteKeyEvents = booleanPreferencesKey("key_reroute_key_events_from_specified_devices")
+//    val devicesToRerouteKeyEvents = stringSetPreferencesKey("key_devices_to_reroute_key_events")
 
     val log = booleanPreferencesKey("key_log")
     val shownShizukuPermissionPrompt = booleanPreferencesKey("key_shown_shizuku_permission_prompt")
@@ -109,4 +109,24 @@ object Keys {
 
     val skipTapTargetTutorial =
         booleanPreferencesKey("key_skip_tap_target_tutorial")
+
+    val isProModeWarningUnderstood =
+        booleanPreferencesKey("key_is_pro_mode_warning_understood")
+
+    val isProModeInteractiveSetupAssistantEnabled =
+        booleanPreferencesKey("key_is_pro_mode_setup_assistant_enabled")
+
+    val isProModeInfoDismissed =
+        booleanPreferencesKey("key_is_pro_mode_info_dismissed")
+
+    val isProModeAutoStartBootEnabled =
+        booleanPreferencesKey("key_is_pro_mode_auto_start_boot_enabled")
+
+    val isSystemBridgeEmergencyKilled =
+        booleanPreferencesKey("key_is_system_bridge_emergency_killed")
+
+    /**
+     * Whether the user has started the system bridge before.
+     */
+    val isSystemBridgeUsed = booleanPreferencesKey("key_is_system_bridge_used")
 }

@@ -8,8 +8,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class GetDefaultKeyMapOptionsUseCaseImpl(
+@Singleton
+class GetDefaultKeyMapOptionsUseCaseImpl @Inject constructor(
     coroutineScope: CoroutineScope,
     preferenceRepository: PreferenceRepository,
 ) : GetDefaultKeyMapOptionsUseCase {

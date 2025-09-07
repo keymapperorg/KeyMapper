@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.base.actions
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.DrawableRes
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -85,6 +86,8 @@ import io.github.sds100.keymapper.base.utils.ui.compose.icons.TopPanelOpen
 import io.github.sds100.keymapper.system.permissions.Permission
 
 object ActionUtils {
+
+    val isSystemBridgeSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
     @StringRes
     fun getCategoryLabel(category: ActionCategory): Int = when (category) {
@@ -525,11 +528,6 @@ object ActionUtils {
         // The global action still fails even though the API exists in SDK 34.
         ActionId.COLLAPSE_STATUS_BAR -> Build.VERSION_CODES.TIRAMISU
 
-        ActionId.ENABLE_BLUETOOTH,
-        ActionId.DISABLE_BLUETOOTH,
-        ActionId.TOGGLE_BLUETOOTH,
-        -> Build.VERSION_CODES.S_V2
-
         // See https://issuetracker.google.com/issues/225186417. The global action
         // is not marked as deprecated even though it doesn't work.
         ActionId.TOGGLE_SPLIT_SCREEN -> Build.VERSION_CODES.S
@@ -551,6 +549,15 @@ object ActionUtils {
         ActionId.DISABLE_WIFI,
         -> listOf(PackageManager.FEATURE_WIFI)
 
+        ActionId.TOGGLE_MOBILE_DATA,
+        ActionId.ENABLE_MOBILE_DATA,
+        ActionId.DISABLE_MOBILE_DATA,
+        -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            listOf(PackageManager.FEATURE_TELEPHONY_DATA)
+        } else {
+            listOf(PackageManager.FEATURE_TELEPHONY)
+        }
+
         ActionId.TOGGLE_NFC,
         ActionId.ENABLE_NFC,
         ActionId.DISABLE_NFC,
@@ -570,19 +577,50 @@ object ActionUtils {
         else -> emptyList()
     }
 
-    fun getRequiredPermissions(id: ActionId): List<Permission> {
-        when (id) {
-            ActionId.TOGGLE_WIFI,
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun isSystemBridgeRequired(id: ActionId): Boolean {
+        return when (id) {
             ActionId.ENABLE_WIFI,
             ActionId.DISABLE_WIFI,
-            -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                return listOf(Permission.ROOT)
-            }
+            ActionId.TOGGLE_WIFI,
+            -> true
 
             ActionId.TOGGLE_MOBILE_DATA,
             ActionId.ENABLE_MOBILE_DATA,
             ActionId.DISABLE_MOBILE_DATA,
-            -> return listOf(Permission.ROOT)
+            -> true
+
+            ActionId.ENABLE_NFC,
+            ActionId.DISABLE_NFC,
+            ActionId.TOGGLE_NFC,
+            -> true
+
+            ActionId.TOGGLE_AIRPLANE_MODE,
+            ActionId.ENABLE_AIRPLANE_MODE,
+            ActionId.DISABLE_AIRPLANE_MODE,
+            -> true
+
+            ActionId.TOGGLE_BLUETOOTH,
+            ActionId.ENABLE_BLUETOOTH,
+            ActionId.DISABLE_BLUETOOTH,
+            -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2
+
+            ActionId.POWER_ON_OFF_DEVICE -> true
+
+            else -> false
+        }
+    }
+
+    fun getRequiredPermissions(id: ActionId): List<Permission> {
+        when (id) {
+            ActionId.TOGGLE_MOBILE_DATA,
+            ActionId.ENABLE_MOBILE_DATA,
+            ActionId.DISABLE_MOBILE_DATA,
+            -> return if (isSystemBridgeSupported) {
+                emptyList()
+            } else {
+                listOf(Permission.ROOT)
+            }
 
             ActionId.PLAY_PAUSE_MEDIA_PACKAGE,
             ActionId.PAUSE_MEDIA_PACKAGE,
@@ -634,7 +672,11 @@ object ActionUtils {
             ActionId.ENABLE_NFC,
             ActionId.DISABLE_NFC,
             ActionId.TOGGLE_NFC,
-            -> return listOf(Permission.ROOT)
+            -> return if (isSystemBridgeSupported) {
+                emptyList()
+            } else {
+                listOf(Permission.ROOT)
+            }
 
             ActionId.SHOW_KEYBOARD_PICKER ->
                 if (Build.VERSION.SDK_INT in Build.VERSION_CODES.O_MR1..Build.VERSION_CODES.P) {
@@ -648,7 +690,11 @@ object ActionUtils {
             ActionId.TOGGLE_AIRPLANE_MODE,
             ActionId.ENABLE_AIRPLANE_MODE,
             ActionId.DISABLE_AIRPLANE_MODE,
-            -> return listOf(Permission.ROOT)
+            -> return if (isSystemBridgeSupported) {
+                emptyList()
+            } else {
+                listOf(Permission.ROOT)
+            }
 
             ActionId.SCREENSHOT -> if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
                 return listOf(Permission.ROOT)
@@ -659,7 +705,11 @@ object ActionUtils {
             }
 
             ActionId.SECURE_LOCK_DEVICE -> return listOf(Permission.DEVICE_ADMIN)
-            ActionId.POWER_ON_OFF_DEVICE -> return listOf(Permission.ROOT)
+            ActionId.POWER_ON_OFF_DEVICE -> return if (isSystemBridgeSupported) {
+                emptyList()
+            } else {
+                listOf(Permission.ROOT)
+            }
 
             ActionId.DISMISS_ALL_NOTIFICATIONS,
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION,
@@ -672,7 +722,8 @@ object ActionUtils {
             ActionId.PHONE_CALL -> return listOf(Permission.CALL_PHONE)
 
             ActionId.ENABLE_BLUETOOTH, ActionId.DISABLE_BLUETOOTH, ActionId.TOGGLE_BLUETOOTH ->
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                // On S_V2 and newer, the system bridge is used which means no permissions are required
+                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.S) {
                     return listOf(Permission.FIND_NEARBY_DEVICES)
                 }
 
@@ -802,18 +853,17 @@ object ActionUtils {
 }
 
 fun ActionData.canBeHeldDown(): Boolean = when (this) {
-    is ActionData.InputKeyEvent -> !useShell
-    is ActionData.TapScreen -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+    is ActionData.InputKeyEvent -> true
     else -> false
 }
 
 fun ActionData.canUseImeToPerform(): Boolean = when (this) {
-    is ActionData.InputKeyEvent -> !useShell
+    is ActionData.InputKeyEvent -> true
     is ActionData.Text -> true
     else -> false
 }
 
-fun ActionData.canUseShizukuToPerform(): Boolean = when (this) {
+fun ActionData.canUseSystemBridgeToPerform(): Boolean = when (this) {
     is ActionData.InputKeyEvent -> true
     else -> false
 }

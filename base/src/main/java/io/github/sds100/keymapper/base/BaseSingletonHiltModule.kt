@@ -14,10 +14,14 @@ import io.github.sds100.keymapper.base.backup.BackupManager
 import io.github.sds100.keymapper.base.backup.BackupManagerImpl
 import io.github.sds100.keymapper.base.constraints.GetConstraintErrorUseCase
 import io.github.sds100.keymapper.base.constraints.GetConstraintErrorUseCaseImpl
-import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCase
-import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCaseController
+import io.github.sds100.keymapper.base.input.InputEventHub
+import io.github.sds100.keymapper.base.input.InputEventHubImpl
+import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapState
+import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapStateImpl
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCaseImpl
+import io.github.sds100.keymapper.base.keymaps.GetDefaultKeyMapOptionsUseCase
+import io.github.sds100.keymapper.base.keymaps.GetDefaultKeyMapOptionsUseCaseImpl
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
@@ -25,6 +29,8 @@ import io.github.sds100.keymapper.base.onboarding.OnboardingUseCaseImpl
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.base.system.accessibility.ControlAccessibilityServiceUseCaseImpl
+import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
+import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjectorImpl
 import io.github.sds100.keymapper.base.system.inputmethod.ShowHideInputMethodUseCase
 import io.github.sds100.keymapper.base.system.inputmethod.ShowHideInputMethodUseCaseImpl
 import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
@@ -35,7 +41,7 @@ import io.github.sds100.keymapper.base.system.notifications.AndroidNotificationA
 import io.github.sds100.keymapper.base.system.notifications.ManageNotificationsUseCase
 import io.github.sds100.keymapper.base.system.notifications.ManageNotificationsUseCaseImpl
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
-import io.github.sds100.keymapper.base.trigger.RecordTriggerUseCase
+import io.github.sds100.keymapper.base.trigger.RecordTriggerControllerImpl
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
@@ -45,6 +51,8 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
 import io.github.sds100.keymapper.common.utils.DefaultUuidGenerator
 import io.github.sds100.keymapper.common.utils.UuidGenerator
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
+import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
+import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapperImpl
 import io.github.sds100.keymapper.system.notifications.NotificationAdapter
 import javax.inject.Singleton
 
@@ -101,11 +109,7 @@ abstract class BaseSingletonHiltModule {
 
     @Binds
     @Singleton
-    abstract fun bindConfigKeyMapUseCase(impl: ConfigKeyMapUseCaseController): ConfigKeyMapUseCase
-
-    @Binds
-    @Singleton
-    abstract fun bindRecordTriggerUseCase(impl: RecordTriggerController): RecordTriggerUseCase
+    abstract fun bindRecordTriggerUseCase(impl: RecordTriggerControllerImpl): RecordTriggerController
 
     @Binds
     @Singleton
@@ -134,4 +138,24 @@ abstract class BaseSingletonHiltModule {
     @Binds
     @Singleton
     abstract fun bindDialogProvider(impl: DialogProviderImpl): DialogProvider
+
+    @Binds
+    @Singleton
+    abstract fun bindInputEventHub(impl: InputEventHubImpl): InputEventHub
+
+    @Binds
+    @Singleton
+    abstract fun keyEventRelayServiceWrapper(impl: KeyEventRelayServiceWrapperImpl): KeyEventRelayServiceWrapper
+
+    @Binds
+    @Singleton
+    abstract fun imeInputEvenInjector(impl: ImeInputEventInjectorImpl): ImeInputEventInjector
+
+    @Binds
+    @Singleton
+    abstract fun bindConfigKeyMapState(impl: ConfigKeyMapStateImpl): ConfigKeyMapState
+
+    @Binds
+    @Singleton
+    abstract fun bindGetDefaultKeyMapOptionsUseCas(impl: GetDefaultKeyMapOptionsUseCaseImpl): GetDefaultKeyMapOptionsUseCase
 }

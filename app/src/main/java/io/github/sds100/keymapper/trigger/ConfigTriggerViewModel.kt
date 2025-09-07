@@ -1,25 +1,25 @@
 package io.github.sds100.keymapper.trigger
 
-import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCase
-import io.github.sds100.keymapper.base.keymaps.CreateKeyMapShortcutUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
+import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.base.trigger.BaseConfigTriggerViewModel
-import io.github.sds100.keymapper.base.trigger.RecordTriggerUseCase
+import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCase
+import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
 
+@HiltViewModel
 class ConfigTriggerViewModel @Inject constructor(
-    private val coroutineScope: CoroutineScope,
     private val onboarding: OnboardingUseCase,
-    private val config: ConfigKeyMapUseCase,
-    private val recordTrigger: RecordTriggerUseCase,
+    private val config: ConfigTriggerUseCase,
+    private val recordTrigger: RecordTriggerController,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
     private val purchasingManager: PurchasingManager,
@@ -29,7 +29,6 @@ class ConfigTriggerViewModel @Inject constructor(
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
 ) : BaseConfigTriggerViewModel(
-    coroutineScope = coroutineScope,
     onboarding = onboarding,
     config = config,
     recordTrigger = recordTrigger,

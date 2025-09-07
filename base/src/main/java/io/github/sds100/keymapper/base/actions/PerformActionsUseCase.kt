@@ -10,6 +10,8 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
+import io.github.sds100.keymapper.base.input.InjectKeyEventModel
+import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeAction
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeModel
 import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
@@ -17,7 +19,7 @@ import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.common.utils.InputEventType
+import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Orientation
@@ -35,6 +37,8 @@ import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
@@ -44,8 +48,8 @@ import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils
-import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
+import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
+import io.github.sds100.keymapper.system.inputevents.Scancode
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.intents.IntentAdapter
 import io.github.sds100.keymapper.system.intents.IntentTarget
@@ -55,30 +59,22 @@ import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.nfc.NfcAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationServiceEvent
-import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.popup.ToastAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
-import io.github.sds100.keymapper.system.shizuku.ShizukuInputEventInjector
 import io.github.sds100.keymapper.system.url.OpenUrlAdapter
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.system.volume.VolumeStream
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import timber.log.Timber
 
 class PerformActionsUseCaseImpl @AssistedInject constructor(
-    private val appCoroutineScope: CoroutineScope,
     @Assisted
     private val service: IAccessibilityService,
     private val inputMethodAdapter: InputMethodAdapter,
@@ -87,7 +83,6 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val shell: ShellAdapter,
     private val intentAdapter: IntentAdapter,
     private val getActionErrorUseCase: GetActionErrorUseCase,
-    @Assisted
     private val keyMapperImeMessenger: ImeInputEventInjector,
     private val packageManagerAdapter: PackageManagerAdapter,
     private val appShortcutAdapter: AppShortcutAdapter,
@@ -106,42 +101,30 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val openUrlAdapter: OpenUrlAdapter,
     private val resourceProvider: ResourceProvider,
     private val soundsManager: SoundsManager,
-    private val permissionAdapter: PermissionAdapter,
     private val notificationReceiverAdapter: NotificationReceiverAdapter,
     private val ringtoneAdapter: RingtoneAdapter,
     private val settingsRepository: PreferenceRepository,
+    private val inputEventHub: InputEventHub,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
 ) : PerformActionsUseCase {
 
     @AssistedFactory
     interface Factory {
         fun create(
             accessibilityService: IAccessibilityService,
-            imeInputEventInjector: ImeInputEventInjector,
         ): PerformActionsUseCaseImpl
     }
 
-    private val shizukuInputEventInjector: ShizukuInputEventInjector = ShizukuInputEventInjector()
-
     private val openMenuHelper by lazy {
         OpenMenuHelper(
-            suAdapter,
             service,
-            shizukuInputEventInjector,
-            permissionAdapter,
-            appCoroutineScope,
+            inputEventHub,
         )
     }
 
-    /**
-     * Cache this so we aren't checking every time a key event must be inputted.
-     */
-    private val inputKeyEventsWithShizuku: StateFlow<Boolean> =
-        permissionAdapter.isGrantedFlow(Permission.SHIZUKU)
-            .stateIn(appCoroutineScope, SharingStarted.Eagerly, false)
-
     override suspend fun perform(
         action: ActionData,
-        inputEventType: InputEventType,
+        inputEventAction: InputEventAction,
         keyMetaState: Int,
     ) {
         /**
@@ -167,32 +150,32 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
                 // See issue #1683. Some apps ignore key events which do not have a source.
                 val source = when {
-                    InputEventUtils.isDpadKeyCode(action.keyCode) -> InputDevice.SOURCE_DPAD
-                    InputEventUtils.isGamepadButton(action.keyCode) -> InputDevice.SOURCE_GAMEPAD
+                    KeyEventUtils.isDpadKeyCode(action.keyCode) -> InputDevice.SOURCE_DPAD
+                    KeyEventUtils.isGamepadButton(action.keyCode) -> InputDevice.SOURCE_GAMEPAD
                     else -> InputDevice.SOURCE_KEYBOARD
                 }
 
-                val model = InputKeyModel(
+                val firstInputAction = if (inputEventAction == InputEventAction.UP) {
+                    KeyEvent.ACTION_UP
+                } else {
+                    KeyEvent.ACTION_DOWN
+                }
+
+                val model = InjectKeyEventModel(
                     keyCode = action.keyCode,
-                    inputType = inputEventType,
+                    action = firstInputAction,
                     metaState = keyMetaState.withFlag(action.metaState),
                     deviceId = deviceId,
                     source = source,
+                    repeatCount = 0,
+                    scanCode = 0,
                 )
 
-                result = when {
-                    inputKeyEventsWithShizuku.value -> {
-                        shizukuInputEventInjector.inputKeyEvent(model)
-                        Success(Unit)
-                    }
-
-                    action.useShell -> suAdapter.execute("input keyevent ${model.keyCode}")
-
-                    else -> {
-                        keyMapperImeMessenger.inputKeyEvent(model)
-
-                        Success(Unit)
-                    }
+                if (inputEventAction == InputEventAction.DOWN_UP) {
+                    result = inputEventHub.injectKeyEvent(model)
+                        .then { inputEventHub.injectKeyEvent(model.copy(action = KeyEvent.ACTION_UP)) }
+                } else {
+                    result = inputEventHub.injectKeyEvent(model)
                 }
             }
 
@@ -335,7 +318,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.TapScreen -> {
-                result = service.tapScreen(action.x, action.y, inputEventType)
+                result = service.tapScreen(action.x, action.y, inputEventAction)
             }
 
             is ActionData.SwipeScreen -> {
@@ -346,7 +329,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                     action.yEnd,
                     action.fingerCount,
                     action.duration,
-                    inputEventType,
+                    inputEventAction,
                 )
             }
 
@@ -358,7 +341,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                     action.pinchType,
                     action.fingerCount,
                     action.duration,
-                    inputEventType,
+                    inputEventAction,
                 )
             }
 
@@ -805,7 +788,22 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.ScreenOnOff -> {
-                result = suAdapter.execute("input keyevent ${KeyEvent.KEYCODE_POWER}")
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+                    systemBridgeConnectionManager.connectionState.value is SystemBridgeConnectionState.Connected
+                ) {
+                    val model = InjectKeyEventModel(
+                        keyCode = KeyEvent.KEYCODE_POWER,
+                        action = KeyEvent.ACTION_DOWN,
+                        metaState = 0,
+                        deviceId = -1,
+                        scanCode = Scancode.KEY_POWER,
+                        source = InputDevice.SOURCE_UNKNOWN,
+                    )
+                    result = inputEventHub.injectKeyEvent(model)
+                        .then { inputEventHub.injectKeyEvent(model.copy(action = KeyEvent.ACTION_UP)) }
+                } else {
+                    result = suAdapter.execute("input keyevent ${KeyEvent.KEYCODE_POWER}")
+                }
             }
 
             is ActionData.SecureLock -> {
@@ -881,9 +879,9 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
         }
 
         when (result) {
-            is Success -> Timber.d("Performed action $action, input event type: $inputEventType, key meta state: $keyMetaState")
+            is Success -> Timber.d("Performed action $action, input event type: $inputEventAction, key meta state: $keyMetaState")
             is KMError -> Timber.d(
-                "Failed to perform action $action, reason: ${result.getFullMessage(resourceProvider)}, action: $action, input event type: $inputEventType, key meta state: $keyMetaState",
+                "Failed to perform action $action, reason: ${result.getFullMessage(resourceProvider)}, action: $action, input event type: $inputEventAction, key meta state: $keyMetaState",
             )
         }
 
@@ -913,7 +911,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
         if (action.device?.descriptor == null) {
             // automatically select a game controller as the input device for game controller key events
 
-            if (InputEventUtils.isGamepadKeyCode(action.keyCode)) {
+            if (KeyEventUtils.isGamepadKeyCode(action.keyCode)) {
                 devicesAdapter.connectedInputDevices.value.ifIsData { inputDevices ->
                     val device = inputDevices.find { it.isGameController }
 
@@ -1022,7 +1020,7 @@ interface PerformActionsUseCase {
 
     suspend fun perform(
         action: ActionData,
-        inputEventType: InputEventType = InputEventType.DOWN_UP,
+        inputEventAction: InputEventAction = InputEventAction.DOWN_UP,
         keyMetaState: Int = 0,
     )
 

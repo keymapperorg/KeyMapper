@@ -46,6 +46,8 @@ import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.compose.DragDropState
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.ProModeIcon
 
 @Composable
 fun TriggerKeyListItem(
@@ -112,6 +114,7 @@ fun TriggerKeyListItem(
                         is TriggerKeyListItemModel.Assistant -> Icons.Outlined.Assistant
                         is TriggerKeyListItemModel.FloatingButton -> Icons.Outlined.BubbleChart
                         is TriggerKeyListItemModel.FingerprintGesture -> Icons.Outlined.Fingerprint
+                        is TriggerKeyListItemModel.EvdevEvent -> KeyMapperIcons.ProModeIcon
                         else -> null
                     }
 
@@ -137,7 +140,8 @@ fun TriggerKeyListItem(
                         model.buttonName,
                     )
 
-                    is TriggerKeyListItemModel.KeyCode -> model.keyName
+                    is TriggerKeyListItemModel.KeyEvent -> model.keyName
+                    is TriggerKeyListItemModel.EvdevEvent -> model.keyName
 
                     is TriggerKeyListItemModel.FloatingButtonDeleted -> stringResource(R.string.trigger_error_floating_button_deleted_title)
 
@@ -159,7 +163,8 @@ fun TriggerKeyListItem(
                     }
 
                     val tertiaryText = when (model) {
-                        is TriggerKeyListItemModel.KeyCode -> model.extraInfo
+                        is TriggerKeyListItemModel.KeyEvent -> model.extraInfo
+                        is TriggerKeyListItemModel.EvdevEvent -> model.extraInfo
                         is TriggerKeyListItemModel.FloatingButton -> model.layoutName
 
                         else -> null
@@ -253,7 +258,6 @@ fun TriggerKeyListItem(
 private fun getErrorMessage(error: TriggerError): String {
     return when (error) {
         TriggerError.DND_ACCESS_DENIED -> stringResource(R.string.trigger_error_dnd_access_denied)
-        TriggerError.SCREEN_OFF_ROOT_DENIED -> stringResource(R.string.trigger_error_screen_off_root_permission_denied)
         TriggerError.CANT_DETECT_IN_PHONE_CALL -> stringResource(R.string.trigger_error_cant_detect_in_phone_call)
         TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> stringResource(R.string.trigger_error_assistant_not_purchased)
         TriggerError.DPAD_IME_NOT_SELECTED -> stringResource(R.string.trigger_error_dpad_ime_not_selected)
@@ -322,9 +326,9 @@ private fun ErrorTextColumn(
 
 @Preview
 @Composable
-private fun KeyCodePreview() {
+private fun KeyEventPreview() {
     TriggerKeyListItem(
-        model = TriggerKeyListItemModel.KeyCode(
+        model = TriggerKeyListItemModel.KeyEvent(
             id = "id",
             keyName = "Volume Up",
             clickType = ClickType.SHORT_PRESS,
@@ -340,9 +344,27 @@ private fun KeyCodePreview() {
 
 @Preview
 @Composable
+private fun EvdevEventPreview() {
+    TriggerKeyListItem(
+        model = TriggerKeyListItemModel.EvdevEvent(
+            id = "id",
+            keyName = "Volume Up",
+            clickType = ClickType.SHORT_PRESS,
+            extraInfo = "Gpio-keys",
+            linkType = LinkType.ARROW,
+            error = null,
+        ),
+        isDragging = false,
+        isReorderingEnabled = true,
+        index = 0,
+    )
+}
+
+@Preview
+@Composable
 private fun NoDragPreview() {
     TriggerKeyListItem(
-        model = TriggerKeyListItemModel.KeyCode(
+        model = TriggerKeyListItemModel.KeyEvent(
             id = "id",
             keyName = "Volume Up",
             clickType = ClickType.LONG_PRESS,

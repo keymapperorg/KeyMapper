@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission
+        android:name="android.permission.WRITE_SECURE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
+
+    <application android:extractNativeLibs="true">
+        <!-- The provider requires the INTERACT_ACROSS_USERS_FULL permission as a crude way
+                to ensure only the system bridge can write to it. This permission is only granted
+                to system apps, such as the Shell package, so 3rd party apps can never connect.. -->
+        <provider
+            android:name=".provider.SystemBridgeBinderProvider"
+            android:authorities="${applicationId}.sysbridge"
+            android:enabled="true"
+            android:exported="true"
+            android:multiprocess="false"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+
+    </application>
+</manifest>

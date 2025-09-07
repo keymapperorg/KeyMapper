@@ -1,31 +1,52 @@
 package io.github.sds100.keymapper.system.airplanemode
 
 import android.content.Context
+import android.os.Build
 import android.provider.Settings
-import io.github.sds100.keymapper.common.utils.KMResult
-import io.github.sds100.keymapper.common.utils.onSuccess
-import io.github.sds100.keymapper.system.SettingsUtils
-import io.github.sds100.keymapper.system.root.SuAdapter
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.SettingsUtils
+import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.system.root.SuAdapter
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class AndroidAirplaneModeAdapter @Inject constructor(
-    @ApplicationContext private val context: Context,
-    val suAdapter: SuAdapter,
+    @ApplicationContext private val ctx: Context,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
+    private val suAdapter: SuAdapter
 ) : AirplaneModeAdapter {
-    private val ctx = context.applicationContext
 
-    override fun enable(): KMResult<*> =
-        suAdapter.execute("settings put global airplane_mode_on 1").onSuccess {
-            broadcastAirplaneModeChanged(false)
+    override suspend fun enable(): KMResult<*> {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            systemBridgeConnectionManager.run { bridge -> bridge.setAirplaneMode(true) }
+        } else {
+            val success = SettingsUtils.putGlobalSetting(ctx, Settings.Global.AIRPLANE_MODE_ON, 1)
+            broadcastAirplaneModeChanged(true)
+            if (success) {
+                Success(Unit)
+            } else {
+                KMError.FailedToModifySystemSetting(Settings.Global.AIRPLANE_MODE_ON)
+            }
         }
+    }
 
-    override fun disable(): KMResult<*> =
-        suAdapter.execute("settings put global airplane_mode_on 0").onSuccess {
-            broadcastAirplaneModeChanged(false)
+    override suspend fun disable(): KMResult<*> {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            systemBridgeConnectionManager.run { bridge -> bridge.setAirplaneMode(false) }
+        } else {
+            val success = SettingsUtils.putGlobalSetting(ctx, Settings.Global.AIRPLANE_MODE_ON, 0)
+            if (success) {
+                broadcastAirplaneModeChanged(false)
+                Success(Unit)
+            } else {
+                KMError.FailedToModifySystemSetting(Settings.Global.AIRPLANE_MODE_ON)
+            }
         }
+    }
 
     override fun isEnabled(): Boolean =
         SettingsUtils.getGlobalSetting<Int>(ctx, Settings.Global.AIRPLANE_MODE_ON) == 1

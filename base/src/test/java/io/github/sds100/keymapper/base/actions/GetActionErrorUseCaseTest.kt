@@ -7,11 +7,8 @@ import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
-import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -52,13 +49,11 @@ class GetActionErrorUseCaseTest {
 
     private lateinit var useCase: GetActionErrorUseCaseImpl
 
-    private lateinit var mockShizukuAdapter: ShizukuAdapter
     private lateinit var fakeInputMethodAdapter: FakeInputMethodAdapter
     private lateinit var mockPermissionAdapter: PermissionAdapter
 
     @Before
     fun init() {
-        mockShizukuAdapter = mock()
         fakeInputMethodAdapter = FakeInputMethodAdapter()
         mockPermissionAdapter = mock()
 
@@ -69,14 +64,14 @@ class GetActionErrorUseCaseTest {
             systemFeatureAdapter = mock(),
             cameraAdapter = mock(),
             soundsManager = mock(),
-            shizukuAdapter = mockShizukuAdapter,
             ringtoneAdapter = mock(),
             buildConfigProvider = TestBuildConfigProvider(),
+            systemBridgeConnectionManager = mock(),
+            preferenceRepository = mock(),
         )
     }
 
     private fun setupKeyEventActionTest(chosenIme: ImeInfo) {
-        whenever(mockShizukuAdapter.isInstalled).then { MutableStateFlow(false) }
         whenever(mockPermissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)).then { true }
         fakeInputMethodAdapter.chosenIme.value = chosenIme
         fakeInputMethodAdapter.inputMethods.value = listOf(GBOARD_IME_INFO, GUI_KEYBOARD_IME_INFO)
@@ -219,43 +214,5 @@ class GetActionErrorUseCaseTest {
             assertThat(errors[0], nullValue())
             assertThat(errors[1], nullValue())
             assertThat(errors[2], `is`(KMError.NoCompatibleImeChosen))
-        }
-
-    /**
-     * #776
-     */
-    @Test
-    fun `don't show Shizuku errors if a compatible ime is selected`() = testScope.runTest {
-        // GIVEN
-        whenever(mockShizukuAdapter.isInstalled).then { MutableStateFlow(true) }
-        fakeInputMethodAdapter.chosenIme.update { GUI_KEYBOARD_IME_INFO }
-
-        val action = ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)
-
-        // WHEN
-        val errorMap = useCase.actionErrorSnapshot.first().getErrors(listOf(action))
-
-        // THEN
-        assertThat(errorMap[action], nullValue())
-    }
-
-    /**
-     * #776
-     */
-    @Test
-    fun `show Shizuku errors if a compatible ime is not selected and Shizuku is installed`() =
-        testScope.runTest {
-            // GIVEN
-            whenever(mockShizukuAdapter.isInstalled).then { MutableStateFlow(true) }
-            whenever(mockShizukuAdapter.isStarted).then { MutableStateFlow(false) }
-            fakeInputMethodAdapter.chosenIme.update { GBOARD_IME_INFO }
-
-            val action = ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)
-
-            // WHEN
-            val errorMap = useCase.actionErrorSnapshot.first().getErrors(listOf(action))
-
-            // THEN
-            assertThat(errorMap[action], `is`(KMError.ShizukuNotStarted))
         }
 }

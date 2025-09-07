@@ -46,7 +46,7 @@ import io.github.sds100.keymapper.base.keymaps.ShortcutRow
 import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.DraggableItem
-import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
+import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
 import io.github.sds100.keymapper.base.utils.ui.compose.rememberDragDropState
 import io.github.sds100.keymapper.common.utils.State
 
@@ -97,6 +97,7 @@ fun BaseTriggerScreen(modifier: Modifier = Modifier, viewModel: BaseConfigTrigge
             onEditFloatingButtonClick = viewModel::onEditFloatingButtonClick,
             onEditFloatingLayoutClick = viewModel::onEditFloatingLayoutClick,
             onSelectFingerprintGestureType = viewModel::onSelectFingerprintGestureType,
+            onScanCodeDetectionChanged = viewModel::onSelectScanCodeDetection,
         )
     }
 
@@ -190,6 +191,8 @@ private fun TriggerScreenVertical(
 ) {
     Surface(modifier = modifier) {
         Column {
+            val isCompact = isVerticalCompactLayout()
+
             when (configState) {
                 is ConfigTriggerState.Empty -> {
                     Column(
@@ -226,7 +229,6 @@ private fun TriggerScreenVertical(
                 }
 
                 is ConfigTriggerState.Loaded -> {
-                    val isCompact = isVerticalCompactLayout()
                     Spacer(Modifier.height(8.dp))
 
                     TriggerList(
@@ -242,34 +244,38 @@ private fun TriggerScreenVertical(
                     )
 
                     if (configState.clickTypeButtons.isNotEmpty()) {
-                        ClickTypeRadioGroup(
-                            modifier = Modifier.padding(horizontal = 8.dp),
+                        ClickTypeSegmentedButtons(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp),
                             clickTypes = configState.clickTypeButtons,
                             checkedClickType = configState.checkedClickType,
                             onSelectClickType = onSelectClickType,
-                            maxLines = if (isCompact) 1 else 2,
+                            isCompact = isCompact,
                         )
+
+                        if (!isCompact) {
+                            Spacer(Modifier.height(8.dp))
+                        }
                     }
 
                     if (configState.triggerModeButtonsVisible) {
-                        if (!isCompact) {
-                            Text(
-                                modifier = Modifier.padding(horizontal = 8.dp),
-                                text = stringResource(R.string.press_dot_dot_dot),
-                                style = MaterialTheme.typography.labelLarge,
-                            )
-                        }
-
-                        TriggerModeRadioGroup(
-                            modifier = Modifier.padding(horizontal = 8.dp),
+                        TriggerModeSegmentedButtons(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp),
                             mode = configState.checkedTriggerMode,
                             isEnabled = configState.triggerModeButtonsEnabled,
                             onSelectParallelMode = onSelectParallelMode,
                             onSelectSequenceMode = onSelectSequenceMode,
-                            maxLines = if (isCompact) 1 else 2,
+                            isCompact = isCompact,
                         )
                     }
                 }
+            }
+
+            if (!isCompact) {
+                Spacer(Modifier.height(8.dp))
             }
 
             RecordTriggerButtonRow(
@@ -386,30 +392,35 @@ private fun TriggerScreenHorizontal(
                             .weight(1f)
                             .verticalScroll(rememberScrollState()),
                     ) {
+                        Spacer(modifier = Modifier.height(16.dp))
                         if (configState.clickTypeButtons.isNotEmpty()) {
-                            ClickTypeRadioGroup(
-                                modifier = Modifier.padding(horizontal = 8.dp),
+                            ClickTypeSegmentedButtons(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp),
                                 clickTypes = configState.clickTypeButtons,
                                 checkedClickType = configState.checkedClickType,
                                 onSelectClickType = onSelectClickType,
+                                isCompact = false,
                             )
                         }
 
-                        Text(
-                            modifier = Modifier.padding(horizontal = 8.dp),
-                            text = stringResource(R.string.press_dot_dot_dot),
-                            style = MaterialTheme.typography.labelLarge,
-                        )
+                        Spacer(modifier = Modifier.height(8.dp))
 
                         if (configState.triggerModeButtonsVisible) {
-                            TriggerModeRadioGroup(
-                                modifier = Modifier.padding(horizontal = 8.dp),
+                            TriggerModeSegmentedButtons(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp),
                                 mode = configState.checkedTriggerMode,
                                 isEnabled = configState.triggerModeButtonsEnabled,
                                 onSelectParallelMode = onSelectParallelMode,
                                 onSelectSequenceMode = onSelectSequenceMode,
+                                isCompact = false,
                             )
                         }
+
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
 
                     RecordTriggerButtonRow(
@@ -508,79 +519,87 @@ private fun TriggerList(
 }
 
 @Composable
-private fun ClickTypeRadioGroup(
+private fun ClickTypeSegmentedButtons(
     modifier: Modifier = Modifier,
     clickTypes: Set<ClickType>,
     checkedClickType: ClickType?,
     onSelectClickType: (ClickType) -> Unit,
-    maxLines: Int = 2,
+    isCompact: Boolean,
 ) {
-    Column(modifier = modifier) {
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            if (clickTypes.contains(ClickType.SHORT_PRESS)) {
-                RadioButtonText(
-                    modifier = Modifier.weight(1f),
-                    isSelected = checkedClickType == ClickType.SHORT_PRESS,
-                    text = stringResource(R.string.radio_button_short_press),
-                    onSelected = { onSelectClickType(ClickType.SHORT_PRESS) },
-                    maxLines = maxLines,
-                )
+    // Always put the buttons in the same order
+    val clickTypeButtonContent: List<Pair<ClickType, String>> = buildList {
+        if (clickTypes.contains(ClickType.SHORT_PRESS)) {
+            val text = if (isCompact) {
+                stringResource(R.string.radio_button_short)
+            } else {
+                stringResource(R.string.radio_button_short_press)
             }
-            if (clickTypes.contains(ClickType.LONG_PRESS)) {
-                RadioButtonText(
-                    modifier = Modifier.weight(1f),
-                    isSelected = checkedClickType == ClickType.LONG_PRESS,
-                    text = stringResource(R.string.radio_button_long_press),
-                    onSelected = { onSelectClickType(ClickType.LONG_PRESS) },
-                    maxLines = maxLines,
-                )
+            add(ClickType.SHORT_PRESS to text)
+        }
+
+        if (clickTypes.contains(ClickType.LONG_PRESS)) {
+            val text = if (isCompact) {
+                stringResource(R.string.radio_button_long)
+            } else {
+                stringResource(R.string.radio_button_long_press)
             }
-            if (clickTypes.contains(ClickType.DOUBLE_PRESS)) {
-                RadioButtonText(
-                    modifier = Modifier.weight(1f),
-                    isSelected = checkedClickType == ClickType.DOUBLE_PRESS,
-                    text = stringResource(R.string.radio_button_double_press),
-                    onSelected = { onSelectClickType(ClickType.DOUBLE_PRESS) },
-                    maxLines = maxLines,
-                )
+            add(ClickType.LONG_PRESS to text)
+        }
+
+        if (clickTypes.contains(ClickType.DOUBLE_PRESS)) {
+            val text = if (isCompact) {
+                stringResource(R.string.radio_button_double)
+            } else {
+                stringResource(R.string.radio_button_double_press)
             }
+            add(ClickType.DOUBLE_PRESS to text)
         }
     }
+
+    KeyMapperSegmentedButtonRow(
+        modifier = modifier,
+        buttonStates = clickTypeButtonContent,
+        selectedState = checkedClickType,
+        onStateSelected = onSelectClickType,
+        isCompact = isCompact,
+    )
 }
 
 @Composable
-private fun TriggerModeRadioGroup(
+private fun TriggerModeSegmentedButtons(
     modifier: Modifier = Modifier,
     mode: TriggerMode,
     isEnabled: Boolean,
     onSelectParallelMode: () -> Unit,
     onSelectSequenceMode: () -> Unit,
-    maxLines: Int = 2,
+    isCompact: Boolean,
 ) {
-    Column(modifier = modifier) {
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            RadioButtonText(
-                modifier = Modifier.weight(1f),
-                isSelected = mode is TriggerMode.Parallel,
-                isEnabled = isEnabled,
-                text = stringResource(R.string.radio_button_parallel),
-                onSelected = onSelectParallelMode,
-                maxLines = maxLines,
-            )
-            RadioButtonText(
-                modifier = Modifier.weight(1f),
-                isSelected = mode == TriggerMode.Sequence,
-                isEnabled = isEnabled,
-                text = stringResource(R.string.radio_button_sequence),
-                onSelected = onSelectSequenceMode,
-                maxLines = maxLines,
-            )
-        }
-    }
+    val triggerModeButtonContent = listOf(
+        "parallel" to stringResource(R.string.radio_button_parallel),
+        "sequence" to stringResource(R.string.radio_button_sequence),
+    )
+
+    KeyMapperSegmentedButtonRow(
+        modifier = modifier,
+        buttonStates = triggerModeButtonContent,
+        selectedState = when (mode) {
+            is TriggerMode.Parallel -> "parallel"
+            TriggerMode.Sequence -> "sequence"
+            TriggerMode.Undefined -> null
+        },
+        onStateSelected = { selectedMode ->
+            when (selectedMode) {
+                "parallel" -> onSelectParallelMode()
+                "sequence" -> onSelectSequenceMode()
+            }
+        },
+        isCompact = isCompact,
+        isEnabled = isEnabled,
+    )
 }
 
 private val sampleList = listOf(
-    TriggerKeyListItemModel.KeyCode(
+    TriggerKeyListItemModel.KeyEvent(
         id = "id1",
         keyName = "Volume Up",
         clickType = ClickType.SHORT_PRESS,
@@ -638,7 +657,7 @@ private fun VerticalPreview() {
     }
 }
 
-@Preview(heightDp = 400, widthDp = 300)
+@Preview(heightDp = 300, widthDp = 300)
 @Composable
 private fun VerticalPreviewTiny() {
     KeyMapperTheme {

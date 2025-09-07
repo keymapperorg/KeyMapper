@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -25,6 +26,11 @@ android {
             )
         }
     }
+
+    buildFeatures {
+        aidl = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -43,6 +49,7 @@ dependencies {
     // kotlin stuff
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.jakewharton.timber)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.dagger.hilt.android)

@@ -25,7 +25,7 @@ import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.TreeNode
 import io.github.sds100.keymapper.common.utils.UuidGenerator
-import io.github.sds100.keymapper.common.utils.breadFirstTraversal
+import io.github.sds100.keymapper.common.utils.breadthFirstTraversal
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.data.Keys
@@ -465,16 +465,25 @@ class BackupManagerImpl @Inject constructor(
                     .map { it.uid }
                     .toSet()
 
-                val groupUids = backupContent.groups.map { it.uid }.toMutableSet()
+                val groupUids =
+                    backupContent.groups.map { it.uid }.toMutableSet().plus(existingGroupUids)
 
-                groupUids.addAll(existingGroupUids)
+                // Set the parents to null of any groups that have a missing parent.
+                val backupGroups = backupContent.groups.map { group ->
+                    if (groupUids.contains(group.parentUid)) {
+                        group
+                    } else {
+                        group.copy(parentUid = null)
+                    }
+                }
 
-                // Group parents must be restored first so an SqliteConstraintException
-                // is not thrown when restoring a child group.
-                val groupRestoreTrees = buildGroupTrees(backupContent.groups)
+                val groupRestoreTrees = buildGroupTrees(backupGroups)
 
                 for (tree in groupRestoreTrees) {
-                    tree.breadFirstTraversal { group ->
+                    // Do breadth first traversal because group parents must be restored
+                    // first so an SqliteConstraintException
+                    // is not thrown when restoring a child group.
+                    tree.breadthFirstTraversal { group ->
                         restoreGroup(group, currentTime, groupUids, existingGroupUids)
                     }
                 }

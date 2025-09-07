@@ -21,7 +21,6 @@ class KeyMapOptionsComparator(
             keyMap,
             otherKeyMap,
             { it.vibrate },
-            { it.trigger.screenOffTrigger },
             { it.trigger.triggerFromOtherApps },
             { it.showToast },
         )

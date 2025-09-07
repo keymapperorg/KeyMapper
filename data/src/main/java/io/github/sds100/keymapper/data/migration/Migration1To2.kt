@@ -14,7 +14,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.data.entities.ActionEntity
-import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
+import io.github.sds100.keymapper.data.entities.KeyEventTriggerKeyEntity
 import timber.log.Timber
 
 /**
@@ -103,7 +103,7 @@ object Migration1To2 {
 
                             createTriggerKey2(
                                 it.asInt,
-                                KeyCodeTriggerKeyEntity.DEVICE_ID_ANY_DEVICE,
+                                KeyEventTriggerKeyEntity.DEVICE_ID_ANY_DEVICE,
                                 clickType,
                             )
                         }

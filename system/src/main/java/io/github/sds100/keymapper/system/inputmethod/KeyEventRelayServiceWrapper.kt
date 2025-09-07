@@ -9,20 +9,17 @@ import android.os.IBinder
 import android.os.RemoteException
 import android.view.KeyEvent
 import android.view.MotionEvent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.api.IKeyEventRelayService
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
-import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
+import io.github.sds100.keymapper.common.BuildConfigProvider
+import javax.inject.Inject
+import javax.inject.Singleton
 
-/**
- * This handles connecting to the relay service and exposes an interface
- * so other parts of the app can get a reference to the service even when it isn't
- * bound yet. This class is copied to the Key Mapper GUI Keyboard app as well.
- */
-class KeyEventRelayServiceWrapperImpl(
-    private val ctx: Context,
-    private val id: String,
-    private val servicePackageName: String,
-    private val callback: IKeyEventRelayServiceCallback,
+@Singleton
+class KeyEventRelayServiceWrapperImpl @Inject constructor(
+    @ApplicationContext private val ctx: Context,
+    private val buildConfigProvider: BuildConfigProvider
 ) : KeyEventRelayServiceWrapper {
 
     private val keyEventRelayServiceLock: Any = Any()
@@ -36,7 +33,6 @@ class KeyEventRelayServiceWrapperImpl(
             ) {
                 synchronized(keyEventRelayServiceLock) {
                     keyEventRelayService = IKeyEventRelayService.Stub.asInterface(service)
-                    keyEventRelayService?.registerCallback(callback, id)
                 }
             }
 
@@ -50,14 +46,6 @@ class KeyEventRelayServiceWrapperImpl(
                 }
             }
         }
-
-    fun onCreate() {
-        bind()
-    }
-
-    fun onDestroy() {
-        unbind()
-    }
 
     override fun sendKeyEvent(
         event: KeyEvent,
@@ -93,11 +81,22 @@ class KeyEventRelayServiceWrapperImpl(
         }
     }
 
-    private fun bind() {
+    override fun registerClient(id: String, callback: IKeyEventRelayServiceCallback) {
+        keyEventRelayService?.registerCallback(callback, id)
+    }
+
+    override fun unregisterClient(id: String) {
+        keyEventRelayService?.unregisterCallback(id)
+    }
+
+    fun bind() {
         try {
             val relayServiceIntent = Intent()
             val component =
-                ComponentName(servicePackageName, "io.github.sds100.keymapper.api.KeyEventRelayService")
+                ComponentName(
+                    buildConfigProvider.packageName,
+                    "io.github.sds100.keymapper.api.KeyEventRelayService"
+                )
             relayServiceIntent.setComponent(component)
             val isSuccess =
                 ctx.bindService(relayServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
@@ -111,13 +110,8 @@ class KeyEventRelayServiceWrapperImpl(
         }
     }
 
-    private fun unbind() {
-        // Unregister the callback if this input method is unbinding
-        // from the relay service. This should not happen in onServiceDisconnected
-        // because the connection is already broken at that point and it
-        // will fail.
+    fun unbind() {
         try {
-            keyEventRelayService?.unregisterCallback(id)
             ctx.unbindService(serviceConnection)
         } catch (e: RemoteException) {
             // do nothing
@@ -129,6 +123,8 @@ class KeyEventRelayServiceWrapperImpl(
 }
 
 interface KeyEventRelayServiceWrapper {
+    fun registerClient(id: String, callback: IKeyEventRelayServiceCallback)
+    fun unregisterClient(id: String)
     fun sendKeyEvent(event: KeyEvent, targetPackageName: String, callbackId: String): Boolean
     fun sendMotionEvent(event: MotionEvent, targetPackageName: String, callbackId: String): Boolean
 }

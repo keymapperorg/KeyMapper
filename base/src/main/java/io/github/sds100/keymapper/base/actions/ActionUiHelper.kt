@@ -7,20 +7,20 @@ import androidx.compose.material.icons.outlined.Android
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.utils.DndModeStrings
-import io.github.sds100.keymapper.base.utils.InputEventStrings
+import io.github.sds100.keymapper.base.utils.KeyCodeStrings
 import io.github.sds100.keymapper.base.utils.RingerModeStrings
 import io.github.sds100.keymapper.base.utils.VolumeStreamStrings
 import io.github.sds100.keymapper.base.utils.ui.IconInfo
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.TintType
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.PinchScreenType
 import io.github.sds100.keymapper.common.utils.handle
 import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.toPercentString
 import io.github.sds100.keymapper.system.camera.CameraLens
-import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.intents.IntentTarget
 
 class ActionUiHelper(
@@ -46,46 +46,43 @@ class ActionUiHelper(
             }
 
             // only a key code can be inputted through the shell
-            if (action.useShell) {
-                getString(R.string.description_keyevent_through_shell, keyCodeString)
-            } else {
-                val metaStateString = buildString {
-                    for (label in InputEventStrings.MODIFIER_LABELS.entries) {
-                        val modifier = label.key
-                        val labelRes = label.value
 
-                        if (action.metaState.hasFlag(modifier)) {
-                            append("${getString(labelRes)} + ")
-                        }
+            val metaStateString = buildString {
+                for (label in KeyCodeStrings.MODIFIER_LABELS.entries) {
+                    val modifier = label.key
+                    val labelRes = label.value
+
+                    if (action.metaState.hasFlag(modifier)) {
+                        append("${getString(labelRes)} + ")
                     }
                 }
+            }
 
-                if (action.device != null) {
-                    val name = if (action.device.name.isBlank()) {
-                        getString(R.string.unknown_device_name)
-                    } else {
-                        action.device.name
-                    }
+            if (action.device != null) {
+                val name = if (action.device.name.isBlank()) {
+                    getString(R.string.unknown_device_name)
+                } else {
+                    action.device.name
+                }
 
-                    val nameToShow = if (showDeviceDescriptors) {
-                        InputDeviceUtils.appendDeviceDescriptorToName(
-                            action.device.descriptor,
-                            name,
-                        )
-                    } else {
-                        name
-                    }
-
-                    getString(
-                        R.string.description_keyevent_from_device,
-                        arrayOf(metaStateString, keyCodeString, nameToShow),
+                val nameToShow = if (showDeviceDescriptors) {
+                    InputDeviceUtils.appendDeviceDescriptorToName(
+                        action.device.descriptor,
+                        name,
                     )
                 } else {
-                    getString(
-                        R.string.description_keyevent,
-                        args = arrayOf(metaStateString, keyCodeString),
-                    )
+                    name
                 }
+
+                getString(
+                    R.string.description_keyevent_from_device,
+                    arrayOf(metaStateString, keyCodeString, nameToShow),
+                )
+            } else {
+                getString(
+                    R.string.description_keyevent,
+                    args = arrayOf(metaStateString, keyCodeString),
+                )
             }
         }
 

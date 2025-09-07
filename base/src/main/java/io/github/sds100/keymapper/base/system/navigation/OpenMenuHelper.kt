@@ -1,27 +1,19 @@
 package io.github.sds100.keymapper.base.system.navigation
 
+import android.view.InputDevice
 import android.view.KeyEvent
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
+import io.github.sds100.keymapper.base.input.InjectKeyEventModel
+import io.github.sds100.keymapper.base.input.InputEventHub
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeAction
 import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
-import io.github.sds100.keymapper.common.utils.InputEventType
 import io.github.sds100.keymapper.common.utils.KMResult
-import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.success
-import io.github.sds100.keymapper.system.inputevents.InputEventInjector
-import io.github.sds100.keymapper.system.inputmethod.InputKeyModel
-import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.system.permissions.PermissionAdapter
-import io.github.sds100.keymapper.system.root.SuAdapter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import io.github.sds100.keymapper.common.utils.then
 
 class OpenMenuHelper(
-    private val suAdapter: SuAdapter,
     private val accessibilityService: IAccessibilityService,
-    private val shizukuInputEventInjector: InputEventInjector,
-    private val permissionAdapter: PermissionAdapter,
-    private val coroutineScope: CoroutineScope,
+    private val inputEventHub: InputEventHub,
 ) {
 
     companion object {
@@ -30,21 +22,23 @@ class OpenMenuHelper(
 
     fun openMenu(): KMResult<*> {
         when {
-            permissionAdapter.isGranted(Permission.SHIZUKU) -> {
-                val inputKeyModel = InputKeyModel(
+            inputEventHub.isSystemBridgeConnected() -> {
+                val downEvent = InjectKeyEventModel(
                     keyCode = KeyEvent.KEYCODE_MENU,
-                    inputType = InputEventType.DOWN_UP,
+                    action = KeyEvent.ACTION_DOWN,
+                    metaState = 0,
+                    scanCode = 0,
+                    deviceId = -1,
+                    repeatCount = 0,
+                    source = InputDevice.SOURCE_UNKNOWN,
                 )
 
-                coroutineScope.launch {
-                    shizukuInputEventInjector.inputKeyEvent(inputKeyModel)
+                val upEvent = downEvent.copy(action = KeyEvent.ACTION_UP)
+
+                return inputEventHub.injectKeyEventAsync(downEvent).then {
+                    inputEventHub.injectKeyEventAsync(upEvent)
                 }
-
-                return success()
             }
-
-            suAdapter.isGranted.firstBlocking() ->
-                return suAdapter.execute("input keyevent ${KeyEvent.KEYCODE_MENU}\n")
 
             else -> {
                 accessibilityService.performActionOnNode({ it.contentDescription == OVERFLOW_MENU_CONTENT_DESCRIPTION }) {

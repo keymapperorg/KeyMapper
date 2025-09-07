@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.base.actions
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -20,10 +19,12 @@ import androidx.compose.material.icons.rounded.Bluetooth
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -71,6 +72,7 @@ fun ChooseActionScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ChooseActionScreen(
     modifier: Modifier = Modifier,
@@ -83,6 +85,11 @@ private fun ChooseActionScreen(
 ) {
     Scaffold(
         modifier = modifier.displayCutoutPadding(),
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.choose_action_title)) },
+            )
+        },
         bottomBar = {
             BottomAppBar(
                 modifier = Modifier.imePadding(),
@@ -113,33 +120,20 @@ private fun ChooseActionScreen(
                 ),
 
         ) {
-            Column {
-                Text(
-                    modifier = Modifier.padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 16.dp,
-                        bottom = 8.dp,
-                    ),
-                    text = stringResource(R.string.choose_action_title),
-                    style = MaterialTheme.typography.titleLarge,
-                )
+            when (state) {
+                State.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
 
-                when (state) {
-                    State.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
-
-                    is State.Data -> {
-                        if (state.data.isEmpty()) {
-                            EmptyScreen(
-                                modifier = Modifier.fillMaxSize(),
-                            )
-                        } else {
-                            ListScreen(
-                                modifier = Modifier.fillMaxSize(),
-                                groups = state.data,
-                                onClickAction = onClickAction,
-                            )
-                        }
+                is State.Data -> {
+                    if (state.data.isEmpty()) {
+                        EmptyScreen(
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    } else {
+                        ListScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            groups = state.data,
+                            onClickAction = onClickAction,
+                        )
                     }
                 }
             }

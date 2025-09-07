@@ -11,7 +11,6 @@ import android.graphics.Path
 import android.graphics.Point
 import android.os.Build
 import android.view.KeyEvent
-import android.view.MotionEvent
 import android.view.accessibility.AccessibilityEvent
 import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
@@ -22,21 +21,16 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjectorImpl
-import io.github.sds100.keymapper.base.trigger.KeyEventDetectionSource
-import io.github.sds100.keymapper.common.utils.InputEventType
+import io.github.sds100.keymapper.base.input.InputEventDetectionSource
+import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.MathUtils
 import io.github.sds100.keymapper.common.utils.PinchScreenType
 import io.github.sds100.keymapper.common.utils.Success
-import io.github.sds100.keymapper.system.devices.InputDeviceUtils
-import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
-import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
+import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
-import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapperImpl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -49,11 +43,6 @@ abstract class BaseAccessibilityService :
     LifecycleOwner,
     IAccessibilityService,
     SavedStateRegistryOwner {
-
-    companion object {
-
-        private const val CALLBACK_ID_ACCESSIBILITY_SERVICE = "accessibility_service"
-    }
 
     @Inject
     lateinit var accessibilityServiceAdapter: AccessibilityServiceAdapterImpl
@@ -142,53 +131,6 @@ abstract class BaseAccessibilityService :
             }
         }
 
-    private val relayServiceCallback: IKeyEventRelayServiceCallback =
-        object : IKeyEventRelayServiceCallback.Stub() {
-            override fun onKeyEvent(event: KeyEvent?): Boolean {
-                event ?: return false
-
-                val device = event.device?.let { InputDeviceUtils.createInputDeviceInfo(it) }
-
-                return getController()
-                    ?.onKeyEventFromIme(
-                        MyKeyEvent(
-                            keyCode = event.keyCode,
-                            action = event.action,
-                            metaState = event.metaState,
-                            scanCode = event.scanCode,
-                            device = device,
-                            repeatCount = event.repeatCount,
-                            source = event.source,
-                        ),
-                    ) ?: false
-            }
-
-            override fun onMotionEvent(event: MotionEvent?): Boolean {
-                event ?: return false
-
-                return getController()
-                    ?.onMotionEventFromIme(MyMotionEvent.fromMotionEvent(event))
-                    ?: return false
-            }
-        }
-
-    val keyEventRelayServiceWrapper: KeyEventRelayServiceWrapperImpl by lazy {
-        KeyEventRelayServiceWrapperImpl(
-            ctx = this,
-            id = CALLBACK_ID_ACCESSIBILITY_SERVICE,
-            servicePackageName = packageName,
-            callback = relayServiceCallback,
-        )
-    }
-
-    val imeInputEventInjector by lazy {
-        ImeInputEventInjectorImpl(
-            this,
-            keyEventRelayService = keyEventRelayServiceWrapper,
-            inputMethodAdapter = inputMethodAdapter,
-        )
-    }
-
     override val lifecycle: Lifecycle
         get() = lifecycleRegistry
 
@@ -211,8 +153,6 @@ abstract class BaseAccessibilityService :
                 }
             }
         }
-
-        keyEventRelayServiceWrapper.onCreate()
     }
 
     override fun onServiceConnected() {
@@ -271,8 +211,6 @@ abstract class BaseAccessibilityService :
                 .unregisterFingerprintGestureCallback(fingerprintGestureCallback)
         }
 
-        keyEventRelayServiceWrapper.onDestroy()
-
         Timber.i("Accessibility service: onDestroy")
 
         super.onDestroy()
@@ -306,23 +244,11 @@ abstract class BaseAccessibilityService :
     override fun onKeyEvent(event: KeyEvent?): Boolean {
         event ?: return super.onKeyEvent(event)
 
-        val device = if (event.device == null) {
-            null
-        } else {
-            InputDeviceUtils.createInputDeviceInfo(event.device)
-        }
+        val kmKeyEvent = KMKeyEvent.fromAndroidKeyEvent(event) ?: return false
 
         return getController()?.onKeyEvent(
-            MyKeyEvent(
-                keyCode = event.keyCode,
-                action = event.action,
-                metaState = event.metaState,
-                scanCode = event.scanCode,
-                device = device,
-                repeatCount = event.repeatCount,
-                source = event.source,
-            ),
-            KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+            kmKeyEvent,
+            InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         ) ?: false
     }
 
@@ -358,7 +284,7 @@ abstract class BaseAccessibilityService :
         }
     }
 
-    override fun tapScreen(x: Int, y: Int, inputEventType: InputEventType): KMResult<*> {
+    override fun tapScreen(x: Int, y: Int, inputEventAction: InputEventAction): KMResult<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val duration = 1L // ms
 
@@ -368,7 +294,7 @@ abstract class BaseAccessibilityService :
 
             val strokeDescription =
                 when {
-                    inputEventType == InputEventType.DOWN && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
+                    inputEventAction == InputEventAction.DOWN && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
                         StrokeDescription(
                             path,
                             0,
@@ -376,7 +302,7 @@ abstract class BaseAccessibilityService :
                             true,
                         )
 
-                    inputEventType == InputEventType.UP && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
+                    inputEventAction == InputEventAction.UP && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
                         StrokeDescription(
                             path,
                             59999,
@@ -412,7 +338,7 @@ abstract class BaseAccessibilityService :
         yEnd: Int,
         fingerCount: Int,
         duration: Int,
-        inputEventType: InputEventType,
+        inputEventAction: InputEventAction,
     ): KMResult<*> {
         // virtual distance between fingers on multitouch gestures
         val fingerGestureDistance = 10L
@@ -514,7 +440,7 @@ abstract class BaseAccessibilityService :
         pinchType: PinchScreenType,
         fingerCount: Int,
         duration: Int,
-        inputEventType: InputEventType,
+        inputEventAction: InputEventAction,
     ): KMResult<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (fingerCount >= GestureDescription.getMaxStrokeCount()) {

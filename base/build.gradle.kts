@@ -73,6 +73,7 @@ android {
 dependencies {
     implementation(project(":common"))
     implementation(project(":data"))
+    implementation(project(":sysbridge"))
     implementation(project(":system"))
     implementation(project(":systemstubs"))
 
@@ -89,7 +90,6 @@ dependencies {
     kapt(libs.airbnb.epoxy.processor)
     implementation(libs.jakewharton.timber)
     implementation(libs.anggrayudi.storage)
-    implementation(libs.github.mflisar.dragselectrecyclerview)
     implementation(libs.google.flexbox)
     implementation(libs.squareup.okhttp)
     coreLibraryDesugaring(libs.desugar.jdk.libs)

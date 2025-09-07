@@ -14,7 +14,6 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
-import io.github.sds100.keymapper.base.NavBaseAppDirections
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.ui.str
 import io.github.sds100.keymapper.common.BuildConfigProvider
@@ -23,7 +22,6 @@ import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapt
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
-import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
 import io.github.sds100.keymapper.system.url.UrlUtils
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.negativeButton
@@ -72,20 +70,12 @@ class RequestPermissionDelegate(
             Permission.CALL_PHONE -> requestPermissionLauncher.launch(Manifest.permission.CALL_PHONE)
             Permission.ANSWER_PHONE_CALL -> requestPermissionLauncher.launch(Manifest.permission.ANSWER_PHONE_CALLS)
             Permission.FIND_NEARBY_DEVICES -> requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
-            Permission.ROOT -> {
-                require(navController != null) { "nav controller can't be null!" }
-                requestRootPermission(navController)
-            }
+            Permission.ROOT -> requestRootPermission()
 
             Permission.IGNORE_BATTERY_OPTIMISATION ->
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    requestIgnoreBatteryOptimisations()
-                }
+                requestIgnoreBatteryOptimisations()
 
-            Permission.SHIZUKU ->
-                if (ShizukuUtils.isSupportedForSdkVersion()) {
-                    shizukuAdapter.requestPermission()
-                }
+            Permission.SHIZUKU -> shizukuAdapter.requestPermission()
 
             Permission.ACCESS_FINE_LOCATION ->
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -113,10 +103,32 @@ class RequestPermissionDelegate(
     }
 
     private fun requestAccessNotificationPolicy() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+        val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
 
-            intent.addFlags(
+        intent.addFlags(
+            Intent.FLAG_ACTIVITY_NEW_TASK
+                or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                // Add this flag so user only has to press back once.
+                or Intent.FLAG_ACTIVITY_NO_HISTORY,
+        )
+
+        try {
+            startActivityForResultLauncher.launch(intent)
+        } catch (e: Exception) {
+            Toast.makeText(
+                activity,
+                R.string.error_cant_find_dnd_access_settings,
+                Toast.LENGTH_SHORT,
+            ).show()
+        }
+    }
+
+    private fun requestWriteSettings() {
+        Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
+            data = Uri.parse("package:${buildConfigProvider.packageName}")
+
+            addFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK
                     or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
@@ -125,39 +137,13 @@ class RequestPermissionDelegate(
             )
 
             try {
-                startActivityForResultLauncher.launch(intent)
+                activity.startActivity(this)
             } catch (e: Exception) {
                 Toast.makeText(
                     activity,
-                    R.string.error_cant_find_dnd_access_settings,
+                    R.string.error_cant_find_write_settings_page,
                     Toast.LENGTH_SHORT,
                 ).show()
-            }
-        }
-    }
-
-    private fun requestWriteSettings() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
-                data = Uri.parse("package:${buildConfigProvider.packageName}")
-
-                addFlags(
-                    Intent.FLAG_ACTIVITY_NEW_TASK
-                        or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
-                        // Add this flag so user only has to press back once.
-                        or Intent.FLAG_ACTIVITY_NO_HISTORY,
-                )
-
-                try {
-                    activity.startActivity(this)
-                } catch (e: Exception) {
-                    Toast.makeText(
-                        activity,
-                        R.string.error_cant_find_write_settings_page,
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                }
             }
         }
     }
@@ -190,23 +176,18 @@ class RequestPermissionDelegate(
         }
     }
 
-    private fun requestRootPermission(navController: NavController) {
+    private fun requestRootPermission() {
         if (showDialogs) {
             activity.materialAlertDialog {
                 titleResource = R.string.dialog_title_root_prompt
                 messageResource = R.string.dialog_message_root_prompt
                 setIcon(R.drawable.ic_baseline_warning_24)
 
-                okButton {
-                    navController.navigate(NavBaseAppDirections.toSettingsFragment())
-                }
-
+                okButton()
                 negativeButton(R.string.neg_cancel) { it.cancel() }
 
                 show()
             }
-        } else {
-            navController.navigate(NavBaseAppDirections.toSettingsFragment())
         }
     }
 

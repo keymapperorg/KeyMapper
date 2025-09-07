@@ -10,7 +10,6 @@
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNothing here!</string>
     <string name="triggers_recyclerview_placeholder">The first step is to add some buttons that will trigger the key map.\n\nFirst tap ‘Record trigger’ and then press the buttons that you want to remap. They will appear here.\n\nAlternatively, you can trigger a key map using an ‘advanced trigger’.\n\nYou can mix and match any keys!</string>
     <string name="choose_action_warning_requires_root">Requires root</string>
-    <string name="press_dot_dot_dot">Press…</string>
     <string name="no_actions">No actions</string>
     <string name="no_trigger">No trigger</string>
     <string name="middot" translatable="false">•</string>
@@ -72,10 +71,8 @@
     <string name="action_title_intent_send_broadcast">Send broadcast: %s</string>
 
     <string name="clipboard_label_keymap_uid">Key map id</string>
-    <string name="check_box_key_event_option_use_shell">Use shell (ROOT only)</string>
 
     <string name="trigger_error_dnd_access_denied">Permission required to work properly in Do Not Disturb mode!</string>
-    <string name="trigger_error_screen_off_root_permission_denied">The option to trigger when the screen is off needs root permission to work!</string>
     <string name="trigger_error_cant_detect_in_phone_call">This trigger won\'t work while ringing or in a phone call!</string>
     <string name="trigger_error_cant_detect_in_phone_call_explanation">Android doesn\'t let accessibility services detect volume button presses while your phone is ringing or it is in a phone call but it does let input method services detect them. Therefore, you must use one of the Key Mapper keyboards if you want this trigger to work.</string>
     <string name="trigger_error_gesture_stroke_count_too_high">Too many fingers to perform gesture due to android limitations.</string>
@@ -97,7 +94,6 @@
     <string name="description_open_app">Open %s</string>
     <string name="description_text_block">Type \'%s\'</string>
     <string name="description_keyevent">Input %s%s</string>
-    <string name="description_keyevent_through_shell">Input %s through shell</string>
     <string name="description_keyevent_from_device">Input %s%s from %s</string>
     <string name="description_url">Open %s</string>
     <string name="description_tap_coordinate_default">Tap screen (%d, %d)</string>
@@ -156,13 +152,16 @@
     <!--  Hints  -->
 
     <!--  Radio buttons  -->
-    <string name="radio_button_parallel">At the same time</string>
-    <string name="radio_button_sequence">In sequence</string>
+    <string name="radio_button_parallel">Press together</string>
+    <string name="radio_button_sequence">Press in sequence</string>
     <string name="radio_button_and">AND</string>
     <string name="radio_button_or">OR</string>
     <string name="radio_button_short_press">Short press</string>
     <string name="radio_button_long_press">Long press</string>
     <string name="radio_button_double_press">Double press</string>
+    <string name="radio_button_short">Short</string>
+    <string name="radio_button_long">Long </string>
+    <string name="radio_button_double">Double</string>
     <string name="radio_button_intent_extra_value_true">True</string>
     <string name="radio_button_intent_extra_value_false">False</string>
     <string name="radio_button_intent_target_activity">Activity</string>
@@ -398,7 +397,7 @@
     <string name="button_advanced_triggers_badge">NEW!</string>
     <string name="button_done">Done</string>
     <string name="button_fix">Fix</string>
-    <string name="button_recording_trigger_countdown">Recording (%d…)</string>
+    <string name="button_recording_trigger_countdown">Press your keys</string>
     <string name="button_add_constraint">Add constraint</string>
     <string name="button_choose_keycode">Choose Key code</string>
     <string name="button_add_intent_extra">Add extra</string>
@@ -421,8 +420,7 @@
     <string name="dialog_title_cant_find_accessibility_settings_page">Can\'t find the accessibility settings page</string>
     <string name="dialog_title_unsaved_changes">Unsaved changes</string>
     <string name="dialog_message_unsaved_changes"> You have unsaved changes. If you discard them, your edits will be lost.</string>
-    <string name="dialog_message_root_prompt">If you know your phone isn\'t rooted or you don\'t know what root is, you can\'t use features which only work on rooted devices. When you tap \'OK\', you will be taken to the settings.
-            In the settings, scroll to the bottom and tap \'Key Mapper has root permission\' so you can use root features/actions.</string>
+    <string name="dialog_message_root_prompt">Please grant Key Mapper root permission in your root management app, such as Magisk.</string>
 
     <string name="dialog_title_write_secure_settings">Grant WRITE_SECURE_SETTINGS permission</string>
     <string name="dialog_message_write_secure_settings">A PC/Mac is required to grant this permission. Read the online guide.</string>
@@ -431,8 +429,8 @@
     <string name="dialog_message_parallel_trigger_order">The keys need to be listed from top to bottom in the order that they will be held down.</string>
     <string name="dialog_message_sequence_trigger_explanation">A \"sequence\" trigger has a timeout unlike parallel triggers. This means after you press the first key, you will have a set amount of time to input the rest of the keys in the trigger. All the keys that you have added to the trigger won\'t do their usual action until the timeout has been reached. You can change this timeout in the "Options" tab.</string>
     <string name="dialog_message_bt_constraint_limitation">Android doesn\'t allow apps to get a list of connected (not paired) Bluetooth devices. Apps can only detect when they are connected and disconnected. So if your Bluetooth device is already connected to your device when the accessibility service starts, you will have to reconnect it for the app to know it is connected.</string>
+    <string name="dialog_title_change_location_or_disable">Automatic backup</string>
     <string name="dialog_message_change_location_or_disable">Change location or turn off automatic back up?</string>
-    <string name="dialog_message_screen_constraints_limitation">Screen on/off constraints will only work if you have turned on the \"detect trigger when screen is off\" key map option. This option will only show for some keys (e.g volume buttons) and if you are rooted. See a list of supported keys on the Help page.</string>
     <string name="dialog_message_password_screen_lock_warning">If you have any other screen lock chosen, such as PIN or Pattern then you don\'t have to worry. But if you have a Password screen lock you will *NOT* be able to unlock your phone if you use the Key Mapper Basic Input Method because it doesn\'t have a GUI. You can grant Key Mapper WRITE_SECURE_SETTINGS permission so it can show a notification to switch to and from the keyboard. There is a guide on how to do this if you tap the question mark at the bottom of the screen.</string>
     <string name="dialog_message_select_compatible_ime">Select the input method for actions that require one. You can change this later by tapping \"Select keyboard for actions\" in the bottom menu of the home screen.</string>
     <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">You need to choose the \"Caps Lock to camera\" keyboard layout for your keyboard otherwise the Caps Lock key will still lock caps. You can find this setting in your device settings -> Languages and Input -> Physical Keyboard -> Tap on your keyboard -> Set Up Keyboard Layouts. This will remap the Caps Lock key to KEYCODE_CAMERA so Key Mapper can remap it properly.\n\nAfter you\'ve done this you must remove the Caps Lock trigger key and record the Caps Lock key again. It should say \"Camera\" instead of \"Caps Lock\" if you did the steps correctly.</string>
@@ -507,9 +505,6 @@
     <string name="drag_handle_for">Drag handle for %1$s</string>
     <string name="show_example">Show example</string>
 
-    <string name="dialog_title_keycode_to_scancode_trigger_explanation">Unrecognized key code</string>
-    <string name="dialog_message_keycode_to_scancode_trigger_explanation">The pressed button was not recognized by the input system. In the past Key Mapper detected such buttons as one and the same. Currently the app tries to distinguish the button based on the scan code, which should be more unique. However, this is a makeshift incomplete solution, which doesn\'t guarantee uniqueness.</string>
-
     <string name="dialog_title_request_notification_permission">Turn on notifications</string>
     <string name="dialog_message_request_notification_permission">Some actions and options need this permission to work. You can also get notified when there is important news about the app.</string>
 
@@ -549,14 +544,10 @@
     <!-- Dialog stuff -->
 
     <!-- Notification strings -->
-    <string name="notification_channel_ime_picker">Keyboard picker</string>
     <string name="notification_channel_toggle_mappings">Pause/Resume key maps</string>
     <string name="notification_channel_keyboard_hidden">Keyboard is hidden warning</string>
     <string name="notification_channel_toggle_keyboard">Toggle Key Mapper keyboard</string>
     <string name="notification_channel_new_features">New features</string>
-
-    <string name="notification_ime_persistent_text">Tap to change your keyboard.</string>
-    <string name="notification_ime_persistent_title">Keyboard picker</string>
 
     <string name="notification_keymaps_resumed_title">Running</string>
     <string name="notification_keymaps_resumed_text">Tap to open Key Mapper.</string>
@@ -589,42 +580,35 @@
     <!-- Notification strings -->
 
     <!--Preference titles and summaries-->
-    <string name="title_pref_long_press_delay">Default long press delay (ms)</string>
+    <string name="title_pref_long_press_delay">Default long press delay</string>
     <string name="summary_pref_long_press_delay">How long a button should be pressed for it to be detected as a long press. Default is 500ms. Can be overridden in a key map\'s options.</string>
 
-    <string name="title_pref_double_press_delay">Default double press duration (ms)</string>
+    <string name="title_pref_double_press_delay">Default double press duration</string>
     <string name="summary_pref_double_press_delay">How fast does a button have to be double pressed for it to be detected as a double press. Default is 300ms. Can be overridden in a key map\'s options.</string>
 
     <string name="summary_pref_vibration_duration">How long to vibrate if vibrating is enabled for a key map. Default is 200ms. Can be overridden in a key map\'s options.</string>
-    <string name="title_pref_vibration_duration">Default vibrate duration (ms)</string>
+    <string name="title_pref_vibration_duration">Default vibrate duration</string>
 
     <string name="summary_pref_repeat_delay">How long the trigger needs to be held down for the action to start repeating. Default is 400ms. Can be overridden in a key map\'s options.</string>
-    <string name="title_pref_repeat_delay">Default delay until repeat (ms)</string>
+    <string name="title_pref_repeat_delay">Default delay until repeat</string>
 
     <string name="summary_pref_repeat_rate">The delay between every time an action is repeated. Default is 50ms. Can be overridden in a key map\'s options.</string>
-    <string name="title_pref_repeat_rate">Default delay between repeats (ms)</string>
+    <string name="title_pref_repeat_rate">Default delay between repeats</string>
 
     <string name="summary_pref_sequence_trigger_timeout">The time allowed to complete a sequence trigger. Default is 1000ms. Can be overridden in a key map\'s options.</string>
-    <string name="title_pref_sequence_trigger_timeout">Default sequence trigger timeout (ms)</string>
+    <string name="title_pref_sequence_trigger_timeout">Default sequence trigger timeout</string>
 
     <string name="title_pref_reset_defaults">Reset</string>
 
-    <string name="summary_pref_force_vibrate">Force all key maps to vibrate.</string>
-    <string name="title_pref_force_vibrate">Force vibrate</string>
+    <string name="title_pref_force_vibrate">Make all key maps vibrate</string>
+    <string name="summary_pref_force_vibrate">Every time a key map is triggered</string>
 
-    <string name="title_pref_show_ime_picker_notification">Keyboard picker notification</string>
-    <string name="summary_pref_show_ime_picker_notification">Show a persistent notification to allow you to pick a keyboard.</string>
+    <string name="title_pref_show_toggle_keymaps_notification">Show pause/resume notification</string>
+    <string name="summary_pref_show_toggle_keymaps_notification">Toggle your key maps on and off</string>
 
-    <string name="title_pref_show_toggle_keymaps_notification">Pause/resume key maps notification</string>
-    <string name="summary_pref_show_toggle_keymaps_notification">Show a persistent notification which starts/pauses your key maps.</string>
-
-    <string name="title_pref_automatic_backup_location">Automatically back up key maps to a specified location</string>
-    <string name="summary_pref_automatic_backup_location_disabled">No location chosen.</string>
-
-    <string name="title_pref_choose_devices">Choose devices</string>
-
-    <string name="title_pref_auto_show_ime_picker">Automatically show keyboard picker</string>
-    <string name="summary_pref_auto_show_ime_picker">When a device that you have chosen connects or disconnects the keyboard picker will show automatically. Choose the devices below.</string>
+    <string name="title_pref_automatic_backup_location_enabled">Change automatic backup location</string>
+    <string name="title_pref_automatic_backup_location_disabled">Turn on automatic backup</string>
+    <string name="summary_pref_automatic_backup_location_disabled">Periodically back up your key maps</string>
 
     <string name="title_pref_auto_change_ime_on_connection">Automatically change the on-screen keyboard when a device (e.g a keyboard) connects/disconnects</string>
     <string name="summary_pref_auto_change_ime_on_connection">The last used Key Mapper keyboard will be automatically selected when a chosen device is connected. Your normal keyboard will be automatically selected when the device disconnects.</string>
@@ -632,11 +616,11 @@
     <string name="title_pref_auto_change_ime_on_input_focus">Automatically change the on-screen keyboard when you start inputting text</string>
     <string name="summary_pref_auto_change_ime_on_input_focus">The last used non Key Mapper keyboard will be automatically selected when you try to open the keyboard. Your Key Mapper keyboard will be automatically selected once you stop using the keyboard.</string>
 
-    <string name="title_pref_show_toast_when_auto_changing_ime">Show an on-screen message when automatically changing the keyboard</string>
+    <string name="title_pref_show_toast_when_auto_changing_ime">On-screen message</string>
+    <string name="summary_pref_show_toast_when_auto_changing_ime">Show when automatically changing the keyboard</string>
 
-    <string name="title_pref_root_permission">Key Mapper has root permission</string>
-    <string name="summary_pref_root_permission">Enable this if you want to use features/actions which only work on rooted devices. Key Mapper must have root permission from your root-access-management app (e.g Magisk, SuperSU) for these features to work.
-            Only turn this on if you know your device is rooted and you have given Key Mapper root permission.</string>
+    <string name="title_pref_root_permission">Request root permission</string>
+    <string name="summary_pref_root_permission">If your device is rooted then this will show the root permission pop up from Magisk or your root app.</string>
 
     <string name="title_pref_dark_theme">Choose theme</string>
     <string name="summary_pref_dark_theme">Light and dark themes available</string>
@@ -648,30 +632,16 @@
     <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Automatically select the Key Mapper keyboard when you resume your key maps and select your default keyboard when pausing them.</string>
 
     <string name="title_pref_hide_home_screen_alerts">Hide home screen alerts</string>
-    <string name="summary_pref_hide_home_screen_alerts">Hide the alerts at the top of the home screen.</string>
+    <string name="summary_pref_hide_home_screen_alerts">Hide the alerts at the top of the home screen</string>
 
-    <string name="title_pref_show_device_descriptors">Show the first 5 characters of the device id for device specific triggers</string>
-    <string name="summary_pref_show_device_descriptors">This is useful to differentiate between devices that have the same name.</string>
-
-    <string name="title_pref_reroute_keyevents_link">Fix keyboards that are set to US English</string>
-    <string name="summary_pref_reroute_keyevents_link">This fixes keyboards that don\'t have the correct the keyboard layout when an accessibility service is enabled. Tap to read more and configure.</string>
-
-    <string name="title_pref_reroute_keyevents">Fix keyboards that are set to US English</string>
-    <string name="summary_pref_reroute_keyevents">There is a bug in Android 11 that turning on an accessibility service makes Android think all external devices are the same internal virtual device. Because it can\'t identify these devices correctly, it doesn\'t know which keyboard layout to use with them so it defaults to US English even if it is a German keyboard for example. You can use Key Mapper to work around this problem by following the steps below.</string>
-
-    <string name="title_pref_devices_to_reroute_keyevents_choose_devices">4. Choose devices</string>
-
-    <string name="title_pref_devices_to_reroute_keyevents_install_gui_keyboard">1. Install the Key Mapper GUI Keyboard (optional)</string>
-    <string name="title_pref_devices_to_reroute_keyevents_install_leanback_keyboard">1. Install the Key Mapper Leanback Keyboard (optional)</string>
-
-    <string name="title_pref_devices_to_reroute_keyevents_enable_ime_gui">2. Enable the Key Mapper GUI Keyboard or the Key Mapper Basic Input Method</string>
-    <string name="title_pref_devices_to_reroute_keyevents_enable_ime_leanback">2. Enable the Key Mapper Leanback Keyboard or the Key Mapper Basic Input Method</string>
-
-    <string name="title_pref_devices_to_reroute_keyevents_choose_ime">3. Use the keyboard that you just enabled</string>
-    <string name="title_pref_devices_to_reroute_keyevents_guide">(Recommended) Read user guide for this setting.</string>
+    <string name="title_pref_show_device_descriptors">Show device IDs</string>
+    <string name="summary_pref_show_device_descriptors">Differentiate devices with the same name</string>
 
     <string name="title_pref_toggle_logging">Enable extra logging</string>
-    <string name="title_pref_view_and_share_log">View and share log</string>
+    <string name="summary_pref_toggle_logging">Record more detailed logs</string>
+    <string name="title_pref_view_and_share_log">View log</string>
+    <string name="summary_pref_view_and_share_log">Share this with the developer if you\'re having issues</string>
+
     <string name="title_pref_report_issue">Report issue</string>
 
     <string name="title_pref_delete_sound_files">Delete sound files</string>
@@ -689,22 +659,25 @@
     <string name="title_pref_grant_shizuku_not_granted">3. Key Mapper does not have permission to use Shizuku. Tap to grant this permission.</string>
     <string name="title_pref_grant_shizuku_granted">3. Key Mapper will automatically use Shizuku. Tap to read which Key Mapper features use Shizuku.</string>
 
-    <string name="title_pref_default_options">Default mapping options</string>
-    <string name="summary_pref_default_options">Change the default options for your key maps.</string>
+    <string name="title_pref_default_options">Change default options</string>
+    <string name="summary_pref_default_options">For triggers and actions</string>
 
-    <string name="title_pref_reset_settings">Reset all settings</string>
-    <string name="summary_pref_reset_settings">DANGER! Reset all settings in the app to the default. Your key maps will NOT be reset.</string>
+    <string name="title_pref_reset_settings">Reset all</string>
     <string name="dialog_title_reset_settings">DANGER!</string>
-    <string name="dialog_message_reset_settings">Are you sure you want to reset all settings in the app to the default? Your key maps will NOT be reset. The introduction screen and all warning pop ups will show again.</string>
+    <string name="dialog_message_reset_settings">Are you sure you want to reset all settings in the app to the default? Your existing key maps will not be affected. The introductions and warning pop ups will show again.</string>
     <string name="pos_button_reset_settings">Yes, reset</string>
 
+    <string name="settings_reset_app_bar_button">Reset all</string>
+    <string name="settings_section_customize_experience_title">Customize your experience</string>
+    <string name="settings_section_key_maps_title">Key maps</string>
+    <string name="settings_section_data_management_title">Data management</string>
+    <string name="settings_section_power_user_title">Power user options</string>
+    <string name="settings_section_debugging_title">Debugging</string>
+    <string name="settings_section_notifications">Notifications</string>
 
     <!--Preference titles and summaries-->
 
     <!--Preference categories-->
-    <string name="title_pref_category_ime_picker">Automatically show the keyboard picker</string>
-    <string name="summary_pref_category_ime_picker">Tap to see the settings that allow you to automatically show the keyboard picker.</string>
-
     <string name="title_pref_category_root">Root settings</string>
     <string name="summary_pref_category_root">These options will only work on root devices! If you don\'t know what root is or whether your device is rooted, please don\'t leave a poor review if they don\'t work. :)</string>
 
@@ -713,30 +686,30 @@
 
     <string name="title_pref_category_shizuku">Shizuku support</string>
     <string name="summary_pref_category_shizuku">Shizuku is an app that allows Key Mapper to do things that only system apps can do. You don\'t need to use the Key Mapper keyboard for example. Tap to learn how to set this up.</string>
-    <string name="summary_pref_category_shizuku_follow_steps">Follow these steps to set up Shizuku.</string>
+    <string name="summary_pref_category_shizuku_follow_steps">Follow these steps to set up Shizuku</string>
 
-    <string name="title_pref_automatically_change_ime">Automatically change the keyboard</string>
-    <string name="summary_pref_automatically_change_ime">These are really useful settings and you are recommended to check them out!</string>
+    <string name="title_pref_automatically_change_ime">Automatically switch keyboard</string>
+    <string name="summary_pref_automatically_change_ime">Switch when needed then switch back</string>
+
+    <string name="title_pref_automatically_change_ime_choose_devices">Choose devices</string>
+    <string name="summary_pref_automatically_change_ime_choose_devices">Choose which devices trigger automatic keyboard switching</string>
 
     <string name="title_pref_category_log">Logging</string>
     <string name="summary_pref_category_log">This may add latency to your key maps so only turn this on if you are trying to debug the app or have been asked to by the developer.</string>
+
+    <string name="title_pref_pro_mode">Use PRO mode</string>
+    <string name="summary_pref_pro_mode">Advanced detection of key events and more</string>
+
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_system">System</string>
     <!--Preference categories-->
-
-    <!-- About activity-->
-    <!-- About activity-->
-
-    <string-array name="pref_dark_theme_entries" translatable="false">
-        <item>Light</item>
-        <item>Dark</item>
-        <item>Follow system</item>
-    </string-array>
 
     <!--flags-->
     <string name="flag_show_volume_dialog">Show volume dialog</string>
     <string name="flag_vibrate">Vibrate</string>
     <string name="flag_show_toast">Show an on-screen message</string>
     <string name="flag_long_press_double_vibration">Vibrate again on long press</string>
-    <string name="flag_detect_triggers_screen_off">Detect trigger when the screen is off</string>
 
     <string name="flag_repeat_build_description_start">Repeat</string>
     <string name="flag_repeat_build_description_limit">%dx</string>
@@ -919,6 +892,7 @@
     <string name="error_swipe_screen_must_be_ten_or_less_fingers">Must be %d or less!</string>
 
     <string name="error_ui_element_not_found">UI element not found!</string>
+    <string name="error_system_bridge_disconnected">PRO Mode needs starting</string>
     <!-- Error messages -->
 
     <!-- action labels -->
@@ -1061,7 +1035,6 @@
     <string name="action_secure_lock_device_message">You will only be able to log back in with your PIN. The fingerprint scanner and face unlock will be disabled. This is the only reliable way I have found to lock non-rooted devices before Android Pie 9.0.</string>
 
     <string name="action_power_on_off_device">Sleep/wake device</string>
-    <string name="action_power_on_off_device_message">You must turn on the option to detect the trigger when the screen is off!</string>
 
     <string name="action_consume_keyevent">Do nothing</string>
 
@@ -1516,6 +1489,15 @@
     <string name="trigger_key_fingerprint_gesture_left">Swipe left fingerprint reader</string>
     <string name="trigger_key_fingerprint_gesture_right">Swipe right fingerprint reader</string>
     <string name="trigger_shortcuts_header">Advanced triggers</string>
+    <string name="trigger_key_unknown_key_code">Key code %d</string>
+    <string name="trigger_key_unknown_scan_code">Scan code %d</string>
+    <string name="trigger_key_scan_code_detection_flag">Scan code</string>
+    <string name="trigger_scan_code_detection_explanation">Keys can be identified by either a \'key code\' or a \'scan code\'. A scan code is more unique than a key code but your trigger may not work with other devices. We recommend using key codes.</string>
+    <string name="trigger_use_key_code_button_disabled">Unknown key code</string>
+    <string name="trigger_use_key_code_button_enabled">Use key code %d</string>
+    <string name="trigger_use_scan_code_button_enabled">Use scan code %d</string>
+    <string name="trigger_use_scan_code_button_disabled">No scan code saved</string>
+    <string name="trigger_record_with_pro_mode">Use PRO mode</string>
 
     <!--  Action screen  -->
     <string name="action_list_item_remove">Remove</string>
@@ -1574,4 +1556,110 @@
         <item quantity="one">+%d inherited constraint</item>
         <item quantity="other">+%d inherited constraints</item>
     </plurals>
+
+
+    <!--  Pro mode  -->
+    <string name="pro_mode_app_bar_title">PRO mode</string>
+    <string name="pro_mode_warning_title">Important!</string>
+    <string name="pro_mode_warning_text">Remapping buttons with PRO mode is dangerous and can cause them to stop working if you remap them incorrectly.\n\nIf you make a mistake, you may need to force restart your device by holding down the power and volume buttons for 30 seconds — consult your device\'s manual or the internet for how to do this.</string>
+    <string name="pro_mode_warning_understand_button_countdown">%d…</string>
+    <string name="pro_mode_warning_understand_button_not_completed">I understand</string>
+    <string name="pro_mode_warning_understand_button_completed">Understood</string>
+    <string name="pro_mode_set_up_title">Set up</string>
+    <string name="pro_mode_root_detected_title">Root detected</string>
+    <string name="pro_mode_root_detected_text">You can skip the set up process by giving Key Mapper root permission. This will let Key Mapper auto start PRO mode on boot as well.</string>
+    <string name="pro_mode_root_detected_button_start_service">Start PRO mode</string>
+    <string name="pro_mode_shizuku_detected_title">Shizuku detected</string>
+    <string name="pro_mode_shizuku_detected_text">You can skip the set up process by giving Key Mapper Shizuku permission.</string>
+    <string name="pro_mode_shizuku_detected_button_start">Start Shizuku</string>
+    <string name="pro_mode_shizuku_detected_button_request_permission">Request permission</string>
+    <string name="pro_mode_shizuku_detected_button_start_service">Start PRO mode</string>
+    <string name="pro_mode_set_up_with_key_mapper_title">Set up with Key Mapper</string>
+    <string name="pro_mode_set_up_with_key_mapper_button">Continue</string>
+    <string name="pro_mode_set_up_with_key_mapper_button_incompatible">Continue (Android 11+)</string>
+    <string name="pro_mode_options_title">Options</string>
+    <string name="pro_mode_enable_for_all_key_maps_title">Enable PRO mode for all key maps</string>
+    <string name="pro_mode_enable_for_all_key_maps_text">Key Mapper will use the ADB Shell for remapping</string>
+    <string name="pro_mode_settings_unavailable_text">These settings are unavailable until you acknowledge the warning.</string>
+    <string name="pro_mode_service_started">PRO mode service is running</string>
+    <string name="pro_mode_stop_service_button">Stop</string>
+
+    <string name="title_pref_pro_mode_auto_start_at_boot">Automatically start at boot</string>
+    <string name="summary_pref_pro_mode_auto_start_at_boot">PRO Mode will start itself whenever you turn on or restart your device</string>
+
+    <string name="pro_mode_emergency_tip_title">Emergency tip</string>
+    <string name="pro_mode_emergency_tip_text">If your buttons stop working, hold down the power button for 10 seconds and release to disable PRO Mode.</string>
+
+    <string name="pro_mode_setup_wizard_title">Setup wizard</string>
+    <string name="pro_mode_setup_wizard_step_n">Step %d of %d</string>
+    <string name="pro_mode_setup_wizard_use_assistant">Use interactive setup assistant</string>
+    <string name="pro_mode_setup_wizard_use_assistant_description">Automatically interact with settings</string>
+    <string name="pro_mode_setup_wizard_use_assistant_enable_accessibility_service">Enable accessibility service first</string>
+    <string name="pro_mode_setup_wizard_watch_tutorial_button">Watch tutorial</string>
+    <string name="pro_mode_setup_wizard_enable_accessibility_service_button">Start service</string>
+    <string name="pro_mode_setup_wizard_go_to_settings_button">Go to settings</string>
+    <string name="pro_mode_setup_wizard_start_service_button">Start service</string>
+
+    <string name="pro_mode_setup_wizard_enable_accessibility_service_title">Enable accessibility service</string>
+    <string name="pro_mode_setup_wizard_enable_accessibility_service_description">Key Mapper uses a service to help you set up PRO mode. It\'s also useful for ordinary key maps.</string>
+
+    <string name="pro_mode_setup_wizard_enable_developer_options_title">Enable developer options</string>
+    <string name="pro_mode_setup_wizard_enable_developer_options_description">Key Mapper needs to use Android Debug Bridge to start PRO mode, and you need to enable developer options for that.</string>
+
+    <string name="pro_mode_setup_wizard_connect_wifi_title">Connect to a WiFi network</string>
+    <string name="pro_mode_setup_wizard_connect_wifi_description">Key Mapper needs a WiFi network to enable ADB. You do not need an internet connection.\n\nNo WiFi network? Use a hotspot from someone else\'s phone.</string>
+
+    <string name="pro_mode_setup_wizard_enable_wireless_debugging_title">Enable wireless debugging</string>
+    <string name="pro_mode_setup_wizard_enable_wireless_debugging_description">Key Mapper uses wireless debugging to launch its remapping and input service.</string>
+
+    <string name="pro_mode_setup_wizard_pair_wireless_debugging_title">Pair wireless debugging</string>
+    <string name="pro_mode_setup_wizard_pair_wireless_debugging_description">Key Mapper needs to pair with wireless debugging before it can launch its remapping and input service.</string>
+
+    <string name="pro_mode_setup_wizard_start_service_title">Start service</string>
+    <string name="pro_mode_setup_wizard_start_service_description">Key Mapper needs to connect to the Android Debug Bridge to start the PRO mode service.</string>
+
+    <string name="pro_mode_setup_wizard_enable_notification_permission_title">Allow notifications</string>
+    <string name="pro_mode_setup_wizard_enable_notification_permission_description">Key Mapper needs permission to notify you if there are any issues with the set up process.</string>
+    <string name="pro_mode_setup_wizard_enable_notification_permission_button">Give permission</string>
+
+    <string name="pro_mode_setup_assistant_notification_channel">Setup assistant</string>
+
+    <string name="pro_mode_setup_wizard_complete_title">PRO mode is running</string>
+    <string name="pro_mode_setup_wizard_complete_text">You can now remap buttons when the screen is off and use more actions.</string>
+
+    <string name="pro_mode_setup_wizard_complete_button">Finish</string>
+
+    <string name="pro_mode_setup_notification_tap_build_number_title">Enable developer options</string>
+    <string name="pro_mode_setup_notification_tap_build_number_text">Tap build number repeatedly</string>
+
+    <string name="pro_mode_setup_notification_pairing_title">Pairing automatically</string>
+    <string name="pro_mode_setup_notification_pairing_text">Searching for pairing code and port…</string>
+
+    <string name="pro_mode_setup_notification_pairing_button_not_found_title">Unable to find pairing port and code</string>
+    <string name="pro_mode_setup_notification_pairing_button_not_found_text">Tap on the button to pair with pairing code and type the code in here</string>
+
+    <string name="pro_mode_setup_notification_start_system_bridge_failed_title">Starting PRO Mode failed</string>
+    <string name="pro_mode_setup_notification_start_system_bridge_failed_text">Tap to set up again. Try ADB pairing and rebooting your phone if it repeatedly fails.</string>
+
+    <string name="pro_mode_setup_notification_auto_start_system_bridge_title">Auto starting PRO mode</string>
+    <string name="pro_mode_setup_notification_auto_start_system_bridge_root_text">Using root</string>
+    <string name="pro_mode_setup_notification_auto_start_system_bridge_shizuku_text">Using shizuku</string>
+    <string name="pro_mode_setup_notification_auto_start_system_bridge_adb_text">Using ADB over WiFi</string>
+
+    <string name="pro_mode_setup_notification_system_bridge_started_title">PRO mode started</string>
+    <string name="pro_mode_setup_notification_system_bridge_started_text">Have fun remapping! ❤️</string>
+
+    <string name="pro_mode_setup_notification_invalid_pairing_code_title">Pairing failed</string>
+    <string name="pro_mode_setup_notification_invalid_pairing_code_text">Keep the pairing code popup on-screen when submitting the pairing code</string>
+    <string name="pro_mode_setup_notification_action_input_pairing_code">Input pairing code</string>
+
+    <string name="pro_mode_info_card_title">What can I do with PRO mode?</string>
+    <string name="pro_mode_info_card_description">📲 You can remap more buttons, such as your power button.\n⌨️ Use any keyboard with key code actions.\n⭐️ The following actions are unlocked: WiFi, Bluetooth, mobile data, NFC, and airplane mode, collapse status bar, and sleep/wake device.</string>
+    <string name="pro_mode_info_card_show_content_description">Show PRO mode info</string>
+    <string name="pro_mode_info_card_dismiss_content_description">Dismiss</string>
+
+    <string name="system_bridge_died_notification_title">PRO mode stopped unexpectedly</string>
+    <string name="system_bridge_died_notification_restarting_text">Automatically restarting…</string>
+    <string name="system_bridge_died_notification_not_restarting_text">Not auto restarting. If you\'re not killing the service report the issue to the developer.</string>
+
 </resources>

@@ -148,8 +148,9 @@ class ChooseConstraintViewModel @Inject constructor(
                     constraintType,
                 )
 
-                ConstraintId.SCREEN_ON -> onSelectScreenOnConstraint()
-                ConstraintId.SCREEN_OFF -> onSelectScreenOffConstraint()
+                ConstraintId.SCREEN_ON -> returnResult.emit(Constraint.ScreenOn())
+
+                ConstraintId.SCREEN_OFF -> returnResult.emit(Constraint.ScreenOff())
 
                 ConstraintId.ORIENTATION_PORTRAIT ->
                     returnResult.emit(Constraint.OrientationPortrait())
@@ -351,28 +352,6 @@ class ChooseConstraintViewModel @Inject constructor(
 
             else -> Unit
         }
-    }
-
-    private suspend fun onSelectScreenOnConstraint() {
-        val response = showDialog(
-            "screen_on_constraint_limitation",
-            DialogModel.Ok(getString(R.string.dialog_message_screen_constraints_limitation)),
-        )
-
-        response ?: return
-
-        returnResult.emit(Constraint.ScreenOn())
-    }
-
-    private suspend fun onSelectScreenOffConstraint() {
-        val response = showDialog(
-            "screen_on_constraint_limitation",
-            DialogModel.Ok(getString(R.string.dialog_message_screen_constraints_limitation)),
-        )
-
-        response ?: return
-
-        returnResult.emit(Constraint.ScreenOff())
     }
 
     private suspend fun onSelectBluetoothConstraint(type: ConstraintId) {
