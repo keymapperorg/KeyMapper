@@ -18,7 +18,6 @@ import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
-import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
@@ -43,7 +42,6 @@ import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.ifIsData
 import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.common.utils.onSuccess
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -179,13 +177,6 @@ abstract class BaseConfigTriggerViewModel(
     private val midDot = getString(R.string.middot)
 
     init {
-        val showTapTargetsPairFlow: Flow<Pair<Boolean, Boolean>> = combine(
-            onboarding.showTapTarget(OnboardingTapTarget.RECORD_TRIGGER),
-            onboarding.showTapTarget(OnboardingTapTarget.ADVANCED_TRIGGERS),
-        ) { recordTriggerTapTarget, advancedTriggersTapTarget ->
-            Pair(recordTriggerTapTarget, advancedTriggersTapTarget)
-        }
-
         // IMPORTANT! Do not flow on another thread because this causes the drag and drop
         // animations to be more janky.
         combine(
@@ -193,16 +184,13 @@ abstract class BaseConfigTriggerViewModel(
             config.keyMap,
             displayKeyMap.showDeviceDescriptors,
             triggerKeyShortcuts,
-            showTapTargetsPairFlow,
-        ) { triggerErrorSnapshot, keyMap, showDeviceDescriptors, shortcuts, showTapTargetsPair ->
+        ) { triggerErrorSnapshot, keyMap, showDeviceDescriptors, shortcuts ->
             _state.update {
                 buildUiState(
                     keyMap,
                     showDeviceDescriptors,
                     shortcuts,
                     triggerErrorSnapshot,
-                    showTapTargetsPair.first,
-                    showTapTargetsPair.second,
                 )
             }
         }.launchIn(viewModelScope)
@@ -272,8 +260,6 @@ abstract class BaseConfigTriggerViewModel(
         showDeviceDescriptors: Boolean,
         triggerKeyShortcuts: Set<ShortcutModel<TriggerKeyShortcut>>,
         triggerErrorSnapshot: TriggerErrorSnapshot,
-        showRecordTriggerTapTarget: Boolean,
-        showAdvancedTriggersTapTarget: Boolean,
     ): State<ConfigTriggerState> {
         return keyMapState.mapData { keyMap ->
             val trigger = keyMap.trigger
@@ -281,8 +267,6 @@ abstract class BaseConfigTriggerViewModel(
             if (trigger.keys.isEmpty()) {
                 return@mapData ConfigTriggerState.Empty(
                     triggerKeyShortcuts,
-                    showRecordTriggerTapTarget = showRecordTriggerTapTarget,
-                    showAdvancedTriggersTapTarget = showAdvancedTriggersTapTarget,
                 )
             }
 
@@ -334,7 +318,6 @@ abstract class BaseConfigTriggerViewModel(
                 triggerModeButtonsVisible = triggerModeButtonsVisible,
                 checkedTriggerMode = trigger.mode,
                 shortcuts = triggerKeyShortcuts,
-                showAdvancedTriggersTapTarget = showAdvancedTriggersTapTarget,
             )
         }
     }
@@ -836,16 +819,8 @@ abstract class BaseConfigTriggerViewModel(
         onboarding.neverShowNoKeysRecordedBottomSheet()
     }
 
-    fun onRecordTriggerTapTargetCompleted() {
-        onboarding.completedTapTarget(OnboardingTapTarget.RECORD_TRIGGER)
-    }
-
     fun onSkipTapTargetClick() {
         onboarding.skipTapTargetOnboarding()
-    }
-
-    fun onAdvancedTriggersTapTargetCompleted() {
-        onboarding.completedTapTarget(OnboardingTapTarget.ADVANCED_TRIGGERS)
     }
 
     abstract fun onEditFloatingButtonClick()
@@ -854,12 +829,9 @@ abstract class BaseConfigTriggerViewModel(
 
 sealed class ConfigTriggerState {
     abstract val shortcuts: Set<ShortcutModel<TriggerKeyShortcut>>
-    abstract val showAdvancedTriggersTapTarget: Boolean
 
     data class Empty(
         override val shortcuts: Set<ShortcutModel<TriggerKeyShortcut>> = emptySet(),
-        val showRecordTriggerTapTarget: Boolean = false,
-        override val showAdvancedTriggersTapTarget: Boolean = false,
     ) : ConfigTriggerState()
 
     data class Loaded(
@@ -871,7 +843,6 @@ sealed class ConfigTriggerState {
         val triggerModeButtonsEnabled: Boolean = false,
         val triggerModeButtonsVisible: Boolean = false,
         override val shortcuts: Set<ShortcutModel<TriggerKeyShortcut>> = emptySet(),
-        override val showAdvancedTriggersTapTarget: Boolean = false,
     ) : ConfigTriggerState()
 }
 

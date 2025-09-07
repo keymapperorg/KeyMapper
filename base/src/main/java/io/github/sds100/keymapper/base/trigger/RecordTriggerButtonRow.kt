@@ -16,11 +16,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,13 +36,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.canopas.lib.showcase.IntroShowcase
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
-import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
-import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperTapTarget
-import io.github.sds100.keymapper.base.utils.ui.compose.keyMapperShowcaseStyle
 
 @Composable
 fun RecordTriggerButtonRow(
@@ -47,53 +46,21 @@ fun RecordTriggerButtonRow(
     onRecordTriggerClick: () -> Unit = {},
     recordTriggerState: RecordTriggerState,
     onAdvancedTriggersClick: () -> Unit = {},
-    showRecordTriggerTapTarget: Boolean = false,
-    onRecordTriggerTapTargetCompleted: () -> Unit = {},
-    onSkipTapTarget: () -> Unit = {},
-    showAdvancedTriggerTapTarget: Boolean = false,
-    onAdvancedTriggerTapTargetCompleted: () -> Unit = {},
 ) {
     Column {
         Row(modifier, verticalAlignment = Alignment.CenterVertically) {
-            IntroShowcase(
-                showIntroShowCase = showRecordTriggerTapTarget,
-                onShowCaseCompleted = onRecordTriggerTapTargetCompleted,
-                dismissOnClickOutside = true,
-            ) {
-                RecordTriggerButton(
-                    modifier = Modifier
-                        .weight(1f)
-                        .introShowCaseTarget(0, style = keyMapperShowcaseStyle()) {
-                            KeyMapperTapTarget(
-                                OnboardingTapTarget.RECORD_TRIGGER,
-                                onSkipClick = onSkipTapTarget,
-                            )
-                        },
-                    recordTriggerState,
-                    onClick = onRecordTriggerClick,
-                )
-            }
+            RecordTriggerButton(
+                modifier = Modifier.weight(1f),
+                recordTriggerState,
+                onClick = onRecordTriggerClick,
+            )
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            IntroShowcase(
-                showIntroShowCase = showAdvancedTriggerTapTarget,
-                onShowCaseCompleted = onAdvancedTriggerTapTargetCompleted,
-                dismissOnClickOutside = true,
-            ) {
-                AdvancedTriggersButton(
-                    modifier = Modifier
-                        .weight(1f)
-                        .introShowCaseTarget(0, style = keyMapperShowcaseStyle()) {
-                            KeyMapperTapTarget(
-                                OnboardingTapTarget.ADVANCED_TRIGGERS,
-                                showSkipButton = false,
-                            )
-                        },
-                    isEnabled = recordTriggerState !is RecordTriggerState.CountingDown,
-                    onClick = onAdvancedTriggersClick,
-                )
-            }
+            AdvancedTriggersButton(
+                isEnabled = recordTriggerState !is RecordTriggerState.CountingDown,
+                onClick = onAdvancedTriggersClick,
+            )
         }
     }
 }
@@ -168,27 +135,17 @@ private fun RecordTriggerButton(
 
 @Composable
 private fun AdvancedTriggersButton(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     isEnabled: Boolean,
     onClick: () -> Unit,
 ) {
-    OutlinedButton(
+    IconButton(
         modifier = modifier,
-        enabled = isEnabled,
         onClick = onClick,
+        enabled = isEnabled,
+        colors = IconButtonDefaults.iconButtonColors(containerColor = LocalCustomColorsPalette.current.amber)
     ) {
-        val color = LocalContentColor.current
-        BasicText(
-            text = stringResource(R.string.button_advanced_triggers),
-            maxLines = 1,
-            autoSize = TextAutoSize.StepBased(
-                minFontSize = 5.sp,
-                maxFontSize = MaterialTheme.typography.labelLarge.fontSize,
-            ),
-            style = MaterialTheme.typography.labelLarge,
-            color = { color },
-            overflow = TextOverflow.Ellipsis,
-        )
+        Icon(Icons.Outlined.ShoppingCart, contentDescription = null)
     }
 }
 

@@ -170,6 +170,7 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
         autoSwitchImeController.init()
 
         processLifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
+            @Suppress("DEPRECATION")
             @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
             fun onResume() {
                 // when the user returns to the app let everything know that the permissions could have changed

@@ -12,16 +12,6 @@ enum class OnboardingTapTarget(
         messageRes = R.string.tap_target_create_key_map_message,
     ),
 
-    RECORD_TRIGGER(
-        titleRes = R.string.tap_target_record_trigger_title,
-        messageRes = R.string.tap_target_record_trigger_message,
-    ),
-
-    ADVANCED_TRIGGERS(
-        titleRes = R.string.tap_target_advanced_triggers_title,
-        messageRes = R.string.tap_target_advanced_triggers_message,
-    ),
-
     CHOOSE_ACTION(
         titleRes = R.string.tap_target_choose_action_title,
         messageRes = R.string.tap_target_choose_action_message,
