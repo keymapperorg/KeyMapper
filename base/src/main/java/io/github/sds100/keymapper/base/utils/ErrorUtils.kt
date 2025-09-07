@@ -2,6 +2,8 @@ package io.github.sds100.keymapper.base.utils
 
 import android.content.pm.PackageManager
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.purchasing.ProductId
+import io.github.sds100.keymapper.base.purchasing.PurchasingError
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.BuildUtils
 import io.github.sds100.keymapper.common.utils.KMError
@@ -183,6 +185,38 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         KMError.UiElementNotFound -> resourceProvider.getString(R.string.error_ui_element_not_found)
         is SystemBridgeError.Disconnected -> resourceProvider.getString(R.string.error_system_bridge_disconnected)
 
+        PurchasingError.PurchasingProcessError.Cancelled -> resourceProvider.getString(
+            R.string.purchasing_error_cancelled,
+        )
+
+        PurchasingError.PurchasingProcessError.NetworkError -> resourceProvider.getString(
+            R.string.purchasing_error_network,
+        )
+
+        PurchasingError.PurchasingProcessError.ProductNotFound -> resourceProvider.getString(
+            R.string.purchasing_error_product_not_found,
+        )
+
+        PurchasingError.PurchasingProcessError.StoreProblem -> resourceProvider.getString(
+            R.string.purchasing_error_store_problem,
+        )
+
+        PurchasingError.PurchasingProcessError.PaymentPending -> resourceProvider.getString(
+            R.string.purchasing_error_payment_pending,
+        )
+
+        PurchasingError.PurchasingProcessError.PurchaseInvalid -> resourceProvider.getString(
+            R.string.purchasing_error_purchase_invalid,
+        )
+
+        is PurchasingError.PurchasingProcessError.Unexpected -> message
+
+        is PurchasingError.ProductNotPurchased -> when (product) {
+            ProductId.ASSISTANT_TRIGGER -> resourceProvider.getString(R.string.purchasing_error_assistant_not_purchased_home_screen)
+            ProductId.FLOATING_BUTTONS -> resourceProvider.getString(R.string.purchasing_error_floating_buttons_not_purchased_home_screen)
+        }
+
+        PurchasingError.PurchasingNotImplemented -> resourceProvider.getString(R.string.purchasing_error_not_implemented)
         else -> this.toString()
     }
 }

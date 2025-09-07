@@ -23,9 +23,17 @@
 
 - Restoring subgroups works and does not freeze Key Mapper
 
+## [3.2.1](https://github.com/sds100/KeyMapper/releases/tag/v3.2.1)
+
+#### 03 Sept 2025
+
+## Bug fixes
+
+- Do not crash when cancelling purchase
+
 ## [3.2.0](https://github.com/sds100/KeyMapper/releases/tag/v3.2.0)
 
-#### TO BE RELEASED
+#### 02 Sept 2025
 
 ## Added
 
