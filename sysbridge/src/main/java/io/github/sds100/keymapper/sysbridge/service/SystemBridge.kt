@@ -9,6 +9,7 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.IPackageManager
 import android.content.pm.PackageManager
 import android.hardware.input.IInputManager
+import android.net.IConnectivityManager
 import android.net.wifi.IWifiManager
 import android.nfc.INfcAdapter
 import android.nfc.NfcAdapterApis
@@ -165,6 +166,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
     private val packageManager: IPackageManager
     private val bluetoothManager: IBluetoothManager?
     private val nfcAdapter: INfcAdapter?
+    private val connectivityManager: IConnectivityManager?
 
     private val processPackageName: String = when (Process.myUid()) {
         Process.ROOT_UID -> "root"
@@ -224,6 +226,10 @@ internal class SystemBridge : ISystemBridge.Stub() {
         } else {
             nfcAdapter = null
         }
+
+        waitSystemService(Context.CONNECTIVITY_SERVICE)
+        connectivityManager =
+            IConnectivityManager.Stub.asInterface(ServiceManager.getService(Context.CONNECTIVITY_SERVICE))
 
         val applicationInfo = getKeyMapperPackageInfo()
 
@@ -561,5 +567,13 @@ internal class SystemBridge : ISystemBridge.Stub() {
                 packageName = processPackageName
             )
         }
+    }
+
+    override fun setAirplaneMode(enable: Boolean) {
+        if (connectivityManager == null) {
+            throw UnsupportedOperationException("ConnectivityManager not supported")
+        }
+
+        connectivityManager.setAirplaneMode(enable)
     }
 }

@@ -33,4 +33,6 @@ interface ISystemBridge {
    void setBluetoothEnabled(boolean enable) = 13;
 
    void setNfcEnabled(boolean enable) = 14;
+
+   void setAirplaneMode(boolean enable) = 15;
 }
