@@ -37,6 +37,8 @@ import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
@@ -47,6 +49,7 @@ import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
+import io.github.sds100.keymapper.system.inputevents.Scancode
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.intents.IntentAdapter
 import io.github.sds100.keymapper.system.intents.IntentTarget
@@ -102,6 +105,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val ringtoneAdapter: RingtoneAdapter,
     private val settingsRepository: PreferenceRepository,
     private val inputEventHub: InputEventHub,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager
 ) : PerformActionsUseCase {
 
     @AssistedFactory
@@ -785,7 +789,22 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.ScreenOnOff -> {
-                result = suAdapter.execute("input keyevent ${KeyEvent.KEYCODE_POWER}")
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+                    systemBridgeConnectionManager.connectionState.value is SystemBridgeConnectionState.Connected
+                ) {
+                    val model = InjectKeyEventModel(
+                        keyCode = KeyEvent.KEYCODE_POWER,
+                        action = KeyEvent.ACTION_DOWN,
+                        metaState = 0,
+                        deviceId = -1,
+                        scanCode = Scancode.KEY_POWER,
+                        source = InputDevice.SOURCE_UNKNOWN
+                    )
+                    result = inputEventHub.injectKeyEvent(model)
+                        .then { inputEventHub.injectKeyEvent(model.copy(action = KeyEvent.ACTION_UP)) }
+                } else {
+                    result = suAdapter.execute("input keyevent ${KeyEvent.KEYCODE_POWER}")
+                }
             }
 
             is ActionData.SecureLock -> {
