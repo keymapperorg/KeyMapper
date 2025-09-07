@@ -64,7 +64,7 @@ abstract class BaseAccessibilityServiceController(
     private val keyEventRelayServiceWrapper: KeyEventRelayServiceWrapper,
     private val inputEventHub: InputEventHub,
     private val recordTriggerController: RecordTriggerController,
-    private val setupAssistantControllerFactory: SystemBridgeSetupAssistantController.Factory
+    private val setupAssistantControllerFactory: SystemBridgeSetupAssistantController.Factory,
 ) {
     companion object {
         private const val DEFAULT_NOTIFICATION_TIMEOUT = 200L

@@ -97,7 +97,7 @@ fun BaseTriggerScreen(modifier: Modifier = Modifier, viewModel: BaseConfigTrigge
             onEditFloatingButtonClick = viewModel::onEditFloatingButtonClick,
             onEditFloatingLayoutClick = viewModel::onEditFloatingLayoutClick,
             onSelectFingerprintGestureType = viewModel::onSelectFingerprintGestureType,
-            onScanCodeDetectionChanged = viewModel::onSelectScanCodeDetection
+            onScanCodeDetectionChanged = viewModel::onSelectScanCodeDetection,
         )
     }
 
@@ -251,7 +251,7 @@ private fun TriggerScreenVertical(
                             clickTypes = configState.clickTypeButtons,
                             checkedClickType = configState.checkedClickType,
                             onSelectClickType = onSelectClickType,
-                            isCompact = isCompact
+                            isCompact = isCompact,
                         )
 
                         if (!isCompact) {
@@ -401,7 +401,7 @@ private fun TriggerScreenHorizontal(
                                 clickTypes = configState.clickTypeButtons,
                                 checkedClickType = configState.checkedClickType,
                                 onSelectClickType = onSelectClickType,
-                                isCompact = false
+                                isCompact = false,
                             )
                         }
 
@@ -561,7 +561,7 @@ private fun ClickTypeSegmentedButtons(
         buttonStates = clickTypeButtonContent,
         selectedState = checkedClickType,
         onStateSelected = onSelectClickType,
-        isCompact = isCompact
+        isCompact = isCompact,
     )
 }
 
@@ -572,11 +572,11 @@ private fun TriggerModeSegmentedButtons(
     isEnabled: Boolean,
     onSelectParallelMode: () -> Unit,
     onSelectSequenceMode: () -> Unit,
-    isCompact: Boolean
+    isCompact: Boolean,
 ) {
     val triggerModeButtonContent = listOf(
         "parallel" to stringResource(R.string.radio_button_parallel),
-        "sequence" to stringResource(R.string.radio_button_sequence)
+        "sequence" to stringResource(R.string.radio_button_sequence),
     )
 
     KeyMapperSegmentedButtonRow(
@@ -594,7 +594,7 @@ private fun TriggerModeSegmentedButtons(
             }
         },
         isCompact = isCompact,
-        isEnabled = isEnabled
+        isEnabled = isEnabled,
     )
 }
 
@@ -712,7 +712,7 @@ private fun HorizontalEmptyPreview() {
                     ),
                 ),
 
-                ),
+            ),
             recordTriggerState = RecordTriggerState.Idle,
         )
     }

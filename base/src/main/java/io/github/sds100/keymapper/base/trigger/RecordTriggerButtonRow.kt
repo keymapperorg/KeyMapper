@@ -124,9 +124,9 @@ private fun RecordTriggerButton(
         targetValue = 1.0f,
         animationSpec = infiniteRepeatable(
             animation = tween(1000),
-            repeatMode = RepeatMode.Reverse
+            repeatMode = RepeatMode.Reverse,
         ),
-        label = "recording_dot_alpha"
+        label = "recording_dot_alpha",
     )
 
     FilledTonalButton(
@@ -135,7 +135,7 @@ private fun RecordTriggerButton(
         colors = colors,
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             // White recording dot
             if (state is RecordTriggerState.CountingDown) {
@@ -145,8 +145,8 @@ private fun RecordTriggerButton(
                         .alpha(alpha)
                         .background(
                             color = Color.White,
-                            shape = CircleShape
-                        )
+                            shape = CircleShape,
+                        ),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
             }

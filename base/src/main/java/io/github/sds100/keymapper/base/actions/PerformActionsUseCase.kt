@@ -105,7 +105,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val ringtoneAdapter: RingtoneAdapter,
     private val settingsRepository: PreferenceRepository,
     private val inputEventHub: InputEventHub,
-    private val systemBridgeConnectionManager: SystemBridgeConnectionManager
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
 ) : PerformActionsUseCase {
 
     @AssistedFactory
@@ -797,7 +797,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                         metaState = 0,
                         deviceId = -1,
                         scanCode = Scancode.KEY_POWER,
-                        source = InputDevice.SOURCE_UNKNOWN
+                        source = InputDevice.SOURCE_UNKNOWN,
                     )
                     result = inputEventHub.injectKeyEvent(model)
                         .then { inputEventHub.injectKeyEvent(model.copy(action = KeyEvent.ACTION_UP)) }

@@ -36,7 +36,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
 class ConfigConstraintsViewModel @Inject constructor(
     private val config: ConfigConstraintsUseCase,
@@ -44,7 +43,8 @@ class ConfigConstraintsViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
-) : ViewModel(), ResourceProvider by resourceProvider,
+) : ViewModel(),
+    ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider {
 

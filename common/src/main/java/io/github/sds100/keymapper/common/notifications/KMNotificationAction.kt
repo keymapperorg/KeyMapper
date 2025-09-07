@@ -10,7 +10,7 @@ sealed class KMNotificationAction {
         START_ACCESSIBILITY_SERVICE,
         RESTART_ACCESSIBILITY_SERVICE,
         TOGGLE_KEY_MAPPER_IME,
-        SHOW_KEYBOARD
+        SHOW_KEYBOARD,
     }
 
     sealed class Broadcast(val intentAction: IntentAction) : KMNotificationAction() {
@@ -29,12 +29,13 @@ sealed class KMNotificationAction {
     }
 
     sealed class RemoteInput(
-        val key: String, val intentAction: IntentAction
+        val key: String,
+        val intentAction: IntentAction,
     ) : KMNotificationAction() {
 
         data object PairingCode : RemoteInput(
             key = "pairing_code",
-            intentAction = IntentAction.PAIRING_CODE_REPLY
+            intentAction = IntentAction.PAIRING_CODE_REPLY,
         )
     }
 

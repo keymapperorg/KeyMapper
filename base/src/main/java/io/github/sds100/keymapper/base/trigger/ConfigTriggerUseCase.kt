@@ -40,7 +40,7 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
     private val devicesAdapter: DevicesAdapter,
     private val floatingLayoutRepository: FloatingLayoutRepository,
     private val getDefaultKeyMapOptionsUseCase: GetDefaultKeyMapOptionsUseCase,
-    private val keyMapRepository: KeyMapRepository
+    private val keyMapRepository: KeyMapRepository,
 ) : ConfigTriggerUseCase, GetDefaultKeyMapOptionsUseCase by getDefaultKeyMapOptionsUseCase {
     override val keyMap: StateFlow<State<KeyMap>> = state.keyMap
 
@@ -66,7 +66,6 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
                             is AssistantTriggerKeyEntity, is FingerprintTriggerKeyEntity, is FloatingButtonKeyEntity -> null
                         }
                     }.filterIsInstance<KeyCodeTriggerKey>()
-
             }.firstBlocking()
     }
 
@@ -106,7 +105,7 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
         keyCode: Int,
         scanCode: Int,
         device: KeyEventTriggerDevice,
-        requiresIme: Boolean
+        requiresIme: Boolean,
     ) = updateTrigger { trigger ->
         delegate.addKeyEventTriggerKey(
             trigger,
@@ -114,7 +113,7 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
             scanCode,
             device,
             requiresIme,
-            otherTriggerKeys = otherTriggerKeys
+            otherTriggerKeys = otherTriggerKeys,
         )
     }
 
@@ -128,7 +127,7 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
             keyCode,
             scanCode,
             device,
-            otherTriggerKeys = otherTriggerKeys
+            otherTriggerKeys = otherTriggerKeys,
         )
     }
 

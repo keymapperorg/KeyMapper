@@ -38,7 +38,7 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
     private val shizukuAdapter: ShizukuAdapter,
     private val devicesAdapter: DevicesAdapter,
     private val buildConfigProvider: BuildConfigProvider,
-    private val notificationAdapter: NotificationAdapter
+    private val notificationAdapter: NotificationAdapter,
 ) : ConfigSettingsUseCase {
 
     private val imeHelper by lazy {

@@ -16,7 +16,7 @@ import javax.inject.Inject
 class ActivityViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
     dialogProvider: DialogProvider,
-    navigationProvider: NavigationProvider
+    navigationProvider: NavigationProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,

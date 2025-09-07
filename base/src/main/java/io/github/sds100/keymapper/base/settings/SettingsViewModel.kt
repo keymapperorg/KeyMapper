@@ -67,7 +67,7 @@ class SettingsViewModel @Inject constructor(
             autoBackupLocation = values[2] as String?,
             forceVibrate = values[3] as Boolean? ?: false,
             hideHomeScreenAlerts = values[4] as Boolean? ?: false,
-            showDeviceDescriptors = values[5] as Boolean? ?: false
+            showDeviceDescriptors = values[5] as Boolean? ?: false,
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, MainSettingsState())
 
@@ -146,7 +146,7 @@ class SettingsViewModel @Inject constructor(
             if (soundFiles.isEmpty()) {
                 showDialog(
                     "no sound files",
-                    DialogModel.Toast(getString(R.string.toast_no_sound_files))
+                    DialogModel.Toast(getString(R.string.toast_no_sound_files)),
                 )
                 return@launch
             }
@@ -404,7 +404,7 @@ data class MainSettingsState(
     val forceVibrate: Boolean = false,
     val loggingEnabled: Boolean = false,
     val hideHomeScreenAlerts: Boolean = false,
-    val showDeviceDescriptors: Boolean = false
+    val showDeviceDescriptors: Boolean = false,
 )
 
 data class DefaultSettingsState(

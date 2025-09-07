@@ -57,7 +57,7 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
             PackageManager.FEATURE_DEVICE_ADMIN -> resourceProvider.getString(R.string.error_system_feature_device_admin_unsupported)
             PackageManager.FEATURE_CAMERA_FLASH -> resourceProvider.getString(R.string.error_system_feature_camera_flash_unsupported)
             PackageManager.FEATURE_TELEPHONY, PackageManager.FEATURE_TELEPHONY_DATA -> resourceProvider.getString(
-                R.string.error_system_feature_telephony_unsupported
+                R.string.error_system_feature_telephony_unsupported,
             )
 
             else -> throw Exception("Don't know how to get error message for this system feature ${this.feature}")
@@ -91,7 +91,7 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         is KMError.InvalidNumber -> resourceProvider.getString(R.string.error_invalid_number)
         is KMError.NumberTooSmall -> resourceProvider.getString(
             R.string.error_number_too_small,
-            min
+            min,
         )
 
         is KMError.NumberTooBig -> resourceProvider.getString(R.string.error_number_too_big, max)
@@ -233,7 +233,8 @@ val KMError.isFixable: Boolean
         is SystemError.PermissionDenied,
         is KMError.ShizukuNotStarted,
         is KMError.CantDetectKeyEventsInPhoneCall,
-        is SystemBridgeError.Disconnected -> true
+        is SystemBridgeError.Disconnected,
+        -> true
 
         else -> false
     }

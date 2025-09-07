@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.base.detection
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
-import io.github.sds100.keymapper.base.detection.SimpleMappingController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

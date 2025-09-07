@@ -80,11 +80,11 @@ private fun LogScreen(
                 actions = {
                     OutlinedButton(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        onClick = onClearLogClick
+                        onClick = onClearLogClick,
                     ) {
                         Text(stringResource(R.string.action_clear_log))
                     }
-                }
+                },
             )
         },
         bottomBar = {
@@ -99,7 +99,7 @@ private fun LogScreen(
                 IconButton(onClick = onCopyToClipboardClick) {
                     Icon(
                         imageVector = Icons.Outlined.ContentCopy,
-                        contentDescription = stringResource(R.string.action_copy_log)
+                        contentDescription = stringResource(R.string.action_copy_log),
                     )
                 }
             }
@@ -143,7 +143,7 @@ private fun Content(
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(8.dp)
+            contentPadding = PaddingValues(8.dp),
         ) {
             items(logListItems, key = { it.id }) { item ->
                 val color = when (item.severity) {
@@ -158,14 +158,14 @@ private fun Content(
                         text = item.time,
                         color = color,
                         style = MaterialTheme.typography.bodySmall,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = item.message,
                         color = color,
                         style = MaterialTheme.typography.bodySmall,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }
@@ -186,26 +186,27 @@ private fun Preview() {
                             2,
                             "12:34:57.123",
                             LogSeverity.WARNING,
-                            "This is a warning message"
+                            "This is a warning message",
                         ),
                         LogListItem(
                             3,
                             "12:34:58.456",
                             LogSeverity.ERROR,
-                            "This is an error message. It is a bit long to see how it overflows inside the available space."
+                            "This is an error message. It is a bit long to see how it overflows inside the available space.",
                         ),
                         LogListItem(4, "12:34:59.000", LogSeverity.INFO, "Another info message"),
                         LogListItem(
                             5,
                             "12:35:00.000",
                             LogSeverity.ERROR,
-                            "Error recording trigger"
+                            "Error recording trigger",
                         ),
                         LogListItem(6, "12:35:01.000", LogSeverity.WARNING, "I am a warning"),
                         LogListItem(7, "12:35:02.000", LogSeverity.INFO, "I am some info..."),
                         LogListItem(8, "12:35:03.000", LogSeverity.INFO, "This more info"),
                     ),
                 )
-            })
+            },
+        )
     }
 }

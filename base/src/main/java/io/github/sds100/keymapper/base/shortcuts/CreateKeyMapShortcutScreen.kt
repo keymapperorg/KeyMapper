@@ -42,9 +42,9 @@ import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.groups.GroupBreadcrumbRow
 import io.github.sds100.keymapper.base.groups.GroupListItemModel
 import io.github.sds100.keymapper.base.groups.GroupRow
+import io.github.sds100.keymapper.base.home.KeyMapAppBarState
 import io.github.sds100.keymapper.base.home.KeyMapList
 import io.github.sds100.keymapper.base.home.KeyMapListState
-import io.github.sds100.keymapper.base.home.KeyMapAppBarState
 import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.base.trigger.TriggerError
 import io.github.sds100.keymapper.base.utils.ui.UnsavedChangesDialog

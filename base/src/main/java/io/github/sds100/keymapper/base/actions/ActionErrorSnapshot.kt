@@ -35,7 +35,7 @@ class LazyActionErrorSnapshot(
     private val ringtoneAdapter: RingtoneAdapter,
     private val buildConfigProvider: BuildConfigProvider,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
-    private val preferenceRepository: PreferenceRepository
+    private val preferenceRepository: PreferenceRepository,
 ) : ActionErrorSnapshot,
     IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(
         systemFeatureAdapter,

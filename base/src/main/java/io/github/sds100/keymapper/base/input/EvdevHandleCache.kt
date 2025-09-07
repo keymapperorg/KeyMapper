@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap
 class EvdevHandleCache(
     private val coroutineScope: CoroutineScope,
     private val devicesAdapter: DevicesAdapter,
-    private val systemBridgeConnectionManager: SystemBridgeConnectionManager
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
 ) {
     private val devicesByPath: MutableMap<String, EvdevDeviceHandle> = ConcurrentHashMap()
 
@@ -30,7 +30,7 @@ class EvdevHandleCache(
         coroutineScope.launch {
             combine(
                 devicesAdapter.connectedInputDevices,
-                systemBridgeConnectionManager.connectionState
+                systemBridgeConnectionManager.connectionState,
             ) { _, connectionState ->
                 if (connectionState !is SystemBridgeConnectionState.Connected) {
                     devicesByPath.clear()

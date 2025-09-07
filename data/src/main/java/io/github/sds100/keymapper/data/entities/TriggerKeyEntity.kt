@@ -145,7 +145,7 @@ sealed class TriggerKeyEntity : Parcelable {
                 clickType,
                 flags ?: 0,
                 uid,
-                scanCode
+                scanCode,
             )
         }
     }

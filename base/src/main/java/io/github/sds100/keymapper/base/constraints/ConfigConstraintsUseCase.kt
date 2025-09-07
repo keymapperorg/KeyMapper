@@ -20,7 +20,7 @@ import javax.inject.Inject
 @ViewModelScoped
 class ConfigConstraintsUseCaseImpl @Inject constructor(
     private val state: ConfigKeyMapState,
-    private val preferenceRepository: PreferenceRepository
+    private val preferenceRepository: PreferenceRepository,
 ) : ConfigConstraintsUseCase {
 
     override val keyMap: StateFlow<State<KeyMap>> = state.keyMap
@@ -95,7 +95,6 @@ class ConfigConstraintsUseCaseImpl @Inject constructor(
         }
     }
 
-
     private suspend fun getConstraintShortcuts(json: String?): List<Constraint> {
         if (json == null) {
             return emptyList()
@@ -112,7 +111,6 @@ class ConfigConstraintsUseCaseImpl @Inject constructor(
             return emptyList()
         }
     }
-
 }
 
 interface ConfigConstraintsUseCase {

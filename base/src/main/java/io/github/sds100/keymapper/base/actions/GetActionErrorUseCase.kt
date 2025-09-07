@@ -33,7 +33,7 @@ class GetActionErrorUseCaseImpl @Inject constructor(
     private val ringtoneAdapter: RingtoneAdapter,
     private val buildConfigProvider: BuildConfigProvider,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
-    private val preferenceRepository: PreferenceRepository
+    private val preferenceRepository: PreferenceRepository,
 ) : GetActionErrorUseCase {
 
     private val invalidateActionErrors = merge(
@@ -46,7 +46,7 @@ class GetActionErrorUseCaseImpl @Inject constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             merge(
                 systemBridgeConnectionManager.connectionState.drop(1).map { },
-                preferenceRepository.get(Keys.isSystemBridgeUsed)
+                preferenceRepository.get(Keys.isSystemBridgeUsed),
             )
         } else {
             emptyFlow()
@@ -72,7 +72,7 @@ class GetActionErrorUseCaseImpl @Inject constructor(
             ringtoneAdapter,
             buildConfigProvider,
             systemBridgeConnectionManager,
-            preferenceRepository
+            preferenceRepository,
         )
     }
 }

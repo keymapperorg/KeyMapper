@@ -159,7 +159,8 @@ class BackupManagerTest {
         val expectedGroup = GroupEntity(
             uid = "child_group",
             name = "Child",
-            parentUid = null, // The parent is null because it did not exist.
+            // The parent is null because it did not exist.
+            parentUid = null,
             lastOpenedDate = 0L,
         )
 

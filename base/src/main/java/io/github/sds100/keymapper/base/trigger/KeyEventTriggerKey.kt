@@ -21,7 +21,7 @@ data class KeyEventTriggerKey(
      */
     val requiresIme: Boolean = false,
     override val scanCode: Int? = null,
-    override val detectWithScanCodeUserSetting: Boolean = false
+    override val detectWithScanCodeUserSetting: Boolean = false,
 ) : TriggerKey(), KeyCodeTriggerKey {
 
     override val allowedLongPress: Boolean = true
@@ -83,7 +83,7 @@ data class KeyEventTriggerKey(
                 consumeEvent = consumeEvent,
                 requiresIme = requiresIme,
                 scanCode = entity.scanCode,
-                detectWithScanCodeUserSetting = detectWithScancode
+                detectWithScanCodeUserSetting = detectWithScancode,
             )
         }
 

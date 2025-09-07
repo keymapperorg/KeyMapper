@@ -16,7 +16,7 @@ val KeyMapperIcons.FakeShizuku: ImageVector
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
             viewportWidth = 24f,
-            viewportHeight = 24f
+            viewportHeight = 24f,
         ).apply {
             path(fill = SolidColor(Color(0xFF4053B9))) {
                 moveTo(12f, 24f)

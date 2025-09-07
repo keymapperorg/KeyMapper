@@ -20,7 +20,7 @@ val KeyMapperIcons.ProModeIconDisabled: ImageVector
             defaultWidth = 32.dp,
             defaultHeight = 32.dp,
             viewportWidth = 32f,
-            viewportHeight = 32f
+            viewportHeight = 32f,
         ).apply {
             group(
                 clipPathData = PathData {
@@ -29,7 +29,7 @@ val KeyMapperIcons.ProModeIconDisabled: ImageVector
                     lineTo(32f, 32f)
                     lineTo(0f, 32f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -39,7 +39,7 @@ val KeyMapperIcons.ProModeIconDisabled: ImageVector
                     lineTo(32f, 32f)
                     lineTo(0f, 32f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -49,7 +49,7 @@ val KeyMapperIcons.ProModeIconDisabled: ImageVector
                     lineTo(32f, 32f)
                     lineTo(-0f, 32f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -59,7 +59,7 @@ val KeyMapperIcons.ProModeIconDisabled: ImageVector
                     lineTo(32f, -0f)
                     lineTo(-0f, -0f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -69,7 +69,7 @@ val KeyMapperIcons.ProModeIconDisabled: ImageVector
                     lineTo(32f, 32f)
                     lineTo(0f, 32f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -79,7 +79,7 @@ val KeyMapperIcons.ProModeIconDisabled: ImageVector
                     lineTo(32f, -0f)
                     lineTo(-0f, -0f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -89,7 +89,7 @@ val KeyMapperIcons.ProModeIconDisabled: ImageVector
                     lineTo(32f, -0f)
                     lineTo(-0f, -0f)
                     close()
-                }
+                },
             ) {
             }
             path(fill = SolidColor(Color.Black)) {
@@ -148,7 +148,7 @@ val KeyMapperIcons.ProModeIconDisabled: ImageVector
                 stroke = SolidColor(Color.Black),
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
-                pathFillType = PathFillType.EvenOdd
+                pathFillType = PathFillType.EvenOdd,
             ) {
                 moveTo(26.664f, 5.353f)
                 lineTo(5.354f, 26.753f)

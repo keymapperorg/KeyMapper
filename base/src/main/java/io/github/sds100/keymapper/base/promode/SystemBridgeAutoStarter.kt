@@ -59,10 +59,12 @@ class SystemBridgeAutoStarter @Inject constructor(
     private val networkAdapter: NetworkAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val notificationAdapter: NotificationAdapter,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider {
     enum class AutoStartType {
-        ADB, SHIZUKU, ROOT
+        ADB,
+        SHIZUKU,
+        ROOT,
     }
 
     // Use flatMapLatest so that any calls to ADB are only done if strictly necessary.
@@ -78,7 +80,7 @@ class SystemBridgeAutoStarter @Inject constructor(
                     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         combine(
                             permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS),
-                            networkAdapter.isWifiConnected
+                            networkAdapter.isWifiConnected,
                         ) { isWriteSecureSettingsGranted, isWifiConnected ->
                             isWriteSecureSettingsGranted && isWifiConnected && setupController.isAdbPaired()
                         }.distinctUntilChanged()
@@ -225,7 +227,7 @@ class SystemBridgeAutoStarter @Inject constructor(
             priority = NotificationCompat.PRIORITY_MAX,
             onGoing = true,
             showIndeterminateProgress = true,
-            showOnLockscreen = false
+            showOnLockscreen = false,
         )
 
         notificationAdapter.showNotification(model)

@@ -97,5 +97,4 @@ class ConfigKeyMapViewModel @Inject constructor(
     fun onEnabledChanged(enabled: Boolean) {
         configTrigger.setEnabled(enabled)
     }
-
 }

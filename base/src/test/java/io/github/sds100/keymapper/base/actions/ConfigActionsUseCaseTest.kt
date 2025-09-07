@@ -37,7 +37,7 @@ class ConfigActionsUseCaseTest {
         configKeyMapState = ConfigKeyMapStateImpl(
             testScope,
             keyMapRepository = mock(),
-            floatingButtonRepository = mock()
+            floatingButtonRepository = mock(),
         )
 
         mockConfigConstraintsUseCase = mock()
@@ -46,7 +46,7 @@ class ConfigActionsUseCaseTest {
             state = configKeyMapState,
             preferenceRepository = mock(),
             configConstraints = mockConfigConstraintsUseCase,
-            defaultKeyMapOptionsUseCase = mock()
+            defaultKeyMapOptionsUseCase = mock(),
         )
     }
 
@@ -60,10 +60,10 @@ class ConfigActionsUseCaseTest {
                             keyCode = KeyEvent.KEYCODE_DPAD_LEFT,
                             device = KeyEventTriggerDevice.Internal,
                             clickType = ClickType.SHORT_PRESS,
-                            requiresIme = true
-                        )
-                    )
-                )
+                            requiresIme = true,
+                        ),
+                    ),
+                ),
             )
 
             useCase.addAction(ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_W))
@@ -150,5 +150,4 @@ class ConfigActionsUseCaseTest {
                     }
             }
         }
-
 }

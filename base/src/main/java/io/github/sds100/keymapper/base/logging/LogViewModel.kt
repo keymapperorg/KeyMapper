@@ -27,14 +27,14 @@ class LogViewModel @Inject constructor(
                     id = it.id,
                     time = dateFormat.format(it.time),
                     message = it.message,
-                    severity = it.severity
+                    severity = it.severity,
                 )
             }
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = emptyList()
+            initialValue = emptyList(),
         )
 
     fun onCopyToClipboardClick() {

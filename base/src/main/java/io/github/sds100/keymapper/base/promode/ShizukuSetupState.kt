@@ -4,5 +4,5 @@ enum class ShizukuSetupState {
     NOT_FOUND,
     INSTALLED,
     STARTED,
-    PERMISSION_GRANTED
+    PERMISSION_GRANTED,
 }

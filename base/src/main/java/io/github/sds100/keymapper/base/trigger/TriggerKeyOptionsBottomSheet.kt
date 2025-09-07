@@ -75,7 +75,6 @@ fun TriggerKeyOptionsBottomSheet(
         // Hide drag handle because other bottom sheets don't have it
         dragHandle = {},
     ) {
-
         val scope = rememberCoroutineScope()
 
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
@@ -89,16 +88,15 @@ fun TriggerKeyOptionsBottomSheet(
                     textAlign = TextAlign.Center,
                     text = stringResource(R.string.trigger_key_options_title),
                     style = MaterialTheme.typography.headlineMedium,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
 
                 HelpIconButton(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(horizontal = 8.dp)
+                        .padding(horizontal = 8.dp),
                 )
             }
-
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -110,7 +108,7 @@ fun TriggerKeyOptionsBottomSheet(
                     keyCode = state.keyCode,
                     scanCode = state.scanCode,
                     onSelectedChange = onScanCodeDetectionChanged,
-                    isCompact = isCompact
+                    isCompact = isCompact,
                 )
 
                 CheckBoxText(
@@ -129,7 +127,7 @@ fun TriggerKeyOptionsBottomSheet(
                     keyCode = state.keyCode,
                     scanCode = state.scanCode,
                     onSelectedChange = onScanCodeDetectionChanged,
-                    isCompact = isCompact
+                    isCompact = isCompact,
                 )
 
                 CheckBoxText(
@@ -144,8 +142,10 @@ fun TriggerKeyOptionsBottomSheet(
                 ClickTypeSection(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp), state, onSelectClickType,
-                    isCompact = isCompact
+                        .padding(horizontal = 16.dp),
+                    state,
+                    onSelectClickType,
+                    isCompact = isCompact,
                 )
 
                 Spacer(Modifier.height(8.dp))
@@ -292,7 +292,7 @@ fun TriggerKeyOptionsBottomSheet(
 
 @Composable
 private fun HelpIconButton(
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     val uriHandler = LocalUriHandler.current
     val helpUrl = stringResource(R.string.url_trigger_key_options_guide)
@@ -314,7 +314,7 @@ private fun ClickTypeSection(
     modifier: Modifier,
     state: TriggerKeyOptionsState,
     onSelectClickType: (ClickType) -> Unit,
-    isCompact: Boolean
+    isCompact: Boolean,
 ) {
     Column(modifier) {
         Text(
@@ -337,7 +337,7 @@ private fun ClickTypeSection(
             buttonStates = clickTypeButtonContent,
             selectedState = state.clickType,
             onStateSelected = onSelectClickType,
-            isCompact = isCompact
+            isCompact = isCompact,
         )
     }
 }
@@ -356,7 +356,7 @@ private fun ScanCodeDetectionButtonRow(
         Text(
             modifier = Modifier.padding(horizontal = 16.dp),
             text = stringResource(R.string.trigger_scan_code_detection_explanation),
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
         )
         Spacer(Modifier.height(8.dp))
 
@@ -370,7 +370,7 @@ private fun ScanCodeDetectionButtonRow(
                 stringResource(R.string.trigger_use_scan_code_button_disabled)
             } else {
                 stringResource(R.string.trigger_use_scan_code_button_enabled, scanCode)
-            }
+            },
         )
 
         KeyMapperSegmentedButtonRow(
@@ -381,7 +381,7 @@ private fun ScanCodeDetectionButtonRow(
             selectedState = isScanCodeSelected,
             onStateSelected = onSelectedChange,
             isCompact = isCompact,
-            isEnabled = isEnabled
+            isEnabled = isEnabled,
         )
     }
 }
@@ -425,7 +425,7 @@ private fun PreviewKeyEvent() {
                 keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 isScanCodeDetectionSelected = true,
-                isScanCodeSettingEnabled = true
+                isScanCodeSettingEnabled = true,
             ),
         )
     }
@@ -463,7 +463,7 @@ private fun PreviewKeyEventTiny() {
                 keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 isScanCodeDetectionSelected = true,
-                isScanCodeSettingEnabled = true
+                isScanCodeSettingEnabled = true,
             ),
         )
     }
@@ -489,7 +489,7 @@ private fun PreviewEvdev() {
                 keyCode = KeyEvent.KEYCODE_UNKNOWN,
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 isScanCodeDetectionSelected = true,
-                isScanCodeSettingEnabled = false
+                isScanCodeSettingEnabled = false,
             ),
         )
     }

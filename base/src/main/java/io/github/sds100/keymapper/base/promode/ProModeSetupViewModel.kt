@@ -19,13 +19,13 @@ import javax.inject.Inject
 class ProModeSetupViewModel @Inject constructor(
     private val useCase: SystemBridgeSetupUseCase,
     navigationProvider: NavigationProvider,
-    resourceProvider: ResourceProvider
+    resourceProvider: ResourceProvider,
 ) : ViewModel(), NavigationProvider by navigationProvider, ResourceProvider by resourceProvider {
     val setupState: StateFlow<State<ProModeSetupState>> =
         combine(useCase.nextSetupStep, useCase.isSetupAssistantEnabled, ::buildState).stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
-            State.Loading
+            State.Loading,
         )
 
     fun onStepButtonClick() {
@@ -57,7 +57,7 @@ class ProModeSetupViewModel @Inject constructor(
 
     private fun buildState(
         step: SystemBridgeSetupStep,
-        isSetupAssistantUserEnabled: Boolean
+        isSetupAssistantUserEnabled: Boolean,
     ): State.Data<ProModeSetupState> {
         // Uncheck the setup assistant if the accessibility service is disabled since it is
         // required for the setup assistant to work
@@ -73,8 +73,8 @@ class ProModeSetupViewModel @Inject constructor(
                 stepCount = SystemBridgeSetupStep.entries.size,
                 step = step,
                 isSetupAssistantChecked = isSetupAssistantChecked,
-                isSetupAssistantButtonEnabled = step != SystemBridgeSetupStep.ACCESSIBILITY_SERVICE && step != SystemBridgeSetupStep.STARTED
-            )
+                isSetupAssistantButtonEnabled = step != SystemBridgeSetupStep.ACCESSIBILITY_SERVICE && step != SystemBridgeSetupStep.STARTED,
+            ),
         )
     }
 }
@@ -84,5 +84,5 @@ data class ProModeSetupState(
     val stepCount: Int,
     val step: SystemBridgeSetupStep,
     val isSetupAssistantChecked: Boolean,
-    val isSetupAssistantButtonEnabled: Boolean
+    val isSetupAssistantButtonEnabled: Boolean,
 )

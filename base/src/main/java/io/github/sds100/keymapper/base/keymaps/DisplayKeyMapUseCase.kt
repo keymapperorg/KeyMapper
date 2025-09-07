@@ -58,7 +58,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
     private val getActionErrorUseCase: GetActionErrorUseCase,
     private val getConstraintErrorUseCase: GetConstraintErrorUseCase,
     private val buildConfigProvider: BuildConfigProvider,
-    private val navigationProvider: NavigationProvider
+    private val navigationProvider: NavigationProvider,
 ) : DisplayKeyMapUseCase,
     GetActionErrorUseCase by getActionErrorUseCase,
     GetConstraintErrorUseCase by getConstraintErrorUseCase {
@@ -195,7 +195,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
 
             is SystemBridgeError.Disconnected -> navigationProvider.navigate(
                 "fix_system_bridge",
-                NavDestination.ProMode
+                NavDestination.ProMode,
             )
 
             else -> Unit

@@ -84,7 +84,7 @@ fun ProModeScreen(
         modifier = modifier,
         onBackClick = viewModel::onBackClick,
         onHelpClick = { viewModel.showInfoCard() },
-        showHelpIcon = !viewModel.showInfoCard
+        showHelpIcon = !viewModel.showInfoCard,
     ) {
         Content(
             warningState = proModeWarningState,
@@ -121,16 +121,16 @@ private fun ProModeScreen(
                     AnimatedVisibility(
                         visible = showHelpIcon,
                         enter = fadeIn() + expandVertically(),
-                        exit = fadeOut() + shrinkVertically()
+                        exit = fadeOut() + shrinkVertically(),
                     ) {
                         IconButton(onClick = onHelpClick) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Rounded.HelpOutline,
-                                contentDescription = stringResource(R.string.pro_mode_info_card_show_content_description)
+                                contentDescription = stringResource(R.string.pro_mode_info_card_show_content_description),
                             )
                         }
                     }
-                }
+                },
             )
         },
         bottomBar = {
@@ -183,13 +183,13 @@ private fun Content(
         AnimatedVisibility(
             visible = showInfoCard,
             enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically()
+            exit = fadeOut() + shrinkVertically(),
         ) {
             ProModeInfoCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp),
-                onDismiss = onInfoCardDismiss
+                onDismiss = onInfoCardDismiss,
             )
         }
 
@@ -247,7 +247,7 @@ private fun LoadedContent(
     onSetupWithKeyMapperClick: () -> Unit,
     onRequestNotificationPermissionClick: () -> Unit = {},
     autoStartAtBoot: Boolean,
-    onAutoStartAtBootToggled: (Boolean) -> Unit = {}
+    onAutoStartAtBootToggled: (Boolean) -> Unit = {},
 ) {
     Column(modifier) {
         OptionsHeaderRow(
@@ -269,7 +269,7 @@ private fun LoadedContent(
                     Icon(
                         imageVector = Icons.Rounded.Notifications,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface
+                        tint = MaterialTheme.colorScheme.onSurface,
                     )
                 },
                 title = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_title),
@@ -280,7 +280,7 @@ private fun LoadedContent(
                     )
                 },
                 buttonText = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_button),
-                onButtonClick = onRequestNotificationPermissionClick
+                onButtonClick = onRequestNotificationPermissionClick,
             )
             Spacer(modifier = Modifier.height(8.dp))
         }
@@ -290,7 +290,7 @@ private fun LoadedContent(
                 EmergencyTipCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
+                        .padding(horizontal = 8.dp),
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -299,7 +299,7 @@ private fun LoadedContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp),
-                    onStopClick = onStopServiceClick
+                    onStopClick = onStopServiceClick,
                 )
             }
 
@@ -314,7 +314,7 @@ private fun LoadedContent(
                             Icon(
                                 imageVector = Icons.Rounded.Numbers,
                                 contentDescription = null,
-                                tint = LocalCustomColorsPalette.current.magiskTeal
+                                tint = LocalCustomColorsPalette.current.magiskTeal,
                             )
                         },
                         title = stringResource(R.string.pro_mode_root_detected_title),
@@ -326,7 +326,7 @@ private fun LoadedContent(
                         },
                         buttonText = stringResource(R.string.pro_mode_root_detected_button_start_service),
                         onButtonClick = onRootButtonClick,
-                        enabled = state.isNotificationPermissionGranted
+                        enabled = state.isNotificationPermissionGranted,
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -360,7 +360,7 @@ private fun LoadedContent(
                         },
                         buttonText = shizukuButtonText,
                         onButtonClick = onShizukuButtonClick,
-                        enabled = state.isNotificationPermissionGranted
+                        enabled = state.isNotificationPermissionGranted,
                     )
                 }
 
@@ -387,7 +387,7 @@ private fun LoadedContent(
                     content = {},
                     buttonText = setupKeyMapperText,
                     onButtonClick = onSetupWithKeyMapperClick,
-                    enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && state.isNotificationPermissionGranted
+                    enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && state.isNotificationPermissionGranted,
                 )
             }
         }
@@ -409,7 +409,7 @@ private fun LoadedContent(
             text = stringResource(R.string.summary_pref_pro_mode_auto_start_at_boot),
             icon = Icons.Rounded.RestartAlt,
             isChecked = autoStartAtBoot,
-            onCheckedChange = onAutoStartAtBootToggled
+            onCheckedChange = onAutoStartAtBootToggled,
         )
     }
 }
@@ -429,7 +429,7 @@ private fun WarningCard(
     OutlinedCard(
         modifier = modifier,
         border = borderStroke,
-        elevation = CardDefaults.elevatedCardElevation()
+        elevation = CardDefaults.elevatedCardElevation(),
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         Row(modifier = Modifier.padding(horizontal = 16.dp)) {
@@ -498,14 +498,14 @@ private fun ProModeStartedCard(
 ) {
     OutlinedCard(modifier) {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Spacer(modifier = Modifier.width(16.dp))
 
             Icon(
                 imageVector = Icons.Rounded.Check,
                 contentDescription = null,
-                tint = LocalCustomColorsPalette.current.green
+                tint = LocalCustomColorsPalette.current.green,
             )
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -515,14 +515,14 @@ private fun ProModeStartedCard(
                     .weight(1f)
                     .padding(vertical = 8.dp),
                 text = stringResource(R.string.pro_mode_service_started),
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium,
             )
 
             Spacer(modifier = Modifier.width(16.dp))
 
             TextButton(
                 onClick = onStopClick,
-                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
             ) {
                 Text(stringResource(R.string.pro_mode_stop_service_button))
             }
@@ -541,7 +541,7 @@ private fun SetupCard(
     content: @Composable () -> Unit,
     buttonText: String,
     onButtonClick: () -> Unit = {},
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
     OutlinedCard(modifier = modifier) {
         Spacer(modifier = Modifier.height(16.dp))
@@ -590,12 +590,12 @@ private fun SetupCard(
 
 @Composable
 private fun EmergencyTipCard(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     OutlinedCard(
         modifier = modifier,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
-        elevation = CardDefaults.elevatedCardElevation()
+        elevation = CardDefaults.elevatedCardElevation(),
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         Row(modifier = Modifier.padding(horizontal = 16.dp)) {
@@ -610,7 +610,7 @@ private fun EmergencyTipCard(
             Text(
                 text = stringResource(R.string.pro_mode_emergency_tip_title),
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             )
         }
 
@@ -629,18 +629,18 @@ private fun EmergencyTipCard(
 @Composable
 private fun ProModeInfoCard(
     modifier: Modifier = Modifier,
-    onDismiss: () -> Unit = {}
+    onDismiss: () -> Unit = {},
 ) {
     OutlinedCard(
         modifier = modifier,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-        elevation = CardDefaults.elevatedCardElevation()
+        elevation = CardDefaults.elevatedCardElevation(),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            verticalAlignment = Alignment.Top
+            verticalAlignment = Alignment.Top,
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Row {
@@ -655,7 +655,7 @@ private fun ProModeInfoCard(
                     Text(
                         text = stringResource(R.string.pro_mode_info_card_title),
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
                 }
 
@@ -671,12 +671,12 @@ private fun ProModeInfoCard(
 
             IconButton(
                 onClick = onDismiss,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(24.dp),
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Close,
                     contentDescription = stringResource(R.string.pro_mode_info_card_dismiss_content_description),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -695,12 +695,12 @@ private fun Preview() {
                         isRootGranted = false,
                         shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
                         isNotificationPermissionGranted = true,
-                    )
+                    ),
                 ),
                 showInfoCard = true,
                 onInfoCardDismiss = {},
                 autoStartAtBoot = false,
-                onAutoStartAtBootToggled = {}
+                onAutoStartAtBootToggled = {},
             )
         }
     }
@@ -717,7 +717,7 @@ private fun PreviewDark() {
                 showInfoCard = false,
                 onInfoCardDismiss = {},
                 autoStartAtBoot = true,
-                onAutoStartAtBootToggled = {}
+                onAutoStartAtBootToggled = {},
             )
         }
     }
@@ -736,7 +736,7 @@ private fun PreviewCountingDown() {
                 showInfoCard = true,
                 onInfoCardDismiss = {},
                 autoStartAtBoot = false,
-                onAutoStartAtBootToggled = {}
+                onAutoStartAtBootToggled = {},
             )
         }
     }
@@ -753,7 +753,7 @@ private fun PreviewStarted() {
                 showInfoCard = false,
                 onInfoCardDismiss = {},
                 autoStartAtBoot = false,
-                onAutoStartAtBootToggled = {}
+                onAutoStartAtBootToggled = {},
             )
         }
     }
@@ -771,12 +771,12 @@ private fun PreviewNotificationPermissionNotGranted() {
                         isRootGranted = true,
                         shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
                         isNotificationPermissionGranted = false,
-                    )
+                    ),
                 ),
                 showInfoCard = false,
                 onInfoCardDismiss = {},
                 autoStartAtBoot = false,
-                onAutoStartAtBootToggled = {}
+                onAutoStartAtBootToggled = {},
             )
         }
     }

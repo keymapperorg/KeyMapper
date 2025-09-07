@@ -33,7 +33,6 @@ class ConfigTriggerDelegate {
         return addTriggerKey(trigger, triggerKey)
     }
 
-
     fun addAssistantTriggerKey(trigger: Trigger, type: AssistantTriggerType): Trigger {
         val clickType = when (trigger.mode) {
             is TriggerMode.Parallel -> trigger.mode.clickType
@@ -75,7 +74,7 @@ class ConfigTriggerDelegate {
         scanCode: Int,
         device: KeyEventTriggerDevice,
         requiresIme: Boolean,
-        otherTriggerKeys: List<KeyCodeTriggerKey> = emptyList()
+        otherTriggerKeys: List<KeyCodeTriggerKey> = emptyList(),
     ): Trigger {
         val isPowerKey = isPowerButtonKey(keyCode, scanCode)
 
@@ -101,9 +100,9 @@ class ConfigTriggerDelegate {
         val logicallyEqualKeys = otherTriggerKeys.plus(trigger.keys)
             .filterIsInstance<KeyEventTriggerKey>()
             .filter {
-                it.keyCode == keyCode
-                    && it.scanCode != scanCode
-                    && it.device == device
+                it.keyCode == keyCode &&
+                    it.scanCode != scanCode &&
+                    it.device == device
             }
 
         val triggerKey = KeyEventTriggerKey(
@@ -113,7 +112,7 @@ class ConfigTriggerDelegate {
             scanCode = scanCode,
             consumeEvent = consumeKeyEvent,
             requiresIme = requiresIme,
-            detectWithScanCodeUserSetting = logicallyEqualKeys.isNotEmpty()
+            detectWithScanCodeUserSetting = logicallyEqualKeys.isNotEmpty(),
         )
 
         var newKeys = trigger.keys.filter { it !is EvdevTriggerKey }
@@ -136,7 +135,7 @@ class ConfigTriggerDelegate {
         keyCode: Int,
         scanCode: Int,
         device: EvdevDeviceInfo,
-        otherTriggerKeys: List<KeyCodeTriggerKey> = emptyList()
+        otherTriggerKeys: List<KeyCodeTriggerKey> = emptyList(),
     ): Trigger {
         val isPowerKey = isPowerButtonKey(keyCode, scanCode)
 
@@ -155,9 +154,9 @@ class ConfigTriggerDelegate {
         val conflictingKeys = otherTriggerKeys.plus(trigger.keys)
             .filterIsInstance<EvdevTriggerKey>()
             .filter {
-                it.keyCode == keyCode
-                    && it.scanCode != scanCode
-                    && it.device == device
+                it.keyCode == keyCode &&
+                    it.scanCode != scanCode &&
+                    it.device == device
             }
 
         val triggerKey = EvdevTriggerKey(
@@ -166,7 +165,7 @@ class ConfigTriggerDelegate {
             device = device,
             clickType = clickType,
             consumeEvent = true,
-            detectWithScanCodeUserSetting = conflictingKeys.isNotEmpty()
+            detectWithScanCodeUserSetting = conflictingKeys.isNotEmpty(),
         )
 
         var newKeys = trigger.keys.filter { it !is KeyEventTriggerKey }
@@ -186,7 +185,7 @@ class ConfigTriggerDelegate {
 
     private fun addTriggerKey(
         trigger: Trigger,
-        key: TriggerKey
+        key: TriggerKey,
     ): Trigger {
         // Check whether the trigger already contains the key because if so
         // then it must be converted to a sequence trigger.
@@ -263,7 +262,6 @@ class ConfigTriggerDelegate {
             .copy(keys = newKeys, mode = TriggerMode.Parallel(ClickType.SHORT_PRESS))
             .validate()
     }
-
 
     fun setSequenceTriggerMode(trigger: Trigger): Trigger {
         if (trigger.mode == TriggerMode.Sequence) return trigger
@@ -352,7 +350,7 @@ class ConfigTriggerDelegate {
     fun setTriggerKeyDevice(
         trigger: Trigger,
         keyUid: String,
-        device: KeyEventTriggerDevice
+        device: KeyEventTriggerDevice,
     ): Trigger {
         val newKeys = trigger.keys.map { key ->
             if (key.uid == keyUid) {
@@ -372,7 +370,7 @@ class ConfigTriggerDelegate {
     fun setTriggerKeyConsumeKeyEvent(
         trigger: Trigger,
         keyUid: String,
-        consumeKeyEvent: Boolean
+        consumeKeyEvent: Boolean,
     ): Trigger {
         val newKeys = trigger.keys.map { key ->
             if (key.uid == keyUid) {
@@ -400,7 +398,7 @@ class ConfigTriggerDelegate {
     fun setAssistantTriggerKeyType(
         trigger: Trigger,
         keyUid: String,
-        type: AssistantTriggerType
+        type: AssistantTriggerType,
     ): Trigger {
         val newKeys = trigger.keys.map { key ->
             if (key.uid == keyUid) {
@@ -420,7 +418,7 @@ class ConfigTriggerDelegate {
     fun setFingerprintGestureType(
         trigger: Trigger,
         keyUid: String,
-        type: FingerprintGestureType
+        type: FingerprintGestureType,
     ): Trigger {
         val newKeys = trigger.keys.map { key ->
             if (key.uid == keyUid) {
@@ -444,7 +442,7 @@ class ConfigTriggerDelegate {
     fun setVibrationDuration(
         trigger: Trigger,
         duration: Int,
-        defaultVibrateDuration: Int
+        defaultVibrateDuration: Int,
     ): Trigger {
         return if (duration == defaultVibrateDuration) {
             trigger.copy(vibrateDuration = null).validate()
@@ -472,7 +470,7 @@ class ConfigTriggerDelegate {
     fun setSequenceTriggerTimeout(
         trigger: Trigger,
         delay: Int,
-        defaultSequenceTriggerTimeout: Int
+        defaultSequenceTriggerTimeout: Int,
     ): Trigger {
         return if (delay == defaultSequenceTriggerTimeout) {
             trigger.copy(sequenceTriggerTimeout = null).validate()

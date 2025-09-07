@@ -50,7 +50,7 @@ fun AutomaticChangeImeSettingsScreen(modifier: Modifier = Modifier, viewModel: S
     AutomaticChangeImeSettingsScreen(
         modifier,
         onBackClick = viewModel::onBackClick,
-        snackbarHostState = snackbarHostState
+        snackbarHostState = snackbarHostState,
     ) {
         Content(
             state = state,
@@ -59,7 +59,7 @@ fun AutomaticChangeImeSettingsScreen(modifier: Modifier = Modifier, viewModel: S
             onChangeImeOnDeviceConnectToggled = viewModel::onChangeImeOnDeviceConnectToggled,
             onDevicesThatChangeImeClick = viewModel::onDevicesThatChangeImeClick,
             onToggleKeyboardOnToggleKeymapsToggled = viewModel::onToggleKeyboardOnToggleKeymapsToggled,
-            onShowToggleKeyboardNotificationClick = viewModel::onShowToggleKeyboardNotificationClick
+            onShowToggleKeyboardNotificationClick = viewModel::onShowToggleKeyboardNotificationClick,
         )
     }
 }
@@ -70,14 +70,14 @@ private fun AutomaticChangeImeSettingsScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Scaffold(
         modifier = modifier.displayCutoutPadding(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.title_pref_automatically_change_ime)) }
+                title = { Text(stringResource(R.string.title_pref_automatically_change_ime)) },
             )
         },
         bottomBar = {
@@ -124,7 +124,7 @@ private fun Content(
     Column(
         modifier
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp),
     ) {
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -133,7 +133,7 @@ private fun Content(
             text = stringResource(R.string.summary_pref_auto_change_ime_on_input_focus),
             icon = Icons.Rounded.SwapHoriz,
             isChecked = state.changeImeOnInputFocus,
-            onCheckedChange = onChangeImeOnInputFocusToggled
+            onCheckedChange = onChangeImeOnInputFocusToggled,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -143,7 +143,7 @@ private fun Content(
             text = stringResource(R.string.summary_pref_auto_change_ime_on_connection),
             icon = Icons.Rounded.SwapHoriz,
             isChecked = state.changeImeOnDeviceConnect,
-            onCheckedChange = onChangeImeOnDeviceConnectToggled
+            onCheckedChange = onChangeImeOnDeviceConnectToggled,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -152,7 +152,7 @@ private fun Content(
             title = stringResource(R.string.title_pref_automatically_change_ime_choose_devices),
             text = stringResource(R.string.summary_pref_automatically_change_ime_choose_devices),
             icon = Icons.Rounded.Devices,
-            onClick = onDevicesThatChangeImeClick
+            onClick = onDevicesThatChangeImeClick,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -162,7 +162,7 @@ private fun Content(
             text = stringResource(R.string.summary_pref_toggle_keyboard_on_toggle_keymaps),
             icon = Icons.Rounded.SwapHoriz,
             isChecked = state.toggleKeyboardOnToggleKeymaps,
-            onCheckedChange = onToggleKeyboardOnToggleKeymapsToggled
+            onCheckedChange = onToggleKeyboardOnToggleKeymapsToggled,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -170,7 +170,7 @@ private fun Content(
         OptionsHeaderRow(
             modifier = Modifier.fillMaxWidth(),
             icon = Icons.Outlined.Notifications,
-            text = stringResource(R.string.settings_section_notifications)
+            text = stringResource(R.string.settings_section_notifications),
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -180,7 +180,7 @@ private fun Content(
             text = stringResource(R.string.summary_pref_show_toast_when_auto_changing_ime),
             icon = Icons.Rounded.Notifications,
             isChecked = state.showToastWhenAutoChangingIme,
-            onCheckedChange = onShowToastWhenAutoChangingImeToggled
+            onCheckedChange = onShowToastWhenAutoChangingImeToggled,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -190,7 +190,7 @@ private fun Content(
                 title = stringResource(R.string.title_pref_show_toggle_keyboard_notification),
                 text = stringResource(R.string.summary_pref_show_toggle_keyboard_notification),
                 icon = Icons.Rounded.Notifications,
-                onClick = onShowToggleKeyboardNotificationClick
+                onClick = onShowToggleKeyboardNotificationClick,
             )
         } else {
             // For older Android versions, this would be a switch but since we're targeting newer versions
@@ -199,7 +199,7 @@ private fun Content(
                 title = stringResource(R.string.title_pref_show_toggle_keyboard_notification),
                 text = stringResource(R.string.summary_pref_show_toggle_keyboard_notification),
                 icon = Icons.Rounded.Notifications,
-                onClick = onShowToggleKeyboardNotificationClick
+                onClick = onShowToggleKeyboardNotificationClick,
             )
         }
 
@@ -213,7 +213,7 @@ private fun Preview() {
     KeyMapperTheme {
         AutomaticChangeImeSettingsScreen(modifier = Modifier.fillMaxSize(), onBackClick = {}) {
             Content(
-                state = AutomaticChangeImeSettingsState()
+                state = AutomaticChangeImeSettingsState(),
             )
         }
     }

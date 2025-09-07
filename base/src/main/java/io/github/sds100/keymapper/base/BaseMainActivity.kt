@@ -227,7 +227,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
         val gamepadEvent = KMGamePadEvent.fromMotionEvent(event) ?: return false
         val consume = inputEventHub.onInputEvent(
             gamepadEvent,
-            detectionSource = InputEventDetectionSource.INPUT_METHOD
+            detectionSource = InputEventDetectionSource.INPUT_METHOD,
         )
 
         return if (consume) {

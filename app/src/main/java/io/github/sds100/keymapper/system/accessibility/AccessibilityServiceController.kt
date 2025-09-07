@@ -29,7 +29,7 @@ class AccessibilityServiceController @AssistedInject constructor(
     keyEventRelayServiceWrapper: KeyEventRelayServiceWrapper,
     inputEventHub: InputEventHub,
     recordTriggerController: RecordTriggerController,
-    setupAssistantControllerFactory: SystemBridgeSetupAssistantController.Factory
+    setupAssistantControllerFactory: SystemBridgeSetupAssistantController.Factory,
 ) : BaseAccessibilityServiceController(
     service = service,
     accessibilityNodeRecorderFactory = accessibilityNodeRecorderFactory,
@@ -42,7 +42,7 @@ class AccessibilityServiceController @AssistedInject constructor(
     keyEventRelayServiceWrapper = keyEventRelayServiceWrapper,
     inputEventHub = inputEventHub,
     recordTriggerController = recordTriggerController,
-    setupAssistantControllerFactory = setupAssistantControllerFactory
+    setupAssistantControllerFactory = setupAssistantControllerFactory,
 ) {
     @AssistedFactory
     interface Factory {

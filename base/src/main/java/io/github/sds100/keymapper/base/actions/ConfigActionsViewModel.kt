@@ -52,7 +52,8 @@ class ConfigActionsViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
-) : ViewModel(), ActionOptionsBottomSheetCallback,
+) : ViewModel(),
+    ActionOptionsBottomSheetCallback,
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider {

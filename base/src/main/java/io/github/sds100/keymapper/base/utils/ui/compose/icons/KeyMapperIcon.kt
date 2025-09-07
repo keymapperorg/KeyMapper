@@ -18,7 +18,7 @@ val KeyMapperIcons.KeyMapperIcon: ImageVector
             defaultWidth = 61.637.dp,
             defaultHeight = 61.637.dp,
             viewportWidth = 61.637f,
-            viewportHeight = 61.637f
+            viewportHeight = 61.637f,
         ).apply {
             group(
                 clipPathData = PathData {
@@ -27,7 +27,7 @@ val KeyMapperIcons.KeyMapperIcon: ImageVector
                     lineTo(102f, 103.637f)
                     lineTo(-42f, 103.637f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -37,7 +37,7 @@ val KeyMapperIcons.KeyMapperIcon: ImageVector
                     lineTo(102f, 103.637f)
                     lineTo(-42f, 103.637f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -47,7 +47,7 @@ val KeyMapperIcons.KeyMapperIcon: ImageVector
                     lineTo(102.095f, 103.731f)
                     lineTo(-42.094f, 103.731f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -57,7 +57,7 @@ val KeyMapperIcons.KeyMapperIcon: ImageVector
                     lineTo(102.047f, 103.684f)
                     lineTo(-42.047f, 103.684f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -67,7 +67,7 @@ val KeyMapperIcons.KeyMapperIcon: ImageVector
                     lineTo(102.047f, 103.684f)
                     lineTo(-42.047f, 103.684f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -77,7 +77,7 @@ val KeyMapperIcons.KeyMapperIcon: ImageVector
                     lineTo(64.667f, 66.304f)
                     lineTo(-4.667f, 66.304f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -87,7 +87,7 @@ val KeyMapperIcons.KeyMapperIcon: ImageVector
                     lineTo(54f, 55.637f)
                     lineTo(6f, 55.637f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -97,7 +97,7 @@ val KeyMapperIcons.KeyMapperIcon: ImageVector
                     lineTo(64.8f, 55.771f)
                     lineTo(-4.8f, 55.771f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -107,7 +107,7 @@ val KeyMapperIcons.KeyMapperIcon: ImageVector
                     lineTo(54.133f, 66.437f)
                     lineTo(5.867f, 66.437f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -117,7 +117,7 @@ val KeyMapperIcons.KeyMapperIcon: ImageVector
                     lineTo(59.467f, 61.104f)
                     lineTo(0.533f, 61.104f)
                     close()
-                }
+                },
             ) {
             }
             group(
@@ -127,12 +127,12 @@ val KeyMapperIcons.KeyMapperIcon: ImageVector
                     lineTo(78f, 79.637f)
                     lineTo(-18f, 79.637f)
                     close()
-                }
+                },
             ) {
             }
             path(
                 fill = SolidColor(Color(0xFFD32F2F)),
-                strokeLineWidth = 1.27586f
+                strokeLineWidth = 1.27586f,
             ) {
                 moveTo(4f, 24.637f)
                 lineTo(33f, 24.637f)
@@ -147,7 +147,7 @@ val KeyMapperIcons.KeyMapperIcon: ImageVector
             }
             path(
                 fill = SolidColor(Color.White),
-                strokeLineWidth = 1.3f
+                strokeLineWidth = 1.3f,
             ) {
                 moveTo(21.9f, 37.514f)
                 lineTo(21.9f, 31.937f)
@@ -201,7 +201,7 @@ val KeyMapperIcons.KeyMapperIcon: ImageVector
             path(
                 fill = SolidColor(Color(0xFF212121)),
                 fillAlpha = 0f,
-                strokeLineWidth = 1.27586f
+                strokeLineWidth = 1.27586f,
             ) {
                 moveTo(22.717f, 4.354f)
                 curveTo(21.679f, 5.075f, 21f, 6.272f, 21f, 7.637f)
@@ -218,7 +218,7 @@ val KeyMapperIcons.KeyMapperIcon: ImageVector
             }
             path(
                 fill = SolidColor(Color(0xFF1565C0)),
-                strokeLineWidth = 1.27586f
+                strokeLineWidth = 1.27586f,
             ) {
                 moveTo(55f, 2.862f)
                 lineTo(26f, 2.862f)
@@ -233,7 +233,7 @@ val KeyMapperIcons.KeyMapperIcon: ImageVector
             }
             path(
                 fill = SolidColor(Color.White),
-                strokeLineWidth = 1.3f
+                strokeLineWidth = 1.3f,
             ) {
                 moveTo(51.4f, 11.437f)
                 lineTo(30.6f, 11.437f)

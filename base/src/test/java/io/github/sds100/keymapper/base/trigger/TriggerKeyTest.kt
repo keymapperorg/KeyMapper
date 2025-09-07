@@ -25,7 +25,7 @@ class TriggerKeyTest {
     fun tearDown() {
         mockedKeyEvent.close()
     }
-    
+
     @Test
     fun `User can not change scan code detection if the scan code is null`() {
         val triggerKey = KeyEventTriggerKey(
@@ -33,7 +33,7 @@ class TriggerKeyTest {
             scanCode = null,
             device = KeyEventTriggerDevice.Internal,
             clickType = ClickType.SHORT_PRESS,
-            detectWithScanCodeUserSetting = true
+            detectWithScanCodeUserSetting = true,
         )
         assertThat(triggerKey.isScanCodeDetectionUserConfigurable(), `is`(false))
     }
@@ -45,7 +45,7 @@ class TriggerKeyTest {
             scanCode = Scancode.KEY_VOLUMEDOWN,
             device = KeyEventTriggerDevice.Internal,
             clickType = ClickType.SHORT_PRESS,
-            detectWithScanCodeUserSetting = true
+            detectWithScanCodeUserSetting = true,
         )
         assertThat(triggerKey.isScanCodeDetectionUserConfigurable(), `is`(false))
     }
@@ -57,7 +57,7 @@ class TriggerKeyTest {
             scanCode = Scancode.KEY_VOLUMEDOWN,
             device = KeyEventTriggerDevice.Internal,
             clickType = ClickType.SHORT_PRESS,
-            detectWithScanCodeUserSetting = true
+            detectWithScanCodeUserSetting = true,
         )
         assertThat(triggerKey.isScanCodeDetectionUserConfigurable(), `is`(true))
     }
@@ -69,7 +69,7 @@ class TriggerKeyTest {
             scanCode = Scancode.KEY_VOLUMEDOWN,
             device = KeyEventTriggerDevice.Internal,
             clickType = ClickType.SHORT_PRESS,
-            detectWithScanCodeUserSetting = true
+            detectWithScanCodeUserSetting = true,
         )
         assertThat(triggerKey.detectWithScancode(), `is`(true))
     }
@@ -81,7 +81,7 @@ class TriggerKeyTest {
             scanCode = Scancode.KEY_VOLUMEDOWN,
             device = KeyEventTriggerDevice.Internal,
             clickType = ClickType.SHORT_PRESS,
-            detectWithScanCodeUserSetting = false
+            detectWithScanCodeUserSetting = false,
         )
         assertThat(triggerKey.detectWithScancode(), `is`(true))
     }
@@ -93,7 +93,7 @@ class TriggerKeyTest {
             scanCode = Scancode.KEY_VOLUMEDOWN,
             device = KeyEventTriggerDevice.Internal,
             clickType = ClickType.SHORT_PRESS,
-            detectWithScanCodeUserSetting = true
+            detectWithScanCodeUserSetting = true,
         )
         assertThat(triggerKey.detectWithScancode(), `is`(true))
     }
@@ -105,7 +105,7 @@ class TriggerKeyTest {
             scanCode = null,
             device = KeyEventTriggerDevice.Internal,
             clickType = ClickType.SHORT_PRESS,
-            detectWithScanCodeUserSetting = true
+            detectWithScanCodeUserSetting = true,
         )
         assertThat(triggerKey.detectWithScancode(), `is`(false))
     }
@@ -117,7 +117,7 @@ class TriggerKeyTest {
             scanCode = Scancode.KEY_VOLUMEDOWN,
             device = KeyEventTriggerDevice.Internal,
             clickType = ClickType.SHORT_PRESS,
-            detectWithScanCodeUserSetting = false
+            detectWithScanCodeUserSetting = false,
         )
         assertThat(triggerKey.detectWithScancode(), `is`(false))
     }

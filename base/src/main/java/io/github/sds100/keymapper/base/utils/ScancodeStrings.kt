@@ -570,7 +570,7 @@ object ScancodeStrings {
         Scancode.KEY_MACRO7 to "Macro 7",
         Scancode.KEY_MACRO8 to "Macro 8",
         Scancode.KEY_MACRO9 to "Macro 9",
-        Scancode.KEY_MACRO10 to "Macro 10"
+        Scancode.KEY_MACRO10 to "Macro 10",
     )
 
     fun getScancodeLabel(scancode: Int): String? {

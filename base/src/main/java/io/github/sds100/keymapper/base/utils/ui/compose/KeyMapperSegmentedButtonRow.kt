@@ -43,7 +43,7 @@ fun <T> KeyMapperSegmentedButtonRow(
         // The disabled border color of the inactive button is by default not greyed out enough
         SegmentedButtonDefaults.colors(
             disabledInactiveBorderColor =
-                SegmentedButtonDefaults.colors().inactiveBorderColor.copy(alpha = 0.5f),
+            SegmentedButtonDefaults.colors().inactiveBorderColor.copy(alpha = 0.5f),
         )
     }
 
@@ -66,9 +66,9 @@ fun <T> KeyMapperSegmentedButtonRow(
                     shape = SegmentedButtonDefaults.itemShape(
                         index = buttonStates.indexOf(content),
                         count = buttonStates.size,
-                        baseShape = MaterialTheme.shapes.extraSmall
+                        baseShape = MaterialTheme.shapes.extraSmall,
                     ),
-                    colors = colors
+                    colors = colors,
                 ) {
                     BasicText(
                         modifier = if (isUnselectedDisabled) Modifier.alpha(0.5f) else Modifier,
@@ -77,7 +77,7 @@ fun <T> KeyMapperSegmentedButtonRow(
                         overflow = TextOverflow.Ellipsis,
                         autoSize = TextAutoSize.StepBased(
                             maxFontSize = LocalTextStyle.current.fontSize,
-                            minFontSize = 10.sp
+                            minFontSize = 10.sp,
                         ),
                     )
                 }
@@ -96,7 +96,7 @@ fun <T> KeyMapperSegmentedButtonRow(
                         modifier = if (isUnselectedDisabled) Modifier.alpha(0.5f) else Modifier,
                         text = label,
                         maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }

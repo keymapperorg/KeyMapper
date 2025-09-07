@@ -58,7 +58,6 @@ class AndroidNotificationAdapter @Inject constructor(
                 }
             }
         }
-
     }
 
     init {
@@ -71,7 +70,7 @@ class AndroidNotificationAdapter @Inject constructor(
             ctx,
             broadcastReceiver,
             intentFilter,
-            ContextCompat.RECEIVER_EXPORTED
+            ContextCompat.RECEIVER_EXPORTED,
         )
     }
 
@@ -205,15 +204,15 @@ class AndroidNotificationAdapter @Inject constructor(
     }
 
     private fun createActionIntent(
-        notificationAction: KMNotificationAction
+        notificationAction: KMNotificationAction,
     ): PendingIntent {
         return when (notificationAction) {
             KMNotificationAction.Activity.AccessibilitySettings -> createActivityPendingIntent(
-                Settings.ACTION_ACCESSIBILITY_SETTINGS
+                Settings.ACTION_ACCESSIBILITY_SETTINGS,
             )
 
             is KMNotificationAction.Activity.MainActivity -> createMainActivityPendingIntent(
-                notificationAction.action
+                notificationAction.action,
             )
 
             is KMNotificationAction.Broadcast -> createBroadcastPendingIntent(notificationAction.intentAction.name)
@@ -230,7 +229,7 @@ class AndroidNotificationAdapter @Inject constructor(
             ctx,
             0,
             intent,
-            PendingIntent.FLAG_MUTABLE
+            PendingIntent.FLAG_MUTABLE,
         )
     }
 
@@ -243,7 +242,7 @@ class AndroidNotificationAdapter @Inject constructor(
             ctx,
             0,
             intent,
-            PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_IMMUTABLE,
         )
     }
 
@@ -254,7 +253,7 @@ class AndroidNotificationAdapter @Inject constructor(
             ctx,
             0,
             intent,
-            PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_IMMUTABLE,
         )
     }
 
@@ -267,7 +266,7 @@ class AndroidNotificationAdapter @Inject constructor(
             ctx,
             0,
             intent,
-            PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_IMMUTABLE,
         )
     }
 }

@@ -27,7 +27,6 @@ class ConfigTriggerDelegateTest {
 
     @Before
     fun before() {
-
         mockedKeyEvent = mockStatic(KeyEvent::class.java)
         mockedKeyEvent.`when`<Int> { KeyEvent.getMaxKeyCode() }.thenReturn(1000)
 
@@ -126,14 +125,14 @@ class ConfigTriggerDelegateTest {
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 device = KeyEventTriggerDevice.Internal,
                 clickType = ClickType.SHORT_PRESS,
-                detectWithScanCodeUserSetting = true
+                detectWithScanCodeUserSetting = true,
             ),
             KeyEventTriggerKey(
                 keyCode = KeyEvent.KEYCODE_VOLUME_UP,
                 scanCode = Scancode.KEY_VOLUMEUP,
                 device = KeyEventTriggerDevice.Internal,
                 clickType = ClickType.SHORT_PRESS,
-                detectWithScanCodeUserSetting = true
+                detectWithScanCodeUserSetting = true,
             ),
         )
 
@@ -158,12 +157,12 @@ class ConfigTriggerDelegateTest {
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 device = KeyEventTriggerDevice.Internal,
                 clickType = ClickType.SHORT_PRESS,
-                detectWithScanCodeUserSetting = true
+                detectWithScanCodeUserSetting = true,
             ),
             AssistantTriggerKey(
                 type = AssistantTriggerType.ANY,
                 clickType = ClickType.SHORT_PRESS,
-            )
+            ),
         )
 
         val newTrigger = delegate.addKeyEventTriggerKey(
@@ -186,7 +185,7 @@ class ConfigTriggerDelegateTest {
             scanCode = Scancode.KEY_VOLUMEDOWN,
             device = KeyEventTriggerDevice.Internal,
             clickType = ClickType.SHORT_PRESS,
-            detectWithScanCodeUserSetting = true
+            detectWithScanCodeUserSetting = true,
         )
 
         val trigger = sequenceTrigger(
@@ -196,7 +195,7 @@ class ConfigTriggerDelegateTest {
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 device = KeyEventTriggerDevice.Internal,
                 clickType = ClickType.SHORT_PRESS,
-                detectWithScanCodeUserSetting = true
+                detectWithScanCodeUserSetting = true,
             ),
         )
 
@@ -214,7 +213,7 @@ class ConfigTriggerDelegateTest {
             scanCode = Scancode.KEY_VOLUMEDOWN,
             device = KeyEventTriggerDevice.Internal,
             clickType = ClickType.SHORT_PRESS,
-            detectWithScanCodeUserSetting = false
+            detectWithScanCodeUserSetting = false,
         )
         val trigger = parallelTrigger(
             KeyEventTriggerKey(
@@ -222,9 +221,9 @@ class ConfigTriggerDelegateTest {
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 device = KeyEventTriggerDevice.Internal,
                 clickType = ClickType.SHORT_PRESS,
-                detectWithScanCodeUserSetting = true
+                detectWithScanCodeUserSetting = true,
             ),
-            key
+            key,
         )
 
         val newTrigger = delegate.setScanCodeDetectionEnabled(trigger, key.uid, true)
@@ -240,7 +239,7 @@ class ConfigTriggerDelegateTest {
             scanCode = Scancode.KEY_VOLUMEDOWN,
             device = KeyEventTriggerDevice.Internal,
             clickType = ClickType.SHORT_PRESS,
-            detectWithScanCodeUserSetting = true
+            detectWithScanCodeUserSetting = true,
         )
         val trigger = sequenceTrigger(
             KeyEventTriggerKey(
@@ -248,16 +247,16 @@ class ConfigTriggerDelegateTest {
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 device = KeyEventTriggerDevice.Internal,
                 clickType = ClickType.SHORT_PRESS,
-                detectWithScanCodeUserSetting = false
+                detectWithScanCodeUserSetting = false,
             ),
-            key
+            key,
         )
 
         val newTrigger = delegate.setScanCodeDetectionEnabled(trigger, key.uid, true)
         assertThat(newTrigger.keys, hasSize(2))
         assertThat(
             newTrigger.keys,
-            contains(trigger.keys[0], key.copy(detectWithScanCodeUserSetting = true))
+            contains(trigger.keys[0], key.copy(detectWithScanCodeUserSetting = true)),
         )
     }
 
@@ -268,7 +267,7 @@ class ConfigTriggerDelegateTest {
             scanCode = Scancode.KEY_VOLUMEUP,
             device = KeyEventTriggerDevice.Internal,
             clickType = ClickType.SHORT_PRESS,
-            detectWithScanCodeUserSetting = false
+            detectWithScanCodeUserSetting = false,
         )
 
         val trigger = parallelTrigger(
@@ -277,9 +276,9 @@ class ConfigTriggerDelegateTest {
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 device = KeyEventTriggerDevice.Internal,
                 clickType = ClickType.SHORT_PRESS,
-                detectWithScanCodeUserSetting = false
+                detectWithScanCodeUserSetting = false,
             ),
-            key
+            key,
         )
 
         val newTrigger = delegate.setScanCodeDetectionEnabled(trigger, key.uid, false)
@@ -288,7 +287,6 @@ class ConfigTriggerDelegateTest {
         assertThat(newTrigger.keys[1], `is`(key.copy(detectWithScanCodeUserSetting = false)))
     }
 
-
     @Test
     fun `Do not remove other keys from different devices when enabling scan code detection`() {
         val key = KeyEventTriggerKey(
@@ -296,7 +294,7 @@ class ConfigTriggerDelegateTest {
             scanCode = Scancode.KEY_VOLUMEDOWN,
             device = KeyEventTriggerDevice.External(descriptor = "keyboard0", name = "Keyboard"),
             clickType = ClickType.SHORT_PRESS,
-            detectWithScanCodeUserSetting = false
+            detectWithScanCodeUserSetting = false,
         )
         val trigger = parallelTrigger(
             KeyEventTriggerKey(
@@ -304,19 +302,18 @@ class ConfigTriggerDelegateTest {
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 device = KeyEventTriggerDevice.Internal,
                 clickType = ClickType.SHORT_PRESS,
-                detectWithScanCodeUserSetting = false
+                detectWithScanCodeUserSetting = false,
             ),
-            key
+            key,
         )
 
         val newTrigger = delegate.setScanCodeDetectionEnabled(trigger, key.uid, true)
         assertThat(newTrigger.keys, hasSize(2))
         assertThat(
             newTrigger.keys,
-            contains(trigger.keys[0], key.copy(detectWithScanCodeUserSetting = true))
+            contains(trigger.keys[0], key.copy(detectWithScanCodeUserSetting = true)),
         )
     }
-
 
     /**
      * Issue #761
@@ -338,7 +335,7 @@ class ConfigTriggerDelegateTest {
                 keyCode = KeyEvent.KEYCODE_VOLUME_UP,
                 scanCode = 123,
                 device = device1,
-                clickType = ClickType.SHORT_PRESS
+                clickType = ClickType.SHORT_PRESS,
             ),
         )
 
@@ -346,9 +343,10 @@ class ConfigTriggerDelegateTest {
             trigger = Trigger(),
             keyCode = KeyEvent.KEYCODE_VOLUME_UP,
             scanCode = 124,
-            device = device2, // Different device
+            // Different device
+            device = device2,
             requiresIme = false,
-            otherTriggers
+            otherTriggers,
         )
 
         assertThat(
@@ -377,7 +375,7 @@ class ConfigTriggerDelegateTest {
                 keyCode = KeyEvent.KEYCODE_VOLUME_UP,
                 scanCode = 123,
                 device = device1,
-                clickType = ClickType.SHORT_PRESS
+                clickType = ClickType.SHORT_PRESS,
             ),
         )
 
@@ -385,7 +383,8 @@ class ConfigTriggerDelegateTest {
             trigger = trigger,
             keyCode = KeyEvent.KEYCODE_VOLUME_UP,
             scanCode = 124,
-            device = device2, // Different device
+            // Different device
+            device = device2,
             requiresIme = false,
         )
 
@@ -420,7 +419,7 @@ class ConfigTriggerDelegateTest {
             keyCode = KeyEvent.KEYCODE_VOLUME_UP,
             scanCode = 124,
             device = device,
-            otherTriggers
+            otherTriggers,
         )
 
         assertThat(
@@ -444,7 +443,7 @@ class ConfigTriggerDelegateTest {
                 keyCode = KeyEvent.KEYCODE_VOLUME_UP,
                 scanCode = 123,
                 device = device,
-                clickType = ClickType.SHORT_PRESS
+                clickType = ClickType.SHORT_PRESS,
             ),
         )
 
@@ -454,7 +453,7 @@ class ConfigTriggerDelegateTest {
             scanCode = 124,
             device = device,
             requiresIme = false,
-            otherTriggers
+            otherTriggers,
         )
 
         assertThat(
@@ -478,7 +477,7 @@ class ConfigTriggerDelegateTest {
                 keyCode = KeyEvent.KEYCODE_VOLUME_UP,
                 scanCode = 123,
                 device = device,
-                clickType = ClickType.SHORT_PRESS
+                clickType = ClickType.SHORT_PRESS,
             ),
         )
 
@@ -560,7 +559,7 @@ class ConfigTriggerDelegateTest {
                     vendor = 1,
                     product = 2,
                 ),
-            )
+            ),
         )
 
         val newTrigger = delegate.addKeyEventTriggerKey(
@@ -704,9 +703,9 @@ class ConfigTriggerDelegateTest {
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 clickType = ClickType.SHORT_PRESS,
                 device = device,
-                detectWithScanCodeUserSetting = true
+                detectWithScanCodeUserSetting = true,
             ),
-            AssistantTriggerKey(type = AssistantTriggerType.ANY, clickType = ClickType.SHORT_PRESS)
+            AssistantTriggerKey(type = AssistantTriggerType.ANY, clickType = ClickType.SHORT_PRESS),
         )
 
         val newTrigger = delegate.addEvdevTriggerKey(
@@ -734,8 +733,8 @@ class ConfigTriggerDelegateTest {
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 clickType = ClickType.SHORT_PRESS,
                 device = device,
-                detectWithScanCodeUserSetting = true
-            )
+                detectWithScanCodeUserSetting = true,
+            ),
         )
 
         val newTrigger = delegate.addEvdevTriggerKey(
@@ -828,7 +827,7 @@ class ConfigTriggerDelegateTest {
 
         val triggerWithAssistant = delegate.addAssistantTriggerKey(
             trigger = triggerWithKeyEvent,
-            type = AssistantTriggerType.ANY
+            type = AssistantTriggerType.ANY,
         )
 
         val finalTrigger = delegate.setTriggerDoublePress(triggerWithAssistant)
@@ -852,7 +851,7 @@ class ConfigTriggerDelegateTest {
 
         val triggerWithAssistant = delegate.addAssistantTriggerKey(
             trigger = triggerWithKeyEvent,
-            type = AssistantTriggerType.ANY
+            type = AssistantTriggerType.ANY,
         )
 
         val finalTrigger = delegate.setTriggerLongPress(triggerWithAssistant)
@@ -868,7 +867,7 @@ class ConfigTriggerDelegateTest {
 
         val triggerWithAssistant = delegate.addAssistantTriggerKey(
             trigger = emptyTrigger,
-            type = AssistantTriggerType.ANY
+            type = AssistantTriggerType.ANY,
         )
 
         val finalTrigger = delegate.setTriggerDoublePress(triggerWithAssistant)
@@ -883,7 +882,7 @@ class ConfigTriggerDelegateTest {
 
         val triggerWithAssistant = delegate.addAssistantTriggerKey(
             trigger = emptyTrigger,
-            type = AssistantTriggerType.ANY
+            type = AssistantTriggerType.ANY,
         )
 
         val finalTrigger = delegate.setTriggerLongPress(triggerWithAssistant)
@@ -908,7 +907,7 @@ class ConfigTriggerDelegateTest {
 
         val finalTrigger = delegate.addAssistantTriggerKey(
             trigger = triggerWithDoublePress,
-            type = AssistantTriggerType.ANY
+            type = AssistantTriggerType.ANY,
         )
 
         assertThat(finalTrigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
@@ -932,7 +931,7 @@ class ConfigTriggerDelegateTest {
 
         val finalTrigger = delegate.addFingerprintGesture(
             trigger = triggerWithDoublePress,
-            type = FingerprintGestureType.SWIPE_UP
+            type = FingerprintGestureType.SWIPE_UP,
         )
 
         assertThat(finalTrigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
@@ -956,7 +955,7 @@ class ConfigTriggerDelegateTest {
 
         val finalTrigger = delegate.addAssistantTriggerKey(
             trigger = triggerWithLongPress,
-            type = AssistantTriggerType.ANY
+            type = AssistantTriggerType.ANY,
         )
 
         assertThat(finalTrigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
@@ -980,7 +979,7 @@ class ConfigTriggerDelegateTest {
 
         val finalTrigger = delegate.addFingerprintGesture(
             trigger = triggerWithLongPress,
-            type = FingerprintGestureType.SWIPE_UP
+            type = FingerprintGestureType.SWIPE_UP,
         )
 
         assertThat(finalTrigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
@@ -1005,12 +1004,12 @@ class ConfigTriggerDelegateTest {
 
         val triggerWithVoiceAssistant = delegate.addAssistantTriggerKey(
             trigger = triggerWithKeyEvent,
-            type = AssistantTriggerType.VOICE
+            type = AssistantTriggerType.VOICE,
         )
 
         val triggerWithDeviceAssistant = delegate.addAssistantTriggerKey(
             trigger = triggerWithVoiceAssistant,
-            type = AssistantTriggerType.DEVICE
+            type = AssistantTriggerType.DEVICE,
         )
 
         val finalTrigger = delegate.setParallelTriggerMode(triggerWithDeviceAssistant)
@@ -1037,12 +1036,12 @@ class ConfigTriggerDelegateTest {
 
         val triggerWithDeviceAssistant = delegate.addAssistantTriggerKey(
             trigger = triggerWithKeyEvent,
-            type = AssistantTriggerType.DEVICE
+            type = AssistantTriggerType.DEVICE,
         )
 
         val triggerWithVoiceAssistant = delegate.addAssistantTriggerKey(
             trigger = triggerWithDeviceAssistant,
-            type = AssistantTriggerType.VOICE
+            type = AssistantTriggerType.VOICE,
         )
 
         val finalTrigger = delegate.setParallelTriggerMode(triggerWithVoiceAssistant)
@@ -1079,7 +1078,7 @@ class ConfigTriggerDelegateTest {
 
         val finalTrigger = delegate.addAssistantTriggerKey(
             trigger = triggerWithLongPress,
-            type = AssistantTriggerType.ANY
+            type = AssistantTriggerType.ANY,
         )
 
         assertThat(finalTrigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
@@ -1101,7 +1100,7 @@ class ConfigTriggerDelegateTest {
 
         val finalTrigger = delegate.addAssistantTriggerKey(
             trigger = triggerWithDoublePress,
-            type = AssistantTriggerType.ANY
+            type = AssistantTriggerType.ANY,
         )
 
         assertThat(finalTrigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
@@ -1123,7 +1122,7 @@ class ConfigTriggerDelegateTest {
 
         val finalTrigger = delegate.addAssistantTriggerKey(
             trigger = triggerWithLongPress,
-            type = AssistantTriggerType.ANY
+            type = AssistantTriggerType.ANY,
         )
 
         assertThat(finalTrigger.mode, `is`(TriggerMode.Parallel(clickType = ClickType.SHORT_PRESS)))
@@ -1207,7 +1206,6 @@ class ConfigTriggerDelegateTest {
         assertThat((trigger.keys[0] as KeyEventTriggerKey).consumeEvent, `is`(true))
     }
 
-
     @Test
     fun `Remove keys with same key code from the same internal device when converting to a parallel trigger`() {
         val key = KeyEventTriggerKey(
@@ -1215,7 +1213,7 @@ class ConfigTriggerDelegateTest {
             scanCode = Scancode.KEY_VOLUMEDOWN,
             device = KeyEventTriggerDevice.Internal,
             clickType = ClickType.SHORT_PRESS,
-            detectWithScanCodeUserSetting = false
+            detectWithScanCodeUserSetting = false,
         )
 
         val trigger = sequenceTrigger(
@@ -1225,7 +1223,7 @@ class ConfigTriggerDelegateTest {
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 device = KeyEventTriggerDevice.Internal,
                 clickType = ClickType.SHORT_PRESS,
-                detectWithScanCodeUserSetting = false
+                detectWithScanCodeUserSetting = false,
             ),
         )
 
@@ -1242,17 +1240,17 @@ class ConfigTriggerDelegateTest {
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 device = KeyEventTriggerDevice.Internal,
                 clickType = ClickType.SHORT_PRESS,
-                detectWithScanCodeUserSetting = false
+                detectWithScanCodeUserSetting = false,
             ),
             KeyEventTriggerKey(
                 keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 device = KeyEventTriggerDevice.External(
                     descriptor = "keyboard0",
-                    name = "Keyboard"
+                    name = "Keyboard",
                 ),
                 clickType = ClickType.SHORT_PRESS,
-                detectWithScanCodeUserSetting = false
+                detectWithScanCodeUserSetting = false,
             ),
         )
 
@@ -1269,14 +1267,14 @@ class ConfigTriggerDelegateTest {
                 scanCode = Scancode.KEY_VOLUMEUP,
                 device = KeyEventTriggerDevice.Internal,
                 clickType = ClickType.SHORT_PRESS,
-                detectWithScanCodeUserSetting = false
+                detectWithScanCodeUserSetting = false,
             ),
             KeyEventTriggerKey(
                 keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 device = KeyEventTriggerDevice.Internal,
                 clickType = ClickType.SHORT_PRESS,
-                detectWithScanCodeUserSetting = false
+                detectWithScanCodeUserSetting = false,
             ),
         )
 
@@ -1292,7 +1290,7 @@ class ConfigTriggerDelegateTest {
             scanCode = Scancode.KEY_VOLUMEDOWN,
             device = KeyEventTriggerDevice.Internal,
             clickType = ClickType.SHORT_PRESS,
-            detectWithScanCodeUserSetting = false
+            detectWithScanCodeUserSetting = false,
         )
 
         val anyDeviceKey = KeyEventTriggerKey(
@@ -1300,7 +1298,7 @@ class ConfigTriggerDelegateTest {
             scanCode = Scancode.KEY_VOLUMEDOWN,
             device = KeyEventTriggerDevice.Any,
             clickType = ClickType.SHORT_PRESS,
-            detectWithScanCodeUserSetting = false
+            detectWithScanCodeUserSetting = false,
         )
 
         val trigger = sequenceTrigger(internalKey, anyDeviceKey)
@@ -1317,10 +1315,10 @@ class ConfigTriggerDelegateTest {
             scanCode = Scancode.KEY_VOLUMEDOWN,
             device = KeyEventTriggerDevice.External(
                 descriptor = "keyboard0",
-                name = "Keyboard"
+                name = "Keyboard",
             ),
             clickType = ClickType.SHORT_PRESS,
-            detectWithScanCodeUserSetting = false
+            detectWithScanCodeUserSetting = false,
         )
 
         val trigger = sequenceTrigger(
@@ -1330,10 +1328,10 @@ class ConfigTriggerDelegateTest {
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 device = KeyEventTriggerDevice.External(
                     descriptor = "keyboard0",
-                    name = "Keyboard"
+                    name = "Keyboard",
                 ),
                 clickType = ClickType.SHORT_PRESS,
-                detectWithScanCodeUserSetting = false
+                detectWithScanCodeUserSetting = false,
             ),
         )
 
@@ -1350,38 +1348,38 @@ class ConfigTriggerDelegateTest {
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 device = KeyEventTriggerDevice.Any,
                 clickType = ClickType.SHORT_PRESS,
-                detectWithScanCodeUserSetting = false
+                detectWithScanCodeUserSetting = false,
             ),
             KeyEventTriggerKey(
                 keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 device = KeyEventTriggerDevice.Any,
                 clickType = ClickType.SHORT_PRESS,
-                detectWithScanCodeUserSetting = false
+                detectWithScanCodeUserSetting = false,
             ),
             KeyEventTriggerKey(
                 keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 device = KeyEventTriggerDevice.Internal,
                 clickType = ClickType.SHORT_PRESS,
-                detectWithScanCodeUserSetting = false
+                detectWithScanCodeUserSetting = false,
             ),
             KeyEventTriggerKey(
                 keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 device = KeyEventTriggerDevice.External(
                     descriptor = "keyboard0",
-                    name = "Keyboard"
+                    name = "Keyboard",
                 ),
                 clickType = ClickType.SHORT_PRESS,
-                detectWithScanCodeUserSetting = false
+                detectWithScanCodeUserSetting = false,
             ),
             KeyEventTriggerKey(
                 keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
                 scanCode = Scancode.KEY_VOLUMEDOWN,
                 device = KeyEventTriggerDevice.Any,
                 clickType = ClickType.SHORT_PRESS,
-                detectWithScanCodeUserSetting = false
+                detectWithScanCodeUserSetting = false,
             ),
         )
 

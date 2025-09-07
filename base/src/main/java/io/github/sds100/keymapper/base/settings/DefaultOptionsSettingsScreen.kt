@@ -46,7 +46,7 @@ fun DefaultOptionsSettingsScreen(modifier: Modifier = Modifier, viewModel: Setti
     ) {
         Content(
             state = state,
-            callback = viewModel
+            callback = viewModel,
         )
     }
 }
@@ -56,7 +56,7 @@ fun DefaultOptionsSettingsScreen(modifier: Modifier = Modifier, viewModel: Setti
 fun DefaultOptionsSettingsScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Scaffold(
         modifier = modifier.displayCutoutPadding(),
@@ -215,7 +215,7 @@ private fun Preview() {
     KeyMapperTheme {
         DefaultOptionsSettingsScreen(modifier = Modifier.fillMaxSize(), onBackClick = {}) {
             Content(
-                state = DefaultSettingsState()
+                state = DefaultSettingsState(),
             )
         }
     }

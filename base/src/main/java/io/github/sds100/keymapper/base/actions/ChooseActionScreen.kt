@@ -119,7 +119,7 @@ private fun ChooseActionScreen(
                     end = endPadding,
                 ),
 
-            ) {
+        ) {
             when (state) {
                 State.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
 
@@ -224,7 +224,7 @@ private fun PreviewList() {
                                 icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
                             ),
 
-                            ),
+                        ),
                     ),
                     SimpleListItemGroup(
                         header = "Connectivity",
@@ -245,7 +245,7 @@ private fun PreviewList() {
                                 isEnabled = false,
                             ),
 
-                            ),
+                        ),
                     ),
                 ),
             ),
@@ -274,7 +274,7 @@ private fun PreviewGrid() {
                                 icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
                             ),
 
-                            ),
+                        ),
                     ),
                     SimpleListItemGroup(
                         header = "Connectivity",
@@ -304,10 +304,10 @@ private fun PreviewGrid() {
                                 isEnabled = false,
                             ),
 
-                            ),
+                        ),
                     ),
 
-                    ),
+                ),
             ),
         )
     }

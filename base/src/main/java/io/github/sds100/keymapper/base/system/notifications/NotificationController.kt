@@ -158,7 +158,7 @@ class NotificationController @Inject constructor(
                 KMNotificationAction.IntentAction.RESUME_KEY_MAPS -> pauseMappings.resume()
                 KMNotificationAction.IntentAction.PAUSE_KEY_MAPS -> pauseMappings.pause()
                 KMNotificationAction.IntentAction.DISMISS_TOGGLE_KEY_MAPS_NOTIFICATION -> manageNotifications.dismiss(
-                    ID_TOGGLE_MAPPINGS
+                    ID_TOGGLE_MAPPINGS,
                 )
 
                 KMNotificationAction.IntentAction.STOP_ACCESSIBILITY_SERVICE -> controlAccessibilityService.stopService()
@@ -267,7 +267,7 @@ class NotificationController @Inject constructor(
             actions = listOf(
                 KMNotificationAction.Broadcast.ResumeKeyMaps to getString(R.string.notification_action_resume),
                 KMNotificationAction.Broadcast.DismissToggleKeyMapsNotification to getString(R.string.notification_action_dismiss),
-                stopServiceAction to getString(R.string.notification_action_stop_acc_service)
+                stopServiceAction to getString(R.string.notification_action_stop_acc_service),
             ),
         )
     }
@@ -295,7 +295,7 @@ class NotificationController @Inject constructor(
             actions = listOf(
                 KMNotificationAction.Broadcast.PauseKeyMaps to getString(R.string.notification_action_pause),
                 KMNotificationAction.Broadcast.DismissToggleKeyMapsNotification to getString(R.string.notification_action_dismiss),
-                stopServiceAction to getString(R.string.notification_action_stop_acc_service)
+                stopServiceAction to getString(R.string.notification_action_stop_acc_service),
             ),
         )
     }
@@ -323,7 +323,7 @@ class NotificationController @Inject constructor(
             actions = listOf(
                 KMNotificationAction.Broadcast.DismissToggleKeyMapsNotification to getString(R.string.notification_action_dismiss),
 
-                ),
+            ),
         )
     }
 
@@ -349,7 +349,7 @@ class NotificationController @Inject constructor(
             priority = NotificationCompat.PRIORITY_MIN,
             bigTextStyle = true,
             actions = listOf(
-                restartServiceAction to getString(R.string.notification_action_restart_accessibility_service)
+                restartServiceAction to getString(R.string.notification_action_restart_accessibility_service),
             ),
         )
     }
@@ -364,7 +364,7 @@ class NotificationController @Inject constructor(
         onGoing = true,
         priority = NotificationCompat.PRIORITY_MIN,
         actions = listOf(
-            KMNotificationAction.Broadcast.TogglerKeyMapperIme to getString(R.string.notification_toggle_keyboard_action)
+            KMNotificationAction.Broadcast.TogglerKeyMapperIme to getString(R.string.notification_toggle_keyboard_action),
         ),
     )
 
@@ -394,7 +394,6 @@ class NotificationController @Inject constructor(
         bigTextStyle = true,
     )
 
-
     private fun showSystemBridgeStartedNotification() {
         val model = NotificationModel(
             id = ID_SYSTEM_BRIDGE_STATUS,
@@ -405,10 +404,9 @@ class NotificationController @Inject constructor(
             onGoing = false,
             showOnLockscreen = false,
             autoCancel = true,
-            timeout = 5000
+            timeout = 5000,
         )
 
         manageNotifications.show(model)
     }
-
 }

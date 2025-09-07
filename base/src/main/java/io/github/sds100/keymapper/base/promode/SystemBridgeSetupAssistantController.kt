@@ -45,7 +45,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 
-
 @Suppress("KotlinConstantConditions")
 @RequiresApi(Build.VERSION_CODES.Q)
 class SystemBridgeSetupAssistantController @AssistedInject constructor(
@@ -58,13 +57,13 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
     private val preferenceRepository: PreferenceRepository,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     private val keyMapperClassProvider: KeyMapperClassProvider,
-    resourceProvider: ResourceProvider
+    resourceProvider: ResourceProvider,
 ) : ResourceProvider by resourceProvider {
     @AssistedFactory
     interface Factory {
         fun create(
             coroutineScope: CoroutineScope,
-            accessibilityService: BaseAccessibilityService
+            accessibilityService: BaseAccessibilityService,
         ): SystemBridgeSetupAssistantController
     }
 
@@ -93,7 +92,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
             .stateIn(
                 coroutineScope,
                 SharingStarted.Eagerly,
-                PreferenceDefaults.PRO_MODE_INTERACTIVE_SETUP_ASSISTANT
+                PreferenceDefaults.PRO_MODE_INTERACTIVE_SETUP_ASSISTANT,
             )
 
     private var interactionStep: InteractionStep? = null
@@ -139,7 +138,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
         val notificationChannel = NotificationChannelModel(
             id = NotificationController.Companion.CHANNEL_SETUP_ASSISTANT,
             name = getString(R.string.pro_mode_setup_assistant_notification_channel),
-            importance = NotificationManagerCompat.IMPORTANCE_MAX
+            importance = NotificationManagerCompat.IMPORTANCE_MAX,
         )
         manageNotifications.createChannel(notificationChannel)
     }
@@ -206,7 +205,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
         foundPairingCode = pairingCode
 
-        Timber.i("Pairing code found ${pairingCode}. Pairing ADB...")
+        Timber.i("Pairing code found $pairingCode. Pairing ADB...")
         setupController.pairWirelessAdb(pairingCode).onSuccess {
             onPairingSuccess()
         }.onFailure {
@@ -216,7 +215,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
             showNotification(
                 getString(R.string.pro_mode_setup_notification_invalid_pairing_code_title),
                 getString(R.string.pro_mode_setup_notification_invalid_pairing_code_text),
-                actions = listOf(KMNotificationAction.RemoteInput.PairingCode to getString(R.string.pro_mode_setup_notification_action_input_pairing_code))
+                actions = listOf(KMNotificationAction.RemoteInput.PairingCode to getString(R.string.pro_mode_setup_notification_action_input_pairing_code)),
             )
         }
     }
@@ -245,7 +244,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
             showNotification(
                 getString(R.string.pro_mode_setup_notification_start_system_bridge_failed_title),
                 getString(R.string.pro_mode_setup_notification_start_system_bridge_failed_text),
-                onClickAction = KMNotificationAction.Activity.MainActivity(BaseMainActivity.ACTION_START_SYSTEM_BRIDGE)
+                onClickAction = KMNotificationAction.Activity.MainActivity(BaseMainActivity.ACTION_START_SYSTEM_BRIDGE),
             )
         }
     }
@@ -275,7 +274,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
         title: String,
         text: String,
         onClickAction: KMNotificationAction? = null,
-        actions: List<Pair<KMNotificationAction, String>> = emptyList()
+        actions: List<Pair<KMNotificationAction, String>> = emptyList(),
     ) {
         val notification = NotificationModel(
             // Use the same notification id for all so they overwrite each other.
@@ -291,7 +290,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
             bigTextStyle = true,
             // Must not be silent so it is shown as a heads up notification
             silent = false,
-            actions = actions
+            actions = actions,
         )
         manageNotifications.show(notification)
     }
@@ -342,7 +341,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
                 showNotification(
                     title = getString(R.string.pro_mode_setup_notification_pairing_button_not_found_title),
                     text = getString(R.string.pro_mode_setup_notification_pairing_button_not_found_text),
-                    actions = listOf(KMNotificationAction.RemoteInput.PairingCode to getString(R.string.pro_mode_setup_notification_action_input_pairing_code))
+                    actions = listOf(KMNotificationAction.RemoteInput.PairingCode to getString(R.string.pro_mode_setup_notification_action_input_pairing_code)),
                 )
 
                 // Give the user 30 seconds to input the pairing code and then dismiss the notification.

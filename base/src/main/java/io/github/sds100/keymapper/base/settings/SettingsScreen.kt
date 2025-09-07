@@ -112,7 +112,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                                 snackbarHostState.showSnackbar(activityNotFoundText)
                             }
                         }
-                    }
+                    },
                 ) {
                     Text(stringResource(R.string.pos_change_location))
                 }
@@ -122,11 +122,11 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                     onClick = {
                         showAutomaticBackupDialog = false
                         viewModel.disableAutomaticBackup()
-                    }
+                    },
                 ) {
                     Text(stringResource(R.string.neg_turn_off))
                 }
-            }
+            },
         )
     }
 
@@ -134,7 +134,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
         modifier,
         onBackClick = viewModel::onBackClick,
         viewModel::onResetAllSettingsClick,
-        snackbarHostState = snackbarHostState
+        snackbarHostState = snackbarHostState,
     ) {
         Content(
             state = state,
@@ -149,8 +149,8 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                         snackbarHostState.showSnackbar(
                             context.getString(
                                 R.string.error_sdk_version_too_low,
-                                BuildUtils.getSdkVersionName(Build.VERSION_CODES.Q)
-                            )
+                                BuildUtils.getSdkVersionName(Build.VERSION_CODES.Q),
+                            ),
                         )
                     }
                 }
@@ -167,7 +167,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                 } else {
                     showAutomaticBackupDialog = true
                 }
-            }
+            },
         )
     }
 }
@@ -179,7 +179,7 @@ private fun SettingsScreen(
     onBackClick: () -> Unit = {},
     onResetClick: () -> Unit = {},
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Scaffold(
         modifier = modifier.displayCutoutPadding(),
@@ -190,11 +190,11 @@ private fun SettingsScreen(
                 actions = {
                     OutlinedButton(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        onClick = onResetClick
+                        onClick = onResetClick,
                     ) {
                         Text(stringResource(R.string.settings_reset_app_bar_button))
                     }
-                }
+                },
             )
         },
         bottomBar = {
@@ -246,21 +246,21 @@ private fun Content(
     Column(
         modifier
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp),
     ) {
         Spacer(modifier = Modifier.height(8.dp))
 
         OptionsHeaderRow(
             modifier = Modifier.fillMaxWidth(),
             icon = KeyMapperIcons.WandStars,
-            text = stringResource(R.string.settings_section_customize_experience_title)
+            text = stringResource(R.string.settings_section_customize_experience_title),
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = stringResource(R.string.title_pref_dark_theme),
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
         )
 
         val buttonStates: List<Pair<Theme, String>> = listOf(
@@ -284,7 +284,7 @@ private fun Content(
             title = stringResource(R.string.title_pref_show_toggle_keymaps_notification),
             text = stringResource(R.string.summary_pref_show_toggle_keymaps_notification),
             icon = Icons.Rounded.PlayCircleOutline,
-            onClick = onPauseResumeNotificationClick
+            onClick = onPauseResumeNotificationClick,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -294,7 +294,7 @@ private fun Content(
             text = stringResource(R.string.summary_pref_hide_home_screen_alerts),
             icon = Icons.Rounded.VisibilityOff,
             isChecked = state.hideHomeScreenAlerts,
-            onCheckedChange = onHideHomeScreenAlertsToggled
+            onCheckedChange = onHideHomeScreenAlertsToggled,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -302,7 +302,7 @@ private fun Content(
         OptionsHeaderRow(
             modifier = Modifier.fillMaxWidth(),
             icon = Icons.Outlined.Gamepad,
-            text = stringResource(R.string.settings_section_key_maps_title)
+            text = stringResource(R.string.settings_section_key_maps_title),
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -311,7 +311,7 @@ private fun Content(
             title = stringResource(R.string.title_pref_default_options),
             text = stringResource(R.string.summary_pref_default_options),
             icon = Icons.Rounded.Tune,
-            onClick = onDefaultOptionsClick
+            onClick = onDefaultOptionsClick,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -321,7 +321,7 @@ private fun Content(
             text = stringResource(R.string.summary_pref_force_vibrate),
             icon = Icons.Rounded.Vibration,
             isChecked = state.forceVibrate,
-            onCheckedChange = onForceVibrateToggled
+            onCheckedChange = onForceVibrateToggled,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -331,7 +331,7 @@ private fun Content(
             text = stringResource(R.string.summary_pref_show_device_descriptors),
             icon = Icons.Rounded.Devices,
             isChecked = state.showDeviceDescriptors,
-            onCheckedChange = onShowDeviceDescriptorsToggled
+            onCheckedChange = onShowDeviceDescriptorsToggled,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -339,7 +339,7 @@ private fun Content(
         OptionsHeaderRow(
             modifier = Modifier.fillMaxWidth(),
             icon = KeyMapperIcons.FolderManaged,
-            text = stringResource(R.string.settings_section_data_management_title)
+            text = stringResource(R.string.settings_section_data_management_title),
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -353,7 +353,7 @@ private fun Content(
             text = state.autoBackupLocation
                 ?: stringResource(R.string.summary_pref_automatic_backup_location_disabled),
             icon = Icons.Rounded.Tune,
-            onClick = onAutomaticBackupClick
+            onClick = onAutomaticBackupClick,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -361,7 +361,7 @@ private fun Content(
         OptionsHeaderRow(
             modifier = Modifier.fillMaxWidth(),
             icon = Icons.Rounded.Construction,
-            text = stringResource(R.string.settings_section_power_user_title)
+            text = stringResource(R.string.settings_section_power_user_title),
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -377,18 +377,18 @@ private fun Content(
             } else {
                 stringResource(
                     R.string.error_sdk_version_too_low,
-                    BuildUtils.getSdkVersionName(Build.VERSION_CODES.Q)
+                    BuildUtils.getSdkVersionName(Build.VERSION_CODES.Q),
                 )
             },
             icon = KeyMapperIcons.ProModeIcon,
-            onClick = onProModeClick
+            onClick = onProModeClick,
         )
 
         OptionPageButton(
             title = stringResource(R.string.title_pref_automatically_change_ime),
             text = stringResource(R.string.summary_pref_automatically_change_ime),
             icon = Icons.Rounded.Keyboard,
-            onClick = onAutomaticChangeImeClick
+            onClick = onAutomaticChangeImeClick,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -396,7 +396,7 @@ private fun Content(
         OptionsHeaderRow(
             modifier = Modifier.fillMaxWidth(),
             icon = Icons.Rounded.Code,
-            text = stringResource(R.string.settings_section_debugging_title)
+            text = stringResource(R.string.settings_section_debugging_title),
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -406,7 +406,7 @@ private fun Content(
             text = stringResource(R.string.summary_pref_toggle_logging),
             icon = Icons.Outlined.BugReport,
             isChecked = state.loggingEnabled,
-            onCheckedChange = onLoggingToggled
+            onCheckedChange = onLoggingToggled,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -415,11 +415,10 @@ private fun Content(
             title = stringResource(R.string.title_pref_view_and_share_log),
             text = stringResource(R.string.summary_pref_view_and_share_log),
             icon = Icons.Outlined.FindInPage,
-            onClick = onViewLogClick
+            onClick = onViewLogClick,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-
     }
 }
 
@@ -429,7 +428,7 @@ private fun Preview() {
     KeyMapperTheme {
         SettingsScreen(modifier = Modifier.fillMaxSize(), onBackClick = {}) {
             Content(
-                state = MainSettingsState()
+                state = MainSettingsState(),
             )
         }
     }

@@ -248,7 +248,7 @@ class KeyMapAlgorithmTest {
         inputDownEvdevEvent(
             KeyEvent.KEYCODE_UNKNOWN,
             Scancode.BTN_LEFT,
-            FAKE_CONTROLLER_EVDEV_DEVICE
+            FAKE_CONTROLLER_EVDEV_DEVICE,
         )
         inputUpEvdevEvent(KeyEvent.KEYCODE_UNKNOWN, Scancode.BTN_LEFT, FAKE_CONTROLLER_EVDEV_DEVICE)
 
@@ -281,7 +281,7 @@ class KeyMapAlgorithmTest {
                     keyCode = KeyEvent.KEYCODE_A,
                     scanCode = Scancode.KEY_B,
                     device = FAKE_CONTROLLER_EVDEV_DEVICE,
-                    detectWithScanCodeUserSetting = true
+                    detectWithScanCodeUserSetting = true,
                 ),
             )
             loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
@@ -300,7 +300,7 @@ class KeyMapAlgorithmTest {
                     keyCode = KeyEvent.KEYCODE_A,
                     scanCode = Scancode.KEY_B,
                     device = FAKE_CONTROLLER_EVDEV_DEVICE,
-                    detectWithScanCodeUserSetting = true
+                    detectWithScanCodeUserSetting = true,
                 ),
             )
             loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
@@ -320,7 +320,7 @@ class KeyMapAlgorithmTest {
                     keyCode = KeyEvent.KEYCODE_A,
                     scanCode = Scancode.KEY_B,
                     device = FAKE_CONTROLLER_EVDEV_DEVICE,
-                    detectWithScanCodeUserSetting = true
+                    detectWithScanCodeUserSetting = true,
                 ),
             )
             loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
@@ -338,15 +338,17 @@ class KeyMapAlgorithmTest {
             val trigger = sequenceTrigger(
                 EvdevTriggerKey(
                     keyCode = KeyEvent.KEYCODE_A,
-                    scanCode = Scancode.KEY_B, // Different scan code
+                    // Different scan code
+                    scanCode = Scancode.KEY_B,
                     device = FAKE_CONTROLLER_EVDEV_DEVICE,
-                    detectWithScanCodeUserSetting = true
+                    detectWithScanCodeUserSetting = true,
                 ),
                 EvdevTriggerKey(
                     keyCode = KeyEvent.KEYCODE_C,
-                    scanCode = Scancode.KEY_D, // Different scan code
+                    // Different scan code
+                    scanCode = Scancode.KEY_D,
                     device = FAKE_CONTROLLER_EVDEV_DEVICE,
-                    detectWithScanCodeUserSetting = true
+                    detectWithScanCodeUserSetting = true,
                 ),
             )
 
@@ -368,15 +370,17 @@ class KeyMapAlgorithmTest {
             val trigger = parallelTrigger(
                 EvdevTriggerKey(
                     keyCode = KeyEvent.KEYCODE_A,
-                    scanCode = Scancode.KEY_B, // Different scan code
+                    // Different scan code
+                    scanCode = Scancode.KEY_B,
                     device = FAKE_CONTROLLER_EVDEV_DEVICE,
-                    detectWithScanCodeUserSetting = true
+                    detectWithScanCodeUserSetting = true,
                 ),
                 EvdevTriggerKey(
                     keyCode = KeyEvent.KEYCODE_C,
-                    scanCode = Scancode.KEY_D, // Different scan code
+                    // Different scan code
+                    scanCode = Scancode.KEY_D,
                     device = FAKE_CONTROLLER_EVDEV_DEVICE,
-                    detectWithScanCodeUserSetting = true
+                    detectWithScanCodeUserSetting = true,
                 ),
             )
 
@@ -392,7 +396,6 @@ class KeyMapAlgorithmTest {
             verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
         }
 
-
     @Test
     fun `Scan code detection works with long press evdev trigger`() =
         runTest(testDispatcher) {
@@ -402,7 +405,7 @@ class KeyMapAlgorithmTest {
                     scanCode = Scancode.KEY_B,
                     device = FAKE_CONTROLLER_EVDEV_DEVICE,
                     clickType = ClickType.LONG_PRESS,
-                    detectWithScanCodeUserSetting = true
+                    detectWithScanCodeUserSetting = true,
                 ),
             )
             loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
@@ -424,7 +427,7 @@ class KeyMapAlgorithmTest {
                     scanCode = Scancode.KEY_B,
                     device = FAKE_CONTROLLER_EVDEV_DEVICE,
                     clickType = ClickType.DOUBLE_PRESS,
-                    detectWithScanCodeUserSetting = true
+                    detectWithScanCodeUserSetting = true,
                 ),
             )
             loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
@@ -471,7 +474,8 @@ class KeyMapAlgorithmTest {
                     scanCode = Scancode.KEY_B,
                     device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
                     clickType = ClickType.SHORT_PRESS,
-                    detectWithScanCodeUserSetting = false // It will be automatically enabled even if the user hasn't explicitly turned it on
+                    // It will be automatically enabled even if the user hasn't explicitly turned it on
+                    detectWithScanCodeUserSetting = false,
                 ),
             )
             loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
@@ -480,13 +484,13 @@ class KeyMapAlgorithmTest {
                 keyCode = KeyEvent.KEYCODE_B,
                 action = KeyEvent.ACTION_DOWN,
                 device = FAKE_CONTROLLER_INPUT_DEVICE,
-                scanCode = Scancode.KEY_B
+                scanCode = Scancode.KEY_B,
             )
             inputKeyEvent(
                 keyCode = KeyEvent.KEYCODE_B,
                 action = KeyEvent.ACTION_UP,
                 device = FAKE_CONTROLLER_INPUT_DEVICE,
-                scanCode = Scancode.KEY_B
+                scanCode = Scancode.KEY_B,
             )
 
             verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
@@ -501,7 +505,7 @@ class KeyMapAlgorithmTest {
                     scanCode = Scancode.KEY_B,
                     device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
                     clickType = ClickType.SHORT_PRESS,
-                    detectWithScanCodeUserSetting = true
+                    detectWithScanCodeUserSetting = true,
                 ),
             )
             loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
@@ -510,13 +514,13 @@ class KeyMapAlgorithmTest {
                 keyCode = KeyEvent.KEYCODE_B,
                 action = KeyEvent.ACTION_DOWN,
                 device = FAKE_CONTROLLER_INPUT_DEVICE,
-                scanCode = Scancode.KEY_B
+                scanCode = Scancode.KEY_B,
             )
             inputKeyEvent(
                 keyCode = KeyEvent.KEYCODE_B,
                 action = KeyEvent.ACTION_UP,
                 device = FAKE_CONTROLLER_INPUT_DEVICE,
-                scanCode = Scancode.KEY_B
+                scanCode = Scancode.KEY_B,
             )
 
             verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
@@ -4703,8 +4707,7 @@ class KeyMapAlgorithmTest {
         metaState: Int? = null,
         scanCode: Int = 0,
         repeatCount: Int = 0,
-
-        ): Boolean = controller.onInputEvent(
+    ): Boolean = controller.onInputEvent(
         KMKeyEvent(
             keyCode = keyCode,
             action = action,
@@ -4831,5 +4834,4 @@ class KeyMapAlgorithmTest {
             sources = if (isGameController) InputDevice.SOURCE_GAMEPAD else InputDevice.SOURCE_KEYBOARD,
         )
     }
-
 }

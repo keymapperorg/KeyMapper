@@ -72,7 +72,7 @@ class GetActionErrorUseCaseTest {
             ringtoneAdapter = mock(),
             buildConfigProvider = TestBuildConfigProvider(),
             systemBridgeConnectionManager = mock(),
-            preferenceRepository = mock()
+            preferenceRepository = mock(),
         )
     }
 

@@ -377,7 +377,7 @@ abstract class BaseConfigTriggerViewModel(
                             keyCode = key.keyCode,
                             scanCode = key.scanCode,
                             isScanCodeDetectionSelected = key.detectWithScancode(),
-                            isScanCodeSettingEnabled = key.isScanCodeDetectionUserConfigurable()
+                            isScanCodeSettingEnabled = key.isScanCodeDetectionUserConfigurable(),
                         )
                     }
 
@@ -411,7 +411,7 @@ abstract class BaseConfigTriggerViewModel(
                             keyCode = key.keyCode,
                             scanCode = key.scanCode,
                             isScanCodeDetectionSelected = key.detectWithScancode(),
-                            isScanCodeSettingEnabled = key.isScanCodeDetectionUserConfigurable()
+                            isScanCodeSettingEnabled = key.isScanCodeDetectionUserConfigurable(),
                         )
                     }
                 }
@@ -639,7 +639,7 @@ abstract class BaseConfigTriggerViewModel(
 
                 is RecordTriggerState.Completed,
                 RecordTriggerState.Idle,
-                    -> recordTrigger.startRecording()
+                -> recordTrigger.startRecording()
             }
 
             // Show dialog if the accessibility service is disabled or crashed

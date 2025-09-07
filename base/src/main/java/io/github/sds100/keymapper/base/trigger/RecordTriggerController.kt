@@ -226,7 +226,7 @@ class RecordTriggerControllerImpl @Inject constructor(
         dpadMotionEventTracker.reset()
         downKeyEvents.clear()
 
-        //TODO
+        // TODO
 //        if (isEvdevRecordingEnabled && isEvdevRecordingPermitted.value) {
         inputEventHub.registerClient(
             INPUT_EVENT_HUB_ID,

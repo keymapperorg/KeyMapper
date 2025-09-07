@@ -48,7 +48,6 @@ class DisplayLogUseCaseImpl @Inject constructor(
         )
     }
 
-
     private fun createLogText(logEntries: List<LogEntryEntity>): String {
         return logEntries.joinToString(separator = "\n") { entry ->
             val date = dateFormat.format(Date(entry.time))

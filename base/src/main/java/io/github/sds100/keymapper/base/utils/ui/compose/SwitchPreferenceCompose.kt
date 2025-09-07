@@ -29,18 +29,18 @@ fun SwitchPreferenceCompose(
         shape = MaterialTheme.shapes.medium,
         onClick = {
             onCheckedChange(!isChecked)
-        }
+        },
     ) {
         Row(
             modifier = Modifier.Companion
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface
+                tint = MaterialTheme.colorScheme.onSurface,
             )
 
             Column(modifier = Modifier.Companion.weight(1f)) {
@@ -56,7 +56,7 @@ fun SwitchPreferenceCompose(
 
             Switch(
                 checked = isChecked,
-                onCheckedChange = onCheckedChange
+                onCheckedChange = onCheckedChange,
             )
         }
     }

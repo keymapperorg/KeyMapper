@@ -128,7 +128,7 @@ fun BaseMainNavHost(
             LogScreen(
                 modifier = Modifier.fillMaxSize(),
                 viewModel = hiltViewModel(),
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
             )
         }
 

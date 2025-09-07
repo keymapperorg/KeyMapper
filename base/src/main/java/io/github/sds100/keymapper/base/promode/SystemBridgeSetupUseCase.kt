@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-
 @RequiresApi(Build.VERSION_CODES.Q)
 @ViewModelScoped
 class SystemBridgeSetupUseCaseImpl @Inject constructor(
@@ -40,7 +39,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     private val shizukuAdapter: ShizukuAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
-    private val networkAdapter: NetworkAdapter
+    private val networkAdapter: NetworkAdapter,
 ) : SystemBridgeSetupUseCase {
     override val isWarningUnderstood: Flow<Boolean> =
         preferences.get(Keys.isProModeWarningUnderstood).map { it ?: false }
@@ -49,7 +48,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             combine(
                 permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS),
-                networkAdapter.isWifiConnected
+                networkAdapter.isWifiConnected,
             ) { isWriteSecureSettingsGranted, isWifiConnected ->
                 isWriteSecureSettingsGranted && isWifiConnected && systemBridgeSetupController.isAdbPaired()
             }.flowOn(Dispatchers.IO)
@@ -100,7 +99,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
                             systemBridgeSetupController.isDeveloperOptionsEnabled,
                             networkAdapter.isWifiConnected,
                             systemBridgeSetupController.isWirelessDebuggingEnabled,
-                            ::getNextStep
+                            ::getNextStep,
                         )
                     }
                 }
@@ -112,7 +111,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     override val shizukuSetupState: Flow<ShizukuSetupState> = combine(
         shizukuAdapter.isInstalled,
         shizukuAdapter.isStarted,
-        permissionAdapter.isGrantedFlow(Permission.SHIZUKU)
+        permissionAdapter.isGrantedFlow(Permission.SHIZUKU),
     ) { isInstalled, isStarted, isPermissionGranted ->
         when {
             isPermissionGranted -> ShizukuSetupState.PERMISSION_GRANTED
@@ -214,7 +213,6 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
             else -> SystemBridgeSetupStep.START_SERVICE
         }
     }
-
 }
 
 interface SystemBridgeSetupUseCase {

@@ -71,7 +71,7 @@ fun ProModeSetupScreen(
         onStepButtonClick = viewModel::onStepButtonClick,
         onAssistantClick = viewModel::onAssistantClick,
         onWatchTutorialClick = { },
-        onBackClick = viewModel::onBackClick
+        onBackClick = viewModel::onBackClick,
     )
 }
 
@@ -82,7 +82,7 @@ fun ProModeSetupScreen(
     onBackClick: () -> Unit = {},
     onStepButtonClick: () -> Unit = {},
     onAssistantClick: () -> Unit = {},
-    onWatchTutorialClick: () -> Unit = {}
+    onWatchTutorialClick: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -92,12 +92,12 @@ fun ProModeSetupScreen(
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(id = R.string.action_go_back)
+                            contentDescription = stringResource(id = R.string.action_go_back),
                         )
                     }
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
         when (state) {
             State.Loading -> {
@@ -105,7 +105,7 @@ fun ProModeSetupScreen(
                     Modifier
                         .padding(paddingValues)
                         .fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator()
                 }
@@ -124,8 +124,8 @@ fun ProModeSetupScreen(
                         targetValue = targetProgress,
                         animationSpec = tween(
                             durationMillis = 800,
-                            easing = EaseInOut
-                        )
+                            easing = EaseInOut,
+                        ),
                     )
                 }
 
@@ -135,8 +135,8 @@ fun ProModeSetupScreen(
                         targetValue = targetProgress,
                         animationSpec = tween(
                             durationMillis = 1000,
-                            easing = EaseInOut
-                        )
+                            easing = EaseInOut,
+                        ),
                     )
                 }
 
@@ -145,11 +145,11 @@ fun ProModeSetupScreen(
                         .fillMaxSize()
                         .padding(paddingValues)
                         .padding(vertical = 16.dp, horizontal = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     LinearProgressIndicator(
                         modifier = Modifier.fillMaxWidth(),
-                        progress = { progressAnimatable.value }
+                        progress = { progressAnimatable.value },
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -157,19 +157,19 @@ fun ProModeSetupScreen(
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             text = stringResource(
                                 R.string.pro_mode_setup_wizard_step_n,
                                 state.data.stepNumber,
-                                state.data.stepCount
+                                state.data.stepCount,
                             ),
-                            style = MaterialTheme.typography.titleLarge
+                            style = MaterialTheme.typography.titleLarge,
                         )
                         Text(
                             text = stringResource(R.string.pro_mode_app_bar_title),
-                            style = MaterialTheme.typography.titleLarge
+                            style = MaterialTheme.typography.titleLarge,
                         )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
@@ -178,7 +178,7 @@ fun ProModeSetupScreen(
                         modifier = Modifier.fillMaxWidth(),
                         isEnabled = state.data.isSetupAssistantButtonEnabled,
                         isChecked = state.data.isSetupAssistantChecked,
-                        onAssistantClick = onAssistantClick
+                        onAssistantClick = onAssistantClick,
                     )
 
                     val iconTint = if (state.data.step == SystemBridgeSetupStep.STARTED) {
@@ -195,7 +195,7 @@ fun ProModeSetupScreen(
                         stepContent,
                         onWatchTutorialClick,
                         onStepButtonClick,
-                        iconTint = iconTint
+                        iconTint = iconTint,
                     )
                 }
             }
@@ -220,13 +220,13 @@ private fun StepContent(
                 .fillMaxWidth()
                 .weight(1f),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Icon(
                 modifier = Modifier.size(64.dp),
                 imageVector = stepContent.icon,
                 contentDescription = null,
-                tint = iconTint
+                tint = iconTint,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -234,7 +234,7 @@ private fun StepContent(
             Text(
                 text = stepContent.title,
                 style = MaterialTheme.typography.headlineSmall,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -242,7 +242,7 @@ private fun StepContent(
             Text(
                 text = stepContent.message,
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
 
@@ -251,7 +251,7 @@ private fun StepContent(
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
 //            TextButton(onClick = onWatchTutorialClick) {
 //                Text(text = stringResource(R.string.pro_mode_setup_wizard_watch_tutorial_button))
@@ -268,12 +268,13 @@ private fun AssistantCheckBoxRow(
     modifier: Modifier,
     isEnabled: Boolean,
     isChecked: Boolean,
-    onAssistantClick: () -> Unit
+    onAssistantClick: () -> Unit,
 ) {
     Surface(
-        modifier = modifier, shape = MaterialTheme.shapes.medium,
+        modifier = modifier,
+        shape = MaterialTheme.shapes.medium,
         enabled = isEnabled,
-        onClick = onAssistantClick
+        onClick = onAssistantClick,
     ) {
         val contentColor = if (isEnabled) {
             LocalContentColor.current
@@ -284,16 +285,17 @@ private fun AssistantCheckBoxRow(
         CompositionLocalProvider(LocalContentColor provides contentColor) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Checkbox(
                     enabled = isEnabled,
                     checked = isChecked,
-                    onCheckedChange = { onAssistantClick() })
+                    onCheckedChange = { onAssistantClick() },
+                )
                 Column {
                     Text(
                         text = stringResource(R.string.pro_mode_setup_wizard_use_assistant),
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleMedium,
                     )
 
                     val text = if (isEnabled) {
@@ -304,7 +306,7 @@ private fun AssistantCheckBoxRow(
 
                     Text(
                         text = text,
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
             }
@@ -319,56 +321,56 @@ private fun getStepContent(step: SystemBridgeSetupStep): StepContent {
             title = stringResource(R.string.pro_mode_setup_wizard_enable_accessibility_service_title),
             message = stringResource(R.string.pro_mode_setup_wizard_enable_accessibility_service_description),
             icon = Icons.Rounded.Accessibility,
-            buttonText = stringResource(R.string.pro_mode_setup_wizard_enable_accessibility_service_button)
+            buttonText = stringResource(R.string.pro_mode_setup_wizard_enable_accessibility_service_button),
         )
 
         SystemBridgeSetupStep.NOTIFICATION_PERMISSION -> StepContent(
             title = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_title),
             message = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_description),
             icon = Icons.Rounded.Notifications,
-            buttonText = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_button)
+            buttonText = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_button),
         )
 
         SystemBridgeSetupStep.DEVELOPER_OPTIONS -> StepContent(
             title = stringResource(R.string.pro_mode_setup_wizard_enable_developer_options_title),
             message = stringResource(R.string.pro_mode_setup_wizard_enable_developer_options_description),
             icon = Icons.Rounded.Build,
-            buttonText = stringResource(R.string.pro_mode_setup_wizard_go_to_settings_button)
+            buttonText = stringResource(R.string.pro_mode_setup_wizard_go_to_settings_button),
         )
 
         SystemBridgeSetupStep.WIFI_NETWORK -> StepContent(
             title = stringResource(R.string.pro_mode_setup_wizard_connect_wifi_title),
             message = stringResource(R.string.pro_mode_setup_wizard_connect_wifi_description),
             icon = KeyMapperIcons.SignalWifiNotConnected,
-            buttonText = stringResource(R.string.pro_mode_setup_wizard_go_to_settings_button)
+            buttonText = stringResource(R.string.pro_mode_setup_wizard_go_to_settings_button),
         )
 
         SystemBridgeSetupStep.WIRELESS_DEBUGGING -> StepContent(
             title = stringResource(R.string.pro_mode_setup_wizard_enable_wireless_debugging_title),
             message = stringResource(R.string.pro_mode_setup_wizard_enable_wireless_debugging_description),
             icon = Icons.Rounded.BugReport,
-            buttonText = stringResource(R.string.pro_mode_setup_wizard_go_to_settings_button)
+            buttonText = stringResource(R.string.pro_mode_setup_wizard_go_to_settings_button),
         )
 
         SystemBridgeSetupStep.ADB_PAIRING -> StepContent(
             title = stringResource(R.string.pro_mode_setup_wizard_pair_wireless_debugging_title),
             message = stringResource(R.string.pro_mode_setup_wizard_pair_wireless_debugging_description),
             icon = Icons.Rounded.Link,
-            buttonText = stringResource(R.string.pro_mode_setup_wizard_go_to_settings_button)
+            buttonText = stringResource(R.string.pro_mode_setup_wizard_go_to_settings_button),
         )
 
         SystemBridgeSetupStep.START_SERVICE -> StepContent(
             title = stringResource(R.string.pro_mode_setup_wizard_start_service_title),
             message = stringResource(R.string.pro_mode_setup_wizard_start_service_description),
             icon = Icons.Rounded.PlayArrow,
-            buttonText = stringResource(R.string.pro_mode_root_detected_button_start_service)
+            buttonText = stringResource(R.string.pro_mode_root_detected_button_start_service),
         )
 
         SystemBridgeSetupStep.STARTED -> StepContent(
             title = stringResource(R.string.pro_mode_setup_wizard_complete_title),
             message = stringResource(R.string.pro_mode_setup_wizard_complete_text),
             icon = Icons.Rounded.CheckCircleOutline,
-            buttonText = stringResource(R.string.pro_mode_setup_wizard_complete_button)
+            buttonText = stringResource(R.string.pro_mode_setup_wizard_complete_button),
         )
     }
 }
@@ -391,9 +393,9 @@ private fun ProModeSetupScreenAccessibilityServicePreview() {
                     stepCount = 6,
                     step = SystemBridgeSetupStep.ACCESSIBILITY_SERVICE,
                     isSetupAssistantChecked = false,
-                    isSetupAssistantButtonEnabled = false
-                )
-            )
+                    isSetupAssistantButtonEnabled = false,
+                ),
+            ),
         )
     }
 }
@@ -409,9 +411,9 @@ private fun ProModeSetupScreenNotificationPermissionPreview() {
                     stepCount = 6,
                     step = SystemBridgeSetupStep.NOTIFICATION_PERMISSION,
                     isSetupAssistantChecked = false,
-                    isSetupAssistantButtonEnabled = true
-                )
-            )
+                    isSetupAssistantButtonEnabled = true,
+                ),
+            ),
         )
     }
 }
@@ -427,9 +429,9 @@ private fun ProModeSetupScreenDeveloperOptionsPreview() {
                     stepCount = 6,
                     step = SystemBridgeSetupStep.DEVELOPER_OPTIONS,
                     isSetupAssistantChecked = false,
-                    isSetupAssistantButtonEnabled = true
-                )
-            )
+                    isSetupAssistantButtonEnabled = true,
+                ),
+            ),
         )
     }
 }
@@ -445,9 +447,9 @@ private fun ProModeSetupScreenWifiNetworkPreview() {
                     stepCount = 6,
                     step = SystemBridgeSetupStep.WIFI_NETWORK,
                     isSetupAssistantChecked = false,
-                    isSetupAssistantButtonEnabled = true
-                )
-            )
+                    isSetupAssistantButtonEnabled = true,
+                ),
+            ),
         )
     }
 }
@@ -463,9 +465,9 @@ private fun ProModeSetupScreenWirelessDebuggingPreview() {
                     stepCount = 6,
                     step = SystemBridgeSetupStep.WIRELESS_DEBUGGING,
                     isSetupAssistantChecked = false,
-                    isSetupAssistantButtonEnabled = true
-                )
-            )
+                    isSetupAssistantButtonEnabled = true,
+                ),
+            ),
         )
     }
 }
@@ -481,9 +483,9 @@ private fun ProModeSetupScreenAdbPairingPreview() {
                     stepCount = 6,
                     step = SystemBridgeSetupStep.ADB_PAIRING,
                     isSetupAssistantChecked = true,
-                    isSetupAssistantButtonEnabled = true
-                )
-            )
+                    isSetupAssistantButtonEnabled = true,
+                ),
+            ),
         )
     }
 }
@@ -499,13 +501,12 @@ private fun ProModeSetupScreenStartServicePreview() {
                     stepCount = 6,
                     step = SystemBridgeSetupStep.START_SERVICE,
                     isSetupAssistantChecked = true,
-                    isSetupAssistantButtonEnabled = true
-                )
-            )
+                    isSetupAssistantButtonEnabled = true,
+                ),
+            ),
         )
     }
 }
-
 
 @Preview(name = "Started", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
@@ -518,21 +519,19 @@ private fun ProModeSetupScreenStartedPreview() {
                     stepCount = 8,
                     step = SystemBridgeSetupStep.STARTED,
                     isSetupAssistantChecked = true,
-                    isSetupAssistantButtonEnabled = true
-                )
-            )
+                    isSetupAssistantButtonEnabled = true,
+                ),
+            ),
         )
     }
 }
-
 
 @Preview(name = "Loading", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun ProModeSetupScreenLoadingPreview() {
     KeyMapperTheme {
         ProModeSetupScreen(
-            state = State.Loading
+            state = State.Loading,
         )
     }
 }
-

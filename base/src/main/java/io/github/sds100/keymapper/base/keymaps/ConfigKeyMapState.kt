@@ -24,7 +24,7 @@ import javax.inject.Singleton
 class ConfigKeyMapStateImpl @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val keyMapRepository: KeyMapRepository,
-    private val floatingButtonRepository: FloatingButtonRepository
+    private val floatingButtonRepository: FloatingButtonRepository,
 ) : ConfigKeyMapState {
     private var originalKeyMap: KeyMap? = null
 
@@ -105,7 +105,6 @@ class ConfigKeyMapStateImpl @Inject constructor(
     override fun update(block: (keyMap: KeyMap) -> KeyMap) {
         _keyMap.update { value -> value.mapData { block.invoke(it) } }
     }
-
 }
 
 interface ConfigKeyMapState {

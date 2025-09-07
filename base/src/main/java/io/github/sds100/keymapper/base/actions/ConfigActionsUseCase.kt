@@ -26,7 +26,7 @@ class ConfigActionsUseCaseImpl @Inject constructor(
     private val state: ConfigKeyMapState,
     private val preferenceRepository: PreferenceRepository,
     private val configConstraints: ConfigConstraintsUseCase,
-    defaultKeyMapOptionsUseCase: GetDefaultKeyMapOptionsUseCase
+    defaultKeyMapOptionsUseCase: GetDefaultKeyMapOptionsUseCase,
 ) : ConfigActionsUseCase, GetDefaultKeyMapOptionsUseCase by defaultKeyMapOptionsUseCase {
 
     override val keyMap: StateFlow<State<KeyMap>> = state.keyMap
@@ -64,7 +64,6 @@ class ConfigActionsUseCaseImpl @Inject constructor(
 
             keyMap.copy(actionList = newActionList)
         }
-
     }
 
     override fun moveAction(fromIndex: Int, toIndex: Int) {
@@ -258,7 +257,6 @@ class ConfigActionsUseCaseImpl @Inject constructor(
             )
         }
     }
-
 }
 
 interface ConfigActionsUseCase : GetDefaultKeyMapOptionsUseCase {
@@ -283,5 +281,4 @@ interface ConfigActionsUseCase : GetDefaultKeyMapOptionsUseCase {
     fun setActionStopRepeatingWhenTriggerReleased(uid: String)
 
     fun setActionStopHoldingDownWhenTriggerPressedAgain(uid: String, enabled: Boolean)
-
 }

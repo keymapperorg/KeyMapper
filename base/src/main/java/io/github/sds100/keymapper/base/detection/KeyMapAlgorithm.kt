@@ -1857,7 +1857,7 @@ class KeyMapAlgorithm(
         KeyEvent.KEYCODE_SYM,
         KeyEvent.KEYCODE_NUM,
         KeyEvent.KEYCODE_FUNCTION,
-            -> true
+        -> true
 
         else -> false
     }

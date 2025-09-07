@@ -20,7 +20,7 @@ data class EvdevTriggerKey(
     val device: EvdevDeviceInfo,
     override val clickType: ClickType = ClickType.SHORT_PRESS,
     override val consumeEvent: Boolean = true,
-    override val detectWithScanCodeUserSetting: Boolean = false
+    override val detectWithScanCodeUserSetting: Boolean = false,
 ) : TriggerKey(), KeyCodeTriggerKey {
     override val allowedDoublePress: Boolean = true
     override val allowedLongPress: Boolean = true
@@ -59,7 +59,7 @@ data class EvdevTriggerKey(
                 ),
                 clickType = clickType,
                 consumeEvent = consumeEvent,
-                detectWithScanCodeUserSetting = detectWithScancode
+                detectWithScanCodeUserSetting = detectWithScancode,
             )
         }
 
