@@ -1,10 +1,12 @@
 package io.github.sds100.keymapper.base.trigger
 
+import android.view.KeyEvent
 import io.github.sds100.keymapper.base.floating.FloatingButtonData
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
+import io.github.sds100.keymapper.system.inputevents.Scancode
 
 /**
  * This extracts the core logic when configuring a trigger which makes it easier to write tests.
@@ -56,6 +58,13 @@ class ConfigTriggerDelegate {
         return addTriggerKey(trigger, triggerKey)
     }
 
+    private fun isPowerButtonKey(keyCode: Int, scanCode: Int): Boolean {
+        return keyCode == KeyEvent.KEYCODE_POWER ||
+            keyCode == KeyEvent.KEYCODE_TV_POWER ||
+            scanCode == Scancode.KEY_POWER ||
+            scanCode == Scancode.KEY_POWER2
+    }
+
     /**
      * @param otherTriggerKeys This needs to check the other triggers in the app so that it can
      * enable scancode detection by default in some situations.
@@ -68,10 +77,16 @@ class ConfigTriggerDelegate {
         requiresIme: Boolean,
         otherTriggerKeys: List<KeyCodeTriggerKey> = emptyList()
     ): Trigger {
-        val clickType = when (trigger.mode) {
-            is TriggerMode.Parallel -> trigger.mode.clickType
-            TriggerMode.Sequence -> ClickType.SHORT_PRESS
-            TriggerMode.Undefined -> ClickType.SHORT_PRESS
+        val isPowerKey = isPowerButtonKey(keyCode, scanCode)
+
+        val clickType = if (isPowerKey) {
+            ClickType.LONG_PRESS
+        } else {
+            when (trigger.mode) {
+                is TriggerMode.Parallel -> trigger.mode.clickType
+                TriggerMode.Sequence -> ClickType.SHORT_PRESS
+                TriggerMode.Undefined -> ClickType.SHORT_PRESS
+            }
         }
 
         var consumeKeyEvent = true
@@ -101,9 +116,19 @@ class ConfigTriggerDelegate {
             detectWithScanCodeUserSetting = logicallyEqualKeys.isNotEmpty()
         )
 
-        val newKeys = trigger.keys.filter { it !is EvdevTriggerKey }
+        var newKeys = trigger.keys.filter { it !is EvdevTriggerKey }
 
-        return addTriggerKey(trigger.copy(keys = newKeys), triggerKey)
+        if (isPowerKey && trigger.mode is TriggerMode.Parallel) {
+            newKeys = newKeys.map { it.setClickType(ClickType.LONG_PRESS) }
+        }
+
+        val newMode = if (isPowerKey && trigger.mode is TriggerMode.Parallel) {
+            TriggerMode.Parallel(ClickType.LONG_PRESS)
+        } else {
+            trigger.mode
+        }
+
+        return addTriggerKey(trigger.copy(mode = newMode, keys = newKeys), triggerKey)
     }
 
     fun addEvdevTriggerKey(
@@ -113,10 +138,16 @@ class ConfigTriggerDelegate {
         device: EvdevDeviceInfo,
         otherTriggerKeys: List<KeyCodeTriggerKey> = emptyList()
     ): Trigger {
-        val clickType = when (trigger.mode) {
-            is TriggerMode.Parallel -> trigger.mode.clickType
-            TriggerMode.Sequence -> ClickType.SHORT_PRESS
-            TriggerMode.Undefined -> ClickType.SHORT_PRESS
+        val isPowerKey = isPowerButtonKey(keyCode, scanCode)
+
+        val clickType = if (isPowerKey) {
+            ClickType.LONG_PRESS
+        } else {
+            when (trigger.mode) {
+                is TriggerMode.Parallel -> trigger.mode.clickType
+                TriggerMode.Sequence -> ClickType.SHORT_PRESS
+                TriggerMode.Undefined -> ClickType.SHORT_PRESS
+            }
         }
 
         // Scan code detection should be turned on by default if there are other
@@ -138,9 +169,19 @@ class ConfigTriggerDelegate {
             detectWithScanCodeUserSetting = conflictingKeys.isNotEmpty()
         )
 
-        val newKeys = trigger.keys.filter { it !is KeyEventTriggerKey }
+        var newKeys = trigger.keys.filter { it !is KeyEventTriggerKey }
 
-        return addTriggerKey(trigger.copy(keys = newKeys), triggerKey)
+        if (isPowerKey && trigger.mode is TriggerMode.Parallel) {
+            newKeys = newKeys.map { it.setClickType(ClickType.LONG_PRESS) }
+        }
+
+        val newMode = if (isPowerKey && trigger.mode is TriggerMode.Parallel) {
+            TriggerMode.Parallel(ClickType.LONG_PRESS)
+        } else {
+            trigger.mode
+        }
+
+        return addTriggerKey(trigger.copy(mode = newMode, keys = newKeys), triggerKey)
     }
 
     private fun addTriggerKey(

@@ -69,9 +69,10 @@ class GetActionErrorUseCaseTest {
             systemFeatureAdapter = mock(),
             cameraAdapter = mock(),
             soundsManager = mock(),
-            shizukuAdapter = mockShizukuAdapter,
             ringtoneAdapter = mock(),
             buildConfigProvider = TestBuildConfigProvider(),
+            systemBridgeConnectionManager = mock(),
+            preferenceRepository = mock()
         )
     }
 

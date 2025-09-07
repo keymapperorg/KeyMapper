@@ -40,6 +40,146 @@ class ConfigTriggerDelegateTest {
     }
 
     @Test
+    fun `set click type to long press when adding power button by key event to empty trigger`() {
+        val trigger = Trigger()
+
+        val newTrigger = delegate.addKeyEventTriggerKey(
+            trigger,
+            keyCode = KeyEvent.KEYCODE_POWER,
+            scanCode = Scancode.KEY_POWER,
+            device = KeyEventTriggerDevice.Internal,
+            requiresIme = false,
+        )
+
+        assertThat(newTrigger.keys, hasSize(1))
+        assertThat(newTrigger.keys[0].clickType, `is`(ClickType.LONG_PRESS))
+    }
+
+    @Test
+    fun `set click type to long press when adding KEY_POWER by evdev event to empty trigger`() {
+        val trigger = Trigger()
+        val device = EvdevDeviceInfo(
+            name = "Power Button",
+            bus = 0,
+            vendor = 1,
+            product = 2,
+        )
+
+        val newTrigger = delegate.addEvdevTriggerKey(
+            trigger,
+            keyCode = KeyEvent.KEYCODE_POWER,
+            scanCode = Scancode.KEY_POWER,
+            device = device,
+        )
+
+        assertThat(newTrigger.keys, hasSize(1))
+        assertThat(newTrigger.keys[0].clickType, `is`(ClickType.LONG_PRESS))
+    }
+
+    @Test
+    fun `set click type to long press when adding KEY_POWER2 by evdev event to empty trigger`() {
+        val trigger = Trigger()
+        val device = EvdevDeviceInfo(
+            name = "Power Button",
+            bus = 0,
+            vendor = 1,
+            product = 2,
+        )
+
+        val newTrigger = delegate.addEvdevTriggerKey(
+            trigger,
+            keyCode = KeyEvent.KEYCODE_POWER,
+            scanCode = Scancode.KEY_POWER2,
+            device = device,
+        )
+
+        assertThat(newTrigger.keys, hasSize(1))
+        assertThat(newTrigger.keys[0].clickType, `is`(ClickType.LONG_PRESS))
+    }
+
+    @Test
+    fun `set click type to long press when adding TV power button by evdev event to empty trigger`() {
+        val trigger = Trigger()
+        val device = EvdevDeviceInfo(
+            name = "TV Remote",
+            bus = 0,
+            vendor = 1,
+            product = 2,
+        )
+
+        val newTrigger = delegate.addEvdevTriggerKey(
+            trigger,
+            keyCode = KeyEvent.KEYCODE_TV_POWER,
+            scanCode = Scancode.KEY_POWER,
+            device = device,
+        )
+
+        assertThat(newTrigger.keys, hasSize(1))
+        assertThat(newTrigger.keys[0].clickType, `is`(ClickType.LONG_PRESS))
+    }
+
+    @Test
+    fun `set click type to long press when adding power button to parallel trigger`() {
+        val trigger = parallelTrigger(
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                device = KeyEventTriggerDevice.Internal,
+                clickType = ClickType.SHORT_PRESS,
+                detectWithScanCodeUserSetting = true
+            ),
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+                scanCode = Scancode.KEY_VOLUMEUP,
+                device = KeyEventTriggerDevice.Internal,
+                clickType = ClickType.SHORT_PRESS,
+                detectWithScanCodeUserSetting = true
+            ),
+        )
+
+        val newTrigger = delegate.addKeyEventTriggerKey(
+            trigger,
+            keyCode = KeyEvent.KEYCODE_POWER,
+            scanCode = Scancode.KEY_POWER,
+            device = KeyEventTriggerDevice.Internal,
+            requiresIme = false,
+        )
+
+        assertThat(newTrigger.keys, hasSize(3))
+        assertThat((newTrigger.mode as TriggerMode.Parallel).clickType, `is`(ClickType.LONG_PRESS))
+        assertThat(newTrigger.keys[2].clickType, `is`(ClickType.LONG_PRESS))
+    }
+
+    @Test
+    fun `set click type to long press when adding power button to sequence trigger`() {
+        val trigger = sequenceTrigger(
+            KeyEventTriggerKey(
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                device = KeyEventTriggerDevice.Internal,
+                clickType = ClickType.SHORT_PRESS,
+                detectWithScanCodeUserSetting = true
+            ),
+            AssistantTriggerKey(
+                type = AssistantTriggerType.ANY,
+                clickType = ClickType.SHORT_PRESS,
+            )
+        )
+
+        val newTrigger = delegate.addKeyEventTriggerKey(
+            trigger,
+            keyCode = KeyEvent.KEYCODE_POWER,
+            scanCode = Scancode.KEY_POWER,
+            device = KeyEventTriggerDevice.Internal,
+            requiresIme = false,
+        )
+
+        assertThat(newTrigger.keys, hasSize(3))
+        assertThat(newTrigger.mode, `is`(TriggerMode.Sequence))
+        assertThat(newTrigger.keys[2].clickType, `is`(ClickType.LONG_PRESS))
+    }
+
+    @Test
     fun `Remove keys with the same scan code if scan code detection is enabled when switching to a parallel trigger`() {
         val key = KeyEventTriggerKey(
             keyCode = KeyEvent.KEYCODE_VOLUME_UP,

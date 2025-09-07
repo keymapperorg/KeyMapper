@@ -80,6 +80,7 @@ class PerformActionsUseCaseTest {
             notificationReceiverAdapter = mock(),
             ringtoneAdapter = mock(),
             inputEventHub = mockInputEventHub,
+            systemBridgeConnectionManager = mock()
         )
     }
 
