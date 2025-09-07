@@ -8,7 +8,6 @@
     <string name="enable">Enable</string>
     <string name="shrug" translatable="false">¯\\_(ツ)_/¯</string>
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNothing here!</string>
-    <string name="triggers_recyclerview_placeholder">The first step is to add some buttons that will trigger the key map.\n\nFirst tap ‘Record trigger’ and then press the buttons that you want to remap. They will appear here.\n\nAlternatively, you can trigger a key map using an ‘advanced trigger’.\n\nYou can mix and match any keys!</string>
     <string name="choose_action_warning_requires_root">Requires root</string>
     <string name="no_actions">No actions</string>
     <string name="no_trigger">No trigger</string>
@@ -1656,5 +1655,30 @@
     <string name="system_bridge_died_notification_title">PRO mode stopped unexpectedly</string>
     <string name="system_bridge_died_notification_restarting_text">Automatically restarting…</string>
     <string name="system_bridge_died_notification_not_restarting_text">Not auto restarting. If you\'re not killing the service report the issue to the developer.</string>
+
+    <!-- Trigger Discover Screen -->
+    <string name="trigger_discover_screen_title">Discover</string>
+    <string name="trigger_discover_screen_subtitle">What do you want to remap?</string>
+    <string name="trigger_discover_section_on_device_buttons">On-device buttons</string>
+    <string name="trigger_discover_section_peripherals_gaming">Peripherals &amp; gaming</string>
+    <string name="trigger_discover_section_floating_buttons">Floating buttons</string>
+
+    <string name="trigger_discover_shortcut_volume">Volume</string>
+    <string name="trigger_discover_shortcut_assistant">Assistant</string>
+    <string name="trigger_discover_shortcut_power">Power</string>
+    <string name="trigger_discover_shortcut_keyboard">Keyboard</string>
+    <string name="trigger_discover_shortcut_mouse">Mouse</string>
+    <string name="trigger_discover_shortcut_gamepad">Gamepad</string>
+    <string name="trigger_discover_shortcut_other">Other</string>
+    <string name="trigger_discover_shortcut_custom">Custom</string>
+    <string name="trigger_discover_shortcut_notch">Notch</string>
+    <string name="trigger_discover_shortcut_lock_screen">Lock screen</string>
+
+    <string name="trigger_discover_promo_title">Level up your phone ⚡</string>
+    <string name="trigger_discover_promo_description">Floating buttons give you instant shortcuts in any app, game or lock screen — no menus, no waiting. Your support keeps Key Mapper alive ❤️</string>
+    <string name="trigger_discover_promo_see_action">See it in action</string>
+    <string name="trigger_discover_promo_dismiss">Dismiss</string>
+    <string name="trigger_discover_promo_unlock">Unlock for just %s</string>
+    <!-- Trigger Discover Screen -->
 
 </resources>

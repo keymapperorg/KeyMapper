@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.trigger
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,7 +32,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -179,9 +179,6 @@ private fun TriggerScreenVertical(
     onMoveTriggerKey: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     onFixErrorClick: (TriggerError) -> Unit = {},
     onClickShortcut: (TriggerKeyShortcut) -> Unit = {},
-    onRecordTriggerTapTargetCompleted: () -> Unit = {},
-    onSkipTapTarget: () -> Unit = {},
-    onAdvancedTriggerTapTargetCompleted: () -> Unit = {},
 ) {
     Surface(modifier = modifier) {
         Column {
@@ -189,36 +186,19 @@ private fun TriggerScreenVertical(
 
             when (configState) {
                 is ConfigTriggerState.Empty -> {
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .verticalScroll(state = rememberScrollState()),
-                        verticalArrangement = Arrangement.Center,
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(32.dp),
-                            text = stringResource(R.string.triggers_recyclerview_placeholder),
-                            textAlign = TextAlign.Center,
+                    Column {
+                        TriggerDiscoverScreen(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(16.dp)
                         )
 
-                        if (configState.shortcuts.isNotEmpty()) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(
-                                    text = stringResource(R.string.trigger_shortcuts_header),
-                                    style = MaterialTheme.typography.titleSmall,
-                                )
-
-                                Spacer(Modifier.height(8.dp))
-
-                                ShortcutRow(
-                                    modifier = Modifier
-                                        .padding(horizontal = 32.dp)
-                                        .fillMaxWidth(),
-                                    shortcuts = configState.shortcuts,
-                                    onClick = onClickShortcut,
-                                )
-                            }
-                        }
+                        RecordTriggerButtonRow(
+                            modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+                            onRecordTriggerClick = onRecordTriggerClick,
+                            recordTriggerState = recordTriggerState,
+                            onAdvancedTriggersClick = onAdvancedTriggersClick,
+                        )
                     }
                 }
 
@@ -302,48 +282,19 @@ private fun TriggerScreenHorizontal(
 ) {
     Surface(modifier = modifier) {
         when (configState) {
-            is ConfigTriggerState.Empty -> Row {
-                Text(
+            is ConfigTriggerState.Empty -> Column {
+                TriggerDiscoverScreen(
                     modifier = Modifier
-                        .widthIn(max = 400.dp)
-                        .padding(32.dp)
-                        .verticalScroll(state = rememberScrollState()),
-                    text = stringResource(R.string.triggers_recyclerview_placeholder),
-                    textAlign = TextAlign.Center,
+                        .weight(1f)
+                        .padding(16.dp)
                 )
-                Column {
-                    if (configState.shortcuts.isNotEmpty()) {
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                                .verticalScroll(state = rememberScrollState()),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center,
-                        ) {
-                            Text(
-                                text = stringResource(R.string.trigger_shortcuts_header),
-                                style = MaterialTheme.typography.titleSmall,
-                            )
 
-                            Spacer(Modifier.height(8.dp))
-
-                            ShortcutRow(
-                                modifier = Modifier
-                                    .padding(horizontal = 32.dp)
-                                    .fillMaxWidth(),
-                                shortcuts = configState.shortcuts,
-                                onClick = onClickShortcut,
-                            )
-                        }
-                    }
-
-                    RecordTriggerButtonRow(
-                        modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
-                        onRecordTriggerClick = onRecordTriggerClick,
-                        recordTriggerState = recordTriggerState,
-                        onAdvancedTriggersClick = onAdvancedTriggersClick,
-                    )
-                }
+                RecordTriggerButtonRow(
+                    modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+                    onRecordTriggerClick = onRecordTriggerClick,
+                    recordTriggerState = recordTriggerState,
+                    onAdvancedTriggersClick = onAdvancedTriggersClick,
+                )
             }
 
             is ConfigTriggerState.Loaded -> Row {
@@ -662,6 +613,25 @@ private fun VerticalEmptyPreview() {
     }
 }
 
+@Preview(device = Devices.PIXEL, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun VerticalEmptyDarkPreview() {
+    KeyMapperTheme {
+        TriggerScreenVertical(
+            configState = ConfigTriggerState.Empty(
+                shortcuts = setOf(
+                    ShortcutModel(
+                        icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),
+                        text = "Fingerprint gesture",
+                        data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
+                    ),
+                ),
+            ),
+            recordTriggerState = RecordTriggerState.Idle,
+        )
+    }
+}
+
 @Preview(widthDp = 800, heightDp = 300)
 @Composable
 private fun HorizontalPreview() {
@@ -687,7 +657,7 @@ private fun HorizontalEmptyPreview() {
                     ),
                 ),
 
-            ),
+                ),
             recordTriggerState = RecordTriggerState.Idle,
         )
     }

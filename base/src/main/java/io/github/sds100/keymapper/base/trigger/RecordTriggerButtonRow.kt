@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.trigger
 
+import android.content.res.Configuration
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -143,7 +144,10 @@ private fun AdvancedTriggersButton(
         modifier = modifier,
         onClick = onClick,
         enabled = isEnabled,
-        colors = IconButtonDefaults.iconButtonColors(containerColor = LocalCustomColorsPalette.current.amber)
+        colors = IconButtonDefaults.iconButtonColors(
+            containerColor = LocalCustomColorsPalette.current.amber,
+            contentColor = LocalCustomColorsPalette.current.onAmber
+        )
     ) {
         Icon(Icons.Outlined.ShoppingCart, contentDescription = null)
     }
@@ -165,6 +169,19 @@ private fun PreviewCountingDown() {
 @Preview(widthDp = 400)
 @Composable
 private fun PreviewStopped() {
+    KeyMapperTheme {
+        Surface {
+            RecordTriggerButtonRow(
+                modifier = Modifier.fillMaxWidth(),
+                recordTriggerState = RecordTriggerState.Idle,
+            )
+        }
+    }
+}
+
+@Preview(widthDp = 400, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun PreviewStoppedDark() {
     KeyMapperTheme {
         Surface {
             RecordTriggerButtonRow(

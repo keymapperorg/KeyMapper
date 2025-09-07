@@ -828,6 +828,7 @@ abstract class BaseConfigTriggerViewModel(
 }
 
 sealed class ConfigTriggerState {
+    // TODO remove. replace with "Add more" button that launches the discover bottom sheet
     abstract val shortcuts: Set<ShortcutModel<TriggerKeyShortcut>>
 
     data class Empty(
