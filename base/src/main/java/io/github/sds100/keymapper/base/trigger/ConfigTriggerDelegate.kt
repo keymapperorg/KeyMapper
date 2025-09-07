@@ -485,10 +485,6 @@ class ConfigTriggerDelegate {
         return trigger.copy(longPressDoubleVibration = enabled).validate()
     }
 
-    fun setTriggerWhenScreenOff(trigger: Trigger, enabled: Boolean): Trigger {
-        return trigger.copy(screenOffTrigger = enabled).validate()
-    }
-
     fun setTriggerFromOtherAppsEnabled(trigger: Trigger, enabled: Boolean): Trigger {
         return trigger.copy(triggerFromOtherApps = enabled).validate()
     }

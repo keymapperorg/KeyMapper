@@ -114,18 +114,6 @@ private fun Loaded(
 
         Spacer(Modifier.height(8.dp))
 
-        if (state.showScreenOffTrigger) {
-            CheckBoxText(
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .fillMaxWidth(),
-                text = stringResource(R.string.flag_detect_triggers_screen_off),
-                isChecked = state.screenOffTrigger,
-                onCheckedChange = callback::onScreenOffTriggerChanged,
-            )
-            Spacer(Modifier.height(8.dp))
-        }
-
         CheckBoxText(
             modifier = Modifier
                 .padding(horizontal = 8.dp)
@@ -352,7 +340,6 @@ interface KeyMapOptionsCallback {
     fun onVibrateDurationChanged(duration: Int) = run { }
     fun onVibrateChanged(checked: Boolean) = run { }
     fun onLongPressDoubleVibrationChanged(checked: Boolean) = run { }
-    fun onScreenOffTriggerChanged(checked: Boolean) = run { }
     fun onShowToastChanged(checked: Boolean) = run { }
     fun onTriggerFromOtherAppsChanged(checked: Boolean) = run {}
     fun onCreateShortcutClick() = run { }
@@ -387,9 +374,6 @@ private fun Preview() {
 
                         showLongPressDoubleVibration = true,
                         longPressDoubleVibration = false,
-
-                        showScreenOffTrigger = true,
-                        screenOffTrigger = false,
 
                         triggerFromOtherApps = true,
                         keyMapUid = "00000-00000-00000-0000000000000000000000000000000000",

@@ -211,7 +211,6 @@ class ChooseActionViewModel @Inject constructor(
             -> R.string.action_toggle_keyboard_message
 
             ActionId.SECURE_LOCK_DEVICE -> R.string.action_secure_lock_device_message
-            ActionId.POWER_ON_OFF_DEVICE -> R.string.action_power_on_off_device_message
 
             else -> null
         }

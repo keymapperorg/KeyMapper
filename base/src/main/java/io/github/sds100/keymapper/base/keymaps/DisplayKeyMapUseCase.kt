@@ -138,11 +138,6 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
     override suspend fun fixTriggerError(error: TriggerError) {
         when (error) {
             TriggerError.DND_ACCESS_DENIED -> fixError(SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY))
-            TriggerError.SCREEN_OFF_ROOT_DENIED -> fixError(
-                SystemError.PermissionDenied(
-                    Permission.ROOT,
-                ),
-            )
 
             TriggerError.CANT_DETECT_IN_PHONE_CALL -> fixError(KMError.CantDetectKeyEventsInPhoneCall)
             TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> fixError(

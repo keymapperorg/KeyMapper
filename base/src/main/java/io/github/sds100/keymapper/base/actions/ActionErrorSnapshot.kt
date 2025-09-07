@@ -156,13 +156,6 @@ class LazyActionErrorSnapshot(
                 return getAppError(action.packageName)
             }
 
-            is ActionData.InputKeyEvent ->
-                if (
-                    action.useShell && !isPermissionGranted(Permission.ROOT)
-                ) {
-                    return SystemError.PermissionDenied(Permission.ROOT)
-                }
-
             is ActionData.Sound.SoundFile -> {
                 soundsManager.getSound(action.soundUid).onFailure { error ->
                     return error

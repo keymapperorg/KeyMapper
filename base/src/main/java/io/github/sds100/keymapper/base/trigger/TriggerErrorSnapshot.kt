@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.base.trigger
 
-import android.os.Build
 import android.view.KeyEvent
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.requiresImeKeyEventForwardingInPhoneCall
@@ -57,16 +56,9 @@ data class TriggerErrorSnapshot(
             key is KeyEventTriggerKey && key.keyCode in keysThatRequireDndAccess
 
         if (requiresDndAccess) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !isDndAccessGranted) {
+            if (!isDndAccessGranted) {
                 return TriggerError.DND_ACCESS_DENIED
             }
-        }
-
-        if (keyMap.trigger.screenOffTrigger &&
-            !isRootGranted &&
-            keyMap.trigger.isDetectingWhenScreenOffAllowed()
-        ) {
-            return TriggerError.SCREEN_OFF_ROOT_DENIED
         }
 
         val containsDpadKey =

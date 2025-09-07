@@ -137,19 +137,20 @@ class ChooseConstraintViewModel @Inject constructor(
                 ConstraintId.APP_NOT_IN_FOREGROUND,
                 ConstraintId.APP_PLAYING_MEDIA,
                 ConstraintId.APP_NOT_PLAYING_MEDIA,
-                -> onSelectAppConstraint(constraintType)
+                    -> onSelectAppConstraint(constraintType)
 
                 ConstraintId.MEDIA_PLAYING -> returnResult.emit(Constraint.MediaPlaying())
                 ConstraintId.MEDIA_NOT_PLAYING -> returnResult.emit(Constraint.NoMediaPlaying())
 
                 ConstraintId.BT_DEVICE_CONNECTED,
                 ConstraintId.BT_DEVICE_DISCONNECTED,
-                -> onSelectBluetoothConstraint(
+                    -> onSelectBluetoothConstraint(
                     constraintType,
                 )
 
-                ConstraintId.SCREEN_ON -> onSelectScreenOnConstraint()
-                ConstraintId.SCREEN_OFF -> onSelectScreenOffConstraint()
+                ConstraintId.SCREEN_ON -> returnResult.emit(Constraint.ScreenOn())
+
+                ConstraintId.SCREEN_OFF -> returnResult.emit(Constraint.ScreenOff())
 
                 ConstraintId.ORIENTATION_PORTRAIT ->
                     returnResult.emit(Constraint.OrientationPortrait())
@@ -184,13 +185,13 @@ class ChooseConstraintViewModel @Inject constructor(
 
                 ConstraintId.WIFI_CONNECTED,
                 ConstraintId.WIFI_DISCONNECTED,
-                -> onSelectWifiConnectedConstraint(
+                    -> onSelectWifiConnectedConstraint(
                     constraintType,
                 )
 
                 ConstraintId.IME_CHOSEN,
                 ConstraintId.IME_NOT_CHOSEN,
-                -> onSelectImeChosenConstraint(constraintType)
+                    -> onSelectImeChosenConstraint(constraintType)
 
                 ConstraintId.DEVICE_IS_LOCKED ->
                     returnResult.emit(Constraint.DeviceIsLocked())
@@ -351,28 +352,6 @@ class ChooseConstraintViewModel @Inject constructor(
 
             else -> Unit
         }
-    }
-
-    private suspend fun onSelectScreenOnConstraint() {
-        val response = showDialog(
-            "screen_on_constraint_limitation",
-            DialogModel.Ok(getString(R.string.dialog_message_screen_constraints_limitation)),
-        )
-
-        response ?: return
-
-        returnResult.emit(Constraint.ScreenOn())
-    }
-
-    private suspend fun onSelectScreenOffConstraint() {
-        val response = showDialog(
-            "screen_on_constraint_limitation",
-            DialogModel.Ok(getString(R.string.dialog_message_screen_constraints_limitation)),
-        )
-
-        response ?: return
-
-        returnResult.emit(Constraint.ScreenOff())
     }
 
     private suspend fun onSelectBluetoothConstraint(type: ConstraintId) {

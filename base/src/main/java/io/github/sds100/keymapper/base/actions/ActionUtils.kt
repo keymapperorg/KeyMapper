@@ -852,12 +852,12 @@ object ActionUtils {
 }
 
 fun ActionData.canBeHeldDown(): Boolean = when (this) {
-    is ActionData.InputKeyEvent -> !useShell
+    is ActionData.InputKeyEvent -> true
     else -> false
 }
 
 fun ActionData.canUseImeToPerform(): Boolean = when (this) {
-    is ActionData.InputKeyEvent -> !useShell
+    is ActionData.InputKeyEvent -> true
     is ActionData.Text -> true
     else -> false
 }

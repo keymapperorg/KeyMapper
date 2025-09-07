@@ -46,46 +46,43 @@ class ActionUiHelper(
             }
 
             // only a key code can be inputted through the shell
-            if (action.useShell) {
-                getString(R.string.description_keyevent_through_shell, keyCodeString)
-            } else {
-                val metaStateString = buildString {
-                    for (label in KeyCodeStrings.MODIFIER_LABELS.entries) {
-                        val modifier = label.key
-                        val labelRes = label.value
 
-                        if (action.metaState.hasFlag(modifier)) {
-                            append("${getString(labelRes)} + ")
-                        }
+            val metaStateString = buildString {
+                for (label in KeyCodeStrings.MODIFIER_LABELS.entries) {
+                    val modifier = label.key
+                    val labelRes = label.value
+
+                    if (action.metaState.hasFlag(modifier)) {
+                        append("${getString(labelRes)} + ")
                     }
                 }
+            }
 
-                if (action.device != null) {
-                    val name = if (action.device.name.isBlank()) {
-                        getString(R.string.unknown_device_name)
-                    } else {
-                        action.device.name
-                    }
+            if (action.device != null) {
+                val name = if (action.device.name.isBlank()) {
+                    getString(R.string.unknown_device_name)
+                } else {
+                    action.device.name
+                }
 
-                    val nameToShow = if (showDeviceDescriptors) {
-                        InputDeviceUtils.appendDeviceDescriptorToName(
-                            action.device.descriptor,
-                            name,
-                        )
-                    } else {
-                        name
-                    }
-
-                    getString(
-                        R.string.description_keyevent_from_device,
-                        arrayOf(metaStateString, keyCodeString, nameToShow),
+                val nameToShow = if (showDeviceDescriptors) {
+                    InputDeviceUtils.appendDeviceDescriptorToName(
+                        action.device.descriptor,
+                        name,
                     )
                 } else {
-                    getString(
-                        R.string.description_keyevent,
-                        args = arrayOf(metaStateString, keyCodeString),
-                    )
+                    name
                 }
+
+                getString(
+                    R.string.description_keyevent_from_device,
+                    arrayOf(metaStateString, keyCodeString, nameToShow),
+                )
+            } else {
+                getString(
+                    R.string.description_keyevent,
+                    args = arrayOf(metaStateString, keyCodeString),
+                )
             }
         }
 
@@ -262,7 +259,7 @@ class ActionUiHelper(
                                 R.string.action_toggle_front_flashlight_with_strength,
                                 action.strengthPercent.toPercentString(),
 
-                            )
+                                )
                         } else {
                             getString(
                                 R.string.action_toggle_flashlight_with_strength,

@@ -105,7 +105,6 @@ class ConfigKeyEventActionViewModel @Inject constructor(
             keyEventState.value = KeyEventState(
                 Success(action.keyCode),
                 inputDevice,
-                useShell = action.useShell,
                 metaState = action.metaState,
             )
         }
@@ -119,10 +118,6 @@ class ConfigKeyEventActionViewModel @Inject constructor(
         }
 
         keyEventState.value = keyEventState.value.copy(keyCode = keyCodeState)
-    }
-
-    fun setUseShell(checked: Boolean) {
-        keyEventState.value = keyEventState.value.copy(useShell = checked)
     }
 
     @SuppressLint("NullSafeMutableLiveData")
@@ -157,7 +152,6 @@ class ConfigKeyEventActionViewModel @Inject constructor(
                 ActionData.InputKeyEvent(
                     keyCode = keyCode,
                     metaState = keyEventState.value.metaState,
-                    useShell = keyEventState.value.useShell,
                     device = device,
                 ),
             )
@@ -171,7 +165,6 @@ class ConfigKeyEventActionViewModel @Inject constructor(
     ): ConfigKeyEventUiState {
         val keyCode = state.keyCode
         val metaState = state.metaState
-        val useShell = state.useShell
         val chosenDevice = state.chosenDevice
 
         val keyCodeString = when (keyCode) {
@@ -226,9 +219,8 @@ class ConfigKeyEventActionViewModel @Inject constructor(
             keyCodeErrorMessage = keyCode.errorOrNull()?.getFullMessage(this),
             keyCodeLabel = keyCodeLabel,
             showKeyCodeLabel = keyCode.isSuccess,
-            isUseShellChecked = useShell,
-            isDevicePickerShown = !useShell,
-            isModifierListShown = !useShell,
+            isDevicePickerShown = true,
+            isModifierListShown = true,
             modifierListItems = modifierListItems,
             isDoneButtonEnabled = keyCode.isSuccess,
             deviceListItems = deviceListItems,
@@ -239,7 +231,6 @@ class ConfigKeyEventActionViewModel @Inject constructor(
     private data class KeyEventState(
         val keyCode: KMResult<Int> = KMError.EmptyText,
         val chosenDevice: InputDeviceInfo? = null,
-        val useShell: Boolean = false,
         val metaState: Int = 0,
     )
 }
@@ -249,7 +240,6 @@ data class ConfigKeyEventUiState(
     val keyCodeErrorMessage: String?,
     val keyCodeLabel: String,
     val showKeyCodeLabel: Boolean,
-    val isUseShellChecked: Boolean,
     val isDevicePickerShown: Boolean,
     val isModifierListShown: Boolean,
     val modifierListItems: List<CheckBoxListItem>,

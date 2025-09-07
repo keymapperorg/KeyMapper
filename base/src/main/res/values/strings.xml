@@ -71,10 +71,8 @@
     <string name="action_title_intent_send_broadcast">Send broadcast: %s</string>
 
     <string name="clipboard_label_keymap_uid">Key map id</string>
-    <string name="check_box_key_event_option_use_shell">Use shell (ROOT only)</string>
 
     <string name="trigger_error_dnd_access_denied">Permission required to work properly in Do Not Disturb mode!</string>
-    <string name="trigger_error_screen_off_root_permission_denied">The option to trigger when the screen is off needs root permission to work!</string>
     <string name="trigger_error_cant_detect_in_phone_call">This trigger won\'t work while ringing or in a phone call!</string>
     <string name="trigger_error_cant_detect_in_phone_call_explanation">Android doesn\'t let accessibility services detect volume button presses while your phone is ringing or it is in a phone call but it does let input method services detect them. Therefore, you must use one of the Key Mapper keyboards if you want this trigger to work.</string>
     <string name="trigger_error_gesture_stroke_count_too_high">Too many fingers to perform gesture due to android limitations.</string>
@@ -96,7 +94,6 @@
     <string name="description_open_app">Open %s</string>
     <string name="description_text_block">Type \'%s\'</string>
     <string name="description_keyevent">Input %s%s</string>
-    <string name="description_keyevent_through_shell">Input %s through shell</string>
     <string name="description_keyevent_from_device">Input %s%s from %s</string>
     <string name="description_url">Open %s</string>
     <string name="description_tap_coordinate_default">Tap screen (%d, %d)</string>
@@ -435,7 +432,6 @@
     <string name="dialog_message_bt_constraint_limitation">Android doesn\'t allow apps to get a list of connected (not paired) Bluetooth devices. Apps can only detect when they are connected and disconnected. So if your Bluetooth device is already connected to your device when the accessibility service starts, you will have to reconnect it for the app to know it is connected.</string>
     <string name="dialog_title_change_location_or_disable">Automatic backup</string>
     <string name="dialog_message_change_location_or_disable">Change location or turn off automatic back up?</string>
-    <string name="dialog_message_screen_constraints_limitation">Screen on/off constraints will only work if you have turned on the \"detect trigger when screen is off\" key map option. This option will only show for some keys (e.g volume buttons) and if you are rooted. See a list of supported keys on the Help page.</string>
     <string name="dialog_message_password_screen_lock_warning">If you have any other screen lock chosen, such as PIN or Pattern then you don\'t have to worry. But if you have a Password screen lock you will *NOT* be able to unlock your phone if you use the Key Mapper Basic Input Method because it doesn\'t have a GUI. You can grant Key Mapper WRITE_SECURE_SETTINGS permission so it can show a notification to switch to and from the keyboard. There is a guide on how to do this if you tap the question mark at the bottom of the screen.</string>
     <string name="dialog_message_select_compatible_ime">Select the input method for actions that require one. You can change this later by tapping \"Select keyboard for actions\" in the bottom menu of the home screen.</string>
     <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">You need to choose the \"Caps Lock to camera\" keyboard layout for your keyboard otherwise the Caps Lock key will still lock caps. You can find this setting in your device settings -> Languages and Input -> Physical Keyboard -> Tap on your keyboard -> Set Up Keyboard Layouts. This will remap the Caps Lock key to KEYCODE_CAMERA so Key Mapper can remap it properly.\n\nAfter you\'ve done this you must remove the Caps Lock trigger key and record the Caps Lock key again. It should say \"Camera\" instead of \"Caps Lock\" if you did the steps correctly.</string>
@@ -715,7 +711,6 @@
     <string name="flag_vibrate">Vibrate</string>
     <string name="flag_show_toast">Show an on-screen message</string>
     <string name="flag_long_press_double_vibration">Vibrate again on long press</string>
-    <string name="flag_detect_triggers_screen_off">Detect trigger when the screen is off</string>
 
     <string name="flag_repeat_build_description_start">Repeat</string>
     <string name="flag_repeat_build_description_limit">%dx</string>
@@ -1041,7 +1036,6 @@
     <string name="action_secure_lock_device_message">You will only be able to log back in with your PIN. The fingerprint scanner and face unlock will be disabled. This is the only reliable way I have found to lock non-rooted devices before Android Pie 9.0.</string>
 
     <string name="action_power_on_off_device">Sleep/wake device</string>
-    <string name="action_power_on_off_device_message">You must turn on the option to detect the trigger when the screen is off!</string>
 
     <string name="action_consume_keyevent">Do nothing</string>
 

@@ -61,7 +61,8 @@ data class ActionEntity(
         const val EXTRA_KEY_EVENT_META_STATE = "extra_meta_state"
         const val EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR = "extra_device_descriptor"
         const val EXTRA_KEY_EVENT_DEVICE_NAME = "extra_device_name"
-        const val EXTRA_KEY_EVENT_USE_SHELL = "extra_key_event_use_shell"
+
+//        const val EXTRA_KEY_EVENT_USE_SHELL = "extra_key_event_use_shell"
 
         const val EXTRA_IME_ID = "extra_ime_id"
         const val EXTRA_IME_NAME = "extra_ime_name"

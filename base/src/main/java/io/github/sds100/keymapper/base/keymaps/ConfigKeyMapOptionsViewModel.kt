@@ -66,10 +66,6 @@ class ConfigKeyMapOptionsViewModel(
         config.setLongPressDoubleVibrationEnabled(checked)
     }
 
-    override fun onScreenOffTriggerChanged(checked: Boolean) {
-        config.setTriggerWhenScreenOff(checked)
-    }
-
     override fun onShowToastChanged(checked: Boolean) {
         config.setShowToastEnabled(checked)
     }
@@ -166,9 +162,6 @@ class ConfigKeyMapOptionsViewModel(
             showLongPressDoubleVibration = keyMap.trigger.isLongPressDoubleVibrationAllowed(),
             longPressDoubleVibration = keyMap.trigger.longPressDoubleVibration,
 
-            showScreenOffTrigger = keyMap.trigger.isDetectingWhenScreenOffAllowed(),
-            screenOffTrigger = keyMap.trigger.screenOffTrigger,
-
             triggerFromOtherApps = keyMap.trigger.triggerFromOtherApps,
             keyMapUid = keyMap.uid,
             isLauncherShortcutButtonEnabled = createKeyMapShortcut.isSupported,
@@ -200,9 +193,6 @@ data class KeyMapOptionsState(
 
     val showLongPressDoubleVibration: Boolean,
     val longPressDoubleVibration: Boolean,
-
-    val showScreenOffTrigger: Boolean,
-    val screenOffTrigger: Boolean,
 
     val triggerFromOtherApps: Boolean,
     val keyMapUid: String,

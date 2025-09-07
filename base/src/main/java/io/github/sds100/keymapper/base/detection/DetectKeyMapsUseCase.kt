@@ -28,7 +28,6 @@ import io.github.sds100.keymapper.data.repositories.GroupRepository
 import io.github.sds100.keymapper.data.repositories.KeyMapRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.popup.ToastAdapter
-import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.vibrator.VibratorAdapter
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import kotlinx.coroutines.CoroutineScope
@@ -46,7 +45,6 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
     private val floatingButtonRepository: FloatingButtonRepository,
     private val groupRepository: GroupRepository,
     private val preferenceRepository: PreferenceRepository,
-    private val suAdapter: SuAdapter,
     private val volumeAdapter: VolumeAdapter,
     private val toastAdapter: ToastAdapter,
     private val resourceProvider: ResourceProvider,
@@ -135,14 +133,6 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
     override val keyMapsToTriggerFromOtherApps: Flow<List<KeyMap>> =
         allKeyMapList.map { keyMapList ->
             keyMapList.filter { it.keyMap.trigger.triggerFromOtherApps }.map { it.keyMap }
-        }.flowOn(Dispatchers.Default)
-
-    override val detectScreenOffTriggers: Flow<Boolean> =
-        combine(
-            allKeyMapList,
-            suAdapter.isRootGranted,
-        ) { keyMapList, isRootPermissionGranted ->
-            keyMapList.any { it.keyMap.trigger.screenOffTrigger } && isRootPermissionGranted
         }.flowOn(Dispatchers.Default)
 
     override val defaultLongPressDelay: Flow<Long> =
@@ -239,7 +229,6 @@ interface DetectKeyMapsUseCase {
     val allKeyMapList: Flow<List<DetectKeyMapModel>>
     val requestFingerprintGestureDetection: Flow<Boolean>
     val keyMapsToTriggerFromOtherApps: Flow<List<KeyMap>>
-    val detectScreenOffTriggers: Flow<Boolean>
 
     val defaultLongPressDelay: Flow<Long>
     val defaultDoublePressDelay: Flow<Long>

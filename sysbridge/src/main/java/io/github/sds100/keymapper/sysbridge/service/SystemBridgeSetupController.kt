@@ -86,7 +86,6 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
                 // This stops Key Mapper going back if they are turning on wireless debugging
                 // for another reason.
                 if (isWirelessDebuggingEnabled.value && setupAssistantStepState.value == SystemBridgeSetupStep.WIRELESS_DEBUGGING) {
-                    // TODO only go back if the ADB server is actually running. The first time wireless debugging is turned on in a new network, it shows a dialog
                     getKeyMapperAppTask()?.moveToFront()
                 }
             }

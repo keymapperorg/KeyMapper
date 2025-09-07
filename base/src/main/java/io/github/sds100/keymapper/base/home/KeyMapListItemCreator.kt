@@ -362,10 +362,6 @@ class KeyMapListItemCreator(
             labels.add(getString(R.string.flag_long_press_double_vibration))
         }
 
-        if (trigger.isDetectingWhenScreenOffAllowed() && trigger.screenOffTrigger) {
-            labels.add(getString(R.string.flag_detect_triggers_screen_off))
-        }
-
         if (trigger.triggerFromOtherApps) {
             labels.add(getString(R.string.flag_trigger_from_other_apps))
         }

@@ -22,7 +22,6 @@ data class Trigger(
     val mode: TriggerMode = TriggerMode.Undefined,
     val vibrate: Boolean = false,
     val longPressDoubleVibration: Boolean = false,
-    val screenOffTrigger: Boolean = false,
     val longPressDelay: Int? = null,
     val doublePressDelay: Int? = null,
     val vibrateDuration: Int? = null,
@@ -40,16 +39,6 @@ data class Trigger(
 
     fun isLongPressDoubleVibrationAllowed(): Boolean = (keys.size == 1 || (mode is TriggerMode.Parallel)) &&
         keys.getOrNull(0)?.clickType == ClickType.LONG_PRESS
-
-    /**
-     * Must check that it is not empty otherwise it would be true from the "all" check.
-     * It is not allowed if the key is an assistant button because it is assumed to be true
-     * anyway.
-     */
-    fun isDetectingWhenScreenOffAllowed(): Boolean {
-        // TODO triggers should always detect when screen is off if possible
-        return false
-    }
 
     fun isChangingSequenceTriggerTimeoutAllowed(): Boolean = keys.isNotEmpty() && keys.size > 1 && mode is TriggerMode.Sequence
 
@@ -126,7 +115,6 @@ object TriggerEntityMapper {
 
             triggerFromOtherApps = entity.flags.hasFlag(TriggerEntity.TRIGGER_FLAG_FROM_OTHER_APPS),
             showToast = entity.flags.hasFlag(TriggerEntity.TRIGGER_FLAG_SHOW_TOAST),
-            screenOffTrigger = entity.flags.hasFlag(TriggerEntity.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS),
         )
     }
 
@@ -183,10 +171,6 @@ object TriggerEntityMapper {
 
         if (trigger.isLongPressDoubleVibrationAllowed() && trigger.longPressDoubleVibration) {
             flags = flags.withFlag(TriggerEntity.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION)
-        }
-
-        if (trigger.isDetectingWhenScreenOffAllowed() && trigger.screenOffTrigger) {
-            flags = flags.withFlag(TriggerEntity.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS)
         }
 
         if (trigger.triggerFromOtherApps) {
