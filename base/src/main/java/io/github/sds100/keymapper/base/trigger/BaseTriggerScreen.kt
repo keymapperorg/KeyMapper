@@ -52,7 +52,11 @@ import io.github.sds100.keymapper.common.utils.State
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BaseTriggerScreen(modifier: Modifier = Modifier, viewModel: BaseConfigTriggerViewModel) {
+fun BaseTriggerScreen(
+    modifier: Modifier = Modifier,
+    viewModel: BaseConfigTriggerViewModel,
+    discoverScreenContent: @Composable () -> Unit = {}
+) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val setupGuiKeyboardState by viewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
     val recordTriggerState by viewModel.recordTriggerState.collectAsStateWithLifecycle()
@@ -121,6 +125,7 @@ fun BaseTriggerScreen(modifier: Modifier = Modifier, viewModel: BaseConfigTrigge
                     onMoveTriggerKey = viewModel::onMoveTriggerKey,
                     onFixErrorClick = viewModel::onTriggerErrorClick,
                     onClickShortcut = viewModel::onClickTriggerKeyShortcut,
+                    discoverScreenContent = discoverScreenContent
                 )
             } else {
                 TriggerScreenVertical(
@@ -137,6 +142,7 @@ fun BaseTriggerScreen(modifier: Modifier = Modifier, viewModel: BaseConfigTrigge
                     onMoveTriggerKey = viewModel::onMoveTriggerKey,
                     onFixErrorClick = viewModel::onTriggerErrorClick,
                     onClickShortcut = viewModel::onClickTriggerKeyShortcut,
+                    discoverScreenContent = discoverScreenContent
                 )
             }
         }
@@ -179,6 +185,7 @@ private fun TriggerScreenVertical(
     onMoveTriggerKey: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     onFixErrorClick: (TriggerError) -> Unit = {},
     onClickShortcut: (TriggerKeyShortcut) -> Unit = {},
+    discoverScreenContent: @Composable () -> Unit = {}
 ) {
     Surface(modifier = modifier) {
         Column {
@@ -187,11 +194,13 @@ private fun TriggerScreenVertical(
             when (configState) {
                 is ConfigTriggerState.Empty -> {
                     Column {
-                        TriggerDiscoverScreen(
+                        Box(
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(16.dp)
-                        )
+                        ) {
+                            discoverScreenContent()
+                        }
 
                         RecordTriggerButtonRow(
                             modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
@@ -279,18 +288,24 @@ private fun TriggerScreenHorizontal(
     onMoveTriggerKey: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     onFixErrorClick: (TriggerError) -> Unit = {},
     onClickShortcut: (TriggerKeyShortcut) -> Unit = {},
+    discoverScreenContent: @Composable () -> Unit = {}
 ) {
     Surface(modifier = modifier) {
         when (configState) {
-            is ConfigTriggerState.Empty -> Column {
-                TriggerDiscoverScreen(
+            is ConfigTriggerState.Empty -> Row {
+                Box(
                     modifier = Modifier
                         .weight(1f)
                         .padding(16.dp)
-                )
+                ) {
+                    discoverScreenContent()
+                }
 
                 RecordTriggerButtonRow(
-                    modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+                    modifier = Modifier
+                        .align(Alignment.Bottom)
+                        .weight(1f)
+                        .padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
                     onRecordTriggerClick = onRecordTriggerClick,
                     recordTriggerState = recordTriggerState,
                     onAdvancedTriggersClick = onAdvancedTriggersClick,
@@ -579,6 +594,9 @@ private fun VerticalPreview() {
         TriggerScreenVertical(
             configState = previewState,
             recordTriggerState = RecordTriggerState.Idle,
+            discoverScreenContent = {
+                TriggerDiscoverScreen()
+            }
         )
     }
 }
@@ -590,6 +608,9 @@ private fun VerticalPreviewTiny() {
         TriggerScreenVertical(
             configState = previewState,
             recordTriggerState = RecordTriggerState.Idle,
+            discoverScreenContent = {
+                TriggerDiscoverScreen()
+            }
         )
     }
 }
@@ -609,6 +630,9 @@ private fun VerticalEmptyPreview() {
                 ),
             ),
             recordTriggerState = RecordTriggerState.Idle,
+            discoverScreenContent = {
+                TriggerDiscoverScreen()
+            }
         )
     }
 }
@@ -628,6 +652,9 @@ private fun VerticalEmptyDarkPreview() {
                 ),
             ),
             recordTriggerState = RecordTriggerState.Idle,
+            discoverScreenContent = {
+                TriggerDiscoverScreen()
+            }
         )
     }
 }
@@ -639,6 +666,9 @@ private fun HorizontalPreview() {
         TriggerScreenHorizontal(
             configState = previewState,
             recordTriggerState = RecordTriggerState.Idle,
+            discoverScreenContent = {
+                TriggerDiscoverScreen()
+            }
         )
     }
 }
@@ -656,9 +686,11 @@ private fun HorizontalEmptyPreview() {
                         data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
                     ),
                 ),
-
-                ),
+            ),
             recordTriggerState = RecordTriggerState.Idle,
+            discoverScreenContent = {
+                TriggerDiscoverScreen()
+            }
         )
     }
 }

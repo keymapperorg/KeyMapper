@@ -48,8 +48,8 @@ fun RecordTriggerButtonRow(
     recordTriggerState: RecordTriggerState,
     onAdvancedTriggersClick: () -> Unit = {},
 ) {
-    Column {
-        Row(modifier, verticalAlignment = Alignment.CenterVertically) {
+    Column(modifier = modifier) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             RecordTriggerButton(
                 modifier = Modifier.weight(1f),
                 recordTriggerState,

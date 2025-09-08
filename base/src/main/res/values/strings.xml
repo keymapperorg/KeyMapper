@@ -1298,7 +1298,7 @@
     <string name="customer_email_subject" translatable="false">Key Mapper Pro query</string>
     <string name="customer_email_body" translatable="false">Please fill the following information so I can help you.\n\n1. Device model:\n2. Android version:\n3. Key maps (make a back up in the home screen menu):\n4. Screenshot of Key Mapper home screen:\n5. Describe the problem you are having:</string>
     <string name="purchase_thank_you_title">Thank you for supporting the app\u00A0❤️!</string>
-    <string name="purchase_thank_you_message">Your purchase was successful. As a paying user of Key\u00A0Mapper you will receive priority support to help you use the app. There is now a button on this page to contact the developer.</string>
+    <string name="purchase_thank_you_message">Your purchase was successful. As a paying user of Key\u00A0Mapper you will receive priority support to help you use the app. There is now a button in the shop to contact the developer.</string>
     <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
     <string name="purchasing_download_key_mapper_from_google_play">Download Play build</string>
 
@@ -1674,12 +1674,6 @@
     <string name="trigger_discover_shortcut_custom">Custom</string>
     <string name="trigger_discover_shortcut_notch">Notch</string>
     <string name="trigger_discover_shortcut_lock_screen">Lock screen</string>
-
-    <string name="trigger_discover_promo_title">Level up your phone ⚡</string>
-    <string name="trigger_discover_promo_description">Floating buttons give you instant shortcuts in any app, game or lock screen — no menus, no waiting. Your support keeps Key Mapper alive ❤️</string>
-    <string name="trigger_discover_promo_see_action">See it in action</string>
-    <string name="trigger_discover_promo_dismiss">Dismiss</string>
-    <string name="trigger_discover_promo_unlock">Unlock for just %s</string>
     <!-- Trigger Discover Screen -->
 
 </resources>

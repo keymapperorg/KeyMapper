@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.trigger
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,6 +48,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.icons.VoiceSelection
 fun TriggerDiscoverScreen(
     modifier: Modifier = Modifier,
     onShortcutClick: (TriggerDiscoverShortcut) -> Unit = {},
+    showFloatingButtons: Boolean = false
 ) {
     val customColors = LocalCustomColorsPalette.current
 
@@ -126,28 +128,30 @@ fun TriggerDiscoverScreen(
             onShortcutClick = onShortcutClick,
         )
 
-        TriggerSection(
-            title = stringResource(R.string.trigger_discover_section_floating_buttons),
-            shortcuts = listOf(
-                ShortcutData(
-                    TriggerDiscoverShortcut.CUSTOM,
-                    stringResource(R.string.trigger_discover_shortcut_custom),
-                    Icons.Outlined.BubbleChart
-                ),
+        AnimatedVisibility(visible = showFloatingButtons) {
+            TriggerSection(
+                title = stringResource(R.string.trigger_discover_section_floating_buttons),
+                shortcuts = listOf(
+                    ShortcutData(
+                        TriggerDiscoverShortcut.CUSTOM,
+                        stringResource(R.string.trigger_discover_shortcut_custom),
+                        Icons.Outlined.BubbleChart
+                    ),
 //                ShortcutData(
 //                    TriggerDiscoverShortcut.NOTCH,
 //                    stringResource(R.string.trigger_discover_shortcut_notch),
 //                    Icons.Default.TouchApp
 //                ),
-                ShortcutData(
-                    TriggerDiscoverShortcut.LOCK_SCREEN,
-                    stringResource(R.string.trigger_discover_shortcut_lock_screen),
-                    Icons.Default.PhoneAndroid
-                )
-            ),
-            onShortcutClick = onShortcutClick,
-            backgroundColor = customColors.amberContainer
-        )
+                    ShortcutData(
+                        TriggerDiscoverShortcut.LOCK_SCREEN,
+                        stringResource(R.string.trigger_discover_shortcut_lock_screen),
+                        Icons.Default.PhoneAndroid
+                    )
+                ),
+                onShortcutClick = onShortcutClick,
+                backgroundColor = customColors.amberContainer
+            )
+        }
     }
 }
 
