@@ -61,14 +61,6 @@ class MainFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         navigationProvider.setupFragmentNavigation(this)
-
-        navController = NavHostController(requireContext()).apply {
-            navigatorProvider.addNavigator(ComposeNavigator())
-            navigatorProvider.addNavigator(DialogNavigator())
-        }
-        if (savedInstanceState != null) {
-            navController.restoreState(savedInstanceState)
-        }
     }
 
     override fun onCreateView(
@@ -83,6 +75,18 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        navController = NavHostController(requireContext()).apply {
+            navigatorProvider.addNavigator(ComposeNavigator())
+            navigatorProvider.addNavigator(DialogNavigator())
+
+            if (savedInstanceState == null) {
+                restoreState(navigationProvider.savedState)
+                navigationProvider.savedState = null
+            } else {
+                restoreState(savedInstanceState)
+            }
+        }
 
         composeView.apply {
             // Dispose of the Composition when the view's LifecycleOwner
@@ -109,8 +113,17 @@ class MainFragment : Fragment() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
         navController.saveState()?.let(outState::putAll)
+
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onDestroyView() {
+        // onSaveInstanceState is only called when the activity's onSaveInstanceState method
+        // is called so use our own place to save the navigation state
+        navigationProvider.savedState = navController.saveState()
+
+        super.onDestroyView()
     }
 
     private fun NavGraphBuilder.composableDestinations(navController: NavController) {

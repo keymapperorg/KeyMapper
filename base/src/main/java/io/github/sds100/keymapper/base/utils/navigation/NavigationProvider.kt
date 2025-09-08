@@ -15,6 +15,7 @@ import androidx.navigation.NavDirections
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.fragment.findNavController
+import androidx.savedstate.SavedState
 import io.github.sds100.keymapper.base.NavBaseAppDirections
 import io.github.sds100.keymapper.base.actions.keyevent.ChooseKeyCodeFragment
 import io.github.sds100.keymapper.base.actions.keyevent.ConfigKeyEventActionFragment
@@ -87,6 +88,8 @@ class NavigationProviderImpl @Inject constructor() : NavigationProvider {
 
     private val _popBackStack = MutableStateFlow<Unit?>(null)
     val popBackStack: StateFlow<Unit?> = _popBackStack.asStateFlow()
+
+    var savedState: SavedState? = null
 
     fun handledPop() {
         _popBackStack.update { null }
