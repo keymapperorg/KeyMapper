@@ -622,7 +622,7 @@ abstract class BaseConfigTriggerViewModel(
 
                 is RecordTriggerState.Completed,
                 RecordTriggerState.Idle,
-                -> recordTrigger.startRecording()
+                    -> recordTrigger.startRecording()
             }
 
             // Show dialog if the accessibility service is disabled or crashed
@@ -819,8 +819,22 @@ abstract class BaseConfigTriggerViewModel(
         onboarding.neverShowNoKeysRecordedBottomSheet()
     }
 
-    fun onSkipTapTargetClick() {
-        onboarding.skipTapTargetOnboarding()
+    open fun onDiscoverShortcutClick(shortcut: TriggerDiscoverShortcut) {
+        when (shortcut) {
+            TriggerDiscoverShortcut.VOLUME -> {
+
+            }
+
+            TriggerDiscoverShortcut.ASSISTANT -> TODO()
+            TriggerDiscoverShortcut.POWER -> TODO()
+            TriggerDiscoverShortcut.FINGERPRINT_GESTURE -> TODO()
+            TriggerDiscoverShortcut.KEYBOARD -> TODO()
+            TriggerDiscoverShortcut.MOUSE -> TODO()
+            TriggerDiscoverShortcut.GAMEPAD -> TODO()
+            TriggerDiscoverShortcut.OTHER -> TODO()
+
+            else -> throw UnsupportedOperationException("Unhandled shortcut: $shortcut")
+        }
     }
 
     abstract fun onEditFloatingButtonClick()

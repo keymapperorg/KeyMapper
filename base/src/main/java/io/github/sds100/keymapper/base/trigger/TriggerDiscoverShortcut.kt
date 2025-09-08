@@ -9,7 +9,6 @@ enum class TriggerDiscoverShortcut {
     MOUSE,
     GAMEPAD,
     OTHER,
-    CUSTOM,
-    NOTCH,
-    LOCK_SCREEN
+    FLOATING_BUTTON_CUSTOM,
+    FLOATING_BUTTON_LOCK_SCREEN
 }

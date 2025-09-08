@@ -133,7 +133,7 @@ fun TriggerDiscoverScreen(
                 title = stringResource(R.string.trigger_discover_section_floating_buttons),
                 shortcuts = listOf(
                     ShortcutData(
-                        TriggerDiscoverShortcut.CUSTOM,
+                        TriggerDiscoverShortcut.FLOATING_BUTTON_CUSTOM,
                         stringResource(R.string.trigger_discover_shortcut_custom),
                         Icons.Outlined.BubbleChart
                     ),
@@ -143,7 +143,7 @@ fun TriggerDiscoverScreen(
 //                    Icons.Default.TouchApp
 //                ),
                     ShortcutData(
-                        TriggerDiscoverShortcut.LOCK_SCREEN,
+                        TriggerDiscoverShortcut.FLOATING_BUTTON_LOCK_SCREEN,
                         stringResource(R.string.trigger_discover_shortcut_lock_screen),
                         Icons.Default.PhoneAndroid
                     )
