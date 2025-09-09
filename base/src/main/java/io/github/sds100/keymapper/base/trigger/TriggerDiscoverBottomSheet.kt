@@ -28,6 +28,7 @@ fun TriggerDiscoverBottomSheet(
     modifier: Modifier = Modifier,
     sheetState: SheetState,
     onDismissRequest: () -> Unit = {},
+    content: @Composable () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -42,11 +43,9 @@ fun TriggerDiscoverBottomSheet(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            TriggerDiscoverScreen(
+            content()
 
-            )
-
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            Row(modifier = Modifier.fillMaxWidth()) {
                 OutlinedButton(
                     onClick = {
                         scope.launch {
@@ -76,6 +75,7 @@ private fun PreviewNoKeyRecordedComplete() {
 
         TriggerDiscoverBottomSheet(
             sheetState = sheetState,
+            content = { TriggerDiscoverScreen(showFloatingButtons = true) }
         )
     }
 }

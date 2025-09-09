@@ -27,6 +27,7 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -49,6 +50,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.icons.ActionKey
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.rememberDragDropState
 import io.github.sds100.keymapper.common.utils.State
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,6 +59,7 @@ fun BaseTriggerScreen(
     viewModel: BaseConfigTriggerViewModel,
     discoverScreenContent: @Composable () -> Unit = {}
 ) {
+    val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val setupGuiKeyboardState by viewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
     val recordTriggerState by viewModel.recordTriggerState.collectAsStateWithLifecycle()
@@ -66,6 +69,18 @@ fun BaseTriggerScreen(
             sheetState = sheetState,
             onDismissRequest = {
                 viewModel.showDiscoverTriggersBottomSheet = false
+            },
+            content = {
+                TriggerDiscoverScreen(
+                    showFloatingButtons = true,
+                    onShortcutClick = { shortcut ->
+                        scope.launch {
+                            sheetState.hide()
+                            viewModel.showDiscoverTriggersBottomSheet = false
+                            viewModel.onDiscoverShortcutClick(shortcut)
+                        }
+                    }
+                )
             }
         )
     }
@@ -418,6 +433,7 @@ private fun TriggerList(
         modifier = modifier,
         state = lazyListState,
         contentPadding = PaddingValues(vertical = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         itemsIndexed(
             triggerList,
