@@ -144,6 +144,9 @@ abstract class BaseConfigTriggerViewModel(
     )
 
     var showAdvancedTriggersBottomSheet: Boolean by mutableStateOf(false)
+    var showDiscoverTriggersBottomSheet: Boolean by mutableStateOf(false)
+
+    // TODO replace with tutorial bottom sheet
     var showDpadTriggerSetupBottomSheet: Boolean by mutableStateOf(false)
     var showNoKeysRecordedBottomSheet: Boolean by mutableStateOf(false)
 
@@ -684,10 +687,9 @@ abstract class BaseConfigTriggerViewModel(
                 key.clickType
             }
 
-            val linkType = when {
-                trigger.mode is TriggerMode.Sequence && (index < trigger.keys.lastIndex) -> LinkType.ARROW
-                (index < trigger.keys.lastIndex) -> LinkType.PLUS
-                else -> LinkType.HIDDEN
+            val linkType = when (trigger.mode) {
+                is TriggerMode.Sequence -> LinkType.ARROW
+                else -> LinkType.PLUS
             }
 
             when (key) {

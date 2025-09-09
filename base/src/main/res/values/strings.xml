@@ -1492,6 +1492,7 @@
     <string name="trigger_use_scan_code_button_enabled">Use scan code %d</string>
     <string name="trigger_use_scan_code_button_disabled">No scan code saved</string>
     <string name="trigger_record_with_pro_mode">Use PRO mode</string>
+    <string name="trigger_list_add_more_button">Add more</string>
 
     <!--  Action screen  -->
     <string name="action_list_item_remove">Remove</string>

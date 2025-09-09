@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -22,9 +21,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -41,12 +39,14 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.keymaps.ClickType
+import io.github.sds100.keymapper.base.keymaps.ShortcutButton
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
-import io.github.sds100.keymapper.base.keymaps.ShortcutRow
 import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.DraggableItem
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.ActionKey
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.rememberDragDropState
 import io.github.sds100.keymapper.common.utils.State
 
@@ -61,9 +61,17 @@ fun BaseTriggerScreen(
     val setupGuiKeyboardState by viewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
     val recordTriggerState by viewModel.recordTriggerState.collectAsStateWithLifecycle()
 
+    if (viewModel.showDiscoverTriggersBottomSheet) {
+        TriggerDiscoverBottomSheet(
+            sheetState = sheetState,
+            onDismissRequest = {
+                viewModel.showDiscoverTriggersBottomSheet = false
+            }
+        )
+    }
+
     if (viewModel.showDpadTriggerSetupBottomSheet) {
         DpadTriggerSetupBottomSheet(
-            modifier = Modifier.systemBarsPadding(),
             onDismissRequest = {
                 viewModel.showDpadTriggerSetupBottomSheet = false
             },
@@ -77,7 +85,6 @@ fun BaseTriggerScreen(
 
     if (viewModel.showNoKeysRecordedBottomSheet) {
         NoKeysRecordedBottomSheet(
-            modifier = Modifier.systemBarsPadding(),
             onDismissRequest = {
                 viewModel.showNoKeysRecordedBottomSheet = false
             },
@@ -90,7 +97,6 @@ fun BaseTriggerScreen(
 
     if (triggerKeyOptionsState != null) {
         TriggerKeyOptionsBottomSheet(
-            modifier = Modifier.systemBarsPadding(),
             sheetState = sheetState,
             state = triggerKeyOptionsState!!,
             onDismissRequest = viewModel::onDismissTriggerKeyOptions,
@@ -124,7 +130,9 @@ fun BaseTriggerScreen(
                     onSelectSequenceMode = viewModel::onSequenceRadioButtonChecked,
                     onMoveTriggerKey = viewModel::onMoveTriggerKey,
                     onFixErrorClick = viewModel::onTriggerErrorClick,
-                    onClickShortcut = viewModel::onClickTriggerKeyShortcut,
+                    onAddMoreTriggerKeysClick = {
+                        viewModel.showDiscoverTriggersBottomSheet = true
+                    },
                     discoverScreenContent = discoverScreenContent
                 )
             } else {
@@ -141,7 +149,9 @@ fun BaseTriggerScreen(
                     onSelectSequenceMode = viewModel::onSequenceRadioButtonChecked,
                     onMoveTriggerKey = viewModel::onMoveTriggerKey,
                     onFixErrorClick = viewModel::onTriggerErrorClick,
-                    onClickShortcut = viewModel::onClickTriggerKeyShortcut,
+                    onAddMoreTriggerKeysClick = {
+                        viewModel.showDiscoverTriggersBottomSheet = true
+                    },
                     discoverScreenContent = discoverScreenContent
                 )
             }
@@ -184,7 +194,7 @@ private fun TriggerScreenVertical(
     onAdvancedTriggersClick: () -> Unit = {},
     onMoveTriggerKey: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     onFixErrorClick: (TriggerError) -> Unit = {},
-    onClickShortcut: (TriggerKeyShortcut) -> Unit = {},
+    onAddMoreTriggerKeysClick: () -> Unit = {},
     discoverScreenContent: @Composable () -> Unit = {}
 ) {
     Surface(modifier = modifier) {
@@ -217,13 +227,12 @@ private fun TriggerScreenVertical(
                     TriggerList(
                         modifier = Modifier.weight(1f),
                         triggerList = configState.triggerKeys,
-                        shortcuts = configState.shortcuts,
                         isReorderingEnabled = configState.isReorderingEnabled,
                         onEditClick = onEditClick,
                         onRemoveClick = onRemoveClick,
                         onMove = onMoveTriggerKey,
-                        onClickShortcut = onClickShortcut,
                         onFixErrorClick = onFixErrorClick,
+                        onAddMoreClick = onAddMoreTriggerKeysClick
                     )
 
                     if (configState.clickTypeButtons.isNotEmpty()) {
@@ -287,8 +296,8 @@ private fun TriggerScreenHorizontal(
     onAdvancedTriggersClick: () -> Unit = {},
     onMoveTriggerKey: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     onFixErrorClick: (TriggerError) -> Unit = {},
-    onClickShortcut: (TriggerKeyShortcut) -> Unit = {},
-    discoverScreenContent: @Composable () -> Unit = {}
+
+    onAddMoreTriggerKeysClick: () -> Unit = {}, discoverScreenContent: @Composable () -> Unit = {}
 ) {
     Surface(modifier = modifier) {
         when (configState) {
@@ -318,13 +327,12 @@ private fun TriggerScreenHorizontal(
                         .fillMaxHeight()
                         .widthIn(max = 400.dp),
                     triggerList = configState.triggerKeys,
-                    shortcuts = configState.shortcuts,
                     isReorderingEnabled = configState.isReorderingEnabled,
                     onEditClick = onEditClick,
                     onRemoveClick = onRemoveClick,
                     onMove = onMoveTriggerKey,
-                    onClickShortcut = onClickShortcut,
                     onFixErrorClick = onFixErrorClick,
+                    onAddMoreClick = onAddMoreTriggerKeysClick
                 )
 
                 Spacer(Modifier.height(8.dp))
@@ -385,20 +393,19 @@ private fun TriggerScreenHorizontal(
 private fun TriggerList(
     modifier: Modifier = Modifier,
     triggerList: List<TriggerKeyListItemModel>,
-    shortcuts: Set<ShortcutModel<TriggerKeyShortcut>>,
     isReorderingEnabled: Boolean,
     onRemoveClick: (String) -> Unit,
     onEditClick: (String) -> Unit,
     onFixErrorClick: (TriggerError) -> Unit,
     onMove: (fromIndex: Int, toIndex: Int) -> Unit,
-    onClickShortcut: (TriggerKeyShortcut) -> Unit,
+    onAddMoreClick: () -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
     val dragDropState = rememberDragDropState(
         lazyListState = lazyListState,
         onMove = onMove,
-        // Do not drag and drop the row of shortcuts
-        ignoreLastItems = if (shortcuts.isEmpty()) {
+        // Do not drag and drop the "add more" button
+        ignoreLastItems = if (triggerList.isEmpty()) {
             0
         } else {
             1
@@ -436,24 +443,15 @@ private fun TriggerList(
             }
         }
 
-        if (shortcuts.isNotEmpty()) {
-            item(key = "shortcuts", contentType = "shortcuts") {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = stringResource(R.string.trigger_shortcuts_header),
-                        style = MaterialTheme.typography.titleSmall,
-                    )
-
-                    Spacer(Modifier.height(8.dp))
-
-                    ShortcutRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 32.dp),
-                        shortcuts = shortcuts,
-                        onClick = { onClickShortcut(it) },
-                    )
-                }
+        if (triggerList.isNotEmpty()) {
+            item(key = "add_more", contentType = "add_more") {
+                ShortcutButton(
+                    onClick = onAddMoreClick,
+                    text = stringResource(R.string.trigger_list_add_more_button),
+                    icon = {
+                        Icon(KeyMapperIcons.ActionKey, contentDescription = null)
+                    }
+                )
             }
         }
     }
@@ -560,7 +558,7 @@ private val sampleList = listOf(
         id = "id3",
         assistantType = AssistantTriggerType.DEVICE,
         clickType = ClickType.DOUBLE_PRESS,
-        linkType = LinkType.HIDDEN,
+        linkType = LinkType.PLUS,
         error = null,
     ),
 )

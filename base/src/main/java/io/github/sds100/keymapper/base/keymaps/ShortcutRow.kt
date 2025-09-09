@@ -76,7 +76,7 @@ fun <T> ShortcutRow(
 }
 
 @Composable
-private fun ShortcutButton(
+fun ShortcutButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     text: String,
