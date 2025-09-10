@@ -31,7 +31,7 @@ class AppHiltModule {
     @Provides
     fun provideBuildConfigProvider(): BuildConfigProvider = object : BuildConfigProvider {
         override val minApi: Int
-            get() = Build.VERSION_CODES.LOLLIPOP
+            get() = Build.VERSION_CODES.O
         override val maxApi: Int
             get() = 1000
         override val packageName: String
