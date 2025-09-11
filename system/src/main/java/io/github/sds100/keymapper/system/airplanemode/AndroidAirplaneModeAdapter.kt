@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.provider.Settings
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.SettingsUtils
@@ -21,7 +22,7 @@ class AndroidAirplaneModeAdapter @Inject constructor(
 ) : AirplaneModeAdapter {
 
     override suspend fun enable(): KMResult<*> {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        return if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             systemBridgeConnectionManager.run { bridge -> bridge.setAirplaneMode(true) }
         } else {
             val success = SettingsUtils.putGlobalSetting(ctx, Settings.Global.AIRPLANE_MODE_ON, 1)

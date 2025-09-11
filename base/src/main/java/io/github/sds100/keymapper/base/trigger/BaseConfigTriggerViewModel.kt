@@ -68,13 +68,15 @@ abstract class BaseConfigTriggerViewModel(
     private val purchasingManager: PurchasingManager,
     private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
+    triggerSetupDelegate: TriggerSetupDelegate,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
-    NavigationProvider by navigationProvider {
+    NavigationProvider by navigationProvider,
+    TriggerSetupDelegate by triggerSetupDelegate {
 
     companion object {
         private const val DEVICE_ID_ANY = "any"
@@ -146,7 +148,7 @@ abstract class BaseConfigTriggerViewModel(
     var showAdvancedTriggersBottomSheet: Boolean by mutableStateOf(false)
     var showDiscoverTriggersBottomSheet: Boolean by mutableStateOf(false)
 
-    // TODO replace with tutorial bottom sheet
+    // TODO replace both of these with trigger setup bottom sheet
     var showDpadTriggerSetupBottomSheet: Boolean by mutableStateOf(false)
     var showNoKeysRecordedBottomSheet: Boolean by mutableStateOf(false)
 
@@ -617,7 +619,7 @@ abstract class BaseConfigTriggerViewModel(
         viewModelScope.launch {
             val recordTriggerState = recordTrigger.state.firstOrNull() ?: return@launch
 
-            val result = when (recordTriggerState) {
+            val result: KMResult<*> = when (recordTriggerState) {
                 is RecordTriggerState.CountingDown -> {
                     isRecordingCompletionUserInitiated = true
                     recordTrigger.stopRecording()
@@ -626,6 +628,11 @@ abstract class BaseConfigTriggerViewModel(
                 is RecordTriggerState.Completed,
                 RecordTriggerState.Idle,
                     -> recordTrigger.startRecording()
+            }
+
+            // Dismiss the trigger setup screen if recording is clicked.
+            result.onSuccess {
+                onDismissTriggerSetup()
             }
 
             // Show dialog if the accessibility service is disabled or crashed
@@ -819,24 +826,6 @@ abstract class BaseConfigTriggerViewModel(
 
     fun onNeverShowNoKeysRecordedClick() {
         onboarding.neverShowNoKeysRecordedBottomSheet()
-    }
-
-    open fun onDiscoverShortcutClick(shortcut: TriggerDiscoverShortcut) {
-        when (shortcut) {
-            TriggerDiscoverShortcut.VOLUME -> {
-
-            }
-
-            TriggerDiscoverShortcut.ASSISTANT -> TODO()
-            TriggerDiscoverShortcut.POWER -> TODO()
-            TriggerDiscoverShortcut.FINGERPRINT_GESTURE -> TODO()
-            TriggerDiscoverShortcut.KEYBOARD -> TODO()
-            TriggerDiscoverShortcut.MOUSE -> TODO()
-            TriggerDiscoverShortcut.GAMEPAD -> TODO()
-            TriggerDiscoverShortcut.OTHER -> TODO()
-
-            else -> throw UnsupportedOperationException("Unhandled shortcut: $shortcut")
-        }
     }
 
     abstract fun onEditFloatingButtonClick()

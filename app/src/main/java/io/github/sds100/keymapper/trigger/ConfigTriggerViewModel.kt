@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.base.trigger.BaseConfigTriggerViewModel
 import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCase
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
+import io.github.sds100.keymapper.base.trigger.TriggerSetupDelegate
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
@@ -25,6 +26,7 @@ class ConfigTriggerViewModel @Inject constructor(
     private val purchasingManager: PurchasingManager,
     private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
+    triggerSetupDelegate: TriggerSetupDelegate,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
@@ -37,6 +39,7 @@ class ConfigTriggerViewModel @Inject constructor(
     purchasingManager = purchasingManager,
     setupGuiKeyboard = setupGuiKeyboard,
     fingerprintGesturesSupported = fingerprintGesturesSupported,
+    triggerSetupDelegate = triggerSetupDelegate,
     resourceProvider = resourceProvider,
     navigationProvider = navigationProvider,
     dialogProvider = dialogProvider,

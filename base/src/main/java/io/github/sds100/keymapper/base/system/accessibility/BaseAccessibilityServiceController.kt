@@ -23,6 +23,7 @@ import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.TriggerKeyMapEvent
 import io.github.sds100.keymapper.base.promode.SystemBridgeSetupAssistantController
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.minusFlag
@@ -102,7 +103,7 @@ abstract class BaseAccessibilityServiceController(
     val accessibilityNodeRecorder = accessibilityNodeRecorderFactory.create(service)
 
     private val setupAssistantController: SystemBridgeSetupAssistantController? =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             setupAssistantControllerFactory.create(service.lifecycleScope, service)
         } else {
             null
@@ -343,7 +344,7 @@ abstract class BaseAccessibilityServiceController(
             relayServiceCallback,
         )
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             setupAssistantController?.onServiceConnected()
         }
     }
@@ -353,7 +354,7 @@ abstract class BaseAccessibilityServiceController(
         keyEventRelayServiceWrapper.unregisterClient(CALLBACK_ID_ACCESSIBILITY_SERVICE)
         accessibilityNodeRecorder.teardown()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             setupAssistantController?.teardown()
         }
     }
@@ -396,7 +397,7 @@ abstract class BaseAccessibilityServiceController(
     open fun onAccessibilityEvent(event: AccessibilityEvent) {
         accessibilityNodeRecorder.onAccessibilityEvent(event)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             setupAssistantController?.onAccessibilityEvent(event)
         }
 

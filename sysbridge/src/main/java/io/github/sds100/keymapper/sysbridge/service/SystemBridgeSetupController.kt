@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.KeyMapperClassProvider
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.isSuccess
@@ -322,7 +323,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 }
 
 @SuppressLint("ObsoleteSdkInt")
-@RequiresApi(Build.VERSION_CODES.Q)
+@RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
 interface SystemBridgeSetupController {
     val setupAssistantStep: Flow<SystemBridgeSetupStep?>
 

@@ -1677,4 +1677,34 @@
     <string name="trigger_discover_shortcut_lock_screen">Lock screen</string>
     <!-- Trigger Discover Screen -->
 
+    <!-- Trigger Setup bottom sheet -->
+    <string name="trigger_setup_volume_title">Volume button</string>
+    <string name="trigger_setup_power_title">Power button</string>
+    <string name="trigger_setup_assistant_trigger_title">Assistant trigger</string>
+    <string name="trigger_setup_mouse_title">Mouse</string>
+    <string name="trigger_setup_gamepad_title">Gamepad</string>
+    <string name="trigger_setup_other_title">Other button</string>
+    <string name="trigger_setup_fingerprint_reader_title">Fingerprint reader gesture</string>
+    <string name="trigger_setup_no_trigger_detected_title">No trigger detected</string>
+    <string name="trigger_setup_add_trigger_button">Tap to add trigger</string>
+    <string name="trigger_setup_requirements_not_met_button">Requirements not met</string>
+    <string name="trigger_setup_get_help_button">Get help</string>
+    <string name="trigger_setup_status_can_not_remap">You cannot remap this button</string>
+    <string name="trigger_setup_status_might_remap_button">You might be able to remap this button</string>
+    <string name="trigger_setup_status_might_remap_device">You might be able to remap this device</string>
+    <string name="trigger_setup_status_remap_button_possible">You can remap this button</string>
+    <string name="trigger_setup_status_remap_device_possible">You can remap this device</string>
+    <string name="trigger_setup_status_feature_possible">You can use this feature</string>
+    <string name="trigger_setup_screen_off_option">Remap even when the screen is off</string>
+    <string name="trigger_setup_options_title">Options</string>
+    <string name="trigger_setup_requirements_title">Requirements</string>
+    <string name="trigger_setup_accessibility_service_title">Accessibility service</string>
+    <string name="trigger_setup_accessibility_service_enable_button">Enable</string>
+    <string name="trigger_setup_accessibility_service_running_button">Running</string>
+    <string name="trigger_setup_pro_mode_title">PRO mode</string>
+    <string name="trigger_setup_pro_mode_enable_button">Enable for free</string>
+    <string name="trigger_setup_pro_mode_running_button">Running</string>
+    <string name="trigger_setup_pro_mode_unsupported">Not available on this Android version</string>
+    <!-- Trigger Setup bottom sheet -->
+
 </resources>

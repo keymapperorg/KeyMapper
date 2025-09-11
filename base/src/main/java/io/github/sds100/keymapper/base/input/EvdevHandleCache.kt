@@ -1,9 +1,9 @@
 package io.github.sds100.keymapper.base.input
 
-import android.os.Build
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.common.models.EvdevDeviceHandle
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.valueIfFailure
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.util.concurrent.ConcurrentHashMap
 
-@RequiresApi(Build.VERSION_CODES.Q)
+@RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
 class EvdevHandleCache(
     private val coroutineScope: CoroutineScope,
     private val devicesAdapter: DevicesAdapter,

@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.firstBlocking
@@ -150,7 +151,7 @@ class AndroidPermissionAdapter @Inject constructor(
         }
 
         val isSystemBridgeConnected =
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+            Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API &&
                 systemBridgeConnectionManager.connectionState.firstBlocking() is SystemBridgeConnectionState.Connected
 
         if (isSystemBridgeConnected) {

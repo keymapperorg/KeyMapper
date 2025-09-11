@@ -64,6 +64,8 @@ fun BaseTriggerScreen(
     val setupGuiKeyboardState by viewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
     val recordTriggerState by viewModel.recordTriggerState.collectAsStateWithLifecycle()
 
+    HandleTriggerSetupBottomSheet(viewModel)
+
     if (viewModel.showDiscoverTriggersBottomSheet) {
         TriggerDiscoverBottomSheet(
             sheetState = sheetState,

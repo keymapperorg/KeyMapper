@@ -20,6 +20,7 @@ import io.github.sds100.keymapper.base.system.accessibility.AccessibilityService
 import io.github.sds100.keymapper.base.system.inputmethod.AutoSwitchImeController
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.base.system.permissions.AutoGrantPermissionController
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.data.repositories.LogRepository
@@ -200,7 +201,7 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
         autoGrantPermissionController.start()
         keyEventRelayServiceWrapper.bind()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             systemBridgeAutoStarter.init()
 
             appCoroutineScope.launch {

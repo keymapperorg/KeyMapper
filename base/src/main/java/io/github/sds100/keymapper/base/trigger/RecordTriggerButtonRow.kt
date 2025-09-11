@@ -67,7 +67,7 @@ fun RecordTriggerButtonRow(
 }
 
 @Composable
-private fun RecordTriggerButton(
+fun RecordTriggerButton(
     modifier: Modifier,
     state: RecordTriggerState,
     onClick: () -> Unit,

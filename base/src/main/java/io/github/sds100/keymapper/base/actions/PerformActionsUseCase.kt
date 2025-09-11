@@ -19,6 +19,7 @@ import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -788,7 +789,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.ScreenOnOff -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+                if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API &&
                     systemBridgeConnectionManager.connectionState.value is SystemBridgeConnectionState.Connected
                 ) {
                     val model = InjectKeyEventModel(
