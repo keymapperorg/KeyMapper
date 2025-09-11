@@ -236,6 +236,12 @@ abstract class BaseConfigTriggerViewModel(
         }.launchIn(viewModelScope)
     }
 
+    override fun onCleared() {
+        recordTrigger.stopRecording()
+
+        super.onCleared()
+    }
+
     open fun onClickTriggerKeyShortcut(shortcut: TriggerKeyShortcut) {
         if (shortcut == TriggerKeyShortcut.FINGERPRINT_GESTURE) {
             viewModelScope.launch {

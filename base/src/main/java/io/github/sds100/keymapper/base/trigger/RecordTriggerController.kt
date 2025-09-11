@@ -182,7 +182,7 @@ class RecordTriggerControllerImpl @Inject constructor(
         return Success(Unit)
     }
 
-    override suspend fun stopRecording(): KMResult<*> {
+    override fun stopRecording(): KMResult<*> {
         recordingTriggerJob?.cancel()
         recordingTriggerJob = null
 
@@ -269,5 +269,5 @@ interface RecordTriggerController {
      * @return Success if started and an Error if failed to start.
      */
     suspend fun startRecording(enableEvdevRecording: Boolean): KMResult<*>
-    suspend fun stopRecording(): KMResult<*>
+    fun stopRecording(): KMResult<*>
 }
