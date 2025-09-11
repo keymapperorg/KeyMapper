@@ -3,13 +3,14 @@
 package io.github.sds100.keymapper.base.trigger
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -119,7 +120,7 @@ fun VolumeTriggerSetupBottomSheet(
 
         AnimatedVisibility(
             visible = state.isScreenOffChecked,
-            enter = fadeIn() + expandVertically(),
+            enter = fadeIn(),
             exit = fadeOut() + shrinkVertically(),
         ) {
             ProModeRequirementRow(
@@ -244,7 +245,7 @@ private fun TriggerSetupBottomSheet(
     title: String,
     icon: ImageVector,
     positiveButtonContent: @Composable RowScope.() -> Unit,
-    content: @Composable () -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -289,7 +290,9 @@ private fun TriggerSetupBottomSheet(
                 )
             }
 
-            content()
+            Column(modifier = Modifier.animateContentSize()) {
+                content()
+            }
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 OutlinedButton(
