@@ -11,6 +11,10 @@ class ShizukuStarterService : IShizukuStarterService.Stub() {
         private val TAG = "ShizukuStarterService"
     }
 
+    init {
+        Log.i(TAG, "ShizukuStarterService created")
+    }
+
     override fun destroy() {
         Log.i(TAG, "ShizukuStarterService destroyed")
 

@@ -112,6 +112,10 @@
 -keep class io.github.sds100.keymapper.sysbridge.IEvdevCallback** { *; }
 -keep class io.github.sds100.keymapper.sysbridge.IShizukuStarterService** { *; }
 
+-keepclassmembers class io.github.sds100.keymapper.sysbridge.shizuku.ShizukuStarterService {
+    public <init>(...);
+}
+
 # Keep binder provider classes
 -keep class io.github.sds100.keymapper.sysbridge.provider.** { *; }
 
