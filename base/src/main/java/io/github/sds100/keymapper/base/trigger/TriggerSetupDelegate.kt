@@ -43,8 +43,10 @@ class TriggerSetupDelegateImpl @Inject constructor(
     val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     resourceProvider: ResourceProvider,
     dialogProvider: DialogProvider,
-    navigationProvider: NavigationProvider
-) : TriggerSetupDelegate, ResourceProvider by resourceProvider, DialogProvider by dialogProvider,
+    navigationProvider: NavigationProvider,
+) : TriggerSetupDelegate,
+    ResourceProvider by resourceProvider,
+    DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider {
 
     private val currentDiscoverShortcut: MutableStateFlow<TriggerDiscoverShortcut?> =
@@ -93,7 +95,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
             controlAccessibilityServiceUseCase.serviceState,
             isScreenOffChecked,
             recordTriggerController.state,
-            proModeStatus
+            proModeStatus,
         ) { serviceState, isScreenOffChecked, recordTriggerState, proModeStatus ->
             val areRequirementsMet = if (isScreenOffChecked) {
                 serviceState == AccessibilityServiceState.ENABLED && proModeStatus == ProModeStatus.ENABLED
@@ -107,7 +109,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
                 proModeStatus = proModeStatus,
                 areRequirementsMet = areRequirementsMet,
                 recordTriggerState = recordTriggerState,
-                remapStatus = RemapStatus.SUPPORTED
+                remapStatus = RemapStatus.SUPPORTED,
             )
         }
     }
@@ -162,8 +164,9 @@ class TriggerSetupDelegateImpl @Inject constructor(
                 }
 
                 is RecordTriggerState.Completed,
-                RecordTriggerState.Idle -> recordTriggerController.startRecording(
-                    enableEvdevRecording
+                RecordTriggerState.Idle,
+                    -> recordTriggerController.startRecording(
+                    enableEvdevRecording,
                 )
             }
 
@@ -204,4 +207,3 @@ interface TriggerSetupDelegate {
     fun onScreenOffTriggerSetupCheckedChange(isChecked: Boolean)
     fun onTriggerSetupRecordClick()
 }
-

@@ -10,5 +10,5 @@ enum class TriggerDiscoverShortcut {
     GAMEPAD,
     OTHER,
     FLOATING_BUTTON_CUSTOM,
-    FLOATING_BUTTON_LOCK_SCREEN
+    FLOATING_BUTTON_LOCK_SCREEN,
 }

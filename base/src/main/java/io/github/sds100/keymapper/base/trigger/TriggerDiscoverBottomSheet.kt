@@ -41,7 +41,7 @@ fun TriggerDiscoverBottomSheet(
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             content()
 
@@ -61,7 +61,6 @@ fun TriggerDiscoverBottomSheet(
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
@@ -75,7 +74,7 @@ private fun PreviewNoKeyRecordedComplete() {
 
         TriggerDiscoverBottomSheet(
             sheetState = sheetState,
-            content = { TriggerDiscoverScreen(showFloatingButtons = true) }
+            content = { TriggerDiscoverScreen(showFloatingButtons = true) },
         )
     }
 }

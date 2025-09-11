@@ -146,8 +146,8 @@ private fun AdvancedTriggersButton(
         enabled = isEnabled,
         colors = IconButtonDefaults.iconButtonColors(
             containerColor = LocalCustomColorsPalette.current.amber,
-            contentColor = LocalCustomColorsPalette.current.onAmber
-        )
+            contentColor = LocalCustomColorsPalette.current.onAmber,
+        ),
     ) {
         Icon(Icons.Outlined.ShoppingCart, contentDescription = null)
     }

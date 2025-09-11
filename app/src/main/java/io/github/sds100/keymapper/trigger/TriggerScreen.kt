@@ -25,7 +25,7 @@ fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewMod
     BaseTriggerScreen(modifier, viewModel, discoverScreenContent = {
         TriggerDiscoverScreen(
             showFloatingButtons = true,
-            onShortcutClick = viewModel::onDiscoverShortcutClick
+            onShortcutClick = viewModel::onDiscoverShortcutClick,
         )
     })
 }

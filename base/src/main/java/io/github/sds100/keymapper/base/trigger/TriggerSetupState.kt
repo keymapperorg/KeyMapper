@@ -7,6 +7,6 @@ sealed class TriggerSetupState {
         val proModeStatus: ProModeStatus,
         val areRequirementsMet: Boolean,
         val recordTriggerState: RecordTriggerState,
-        val remapStatus: RemapStatus
+        val remapStatus: RemapStatus,
     ) : TriggerSetupState()
 }

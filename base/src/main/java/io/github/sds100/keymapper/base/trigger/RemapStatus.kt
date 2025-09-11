@@ -8,5 +8,5 @@ enum class RemapStatus {
     UNCERTAIN,
 
     /** The button can be remapped. */
-    SUPPORTED
+    SUPPORTED,
 }

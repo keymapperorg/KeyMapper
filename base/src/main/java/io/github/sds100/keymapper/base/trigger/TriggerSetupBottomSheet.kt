@@ -64,7 +64,7 @@ fun HandleTriggerSetupBottomSheet(
             onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
             onEnableProModeClick = viewModel::onEnableProModeClick,
             onRecordTriggerClick = viewModel::onTriggerSetupRecordClick,
-            onScreenOffCheckedChange = viewModel::onScreenOffTriggerSetupCheckedChange
+            onScreenOffCheckedChange = viewModel::onScreenOffTriggerSetupCheckedChange,
         )
 
         null -> {}
@@ -84,7 +84,8 @@ fun VolumeTriggerSetupBottomSheet(
 ) {
     TriggerSetupBottomSheet(
         modifier = modifier,
-        sheetState = sheetState, onDismissRequest = onDismissRequest,
+        sheetState = sheetState,
+        onDismissRequest = onDismissRequest,
         title = stringResource(R.string.trigger_setup_volume_title),
         icon = Icons.AutoMirrored.Outlined.VolumeUp,
         positiveButtonContent = {
@@ -92,14 +93,13 @@ fun VolumeTriggerSetupBottomSheet(
                 RecordTriggerButton(
                     modifier = Modifier.weight(1f),
                     state = state.recordTriggerState,
-                    onClick = onRecordTriggerClick
+                    onClick = onRecordTriggerClick,
                 )
             } else {
                 RequirementsNotMetButton(modifier = Modifier.weight(1f))
             }
-        }
+        },
     ) {
-
         Header(text = stringResource(R.string.trigger_setup_options_title))
 
         CheckBoxText(
@@ -107,24 +107,24 @@ fun VolumeTriggerSetupBottomSheet(
             text = stringResource(R.string.trigger_setup_screen_off_option),
             isChecked = state.isScreenOffChecked,
             isEnabled = true,
-            onCheckedChange = onScreenOffCheckedChange
+            onCheckedChange = onScreenOffCheckedChange,
         )
 
         Header(text = stringResource(R.string.trigger_setup_requirements_title))
 
         AccessibilityServiceRequirementRow(
             isServiceEnabled = state.isAccessibilityServiceEnabled,
-            onClick = onEnableAccessibilityServiceClick
+            onClick = onEnableAccessibilityServiceClick,
         )
 
         AnimatedVisibility(
             visible = state.isScreenOffChecked,
             enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically()
+            exit = fadeOut() + shrinkVertically(),
         ) {
             ProModeRequirementRow(
                 proModeStatus = state.proModeStatus,
-                onClick = onEnableProModeClick
+                onClick = onEnableProModeClick,
             )
         }
     }
@@ -134,23 +134,23 @@ fun VolumeTriggerSetupBottomSheet(
 private fun ProModeRequirementRow(
     modifier: Modifier = Modifier,
     proModeStatus: ProModeStatus,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     RequirementRow(
         modifier = modifier,
-        text = stringResource(R.string.trigger_setup_pro_mode_title)
+        text = stringResource(R.string.trigger_setup_pro_mode_title),
     ) {
         if (proModeStatus == ProModeStatus.UNSUPPORTED) {
             Text(
                 text = stringResource(R.string.trigger_setup_pro_mode_unsupported),
-                color = MaterialTheme.colorScheme.error
+                color = MaterialTheme.colorScheme.error,
             )
         } else {
             RequirementButton(
                 enabledText = stringResource(R.string.trigger_setup_pro_mode_enable_button),
                 disabledText = stringResource(R.string.trigger_setup_pro_mode_running_button),
                 isEnabled = proModeStatus != ProModeStatus.ENABLED,
-                onClick = onClick
+                onClick = onClick,
             )
         }
     }
@@ -160,17 +160,17 @@ private fun ProModeRequirementRow(
 private fun AccessibilityServiceRequirementRow(
     modifier: Modifier = Modifier,
     isServiceEnabled: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     RequirementRow(
         modifier = modifier,
-        text = stringResource(R.string.trigger_setup_accessibility_service_title)
+        text = stringResource(R.string.trigger_setup_accessibility_service_title),
     ) {
         RequirementButton(
             enabledText = stringResource(R.string.trigger_setup_accessibility_service_enable_button),
             disabledText = stringResource(R.string.trigger_setup_accessibility_service_running_button),
             isEnabled = !isServiceEnabled,
-            onClick = onClick
+            onClick = onClick,
         )
     }
 }
@@ -181,7 +181,7 @@ private fun Header(modifier: Modifier = Modifier, text: String) {
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.primary
+        color = MaterialTheme.colorScheme.primary,
     )
 }
 
@@ -189,7 +189,7 @@ private fun Header(modifier: Modifier = Modifier, text: String) {
 private fun RequirementRow(
     modifier: Modifier = Modifier,
     text: String,
-    actionContent: @Composable () -> Unit
+    actionContent: @Composable () -> Unit,
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         Spacer(Modifier.width(8.dp))
@@ -197,7 +197,7 @@ private fun RequirementRow(
         Text(
             modifier = Modifier.weight(1f),
             text = text,
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
         )
 
         actionContent()
@@ -217,12 +217,12 @@ private fun RequirementButton(
     enabledText: String,
     disabledText: String,
     isEnabled: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     FilledTonalButton(
         modifier = modifier,
         onClick = onClick,
-        enabled = isEnabled
+        enabled = isEnabled,
     ) {
         if (isEnabled) {
             Text(text = enabledText)
@@ -244,7 +244,7 @@ private fun TriggerSetupBottomSheet(
     title: String,
     icon: ImageVector,
     positiveButtonContent: @Composable RowScope.() -> Unit,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -262,7 +262,7 @@ private fun TriggerSetupBottomSheet(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.Center,
             ) {
                 Surface(
                     modifier = Modifier.size(48.dp),
@@ -274,7 +274,7 @@ private fun TriggerSetupBottomSheet(
                             modifier = Modifier.size(24.dp),
                             imageVector = icon,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         )
                     }
                 }
@@ -282,9 +282,10 @@ private fun TriggerSetupBottomSheet(
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Text(
-                    text = title, style = MaterialTheme.typography.titleLarge,
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
 
@@ -329,11 +330,10 @@ private fun VolumeButtonPreview() {
                 proModeStatus = ProModeStatus.ENABLED,
                 areRequirementsMet = true,
                 recordTriggerState = RecordTriggerState.Idle,
-                remapStatus = RemapStatus.SUPPORTED
-            )
+                remapStatus = RemapStatus.SUPPORTED,
+            ),
         )
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -355,9 +355,8 @@ private fun VolumeButtonDisabledPreview() {
                 proModeStatus = ProModeStatus.DISABLED,
                 areRequirementsMet = false,
                 recordTriggerState = RecordTriggerState.Idle,
-                remapStatus = RemapStatus.UNCERTAIN
-            )
+                remapStatus = RemapStatus.UNCERTAIN,
+            ),
         )
     }
-
 }

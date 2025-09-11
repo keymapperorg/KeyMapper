@@ -57,7 +57,7 @@ import kotlinx.coroutines.launch
 fun BaseTriggerScreen(
     modifier: Modifier = Modifier,
     viewModel: BaseConfigTriggerViewModel,
-    discoverScreenContent: @Composable () -> Unit = {}
+    discoverScreenContent: @Composable () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -81,9 +81,9 @@ fun BaseTriggerScreen(
                             viewModel.showDiscoverTriggersBottomSheet = false
                             viewModel.onDiscoverShortcutClick(shortcut)
                         }
-                    }
+                    },
                 )
-            }
+            },
         )
     }
 
@@ -150,7 +150,7 @@ fun BaseTriggerScreen(
                     onAddMoreTriggerKeysClick = {
                         viewModel.showDiscoverTriggersBottomSheet = true
                     },
-                    discoverScreenContent = discoverScreenContent
+                    discoverScreenContent = discoverScreenContent,
                 )
             } else {
                 TriggerScreenVertical(
@@ -169,7 +169,7 @@ fun BaseTriggerScreen(
                     onAddMoreTriggerKeysClick = {
                         viewModel.showDiscoverTriggersBottomSheet = true
                     },
-                    discoverScreenContent = discoverScreenContent
+                    discoverScreenContent = discoverScreenContent,
                 )
             }
         }
@@ -212,7 +212,7 @@ private fun TriggerScreenVertical(
     onMoveTriggerKey: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     onFixErrorClick: (TriggerError) -> Unit = {},
     onAddMoreTriggerKeysClick: () -> Unit = {},
-    discoverScreenContent: @Composable () -> Unit = {}
+    discoverScreenContent: @Composable () -> Unit = {},
 ) {
     Surface(modifier = modifier) {
         Column {
@@ -224,7 +224,7 @@ private fun TriggerScreenVertical(
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(16.dp)
+                                .padding(16.dp),
                         ) {
                             discoverScreenContent()
                         }
@@ -249,7 +249,7 @@ private fun TriggerScreenVertical(
                         onRemoveClick = onRemoveClick,
                         onMove = onMoveTriggerKey,
                         onFixErrorClick = onFixErrorClick,
-                        onAddMoreClick = onAddMoreTriggerKeysClick
+                        onAddMoreClick = onAddMoreTriggerKeysClick,
                     )
 
                     if (configState.clickTypeButtons.isNotEmpty()) {
@@ -313,8 +313,8 @@ private fun TriggerScreenHorizontal(
     onAdvancedTriggersClick: () -> Unit = {},
     onMoveTriggerKey: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     onFixErrorClick: (TriggerError) -> Unit = {},
-
-    onAddMoreTriggerKeysClick: () -> Unit = {}, discoverScreenContent: @Composable () -> Unit = {}
+    onAddMoreTriggerKeysClick: () -> Unit = {},
+    discoverScreenContent: @Composable () -> Unit = {},
 ) {
     Surface(modifier = modifier) {
         when (configState) {
@@ -322,7 +322,7 @@ private fun TriggerScreenHorizontal(
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(16.dp)
+                        .padding(16.dp),
                 ) {
                     discoverScreenContent()
                 }
@@ -349,7 +349,7 @@ private fun TriggerScreenHorizontal(
                     onRemoveClick = onRemoveClick,
                     onMove = onMoveTriggerKey,
                     onFixErrorClick = onFixErrorClick,
-                    onAddMoreClick = onAddMoreTriggerKeysClick
+                    onAddMoreClick = onAddMoreTriggerKeysClick,
                 )
 
                 Spacer(Modifier.height(8.dp))
@@ -435,7 +435,7 @@ private fun TriggerList(
         modifier = modifier,
         state = lazyListState,
         contentPadding = PaddingValues(vertical = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         itemsIndexed(
             triggerList,
@@ -468,7 +468,7 @@ private fun TriggerList(
                     text = stringResource(R.string.trigger_list_add_more_button),
                     icon = {
                         Icon(KeyMapperIcons.ActionKey, contentDescription = null)
-                    }
+                    },
                 )
             }
         }
@@ -612,7 +612,7 @@ private fun VerticalPreview() {
             recordTriggerState = RecordTriggerState.Idle,
             discoverScreenContent = {
                 TriggerDiscoverScreen()
-            }
+            },
         )
     }
 }
@@ -626,7 +626,7 @@ private fun VerticalPreviewTiny() {
             recordTriggerState = RecordTriggerState.Idle,
             discoverScreenContent = {
                 TriggerDiscoverScreen()
-            }
+            },
         )
     }
 }
@@ -648,7 +648,7 @@ private fun VerticalEmptyPreview() {
             recordTriggerState = RecordTriggerState.Idle,
             discoverScreenContent = {
                 TriggerDiscoverScreen()
-            }
+            },
         )
     }
 }
@@ -670,7 +670,7 @@ private fun VerticalEmptyDarkPreview() {
             recordTriggerState = RecordTriggerState.Idle,
             discoverScreenContent = {
                 TriggerDiscoverScreen()
-            }
+            },
         )
     }
 }
@@ -684,7 +684,7 @@ private fun HorizontalPreview() {
             recordTriggerState = RecordTriggerState.Idle,
             discoverScreenContent = {
                 TriggerDiscoverScreen()
-            }
+            },
         )
     }
 }
@@ -706,7 +706,7 @@ private fun HorizontalEmptyPreview() {
             recordTriggerState = RecordTriggerState.Idle,
             discoverScreenContent = {
                 TriggerDiscoverScreen()
-            }
+            },
         )
     }
 }
