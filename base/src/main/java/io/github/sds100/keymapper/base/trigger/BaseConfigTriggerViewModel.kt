@@ -626,13 +626,7 @@ abstract class BaseConfigTriggerViewModel(
                 }
 
                 is RecordTriggerState.Completed,
-                RecordTriggerState.Idle,
-                    -> recordTrigger.startRecording()
-            }
-
-            // Dismiss the trigger setup screen if recording is clicked.
-            result.onSuccess {
-                onDismissTriggerSetup()
+                RecordTriggerState.Idle -> recordTrigger.startRecording(enableEvdevRecording = false)
             }
 
             // Show dialog if the accessibility service is disabled or crashed

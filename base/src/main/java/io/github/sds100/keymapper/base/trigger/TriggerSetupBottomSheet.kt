@@ -63,7 +63,7 @@ fun HandleTriggerSetupBottomSheet(
             onDismissRequest = viewModel::onDismissTriggerSetup,
             onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
             onEnableProModeClick = viewModel::onEnableProModeClick,
-            onRecordTriggerClick = viewModel::onRecordTriggerButtonClick,
+            onRecordTriggerClick = viewModel::onTriggerSetupRecordClick,
             onScreenOffCheckedChange = viewModel::onScreenOffTriggerSetupCheckedChange
         )
 

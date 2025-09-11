@@ -10,6 +10,9 @@ import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.common.utils.Constants
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
@@ -21,6 +24,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -141,6 +145,54 @@ class TriggerSetupDelegateImpl @Inject constructor(
     override fun onDismissTriggerSetup() {
         currentDiscoverShortcut.value = null
     }
+
+    override fun onTriggerSetupRecordClick() {
+        val setupState = triggerSetupState.value ?: return
+
+        val enableEvdevRecording = when (setupState) {
+            is TriggerSetupState.Volume -> setupState.isScreenOffChecked
+        }
+
+        viewModelScope.launch {
+            val recordTriggerState = recordTriggerController.state.firstOrNull() ?: return@launch
+
+            val result: KMResult<*> = when (recordTriggerState) {
+                is RecordTriggerState.CountingDown -> {
+                    recordTriggerController.stopRecording()
+                }
+
+                is RecordTriggerState.Completed,
+                RecordTriggerState.Idle -> recordTriggerController.startRecording(
+                    enableEvdevRecording
+                )
+            }
+
+            result.onSuccess {
+                currentDiscoverShortcut.value = null
+            }
+
+            // Show dialog if the accessibility service is disabled or crashed
+            handleServiceEventResult(result)
+        }
+    }
+
+    private suspend fun handleServiceEventResult(result: KMResult<*>) {
+        if (result is KMError.AccessibilityServiceDisabled) {
+            ViewModelHelper.handleAccessibilityServiceStoppedDialog(
+                resourceProvider = this,
+                dialogProvider = this,
+                startService = controlAccessibilityServiceUseCase::startService,
+            )
+        }
+
+        if (result is KMError.AccessibilityServiceCrashed) {
+            ViewModelHelper.handleAccessibilityServiceCrashedDialog(
+                resourceProvider = this,
+                dialogProvider = this,
+                restartService = controlAccessibilityServiceUseCase::restartService,
+            )
+        }
+    }
 }
 
 interface TriggerSetupDelegate {
@@ -150,5 +202,6 @@ interface TriggerSetupDelegate {
     fun onEnableAccessibilityServiceClick()
     fun onEnableProModeClick()
     fun onScreenOffTriggerSetupCheckedChange(isChecked: Boolean)
+    fun onTriggerSetupRecordClick()
 }
 

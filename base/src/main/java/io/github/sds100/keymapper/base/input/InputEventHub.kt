@@ -236,14 +236,14 @@ class InputEventHubImpl @Inject constructor(
     override fun registerClient(
         clientId: String,
         callback: InputEventHubCallback,
-        eventTypes: List<Int>,
+        evdevEventTypes: List<Int>,
     ) {
         Timber.d("InputEventHub: Registering client $clientId")
         if (clients.containsKey(clientId)) {
             throw IllegalArgumentException("This client already has a callback registered!")
         }
 
-        clients[clientId] = ClientContext(callback, emptySet(), eventTypes.toSet())
+        clients[clientId] = ClientContext(callback, emptySet(), evdevEventTypes.toSet())
     }
 
     override fun unregisterClient(clientId: String) {
@@ -388,7 +388,7 @@ interface InputEventHub {
     fun registerClient(
         clientId: String,
         callback: InputEventHubCallback,
-        eventTypes: List<Int>,
+        evdevEventTypes: List<Int>,
     )
 
     fun unregisterClient(clientId: String)
