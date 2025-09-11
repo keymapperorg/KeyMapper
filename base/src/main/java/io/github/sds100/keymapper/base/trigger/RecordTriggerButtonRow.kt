@@ -58,10 +58,7 @@ fun RecordTriggerButtonRow(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            AdvancedTriggersButton(
-                isEnabled = recordTriggerState !is RecordTriggerState.CountingDown,
-                onClick = onAdvancedTriggersClick,
-            )
+            AdvancedTriggersButton(onClick = onAdvancedTriggersClick)
         }
     }
 }
@@ -137,13 +134,11 @@ fun RecordTriggerButton(
 @Composable
 private fun AdvancedTriggersButton(
     modifier: Modifier = Modifier,
-    isEnabled: Boolean,
     onClick: () -> Unit,
 ) {
     IconButton(
         modifier = modifier,
         onClick = onClick,
-        enabled = isEnabled,
         colors = IconButtonDefaults.iconButtonColors(
             containerColor = LocalCustomColorsPalette.current.amber,
             contentColor = LocalCustomColorsPalette.current.onAmber,
