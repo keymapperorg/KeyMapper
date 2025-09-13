@@ -27,6 +27,14 @@ sealed class TriggerSetupState {
         val remapStatus: RemapStatus,
     ) : TriggerSetupState()
 
+    data class Mouse(
+        val isAccessibilityServiceEnabled: Boolean,
+        val proModeStatus: ProModeStatus,
+        val areRequirementsMet: Boolean,
+        val recordTriggerState: RecordTriggerState,
+        val remapStatus: RemapStatus,
+    ) : TriggerSetupState()
+
     data class FingerprintGesture(
         val isAccessibilityServiceEnabled: Boolean,
         val areRequirementsMet: Boolean,

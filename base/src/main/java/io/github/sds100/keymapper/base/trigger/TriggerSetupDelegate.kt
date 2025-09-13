@@ -80,7 +80,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
                     TriggerDiscoverShortcut.POWER -> buildSetupPowerTriggerFlow()
                     TriggerDiscoverShortcut.FINGERPRINT_GESTURE -> buildSetupFingerprintGestureFlow()
                     TriggerDiscoverShortcut.KEYBOARD -> buildSetupKeyboardTriggerFlow()
-                    TriggerDiscoverShortcut.MOUSE -> TODO()
+                    TriggerDiscoverShortcut.MOUSE -> buildSetupMouseTriggerFlow()
                     TriggerDiscoverShortcut.GAMEPAD -> TODO()
                     TriggerDiscoverShortcut.OTHER -> TODO()
 
@@ -183,6 +183,35 @@ class TriggerSetupDelegateImpl @Inject constructor(
         }
     }
 
+    private fun buildSetupMouseTriggerFlow(): Flow<TriggerSetupState> {
+        return combine(
+            controlAccessibilityServiceUseCase.serviceState,
+            recordTriggerController.state,
+            proModeStatus,
+        ) { serviceState, recordTriggerState, proModeStatus ->
+            val areRequirementsMet =
+                serviceState == AccessibilityServiceState.ENABLED && proModeStatus == ProModeStatus.ENABLED
+
+            val remapStatus = if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
+                if (areRequirementsMet) {
+                    RemapStatus.SUPPORTED
+                } else {
+                    RemapStatus.UNCERTAIN
+                }
+            } else {
+                RemapStatus.UNSUPPORTED
+            }
+
+            TriggerSetupState.Mouse(
+                isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
+                proModeStatus = proModeStatus,
+                areRequirementsMet = areRequirementsMet,
+                recordTriggerState = recordTriggerState,
+                remapStatus = remapStatus,
+            )
+        }
+    }
+
     override fun onEnableAccessibilityServiceClick() {
         viewModelScope.launch {
             val state = controlAccessibilityServiceUseCase.serviceState.first()
@@ -225,6 +254,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
             is TriggerSetupState.Keyboard -> setupState.isScreenOffChecked
             is TriggerSetupState.Power -> true
             is TriggerSetupState.FingerprintGesture -> false
+            is TriggerSetupState.Mouse -> true
         }
 
         viewModelScope.launch {

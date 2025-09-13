@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
+import androidx.compose.material.icons.outlined.Mouse
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material.icons.rounded.Keyboard
@@ -113,7 +114,79 @@ fun HandleTriggerSetupBottomSheet(
             onScreenOffCheckedChange = viewModel::onScreenOffTriggerSetupCheckedChange,
         )
 
+        is TriggerSetupState.Mouse -> MouseTriggerSetupBottomSheet(
+            sheetState = sheetState,
+            state = triggerSetupState as TriggerSetupState.Mouse,
+            onDismissRequest = viewModel::onDismissTriggerSetup,
+            onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
+            onEnableProModeClick = viewModel::onEnableProModeClick,
+            onRecordTriggerClick = viewModel::onTriggerSetupRecordClick,
+        )
+
         null -> {}
+    }
+}
+
+@Composable
+private fun MouseTriggerSetupBottomSheet(
+    modifier: Modifier = Modifier,
+    sheetState: SheetState,
+    state: TriggerSetupState.Mouse,
+    onDismissRequest: () -> Unit = {},
+    onEnableAccessibilityServiceClick: () -> Unit = {},
+    onEnableProModeClick: () -> Unit = {},
+    onRecordTriggerClick: () -> Unit = {},
+) {
+    TriggerSetupBottomSheet(
+        modifier = modifier,
+        sheetState = sheetState,
+        onDismissRequest = onDismissRequest,
+        title = stringResource(R.string.trigger_setup_mouse_title),
+        icon = Icons.Outlined.Mouse,
+        positiveButtonContent = {
+            if (state.areRequirementsMet) {
+                RecordTriggerButton(
+                    modifier = Modifier.weight(1f),
+                    state = state.recordTriggerState,
+                    onClick = onRecordTriggerClick,
+                )
+            } else {
+                TriggerRequirementsNotMetButton(modifier = Modifier.weight(1f))
+            }
+        },
+    ) {
+
+        RemapStatusButton(modifier = Modifier.fillMaxWidth(), remapStatus = state.remapStatus)
+
+        HeaderText(text = stringResource(R.string.trigger_setup_options_title))
+
+        CheckBoxText(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(R.string.trigger_setup_screen_off_option),
+            isChecked = true,
+            isEnabled = false,
+            onCheckedChange = {},
+        )
+
+        HeaderText(text = stringResource(R.string.trigger_setup_requirements_title))
+
+        AccessibilityServiceRequirementRow(
+            isServiceEnabled = state.isAccessibilityServiceEnabled,
+            onClick = onEnableAccessibilityServiceClick,
+        )
+
+        ProModeRequirementRow(
+            isVisible = true,
+            proModeStatus = state.proModeStatus,
+            onClick = onEnableProModeClick,
+        )
+
+        HeaderText(text = stringResource(R.string.trigger_setup_information_title))
+
+        Text(
+            stringResource(R.string.trigger_setup_power_information),
+            style = MaterialTheme.typography.bodyMedium
+        )
     }
 }
 
@@ -489,6 +562,8 @@ fun TriggerRequirementRow(
             style = MaterialTheme.typography.bodyLarge,
         )
 
+        Spacer(Modifier.width(8.dp))
+
         actionContent()
     }
 }
@@ -800,6 +875,54 @@ private fun KeyboardButtonDisabledPreview() {
                 proModeStatus = ProModeStatus.DISABLED,
                 areRequirementsMet = false,
                 recordTriggerState = RecordTriggerState.Idle,
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun MouseButtonPreview() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = SheetValue.Expanded,
+        )
+
+        MouseTriggerSetupBottomSheet(
+            sheetState = sheetState,
+            state = TriggerSetupState.Mouse(
+                isAccessibilityServiceEnabled = true,
+                proModeStatus = ProModeStatus.ENABLED,
+                areRequirementsMet = true,
+                recordTriggerState = RecordTriggerState.Idle,
+                remapStatus = RemapStatus.SUPPORTED,
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun MouseButtonDisabledPreview() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = SheetValue.Expanded,
+        )
+
+        MouseTriggerSetupBottomSheet(
+            sheetState = sheetState,
+            state = TriggerSetupState.Mouse(
+                isAccessibilityServiceEnabled = false,
+                proModeStatus = ProModeStatus.UNSUPPORTED,
+                areRequirementsMet = false,
+                recordTriggerState = RecordTriggerState.Idle,
+                remapStatus = RemapStatus.UNSUPPORTED,
             ),
         )
     }
