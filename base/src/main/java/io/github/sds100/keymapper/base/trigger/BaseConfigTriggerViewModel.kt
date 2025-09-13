@@ -53,6 +53,7 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -144,6 +145,10 @@ abstract class BaseConfigTriggerViewModel(
         SharingStarted.Lazily,
         RecordTriggerState.Idle,
     )
+
+    val showFingerprintGesturesShortcut: StateFlow<Boolean> =
+        fingerprintGesturesSupported.isSupported.map { it ?: false }
+            .stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     var showAdvancedTriggersBottomSheet: Boolean by mutableStateOf(false)
     var showDiscoverTriggersBottomSheet: Boolean by mutableStateOf(false)

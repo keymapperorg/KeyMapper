@@ -49,6 +49,7 @@ fun TriggerDiscoverScreen(
     modifier: Modifier = Modifier,
     onShortcutClick: (TriggerDiscoverShortcut) -> Unit = {},
     showFloatingButtons: Boolean = false,
+    showFingerprintGestures: Boolean = false
 ) {
     val customColors = LocalCustomColorsPalette.current
 
@@ -74,30 +75,41 @@ fun TriggerDiscoverScreen(
 
         TriggerSection(
             title = stringResource(R.string.trigger_discover_section_on_device_buttons),
-            shortcuts = listOf(
-                ShortcutData(
-                    TriggerDiscoverShortcut.VOLUME,
-                    stringResource(R.string.trigger_discover_shortcut_volume),
-                    Icons.AutoMirrored.Outlined.VolumeUp,
-                ),
-                ShortcutData(
-                    TriggerDiscoverShortcut.ASSISTANT,
-                    stringResource(R.string.trigger_discover_shortcut_assistant),
-                    KeyMapperIcons.VoiceSelection,
-                ),
-                ShortcutData(
-                    TriggerDiscoverShortcut.POWER,
-                    stringResource(R.string.trigger_discover_shortcut_power),
-                    KeyMapperIcons.ModeOffOn,
-                ),
+            shortcuts = buildList {
+                add(
+                    ShortcutData(
+                        TriggerDiscoverShortcut.VOLUME,
+                        stringResource(R.string.trigger_discover_shortcut_volume),
+                        Icons.AutoMirrored.Outlined.VolumeUp,
+                    )
+                )
 
-                // TODO only show this if fingerprint gestures supported
-                ShortcutData(
-                    TriggerDiscoverShortcut.FINGERPRINT_GESTURE,
-                    stringResource(R.string.trigger_discover_shortcut_fingerprint_gesture),
-                    Icons.Rounded.Fingerprint,
-                ),
-            ),
+                add(
+                    ShortcutData(
+                        TriggerDiscoverShortcut.ASSISTANT,
+                        stringResource(R.string.trigger_discover_shortcut_assistant),
+                        KeyMapperIcons.VoiceSelection,
+                    )
+                )
+
+                add(
+                    ShortcutData(
+                        TriggerDiscoverShortcut.POWER,
+                        stringResource(R.string.trigger_discover_shortcut_power),
+                        KeyMapperIcons.ModeOffOn,
+                    )
+                )
+
+                if (showFingerprintGestures) {
+                    add(
+                        ShortcutData(
+                            TriggerDiscoverShortcut.FINGERPRINT_GESTURE,
+                            stringResource(R.string.trigger_discover_shortcut_fingerprint_gesture),
+                            Icons.Rounded.Fingerprint,
+                        )
+                    )
+                }
+            },
             onShortcutClick = onShortcutClick,
         )
 

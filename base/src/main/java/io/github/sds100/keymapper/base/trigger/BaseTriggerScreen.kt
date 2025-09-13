@@ -63,6 +63,7 @@ fun BaseTriggerScreen(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val setupGuiKeyboardState by viewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
     val recordTriggerState by viewModel.recordTriggerState.collectAsStateWithLifecycle()
+    val showFingerprintGestures: Boolean by viewModel.showFingerprintGesturesShortcut.collectAsStateWithLifecycle()
 
     HandleTriggerSetupBottomSheet(viewModel)
 
@@ -75,6 +76,7 @@ fun BaseTriggerScreen(
             content = {
                 TriggerDiscoverScreen(
                     showFloatingButtons = true,
+                    showFingerprintGestures = showFingerprintGestures,
                     onShortcutClick = { shortcut ->
                         scope.launch {
                             sheetState.hide()
