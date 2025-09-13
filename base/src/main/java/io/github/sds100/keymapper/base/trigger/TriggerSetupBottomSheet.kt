@@ -4,9 +4,11 @@ package io.github.sds100.keymapper.base.trigger
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,9 +17,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material.icons.rounded.Check
@@ -37,6 +41,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -46,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
+import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
 import kotlinx.coroutines.launch
 
@@ -101,6 +107,15 @@ fun VolumeTriggerSetupBottomSheet(
             }
         },
     ) {
+
+        RemapStatusRow(
+            modifier = Modifier.fillMaxWidth(),
+            color = LocalCustomColorsPalette.current.green,
+            text = stringResource(R.string.trigger_setup_status_remap_button_possible)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         Header(text = stringResource(R.string.trigger_setup_options_title))
 
         CheckBoxText(
@@ -111,6 +126,8 @@ fun VolumeTriggerSetupBottomSheet(
             onCheckedChange = onScreenOffCheckedChange,
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
         Header(text = stringResource(R.string.trigger_setup_requirements_title))
 
         AccessibilityServiceRequirementRow(
@@ -118,41 +135,69 @@ fun VolumeTriggerSetupBottomSheet(
             onClick = onEnableAccessibilityServiceClick,
         )
 
-        AnimatedVisibility(
-            visible = state.isScreenOffChecked,
-            enter = fadeIn(),
-            exit = fadeOut() + shrinkVertically(),
-        ) {
-            ProModeRequirementRow(
-                proModeStatus = state.proModeStatus,
-                onClick = onEnableProModeClick,
-            )
-        }
+        ProModeRequirementRow(
+            isVisible = state.isScreenOffChecked,
+            proModeStatus = state.proModeStatus,
+            onClick = onEnableProModeClick,
+        )
+    }
+}
+
+@Composable
+private fun RemapStatusRow(
+    modifier: Modifier = Modifier,
+    color: Color,
+    text: String
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(16.dp)
+                .background(
+                    color = color,
+                    shape = CircleShape,
+                ),
+        )
+
+        Spacer(Modifier.width(16.dp))
+
+        Text(text = text, style = MaterialTheme.typography.titleMedium)
     }
 }
 
 @Composable
 private fun ProModeRequirementRow(
     modifier: Modifier = Modifier,
+    isVisible: Boolean,
     proModeStatus: ProModeStatus,
     onClick: () -> Unit,
 ) {
-    RequirementRow(
-        modifier = modifier,
-        text = stringResource(R.string.trigger_setup_pro_mode_title),
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = fadeIn(animationSpec = tween(200)),
+        exit = fadeOut(animationSpec = tween(200)) + shrinkVertically(animationSpec = tween(200)),
     ) {
-        if (proModeStatus == ProModeStatus.UNSUPPORTED) {
-            Text(
-                text = stringResource(R.string.trigger_setup_pro_mode_unsupported),
-                color = MaterialTheme.colorScheme.error,
-            )
-        } else {
-            RequirementButton(
-                enabledText = stringResource(R.string.trigger_setup_pro_mode_enable_button),
-                disabledText = stringResource(R.string.trigger_setup_pro_mode_running_button),
-                isEnabled = proModeStatus != ProModeStatus.ENABLED,
-                onClick = onClick,
-            )
+        RequirementRow(
+            modifier = modifier,
+            text = stringResource(R.string.trigger_setup_pro_mode_title),
+        ) {
+            if (proModeStatus == ProModeStatus.UNSUPPORTED) {
+                Text(
+                    text = stringResource(R.string.trigger_setup_pro_mode_unsupported),
+                    color = MaterialTheme.colorScheme.error,
+                )
+            } else {
+                RequirementButton(
+                    enabledText = stringResource(R.string.trigger_setup_pro_mode_enable_button),
+                    disabledText = stringResource(R.string.trigger_setup_pro_mode_running_button),
+                    isEnabled = proModeStatus != ProModeStatus.ENABLED,
+                    onClick = onClick,
+                )
+            }
         }
     }
 }
