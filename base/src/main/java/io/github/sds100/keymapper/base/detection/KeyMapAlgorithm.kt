@@ -671,7 +671,7 @@ class KeyMapAlgorithm(
                 }
             }
 
-            is KMGamePadEvent -> throw IllegalArgumentException("GamePad events are not supported by the key map algorithm")
+            is KMGamePadEvent -> {}
         }
 
         return false
