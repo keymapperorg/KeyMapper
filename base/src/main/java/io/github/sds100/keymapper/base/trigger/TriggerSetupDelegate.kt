@@ -79,7 +79,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
                     TriggerDiscoverShortcut.VOLUME -> buildSetupVolumeTriggerFlow()
                     TriggerDiscoverShortcut.POWER -> buildSetupPowerTriggerFlow()
                     TriggerDiscoverShortcut.FINGERPRINT_GESTURE -> buildSetupFingerprintGestureFlow()
-                    TriggerDiscoverShortcut.KEYBOARD -> TODO()
+                    TriggerDiscoverShortcut.KEYBOARD -> buildSetupKeyboardTriggerFlow()
                     TriggerDiscoverShortcut.MOUSE -> TODO()
                     TriggerDiscoverShortcut.GAMEPAD -> TODO()
                     TriggerDiscoverShortcut.OTHER -> TODO()
@@ -116,6 +116,28 @@ class TriggerSetupDelegateImpl @Inject constructor(
         }
     }
 
+    private fun buildSetupKeyboardTriggerFlow(): Flow<TriggerSetupState> {
+        return combine(
+            controlAccessibilityServiceUseCase.serviceState,
+            isScreenOffChecked,
+            recordTriggerController.state,
+            proModeStatus,
+        ) { serviceState, isScreenOffChecked, recordTriggerState, proModeStatus ->
+            val areRequirementsMet = if (isScreenOffChecked) {
+                serviceState == AccessibilityServiceState.ENABLED && proModeStatus == ProModeStatus.ENABLED
+            } else {
+                serviceState == AccessibilityServiceState.ENABLED
+            }
+
+            TriggerSetupState.Keyboard(
+                isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
+                isScreenOffChecked = isScreenOffChecked,
+                proModeStatus = proModeStatus,
+                areRequirementsMet = areRequirementsMet,
+                recordTriggerState = recordTriggerState,
+            )
+        }
+    }
 
     private fun buildSetupFingerprintGestureFlow(): Flow<TriggerSetupState> {
         return combine(
@@ -200,6 +222,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
 
         val enableEvdevRecording = when (setupState) {
             is TriggerSetupState.Volume -> setupState.isScreenOffChecked
+            is TriggerSetupState.Keyboard -> setupState.isScreenOffChecked
             is TriggerSetupState.Power -> true
             is TriggerSetupState.FingerprintGesture -> false
         }

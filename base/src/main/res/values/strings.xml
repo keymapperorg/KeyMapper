@@ -1680,6 +1680,7 @@
 
     <!-- Trigger Setup bottom sheet -->
     <string name="trigger_setup_volume_title">Volume button</string>
+    <string name="trigger_setup_keyboard_title">Keyboard</string>
     <string name="trigger_setup_power_title">Power button</string>
     <string name="trigger_setup_assistant_trigger_title">Assistant trigger</string>
     <string name="trigger_setup_assistant_trigger_add_on">Assistant trigger add-on</string>

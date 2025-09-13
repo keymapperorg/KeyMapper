@@ -11,6 +11,14 @@ sealed class TriggerSetupState {
         val recordTriggerState: RecordTriggerState,
     ) : TriggerSetupState()
 
+    data class Keyboard(
+        val isAccessibilityServiceEnabled: Boolean,
+        val isScreenOffChecked: Boolean,
+        val proModeStatus: ProModeStatus,
+        val areRequirementsMet: Boolean,
+        val recordTriggerState: RecordTriggerState,
+    ) : TriggerSetupState()
+
     data class Power(
         val isAccessibilityServiceEnabled: Boolean,
         val proModeStatus: ProModeStatus,

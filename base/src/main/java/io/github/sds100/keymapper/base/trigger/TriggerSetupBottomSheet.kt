@@ -27,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Fingerprint
+import androidx.compose.material.icons.rounded.Keyboard
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -100,6 +101,16 @@ fun HandleTriggerSetupBottomSheet(
             onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
             onGestureTypeSelected = viewModel::onFingerprintGestureTypeSelected,
             onAddTriggerClick = viewModel::onAddFingerprintGestureClick,
+        )
+
+        is TriggerSetupState.Keyboard -> KeyboardTriggerSetupBottomSheet(
+            sheetState = sheetState,
+            state = triggerSetupState as TriggerSetupState.Keyboard,
+            onDismissRequest = viewModel::onDismissTriggerSetup,
+            onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
+            onEnableProModeClick = viewModel::onEnableProModeClick,
+            onRecordTriggerClick = viewModel::onTriggerSetupRecordClick,
+            onScreenOffCheckedChange = viewModel::onScreenOffTriggerSetupCheckedChange,
         )
 
         null -> {}
@@ -226,6 +237,67 @@ private fun VolumeTriggerSetupBottomSheet(
             modifier = Modifier.fillMaxWidth(),
             color = LocalCustomColorsPalette.current.green,
             text = stringResource(R.string.trigger_setup_status_remap_button_possible)
+        )
+
+        HeaderText(text = stringResource(R.string.trigger_setup_options_title))
+
+        CheckBoxText(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(R.string.trigger_setup_screen_off_option),
+            isChecked = state.isScreenOffChecked,
+            isEnabled = true,
+            onCheckedChange = onScreenOffCheckedChange,
+        )
+
+        HeaderText(text = stringResource(R.string.trigger_setup_requirements_title))
+
+        AccessibilityServiceRequirementRow(
+            isServiceEnabled = state.isAccessibilityServiceEnabled,
+            onClick = onEnableAccessibilityServiceClick,
+        )
+
+        ProModeRequirementRow(
+            isVisible = state.isScreenOffChecked,
+            proModeStatus = state.proModeStatus,
+            onClick = onEnableProModeClick,
+        )
+    }
+}
+
+@Composable
+private fun KeyboardTriggerSetupBottomSheet(
+    modifier: Modifier = Modifier,
+    sheetState: SheetState,
+    state: TriggerSetupState.Keyboard,
+    onDismissRequest: () -> Unit = {},
+    onEnableAccessibilityServiceClick: () -> Unit = {},
+    onEnableProModeClick: () -> Unit = {},
+    onRecordTriggerClick: () -> Unit = {},
+    onScreenOffCheckedChange: (Boolean) -> Unit = {},
+) {
+    TriggerSetupBottomSheet(
+        modifier = modifier,
+        sheetState = sheetState,
+        onDismissRequest = onDismissRequest,
+        title = stringResource(R.string.trigger_setup_keyboard_title),
+        icon = Icons.Rounded.Keyboard,
+
+        positiveButtonContent = {
+            if (state.areRequirementsMet) {
+                RecordTriggerButton(
+                    modifier = Modifier.weight(1f),
+                    state = state.recordTriggerState,
+                    onClick = onRecordTriggerClick,
+                )
+            } else {
+                TriggerRequirementsNotMetButton(modifier = Modifier.weight(1f))
+            }
+        },
+    ) {
+        RemapStatusRow(
+            modifier = Modifier.fillMaxWidth(),
+            color = LocalCustomColorsPalette.current.green,
+            text = stringResource(R.string.trigger_setup_status_feature_possible)
         )
 
         HeaderText(text = stringResource(R.string.trigger_setup_options_title))
@@ -680,6 +752,54 @@ private fun FingerprintGestureRequirementsNotMetPreview() {
                 isAccessibilityServiceEnabled = false,
                 areRequirementsMet = false,
                 selectedType = FingerprintGestureType.SWIPE_UP,
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun KeyboardButtonEnabledPreview() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = SheetValue.Expanded,
+        )
+
+        KeyboardTriggerSetupBottomSheet(
+            sheetState = sheetState,
+            state = TriggerSetupState.Keyboard(
+                isAccessibilityServiceEnabled = true,
+                isScreenOffChecked = false,
+                proModeStatus = ProModeStatus.DISABLED,
+                areRequirementsMet = true,
+                recordTriggerState = RecordTriggerState.Idle,
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun KeyboardButtonDisabledPreview() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = SheetValue.Expanded,
+        )
+
+        KeyboardTriggerSetupBottomSheet(
+            sheetState = sheetState,
+            state = TriggerSetupState.Keyboard(
+                isAccessibilityServiceEnabled = false,
+                isScreenOffChecked = true,
+                proModeStatus = ProModeStatus.DISABLED,
+                areRequirementsMet = false,
+                recordTriggerState = RecordTriggerState.Idle,
             ),
         )
     }
