@@ -26,6 +26,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -56,8 +57,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
+import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.base.utils.ui.compose.HeaderText
+import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.ModeOffOn
 import kotlinx.coroutines.launch
@@ -90,12 +93,21 @@ fun HandleTriggerSetupBottomSheet(
             onRecordTriggerClick = viewModel::onTriggerSetupRecordClick,
         )
 
+        is TriggerSetupState.FingerprintGesture -> FingerprintGestureSetupBottomSheet(
+            sheetState = sheetState,
+            state = triggerSetupState as TriggerSetupState.FingerprintGesture,
+            onDismissRequest = viewModel::onDismissTriggerSetup,
+            onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
+            onGestureTypeSelected = viewModel::onFingerprintGestureTypeSelected,
+            onAddTriggerClick = viewModel::onAddFingerprintGestureClick,
+        )
+
         null -> {}
     }
 }
 
 @Composable
-fun PowerTriggerSetupBottomSheet(
+private fun PowerTriggerSetupBottomSheet(
     modifier: Modifier = Modifier,
     sheetState: SheetState,
     state: TriggerSetupState.Power,
@@ -181,7 +193,7 @@ private fun RemapStatusButton(modifier: Modifier = Modifier, remapStatus: RemapS
 }
 
 @Composable
-fun VolumeTriggerSetupBottomSheet(
+private fun VolumeTriggerSetupBottomSheet(
     modifier: Modifier = Modifier,
     sheetState: SheetState,
     state: TriggerSetupState.Volume,
@@ -237,6 +249,76 @@ fun VolumeTriggerSetupBottomSheet(
             isVisible = state.isScreenOffChecked,
             proModeStatus = state.proModeStatus,
             onClick = onEnableProModeClick,
+        )
+    }
+}
+
+@Composable
+private fun FingerprintGestureSetupBottomSheet(
+    modifier: Modifier = Modifier,
+    sheetState: SheetState,
+    state: TriggerSetupState.FingerprintGesture,
+    onDismissRequest: () -> Unit = {},
+    onEnableAccessibilityServiceClick: () -> Unit = {},
+    onGestureTypeSelected: (FingerprintGestureType) -> Unit = {},
+    onAddTriggerClick: () -> Unit = {},
+) {
+    TriggerSetupBottomSheet(
+        modifier = modifier,
+        sheetState = sheetState,
+        onDismissRequest = onDismissRequest,
+        title = stringResource(R.string.trigger_setup_fingerprint_reader_title),
+        icon = Icons.Rounded.Fingerprint,
+
+        positiveButtonContent = {
+            if (state.areRequirementsMet) {
+                AddTriggerButton(modifier = Modifier.weight(1f), onClick = onAddTriggerClick)
+            } else {
+                TriggerRequirementsNotMetButton(modifier = Modifier.weight(1f))
+            }
+        },
+    ) {
+        RemapStatusRow(
+            modifier = Modifier.fillMaxWidth(),
+            color = LocalCustomColorsPalette.current.amber,
+            text = stringResource(R.string.trigger_setup_status_might_remap_button)
+        )
+
+        HeaderText(text = stringResource(R.string.trigger_setup_requirements_title))
+
+        AccessibilityServiceRequirementRow(
+            isServiceEnabled = state.isAccessibilityServiceEnabled,
+            onClick = onEnableAccessibilityServiceClick,
+        )
+
+        HeaderText(text = stringResource(R.string.trigger_key_fingerprint_gesture_type_header))
+
+        RadioButtonText(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(R.string.fingerprint_gesture_down),
+            isSelected = state.selectedType == FingerprintGestureType.SWIPE_DOWN,
+            onSelected = { onGestureTypeSelected(FingerprintGestureType.SWIPE_DOWN) },
+        )
+
+        RadioButtonText(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(R.string.fingerprint_gesture_up),
+            isSelected = state.selectedType == FingerprintGestureType.SWIPE_UP,
+            onSelected = { onGestureTypeSelected(FingerprintGestureType.SWIPE_UP) },
+        )
+
+        RadioButtonText(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(R.string.fingerprint_gesture_left),
+            isSelected = state.selectedType == FingerprintGestureType.SWIPE_LEFT,
+            onSelected = { onGestureTypeSelected(FingerprintGestureType.SWIPE_LEFT) },
+        )
+
+        RadioButtonText(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(R.string.fingerprint_gesture_right),
+            isSelected = state.selectedType == FingerprintGestureType.SWIPE_RIGHT,
+            onSelected = { onGestureTypeSelected(FingerprintGestureType.SWIPE_RIGHT) },
         )
     }
 }
@@ -530,7 +612,6 @@ private fun VolumeButtonPreview() {
                 proModeStatus = ProModeStatus.ENABLED,
                 areRequirementsMet = true,
                 recordTriggerState = RecordTriggerState.Idle,
-                remapStatus = RemapStatus.SUPPORTED,
             ),
         )
     }
@@ -555,7 +636,50 @@ private fun VolumeButtonDisabledPreview() {
                 proModeStatus = ProModeStatus.DISABLED,
                 areRequirementsMet = false,
                 recordTriggerState = RecordTriggerState.Idle,
-                remapStatus = RemapStatus.UNCERTAIN,
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun FingerprintGestureRequirementsMetPreview() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = SheetValue.Expanded,
+        )
+
+        FingerprintGestureSetupBottomSheet(
+            sheetState = sheetState,
+            state = TriggerSetupState.FingerprintGesture(
+                isAccessibilityServiceEnabled = true,
+                areRequirementsMet = true,
+                selectedType = FingerprintGestureType.SWIPE_DOWN,
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun FingerprintGestureRequirementsNotMetPreview() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = SheetValue.Expanded,
+        )
+
+        FingerprintGestureSetupBottomSheet(
+            sheetState = sheetState,
+            state = TriggerSetupState.FingerprintGesture(
+                isAccessibilityServiceEnabled = false,
+                areRequirementsMet = false,
+                selectedType = FingerprintGestureType.SWIPE_UP,
             ),
         )
     }

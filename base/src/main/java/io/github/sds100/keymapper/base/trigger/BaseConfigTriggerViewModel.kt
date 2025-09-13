@@ -247,25 +247,6 @@ abstract class BaseConfigTriggerViewModel(
         super.onCleared()
     }
 
-    open fun onClickTriggerKeyShortcut(shortcut: TriggerKeyShortcut) {
-        if (shortcut == TriggerKeyShortcut.FINGERPRINT_GESTURE) {
-            viewModelScope.launch {
-                val listItems = listOf(
-                    FingerprintGestureType.SWIPE_DOWN to getString(R.string.fingerprint_gesture_down),
-                    FingerprintGestureType.SWIPE_UP to getString(R.string.fingerprint_gesture_up),
-                    FingerprintGestureType.SWIPE_LEFT to getString(R.string.fingerprint_gesture_left),
-                    FingerprintGestureType.SWIPE_RIGHT to getString(R.string.fingerprint_gesture_right),
-                )
-
-                val selectedType =
-                    showDialog("pick_assistant_type", DialogModel.SingleChoice(listItems))
-                        ?: return@launch
-
-                config.addFingerprintGesture(type = selectedType)
-            }
-        }
-    }
-
     fun onAdvancedTriggersClick() {
         onboarding.viewedAdvancedTriggers()
         showAdvancedTriggersBottomSheet = true

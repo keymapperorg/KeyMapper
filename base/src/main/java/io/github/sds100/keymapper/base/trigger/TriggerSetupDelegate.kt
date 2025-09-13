@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.base.trigger
 import android.os.Build
 import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.base.system.accessibility.ControlAccessibilityServiceUseCase
+import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
@@ -41,6 +42,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
     val controlAccessibilityServiceUseCase: ControlAccessibilityServiceUseCase,
     val recordTriggerController: RecordTriggerController,
     val systemBridgeConnectionManager: SystemBridgeConnectionManager,
+    val configTriggerUseCase: ConfigTriggerUseCase,
     resourceProvider: ResourceProvider,
     dialogProvider: DialogProvider,
     navigationProvider: NavigationProvider,
@@ -53,6 +55,8 @@ class TriggerSetupDelegateImpl @Inject constructor(
         MutableStateFlow(null)
 
     private val isScreenOffChecked: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val selectedFingerprintGestureType: MutableStateFlow<FingerprintGestureType> =
+        MutableStateFlow(FingerprintGestureType.SWIPE_DOWN)
 
     private val proModeStatus: Flow<ProModeStatus> =
         if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
@@ -74,7 +78,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
                 when (shortcut) {
                     TriggerDiscoverShortcut.VOLUME -> buildSetupVolumeTriggerFlow()
                     TriggerDiscoverShortcut.POWER -> buildSetupPowerTriggerFlow()
-                    TriggerDiscoverShortcut.FINGERPRINT_GESTURE -> TODO()
+                    TriggerDiscoverShortcut.FINGERPRINT_GESTURE -> buildSetupFingerprintGestureFlow()
                     TriggerDiscoverShortcut.KEYBOARD -> TODO()
                     TriggerDiscoverShortcut.MOUSE -> TODO()
                     TriggerDiscoverShortcut.GAMEPAD -> TODO()
@@ -108,7 +112,22 @@ class TriggerSetupDelegateImpl @Inject constructor(
                 proModeStatus = proModeStatus,
                 areRequirementsMet = areRequirementsMet,
                 recordTriggerState = recordTriggerState,
-                remapStatus = RemapStatus.SUPPORTED,
+            )
+        }
+    }
+
+
+    private fun buildSetupFingerprintGestureFlow(): Flow<TriggerSetupState> {
+        return combine(
+            controlAccessibilityServiceUseCase.serviceState,
+            selectedFingerprintGestureType
+        ) { serviceState, gestureType ->
+            val areRequirementsMet = serviceState == AccessibilityServiceState.ENABLED
+
+            TriggerSetupState.FingerprintGesture(
+                isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
+                areRequirementsMet = areRequirementsMet,
+                selectedType = gestureType,
             )
         }
     }
@@ -182,6 +201,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
         val enableEvdevRecording = when (setupState) {
             is TriggerSetupState.Volume -> setupState.isScreenOffChecked
             is TriggerSetupState.Power -> true
+            is TriggerSetupState.FingerprintGesture -> false
         }
 
         viewModelScope.launch {
@@ -206,6 +226,15 @@ class TriggerSetupDelegateImpl @Inject constructor(
             // Show dialog if the accessibility service is disabled or crashed
             handleServiceEventResult(result)
         }
+    }
+
+    override fun onFingerprintGestureTypeSelected(type: FingerprintGestureType) {
+        selectedFingerprintGestureType.value = type
+    }
+
+    override fun onAddFingerprintGestureClick() {
+        configTriggerUseCase.addFingerprintGesture(selectedFingerprintGestureType.value)
+        currentDiscoverShortcut.value = null
     }
 
     private suspend fun handleServiceEventResult(result: KMResult<*>) {
@@ -235,4 +264,6 @@ interface TriggerSetupDelegate {
     fun onEnableProModeClick()
     fun onScreenOffTriggerSetupCheckedChange(isChecked: Boolean)
     fun onTriggerSetupRecordClick()
+    fun onFingerprintGestureTypeSelected(type: FingerprintGestureType)
+    fun onAddFingerprintGestureClick()
 }
