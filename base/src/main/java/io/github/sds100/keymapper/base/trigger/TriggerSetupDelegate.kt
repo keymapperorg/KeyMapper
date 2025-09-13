@@ -73,7 +73,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
             } else {
                 when (shortcut) {
                     TriggerDiscoverShortcut.VOLUME -> buildSetupVolumeTriggerFlow()
-                    TriggerDiscoverShortcut.POWER -> TODO()
+                    TriggerDiscoverShortcut.POWER -> buildSetupPowerTriggerFlow()
                     TriggerDiscoverShortcut.FINGERPRINT_GESTURE -> TODO()
                     TriggerDiscoverShortcut.KEYBOARD -> TODO()
                     TriggerDiscoverShortcut.MOUSE -> TODO()
@@ -109,6 +109,35 @@ class TriggerSetupDelegateImpl @Inject constructor(
                 areRequirementsMet = areRequirementsMet,
                 recordTriggerState = recordTriggerState,
                 remapStatus = RemapStatus.SUPPORTED,
+            )
+        }
+    }
+
+    private fun buildSetupPowerTriggerFlow(): Flow<TriggerSetupState> {
+        return combine(
+            controlAccessibilityServiceUseCase.serviceState,
+            recordTriggerController.state,
+            proModeStatus,
+        ) { serviceState, recordTriggerState, proModeStatus ->
+            val areRequirementsMet =
+                serviceState == AccessibilityServiceState.ENABLED && proModeStatus == ProModeStatus.ENABLED
+
+            val remapStatus = if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
+                if (areRequirementsMet) {
+                    RemapStatus.SUPPORTED
+                } else {
+                    RemapStatus.UNCERTAIN
+                }
+            } else {
+                RemapStatus.UNSUPPORTED
+            }
+
+            TriggerSetupState.Power(
+                isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
+                proModeStatus = proModeStatus,
+                areRequirementsMet = areRequirementsMet,
+                recordTriggerState = recordTriggerState,
+                remapStatus = remapStatus,
             )
         }
     }
@@ -152,6 +181,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
 
         val enableEvdevRecording = when (setupState) {
             is TriggerSetupState.Volume -> setupState.isScreenOffChecked
+            is TriggerSetupState.Power -> true
         }
 
         viewModelScope.launch {

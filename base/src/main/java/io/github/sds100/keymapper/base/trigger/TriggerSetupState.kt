@@ -9,4 +9,12 @@ sealed class TriggerSetupState {
         val recordTriggerState: RecordTriggerState,
         val remapStatus: RemapStatus,
     ) : TriggerSetupState()
+
+    data class Power(
+        val isAccessibilityServiceEnabled: Boolean,
+        val proModeStatus: ProModeStatus,
+        val areRequirementsMet: Boolean,
+        val recordTriggerState: RecordTriggerState,
+        val remapStatus: RemapStatus,
+    ) : TriggerSetupState()
 }

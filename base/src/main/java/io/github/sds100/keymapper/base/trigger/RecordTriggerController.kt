@@ -168,6 +168,7 @@ class RecordTriggerControllerImpl @Inject constructor(
     override suspend fun startRecording(enableEvdevRecording: Boolean): KMResult<*> {
         val serviceResult =
             accessibilityServiceAdapter.send(AccessibilityServiceEvent.Ping("record_trigger"))
+
         if (serviceResult.isError) {
             return serviceResult
         }
@@ -223,6 +224,8 @@ class RecordTriggerControllerImpl @Inject constructor(
     // Run on a different thread in case the main thread is locked up while recording and
     // the evdev devices aren't ungrabbed.
     private fun recordTriggerJob(): Job = coroutineScope.launch(Dispatchers.Default) {
+        Timber.i("Starting trigger recording. Evdev recording: $isEvdevRecordingEnabled")
+
         recordedKeys.clear()
         dpadMotionEventTracker.reset()
         downKeyEvents.clear()

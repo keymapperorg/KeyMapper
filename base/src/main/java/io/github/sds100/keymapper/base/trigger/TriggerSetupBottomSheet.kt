@@ -20,7 +20,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material.icons.rounded.Check
@@ -56,6 +58,8 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.base.utils.ui.compose.HeaderText
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.ModeOffOn
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,7 +81,102 @@ fun HandleTriggerSetupBottomSheet(
             onScreenOffCheckedChange = viewModel::onScreenOffTriggerSetupCheckedChange,
         )
 
+        is TriggerSetupState.Power -> PowerTriggerSetupBottomSheet(
+            sheetState = sheetState,
+            state = triggerSetupState as TriggerSetupState.Power,
+            onDismissRequest = viewModel::onDismissTriggerSetup,
+            onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
+            onEnableProModeClick = viewModel::onEnableProModeClick,
+            onRecordTriggerClick = viewModel::onTriggerSetupRecordClick,
+        )
+
         null -> {}
+    }
+}
+
+@Composable
+fun PowerTriggerSetupBottomSheet(
+    modifier: Modifier = Modifier,
+    sheetState: SheetState,
+    state: TriggerSetupState.Power,
+    onDismissRequest: () -> Unit = {},
+    onEnableAccessibilityServiceClick: () -> Unit = {},
+    onEnableProModeClick: () -> Unit = {},
+    onRecordTriggerClick: () -> Unit = {},
+) {
+    TriggerSetupBottomSheet(
+        modifier = modifier,
+        sheetState = sheetState,
+        onDismissRequest = onDismissRequest,
+        title = stringResource(R.string.trigger_setup_power_title),
+        icon = KeyMapperIcons.ModeOffOn,
+        positiveButtonContent = {
+            if (state.areRequirementsMet) {
+                RecordTriggerButton(
+                    modifier = Modifier.weight(1f),
+                    state = state.recordTriggerState,
+                    onClick = onRecordTriggerClick,
+                )
+            } else {
+                TriggerRequirementsNotMetButton(modifier = Modifier.weight(1f))
+            }
+        },
+    ) {
+
+        RemapStatusButton(modifier = Modifier.fillMaxWidth(), remapStatus = state.remapStatus)
+
+        HeaderText(text = stringResource(R.string.trigger_setup_options_title))
+
+        CheckBoxText(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(R.string.trigger_setup_screen_off_option),
+            isChecked = true,
+            isEnabled = false,
+            onCheckedChange = {},
+        )
+
+        HeaderText(text = stringResource(R.string.trigger_setup_requirements_title))
+
+        AccessibilityServiceRequirementRow(
+            isServiceEnabled = state.isAccessibilityServiceEnabled,
+            onClick = onEnableAccessibilityServiceClick,
+        )
+
+        ProModeRequirementRow(
+            isVisible = true,
+            proModeStatus = state.proModeStatus,
+            onClick = onEnableProModeClick,
+        )
+
+        HeaderText(text = stringResource(R.string.trigger_setup_information_title))
+
+        Text(
+            stringResource(R.string.trigger_setup_power_information),
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+}
+
+@Composable
+private fun RemapStatusButton(modifier: Modifier = Modifier, remapStatus: RemapStatus) {
+    when (remapStatus) {
+        RemapStatus.UNSUPPORTED -> RemapStatusRow(
+            modifier = modifier,
+            color = MaterialTheme.colorScheme.error,
+            text = stringResource(R.string.trigger_setup_status_can_not_remap)
+        )
+
+        RemapStatus.UNCERTAIN -> RemapStatusRow(
+            modifier = modifier,
+            color = LocalCustomColorsPalette.current.amber,
+            text = stringResource(R.string.trigger_setup_status_remap_button_possible)
+        )
+
+        RemapStatus.SUPPORTED -> RemapStatusRow(
+            modifier = modifier,
+            color = LocalCustomColorsPalette.current.green,
+            text = stringResource(R.string.trigger_setup_status_remap_button_possible)
+        )
     }
 }
 
@@ -98,6 +197,7 @@ fun VolumeTriggerSetupBottomSheet(
         onDismissRequest = onDismissRequest,
         title = stringResource(R.string.trigger_setup_volume_title),
         icon = Icons.AutoMirrored.Outlined.VolumeUp,
+
         positiveButtonContent = {
             if (state.areRequirementsMet) {
                 RecordTriggerButton(
@@ -110,7 +210,6 @@ fun VolumeTriggerSetupBottomSheet(
             }
         },
     ) {
-
         RemapStatusRow(
             modifier = Modifier.fillMaxWidth(),
             color = LocalCustomColorsPalette.current.green,
@@ -188,6 +287,7 @@ private fun ProModeRequirementRow(
                 Text(
                     text = stringResource(R.string.trigger_setup_pro_mode_unsupported),
                     color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
                 )
             } else {
                 TriggerRequirementButton(
@@ -335,7 +435,9 @@ fun TriggerSetupBottomSheet(
             }
 
             Column(
-                modifier = Modifier.animateContentSize(),
+                modifier = Modifier
+                    .animateContentSize()
+                    .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 content()
@@ -358,6 +460,54 @@ fun TriggerSetupBottomSheet(
                 positiveButtonContent()
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun PowerButtonPreview() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = SheetValue.Expanded,
+        )
+
+        PowerTriggerSetupBottomSheet(
+            sheetState = sheetState,
+            state = TriggerSetupState.Power(
+                isAccessibilityServiceEnabled = true,
+                proModeStatus = ProModeStatus.ENABLED,
+                areRequirementsMet = true,
+                recordTriggerState = RecordTriggerState.Idle,
+                remapStatus = RemapStatus.SUPPORTED,
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun PowerButtonDisabledPreview() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = SheetValue.Expanded,
+        )
+
+        PowerTriggerSetupBottomSheet(
+            sheetState = sheetState,
+            state = TriggerSetupState.Power(
+                isAccessibilityServiceEnabled = false,
+                proModeStatus = ProModeStatus.UNSUPPORTED,
+                areRequirementsMet = false,
+                recordTriggerState = RecordTriggerState.Idle,
+                remapStatus = RemapStatus.UNSUPPORTED,
+            ),
+        )
     }
 }
 

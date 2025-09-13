@@ -95,7 +95,7 @@ fun <T> KeyMapperSegmentedButtonRow(
                     Text(
                         modifier = if (isUnselectedDisabled) Modifier.alpha(0.5f) else Modifier,
                         text = label,
-                        maxLines = 2,
+                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
                 }

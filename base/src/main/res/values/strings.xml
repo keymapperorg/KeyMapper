@@ -1699,7 +1699,7 @@
     <string name="trigger_setup_status_remap_button_possible">You can remap this button</string>
     <string name="trigger_setup_status_remap_device_possible">You can remap this device</string>
     <string name="trigger_setup_status_feature_possible">You can use this feature</string>
-    <string name="trigger_setup_screen_off_option">Remap even when the screen is off</string>
+    <string name="trigger_setup_screen_off_option">Remap when the screen is off</string>
     <string name="trigger_setup_options_title">Options</string>
     <string name="trigger_setup_requirements_title">Requirements</string>
     <string name="trigger_setup_information_title">Information</string>
@@ -1716,6 +1716,7 @@
     <string name="trigger_setup_assistant_read_instructions_link">read the instructions</string>
     <string name="trigger_setup_assistant_read_instructions_button">Read instructions</string>
     <string name="trigger_setup_assistant_select_type_button">Select trigger type</string>
+    <string name="trigger_setup_power_information">If your device assistant is triggered by the power button, it might be possible to remap the assistant instead, meaning you don\'t need to use PRO mode. Try choosing \'Assistant\' from the trigger page and follow the instructions.</string>
     <!-- Trigger Setup bottom sheet -->
 
 </resources>
