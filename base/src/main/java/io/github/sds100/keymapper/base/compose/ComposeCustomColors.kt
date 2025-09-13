@@ -49,6 +49,8 @@ data class ComposeCustomColors(
     val onAmber: Color = Color.Unspecified,
     val amberContainer: Color = Color.Unspecified,
     val onAmberContainer: Color = Color.Unspecified,
+    val discord: Color = Color.Unspecified,
+    val onDiscord: Color = Color.Unspecified,
 ) {
     companion object {
         val LightPalette = ComposeCustomColors(
@@ -70,6 +72,8 @@ data class ComposeCustomColors(
             onAmber = onAmberLight,
             amberContainer = amberContainerLight,
             onAmberContainer = onAmberContainerLight,
+            discord = ComposeColors.discordLight,
+            onDiscord = ComposeColors.onDiscordLight,
         )
 
         val DarkPalette = ComposeCustomColors(
@@ -91,6 +95,8 @@ data class ComposeCustomColors(
             onAmber = onAmberDark,
             amberContainer = amberContainerDark,
             onAmberContainer = onAmberContainerDark,
+            discord = ComposeColors.discordDark,
+            onDiscord = ComposeColors.onDiscordDark,
         )
     }
 
@@ -105,6 +111,7 @@ data class ComposeCustomColors(
             shizukuBlue -> onShizukuBlue
             amber -> onAmber
             amberContainer -> onAmberContainer
+            discord -> onDiscord
             else -> MaterialTheme.colorScheme.contentColorFor(color)
         }
     }

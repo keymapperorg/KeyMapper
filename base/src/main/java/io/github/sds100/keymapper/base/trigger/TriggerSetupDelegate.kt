@@ -82,7 +82,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
                     TriggerDiscoverShortcut.KEYBOARD -> buildSetupKeyboardTriggerFlow()
                     TriggerDiscoverShortcut.MOUSE -> buildSetupMouseTriggerFlow()
                     TriggerDiscoverShortcut.GAMEPAD -> TODO()
-                    TriggerDiscoverShortcut.OTHER -> TODO()
+                    TriggerDiscoverShortcut.OTHER -> buildSetupOtherTriggerFlow()
 
                     else -> throw UnsupportedOperationException("Unhandled shortcut: $shortcut")
                 }
@@ -107,6 +107,29 @@ class TriggerSetupDelegateImpl @Inject constructor(
             }
 
             TriggerSetupState.Volume(
+                isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
+                isScreenOffChecked = isScreenOffChecked,
+                proModeStatus = proModeStatus,
+                areRequirementsMet = areRequirementsMet,
+                recordTriggerState = recordTriggerState,
+            )
+        }
+    }
+
+    private fun buildSetupOtherTriggerFlow(): Flow<TriggerSetupState> {
+        return combine(
+            controlAccessibilityServiceUseCase.serviceState,
+            isScreenOffChecked,
+            recordTriggerController.state,
+            proModeStatus,
+        ) { serviceState, isScreenOffChecked, recordTriggerState, proModeStatus ->
+            val areRequirementsMet = if (isScreenOffChecked) {
+                serviceState == AccessibilityServiceState.ENABLED && proModeStatus == ProModeStatus.ENABLED
+            } else {
+                serviceState == AccessibilityServiceState.ENABLED
+            }
+
+            TriggerSetupState.Other(
                 isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
                 isScreenOffChecked = isScreenOffChecked,
                 proModeStatus = proModeStatus,
@@ -255,6 +278,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
             is TriggerSetupState.Power -> true
             is TriggerSetupState.FingerprintGesture -> false
             is TriggerSetupState.Mouse -> true
+            is TriggerSetupState.Other -> setupState.isScreenOffChecked
         }
 
         viewModelScope.launch {

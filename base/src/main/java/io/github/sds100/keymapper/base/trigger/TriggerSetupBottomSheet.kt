@@ -51,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,6 +64,7 @@ import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureTy
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.base.utils.ui.compose.HeaderText
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.IndeterminateQuestionBox
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.ModeOffOn
 import kotlinx.coroutines.launch
@@ -121,6 +123,16 @@ fun HandleTriggerSetupBottomSheet(
             onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
             onEnableProModeClick = viewModel::onEnableProModeClick,
             onRecordTriggerClick = viewModel::onTriggerSetupRecordClick,
+        )
+
+        is TriggerSetupState.Other -> OtherTriggerSetupBottomSheet(
+            sheetState = sheetState,
+            state = triggerSetupState as TriggerSetupState.Other,
+            onDismissRequest = viewModel::onDismissTriggerSetup,
+            onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
+            onEnableProModeClick = viewModel::onEnableProModeClick,
+            onRecordTriggerClick = viewModel::onTriggerSetupRecordClick,
+            onScreenOffCheckedChange = viewModel::onScreenOffTriggerSetupCheckedChange,
         )
 
         null -> {}
@@ -334,6 +346,90 @@ private fun VolumeTriggerSetupBottomSheet(
             proModeStatus = state.proModeStatus,
             onClick = onEnableProModeClick,
         )
+    }
+}
+
+@Composable
+private fun OtherTriggerSetupBottomSheet(
+    modifier: Modifier = Modifier,
+    sheetState: SheetState,
+    state: TriggerSetupState.Other,
+    onDismissRequest: () -> Unit = {},
+    onEnableAccessibilityServiceClick: () -> Unit = {},
+    onEnableProModeClick: () -> Unit = {},
+    onRecordTriggerClick: () -> Unit = {},
+    onScreenOffCheckedChange: (Boolean) -> Unit = {},
+) {
+    TriggerSetupBottomSheet(
+        modifier = modifier,
+        sheetState = sheetState,
+        onDismissRequest = onDismissRequest,
+        title = stringResource(R.string.trigger_setup_other_title),
+        icon = KeyMapperIcons.IndeterminateQuestionBox,
+
+        positiveButtonContent = {
+            if (state.areRequirementsMet) {
+                RecordTriggerButton(
+                    modifier = Modifier.weight(1f),
+                    state = state.recordTriggerState,
+                    onClick = onRecordTriggerClick,
+                )
+            } else {
+                TriggerRequirementsNotMetButton(modifier = Modifier.weight(1f))
+            }
+        },
+    ) {
+        RemapStatusRow(
+            modifier = Modifier.fillMaxWidth(),
+            color = LocalCustomColorsPalette.current.amber,
+            text = stringResource(R.string.trigger_setup_status_might_remap_button)
+        )
+
+        HeaderText(text = stringResource(R.string.trigger_setup_options_title))
+
+        CheckBoxText(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(R.string.trigger_setup_screen_off_option),
+            isChecked = state.isScreenOffChecked,
+            isEnabled = true,
+            onCheckedChange = onScreenOffCheckedChange,
+        )
+
+        HeaderText(text = stringResource(R.string.trigger_setup_requirements_title))
+
+        AccessibilityServiceRequirementRow(
+            isServiceEnabled = state.isAccessibilityServiceEnabled,
+            onClick = onEnableAccessibilityServiceClick,
+        )
+
+        ProModeRequirementRow(
+            isVisible = state.isScreenOffChecked,
+            proModeStatus = state.proModeStatus,
+            onClick = onEnableProModeClick,
+        )
+
+        HeaderText(text = stringResource(R.string.trigger_setup_information_title))
+
+        Text(
+            stringResource(R.string.trigger_setup_get_help_information),
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        val uriHandler = LocalUriHandler.current
+        val helpUrl = stringResource(R.string.url_discord_server_invite)
+
+        Button(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            onClick = {
+                uriHandler.openUri(helpUrl)
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = LocalCustomColorsPalette.current.discord,
+                contentColor = LocalCustomColorsPalette.current.onDiscord,
+            )
+        ) {
+            Text(stringResource(R.string.trigger_setup_get_help_button))
+        }
     }
 }
 
@@ -645,7 +741,7 @@ fun TriggerSetupBottomSheet(
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
-                            modifier = Modifier.size(24.dp),
+                            modifier = Modifier.size(32.dp),
                             imageVector = icon,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -923,6 +1019,54 @@ private fun MouseButtonDisabledPreview() {
                 areRequirementsMet = false,
                 recordTriggerState = RecordTriggerState.Idle,
                 remapStatus = RemapStatus.UNSUPPORTED,
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun OtherButtonPreview() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = SheetValue.Expanded,
+        )
+
+        OtherTriggerSetupBottomSheet(
+            sheetState = sheetState,
+            state = TriggerSetupState.Other(
+                isAccessibilityServiceEnabled = true,
+                isScreenOffChecked = true,
+                proModeStatus = ProModeStatus.ENABLED,
+                areRequirementsMet = true,
+                recordTriggerState = RecordTriggerState.Idle,
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun OtherButtonDisabledPreview() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = SheetValue.Expanded,
+        )
+
+        OtherTriggerSetupBottomSheet(
+            sheetState = sheetState,
+            state = TriggerSetupState.Other(
+                isAccessibilityServiceEnabled = false,
+                isScreenOffChecked = true,
+                proModeStatus = ProModeStatus.DISABLED,
+                areRequirementsMet = false,
+                recordTriggerState = RecordTriggerState.Idle,
             ),
         )
     }

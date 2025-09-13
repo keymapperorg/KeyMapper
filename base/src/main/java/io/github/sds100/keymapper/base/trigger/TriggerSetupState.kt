@@ -35,6 +35,14 @@ sealed class TriggerSetupState {
         val remapStatus: RemapStatus,
     ) : TriggerSetupState()
 
+    data class Other(
+        val isAccessibilityServiceEnabled: Boolean,
+        val isScreenOffChecked: Boolean,
+        val proModeStatus: ProModeStatus,
+        val areRequirementsMet: Boolean,
+        val recordTriggerState: RecordTriggerState,
+    ) : TriggerSetupState()
+
     data class FingerprintGesture(
         val isAccessibilityServiceEnabled: Boolean,
         val areRequirementsMet: Boolean,
