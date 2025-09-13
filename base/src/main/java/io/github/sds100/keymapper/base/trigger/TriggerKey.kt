@@ -31,12 +31,14 @@ sealed class TriggerKey : Comparable<TriggerKey> {
                 }
             }
 
+            // Assistant triggers can not be triggered at the same time.
             this is AssistantTriggerKey && other is AssistantTriggerKey -> {
-                return this.type == other.type
+                return true
             }
 
+            // Fingerprint gestures can not be triggered at the same time.
             this is FingerprintTriggerKey && other is FingerprintTriggerKey -> {
-                return this.type == other.type
+                return true
             }
 
             this is FloatingButtonKey && other is FloatingButtonKey -> {
