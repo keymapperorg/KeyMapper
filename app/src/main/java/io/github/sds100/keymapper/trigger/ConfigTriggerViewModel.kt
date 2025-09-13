@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.base.trigger.BaseConfigTriggerViewModel
 import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCase
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
+import io.github.sds100.keymapper.base.trigger.TriggerDiscoverShortcut
 import io.github.sds100.keymapper.base.trigger.TriggerSetupDelegate
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
@@ -47,4 +48,12 @@ class ConfigTriggerViewModel @Inject constructor(
     override fun onEditFloatingButtonClick() {}
 
     override fun onEditFloatingLayoutClick() {}
+
+    override fun onDiscoverShortcutClick(shortcut: TriggerDiscoverShortcut) {
+        when (shortcut) {
+            TriggerDiscoverShortcut.ASSISTANT -> showAdvancedTriggersBottomSheet = true
+
+            else -> super.onDiscoverShortcutClick(shortcut)
+        }
+    }
 }

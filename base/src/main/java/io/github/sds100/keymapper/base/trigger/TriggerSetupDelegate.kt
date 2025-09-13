@@ -73,7 +73,6 @@ class TriggerSetupDelegateImpl @Inject constructor(
             } else {
                 when (shortcut) {
                     TriggerDiscoverShortcut.VOLUME -> buildSetupVolumeTriggerFlow()
-                    TriggerDiscoverShortcut.ASSISTANT -> TODO()
                     TriggerDiscoverShortcut.POWER -> TODO()
                     TriggerDiscoverShortcut.FINGERPRINT_GESTURE -> TODO()
                     TriggerDiscoverShortcut.KEYBOARD -> TODO()

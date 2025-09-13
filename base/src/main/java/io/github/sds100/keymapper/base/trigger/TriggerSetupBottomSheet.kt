@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -25,6 +24,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -53,6 +55,7 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
+import io.github.sds100.keymapper.base.utils.ui.compose.HeaderText
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -103,7 +106,7 @@ fun VolumeTriggerSetupBottomSheet(
                     onClick = onRecordTriggerClick,
                 )
             } else {
-                RequirementsNotMetButton(modifier = Modifier.weight(1f))
+                TriggerRequirementsNotMetButton(modifier = Modifier.weight(1f))
             }
         },
     ) {
@@ -114,9 +117,7 @@ fun VolumeTriggerSetupBottomSheet(
             text = stringResource(R.string.trigger_setup_status_remap_button_possible)
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Header(text = stringResource(R.string.trigger_setup_options_title))
+        HeaderText(text = stringResource(R.string.trigger_setup_options_title))
 
         CheckBoxText(
             modifier = Modifier.fillMaxWidth(),
@@ -126,9 +127,7 @@ fun VolumeTriggerSetupBottomSheet(
             onCheckedChange = onScreenOffCheckedChange,
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Header(text = stringResource(R.string.trigger_setup_requirements_title))
+        HeaderText(text = stringResource(R.string.trigger_setup_requirements_title))
 
         AccessibilityServiceRequirementRow(
             isServiceEnabled = state.isAccessibilityServiceEnabled,
@@ -144,7 +143,7 @@ fun VolumeTriggerSetupBottomSheet(
 }
 
 @Composable
-private fun RemapStatusRow(
+fun RemapStatusRow(
     modifier: Modifier = Modifier,
     color: Color,
     text: String
@@ -181,7 +180,7 @@ private fun ProModeRequirementRow(
         enter = fadeIn(animationSpec = tween(200)),
         exit = fadeOut(animationSpec = tween(200)) + shrinkVertically(animationSpec = tween(200)),
     ) {
-        RequirementRow(
+        TriggerRequirementRow(
             modifier = modifier,
             text = stringResource(R.string.trigger_setup_pro_mode_title),
         ) {
@@ -191,7 +190,7 @@ private fun ProModeRequirementRow(
                     color = MaterialTheme.colorScheme.error,
                 )
             } else {
-                RequirementButton(
+                TriggerRequirementButton(
                     enabledText = stringResource(R.string.trigger_setup_pro_mode_enable_button),
                     disabledText = stringResource(R.string.trigger_setup_pro_mode_running_button),
                     isEnabled = proModeStatus != ProModeStatus.ENABLED,
@@ -203,16 +202,16 @@ private fun ProModeRequirementRow(
 }
 
 @Composable
-private fun AccessibilityServiceRequirementRow(
+fun AccessibilityServiceRequirementRow(
     modifier: Modifier = Modifier,
     isServiceEnabled: Boolean,
     onClick: () -> Unit,
 ) {
-    RequirementRow(
+    TriggerRequirementRow(
         modifier = modifier,
         text = stringResource(R.string.trigger_setup_accessibility_service_title),
     ) {
-        RequirementButton(
+        TriggerRequirementButton(
             enabledText = stringResource(R.string.trigger_setup_accessibility_service_enable_button),
             disabledText = stringResource(R.string.trigger_setup_accessibility_service_running_button),
             isEnabled = !isServiceEnabled,
@@ -222,17 +221,7 @@ private fun AccessibilityServiceRequirementRow(
 }
 
 @Composable
-private fun Header(modifier: Modifier = Modifier, text: String) {
-    Text(
-        modifier = modifier,
-        text = text,
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.primary,
-    )
-}
-
-@Composable
-private fun RequirementRow(
+fun TriggerRequirementRow(
     modifier: Modifier = Modifier,
     text: String,
     actionContent: @Composable () -> Unit,
@@ -251,24 +240,34 @@ private fun RequirementRow(
 }
 
 @Composable
-private fun RequirementsNotMetButton(modifier: Modifier = Modifier) {
+fun TriggerRequirementsNotMetButton(modifier: Modifier = Modifier) {
     FilledTonalButton(modifier = modifier, onClick = {}, enabled = false) {
         Text(stringResource(R.string.trigger_setup_requirements_not_met_button))
     }
 }
 
+
 @Composable
-private fun RequirementButton(
+fun AddTriggerButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    Button(modifier = modifier, onClick = onClick) {
+        Text(stringResource(R.string.trigger_setup_add_trigger_button))
+    }
+}
+
+@Composable
+fun TriggerRequirementButton(
     modifier: Modifier = Modifier,
     enabledText: String,
     disabledText: String,
     isEnabled: Boolean,
+    colors: ButtonColors = ButtonDefaults.filledTonalButtonColors(),
     onClick: () -> Unit,
 ) {
     FilledTonalButton(
         modifier = modifier,
         onClick = onClick,
         enabled = isEnabled,
+        colors = colors
     ) {
         if (isEnabled) {
             Text(text = enabledText)
@@ -283,7 +282,7 @@ private fun RequirementButton(
 }
 
 @Composable
-private fun TriggerSetupBottomSheet(
+fun TriggerSetupBottomSheet(
     modifier: Modifier = Modifier,
     sheetState: SheetState,
     onDismissRequest: () -> Unit,
@@ -335,7 +334,10 @@ private fun TriggerSetupBottomSheet(
                 )
             }
 
-            Column(modifier = Modifier.animateContentSize()) {
+            Column(
+                modifier = Modifier.animateContentSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 content()
             }
 
