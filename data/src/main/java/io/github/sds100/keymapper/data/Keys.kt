@@ -73,8 +73,10 @@ object Keys {
 
     val neverShowDpadImeTriggerError =
         booleanPreferencesKey("key_never_show_dpad_ime_trigger_error")
-    val neverShowNoKeysRecordedError =
-        booleanPreferencesKey("key_never_show_no_keys_recorded_error")
+
+//    val neverShowNoKeysRecordedError =
+//        booleanPreferencesKey("key_never_show_no_keys_recorded_error")
+
     val sortOrderJson = stringPreferencesKey("key_keymaps_sort_order_json")
     val sortShowHelp = booleanPreferencesKey("key_keymaps_sort_show_help")
 

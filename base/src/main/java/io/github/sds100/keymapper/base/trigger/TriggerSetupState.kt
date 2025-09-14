@@ -43,6 +43,13 @@ sealed class TriggerSetupState {
         val recordTriggerState: RecordTriggerState,
     ) : TriggerSetupState()
 
+    data class NotDetected(
+        val isAccessibilityServiceEnabled: Boolean,
+        val proModeStatus: ProModeStatus,
+        val areRequirementsMet: Boolean,
+        val recordTriggerState: RecordTriggerState,
+    ) : TriggerSetupState()
+
     sealed class Gamepad() : TriggerSetupState() {
         abstract val isAccessibilityServiceEnabled: Boolean
         abstract val areRequirementsMet: Boolean

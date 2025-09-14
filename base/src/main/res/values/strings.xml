@@ -1703,6 +1703,7 @@
     <string name="trigger_setup_screen_off_option">Remap when the screen is off</string>
     <string name="trigger_setup_options_title">Options</string>
     <string name="trigger_setup_requirements_title">Requirements</string>
+    <string name="trigger_setup_not_detected_information">If your buttons still cannot be detected, please join our Discord server and let us know. We will do our best to help you remap your buttons.</string>
     <string name="trigger_setup_get_help_information">If your buttons cannot be detected please join our Discord server and let us know. We will do our best to help you remap your buttons.</string>
     <string name="trigger_setup_information_title">Information</string>
     <string name="trigger_setup_accessibility_service_title">Accessibility service</string>

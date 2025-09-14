@@ -29,7 +29,7 @@ fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewMod
         TriggerDiscoverScreen(
             showFloatingButtons = true,
             showFingerprintGestures = showFingerprintGestures,
-            onShortcutClick = viewModel::onDiscoverShortcutClick,
+            onShortcutClick = viewModel::showTriggerSetup,
         )
     })
 }

@@ -52,7 +52,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider {
 
-    private val currentDiscoverShortcut: MutableStateFlow<TriggerDiscoverShortcut?> =
+    private val currentSetupShortcut: MutableStateFlow<TriggerSetupShortcut?> =
         MutableStateFlow(null)
 
     private val isScreenOffChecked: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -75,26 +75,27 @@ class TriggerSetupDelegateImpl @Inject constructor(
         }
 
     override val triggerSetupState: StateFlow<TriggerSetupState?> =
-        currentDiscoverShortcut.flatMapLatest { shortcut ->
+        currentSetupShortcut.flatMapLatest { shortcut ->
             if (shortcut == null) {
                 flowOf(null)
             } else {
                 when (shortcut) {
-                    TriggerDiscoverShortcut.VOLUME -> buildSetupVolumeTriggerFlow()
-                    TriggerDiscoverShortcut.POWER -> buildSetupPowerTriggerFlow()
-                    TriggerDiscoverShortcut.FINGERPRINT_GESTURE -> buildSetupFingerprintGestureFlow()
-                    TriggerDiscoverShortcut.KEYBOARD -> buildSetupKeyboardTriggerFlow()
-                    TriggerDiscoverShortcut.MOUSE -> buildSetupMouseTriggerFlow()
-                    TriggerDiscoverShortcut.GAMEPAD -> buildSetupGamepadTriggerFlow()
-                    TriggerDiscoverShortcut.OTHER -> buildSetupOtherTriggerFlow()
+                    TriggerSetupShortcut.VOLUME -> buildSetupVolumeTriggerFlow()
+                    TriggerSetupShortcut.POWER -> buildSetupPowerTriggerFlow()
+                    TriggerSetupShortcut.FINGERPRINT_GESTURE -> buildSetupFingerprintGestureFlow()
+                    TriggerSetupShortcut.KEYBOARD -> buildSetupKeyboardTriggerFlow()
+                    TriggerSetupShortcut.MOUSE -> buildSetupMouseTriggerFlow()
+                    TriggerSetupShortcut.GAMEPAD -> buildSetupGamepadTriggerFlow()
+                    TriggerSetupShortcut.OTHER -> buildSetupOtherTriggerFlow()
+                    TriggerSetupShortcut.NOT_DETECTED -> buildSetupNotDetectedFlow()
 
                     else -> throw UnsupportedOperationException("Unhandled shortcut: $shortcut")
                 }
             }
         }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-    override fun onDiscoverShortcutClick(shortcut: TriggerDiscoverShortcut) {
-        currentDiscoverShortcut.value = shortcut
+    override fun showTriggerSetup(shortcut: TriggerSetupShortcut) {
+        currentSetupShortcut.value = shortcut
     }
 
     private fun buildSetupVolumeTriggerFlow(): Flow<TriggerSetupState> {
@@ -186,6 +187,24 @@ class TriggerSetupDelegateImpl @Inject constructor(
             TriggerSetupState.Other(
                 isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
                 isScreenOffChecked = isScreenOffChecked,
+                proModeStatus = proModeStatus,
+                areRequirementsMet = areRequirementsMet,
+                recordTriggerState = recordTriggerState,
+            )
+        }
+    }
+
+    private fun buildSetupNotDetectedFlow(): Flow<TriggerSetupState> {
+        return combine(
+            controlAccessibilityServiceUseCase.serviceState,
+            recordTriggerController.state,
+            proModeStatus,
+        ) { serviceState, recordTriggerState, proModeStatus ->
+            val areRequirementsMet =
+                serviceState == AccessibilityServiceState.ENABLED && proModeStatus == ProModeStatus.ENABLED
+
+            TriggerSetupState.NotDetected(
+                isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
                 proModeStatus = proModeStatus,
                 areRequirementsMet = areRequirementsMet,
                 recordTriggerState = recordTriggerState,
@@ -320,7 +339,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
     }
 
     override fun onDismissTriggerSetup() {
-        currentDiscoverShortcut.value = null
+        currentSetupShortcut.value = null
     }
 
     override fun onTriggerSetupRecordClick() {
@@ -335,6 +354,9 @@ class TriggerSetupDelegateImpl @Inject constructor(
             is TriggerSetupState.Other -> setupState.isScreenOffChecked
             is TriggerSetupState.Gamepad.Dpad -> false
             is TriggerSetupState.Gamepad.SimpleButtons -> setupState.isScreenOffChecked
+            // Always enable pro mode recording to increase the chances of detecting
+            // the key
+            is TriggerSetupState.NotDetected -> true
         }
 
         viewModelScope.launch {
@@ -353,7 +375,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
             }
 
             result.onSuccess {
-                currentDiscoverShortcut.value = null
+                currentSetupShortcut.value = null
             }
 
             // Show dialog if the accessibility service is disabled or crashed
@@ -367,7 +389,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
 
     override fun onAddFingerprintGestureClick() {
         configTriggerUseCase.addFingerprintGesture(selectedFingerprintGestureType.value)
-        currentDiscoverShortcut.value = null
+        currentSetupShortcut.value = null
     }
 
     override fun onGamepadButtonTypeSelected(type: TriggerSetupState.Gamepad.Type) {
@@ -407,7 +429,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
 
 interface TriggerSetupDelegate {
     val triggerSetupState: StateFlow<TriggerSetupState?>
-    fun onDiscoverShortcutClick(shortcut: TriggerDiscoverShortcut)
+    fun showTriggerSetup(shortcut: TriggerSetupShortcut)
     fun onDismissTriggerSetup()
     fun onEnableAccessibilityServiceClick()
     fun onEnableProModeClick()

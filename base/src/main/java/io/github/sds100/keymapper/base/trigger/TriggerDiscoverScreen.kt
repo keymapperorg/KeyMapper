@@ -47,7 +47,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.icons.VoiceSelection
 @Composable
 fun TriggerDiscoverScreen(
     modifier: Modifier = Modifier,
-    onShortcutClick: (TriggerDiscoverShortcut) -> Unit = {},
+    onShortcutClick: (TriggerSetupShortcut) -> Unit = {},
     showFloatingButtons: Boolean = false,
     showFingerprintGestures: Boolean = false
 ) {
@@ -78,7 +78,7 @@ fun TriggerDiscoverScreen(
             shortcuts = buildList {
                 add(
                     ShortcutData(
-                        TriggerDiscoverShortcut.VOLUME,
+                        TriggerSetupShortcut.VOLUME,
                         stringResource(R.string.trigger_discover_shortcut_volume),
                         Icons.AutoMirrored.Outlined.VolumeUp,
                     )
@@ -86,7 +86,7 @@ fun TriggerDiscoverScreen(
 
                 add(
                     ShortcutData(
-                        TriggerDiscoverShortcut.ASSISTANT,
+                        TriggerSetupShortcut.ASSISTANT,
                         stringResource(R.string.trigger_discover_shortcut_assistant),
                         KeyMapperIcons.VoiceSelection,
                     )
@@ -94,7 +94,7 @@ fun TriggerDiscoverScreen(
 
                 add(
                     ShortcutData(
-                        TriggerDiscoverShortcut.POWER,
+                        TriggerSetupShortcut.POWER,
                         stringResource(R.string.trigger_discover_shortcut_power),
                         KeyMapperIcons.ModeOffOn,
                     )
@@ -103,7 +103,7 @@ fun TriggerDiscoverScreen(
                 if (showFingerprintGestures) {
                     add(
                         ShortcutData(
-                            TriggerDiscoverShortcut.FINGERPRINT_GESTURE,
+                            TriggerSetupShortcut.FINGERPRINT_GESTURE,
                             stringResource(R.string.trigger_discover_shortcut_fingerprint_gesture),
                             Icons.Rounded.Fingerprint,
                         )
@@ -117,22 +117,22 @@ fun TriggerDiscoverScreen(
             title = stringResource(R.string.trigger_discover_section_peripherals_gaming),
             shortcuts = listOf(
                 ShortcutData(
-                    TriggerDiscoverShortcut.KEYBOARD,
+                    TriggerSetupShortcut.KEYBOARD,
                     stringResource(R.string.trigger_discover_shortcut_keyboard),
                     Icons.Outlined.Keyboard,
                 ),
                 ShortcutData(
-                    TriggerDiscoverShortcut.MOUSE,
+                    TriggerSetupShortcut.MOUSE,
                     stringResource(R.string.trigger_discover_shortcut_mouse),
                     Icons.Outlined.Mouse,
                 ),
                 ShortcutData(
-                    TriggerDiscoverShortcut.GAMEPAD,
+                    TriggerSetupShortcut.GAMEPAD,
                     stringResource(R.string.trigger_discover_shortcut_gamepad),
                     KeyMapperIcons.SportsEsports,
                 ),
                 ShortcutData(
-                    TriggerDiscoverShortcut.OTHER,
+                    TriggerSetupShortcut.OTHER,
                     stringResource(R.string.trigger_discover_shortcut_other),
                     KeyMapperIcons.IndeterminateQuestionBox,
                 ),
@@ -145,17 +145,17 @@ fun TriggerDiscoverScreen(
                 title = stringResource(R.string.trigger_discover_section_floating_buttons),
                 shortcuts = listOf(
                     ShortcutData(
-                        TriggerDiscoverShortcut.FLOATING_BUTTON_CUSTOM,
+                        TriggerSetupShortcut.FLOATING_BUTTON_CUSTOM,
                         stringResource(R.string.trigger_discover_shortcut_custom),
                         Icons.Outlined.BubbleChart,
                     ),
 //                ShortcutData(
-//                    TriggerDiscoverShortcut.NOTCH,
+//                    TriggerSetupShortcut.NOTCH,
 //                    stringResource(R.string.trigger_discover_shortcut_notch),
 //                    Icons.Default.TouchApp
 //                ),
                     ShortcutData(
-                        TriggerDiscoverShortcut.FLOATING_BUTTON_LOCK_SCREEN,
+                        TriggerSetupShortcut.FLOATING_BUTTON_LOCK_SCREEN,
                         stringResource(R.string.trigger_discover_shortcut_lock_screen),
                         Icons.Default.PhoneAndroid,
                     ),
@@ -172,7 +172,7 @@ fun TriggerDiscoverScreen(
 private fun TriggerSection(
     title: String,
     shortcuts: List<ShortcutData>,
-    onShortcutClick: (TriggerDiscoverShortcut) -> Unit,
+    onShortcutClick: (TriggerSetupShortcut) -> Unit,
     backgroundColor: Color = MaterialTheme.colorScheme.primaryContainer,
 ) {
     Column(
@@ -239,7 +239,7 @@ private fun ShortcutButton(
 }
 
 private data class ShortcutData(
-    val type: TriggerDiscoverShortcut,
+    val type: TriggerSetupShortcut,
     val label: String,
     val icon: ImageVector,
 )

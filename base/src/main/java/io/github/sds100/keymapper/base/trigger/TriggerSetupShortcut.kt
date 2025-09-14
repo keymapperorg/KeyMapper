@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.base.trigger
 
-enum class TriggerDiscoverShortcut {
+enum class TriggerSetupShortcut {
     VOLUME,
     ASSISTANT,
     POWER,
@@ -9,6 +9,7 @@ enum class TriggerDiscoverShortcut {
     MOUSE,
     GAMEPAD,
     OTHER,
+    NOT_DETECTED,
     FLOATING_BUTTON_CUSTOM,
     FLOATING_BUTTON_LOCK_SCREEN,
 }

@@ -67,7 +67,6 @@ abstract class BaseConfigTriggerViewModel(
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
     private val purchasingManager: PurchasingManager,
-    private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
     triggerSetupDelegate: TriggerSetupDelegate,
     resourceProvider: ResourceProvider,
@@ -153,25 +152,6 @@ abstract class BaseConfigTriggerViewModel(
     var showAdvancedTriggersBottomSheet: Boolean by mutableStateOf(false)
     var showDiscoverTriggersBottomSheet: Boolean by mutableStateOf(false)
 
-    // TODO replace both of these with trigger setup bottom sheet
-    var showNoKeysRecordedBottomSheet: Boolean by mutableStateOf(false)
-
-    val setupGuiKeyboardState: StateFlow<SetupGuiKeyboardState> = combine(
-        setupGuiKeyboard.isInstalled,
-        setupGuiKeyboard.isEnabled,
-        setupGuiKeyboard.isChosen,
-    ) { isInstalled, isEnabled, isChosen ->
-        SetupGuiKeyboardState(
-            isInstalled,
-            isEnabled,
-            isChosen,
-        )
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.Lazily,
-        SetupGuiKeyboardState.DEFAULT,
-    )
-
     val triggerKeyOptionsUid = MutableStateFlow<String?>(null)
     val triggerKeyOptionsState: StateFlow<TriggerKeyOptionsState?> =
         combine(config.keyMap, triggerKeyOptionsUid, transform = ::buildKeyOptionsUiState)
@@ -229,10 +209,9 @@ abstract class BaseConfigTriggerViewModel(
         recordTrigger.state.drop(1).onEach { state ->
             if (state is RecordTriggerState.Completed &&
                 state.recordedKeys.isEmpty() &&
-                onboarding.showNoKeysDetectedBottomSheet.first() &&
                 !isRecordingCompletionUserInitiated
             ) {
-                showNoKeysRecordedBottomSheet = true
+                showTriggerSetup(TriggerSetupShortcut.NOT_DETECTED)
             }
 
             // reset this field when recording has completed
@@ -241,6 +220,7 @@ abstract class BaseConfigTriggerViewModel(
     }
 
     override fun onCleared() {
+        isRecordingCompletionUserInitiated = true
         recordTrigger.stopRecording()
 
         super.onCleared()
@@ -656,7 +636,7 @@ abstract class BaseConfigTriggerViewModel(
                     )
 
                 TriggerError.DPAD_IME_NOT_SELECTED -> {
-                    onDiscoverShortcutClick(TriggerDiscoverShortcut.GAMEPAD)
+                    showTriggerSetup(TriggerSetupShortcut.GAMEPAD)
                 }
 
                 else -> displayKeyMap.fixTriggerError(error)
@@ -794,24 +774,6 @@ abstract class BaseConfigTriggerViewModel(
                 device.name
             }
         }
-    }
-
-    fun onEnableGuiKeyboardClick() {
-        viewModelScope.launch {
-            setupGuiKeyboard.enableInputMethod()
-        }
-    }
-
-    fun onChooseGuiKeyboardClick() {
-        setupGuiKeyboard.chooseInputMethod()
-    }
-
-    fun onNeverShowSetupDpadClick() {
-        displayKeyMap.neverShowDpadImeSetupError()
-    }
-
-    fun onNeverShowNoKeysRecordedClick() {
-        onboarding.neverShowNoKeysRecordedBottomSheet()
     }
 
     abstract fun onEditFloatingButtonClick()

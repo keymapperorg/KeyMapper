@@ -117,19 +117,6 @@ class OnboardingUseCaseImpl @Inject constructor(
     override val showShizukuAppIntroSlide: Boolean
         get() = shizukuAdapter.isInstalled.value
 
-    override val showNoKeysDetectedBottomSheet: Flow<Boolean> =
-        settingsRepository.get(Keys.neverShowNoKeysRecordedError).map { neverShow ->
-            if (neverShow == null) {
-                true
-            } else {
-                !neverShow
-            }
-        }
-
-    override fun neverShowNoKeysRecordedBottomSheet() {
-        settingsRepository.set(Keys.neverShowNoKeysRecordedError, true)
-    }
-
     override val hasViewedAdvancedTriggers: Flow<Boolean> =
         get(Keys.viewedAdvancedTriggers).map { it ?: false }
 
@@ -221,9 +208,6 @@ interface OnboardingUseCase {
     val promptForShizukuPermission: Flow<Boolean>
 
     val showShizukuAppIntroSlide: Boolean
-
-    val showNoKeysDetectedBottomSheet: Flow<Boolean>
-    fun neverShowNoKeysRecordedBottomSheet()
 
     val hasViewedAdvancedTriggers: Flow<Boolean>
     fun viewedAdvancedTriggers()

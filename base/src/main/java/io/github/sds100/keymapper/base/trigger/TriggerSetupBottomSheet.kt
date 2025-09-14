@@ -137,6 +137,15 @@ fun HandleTriggerSetupBottomSheet(
             onScreenOffCheckedChange = delegate::onScreenOffTriggerSetupCheckedChange,
         )
 
+        is TriggerSetupState.NotDetected -> NotDetectedSetupBottomSheet(
+            sheetState = sheetState,
+            state = triggerSetupState as TriggerSetupState.NotDetected,
+            onDismissRequest = delegate::onDismissTriggerSetup,
+            onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
+            onEnableProModeClick = delegate::onEnableProModeClick,
+            onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
+        )
+
         is TriggerSetupState.Gamepad -> GamepadTriggerSetupBottomSheet(
             sheetState = sheetState,
             state = triggerSetupState as TriggerSetupState.Gamepad,
@@ -477,6 +486,91 @@ private fun VolumeTriggerSetupBottomSheet(
             proModeStatus = state.proModeStatus,
             onClick = onEnableProModeClick,
         )
+    }
+}
+
+@Composable
+private fun NotDetectedSetupBottomSheet(
+    modifier: Modifier = Modifier,
+    sheetState: SheetState,
+    state: TriggerSetupState.NotDetected,
+    onDismissRequest: () -> Unit = {},
+    onEnableAccessibilityServiceClick: () -> Unit = {},
+    onEnableProModeClick: () -> Unit = {},
+    onRecordTriggerClick: () -> Unit = {},
+) {
+    TriggerSetupBottomSheet(
+        modifier = modifier,
+        sheetState = sheetState,
+        onDismissRequest = onDismissRequest,
+        title = stringResource(R.string.trigger_setup_no_trigger_detected_title),
+        icon = KeyMapperIcons.IndeterminateQuestionBox,
+
+        positiveButtonContent = {
+            if (state.areRequirementsMet) {
+                RecordTriggerButton(
+                    modifier = Modifier.weight(1f),
+                    state = state.recordTriggerState,
+                    onClick = onRecordTriggerClick,
+                )
+            } else {
+                TriggerRequirementsNotMetButton(modifier = Modifier.weight(1f))
+            }
+        },
+    ) {
+        RemapStatusRow(
+            modifier = Modifier.fillMaxWidth(),
+            color = LocalCustomColorsPalette.current.amber,
+            text = stringResource(R.string.trigger_setup_status_might_remap_button)
+        )
+
+        HeaderText(text = stringResource(R.string.trigger_setup_options_title))
+
+        // Must always be checked because PRO mode is always used to increase the chances
+        // of detecting the button
+        CheckBoxText(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(R.string.trigger_setup_screen_off_option),
+            isChecked = true,
+            isEnabled = false,
+            onCheckedChange = {},
+        )
+
+        HeaderText(text = stringResource(R.string.trigger_setup_requirements_title))
+
+        AccessibilityServiceRequirementRow(
+            isServiceEnabled = state.isAccessibilityServiceEnabled,
+            onClick = onEnableAccessibilityServiceClick,
+        )
+
+        ProModeRequirementRow(
+            isVisible = true,
+            proModeStatus = state.proModeStatus,
+            onClick = onEnableProModeClick,
+        )
+
+        HeaderText(text = stringResource(R.string.trigger_setup_information_title))
+
+        Text(
+            stringResource(R.string.trigger_setup_not_detected_information),
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        val uriHandler = LocalUriHandler.current
+        val helpUrl = stringResource(R.string.url_discord_server_invite)
+
+        Button(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            onClick = {
+                uriHandler.openUri(helpUrl)
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = LocalCustomColorsPalette.current.discord,
+                contentColor = LocalCustomColorsPalette.current.onDiscord,
+            )
+        ) {
+            Text(stringResource(R.string.trigger_setup_get_help_button))
+        }
     }
 }
 

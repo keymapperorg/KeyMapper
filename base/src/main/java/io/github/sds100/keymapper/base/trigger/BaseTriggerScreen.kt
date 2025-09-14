@@ -80,21 +80,11 @@ fun BaseTriggerScreen(
                         scope.launch {
                             sheetState.hide()
                             viewModel.showDiscoverTriggersBottomSheet = false
-                            viewModel.onDiscoverShortcutClick(shortcut)
+                            viewModel.showTriggerSetup(shortcut)
                         }
                     },
                 )
             },
-        )
-    }
-
-    if (viewModel.showNoKeysRecordedBottomSheet) {
-        NoKeysRecordedBottomSheet(
-            onDismissRequest = {
-                viewModel.showNoKeysRecordedBottomSheet = false
-            },
-            viewModel = viewModel,
-            sheetState = sheetState,
         )
     }
 
