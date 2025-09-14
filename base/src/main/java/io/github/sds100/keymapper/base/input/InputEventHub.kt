@@ -54,7 +54,7 @@ class InputEventHubImpl @Inject constructor(
 ) : InputEventHub, IEvdevCallback.Stub() {
 
     companion object {
-        private const val INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH = 2
+        const val INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH = 2
     }
 
     private val clients: ConcurrentHashMap<String, ClientContext> = ConcurrentHashMap()

@@ -132,10 +132,7 @@ abstract class BaseAccessibilityServiceController(
             // detect when to show/hide overlays.
             .withFlag(AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS)
             .withFlag(AccessibilityServiceInfo.FLAG_INPUT_METHOD_EDITOR)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            flags = flags.withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
-        }
+            .withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
 
         return@lazy flags
     }
@@ -444,9 +441,8 @@ abstract class BaseAccessibilityServiceController(
             is AccessibilityServiceEvent.HideKeyboard -> service.hideKeyboard()
             is AccessibilityServiceEvent.ShowKeyboard -> service.showKeyboard()
             is AccessibilityServiceEvent.ChangeIme -> service.switchIme(event.imeId)
-            is AccessibilityServiceEvent.DisableService -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            is AccessibilityServiceEvent.DisableService ->
                 service.disableSelf()
-            }
 
             is TriggerKeyMapEvent -> triggerKeyMapFromIntent(event.uid)
 
@@ -460,6 +456,10 @@ abstract class BaseAccessibilityServiceController(
 
             is RecordAccessibilityNodeEvent.StopRecordingNodes -> {
                 accessibilityNodeRecorder.stopRecording()
+            }
+
+            is AccessibilityServiceEvent.GlobalAction -> {
+                service.doGlobalAction(event.action)
             }
 
             else -> Unit
