@@ -49,6 +49,8 @@ import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCase
 import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCaseImpl
 import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCaseImpl
+import io.github.sds100.keymapper.base.trigger.SetupInputMethodUseCase
+import io.github.sds100.keymapper.base.trigger.SetupInputMethodUseCaseImpl
 import io.github.sds100.keymapper.base.trigger.TriggerSetupDelegate
 import io.github.sds100.keymapper.base.trigger.TriggerSetupDelegateImpl
 
@@ -150,4 +152,8 @@ abstract class BaseViewModelHiltModule {
     @Binds
     @ViewModelScoped
     abstract fun bindTriggerSetupDelegate(impl: TriggerSetupDelegateImpl): TriggerSetupDelegate
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindSetupInputMethodUseCase(impl: SetupInputMethodUseCaseImpl): SetupInputMethodUseCase
 }

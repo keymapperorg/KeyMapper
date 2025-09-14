@@ -61,7 +61,6 @@ fun BaseTriggerScreen(
 ) {
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val setupGuiKeyboardState by viewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
     val recordTriggerState by viewModel.recordTriggerState.collectAsStateWithLifecycle()
     val showFingerprintGestures: Boolean by viewModel.showFingerprintGesturesShortcut.collectAsStateWithLifecycle()
 
@@ -86,19 +85,6 @@ fun BaseTriggerScreen(
                     },
                 )
             },
-        )
-    }
-
-    if (viewModel.showDpadTriggerSetupBottomSheet) {
-        DpadTriggerSetupBottomSheet(
-            onDismissRequest = {
-                viewModel.showDpadTriggerSetupBottomSheet = false
-            },
-            guiKeyboardState = setupGuiKeyboardState,
-            onEnableKeyboardClick = viewModel::onEnableGuiKeyboardClick,
-            onChooseKeyboardClick = viewModel::onChooseGuiKeyboardClick,
-            onNeverShowAgainClick = viewModel::onNeverShowSetupDpadClick,
-            sheetState = sheetState,
         )
     }
 

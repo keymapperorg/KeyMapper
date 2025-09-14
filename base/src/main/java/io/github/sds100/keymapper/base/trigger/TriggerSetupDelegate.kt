@@ -43,6 +43,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
     val recordTriggerController: RecordTriggerController,
     val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     val configTriggerUseCase: ConfigTriggerUseCase,
+    val setupInputMethodUseCase: SetupInputMethodUseCase,
     resourceProvider: ResourceProvider,
     dialogProvider: DialogProvider,
     navigationProvider: NavigationProvider,
@@ -57,6 +58,9 @@ class TriggerSetupDelegateImpl @Inject constructor(
     private val isScreenOffChecked: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val selectedFingerprintGestureType: MutableStateFlow<FingerprintGestureType> =
         MutableStateFlow(FingerprintGestureType.SWIPE_DOWN)
+
+    private val selectedGamePadType: MutableStateFlow<TriggerSetupState.Gamepad.Type> =
+        MutableStateFlow(TriggerSetupState.Gamepad.Type.DPAD)
 
     private val proModeStatus: Flow<ProModeStatus> =
         if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
@@ -81,7 +85,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
                     TriggerDiscoverShortcut.FINGERPRINT_GESTURE -> buildSetupFingerprintGestureFlow()
                     TriggerDiscoverShortcut.KEYBOARD -> buildSetupKeyboardTriggerFlow()
                     TriggerDiscoverShortcut.MOUSE -> buildSetupMouseTriggerFlow()
-                    TriggerDiscoverShortcut.GAMEPAD -> TODO()
+                    TriggerDiscoverShortcut.GAMEPAD -> buildSetupGamepadTriggerFlow()
                     TriggerDiscoverShortcut.OTHER -> buildSetupOtherTriggerFlow()
 
                     else -> throw UnsupportedOperationException("Unhandled shortcut: $shortcut")
@@ -114,6 +118,56 @@ class TriggerSetupDelegateImpl @Inject constructor(
                 recordTriggerState = recordTriggerState,
             )
         }
+    }
+
+    private fun buildSetupGamepadTriggerFlow(): Flow<TriggerSetupState> {
+        return selectedGamePadType.flatMapLatest { selectedGamepadType ->
+            when (selectedGamepadType) {
+                TriggerSetupState.Gamepad.Type.DPAD -> {
+                    combine(
+                        controlAccessibilityServiceUseCase.serviceState,
+                        setupInputMethodUseCase.isEnabled,
+                        setupInputMethodUseCase.isChosen,
+                        recordTriggerController.state
+                    ) { serviceState, isImeEnabled, isImeChosen, recordTriggerState ->
+                        val areRequirementsMet =
+                            serviceState == AccessibilityServiceState.ENABLED && isImeEnabled && isImeChosen
+
+                        TriggerSetupState.Gamepad.Dpad(
+                            isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
+                            isImeEnabled = isImeEnabled,
+                            isImeChosen = isImeChosen,
+                            areRequirementsMet = areRequirementsMet,
+                            recordTriggerState = recordTriggerState,
+                        )
+                    }
+                }
+
+                TriggerSetupState.Gamepad.Type.SIMPLE_BUTTONS -> {
+                    combine(
+                        controlAccessibilityServiceUseCase.serviceState,
+                        isScreenOffChecked,
+                        recordTriggerController.state,
+                        proModeStatus,
+                    ) { serviceState, isScreenOffChecked, recordTriggerState, proModeStatus ->
+                        val areRequirementsMet = if (isScreenOffChecked) {
+                            serviceState == AccessibilityServiceState.ENABLED && proModeStatus == ProModeStatus.ENABLED
+                        } else {
+                            serviceState == AccessibilityServiceState.ENABLED
+                        }
+
+                        TriggerSetupState.Gamepad.SimpleButtons(
+                            isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
+                            isScreenOffChecked = isScreenOffChecked,
+                            proModeStatus = proModeStatus,
+                            areRequirementsMet = areRequirementsMet,
+                            recordTriggerState = recordTriggerState,
+                        )
+                    }
+                }
+            }
+        }
+
     }
 
     private fun buildSetupOtherTriggerFlow(): Flow<TriggerSetupState> {
@@ -279,6 +333,8 @@ class TriggerSetupDelegateImpl @Inject constructor(
             is TriggerSetupState.FingerprintGesture -> false
             is TriggerSetupState.Mouse -> true
             is TriggerSetupState.Other -> setupState.isScreenOffChecked
+            is TriggerSetupState.Gamepad.Dpad -> false
+            is TriggerSetupState.Gamepad.SimpleButtons -> setupState.isScreenOffChecked
         }
 
         viewModelScope.launch {
@@ -314,6 +370,22 @@ class TriggerSetupDelegateImpl @Inject constructor(
         currentDiscoverShortcut.value = null
     }
 
+    override fun onGamepadButtonTypeSelected(type: TriggerSetupState.Gamepad.Type) {
+        selectedGamePadType.value = type
+    }
+
+    override fun onEnableImeClick() {
+        viewModelScope.launch {
+            setupInputMethodUseCase.enableInputMethod()
+        }
+    }
+
+    override fun onChooseImeClick() {
+        viewModelScope.launch {
+            setupInputMethodUseCase.chooseInputMethod()
+        }
+    }
+
     private suspend fun handleServiceEventResult(result: KMResult<*>) {
         if (result is KMError.AccessibilityServiceDisabled) {
             ViewModelHelper.handleAccessibilityServiceStoppedDialog(
@@ -343,4 +415,7 @@ interface TriggerSetupDelegate {
     fun onTriggerSetupRecordClick()
     fun onFingerprintGestureTypeSelected(type: FingerprintGestureType)
     fun onAddFingerprintGestureClick()
+    fun onGamepadButtonTypeSelected(type: TriggerSetupState.Gamepad.Type)
+    fun onEnableImeClick()
+    fun onChooseImeClick()
 }

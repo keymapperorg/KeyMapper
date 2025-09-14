@@ -40,31 +40,6 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DpadTriggerSetupBottomSheet(
-    modifier: Modifier = Modifier,
-    onDismissRequest: () -> Unit,
-    guiKeyboardState: SetupGuiKeyboardState,
-    onEnableKeyboardClick: () -> Unit = {},
-    onChooseKeyboardClick: () -> Unit = {},
-    onNeverShowAgainClick: () -> Unit = {},
-    sheetState: SheetState,
-) {
-    SetupGuiKeyboardBottomSheet(
-        modifier,
-        guiKeyboardState = guiKeyboardState,
-        sheetState = sheetState,
-        onDismissRequest = onDismissRequest,
-        onEnableKeyboardClick = onEnableKeyboardClick,
-        onChooseKeyboardClick = onChooseKeyboardClick,
-        onNeverShowAgainClick = onNeverShowAgainClick,
-        title = stringResource(R.string.dpad_trigger_setup_bottom_sheet_title),
-        text = stringResource(R.string.dpad_trigger_setup_bottom_sheet_text),
-        setupCompleteText = stringResource(R.string.dpad_trigger_setup_setup_complete_text),
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
 fun NoKeysRecordedBottomSheet(
     modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit,

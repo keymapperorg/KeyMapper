@@ -154,7 +154,6 @@ abstract class BaseConfigTriggerViewModel(
     var showDiscoverTriggersBottomSheet: Boolean by mutableStateOf(false)
 
     // TODO replace both of these with trigger setup bottom sheet
-    var showDpadTriggerSetupBottomSheet: Boolean by mutableStateOf(false)
     var showNoKeysRecordedBottomSheet: Boolean by mutableStateOf(false)
 
     val setupGuiKeyboardState: StateFlow<SetupGuiKeyboardState> = combine(
@@ -657,7 +656,7 @@ abstract class BaseConfigTriggerViewModel(
                     )
 
                 TriggerError.DPAD_IME_NOT_SELECTED -> {
-                    showDpadTriggerSetupBottomSheet = true
+                    onDiscoverShortcutClick(TriggerDiscoverShortcut.GAMEPAD)
                 }
 
                 else -> displayKeyMap.fixTriggerError(error)

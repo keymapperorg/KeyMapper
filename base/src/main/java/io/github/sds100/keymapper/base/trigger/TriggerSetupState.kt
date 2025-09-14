@@ -43,6 +43,33 @@ sealed class TriggerSetupState {
         val recordTriggerState: RecordTriggerState,
     ) : TriggerSetupState()
 
+    sealed class Gamepad() : TriggerSetupState() {
+        abstract val isAccessibilityServiceEnabled: Boolean
+        abstract val areRequirementsMet: Boolean
+        abstract val recordTriggerState: RecordTriggerState
+
+        enum class Type {
+            DPAD,
+            SIMPLE_BUTTONS
+        }
+
+        data class Dpad(
+            override val isAccessibilityServiceEnabled: Boolean,
+            val isImeEnabled: Boolean,
+            val isImeChosen: Boolean,
+            override val areRequirementsMet: Boolean,
+            override val recordTriggerState: RecordTriggerState,
+        ) : Gamepad()
+
+        data class SimpleButtons(
+            override val isAccessibilityServiceEnabled: Boolean,
+            val isScreenOffChecked: Boolean,
+            val proModeStatus: ProModeStatus,
+            override val areRequirementsMet: Boolean,
+            override val recordTriggerState: RecordTriggerState,
+        ) : Gamepad()
+    }
+
     data class FingerprintGesture(
         val isAccessibilityServiceEnabled: Boolean,
         val areRequirementsMet: Boolean,

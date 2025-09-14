@@ -198,6 +198,14 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
                 NavDestination.ProMode,
             )
 
+            is KMError.DpadTriggerImeNotSelected -> {
+                if (keyMapperImeHelper.isCompatibleImeEnabled()) {
+                    keyMapperImeHelper.chooseCompatibleInputMethod()
+                } else {
+                    keyMapperImeHelper.enableCompatibleInputMethods()
+                }
+            }
+
             else -> Unit
         }
     }

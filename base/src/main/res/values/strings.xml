@@ -1719,6 +1719,13 @@
     <string name="trigger_setup_assistant_read_instructions_button">Read instructions</string>
     <string name="trigger_setup_assistant_select_type_button">Select trigger type</string>
     <string name="trigger_setup_power_information">If your device assistant is triggered by the power button, it might be possible to remap the assistant instead, meaning you don\'t need to use PRO mode. Try choosing \'Assistant\' from the trigger page and follow the instructions.</string>
+    <string name="trigger_setup_gamepad_type_dpad">D-Pad button</string>
+    <string name="trigger_setup_gamepad_type_simple_buttons">Other simple buttons</string>
+    <string name="trigger_setup_gamepad_information_dpad">You will not be able to use your normal on-screen keyboard when remapping DPAD buttons.</string>
+    <string name="trigger_setup_input_method_title">Key Mapper Keyboard</string>
+    <string name="trigger_setup_input_method_enable_button">Enable keyboard</string>
+    <string name="trigger_setup_input_method_choose_button">Choose keyboard</string>
+    <string name="trigger_setup_input_method_running_button">Running</string>
     <!-- Trigger Setup bottom sheet -->
 
 </resources>

@@ -63,79 +63,210 @@ import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.base.utils.ui.compose.HeaderText
+import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.IndeterminateQuestionBox
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.ModeOffOn
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.VoiceSelection
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HandleTriggerSetupBottomSheet(
-    viewModel: BaseConfigTriggerViewModel,
+    delegate: TriggerSetupDelegate,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val triggerSetupState: TriggerSetupState? by viewModel.triggerSetupState.collectAsStateWithLifecycle()
+    val triggerSetupState: TriggerSetupState? by delegate.triggerSetupState.collectAsStateWithLifecycle()
 
     when (triggerSetupState) {
         is TriggerSetupState.Volume -> VolumeTriggerSetupBottomSheet(
             sheetState = sheetState,
             state = triggerSetupState as TriggerSetupState.Volume,
-            onDismissRequest = viewModel::onDismissTriggerSetup,
-            onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
-            onEnableProModeClick = viewModel::onEnableProModeClick,
-            onRecordTriggerClick = viewModel::onTriggerSetupRecordClick,
-            onScreenOffCheckedChange = viewModel::onScreenOffTriggerSetupCheckedChange,
+            onDismissRequest = delegate::onDismissTriggerSetup,
+            onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
+            onEnableProModeClick = delegate::onEnableProModeClick,
+            onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
+            onScreenOffCheckedChange = delegate::onScreenOffTriggerSetupCheckedChange,
         )
 
         is TriggerSetupState.Power -> PowerTriggerSetupBottomSheet(
             sheetState = sheetState,
             state = triggerSetupState as TriggerSetupState.Power,
-            onDismissRequest = viewModel::onDismissTriggerSetup,
-            onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
-            onEnableProModeClick = viewModel::onEnableProModeClick,
-            onRecordTriggerClick = viewModel::onTriggerSetupRecordClick,
+            onDismissRequest = delegate::onDismissTriggerSetup,
+            onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
+            onEnableProModeClick = delegate::onEnableProModeClick,
+            onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
         )
 
         is TriggerSetupState.FingerprintGesture -> FingerprintGestureSetupBottomSheet(
             sheetState = sheetState,
             state = triggerSetupState as TriggerSetupState.FingerprintGesture,
-            onDismissRequest = viewModel::onDismissTriggerSetup,
-            onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
-            onGestureTypeSelected = viewModel::onFingerprintGestureTypeSelected,
-            onAddTriggerClick = viewModel::onAddFingerprintGestureClick,
+            onDismissRequest = delegate::onDismissTriggerSetup,
+            onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
+            onGestureTypeSelected = delegate::onFingerprintGestureTypeSelected,
+            onAddTriggerClick = delegate::onAddFingerprintGestureClick,
         )
 
         is TriggerSetupState.Keyboard -> KeyboardTriggerSetupBottomSheet(
             sheetState = sheetState,
             state = triggerSetupState as TriggerSetupState.Keyboard,
-            onDismissRequest = viewModel::onDismissTriggerSetup,
-            onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
-            onEnableProModeClick = viewModel::onEnableProModeClick,
-            onRecordTriggerClick = viewModel::onTriggerSetupRecordClick,
-            onScreenOffCheckedChange = viewModel::onScreenOffTriggerSetupCheckedChange,
+            onDismissRequest = delegate::onDismissTriggerSetup,
+            onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
+            onEnableProModeClick = delegate::onEnableProModeClick,
+            onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
+            onScreenOffCheckedChange = delegate::onScreenOffTriggerSetupCheckedChange,
         )
 
         is TriggerSetupState.Mouse -> MouseTriggerSetupBottomSheet(
             sheetState = sheetState,
             state = triggerSetupState as TriggerSetupState.Mouse,
-            onDismissRequest = viewModel::onDismissTriggerSetup,
-            onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
-            onEnableProModeClick = viewModel::onEnableProModeClick,
-            onRecordTriggerClick = viewModel::onTriggerSetupRecordClick,
+            onDismissRequest = delegate::onDismissTriggerSetup,
+            onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
+            onEnableProModeClick = delegate::onEnableProModeClick,
+            onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
         )
 
         is TriggerSetupState.Other -> OtherTriggerSetupBottomSheet(
             sheetState = sheetState,
             state = triggerSetupState as TriggerSetupState.Other,
-            onDismissRequest = viewModel::onDismissTriggerSetup,
-            onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
-            onEnableProModeClick = viewModel::onEnableProModeClick,
-            onRecordTriggerClick = viewModel::onTriggerSetupRecordClick,
-            onScreenOffCheckedChange = viewModel::onScreenOffTriggerSetupCheckedChange,
+            onDismissRequest = delegate::onDismissTriggerSetup,
+            onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
+            onEnableProModeClick = delegate::onEnableProModeClick,
+            onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
+            onScreenOffCheckedChange = delegate::onScreenOffTriggerSetupCheckedChange,
+        )
+
+        is TriggerSetupState.Gamepad -> GamepadTriggerSetupBottomSheet(
+            sheetState = sheetState,
+            state = triggerSetupState as TriggerSetupState.Gamepad,
+            onDismissRequest = delegate::onDismissTriggerSetup,
+            onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
+            onSelectButtonType = delegate::onGamepadButtonTypeSelected,
+            onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
+            onEnableInputMethodClick = delegate::onEnableImeClick,
+            onChooseInputMethodClick = delegate::onChooseImeClick,
+            onScreenOffCheckedChange = delegate::onScreenOffTriggerSetupCheckedChange,
+            onEnableProModeClick = delegate::onEnableProModeClick
         )
 
         null -> {}
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun GamepadTriggerSetupBottomSheet(
+    modifier: Modifier = Modifier,
+    onDismissRequest: () -> Unit = {},
+    sheetState: SheetState,
+    state: TriggerSetupState.Gamepad,
+    onRecordTriggerClick: () -> Unit = {},
+    onEnableAccessibilityServiceClick: () -> Unit = {},
+    onSelectButtonType: (TriggerSetupState.Gamepad.Type) -> Unit = { },
+    onEnableProModeClick: () -> Unit = {},
+    onEnableInputMethodClick: () -> Unit = { },
+    onChooseInputMethodClick: () -> Unit = { },
+    onScreenOffCheckedChange: (Boolean) -> Unit = {}
+) {
+    TriggerSetupBottomSheet(
+        modifier = modifier,
+        sheetState = sheetState,
+        onDismissRequest = onDismissRequest,
+        title = stringResource(R.string.trigger_setup_gamepad_title),
+        icon = KeyMapperIcons.VoiceSelection,
+        positiveButtonContent = {
+            if (state.areRequirementsMet) {
+                RecordTriggerButton(
+                    modifier = Modifier.weight(1f),
+                    state = state.recordTriggerState,
+                    onClick = onRecordTriggerClick,
+                )
+            } else {
+                TriggerRequirementsNotMetButton(modifier = Modifier.weight(1f))
+            }
+        },
+    ) {
+
+        // There is no guarantee that a gamepad can be remapped
+        RemapStatusRow(
+            modifier = Modifier.fillMaxWidth(),
+            color = LocalCustomColorsPalette.current.orange,
+            text = stringResource(R.string.trigger_setup_status_might_remap_device)
+        )
+
+        HeaderText(text = stringResource(R.string.trigger_setup_options_title))
+
+        val buttonStates = listOf(
+            TriggerSetupState.Gamepad.Type.DPAD to stringResource(R.string.trigger_setup_gamepad_type_dpad),
+            TriggerSetupState.Gamepad.Type.SIMPLE_BUTTONS to stringResource(R.string.trigger_setup_gamepad_type_simple_buttons),
+        )
+
+        val selectedState = when (state) {
+            is TriggerSetupState.Gamepad.Dpad -> TriggerSetupState.Gamepad.Type.DPAD
+            is TriggerSetupState.Gamepad.SimpleButtons -> TriggerSetupState.Gamepad.Type.SIMPLE_BUTTONS
+        }
+
+        KeyMapperSegmentedButtonRow(
+            modifier = Modifier.fillMaxWidth(),
+            buttonStates = buttonStates,
+            selectedState = selectedState,
+            onStateSelected = onSelectButtonType
+        )
+
+        val isScreenOffChecked = when (state) {
+            is TriggerSetupState.Gamepad.Dpad -> false
+            is TriggerSetupState.Gamepad.SimpleButtons -> state.isScreenOffChecked
+        }
+
+        val isScreenOffEnabled = when (state) {
+            is TriggerSetupState.Gamepad.Dpad -> false
+            is TriggerSetupState.Gamepad.SimpleButtons -> true
+        }
+
+        CheckBoxText(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(R.string.trigger_setup_screen_off_option),
+            isChecked = isScreenOffChecked,
+            isEnabled = isScreenOffEnabled,
+            onCheckedChange = onScreenOffCheckedChange,
+        )
+
+        HeaderText(text = stringResource(R.string.trigger_setup_requirements_title))
+
+        AccessibilityServiceRequirementRow(
+            isServiceEnabled = state.isAccessibilityServiceEnabled,
+            onClick = onEnableAccessibilityServiceClick,
+        )
+
+        when (state) {
+            is TriggerSetupState.Gamepad.Dpad -> {
+                InputMethodRequirementRow(
+                    isEnabled = state.isImeEnabled,
+                    isChosen = state.isImeChosen,
+                    onEnableClick = onEnableInputMethodClick,
+                    onChooseClick = onChooseInputMethodClick
+                )
+            }
+
+            is TriggerSetupState.Gamepad.SimpleButtons -> {
+                ProModeRequirementRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    isVisible = state.isScreenOffChecked,
+                    proModeStatus = state.proModeStatus,
+                    onClick = onEnableProModeClick
+                )
+            }
+        }
+
+        if (state is TriggerSetupState.Gamepad.Dpad) {
+            HeaderText(text = stringResource(R.string.trigger_setup_information_title))
+
+            Text(
+                stringResource(R.string.trigger_setup_gamepad_information_dpad),
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
     }
 }
 
@@ -644,6 +775,35 @@ fun AccessibilityServiceRequirementRow(
 }
 
 @Composable
+fun InputMethodRequirementRow(
+    modifier: Modifier = Modifier,
+    isEnabled: Boolean,
+    isChosen: Boolean,
+    onEnableClick: () -> Unit,
+    onChooseClick: () -> Unit,
+) {
+    TriggerRequirementRow(
+        modifier = modifier,
+        text = stringResource(R.string.trigger_setup_input_method_title),
+    ) {
+        val enabledText = when {
+            !isEnabled -> stringResource(R.string.trigger_setup_input_method_enable_button)
+            !isChosen -> stringResource(R.string.trigger_setup_input_method_choose_button)
+            else -> ""
+        }
+
+        val disabledText = stringResource(R.string.trigger_setup_input_method_running_button)
+
+        TriggerRequirementButton(
+            enabledText = enabledText,
+            disabledText = disabledText,
+            isEnabled = !isEnabled || !isChosen,
+            onClick = if (isEnabled) onChooseClick else onEnableClick,
+        )
+    }
+}
+
+@Composable
 fun TriggerRequirementRow(
     modifier: Modifier = Modifier,
     text: String,
@@ -1064,6 +1224,102 @@ private fun OtherButtonDisabledPreview() {
             state = TriggerSetupState.Other(
                 isAccessibilityServiceEnabled = false,
                 isScreenOffChecked = true,
+                proModeStatus = ProModeStatus.DISABLED,
+                areRequirementsMet = false,
+                recordTriggerState = RecordTriggerState.Idle,
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun GamepadDpadPreview() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = SheetValue.Expanded,
+        )
+
+        GamepadTriggerSetupBottomSheet(
+            sheetState = sheetState,
+            state = TriggerSetupState.Gamepad.Dpad(
+                isAccessibilityServiceEnabled = true,
+                isImeEnabled = true,
+                isImeChosen = true,
+                areRequirementsMet = true,
+                recordTriggerState = RecordTriggerState.Idle,
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun GamepadDpadDisabledPreview() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = SheetValue.Expanded,
+        )
+
+        GamepadTriggerSetupBottomSheet(
+            sheetState = sheetState,
+            state = TriggerSetupState.Gamepad.Dpad(
+                isAccessibilityServiceEnabled = false,
+                isImeEnabled = false,
+                isImeChosen = false,
+                areRequirementsMet = false,
+                recordTriggerState = RecordTriggerState.Idle,
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun GamepadSimpleButtonsPreview() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = SheetValue.Expanded,
+        )
+
+        GamepadTriggerSetupBottomSheet(
+            sheetState = sheetState,
+            state = TriggerSetupState.Gamepad.SimpleButtons(
+                isAccessibilityServiceEnabled = true,
+                isScreenOffChecked = true,
+                proModeStatus = ProModeStatus.ENABLED,
+                areRequirementsMet = true,
+                recordTriggerState = RecordTriggerState.Idle,
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun GamepadSimpleButtonsDisabledPreview() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = SheetValue.Expanded,
+        )
+
+        GamepadTriggerSetupBottomSheet(
+            sheetState = sheetState,
+            state = TriggerSetupState.Gamepad.SimpleButtons(
+                isAccessibilityServiceEnabled = false,
+                isScreenOffChecked = false,
                 proModeStatus = ProModeStatus.DISABLED,
                 areRequirementsMet = false,
                 recordTriggerState = RecordTriggerState.Idle,

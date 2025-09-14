@@ -136,8 +136,6 @@ class KeyMapListViewModel(
         )
     }.stateIn(coroutineScope, SharingStarted.Lazily, SetupGuiKeyboardState.DEFAULT)
 
-    var showDpadTriggerSetupBottomSheet: Boolean by mutableStateOf(false)
-
     private val keyMapGroupStateFlow = listKeyMaps.keyMapGroup.stateIn(
         coroutineScope,
         SharingStarted.Eagerly,
@@ -522,10 +520,6 @@ class KeyMapListViewModel(
                         neverShowDndTriggerErrorAgain = { listKeyMaps.neverShowDndTriggerError() },
                         fixError = { listKeyMaps.fixTriggerError(error) },
                     )
-                }
-
-                TriggerError.DPAD_IME_NOT_SELECTED -> {
-                    showDpadTriggerSetupBottomSheet = true
                 }
 
                 TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED, TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> {
