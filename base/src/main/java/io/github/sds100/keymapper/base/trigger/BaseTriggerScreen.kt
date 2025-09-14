@@ -17,8 +17,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -41,9 +39,7 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.keymaps.ShortcutButton
-import io.github.sds100.keymapper.base.keymaps.ShortcutModel
 import io.github.sds100.keymapper.base.utils.ui.LinkType
-import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.DraggableItem
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.ActionKey
@@ -572,13 +568,6 @@ private val previewState =
         checkedTriggerMode = TriggerMode.Sequence,
         triggerModeButtonsEnabled = true,
         triggerModeButtonsVisible = true,
-        shortcuts = setOf(
-            ShortcutModel(
-                icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),
-                text = "Fingerprint gesture",
-                data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
-            ),
-        ),
     )
 
 @Preview(device = Devices.PIXEL)
@@ -614,15 +603,7 @@ private fun VerticalPreviewTiny() {
 private fun VerticalEmptyPreview() {
     KeyMapperTheme {
         TriggerScreenVertical(
-            configState = ConfigTriggerState.Empty(
-                shortcuts = setOf(
-                    ShortcutModel(
-                        icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),
-                        text = "Fingerprint gesture",
-                        data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
-                    ),
-                ),
-            ),
+            configState = ConfigTriggerState.Empty,
             recordTriggerState = RecordTriggerState.Idle,
             discoverScreenContent = {
                 TriggerDiscoverScreen()
@@ -636,15 +617,7 @@ private fun VerticalEmptyPreview() {
 private fun VerticalEmptyDarkPreview() {
     KeyMapperTheme {
         TriggerScreenVertical(
-            configState = ConfigTriggerState.Empty(
-                shortcuts = setOf(
-                    ShortcutModel(
-                        icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),
-                        text = "Fingerprint gesture",
-                        data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
-                    ),
-                ),
-            ),
+            configState = ConfigTriggerState.Empty,
             recordTriggerState = RecordTriggerState.Idle,
             discoverScreenContent = {
                 TriggerDiscoverScreen()
@@ -672,15 +645,7 @@ private fun HorizontalPreview() {
 private fun HorizontalEmptyPreview() {
     KeyMapperTheme {
         TriggerScreenHorizontal(
-            configState = ConfigTriggerState.Empty(
-                shortcuts = setOf(
-                    ShortcutModel(
-                        icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),
-                        text = "Fingerprint gesture",
-                        data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
-                    ),
-                ),
-            ),
+            configState = ConfigTriggerState.Empty,
             recordTriggerState = RecordTriggerState.Idle,
             discoverScreenContent = {
                 TriggerDiscoverScreen()

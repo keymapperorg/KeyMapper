@@ -1,10 +1,6 @@
 package io.github.sds100.keymapper.base.trigger
 
 import android.view.KeyEvent
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Assistant
-import androidx.compose.material.icons.rounded.BubbleChart
-import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -17,10 +13,7 @@ import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapOptionsViewModel
 import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
-import io.github.sds100.keymapper.base.keymaps.ShortcutModel
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
-import io.github.sds100.keymapper.base.purchasing.ProductId
-import io.github.sds100.keymapper.base.purchasing.PurchasingManager
 import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
@@ -31,7 +24,6 @@ import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
-import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.InputDeviceUtils
@@ -39,9 +31,7 @@ import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
-import io.github.sds100.keymapper.common.utils.ifIsData
 import io.github.sds100.keymapper.common.utils.mapData
-import io.github.sds100.keymapper.common.utils.onSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -66,7 +56,6 @@ abstract class BaseConfigTriggerViewModel(
     private val recordTrigger: RecordTriggerController,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
-    private val purchasingManager: PurchasingManager,
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
     triggerSetupDelegate: TriggerSetupDelegate,
     resourceProvider: ResourceProvider,
@@ -91,49 +80,6 @@ abstract class BaseConfigTriggerViewModel(
         dialogProvider,
         resourceProvider,
     )
-
-    private val triggerKeyShortcuts = combine(
-        fingerprintGesturesSupported.isSupported,
-        purchasingManager.purchases,
-    ) { isFingerprintGesturesSupported, purchasesState ->
-        val newShortcuts = mutableSetOf<ShortcutModel<TriggerKeyShortcut>>()
-
-        if (isFingerprintGesturesSupported == true) {
-            newShortcuts.add(
-                ShortcutModel(
-                    icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),
-                    text = getString(R.string.trigger_key_shortcut_add_fingerprint_gesture),
-                    data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
-                ),
-            )
-        }
-
-        purchasesState.ifIsData { result ->
-            result.onSuccess { purchases ->
-                if (purchases.contains(ProductId.ASSISTANT_TRIGGER)) {
-                    newShortcuts.add(
-                        ShortcutModel(
-                            icon = ComposeIconInfo.Vector(Icons.Rounded.Assistant),
-                            text = getString(R.string.trigger_key_shortcut_add_assistant),
-                            data = TriggerKeyShortcut.ASSISTANT,
-                        ),
-                    )
-                }
-
-                if (purchases.contains(ProductId.FLOATING_BUTTONS)) {
-                    newShortcuts.add(
-                        ShortcutModel(
-                            icon = ComposeIconInfo.Vector(Icons.Rounded.BubbleChart),
-                            text = getString(R.string.trigger_key_shortcut_add_floating_button),
-                            data = TriggerKeyShortcut.FLOATING_BUTTON,
-                        ),
-                    )
-                }
-            }
-        }
-
-        newShortcuts
-    }
 
     private val _state: MutableStateFlow<State<ConfigTriggerState>> =
         MutableStateFlow(State.Loading)
@@ -172,13 +118,11 @@ abstract class BaseConfigTriggerViewModel(
             displayKeyMap.triggerErrorSnapshot,
             config.keyMap,
             displayKeyMap.showDeviceDescriptors,
-            triggerKeyShortcuts,
-        ) { triggerErrorSnapshot, keyMap, showDeviceDescriptors, shortcuts ->
+        ) { triggerErrorSnapshot, keyMap, showDeviceDescriptors ->
             _state.update {
                 buildUiState(
                     keyMap,
                     showDeviceDescriptors,
-                    shortcuts,
                     triggerErrorSnapshot,
                 )
             }
@@ -234,16 +178,13 @@ abstract class BaseConfigTriggerViewModel(
     private fun buildUiState(
         keyMapState: State<KeyMap>,
         showDeviceDescriptors: Boolean,
-        triggerKeyShortcuts: Set<ShortcutModel<TriggerKeyShortcut>>,
         triggerErrorSnapshot: TriggerErrorSnapshot,
     ): State<ConfigTriggerState> {
         return keyMapState.mapData { keyMap ->
             val trigger = keyMap.trigger
 
             if (trigger.keys.isEmpty()) {
-                return@mapData ConfigTriggerState.Empty(
-                    triggerKeyShortcuts,
-                )
+                return@mapData ConfigTriggerState.Empty
             }
 
             val triggerKeys =
@@ -293,7 +234,6 @@ abstract class BaseConfigTriggerViewModel(
                 triggerModeButtonsEnabled = triggerModeButtonsEnabled,
                 triggerModeButtonsVisible = triggerModeButtonsVisible,
                 checkedTriggerMode = trigger.mode,
-                shortcuts = triggerKeyShortcuts,
             )
         }
     }
@@ -781,12 +721,7 @@ abstract class BaseConfigTriggerViewModel(
 }
 
 sealed class ConfigTriggerState {
-    // TODO remove. replace with "Add more" button that launches the discover bottom sheet
-    abstract val shortcuts: Set<ShortcutModel<TriggerKeyShortcut>>
-
-    data class Empty(
-        override val shortcuts: Set<ShortcutModel<TriggerKeyShortcut>> = emptySet(),
-    ) : ConfigTriggerState()
+    data object Empty : ConfigTriggerState()
 
     data class Loaded(
         val triggerKeys: List<TriggerKeyListItemModel> = emptyList(),
@@ -796,7 +731,6 @@ sealed class ConfigTriggerState {
         val checkedTriggerMode: TriggerMode = TriggerMode.Undefined,
         val triggerModeButtonsEnabled: Boolean = false,
         val triggerModeButtonsVisible: Boolean = false,
-        override val shortcuts: Set<ShortcutModel<TriggerKeyShortcut>> = emptySet(),
     ) : ConfigTriggerState()
 }
 

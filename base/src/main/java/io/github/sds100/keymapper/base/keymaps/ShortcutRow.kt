@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
-import io.github.sds100.keymapper.base.trigger.TriggerKeyShortcut
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.drawable
 
@@ -115,7 +114,7 @@ private fun PreviewVector() {
                     ShortcutModel(
                         icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),
                         text = stringResource(R.string.trigger_key_shortcut_add_fingerprint_gesture),
-                        data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
+                        data = "",
                     ),
                 ),
             )
@@ -136,7 +135,7 @@ private fun PreviewDrawable() {
                     ShortcutModel(
                         icon = ComposeIconInfo.Drawable(icon),
                         text = stringResource(R.string.trigger_key_shortcut_add_fingerprint_gesture),
-                        data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
+                        data = "",
                     ),
                 ),
             )
@@ -157,7 +156,7 @@ private fun PreviewMultipleLines() {
                     ShortcutModel(
                         icon = ComposeIconInfo.Drawable(icon),
                         text = "Line 1\nLine 2\nLine 3",
-                        data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
+                        data = "",
                     ),
                 ),
             )
