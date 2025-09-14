@@ -156,7 +156,7 @@ fun HandleTriggerSetupBottomSheet(
             onEnableInputMethodClick = delegate::onEnableImeClick,
             onChooseInputMethodClick = delegate::onChooseImeClick,
             onScreenOffCheckedChange = delegate::onScreenOffTriggerSetupCheckedChange,
-            onEnableProModeClick = delegate::onEnableProModeClick
+            onEnableProModeClick = delegate::onEnableProModeClick,
         )
 
         null -> {}
@@ -176,7 +176,7 @@ private fun GamepadTriggerSetupBottomSheet(
     onEnableProModeClick: () -> Unit = {},
     onEnableInputMethodClick: () -> Unit = { },
     onChooseInputMethodClick: () -> Unit = { },
-    onScreenOffCheckedChange: (Boolean) -> Unit = {}
+    onScreenOffCheckedChange: (Boolean) -> Unit = {},
 ) {
     TriggerSetupBottomSheet(
         modifier = modifier,
@@ -196,12 +196,11 @@ private fun GamepadTriggerSetupBottomSheet(
             }
         },
     ) {
-
         // There is no guarantee that a gamepad can be remapped
         RemapStatusRow(
             modifier = Modifier.fillMaxWidth(),
             color = LocalCustomColorsPalette.current.orange,
-            text = stringResource(R.string.trigger_setup_status_might_remap_device)
+            text = stringResource(R.string.trigger_setup_status_might_remap_device),
         )
 
         HeaderText(text = stringResource(R.string.trigger_setup_options_title))
@@ -220,7 +219,7 @@ private fun GamepadTriggerSetupBottomSheet(
             modifier = Modifier.fillMaxWidth(),
             buttonStates = buttonStates,
             selectedState = selectedState,
-            onStateSelected = onSelectButtonType
+            onStateSelected = onSelectButtonType,
         )
 
         val isScreenOffChecked = when (state) {
@@ -254,7 +253,7 @@ private fun GamepadTriggerSetupBottomSheet(
                     isEnabled = state.isImeEnabled,
                     isChosen = state.isImeChosen,
                     onEnableClick = onEnableInputMethodClick,
-                    onChooseClick = onChooseInputMethodClick
+                    onChooseClick = onChooseInputMethodClick,
                 )
             }
 
@@ -263,7 +262,7 @@ private fun GamepadTriggerSetupBottomSheet(
                     modifier = Modifier.fillMaxWidth(),
                     isVisible = state.isScreenOffChecked,
                     proModeStatus = state.proModeStatus,
-                    onClick = onEnableProModeClick
+                    onClick = onEnableProModeClick,
                 )
             }
         }
@@ -273,7 +272,7 @@ private fun GamepadTriggerSetupBottomSheet(
 
             Text(
                 stringResource(R.string.trigger_setup_gamepad_information_dpad),
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
     }
@@ -307,7 +306,6 @@ private fun MouseTriggerSetupBottomSheet(
             }
         },
     ) {
-
         RemapStatusButton(modifier = Modifier.fillMaxWidth(), remapStatus = state.remapStatus)
 
         HeaderText(text = stringResource(R.string.trigger_setup_options_title))
@@ -337,7 +335,7 @@ private fun MouseTriggerSetupBottomSheet(
 
         Text(
             stringResource(R.string.trigger_setup_power_information),
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
         )
     }
 }
@@ -370,7 +368,6 @@ private fun PowerTriggerSetupBottomSheet(
             }
         },
     ) {
-
         RemapStatusButton(modifier = Modifier.fillMaxWidth(), remapStatus = state.remapStatus)
 
         HeaderText(text = stringResource(R.string.trigger_setup_options_title))
@@ -400,7 +397,7 @@ private fun PowerTriggerSetupBottomSheet(
 
         Text(
             stringResource(R.string.trigger_setup_power_information),
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
         )
     }
 }
@@ -411,19 +408,19 @@ private fun RemapStatusButton(modifier: Modifier = Modifier, remapStatus: RemapS
         RemapStatus.UNSUPPORTED -> RemapStatusRow(
             modifier = modifier,
             color = MaterialTheme.colorScheme.error,
-            text = stringResource(R.string.trigger_setup_status_can_not_remap)
+            text = stringResource(R.string.trigger_setup_status_can_not_remap),
         )
 
         RemapStatus.UNCERTAIN -> RemapStatusRow(
             modifier = modifier,
             color = LocalCustomColorsPalette.current.amber,
-            text = stringResource(R.string.trigger_setup_status_remap_button_possible)
+            text = stringResource(R.string.trigger_setup_status_remap_button_possible),
         )
 
         RemapStatus.SUPPORTED -> RemapStatusRow(
             modifier = modifier,
             color = LocalCustomColorsPalette.current.green,
-            text = stringResource(R.string.trigger_setup_status_remap_button_possible)
+            text = stringResource(R.string.trigger_setup_status_remap_button_possible),
         )
     }
 }
@@ -461,7 +458,7 @@ private fun VolumeTriggerSetupBottomSheet(
         RemapStatusRow(
             modifier = Modifier.fillMaxWidth(),
             color = LocalCustomColorsPalette.current.green,
-            text = stringResource(R.string.trigger_setup_status_remap_button_possible)
+            text = stringResource(R.string.trigger_setup_status_remap_button_possible),
         )
 
         HeaderText(text = stringResource(R.string.trigger_setup_options_title))
@@ -521,7 +518,7 @@ private fun NotDetectedSetupBottomSheet(
         RemapStatusRow(
             modifier = Modifier.fillMaxWidth(),
             color = LocalCustomColorsPalette.current.amber,
-            text = stringResource(R.string.trigger_setup_status_might_remap_button)
+            text = stringResource(R.string.trigger_setup_status_might_remap_button),
         )
 
         HeaderText(text = stringResource(R.string.trigger_setup_options_title))
@@ -553,7 +550,7 @@ private fun NotDetectedSetupBottomSheet(
 
         Text(
             stringResource(R.string.trigger_setup_not_detected_information),
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
         )
 
         val uriHandler = LocalUriHandler.current
@@ -567,7 +564,7 @@ private fun NotDetectedSetupBottomSheet(
             colors = ButtonDefaults.buttonColors(
                 containerColor = LocalCustomColorsPalette.current.discord,
                 contentColor = LocalCustomColorsPalette.current.onDiscord,
-            )
+            ),
         ) {
             Text(stringResource(R.string.trigger_setup_get_help_button))
         }
@@ -607,7 +604,7 @@ private fun OtherTriggerSetupBottomSheet(
         RemapStatusRow(
             modifier = Modifier.fillMaxWidth(),
             color = LocalCustomColorsPalette.current.amber,
-            text = stringResource(R.string.trigger_setup_status_might_remap_button)
+            text = stringResource(R.string.trigger_setup_status_might_remap_button),
         )
 
         HeaderText(text = stringResource(R.string.trigger_setup_options_title))
@@ -637,7 +634,7 @@ private fun OtherTriggerSetupBottomSheet(
 
         Text(
             stringResource(R.string.trigger_setup_get_help_information),
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
         )
 
         val uriHandler = LocalUriHandler.current
@@ -651,7 +648,7 @@ private fun OtherTriggerSetupBottomSheet(
             colors = ButtonDefaults.buttonColors(
                 containerColor = LocalCustomColorsPalette.current.discord,
                 contentColor = LocalCustomColorsPalette.current.onDiscord,
-            )
+            ),
         ) {
             Text(stringResource(R.string.trigger_setup_get_help_button))
         }
@@ -691,7 +688,7 @@ private fun KeyboardTriggerSetupBottomSheet(
         RemapStatusRow(
             modifier = Modifier.fillMaxWidth(),
             color = LocalCustomColorsPalette.current.green,
-            text = stringResource(R.string.trigger_setup_status_feature_possible)
+            text = stringResource(R.string.trigger_setup_status_feature_possible),
         )
 
         HeaderText(text = stringResource(R.string.trigger_setup_options_title))
@@ -747,7 +744,7 @@ private fun FingerprintGestureSetupBottomSheet(
         RemapStatusRow(
             modifier = Modifier.fillMaxWidth(),
             color = LocalCustomColorsPalette.current.amber,
-            text = stringResource(R.string.trigger_setup_status_might_remap_button)
+            text = stringResource(R.string.trigger_setup_status_might_remap_button),
         )
 
         HeaderText(text = stringResource(R.string.trigger_setup_requirements_title))
@@ -793,12 +790,12 @@ private fun FingerprintGestureSetupBottomSheet(
 fun RemapStatusRow(
     modifier: Modifier = Modifier,
     color: Color,
-    text: String
+    text: String,
 ) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.Center,
     ) {
         Box(
             modifier = Modifier
@@ -835,7 +832,7 @@ private fun ProModeRequirementRow(
                 Text(
                     text = stringResource(R.string.trigger_setup_pro_mode_unsupported),
                     color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             } else {
                 TriggerRequirementButton(
@@ -925,7 +922,6 @@ fun TriggerRequirementsNotMetButton(modifier: Modifier = Modifier) {
     }
 }
 
-
 @Composable
 fun AddTriggerButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
     Button(modifier = modifier, onClick = onClick) {
@@ -946,7 +942,7 @@ fun TriggerRequirementButton(
         modifier = modifier,
         onClick = onClick,
         enabled = isEnabled,
-        colors = colors
+        colors = colors,
     ) {
         if (isEnabled) {
             Text(text = enabledText)
@@ -1017,7 +1013,7 @@ fun TriggerSetupBottomSheet(
                 modifier = Modifier
                     .animateContentSize()
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 content()
             }

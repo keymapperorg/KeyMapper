@@ -10,7 +10,7 @@ import javax.inject.Inject
 @ViewModelScoped
 class SetupInputMethodUseCaseImpl @Inject constructor(
     private val inputMethodAdapter: InputMethodAdapter,
-    private val buildConfigProvider: BuildConfigProvider
+    private val buildConfigProvider: BuildConfigProvider,
 ) : SetupInputMethodUseCase {
     private val keyMapperImeHelper =
         KeyMapperImeHelper(inputMethodAdapter, buildConfigProvider.packageName)

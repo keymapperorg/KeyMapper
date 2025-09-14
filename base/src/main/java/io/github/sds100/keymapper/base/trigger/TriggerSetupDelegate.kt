@@ -129,7 +129,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
                         controlAccessibilityServiceUseCase.serviceState,
                         setupInputMethodUseCase.isEnabled,
                         setupInputMethodUseCase.isChosen,
-                        recordTriggerController.state
+                        recordTriggerController.state,
                     ) { serviceState, isImeEnabled, isImeChosen, recordTriggerState ->
                         val areRequirementsMet =
                             serviceState == AccessibilityServiceState.ENABLED && isImeEnabled && isImeChosen
@@ -168,7 +168,6 @@ class TriggerSetupDelegateImpl @Inject constructor(
                 }
             }
         }
-
     }
 
     private fun buildSetupOtherTriggerFlow(): Flow<TriggerSetupState> {
@@ -238,7 +237,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
     private fun buildSetupFingerprintGestureFlow(): Flow<TriggerSetupState> {
         return combine(
             controlAccessibilityServiceUseCase.serviceState,
-            selectedFingerprintGestureType
+            selectedFingerprintGestureType,
         ) { serviceState, gestureType ->
             val areRequirementsMet = serviceState == AccessibilityServiceState.ENABLED
 
@@ -369,7 +368,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
 
                 is RecordTriggerState.Completed,
                 RecordTriggerState.Idle,
-                    -> recordTriggerController.startRecording(
+                -> recordTriggerController.startRecording(
                     enableEvdevRecording,
                 )
             }

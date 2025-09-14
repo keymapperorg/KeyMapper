@@ -57,7 +57,7 @@ sealed class TriggerSetupState {
 
         enum class Type {
             DPAD,
-            SIMPLE_BUTTONS
+            SIMPLE_BUTTONS,
         }
 
         data class Dpad(
@@ -80,6 +80,6 @@ sealed class TriggerSetupState {
     data class FingerprintGesture(
         val isAccessibilityServiceEnabled: Boolean,
         val areRequirementsMet: Boolean,
-        val selectedType: FingerprintGestureType
+        val selectedType: FingerprintGestureType,
     ) : TriggerSetupState()
 }

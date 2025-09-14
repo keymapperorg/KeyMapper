@@ -45,8 +45,8 @@ fun CheckBoxText(
                 } else {
                     MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.onSurface.copy(
-                            alpha = 0.5f
-                        )
+                            alpha = 0.5f,
+                        ),
                     )
                 },
                 maxLines = 2,

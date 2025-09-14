@@ -49,7 +49,7 @@ fun TriggerDiscoverScreen(
     modifier: Modifier = Modifier,
     onShortcutClick: (TriggerSetupShortcut) -> Unit = {},
     showFloatingButtons: Boolean = false,
-    showFingerprintGestures: Boolean = false
+    showFingerprintGestures: Boolean = false,
 ) {
     val customColors = LocalCustomColorsPalette.current
 
@@ -81,7 +81,7 @@ fun TriggerDiscoverScreen(
                         TriggerSetupShortcut.VOLUME,
                         stringResource(R.string.trigger_discover_shortcut_volume),
                         Icons.AutoMirrored.Outlined.VolumeUp,
-                    )
+                    ),
                 )
 
                 add(
@@ -89,7 +89,7 @@ fun TriggerDiscoverScreen(
                         TriggerSetupShortcut.ASSISTANT,
                         stringResource(R.string.trigger_discover_shortcut_assistant),
                         KeyMapperIcons.VoiceSelection,
-                    )
+                    ),
                 )
 
                 add(
@@ -97,7 +97,7 @@ fun TriggerDiscoverScreen(
                         TriggerSetupShortcut.POWER,
                         stringResource(R.string.trigger_discover_shortcut_power),
                         KeyMapperIcons.ModeOffOn,
-                    )
+                    ),
                 )
 
                 if (showFingerprintGestures) {
@@ -106,7 +106,7 @@ fun TriggerDiscoverScreen(
                             TriggerSetupShortcut.FINGERPRINT_GESTURE,
                             stringResource(R.string.trigger_discover_shortcut_fingerprint_gesture),
                             Icons.Rounded.Fingerprint,
-                        )
+                        ),
                     )
                 }
             },
