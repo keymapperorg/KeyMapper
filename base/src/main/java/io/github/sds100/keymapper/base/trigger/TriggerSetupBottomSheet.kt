@@ -68,7 +68,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.IndeterminateQuestionBox
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.ModeOffOn
-import io.github.sds100.keymapper.base.utils.ui.compose.icons.VoiceSelection
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.SportsEsports
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -183,7 +183,7 @@ private fun GamepadTriggerSetupBottomSheet(
         sheetState = sheetState,
         onDismissRequest = onDismissRequest,
         title = stringResource(R.string.trigger_setup_gamepad_title),
-        icon = KeyMapperIcons.VoiceSelection,
+        icon = KeyMapperIcons.SportsEsports,
         positiveButtonContent = {
             if (state.areRequirementsMet) {
                 RecordTriggerButton(
@@ -329,13 +329,6 @@ private fun MouseTriggerSetupBottomSheet(
             isVisible = true,
             proModeStatus = state.proModeStatus,
             onClick = onEnableProModeClick,
-        )
-
-        HeaderText(text = stringResource(R.string.trigger_setup_information_title))
-
-        Text(
-            stringResource(R.string.trigger_setup_power_information),
-            style = MaterialTheme.typography.bodyMedium,
         )
     }
 }
