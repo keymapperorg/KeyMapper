@@ -15,13 +15,17 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.ComposeNavigator
+import androidx.navigation.compose.DialogNavigator
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.BaseMainNavHost
 import io.github.sds100.keymapper.base.actions.ActionsScreen
@@ -29,7 +33,6 @@ import io.github.sds100.keymapper.base.actions.ConfigActionsViewModel
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.constraints.ConfigConstraintsViewModel
 import io.github.sds100.keymapper.base.constraints.ConstraintsScreen
-import io.github.sds100.keymapper.base.databinding.FragmentComposeBinding
 import io.github.sds100.keymapper.base.home.HomeKeyMapListScreen
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapScreen
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapViewModel
@@ -50,6 +53,10 @@ class MainFragment : Fragment() {
     @Inject
     lateinit var navigationProvider: NavigationProviderImpl
 
+    private lateinit var composeView: ComposeView
+
+    private lateinit var navController: NavHostController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -61,35 +68,65 @@ class MainFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        FragmentComposeBinding.inflate(inflater, container, false).apply {
-            composeView.apply {
-                // Dispose of the Composition when the view's LifecycleOwner
-                // is destroyed
-                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-                setContent {
-                    val navController = rememberNavController()
-                    SetupNavigation(navigationProvider, navController)
-
-                    KeyMapperTheme {
-                        BaseMainNavHost(
-                            modifier = Modifier
-                                .windowInsetsPadding(
-                                    WindowInsets.systemBars.only(sides = WindowInsetsSides.Horizontal)
-                                        .add(WindowInsets.displayCutout.only(sides = WindowInsetsSides.Horizontal)),
-                                ),
-                            navController = navController,
-                            composableDestinations = {
-                                composableDestinations()
-                            },
-                        )
-                    }
-                }
-            }
-            return this.root
+        return ComposeView(requireContext()).also {
+            composeView = it
         }
     }
 
-    private fun NavGraphBuilder.composableDestinations() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        navController = NavHostController(requireContext()).apply {
+            navigatorProvider.addNavigator(ComposeNavigator())
+            navigatorProvider.addNavigator(DialogNavigator())
+
+            if (savedInstanceState == null) {
+                restoreState(navigationProvider.savedState)
+                navigationProvider.savedState = null
+            } else {
+                restoreState(savedInstanceState)
+            }
+        }
+
+        composeView.apply {
+            // Dispose of the Composition when the view's LifecycleOwner
+            // is destroyed
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                SetupNavigation(navigationProvider, navController)
+
+                KeyMapperTheme {
+                    BaseMainNavHost(
+                        modifier = Modifier
+                            .windowInsetsPadding(
+                                WindowInsets.systemBars.only(sides = WindowInsetsSides.Horizontal)
+                                    .add(WindowInsets.displayCutout.only(sides = WindowInsetsSides.Horizontal)),
+                            ),
+                        navController = navController,
+                        composableDestinations = {
+                            composableDestinations(navController)
+                        },
+                    )
+                }
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        navController.saveState()?.let(outState::putAll)
+
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onDestroyView() {
+        // onSaveInstanceState is only called when the activity's onSaveInstanceState method
+        // is called so use our own place to save the navigation state
+        navigationProvider.savedState = navController.saveState()
+
+        super.onDestroyView()
+    }
+
+    private fun NavGraphBuilder.composableDestinations(navController: NavController) {
         composable<NavDestination.Home> {
             val snackbarState = remember { SnackbarHostState() }
             val viewModel: HomeViewModel = hiltViewModel()

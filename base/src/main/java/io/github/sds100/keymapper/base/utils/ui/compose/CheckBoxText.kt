@@ -43,7 +43,11 @@ fun CheckBoxText(
                 style = if (isEnabled) {
                     MaterialTheme.typography.bodyLarge
                 } else {
-                    MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.surfaceVariant)
+                    MaterialTheme.typography.bodyLarge.copy(
+                        color = MaterialTheme.colorScheme.onSurface.copy(
+                            alpha = 0.5f
+                        )
+                    )
                 },
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,

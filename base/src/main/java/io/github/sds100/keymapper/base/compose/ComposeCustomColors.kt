@@ -6,6 +6,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
+import io.github.sds100.keymapper.base.compose.ComposeColors.amberContainerDark
+import io.github.sds100.keymapper.base.compose.ComposeColors.amberContainerLight
+import io.github.sds100.keymapper.base.compose.ComposeColors.amberDark
+import io.github.sds100.keymapper.base.compose.ComposeColors.amberLight
+import io.github.sds100.keymapper.base.compose.ComposeColors.onAmberContainerDark
+import io.github.sds100.keymapper.base.compose.ComposeColors.onAmberContainerLight
+import io.github.sds100.keymapper.base.compose.ComposeColors.onAmberDark
+import io.github.sds100.keymapper.base.compose.ComposeColors.onAmberLight
 import io.github.sds100.keymapper.base.compose.ComposeColors.onOrangeContainerDark
 import io.github.sds100.keymapper.base.compose.ComposeColors.onOrangeContainerLight
 import io.github.sds100.keymapper.base.compose.ComposeColors.onOrangeDark
@@ -37,6 +45,12 @@ data class ComposeCustomColors(
     val onOrange: Color = Color.Unspecified,
     val orangeContainer: Color = Color.Unspecified,
     val onOrangeContainer: Color = Color.Unspecified,
+    val amber: Color = Color.Unspecified,
+    val onAmber: Color = Color.Unspecified,
+    val amberContainer: Color = Color.Unspecified,
+    val onAmberContainer: Color = Color.Unspecified,
+    val discord: Color = Color.Unspecified,
+    val onDiscord: Color = Color.Unspecified,
 ) {
     companion object {
         val LightPalette = ComposeCustomColors(
@@ -54,6 +68,12 @@ data class ComposeCustomColors(
             onOrange = onOrangeLight,
             orangeContainer = orangeContainerLight,
             onOrangeContainer = onOrangeContainerLight,
+            amber = amberLight,
+            onAmber = onAmberLight,
+            amberContainer = amberContainerLight,
+            onAmberContainer = onAmberContainerLight,
+            discord = ComposeColors.discordLight,
+            onDiscord = ComposeColors.onDiscordLight,
         )
 
         val DarkPalette = ComposeCustomColors(
@@ -71,6 +91,12 @@ data class ComposeCustomColors(
             onOrange = onOrangeDark,
             orangeContainer = orangeContainerDark,
             onOrangeContainer = onOrangeContainerDark,
+            amber = amberDark,
+            onAmber = onAmberDark,
+            amberContainer = amberContainerDark,
+            onAmberContainer = onAmberContainerDark,
+            discord = ComposeColors.discordDark,
+            onDiscord = ComposeColors.onDiscordDark,
         )
     }
 
@@ -83,6 +109,9 @@ data class ComposeCustomColors(
             greenContainer -> onGreenContainer
             magiskTeal -> onMagiskTeal
             shizukuBlue -> onShizukuBlue
+            amber -> onAmber
+            amberContainer -> onAmberContainer
+            discord -> onDiscord
             else -> MaterialTheme.colorScheme.contentColorFor(color)
         }
     }

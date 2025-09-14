@@ -8,7 +8,6 @@ import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
-import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
@@ -17,7 +16,6 @@ import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showDialog
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 abstract class BaseHomeViewModel(
@@ -27,7 +25,6 @@ abstract class BaseHomeViewModel(
     private val showAlertsUseCase: ShowHomeScreenAlertsUseCase,
     private val onboarding: OnboardingUseCase,
     resourceProvider: ResourceProvider,
-    private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     private val sortKeyMaps: SortKeyMapsUseCase,
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
     navigationProvider: NavigationProvider,
@@ -42,7 +39,6 @@ abstract class BaseHomeViewModel(
             viewModelScope,
             listKeyMaps,
             resourceProvider,
-            setupGuiKeyboard,
             sortKeyMaps,
             showAlertsUseCase,
             pauseKeyMaps,
@@ -60,12 +56,6 @@ abstract class BaseHomeViewModel(
                 if (showWhatsNew) {
                     showWhatsNewDialog()
                 }
-            }
-        }
-
-        viewModelScope.launch {
-            if (setupGuiKeyboard.isInstalled.first() && !setupGuiKeyboard.isCompatibleVersion.first()) {
-                showUpgradeGuiKeyboardDialog()
             }
         }
     }
@@ -98,24 +88,6 @@ abstract class BaseHomeViewModel(
         }
 
         onboarding.showedWhatsNew()
-    }
-
-    private suspend fun showUpgradeGuiKeyboardDialog() {
-        val dialog = DialogModel.Alert(
-            title = getString(R.string.dialog_upgrade_gui_keyboard_title),
-            message = getString(R.string.dialog_upgrade_gui_keyboard_message),
-            positiveButtonText = getString(R.string.dialog_upgrade_gui_keyboard_positive),
-            negativeButtonText = getString(R.string.dialog_upgrade_gui_keyboard_neutral),
-        )
-
-        val response = showDialog("upgrade_gui_keyboard", dialog)
-
-        if (response == DialogResponse.POSITIVE) {
-            showDialog(
-                "gui_keyboard_play_store",
-                DialogModel.OpenUrl(getString(R.string.url_play_store_keymapper_gui_keyboard)),
-            )
-        }
     }
 }
 

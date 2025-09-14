@@ -68,10 +68,11 @@ import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.ProModeIcon
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.WandStars
 import io.github.sds100.keymapper.common.utils.BuildUtils
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.system.files.FileUtils
 import kotlinx.coroutines.launch
 
-private val isProModeSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+private val isProModeSupported = Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API
 
 @Composable
 fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) {
@@ -149,7 +150,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                         snackbarHostState.showSnackbar(
                             context.getString(
                                 R.string.error_sdk_version_too_low,
-                                BuildUtils.getSdkVersionName(Build.VERSION_CODES.Q),
+                                BuildUtils.getSdkVersionName(Constants.SYSTEM_BRIDGE_MIN_API),
                             ),
                         )
                     }
@@ -377,7 +378,7 @@ private fun Content(
             } else {
                 stringResource(
                     R.string.error_sdk_version_too_low,
-                    BuildUtils.getSdkVersionName(Build.VERSION_CODES.Q),
+                    BuildUtils.getSdkVersionName(Constants.SYSTEM_BRIDGE_MIN_API),
                 )
             },
             icon = KeyMapperIcons.ProModeIcon,

@@ -9,7 +9,6 @@ import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
-import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
@@ -23,7 +22,6 @@ class HomeViewModel @Inject constructor(
     private val showAlertsUseCase: ShowHomeScreenAlertsUseCase,
     private val onboarding: OnboardingUseCase,
     resourceProvider: ResourceProvider,
-    private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     private val sortKeyMaps: SortKeyMapsUseCase,
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
     navigationProvider: NavigationProvider,
@@ -35,7 +33,6 @@ class HomeViewModel @Inject constructor(
     showAlertsUseCase,
     onboarding,
     resourceProvider,
-    setupGuiKeyboard,
     sortKeyMaps,
     showInputMethodPickerUseCase,
     navigationProvider,

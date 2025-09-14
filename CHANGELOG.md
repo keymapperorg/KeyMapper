@@ -6,7 +6,8 @@
 
 - #761 Detect keys with scancodes. Key Mapper will do this automatically if the key code is unknown
   or you record different physical keys from the same device with the same key code.
-- Redesign the Settings screen
+- Redesign the Settings screen.
+- Shortcuts on the trigger screen that guide you how to set up different types of buttons.
 
 ## Removed
 

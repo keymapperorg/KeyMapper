@@ -73,8 +73,10 @@ object Keys {
 
     val neverShowDpadImeTriggerError =
         booleanPreferencesKey("key_never_show_dpad_ime_trigger_error")
-    val neverShowNoKeysRecordedError =
-        booleanPreferencesKey("key_never_show_no_keys_recorded_error")
+
+//    val neverShowNoKeysRecordedError =
+//        booleanPreferencesKey("key_never_show_no_keys_recorded_error")
+
     val sortOrderJson = stringPreferencesKey("key_keymaps_sort_order_json")
     val sortShowHelp = booleanPreferencesKey("key_keymaps_sort_show_help")
 
@@ -94,12 +96,6 @@ object Keys {
 
     val shownTapTargetCreateKeyMap =
         booleanPreferencesKey("key_shown_tap_target_create_key_map")
-
-    val shownTapTargetRecordTrigger =
-        booleanPreferencesKey("key_shown_tap_target_record_trigger")
-
-    val shownTapTargetAdvancedTriggers =
-        booleanPreferencesKey("key_shown_tap_target_advanced_triggers")
 
     val shownTapTargetChooseAction =
         booleanPreferencesKey("key_shown_tap_target_choose_action")

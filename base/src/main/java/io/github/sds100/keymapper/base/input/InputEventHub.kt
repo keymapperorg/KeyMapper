@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.base.BuildConfig
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
@@ -53,7 +54,7 @@ class InputEventHubImpl @Inject constructor(
 ) : InputEventHub, IEvdevCallback.Stub() {
 
     companion object {
-        private const val INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH = 2
+        const val INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH = 2
     }
 
     private val clients: ConcurrentHashMap<String, ClientContext> = ConcurrentHashMap()
@@ -61,7 +62,7 @@ class InputEventHubImpl @Inject constructor(
     // Event queue for processing key events asynchronously in order
     private val keyEventQueue = Channel<InjectKeyEventModel>(capacity = 100)
 
-    @RequiresApi(Build.VERSION_CODES.Q)
+    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     private val evdevHandlesCache: EvdevHandleCache = EvdevHandleCache(
         coroutineScope,
         devicesAdapter,
@@ -82,7 +83,7 @@ class InputEventHubImpl @Inject constructor(
     init {
         startKeyEventProcessingLoop()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             coroutineScope.launch {
                 systemBridgeConnManager.connectionState
                     .filterIsInstance<SystemBridgeConnectionState.Connected>()
@@ -122,7 +123,7 @@ class InputEventHubImpl @Inject constructor(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
+    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     override fun isSystemBridgeConnected(): Boolean {
         return systemBridgeConnManager.connectionState.firstBlocking() is SystemBridgeConnectionState.Connected
     }
@@ -135,7 +136,7 @@ class InputEventHubImpl @Inject constructor(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
+    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     override fun onEvdevEvent(
         devicePath: String?,
         timeSec: Long,
@@ -235,14 +236,14 @@ class InputEventHubImpl @Inject constructor(
     override fun registerClient(
         clientId: String,
         callback: InputEventHubCallback,
-        eventTypes: List<Int>,
+        evdevEventTypes: List<Int>,
     ) {
         Timber.d("InputEventHub: Registering client $clientId")
         if (clients.containsKey(clientId)) {
             throw IllegalArgumentException("This client already has a callback registered!")
         }
 
-        clients[clientId] = ClientContext(callback, emptySet(), eventTypes.toSet())
+        clients[clientId] = ClientContext(callback, emptySet(), evdevEventTypes.toSet())
     }
 
     override fun unregisterClient(clientId: String) {
@@ -261,7 +262,7 @@ class InputEventHubImpl @Inject constructor(
         invalidateGrabbedDevicesChannel.trySend(Unit)
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
+    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     override fun grabAllEvdevDevices(clientId: String) {
         if (!clients.containsKey(clientId)) {
             throw IllegalArgumentException("This client $clientId is not registered when trying to grab devices!")
@@ -273,7 +274,7 @@ class InputEventHubImpl @Inject constructor(
         invalidateGrabbedDevicesChannel.trySend(Unit)
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
+    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     private suspend fun invalidateGrabbedEvdevDevices(evdevDevices: List<EvdevDeviceInfo>) {
         // Invalidate the cache first to make sure it is up to date.
         evdevHandlesCache.invalidate()
@@ -300,7 +301,7 @@ class InputEventHubImpl @Inject constructor(
             }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
+    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     override fun injectEvdevEvent(
         devicePath: String,
         type: Int,
@@ -320,7 +321,7 @@ class InputEventHubImpl @Inject constructor(
     }
 
     override suspend fun injectKeyEvent(event: InjectKeyEventModel): KMResult<Unit> {
-        val isSysBridgeConnected = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+        val isSysBridgeConnected = Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API &&
             systemBridgeConnManager.connectionState.value is SystemBridgeConnectionState.Connected
 
         if (isSysBridgeConnected) {
@@ -387,7 +388,7 @@ interface InputEventHub {
     fun registerClient(
         clientId: String,
         callback: InputEventHubCallback,
-        eventTypes: List<Int>,
+        evdevEventTypes: List<Int>,
     )
 
     fun unregisterClient(clientId: String)

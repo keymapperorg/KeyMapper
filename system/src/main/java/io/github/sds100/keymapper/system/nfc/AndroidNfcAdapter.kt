@@ -5,6 +5,7 @@ import android.nfc.NfcManager
 import android.os.Build
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.system.root.SuAdapter
@@ -24,7 +25,7 @@ class AndroidNfcAdapter @Inject constructor(
     override fun isEnabled(): Boolean = nfcManager?.defaultAdapter?.isEnabled ?: false
 
     override fun enable(): KMResult<*> {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             return systemBridgeConnectionManager.run { bridge -> bridge.setNfcEnabled(true) }
         } else {
             return suAdapter.execute("svc nfc enable")
@@ -32,7 +33,7 @@ class AndroidNfcAdapter @Inject constructor(
     }
 
     override fun disable(): KMResult<*> {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             return systemBridgeConnectionManager.run { bridge -> bridge.setNfcEnabled(false) }
         } else {
             return suAdapter.execute("svc nfc disable")

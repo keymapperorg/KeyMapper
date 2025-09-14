@@ -4,6 +4,7 @@ import android.os.Build
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.onFailure
@@ -62,7 +63,7 @@ class LazyActionErrorSnapshot(
     }
 
     private val isSystemBridgeConnected: Boolean by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             systemBridgeConnectionManager.connectionState.value is SystemBridgeConnectionState.Connected
         } else {
             false
@@ -70,7 +71,7 @@ class LazyActionErrorSnapshot(
     }
 
     private val isSystemBridgeUsed: Boolean by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             preferenceRepository.get(Keys.isSystemBridgeUsed).firstBlocking() ?: false
         } else {
             false
@@ -117,7 +118,7 @@ class LazyActionErrorSnapshot(
             return isSupportedError
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && action.canUseSystemBridgeToPerform() && isSystemBridgeUsed) {
+        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API && action.canUseSystemBridgeToPerform() && isSystemBridgeUsed) {
             // Only throw an error if they aren't using another compatible back up option
             if (!(action.canUseImeToPerform() && isCompatibleImeChosen) && !isSystemBridgeConnected) {
                 return SystemBridgeError.Disconnected
@@ -132,7 +133,7 @@ class LazyActionErrorSnapshot(
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API &&
             ActionUtils.isSystemBridgeRequired(action.id) &&
             !isSystemBridgeConnected
         ) {

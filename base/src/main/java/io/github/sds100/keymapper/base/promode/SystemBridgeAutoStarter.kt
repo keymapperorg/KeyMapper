@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.base.system.notifications.NotificationControll
 import io.github.sds100.keymapper.base.system.notifications.NotificationController.Companion.ID_SYSTEM_BRIDGE_STATUS
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.notifications.KMNotificationAction
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -47,7 +48,7 @@ import javax.inject.Singleton
  * This class handles auto starting the system bridge when Key Mapper is launched and when
  * the System Bridge is killed not due to the user.
  */
-@RequiresApi(Build.VERSION_CODES.Q)
+@RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
 @Singleton
 class SystemBridgeAutoStarter @Inject constructor(
     private val coroutineScope: CoroutineScope,

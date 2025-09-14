@@ -9,7 +9,8 @@ import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.base.trigger.BaseConfigTriggerViewModel
 import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCase
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
-import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
+import io.github.sds100.keymapper.base.trigger.TriggerSetupDelegate
+import io.github.sds100.keymapper.base.trigger.TriggerSetupShortcut
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
@@ -23,8 +24,8 @@ class ConfigTriggerViewModel @Inject constructor(
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
     private val purchasingManager: PurchasingManager,
-    private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
+    triggerSetupDelegate: TriggerSetupDelegate,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
@@ -35,8 +36,8 @@ class ConfigTriggerViewModel @Inject constructor(
     createKeyMapShortcut = createKeyMapShortcut,
     displayKeyMap = displayKeyMap,
     purchasingManager = purchasingManager,
-    setupGuiKeyboard = setupGuiKeyboard,
     fingerprintGesturesSupported = fingerprintGesturesSupported,
+    triggerSetupDelegate = triggerSetupDelegate,
     resourceProvider = resourceProvider,
     navigationProvider = navigationProvider,
     dialogProvider = dialogProvider,
@@ -44,4 +45,12 @@ class ConfigTriggerViewModel @Inject constructor(
     override fun onEditFloatingButtonClick() {}
 
     override fun onEditFloatingLayoutClick() {}
+
+    override fun showTriggerSetup(shortcut: TriggerSetupShortcut) {
+        when (shortcut) {
+            TriggerSetupShortcut.ASSISTANT -> showAdvancedTriggersBottomSheet = true
+
+            else -> super.showTriggerSetup(shortcut)
+        }
+    }
 }

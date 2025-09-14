@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.trigger
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -21,17 +21,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,44 +40,51 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.keymaps.ClickType
+import io.github.sds100.keymapper.base.keymaps.ShortcutButton
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
-import io.github.sds100.keymapper.base.keymaps.ShortcutRow
 import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.DraggableItem
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.ActionKey
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.rememberDragDropState
 import io.github.sds100.keymapper.common.utils.State
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BaseTriggerScreen(modifier: Modifier = Modifier, viewModel: BaseConfigTriggerViewModel) {
+fun BaseTriggerScreen(
+    modifier: Modifier = Modifier,
+    viewModel: BaseConfigTriggerViewModel,
+    discoverScreenContent: @Composable () -> Unit = {},
+) {
+    val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val setupGuiKeyboardState by viewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
     val recordTriggerState by viewModel.recordTriggerState.collectAsStateWithLifecycle()
+    val showFingerprintGestures: Boolean by viewModel.showFingerprintGesturesShortcut.collectAsStateWithLifecycle()
 
-    if (viewModel.showDpadTriggerSetupBottomSheet) {
-        DpadTriggerSetupBottomSheet(
-            modifier = Modifier.systemBarsPadding(),
-            onDismissRequest = {
-                viewModel.showDpadTriggerSetupBottomSheet = false
-            },
-            guiKeyboardState = setupGuiKeyboardState,
-            onEnableKeyboardClick = viewModel::onEnableGuiKeyboardClick,
-            onChooseKeyboardClick = viewModel::onChooseGuiKeyboardClick,
-            onNeverShowAgainClick = viewModel::onNeverShowSetupDpadClick,
-            sheetState = sheetState,
-        )
-    }
+    HandleTriggerSetupBottomSheet(viewModel)
 
-    if (viewModel.showNoKeysRecordedBottomSheet) {
-        NoKeysRecordedBottomSheet(
-            modifier = Modifier.systemBarsPadding(),
-            onDismissRequest = {
-                viewModel.showNoKeysRecordedBottomSheet = false
-            },
-            viewModel = viewModel,
+    if (viewModel.showDiscoverTriggersBottomSheet) {
+        TriggerDiscoverBottomSheet(
             sheetState = sheetState,
+            onDismissRequest = {
+                viewModel.showDiscoverTriggersBottomSheet = false
+            },
+            content = {
+                TriggerDiscoverScreen(
+                    showFloatingButtons = true,
+                    showFingerprintGestures = showFingerprintGestures,
+                    onShortcutClick = { shortcut ->
+                        scope.launch {
+                            sheetState.hide()
+                            viewModel.showDiscoverTriggersBottomSheet = false
+                            viewModel.showTriggerSetup(shortcut)
+                        }
+                    },
+                )
+            },
         )
     }
 
@@ -86,7 +92,6 @@ fun BaseTriggerScreen(modifier: Modifier = Modifier, viewModel: BaseConfigTrigge
 
     if (triggerKeyOptionsState != null) {
         TriggerKeyOptionsBottomSheet(
-            modifier = Modifier.systemBarsPadding(),
             sheetState = sheetState,
             state = triggerKeyOptionsState!!,
             onDismissRequest = viewModel::onDismissTriggerKeyOptions,
@@ -120,10 +125,10 @@ fun BaseTriggerScreen(modifier: Modifier = Modifier, viewModel: BaseConfigTrigge
                     onSelectSequenceMode = viewModel::onSequenceRadioButtonChecked,
                     onMoveTriggerKey = viewModel::onMoveTriggerKey,
                     onFixErrorClick = viewModel::onTriggerErrorClick,
-                    onClickShortcut = viewModel::onClickTriggerKeyShortcut,
-                    onRecordTriggerTapTargetCompleted = viewModel::onRecordTriggerTapTargetCompleted,
-                    onSkipTapTarget = viewModel::onSkipTapTargetClick,
-                    onAdvancedTriggerTapTargetCompleted = viewModel::onAdvancedTriggersTapTargetCompleted,
+                    onAddMoreTriggerKeysClick = {
+                        viewModel.showDiscoverTriggersBottomSheet = true
+                    },
+                    discoverScreenContent = discoverScreenContent,
                 )
             } else {
                 TriggerScreenVertical(
@@ -139,10 +144,10 @@ fun BaseTriggerScreen(modifier: Modifier = Modifier, viewModel: BaseConfigTrigge
                     onSelectSequenceMode = viewModel::onSequenceRadioButtonChecked,
                     onMoveTriggerKey = viewModel::onMoveTriggerKey,
                     onFixErrorClick = viewModel::onTriggerErrorClick,
-                    onClickShortcut = viewModel::onClickTriggerKeyShortcut,
-                    onRecordTriggerTapTargetCompleted = viewModel::onRecordTriggerTapTargetCompleted,
-                    onSkipTapTarget = viewModel::onSkipTapTargetClick,
-                    onAdvancedTriggerTapTargetCompleted = viewModel::onAdvancedTriggersTapTargetCompleted,
+                    onAddMoreTriggerKeysClick = {
+                        viewModel.showDiscoverTriggersBottomSheet = true
+                    },
+                    discoverScreenContent = discoverScreenContent,
                 )
             }
         }
@@ -184,10 +189,8 @@ private fun TriggerScreenVertical(
     onAdvancedTriggersClick: () -> Unit = {},
     onMoveTriggerKey: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     onFixErrorClick: (TriggerError) -> Unit = {},
-    onClickShortcut: (TriggerKeyShortcut) -> Unit = {},
-    onRecordTriggerTapTargetCompleted: () -> Unit = {},
-    onSkipTapTarget: () -> Unit = {},
-    onAdvancedTriggerTapTargetCompleted: () -> Unit = {},
+    onAddMoreTriggerKeysClick: () -> Unit = {},
+    discoverScreenContent: @Composable () -> Unit = {},
 ) {
     Surface(modifier = modifier) {
         Column {
@@ -195,36 +198,21 @@ private fun TriggerScreenVertical(
 
             when (configState) {
                 is ConfigTriggerState.Empty -> {
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .verticalScroll(state = rememberScrollState()),
-                        verticalArrangement = Arrangement.Center,
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(32.dp),
-                            text = stringResource(R.string.triggers_recyclerview_placeholder),
-                            textAlign = TextAlign.Center,
-                        )
-
-                        if (configState.shortcuts.isNotEmpty()) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(
-                                    text = stringResource(R.string.trigger_shortcuts_header),
-                                    style = MaterialTheme.typography.titleSmall,
-                                )
-
-                                Spacer(Modifier.height(8.dp))
-
-                                ShortcutRow(
-                                    modifier = Modifier
-                                        .padding(horizontal = 32.dp)
-                                        .fillMaxWidth(),
-                                    shortcuts = configState.shortcuts,
-                                    onClick = onClickShortcut,
-                                )
-                            }
+                    Column {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(16.dp),
+                        ) {
+                            discoverScreenContent()
                         }
+
+                        RecordTriggerButtonRow(
+                            modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+                            onRecordTriggerClick = onRecordTriggerClick,
+                            recordTriggerState = recordTriggerState,
+                            onAdvancedTriggersClick = onAdvancedTriggersClick,
+                        )
                     }
                 }
 
@@ -234,13 +222,12 @@ private fun TriggerScreenVertical(
                     TriggerList(
                         modifier = Modifier.weight(1f),
                         triggerList = configState.triggerKeys,
-                        shortcuts = configState.shortcuts,
                         isReorderingEnabled = configState.isReorderingEnabled,
                         onEditClick = onEditClick,
                         onRemoveClick = onRemoveClick,
                         onMove = onMoveTriggerKey,
-                        onClickShortcut = onClickShortcut,
                         onFixErrorClick = onFixErrorClick,
+                        onAddMoreClick = onAddMoreTriggerKeysClick,
                     )
 
                     if (configState.clickTypeButtons.isNotEmpty()) {
@@ -285,12 +272,6 @@ private fun TriggerScreenVertical(
                 onRecordTriggerClick = onRecordTriggerClick,
                 recordTriggerState = recordTriggerState,
                 onAdvancedTriggersClick = onAdvancedTriggersClick,
-                showRecordTriggerTapTarget = (configState as? ConfigTriggerState.Empty)?.showRecordTriggerTapTarget
-                    ?: false,
-                onRecordTriggerTapTargetCompleted = onRecordTriggerTapTargetCompleted,
-                onSkipTapTarget = onSkipTapTarget,
-                showAdvancedTriggerTapTarget = configState.showAdvancedTriggersTapTarget,
-                onAdvancedTriggerTapTargetCompleted = onAdvancedTriggerTapTargetCompleted,
             )
         }
     }
@@ -310,60 +291,29 @@ private fun TriggerScreenHorizontal(
     onAdvancedTriggersClick: () -> Unit = {},
     onMoveTriggerKey: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     onFixErrorClick: (TriggerError) -> Unit = {},
-    onClickShortcut: (TriggerKeyShortcut) -> Unit = {},
-    onRecordTriggerTapTargetCompleted: () -> Unit = {},
-    onSkipTapTarget: () -> Unit = {},
-    onAdvancedTriggerTapTargetCompleted: () -> Unit = {},
+    onAddMoreTriggerKeysClick: () -> Unit = {},
+    discoverScreenContent: @Composable () -> Unit = {},
 ) {
     Surface(modifier = modifier) {
         when (configState) {
             is ConfigTriggerState.Empty -> Row {
-                Text(
+                Box(
                     modifier = Modifier
-                        .widthIn(max = 400.dp)
-                        .padding(32.dp)
-                        .verticalScroll(state = rememberScrollState()),
-                    text = stringResource(R.string.triggers_recyclerview_placeholder),
-                    textAlign = TextAlign.Center,
-                )
-                Column {
-                    if (configState.shortcuts.isNotEmpty()) {
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                                .verticalScroll(state = rememberScrollState()),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center,
-                        ) {
-                            Text(
-                                text = stringResource(R.string.trigger_shortcuts_header),
-                                style = MaterialTheme.typography.titleSmall,
-                            )
-
-                            Spacer(Modifier.height(8.dp))
-
-                            ShortcutRow(
-                                modifier = Modifier
-                                    .padding(horizontal = 32.dp)
-                                    .fillMaxWidth(),
-                                shortcuts = configState.shortcuts,
-                                onClick = onClickShortcut,
-                            )
-                        }
-                    }
-
-                    RecordTriggerButtonRow(
-                        modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
-                        onRecordTriggerClick = onRecordTriggerClick,
-                        recordTriggerState = recordTriggerState,
-                        onAdvancedTriggersClick = onAdvancedTriggersClick,
-                        showRecordTriggerTapTarget = (configState as? ConfigTriggerState.Empty)?.showRecordTriggerTapTarget
-                            ?: false,
-                        onRecordTriggerTapTargetCompleted = onRecordTriggerTapTargetCompleted,
-                        onSkipTapTarget = onSkipTapTarget,
-                        showAdvancedTriggerTapTarget = configState.showAdvancedTriggersTapTarget,
-                    )
+                        .weight(1f)
+                        .padding(16.dp),
+                ) {
+                    discoverScreenContent()
                 }
+
+                RecordTriggerButtonRow(
+                    modifier = Modifier
+                        .align(Alignment.Bottom)
+                        .weight(1f)
+                        .padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+                    onRecordTriggerClick = onRecordTriggerClick,
+                    recordTriggerState = recordTriggerState,
+                    onAdvancedTriggersClick = onAdvancedTriggersClick,
+                )
             }
 
             is ConfigTriggerState.Loaded -> Row {
@@ -372,13 +322,12 @@ private fun TriggerScreenHorizontal(
                         .fillMaxHeight()
                         .widthIn(max = 400.dp),
                     triggerList = configState.triggerKeys,
-                    shortcuts = configState.shortcuts,
                     isReorderingEnabled = configState.isReorderingEnabled,
                     onEditClick = onEditClick,
                     onRemoveClick = onRemoveClick,
                     onMove = onMoveTriggerKey,
-                    onClickShortcut = onClickShortcut,
                     onFixErrorClick = onFixErrorClick,
+                    onAddMoreClick = onAddMoreTriggerKeysClick,
                 )
 
                 Spacer(Modifier.height(8.dp))
@@ -428,11 +377,6 @@ private fun TriggerScreenHorizontal(
                         onRecordTriggerClick = onRecordTriggerClick,
                         recordTriggerState = recordTriggerState,
                         onAdvancedTriggersClick = onAdvancedTriggersClick,
-                        showRecordTriggerTapTarget = false,
-                        onRecordTriggerTapTargetCompleted = onRecordTriggerTapTargetCompleted,
-                        onSkipTapTarget = onSkipTapTarget,
-                        showAdvancedTriggerTapTarget = configState.showAdvancedTriggersTapTarget,
-                        onAdvancedTriggerTapTargetCompleted = onAdvancedTriggerTapTargetCompleted,
                     )
                 }
             }
@@ -444,20 +388,19 @@ private fun TriggerScreenHorizontal(
 private fun TriggerList(
     modifier: Modifier = Modifier,
     triggerList: List<TriggerKeyListItemModel>,
-    shortcuts: Set<ShortcutModel<TriggerKeyShortcut>>,
     isReorderingEnabled: Boolean,
     onRemoveClick: (String) -> Unit,
     onEditClick: (String) -> Unit,
     onFixErrorClick: (TriggerError) -> Unit,
     onMove: (fromIndex: Int, toIndex: Int) -> Unit,
-    onClickShortcut: (TriggerKeyShortcut) -> Unit,
+    onAddMoreClick: () -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
     val dragDropState = rememberDragDropState(
         lazyListState = lazyListState,
         onMove = onMove,
-        // Do not drag and drop the row of shortcuts
-        ignoreLastItems = if (shortcuts.isEmpty()) {
+        // Do not drag and drop the "add more" button
+        ignoreLastItems = if (triggerList.isEmpty()) {
             0
         } else {
             1
@@ -470,6 +413,7 @@ private fun TriggerList(
         modifier = modifier,
         state = lazyListState,
         contentPadding = PaddingValues(vertical = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         itemsIndexed(
             triggerList,
@@ -495,24 +439,15 @@ private fun TriggerList(
             }
         }
 
-        if (shortcuts.isNotEmpty()) {
-            item(key = "shortcuts", contentType = "shortcuts") {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = stringResource(R.string.trigger_shortcuts_header),
-                        style = MaterialTheme.typography.titleSmall,
-                    )
-
-                    Spacer(Modifier.height(8.dp))
-
-                    ShortcutRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 32.dp),
-                        shortcuts = shortcuts,
-                        onClick = { onClickShortcut(it) },
-                    )
-                }
+        if (triggerList.isNotEmpty()) {
+            item(key = "add_more", contentType = "add_more") {
+                ShortcutButton(
+                    onClick = onAddMoreClick,
+                    text = stringResource(R.string.trigger_list_add_more_button),
+                    icon = {
+                        Icon(KeyMapperIcons.ActionKey, contentDescription = null)
+                    },
+                )
             }
         }
     }
@@ -619,7 +554,7 @@ private val sampleList = listOf(
         id = "id3",
         assistantType = AssistantTriggerType.DEVICE,
         clickType = ClickType.DOUBLE_PRESS,
-        linkType = LinkType.HIDDEN,
+        linkType = LinkType.PLUS,
         error = null,
     ),
 )
@@ -653,6 +588,9 @@ private fun VerticalPreview() {
         TriggerScreenVertical(
             configState = previewState,
             recordTriggerState = RecordTriggerState.Idle,
+            discoverScreenContent = {
+                TriggerDiscoverScreen()
+            },
         )
     }
 }
@@ -664,6 +602,9 @@ private fun VerticalPreviewTiny() {
         TriggerScreenVertical(
             configState = previewState,
             recordTriggerState = RecordTriggerState.Idle,
+            discoverScreenContent = {
+                TriggerDiscoverScreen()
+            },
         )
     }
 }
@@ -683,6 +624,31 @@ private fun VerticalEmptyPreview() {
                 ),
             ),
             recordTriggerState = RecordTriggerState.Idle,
+            discoverScreenContent = {
+                TriggerDiscoverScreen()
+            },
+        )
+    }
+}
+
+@Preview(device = Devices.PIXEL, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun VerticalEmptyDarkPreview() {
+    KeyMapperTheme {
+        TriggerScreenVertical(
+            configState = ConfigTriggerState.Empty(
+                shortcuts = setOf(
+                    ShortcutModel(
+                        icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),
+                        text = "Fingerprint gesture",
+                        data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
+                    ),
+                ),
+            ),
+            recordTriggerState = RecordTriggerState.Idle,
+            discoverScreenContent = {
+                TriggerDiscoverScreen()
+            },
         )
     }
 }
@@ -694,6 +660,9 @@ private fun HorizontalPreview() {
         TriggerScreenHorizontal(
             configState = previewState,
             recordTriggerState = RecordTriggerState.Idle,
+            discoverScreenContent = {
+                TriggerDiscoverScreen()
+            },
         )
     }
 }
@@ -711,9 +680,11 @@ private fun HorizontalEmptyPreview() {
                         data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
                     ),
                 ),
-
             ),
             recordTriggerState = RecordTriggerState.Idle,
+            discoverScreenContent = {
+                TriggerDiscoverScreen()
+            },
         )
     }
 }

@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -61,7 +60,6 @@ import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.groups.GroupListItemModel
 import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.base.sorting.SortBottomSheet
-import io.github.sds100.keymapper.base.trigger.DpadTriggerSetupBottomSheet
 import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.base.trigger.TriggerError
 import io.github.sds100.keymapper.base.utils.ShareUtils
@@ -90,7 +88,6 @@ fun HomeKeyMapListScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val setupGuiKeyboardState by viewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
 
     val importFileLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
@@ -107,20 +104,6 @@ fun HomeKeyMapListScreen(
         setIdleState = viewModel::setImportExportIdle,
         onConfirmImport = viewModel::onConfirmImport,
     )
-
-    if (viewModel.showDpadTriggerSetupBottomSheet) {
-        DpadTriggerSetupBottomSheet(
-            modifier = Modifier.systemBarsPadding(),
-            onDismissRequest = {
-                viewModel.showDpadTriggerSetupBottomSheet = false
-            },
-            guiKeyboardState = setupGuiKeyboardState,
-            onEnableKeyboardClick = viewModel::onEnableGuiKeyboardClick,
-            onChooseKeyboardClick = viewModel::onChooseGuiKeyboardClick,
-            onNeverShowAgainClick = viewModel::onNeverShowSetupDpadClick,
-            sheetState = sheetState,
-        )
-    }
 
     if (viewModel.showSortBottomSheet) {
         SortBottomSheet(

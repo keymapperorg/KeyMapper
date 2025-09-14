@@ -47,8 +47,10 @@ import io.github.sds100.keymapper.base.system.bluetooth.ChooseBluetoothDeviceUse
 import io.github.sds100.keymapper.base.system.bluetooth.ChooseBluetoothDeviceUseCaseImpl
 import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCase
 import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCaseImpl
-import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
-import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCaseImpl
+import io.github.sds100.keymapper.base.trigger.SetupInputMethodUseCase
+import io.github.sds100.keymapper.base.trigger.SetupInputMethodUseCaseImpl
+import io.github.sds100.keymapper.base.trigger.TriggerSetupDelegate
+import io.github.sds100.keymapper.base.trigger.TriggerSetupDelegateImpl
 
 @Module
 @InstallIn(ViewModelComponent::class)
@@ -119,10 +121,6 @@ abstract class BaseViewModelHiltModule {
 
     @Binds
     @ViewModelScoped
-    abstract fun bindSetupGuiKeyboardUseCase(impl: SetupGuiKeyboardUseCaseImpl): SetupGuiKeyboardUseCase
-
-    @Binds
-    @ViewModelScoped
     abstract fun bindCreateActionUseCase(impl: CreateActionUseCaseImpl): CreateActionUseCase
 
     @Binds
@@ -144,4 +142,12 @@ abstract class BaseViewModelHiltModule {
     @Binds
     @ViewModelScoped
     abstract fun bindConfigTriggerUseCase(impl: ConfigTriggerUseCaseImpl): ConfigTriggerUseCase
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindTriggerSetupDelegate(impl: TriggerSetupDelegateImpl): TriggerSetupDelegate
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindSetupInputMethodUseCase(impl: SetupInputMethodUseCaseImpl): SetupInputMethodUseCase
 }

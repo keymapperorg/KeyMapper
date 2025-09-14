@@ -22,8 +22,6 @@ import io.github.sds100.keymapper.base.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.base.sorting.SortViewModel
 import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
-import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardState
-import io.github.sds100.keymapper.base.trigger.SetupGuiKeyboardUseCase
 import io.github.sds100.keymapper.base.trigger.TriggerError
 import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.base.utils.getFullMessage
@@ -76,7 +74,6 @@ class KeyMapListViewModel(
     private val coroutineScope: CoroutineScope,
     private val listKeyMaps: ListKeyMapsUseCase,
     resourceProvider: ResourceProvider,
-    private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     private val sortKeyMaps: SortKeyMapsUseCase,
     private val showAlertsUseCase: ShowHomeScreenAlertsUseCase,
     private val pauseKeyMaps: PauseKeyMapsUseCase,
@@ -123,20 +120,6 @@ class KeyMapListViewModel(
     val state = _state.asStateFlow()
 
     var showFabText: Boolean by mutableStateOf(true)
-
-    val setupGuiKeyboardState: StateFlow<SetupGuiKeyboardState> = combine(
-        setupGuiKeyboard.isInstalled,
-        setupGuiKeyboard.isEnabled,
-        setupGuiKeyboard.isChosen,
-    ) { isInstalled, isEnabled, isChosen ->
-        SetupGuiKeyboardState(
-            isInstalled,
-            isEnabled,
-            isChosen,
-        )
-    }.stateIn(coroutineScope, SharingStarted.Lazily, SetupGuiKeyboardState.DEFAULT)
-
-    var showDpadTriggerSetupBottomSheet: Boolean by mutableStateOf(false)
 
     private val keyMapGroupStateFlow = listKeyMaps.keyMapGroup.stateIn(
         coroutineScope,
@@ -524,10 +507,6 @@ class KeyMapListViewModel(
                     )
                 }
 
-                TriggerError.DPAD_IME_NOT_SELECTED -> {
-                    showDpadTriggerSetupBottomSheet = true
-                }
-
                 TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED, TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> {
                     navigate(
                         "purchase_advanced_trigger",
@@ -568,20 +547,6 @@ class KeyMapListViewModel(
                 }
             }
         }
-    }
-
-    fun onEnableGuiKeyboardClick() {
-        coroutineScope.launch {
-            setupGuiKeyboard.enableInputMethod()
-        }
-    }
-
-    fun onChooseGuiKeyboardClick() {
-        setupGuiKeyboard.chooseInputMethod()
-    }
-
-    fun onNeverShowSetupDpadClick() {
-        listKeyMaps.neverShowDpadImeSetupError()
     }
 
     fun onSelectAllClick() {

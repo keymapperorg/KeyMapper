@@ -6,8 +6,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -18,7 +16,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
-class AndroidLockScreenAdapter @Inject constructor(@ApplicationContext private val ctx: Context) : LockScreenAdapter {
+class AndroidLockScreenAdapter @Inject constructor(@ApplicationContext private val ctx: Context) :
+    LockScreenAdapter {
 
     private val devicePolicyManager: DevicePolicyManager by lazy { ctx.getSystemService()!! }
     private val keyguardManager: KeyguardManager by lazy { ctx.getSystemService()!! }
@@ -30,10 +29,8 @@ class AndroidLockScreenAdapter @Inject constructor(@ApplicationContext private v
 
             when (intent.action) {
                 Intent.ACTION_SCREEN_ON, Intent.ACTION_SCREEN_OFF, Intent.ACTION_USER_PRESENT, Intent.ACTION_USER_UNLOCKED -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                        isLockedFlow.update {
-                            isLocked()
-                        }
+                    isLockedFlow.update {
+                        isLocked()
                     }
 
                     isLockscreenShowingFlow.update { isLockScreenShowing() }
@@ -42,13 +39,7 @@ class AndroidLockScreenAdapter @Inject constructor(@ApplicationContext private v
         }
     }
 
-    private val isLockedFlow by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            MutableStateFlow(isLocked())
-        } else {
-            MutableStateFlow(false)
-        }
-    }
+    private val isLockedFlow by lazy { MutableStateFlow(isLocked()) }
 
     private val isLockscreenShowingFlow = MutableStateFlow(isLockScreenShowing())
 
@@ -60,10 +51,7 @@ class AndroidLockScreenAdapter @Inject constructor(@ApplicationContext private v
         filter.addAction(Intent.ACTION_SCREEN_ON)
         filter.addAction(Intent.ACTION_SCREEN_OFF)
         filter.addAction(Intent.ACTION_USER_PRESENT)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            filter.addAction(Intent.ACTION_USER_UNLOCKED)
-        }
+        filter.addAction(Intent.ACTION_USER_UNLOCKED)
 
         ContextCompat.registerReceiver(
             ctx,
@@ -80,7 +68,6 @@ class AndroidLockScreenAdapter @Inject constructor(@ApplicationContext private v
         return Success(Unit)
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     override fun isLocked(): Boolean = keyguardManager.isDeviceLocked
 
     override fun isLockScreenShowing(): Boolean = keyguardManager.isKeyguardLocked

@@ -35,4 +35,6 @@ abstract class AccessibilityServiceEvent  {
     @Serializable
     data class EnableInputMethod(val imeId: String) : AccessibilityServiceEvent()
 
+    @Serializable
+    data class GlobalAction(val action: Int) : AccessibilityServiceEvent()
 }

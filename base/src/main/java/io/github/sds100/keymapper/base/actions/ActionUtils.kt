@@ -72,7 +72,6 @@ import androidx.compose.material.icons.rounded.ContentPaste
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material.icons.rounded.WifiOff
 import androidx.compose.ui.graphics.vector.ImageVector
-import io.github.sds100.keymapper.base.Constants
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.HomeIotDevice
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.InstantMix
@@ -83,11 +82,12 @@ import io.github.sds100.keymapper.base.utils.ui.compose.icons.NfcOff
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.TextSelectEnd
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.TopPanelClose
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.TopPanelOpen
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.system.permissions.Permission
 
 object ActionUtils {
 
-    val isSystemBridgeSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+    val isSystemBridgeSupported = Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API
 
     @StringRes
     fun getCategoryLabel(category: ActionCategory): Int = when (category) {
@@ -577,7 +577,7 @@ object ActionUtils {
         else -> emptyList()
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
+    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     fun isSystemBridgeRequired(id: ActionId): Boolean {
         return when (id) {
             ActionId.ENABLE_WIFI,

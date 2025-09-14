@@ -47,6 +47,16 @@ class KeyMapperImeHelper(
         imeAdapter.inputMethods
             .map { containsCompatibleIme(it) }
 
+    val isCompatibleImeChosenFlow: Flow<Boolean> =
+        imeAdapter.chosenIme
+            .map { chosenIme ->
+                if (chosenIme == null) {
+                    false
+                } else {
+                    isKeyMapperInputMethod(chosenIme.packageName, packageName)
+                }
+            }
+
     suspend fun enableCompatibleInputMethods() {
         keyMapperImePackageList.forEach { packageName ->
             imeAdapter.getInfoByPackageName(packageName).onSuccess {

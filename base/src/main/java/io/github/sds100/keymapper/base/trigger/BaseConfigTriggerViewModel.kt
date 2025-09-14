@@ -18,7 +18,6 @@ import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
-import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
@@ -43,7 +42,6 @@ import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.ifIsData
 import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.common.utils.onSuccess
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -55,6 +53,7 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -68,15 +67,16 @@ abstract class BaseConfigTriggerViewModel(
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
     private val purchasingManager: PurchasingManager,
-    private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
+    triggerSetupDelegate: TriggerSetupDelegate,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
 ) : ViewModel(),
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
-    NavigationProvider by navigationProvider {
+    NavigationProvider by navigationProvider,
+    TriggerSetupDelegate by triggerSetupDelegate {
 
     companion object {
         private const val DEVICE_ID_ANY = "any"
@@ -145,25 +145,12 @@ abstract class BaseConfigTriggerViewModel(
         RecordTriggerState.Idle,
     )
 
-    var showAdvancedTriggersBottomSheet: Boolean by mutableStateOf(false)
-    var showDpadTriggerSetupBottomSheet: Boolean by mutableStateOf(false)
-    var showNoKeysRecordedBottomSheet: Boolean by mutableStateOf(false)
+    val showFingerprintGesturesShortcut: StateFlow<Boolean> =
+        fingerprintGesturesSupported.isSupported.map { it ?: false }
+            .stateIn(viewModelScope, SharingStarted.Lazily, false)
 
-    val setupGuiKeyboardState: StateFlow<SetupGuiKeyboardState> = combine(
-        setupGuiKeyboard.isInstalled,
-        setupGuiKeyboard.isEnabled,
-        setupGuiKeyboard.isChosen,
-    ) { isInstalled, isEnabled, isChosen ->
-        SetupGuiKeyboardState(
-            isInstalled,
-            isEnabled,
-            isChosen,
-        )
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.Lazily,
-        SetupGuiKeyboardState.DEFAULT,
-    )
+    var showAdvancedTriggersBottomSheet: Boolean by mutableStateOf(false)
+    var showDiscoverTriggersBottomSheet: Boolean by mutableStateOf(false)
 
     val triggerKeyOptionsUid = MutableStateFlow<String?>(null)
     val triggerKeyOptionsState: StateFlow<TriggerKeyOptionsState?> =
@@ -179,13 +166,6 @@ abstract class BaseConfigTriggerViewModel(
     private val midDot = getString(R.string.middot)
 
     init {
-        val showTapTargetsPairFlow: Flow<Pair<Boolean, Boolean>> = combine(
-            onboarding.showTapTarget(OnboardingTapTarget.RECORD_TRIGGER),
-            onboarding.showTapTarget(OnboardingTapTarget.ADVANCED_TRIGGERS),
-        ) { recordTriggerTapTarget, advancedTriggersTapTarget ->
-            Pair(recordTriggerTapTarget, advancedTriggersTapTarget)
-        }
-
         // IMPORTANT! Do not flow on another thread because this causes the drag and drop
         // animations to be more janky.
         combine(
@@ -193,16 +173,13 @@ abstract class BaseConfigTriggerViewModel(
             config.keyMap,
             displayKeyMap.showDeviceDescriptors,
             triggerKeyShortcuts,
-            showTapTargetsPairFlow,
-        ) { triggerErrorSnapshot, keyMap, showDeviceDescriptors, shortcuts, showTapTargetsPair ->
+        ) { triggerErrorSnapshot, keyMap, showDeviceDescriptors, shortcuts ->
             _state.update {
                 buildUiState(
                     keyMap,
                     showDeviceDescriptors,
                     shortcuts,
                     triggerErrorSnapshot,
-                    showTapTargetsPair.first,
-                    showTapTargetsPair.second,
                 )
             }
         }.launchIn(viewModelScope)
@@ -232,10 +209,9 @@ abstract class BaseConfigTriggerViewModel(
         recordTrigger.state.drop(1).onEach { state ->
             if (state is RecordTriggerState.Completed &&
                 state.recordedKeys.isEmpty() &&
-                onboarding.showNoKeysDetectedBottomSheet.first() &&
                 !isRecordingCompletionUserInitiated
             ) {
-                showNoKeysRecordedBottomSheet = true
+                showTriggerSetup(TriggerSetupShortcut.NOT_DETECTED)
             }
 
             // reset this field when recording has completed
@@ -243,23 +219,11 @@ abstract class BaseConfigTriggerViewModel(
         }.launchIn(viewModelScope)
     }
 
-    open fun onClickTriggerKeyShortcut(shortcut: TriggerKeyShortcut) {
-        if (shortcut == TriggerKeyShortcut.FINGERPRINT_GESTURE) {
-            viewModelScope.launch {
-                val listItems = listOf(
-                    FingerprintGestureType.SWIPE_DOWN to getString(R.string.fingerprint_gesture_down),
-                    FingerprintGestureType.SWIPE_UP to getString(R.string.fingerprint_gesture_up),
-                    FingerprintGestureType.SWIPE_LEFT to getString(R.string.fingerprint_gesture_left),
-                    FingerprintGestureType.SWIPE_RIGHT to getString(R.string.fingerprint_gesture_right),
-                )
+    override fun onCleared() {
+        isRecordingCompletionUserInitiated = true
+        recordTrigger.stopRecording()
 
-                val selectedType =
-                    showDialog("pick_assistant_type", DialogModel.SingleChoice(listItems))
-                        ?: return@launch
-
-                config.addFingerprintGesture(type = selectedType)
-            }
-        }
+        super.onCleared()
     }
 
     fun onAdvancedTriggersClick() {
@@ -272,8 +236,6 @@ abstract class BaseConfigTriggerViewModel(
         showDeviceDescriptors: Boolean,
         triggerKeyShortcuts: Set<ShortcutModel<TriggerKeyShortcut>>,
         triggerErrorSnapshot: TriggerErrorSnapshot,
-        showRecordTriggerTapTarget: Boolean,
-        showAdvancedTriggersTapTarget: Boolean,
     ): State<ConfigTriggerState> {
         return keyMapState.mapData { keyMap ->
             val trigger = keyMap.trigger
@@ -281,8 +243,6 @@ abstract class BaseConfigTriggerViewModel(
             if (trigger.keys.isEmpty()) {
                 return@mapData ConfigTriggerState.Empty(
                     triggerKeyShortcuts,
-                    showRecordTriggerTapTarget = showRecordTriggerTapTarget,
-                    showAdvancedTriggersTapTarget = showAdvancedTriggersTapTarget,
                 )
             }
 
@@ -334,7 +294,6 @@ abstract class BaseConfigTriggerViewModel(
                 triggerModeButtonsVisible = triggerModeButtonsVisible,
                 checkedTriggerMode = trigger.mode,
                 shortcuts = triggerKeyShortcuts,
-                showAdvancedTriggersTapTarget = showAdvancedTriggersTapTarget,
             )
         }
     }
@@ -631,7 +590,7 @@ abstract class BaseConfigTriggerViewModel(
         viewModelScope.launch {
             val recordTriggerState = recordTrigger.state.firstOrNull() ?: return@launch
 
-            val result = when (recordTriggerState) {
+            val result: KMResult<*> = when (recordTriggerState) {
                 is RecordTriggerState.CountingDown -> {
                     isRecordingCompletionUserInitiated = true
                     recordTrigger.stopRecording()
@@ -639,7 +598,7 @@ abstract class BaseConfigTriggerViewModel(
 
                 is RecordTriggerState.Completed,
                 RecordTriggerState.Idle,
-                -> recordTrigger.startRecording()
+                    -> recordTrigger.startRecording(enableEvdevRecording = false)
             }
 
             // Show dialog if the accessibility service is disabled or crashed
@@ -677,7 +636,7 @@ abstract class BaseConfigTriggerViewModel(
                     )
 
                 TriggerError.DPAD_IME_NOT_SELECTED -> {
-                    showDpadTriggerSetupBottomSheet = true
+                    showTriggerSetup(TriggerSetupShortcut.GAMEPAD)
                 }
 
                 else -> displayKeyMap.fixTriggerError(error)
@@ -701,10 +660,9 @@ abstract class BaseConfigTriggerViewModel(
                 key.clickType
             }
 
-            val linkType = when {
-                trigger.mode is TriggerMode.Sequence && (index < trigger.keys.lastIndex) -> LinkType.ARROW
-                (index < trigger.keys.lastIndex) -> LinkType.PLUS
-                else -> LinkType.HIDDEN
+            val linkType = when (trigger.mode) {
+                is TriggerMode.Sequence -> LinkType.ARROW
+                else -> LinkType.PLUS
             }
 
             when (key) {
@@ -818,48 +776,16 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    fun onEnableGuiKeyboardClick() {
-        viewModelScope.launch {
-            setupGuiKeyboard.enableInputMethod()
-        }
-    }
-
-    fun onChooseGuiKeyboardClick() {
-        setupGuiKeyboard.chooseInputMethod()
-    }
-
-    fun onNeverShowSetupDpadClick() {
-        displayKeyMap.neverShowDpadImeSetupError()
-    }
-
-    fun onNeverShowNoKeysRecordedClick() {
-        onboarding.neverShowNoKeysRecordedBottomSheet()
-    }
-
-    fun onRecordTriggerTapTargetCompleted() {
-        onboarding.completedTapTarget(OnboardingTapTarget.RECORD_TRIGGER)
-    }
-
-    fun onSkipTapTargetClick() {
-        onboarding.skipTapTargetOnboarding()
-    }
-
-    fun onAdvancedTriggersTapTargetCompleted() {
-        onboarding.completedTapTarget(OnboardingTapTarget.ADVANCED_TRIGGERS)
-    }
-
     abstract fun onEditFloatingButtonClick()
     abstract fun onEditFloatingLayoutClick()
 }
 
 sealed class ConfigTriggerState {
+    // TODO remove. replace with "Add more" button that launches the discover bottom sheet
     abstract val shortcuts: Set<ShortcutModel<TriggerKeyShortcut>>
-    abstract val showAdvancedTriggersTapTarget: Boolean
 
     data class Empty(
         override val shortcuts: Set<ShortcutModel<TriggerKeyShortcut>> = emptySet(),
-        val showRecordTriggerTapTarget: Boolean = false,
-        override val showAdvancedTriggersTapTarget: Boolean = false,
     ) : ConfigTriggerState()
 
     data class Loaded(
@@ -871,7 +797,6 @@ sealed class ConfigTriggerState {
         val triggerModeButtonsEnabled: Boolean = false,
         val triggerModeButtonsVisible: Boolean = false,
         override val shortcuts: Set<ShortcutModel<TriggerKeyShortcut>> = emptySet(),
-        override val showAdvancedTriggersTapTarget: Boolean = false,
     ) : ConfigTriggerState()
 }
 

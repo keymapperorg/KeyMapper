@@ -67,7 +67,7 @@ class RecordTriggerControllerImpl @Inject constructor(
     private val downEvdevEvents: MutableSet<KMEvdevEvent> = mutableSetOf()
     private val dpadMotionEventTracker: DpadMotionEventTracker = DpadMotionEventTracker()
 
-    private var isEvdevRecordingEnabled: Boolean = true
+    private var isEvdevRecordingEnabled: Boolean = false
 
     override fun setEvdevRecordingEnabled(enabled: Boolean) {
         if (state.value is RecordTriggerState.CountingDown) {
@@ -165,9 +165,10 @@ class RecordTriggerControllerImpl @Inject constructor(
         }
     }
 
-    override suspend fun startRecording(): KMResult<*> {
+    override suspend fun startRecording(enableEvdevRecording: Boolean): KMResult<*> {
         val serviceResult =
             accessibilityServiceAdapter.send(AccessibilityServiceEvent.Ping("record_trigger"))
+
         if (serviceResult.isError) {
             return serviceResult
         }
@@ -176,12 +177,13 @@ class RecordTriggerControllerImpl @Inject constructor(
             return Success(Unit)
         }
 
+        this.isEvdevRecordingEnabled = enableEvdevRecording
         recordingTriggerJob = recordTriggerJob()
 
         return Success(Unit)
     }
 
-    override suspend fun stopRecording(): KMResult<*> {
+    override fun stopRecording(): KMResult<*> {
         recordingTriggerJob?.cancel()
         recordingTriggerJob = null
 
@@ -222,21 +224,28 @@ class RecordTriggerControllerImpl @Inject constructor(
     // Run on a different thread in case the main thread is locked up while recording and
     // the evdev devices aren't ungrabbed.
     private fun recordTriggerJob(): Job = coroutineScope.launch(Dispatchers.Default) {
+        Timber.i("Starting trigger recording. Evdev recording: $isEvdevRecordingEnabled")
+
         recordedKeys.clear()
         dpadMotionEventTracker.reset()
         downKeyEvents.clear()
 
-        // TODO
-//        if (isEvdevRecordingEnabled && isEvdevRecordingPermitted.value) {
+        val evdevEventTypes = if (isEvdevRecordingEnabled) {
+            listOf(KMEvdevEvent.TYPE_KEY_EVENT)
+        } else {
+            emptyList()
+        }
+
         inputEventHub.registerClient(
             INPUT_EVENT_HUB_ID,
             this@RecordTriggerControllerImpl,
-            listOf(KMEvdevEvent.TYPE_KEY_EVENT),
+            evdevEventTypes,
         )
 
-        // Grab all evdev devices
-        inputEventHub.grabAllEvdevDevices(INPUT_EVENT_HUB_ID)
-//        }
+        if (isEvdevRecordingEnabled) {
+            // Grab all evdev devices
+            inputEventHub.grabAllEvdevDevices(INPUT_EVENT_HUB_ID)
+        }
 
         repeat(RECORD_TRIGGER_TIMER_LENGTH) { iteration ->
             val timeLeft = RECORD_TRIGGER_TIMER_LENGTH - iteration
@@ -262,6 +271,6 @@ interface RecordTriggerController {
     /**
      * @return Success if started and an Error if failed to start.
      */
-    suspend fun startRecording(): KMResult<*>
-    suspend fun stopRecording(): KMResult<*>
+    suspend fun startRecording(enableEvdevRecording: Boolean): KMResult<*>
+    fun stopRecording(): KMResult<*>
 }

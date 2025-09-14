@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.base.system.inputmethod.ToggleCompatibleImeUse
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.notifications.KMNotificationAction
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.DefaultDispatcherProvider
 import io.github.sds100.keymapper.common.utils.DispatcherProvider
 import io.github.sds100.keymapper.common.utils.onFailure
@@ -176,7 +177,7 @@ class NotificationController @Inject constructor(
             }
         }.launchIn(coroutineScope)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             coroutineScope.launch {
                 systemBridgeConnectionManager.connectionState
                     .collect { connectionState ->

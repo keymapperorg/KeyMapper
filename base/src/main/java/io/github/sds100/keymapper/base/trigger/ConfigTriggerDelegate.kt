@@ -99,6 +99,9 @@ class ConfigTriggerDelegate {
         // keys from the same device that report the same key code but have a different scan code.
         val logicallyEqualKeys = otherTriggerKeys.plus(trigger.keys)
             .filterIsInstance<KeyEventTriggerKey>()
+            // Assume that keys without a scan code come from the same device so ignore them.
+            // The scan code was not saved on versions older than 4.0
+            .filter { it.scanCode != null }
             .filter {
                 it.keyCode == keyCode &&
                     it.scanCode != scanCode &&

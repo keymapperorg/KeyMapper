@@ -8,7 +8,6 @@
     <string name="enable">Enable</string>
     <string name="shrug" translatable="false">¯\\_(ツ)_/¯</string>
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNothing here!</string>
-    <string name="triggers_recyclerview_placeholder">The first step is to add some buttons that will trigger the key map.\n\nFirst tap ‘Record trigger’ and then press the buttons that you want to remap. They will appear here.\n\nAlternatively, you can trigger a key map using an ‘advanced trigger’.\n\nYou can mix and match any keys!</string>
     <string name="choose_action_warning_requires_root">Requires root</string>
     <string name="no_actions">No actions</string>
     <string name="no_trigger">No trigger</string>
@@ -392,7 +391,7 @@
 
     <!-- Button titles -->
     <string name="button_add_action">Add action</string>
-    <string name="button_record_trigger">Record trigger</string>
+    <string name="button_record_trigger">Tap to record trigger</string>
     <string name="button_advanced_triggers">Advanced triggers</string>
     <string name="button_advanced_triggers_badge">NEW!</string>
     <string name="button_done">Done</string>
@@ -1210,11 +1209,6 @@
     <string name="tap_target_skip_tutorial_button">Skip tutorial</string>
     <string name="tap_target_create_key_map_title">Create your first key map!</string>
     <string name="tap_target_create_key_map_message">A key map is a rule to tell your device what to do when a button is pressed.</string>
-    <string name="tap_target_record_trigger_title">Record a trigger</string>
-    <string name="tap_target_record_trigger_message">Tap record, and then press the physical buttons you want to change.</string>
-    <string name="tap_target_advanced_triggers_title">Love Key Mapper? ❤️</string>
-    <string name="tap_target_advanced_triggers_message">For an affordable price, make powerful key maps with on-screen floating buttons and support the development of more great features 👨‍💻.</string>
-
     <string name="tap_target_choose_action_title">Choose an action</string>
     <string name="tap_target_choose_action_message">An action is what should happen when you press the trigger.</string>
     <string name="tap_target_choose_constraint_title">Choose a constraint (optional)</string>
@@ -1274,11 +1268,6 @@
     <string name="trigger_error_floating_buttons_not_purchased">You must purchase floating buttons.</string>
     <string name="trigger_error_floating_button_deleted">Button was deleted.</string>
     <string name="trigger_error_floating_button_deleted_title">Floating button</string>
-    <string name="setup_assistant_trigger_title">Set up side key trigger</string>
-    <string name="setup_assistant_trigger_attention">Attention!</string>
-    <string name="setup_assistant_trigger_text">You must read the instructions on our website that describe how to set up this trigger. Key Mapper will not guide you.</string>
-    <string name="setup_assistant_trigger_read_instructions_button">Read instructions</string>
-    <string name="setup_assistant_trigger_select_type_button">Select trigger type</string>
     <string name="trigger_error_product_verification_failed">Purchase can not be verified. Do you have an internet connection?</string>
 
     <!--  Purchasing  -->
@@ -1304,7 +1293,7 @@
     <string name="customer_email_subject" translatable="false">Key Mapper Pro query</string>
     <string name="customer_email_body" translatable="false">Please fill the following information so I can help you.\n\n1. Device model:\n2. Android version:\n3. Key maps (make a back up in the home screen menu):\n4. Screenshot of Key Mapper home screen:\n5. Describe the problem you are having:</string>
     <string name="purchase_thank_you_title">Thank you for supporting the app\u00A0❤️!</string>
-    <string name="purchase_thank_you_message">Your purchase was successful. As a paying user of Key\u00A0Mapper you will receive priority support to help you use the app. There is now a button on this page to contact the developer.</string>
+    <string name="purchase_thank_you_message">Your purchase was successful. As a paying user of Key\u00A0Mapper you will receive priority support to help you use the app. There is now a button in the shop to contact the developer.</string>
     <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
     <string name="purchasing_download_key_mapper_from_google_play">Download Play build</string>
 
@@ -1492,12 +1481,13 @@
     <string name="trigger_key_unknown_key_code">Key code %d</string>
     <string name="trigger_key_unknown_scan_code">Scan code %d</string>
     <string name="trigger_key_scan_code_detection_flag">Scan code</string>
-    <string name="trigger_scan_code_detection_explanation">Keys can be identified by either a \'key code\' or a \'scan code\'. A scan code is more unique than a key code but your trigger may not work with other devices. We recommend using key codes.</string>
+    <string name="trigger_scan_code_detection_explanation">Keys can be identified by either a \'key code\' or a \'scan code\'. A scan code is more unique than a key code but your trigger may not work on other devices. We recommend using key codes.</string>
     <string name="trigger_use_key_code_button_disabled">Unknown key code</string>
     <string name="trigger_use_key_code_button_enabled">Use key code %d</string>
     <string name="trigger_use_scan_code_button_enabled">Use scan code %d</string>
     <string name="trigger_use_scan_code_button_disabled">No scan code saved</string>
     <string name="trigger_record_with_pro_mode">Use PRO mode</string>
+    <string name="trigger_list_add_more_button">Add more</string>
 
     <!--  Action screen  -->
     <string name="action_list_item_remove">Remove</string>
@@ -1661,5 +1651,82 @@
     <string name="system_bridge_died_notification_title">PRO mode stopped unexpectedly</string>
     <string name="system_bridge_died_notification_restarting_text">Automatically restarting…</string>
     <string name="system_bridge_died_notification_not_restarting_text">Not auto restarting. If you\'re not killing the service report the issue to the developer.</string>
+
+    <!-- Trigger Discover Screen -->
+    <string name="trigger_discover_screen_title">Discover</string>
+    <string name="trigger_discover_screen_subtitle">What do you want to remap?</string>
+    <string name="trigger_discover_section_on_device_buttons">On-device buttons</string>
+    <string name="trigger_discover_section_peripherals_gaming">Peripherals &amp; gaming</string>
+    <string name="trigger_discover_section_floating_buttons">Floating buttons</string>
+
+    <string name="trigger_discover_shortcut_volume">Volume</string>
+    <string name="trigger_discover_shortcut_assistant">Assistant</string>
+    <string name="trigger_discover_shortcut_power">Power</string>
+    <string name="trigger_discover_shortcut_fingerprint_gesture">Fingerprint gesture</string>
+    <string name="trigger_discover_shortcut_keyboard">Keyboard</string>
+    <string name="trigger_discover_shortcut_mouse">Mouse</string>
+    <string name="trigger_discover_shortcut_gamepad">Gamepad</string>
+    <string name="trigger_discover_shortcut_other">Other</string>
+    <string name="trigger_discover_shortcut_custom">Custom</string>
+    <string name="trigger_discover_shortcut_notch">Notch</string>
+    <string name="trigger_discover_shortcut_lock_screen">Lock screen</string>
+
+    <string name="trigger_discover_promo_title">Level up your phone</string>
+    <string name="trigger_discover_promo_description">Floating buttons are instant shortcuts in any app, game or on your lock screen. Your support keeps Key Mapper alive ❤️</string>
+    <string name="trigger_discover_promo_see_action">See it in action</string>
+    <string name="trigger_discover_promo_dismiss">Dismiss</string>
+    <string name="trigger_discover_promo_unlock">Unlock for just %s</string>
+    <!-- Trigger Discover Screen -->
+
+    <!-- Trigger Setup bottom sheet -->
+    <string name="trigger_setup_volume_title">Volume button</string>
+    <string name="trigger_setup_keyboard_title">Keyboard</string>
+    <string name="trigger_setup_power_title">Power button</string>
+    <string name="trigger_setup_assistant_trigger_title">Assistant trigger</string>
+    <string name="trigger_setup_assistant_trigger_add_on">Assistant trigger add-on</string>
+    <string name="trigger_setup_mouse_title">Mouse</string>
+    <string name="trigger_setup_gamepad_title">Gamepad</string>
+    <string name="trigger_setup_other_title">Other button</string>
+    <string name="trigger_setup_fingerprint_reader_title">Fingerprint reader gesture</string>
+    <string name="trigger_setup_no_trigger_detected_title">No trigger detected</string>
+    <string name="trigger_setup_add_trigger_button">Tap to add trigger</string>
+    <string name="trigger_setup_requirements_not_met_button">Requirements not met</string>
+    <string name="trigger_setup_get_help_button">Get help</string>
+    <string name="trigger_setup_status_can_not_remap">You cannot remap this button</string>
+    <string name="trigger_setup_status_can_not_use_feature">You cannot use this feature</string>
+    <string name="trigger_setup_status_might_remap_button">You might be able to remap this button</string>
+    <string name="trigger_setup_status_might_remap_device">You might be able to remap this device</string>
+    <string name="trigger_setup_status_might_use_feature">You might be able to use this feature</string>
+    <string name="trigger_setup_status_remap_button_possible">You can remap this button</string>
+    <string name="trigger_setup_status_remap_device_possible">You can remap this device</string>
+    <string name="trigger_setup_status_feature_possible">You can use this feature</string>
+    <string name="trigger_setup_screen_off_option">Remap when the screen is off</string>
+    <string name="trigger_setup_options_title">Options</string>
+    <string name="trigger_setup_requirements_title">Requirements</string>
+    <string name="trigger_setup_not_detected_information">If your buttons still cannot be detected, please join our Discord server and let us know. We will do our best to help you remap your buttons.</string>
+    <string name="trigger_setup_get_help_information">If your buttons cannot be detected please join our Discord server and let us know. We will do our best to help you remap your buttons.</string>
+    <string name="trigger_setup_information_title">Information</string>
+    <string name="trigger_setup_accessibility_service_title">Accessibility service</string>
+    <string name="trigger_setup_accessibility_service_enable_button">Enable</string>
+    <string name="trigger_setup_accessibility_service_running_button">Running</string>
+    <string name="trigger_setup_purchased_button">Purchased</string>
+    <string name="trigger_setup_pro_mode_title">PRO mode</string>
+    <string name="trigger_setup_pro_mode_enable_button">Enable for free</string>
+    <string name="trigger_setup_pro_mode_running_button">Running</string>
+    <string name="trigger_setup_pro_mode_unsupported">Not available on this Android version</string>
+    <string name="trigger_setup_assistant_information">If your device assistant is triggered by a hardware button, it might be possible to remap it for free with PRO mode. Try choosing \'Other\' from the trigger page and follow the instructions.</string>
+    <string name="trigger_setup_assistant_requirements_met_info">This trigger requires some set up that varies per device. Please\ </string>
+    <string name="trigger_setup_assistant_read_instructions_link">read the instructions</string>
+    <string name="trigger_setup_assistant_read_instructions_button">Read instructions</string>
+    <string name="trigger_setup_assistant_select_type_button">Select trigger type</string>
+    <string name="trigger_setup_power_information">If your device assistant is triggered by the power button, it might be possible to remap the assistant instead, meaning you don\'t need to use PRO mode. Try choosing \'Assistant\' from the trigger page and follow the instructions.</string>
+    <string name="trigger_setup_gamepad_type_dpad">D-Pad button</string>
+    <string name="trigger_setup_gamepad_type_simple_buttons">Other simple buttons</string>
+    <string name="trigger_setup_gamepad_information_dpad">You will not be able to use your normal on-screen keyboard when remapping DPAD buttons.</string>
+    <string name="trigger_setup_input_method_title">Key Mapper Keyboard</string>
+    <string name="trigger_setup_input_method_enable_button">Enable keyboard</string>
+    <string name="trigger_setup_input_method_choose_button">Choose keyboard</string>
+    <string name="trigger_setup_input_method_running_button">Running</string>
+    <!-- Trigger Setup bottom sheet -->
 
 </resources>

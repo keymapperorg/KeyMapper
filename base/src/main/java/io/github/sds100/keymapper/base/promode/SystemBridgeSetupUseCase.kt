@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.base.promode
 import android.os.Build
 import androidx.annotation.RequiresApi
 import dagger.hilt.android.scopes.ViewModelScoped
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
@@ -29,7 +30,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-@RequiresApi(Build.VERSION_CODES.Q)
+@RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
 @ViewModelScoped
 class SystemBridgeSetupUseCaseImpl @Inject constructor(
     private val preferences: PreferenceRepository,
