@@ -98,5 +98,12 @@
             android:name=".notifications.ObserveNotificationListenersJob"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
+        <activity
+            android:name=".apps.TrampolineActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:finishOnTaskLaunch="true"
+            android:launchMode="singleInstance"
+            android:theme="@android:style/Theme.NoDisplay"></activity>
     </application>
 </manifest>

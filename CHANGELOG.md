@@ -8,6 +8,7 @@
   or you record different physical keys from the same device with the same key code.
 - Redesign the Settings screen.
 - Shortcuts on the trigger screen that guide you how to set up different types of buttons.
+- #1788 dismiss lockscreen when launching app action from lockscreen
 
 ## Removed
 
