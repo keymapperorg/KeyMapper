@@ -45,7 +45,12 @@ class ConfigConstraintsUseCaseImpl @Inject constructor(
 
         updateConstraintState { oldState ->
             containsConstraint = oldState.constraints.contains(constraint)
-            oldState.copy(constraints = oldState.constraints.plus(constraint))
+
+            if (containsConstraint) {
+                oldState
+            } else {
+                oldState.copy(constraints = oldState.constraints.plus(constraint))
+            }
         }
 
         preferenceRepository.update(
