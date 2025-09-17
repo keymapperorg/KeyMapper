@@ -1578,7 +1578,7 @@
     <string name="summary_pref_pro_mode_auto_start_at_boot">PRO Mode will start itself whenever you turn on or restart your device</string>
 
     <string name="pro_mode_emergency_tip_title">Emergency tip</string>
-    <string name="pro_mode_emergency_tip_text">If your buttons stop working, hold down the power button for 10 seconds and release to disable PRO Mode.</string>
+    <string name="pro_mode_emergency_tip_text">If your power button stops working, hold down the power button for 10 seconds and release to disable PRO Mode.</string>
 
     <string name="pro_mode_setup_wizard_title">Setup wizard</string>
     <string name="pro_mode_setup_wizard_step_n">Step %d of %d</string>

@@ -467,5 +467,12 @@ object KeyEventUtils {
         // The lowest key code is 1 (KEYCODE_SOFT_LEFT)
         return keyCode > KeyEvent.getMaxKeyCode() || keyCode < 1
     }
+
+    fun isPowerButtonKey(keyCode: Int, scanCode: Int): Boolean {
+        return keyCode == KeyEvent.KEYCODE_POWER ||
+            keyCode == KeyEvent.KEYCODE_TV_POWER ||
+            scanCode == Scancode.KEY_POWER ||
+            scanCode == Scancode.KEY_POWER2
+    }
 }
 

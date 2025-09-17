@@ -223,6 +223,7 @@ bool onEpollEvdevEvent(DeviceContext *deviceContext, IEvdevCallback *callback) {
 
             deviceContext->keyLayoutMap.mapKey(inputEvent.code, 0, &outKeycode, &outFlags);
 
+            // Kill the system bridge when power button is held down and released after 10+ seconds.
             // 26 = KEYCODE_POWER
             if (inputEvent.code == KEY_POWER || outKeycode == 26) {
                 if (inputEvent.value == 1) {

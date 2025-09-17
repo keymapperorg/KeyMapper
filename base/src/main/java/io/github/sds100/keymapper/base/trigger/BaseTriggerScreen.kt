@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.trigger
 
 import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,16 +12,23 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -215,6 +223,15 @@ private fun TriggerScreenVertical(
                 is ConfigTriggerState.Loaded -> {
                     Spacer(Modifier.height(8.dp))
 
+                    if (configState.showPowerButtonEmergencyTip) {
+                        PowerButtonEmergencyTipCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
                     TriggerList(
                         modifier = Modifier.weight(1f),
                         triggerList = configState.triggerKeys,
@@ -338,6 +355,16 @@ private fun TriggerScreenHorizontal(
                             .verticalScroll(rememberScrollState()),
                     ) {
                         Spacer(modifier = Modifier.height(16.dp))
+
+                        if (configState.showPowerButtonEmergencyTip) {
+                            PowerButtonEmergencyTipCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp)
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+
                         if (configState.clickTypeButtons.isNotEmpty()) {
                             ClickTypeSegmentedButtons(
                                 modifier = Modifier
@@ -529,6 +556,44 @@ private fun TriggerModeSegmentedButtons(
     )
 }
 
+@Composable
+private fun PowerButtonEmergencyTipCard(
+    modifier: Modifier = Modifier,
+) {
+    OutlinedCard(
+        modifier = modifier,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
+        elevation = CardDefaults.elevatedCardElevation(),
+    ) {
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+            Icon(
+                imageVector = Icons.Rounded.Info,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.tertiary,
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(
+                text = stringResource(R.string.pro_mode_emergency_tip_title),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            text = stringResource(R.string.pro_mode_emergency_tip_text),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
 private val sampleList = listOf(
     TriggerKeyListItemModel.KeyEvent(
         id = "id1",
@@ -568,6 +633,7 @@ private val previewState =
         checkedTriggerMode = TriggerMode.Sequence,
         triggerModeButtonsEnabled = true,
         triggerModeButtonsVisible = true,
+        showPowerButtonEmergencyTip = true
     )
 
 @Preview(device = Devices.PIXEL)

@@ -29,7 +29,6 @@ import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Checklist
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Numbers
 import androidx.compose.material.icons.rounded.RestartAlt
@@ -287,14 +286,6 @@ private fun LoadedContent(
 
         when (state) {
             ProModeState.Started -> {
-                EmergencyTipCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
                 ProModeStartedCard(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -583,44 +574,6 @@ private fun SetupCard(
         ) {
             Text(buttonText)
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-    }
-}
-
-@Composable
-private fun EmergencyTipCard(
-    modifier: Modifier = Modifier,
-) {
-    OutlinedCard(
-        modifier = modifier,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
-        elevation = CardDefaults.elevatedCardElevation(),
-    ) {
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Icon(
-                imageVector = Icons.Rounded.Info,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.tertiary,
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Text(
-                text = stringResource(R.string.pro_mode_emergency_tip_title),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            text = stringResource(R.string.pro_mode_emergency_tip_text),
-            style = MaterialTheme.typography.bodyMedium,
-        )
 
         Spacer(modifier = Modifier.height(16.dp))
     }
