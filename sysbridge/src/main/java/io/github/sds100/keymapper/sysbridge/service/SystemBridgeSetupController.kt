@@ -239,7 +239,9 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
                 }
 
                 // Try running a command to see if the pairing is working correctly.
-                isAdbPairedResult.value = adbManager.executeCommand("sh").isSuccess
+                // This will execute the "exit" command in the shell so it immediately closes
+                // the connection.
+                isAdbPairedResult.value = adbManager.executeCommand("exit").isSuccess
             }
         }
 

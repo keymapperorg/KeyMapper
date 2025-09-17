@@ -30,11 +30,9 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import rikka.core.os.FileUtils
 import rikka.shizuku.Shizuku
 import timber.log.Timber
 import java.io.BufferedReader
-import java.io.ByteArrayInputStream
 import java.io.DataInputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -42,6 +40,7 @@ import java.io.FileWriter
 import java.io.IOException
 import java.io.InputStreamReader
 import java.io.PrintWriter
+import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -54,7 +53,8 @@ class SystemBridgeStarter @Inject constructor(
 ) {
     private val userManager by lazy { ctx.getSystemService(UserManager::class.java)!! }
 
-    private val apkPath = ctx.applicationInfo.sourceDir
+    private val baseApkPath = ctx.applicationInfo.sourceDir
+    private val splitApkPaths: Array<String> = ctx.applicationInfo.splitSourceDirs ?: emptyArray()
     private val libPath = ctx.applicationInfo.nativeLibraryDir
     private val packageName = ctx.applicationInfo.packageName
     private val startMutex: Mutex = Mutex()
@@ -134,13 +134,13 @@ class SystemBridgeStarter @Inject constructor(
 
         return startSystemBridge(executeCommand = adbManager::executeCommand)
             .onFailure { error ->
-                Timber.w("Failed to start system bridge with ADB: $error")
+                Timber.e("Failed to start system bridge with ADB: $error")
             }
     }
 
     suspend fun startWithRoot() {
         if (Shell.isAppGrantedRoot() != true) {
-            Timber.w("Root is not granted. Cannot start System Bridge with Root.")
+            Timber.e("Root is not granted. Cannot start System Bridge with Root.")
             return
         }
 
@@ -166,34 +166,39 @@ class SystemBridgeStarter @Inject constructor(
                 return KMError.UnknownIOError
             }
 
+            Timber.i("Copy starter files to ${externalFilesParent?.absolutePath}")
+
             val outputStarterBinary = File(externalFilesParent, "starter")
             val outputStarterScript = File(externalFilesParent, "start.sh")
-            withContext(Dispatchers.IO) {
-                copyNativeLibrary(outputStarterBinary)
 
-                // Create the start.sh shell script
-                writeStarterScript(
-                    outputStarterScript,
-                    outputStarterBinary.absolutePath
-                )
+            val copyFilesResult = withContext(Dispatchers.IO) {
+                copyNativeLibrary(outputStarterBinary).then {
+                    // Create the start.sh shell script
+                    writeStarterScript(
+                        outputStarterScript,
+                        outputStarterBinary.absolutePath
+                    )
+                    Success(Unit)
+                }
             }
 
             val startCommand =
-                "sh ${outputStarterScript.absolutePath} --apk=$apkPath --lib=$libPath --package=$packageName --version_code=${buildConfigProvider.versionCode}"
+                "sh ${outputStarterScript.absolutePath} --apk=$baseApkPath --lib=$libPath --package=$packageName --version=${buildConfigProvider.versionCode}"
 
-            return executeCommand(startCommand).then { output ->
+            return copyFilesResult
+                .then { executeCommand(startCommand) }
+                .then { output ->
+                    // Adb on Android 11 has no permission to access Android/data so use /data/user_de.
+                    if (output.contains("/Android/data/${ctx.packageName}/start.sh: Permission denied")) {
+                        Timber.w(
+                            "ADB has no permission to access Android/data/${ctx.packageName}/start.sh. Trying to use /data/user_de instead..."
+                        )
 
-                // Adb on Android 11 has no permission to access Android/data so use /data/user_de.
-                if (output.contains("/Android/data/${ctx.packageName}/start.sh: Permission denied")) {
-                    Timber.w(
-                        "ADB has no permission to access Android/data/${ctx.packageName}/start.sh. Trying to use /data/user_de instead..."
-                    )
-
-                    startSystemBridgeFromProtectedStorage(executeCommand)
-                } else {
-                    Success(output)
+                        startSystemBridgeFromProtectedStorage(executeCommand)
+                    } else {
+                        Success(output)
+                    }
                 }
-            }
         }
     }
 
@@ -201,13 +206,17 @@ class SystemBridgeStarter @Inject constructor(
         executeCommand: suspend (String) -> KMResult<String>
     ): KMResult<String> {
         val protectedStorageDir =
-            ctx.createDeviceProtectedStorageContext().filesDir.parentFile
+            ctx.createDeviceProtectedStorageContext().filesDir.parentFile!!
+
+        Timber.i("Protected storage dir: ${protectedStorageDir.absolutePath}")
 
         try {
             Os.chmod(protectedStorageDir.absolutePath, 457 /* 0711 */)
         } catch (e: ErrnoException) {
             e.printStackTrace()
         }
+
+        Timber.i("Copy starter files to ${protectedStorageDir.absolutePath}")
 
         try {
             val outputStarterBinary = File(protectedStorageDir, "starter")
@@ -223,7 +232,7 @@ class SystemBridgeStarter @Inject constructor(
             }
 
             val startCommand =
-                "sh ${outputStarterScript.absolutePath} --apk=$apkPath --lib=$libPath  --package=$packageName --version_code=${buildConfigProvider.versionCode}"
+                "sh ${outputStarterScript.absolutePath} --apk=$baseApkPath --lib=$libPath  --package=$packageName --version=${buildConfigProvider.versionCode}"
 
             // Make starter binary executable
             try {
@@ -250,36 +259,50 @@ class SystemBridgeStarter @Inject constructor(
     /**
      * This extracts the library file from inside the apk and copies it to [out] File.
      */
-    private fun copyNativeLibrary(out: File) {
-        val expectedLibraryPath = "lib/${Build.SUPPORTED_ABIS[0]}/libsysbridge.so"
+    private fun copyNativeLibrary(out: File): KMResult<Unit> {
+        Timber.i("Supported ABIs: ${Build.SUPPORTED_ABIS.joinToString()}")
+        Timber.i("Attempt to copy native library from: $libPath")
 
-        // Open the apk so the library file can be found
-        with(ZipFile(apkPath)) {
-            val entries = entries()
+        val libraryName = "libsysbridge.so"
 
-            // Loop over all the file entries in the zip file
-            while (entries.hasMoreElements()) {
-                val entry = entries.nextElement() ?: break
+        try {
+            // copyTo throws an exception if it already exists
+            out.delete()
 
-                if (entry.name != expectedLibraryPath) {
-                    continue
+            File("$libPath/$libraryName").copyTo(out)
+            return Success(Unit)
+
+        } catch (e: Exception) {
+            Timber.w("Native library not found. Extracting from APKs. Exception: ${e.toString()}")
+
+            val apkPaths: Array<String> = arrayOf(baseApkPath, *splitApkPaths)
+
+            Timber.i("APK paths: ${apkPaths.joinToString()}")
+
+            for (apk in apkPaths) {
+                with(ZipFile(apk)) {
+
+                    for (abi in Build.SUPPORTED_ABIS) {
+                        val expectedLibraryPath = "lib/$abi/$libraryName"
+
+                        // Open the apk so the library file can be found
+                        val entry: ZipEntry = getEntry(expectedLibraryPath) ?: continue
+
+                        with(DataInputStream(getInputStream(entry))) {
+                            val input = this
+                            with(FileOutputStream(out)) {
+                                val output = this
+                                input.copyTo(output)
+                            }
+                        }
+
+                        return Success(Unit)
+                    }
                 }
-
-                val buf = ByteArray(entry.size.toInt())
-
-                // Read the native library into the buffer
-                with(DataInputStream(getInputStream(entry))) {
-                    readFully(buf)
-                }
-
-                // Copy the buffer to the output file
-                with(FileOutputStream(out)) {
-                    FileUtils.copy(ByteArrayInputStream(buf), this)
-                }
-
-                break
             }
         }
+
+        return KMError.SourceFileNotFound(libraryName)
     }
 
     /**

@@ -67,11 +67,13 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
     companion object {
         private const val TAG: String = "KeyMapperSystemBridge"
-        private val systemBridgePackageName: String? =
+        private val systemBridgePackageName: String? by lazy {
             System.getProperty("keymapper_sysbridge.package")
+        }
 
-        private val systemBridgeVersionCode: Int =
-            System.getProperty("keymapper_sysbridge.version_code")!!.toInt()
+        private val systemBridgeVersionCode: Int by lazy {
+            System.getProperty("keymapper_sysbridge.version")?.toIntOrNull() ?: -1
+        }
 
         private const val KEYMAPPER_CHECK_INTERVAL_MS = 60 * 1000L // 1 minute
         private const val DATA_ENABLED_REASON_USER: Int = 0
@@ -140,7 +142,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
     private val sendBinderLock: Any = Any()
 
     private val coroutineScope: CoroutineScope = MainScope()
-    private val mainHandler = Handler(Looper.myLooper()!!)
+    private val mainHandler by lazy { Handler(Looper.myLooper()!!) }
 
     private val keyMapperCheckLock: Any = Any()
     private var keyMapperCheckJob: Job? = null
@@ -175,18 +177,24 @@ internal class SystemBridge : ISystemBridge.Stub() {
     }
 
     init {
+        if (versionCode == -1) {
+            Log.e(TAG, "SystemBridge version code not set")
+            throw IllegalStateException("SystemBridge version code not set")
+        }
+
         val libraryPath = System.getProperty("keymapper_sysbridge.library.path")
         @SuppressLint("UnsafeDynamicallyLoadedCode")
         System.load("$libraryPath/libevdev.so")
 
         Log.i(TAG, "SystemBridge starting... Version code $versionCode")
 
-        waitSystemService("package")
-        packageManager = IPackageManager.Stub.asInterface(ServiceManager.getService("package"))
-
         waitSystemService(Context.ACTIVITY_SERVICE)
         waitSystemService(Context.USER_SERVICE)
         waitSystemService(Context.APP_OPS_SERVICE)
+
+        waitSystemService("package")
+        packageManager = IPackageManager.Stub.asInterface(ServiceManager.getService("package"))
+
         waitSystemService("permissionmgr")
         permissionManager =
             IPermissionManager.Stub.asInterface(ServiceManager.getService("permissionmgr"))

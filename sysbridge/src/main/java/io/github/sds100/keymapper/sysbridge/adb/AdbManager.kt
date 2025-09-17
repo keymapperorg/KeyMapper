@@ -56,14 +56,18 @@ class AdbManagerImpl @Inject constructor(
 
                 return@withLock with(client) {
                     connect().then {
-                        try {
-                            client.shellCommand(command).success()
-                        } catch (e: Exception) {
-                            Timber.e(e)
-                            AdbError.Unknown(e)
+                        val output = buildString {
+                            try {
+                                client.shellCommand(command) { append(String(it)) }
+                            } catch (e: Exception) {
+                                Timber.e(e)
+                                AdbError.Unknown(e)
+                            }
                         }
+
+                        Success(output)
                     }
-                }.then { String(it).success() }
+                }
             }
         }
 

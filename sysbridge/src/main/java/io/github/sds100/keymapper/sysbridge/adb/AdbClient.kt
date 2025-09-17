@@ -110,7 +110,7 @@ internal class AdbClient(private val host: String, private val port: Int, privat
         return Success(Unit)
     }
 
-    fun shellCommand(command: String): ByteArray {
+    fun shellCommand(command: String, listener: (ByteArray) -> Unit) {
         val localId = 1
         write(A_OPEN, localId, 0, "shell:$command")
 
@@ -119,10 +119,11 @@ internal class AdbClient(private val host: String, private val port: Int, privat
             A_OKAY -> {
                 while (true) {
                     message = read()
+
                     val remoteId = message.arg0
                     if (message.command == A_WRTE) {
                         if (message.data_length > 0) {
-                            return message.data!!
+                            listener(message.data!!)
                         }
                         write(A_OKAY, localId, remoteId)
                     } else if (message.command == A_CLSE) {
@@ -143,8 +144,6 @@ internal class AdbClient(private val host: String, private val port: Int, privat
                 error("not A_OKAY or A_CLSE")
             }
         }
-
-        error("No response from adb?")
     }
 
     private fun write(command: Int, arg0: Int, arg1: Int, data: ByteArray? = null) = write(
@@ -167,7 +166,7 @@ internal class AdbClient(private val host: String, private val port: Int, privat
 
     private fun read(): AdbMessage {
         val buffer =
-            ByteBuffer.allocate(AdbMessage.Companion.HEADER_LENGTH).order(ByteOrder.LITTLE_ENDIAN)
+            ByteBuffer.allocate(AdbMessage.HEADER_LENGTH).order(ByteOrder.LITTLE_ENDIAN)
 
         inputStream.readFully(buffer.array(), 0, 24)
 

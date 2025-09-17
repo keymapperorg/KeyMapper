@@ -97,7 +97,7 @@ v_current = (uintptr_t) v + v_size - sizeof(char *); \
     ARG_PUSH_FMT(argv, "-Djava.class.path=%s", apk_path)
     ARG_PUSH_FMT(argv, "-Dkeymapper_sysbridge.library.path=%s", lib_path)
     ARG_PUSH_FMT(argv, "-Dkeymapper_sysbridge.package=%s", package_name)
-    ARG_PUSH_FMT(argv, "-Dkeymapper_sysbridge.version_code=%s", version_code)
+    ARG_PUSH_FMT(argv, "-Dkeymapper_sysbridge.version=%s", version_code)
     ARG_PUSH_DEBUG_VM_PARAMS(argv)
     ARG_PUSH(argv, "/system/bin")
     ARG_PUSH_FMT(argv, "--nice-name=%s", process_name)
@@ -120,7 +120,7 @@ static void start_server(const char *apk_path, const char *lib_path, const char 
         LOGD("child");
         run_server(apk_path, lib_path, main_class, process_name, package_name, version_code);
     } else {
-        perrorf("fatal: can't fork\n");
+        LOGE("fatal: can't fork");
         exit(EXIT_FATAL_FORK);
     }
 }
@@ -130,8 +130,7 @@ static int check_selinux(const char *s, const char *t, const char *c, const char
 #ifndef DEBUG
     if (res != 0) {
 #endif
-    printf("info: selinux_check_access %s %s %s %s: %d\n", s, t, c, p, res);
-    fflush(stdout);
+    LOGI("selinux_check_access %s %s %s %s: %d", s, t, c, p, res);
 #ifndef DEBUG
     }
 #endif
@@ -143,28 +142,23 @@ static int switch_cgroup() {
     int spid = getpid();
 
     if (cgroup::get_cgroup(spid, &s_cuid, &s_cpid) != 0) {
-        printf("warn: can't read cgroup\n");
-        fflush(stdout);
+        LOGW("can't read cgroup");
         return -1;
     }
 
-    printf("info: cgroup is /uid_%d/pid_%d\n", s_cuid, s_cpid);
-    fflush(stdout);
+    LOGI("cgroup is /uid_%d/pid_%d", s_cuid, s_cpid);
 
     if (cgroup::switch_cgroup(spid, -1, -1) != 0) {
-        printf("warn: can't switch cgroup\n");
-        fflush(stdout);
+        LOGW("can't switch cgroup");
         return -1;
     }
 
     if (cgroup::get_cgroup(spid, &s_cuid, &s_cpid) != 0) {
-        printf("info: switch cgroup succeeded\n");
-        fflush(stdout);
+        LOGI("switch cgroup succeeded");
         return 0;
     }
 
-    printf("warn: can't switch self, current cgroup is /uid_%d/pid_%d\n", s_cuid, s_cpid);
-    fflush(stdout);
+    LOGW("can't switch self, current cgroup is /uid_%d/pid_%d", s_cuid, s_cpid);
     return -1;
 }
 
@@ -174,7 +168,7 @@ int starter_main(int argc, char *argv[]) {
     char *apk_path = nullptr;
     char *lib_path = nullptr;
     char *package_name = nullptr;
-    char *version_code = nullptr;
+    char *version = nullptr;
 
     // Get the apk path from the program arguments. This gets the path by setting the
     // start of the apk path array to after the "--apk=" by offsetting by 6 characters.
@@ -185,19 +179,19 @@ int starter_main(int argc, char *argv[]) {
             lib_path = argv[i] + 6;
         } else if (strncmp(argv[i], "--package=", 10) == 0) {
             package_name = argv[i] + 10;
-        } else if (strncmp(argv[i], "--version_code=", 15) == 0) {
-            version_code = argv[i] + 15;
+        } else if (strncmp(argv[i], "--version=", 10) == 0) {
+            version = argv[i] + 10;
         }
     }
 
-    printf("info: apk path = %s\n", apk_path);
-    printf("info: lib path = %s\n", lib_path);
-    printf("info: package name = %s\n", package_name);
-    printf("info: version code = %s\n", version_code);
+    LOGI("apk path = %s", apk_path);
+    LOGI("lib path = %s", lib_path);
+    LOGI("package name = %s", package_name);
+    LOGI("version = %s", version);
 
     int uid = getuid();
     if (uid != 0 && uid != 2000) {
-        perrorf("fatal: run system bridge from non root nor adb user (uid=%d).\n", uid);
+        LOGE("fatal: run system bridge from non root nor adb user (uid=%d).", uid);
         exit(EXIT_FATAL_UID);
     }
 
@@ -215,7 +209,7 @@ int starter_main(int argc, char *argv[]) {
             sdkLevel = atoi(buf);
 
         if (sdkLevel >= 29) {
-            printf("info: switching mount namespace to init...\n");
+            LOGI("switching mount namespace to init...");
             switch_mnt_ns(1);
         }
     }
@@ -228,7 +222,7 @@ int starter_main(int argc, char *argv[]) {
             res |= check_selinux("u:r:untrusted_app:s0", context, "binder", "transfer");
 
             if (res != 0) {
-                perrorf("fatal: the su you are using does not allow app (u:r:untrusted_app:s0) to connect to su (%s) with binder.\n",
+                LOGE("fatal: the su you are using does not allow app (u:r:untrusted_app:s0) to connect to su (%s) with binder.",
                         context);
                 exit(EXIT_FATAL_BINDER_BLOCKED_BY_SELINUX);
             }
@@ -236,19 +230,10 @@ int starter_main(int argc, char *argv[]) {
         }
     }
 
-    mkdir("/data/local/tmp/keymapper_sysbridge", 0707);
-    chmod("/data/local/tmp/keymapper_sysbridge", 0707);
-    if (uid == 0) {
-        chown("/data/local/tmp/keymapper_sysbridge", 2000, 2000);
-        se::setfilecon("/data/local/tmp/keymapper_sysbridge", "u:object_r:shell_data_file:s0");
-    }
-
-    printf("info: starter begin\n");
-    fflush(stdout);
+    LOGI("starter begin");
 
     // kill old server
-    printf("info: killing old process...\n");
-    fflush(stdout);
+    LOGI("killing old process...");
 
     foreach_proc([](pid_t pid) {
         if (pid == getpid()) return;
@@ -259,47 +244,42 @@ int starter_main(int argc, char *argv[]) {
         if (strcmp(SERVER_NAME, name) != 0) return;
 
         if (kill(pid, SIGKILL) == 0)
-            printf("info: killed %d (%s)\n", pid, name);
+            LOGI("killed %d (%s)", pid, name);
         else if (errno == EPERM) {
-            perrorf("fatal: can't kill %d, please try to stop existing sysbridge from app first.\n",
+            LOGE("fatal: can't kill %d, please try to stop existing sysbridge from app first.",
                     pid);
             exit(EXIT_FATAL_KILL);
         } else {
-            printf("warn: failed to kill %d (%s)\n", pid, name);
+            LOGW("failed to kill %d (%s)", pid, name);
         }
     });
 
     if (access(apk_path, R_OK) == 0) {
-        printf("info: use apk path from argv\n");
-        fflush(stdout);
+        LOGI("use apk path from argv");
     }
 
     if (access(lib_path, R_OK) == 0) {
-        printf("info: use lib path from argv\n");
-        fflush(stdout);
+        LOGI("use lib path from argv");
     }
 
     if (!apk_path) {
-        perrorf("fatal: can't get path of manager\n");
+        LOGE("fatal: can't get path of manager");
         exit(EXIT_FATAL_PM_PATH);
     }
 
     if (!lib_path) {
-        perrorf("fatal: can't get path of native libraries\n");
+        LOGE("fatal: can't get path of native libraries");
         exit(EXIT_FATAL_PM_PATH);
     }
 
-    printf("info: apk path is %s\n", apk_path);
-    printf("info: lib path is %s\n", lib_path);
     if (access(apk_path, R_OK) != 0) {
-        perrorf("fatal: can't access manager %s\n", apk_path);
+        LOGE("fatal: can't access manager %s", apk_path);
         exit(EXIT_FATAL_PM_PATH);
     }
 
-    printf("info: starting server...\n");
-    fflush(stdout);
+    LOGI("starting server...");
     LOGD("start_server");
-    start_server(apk_path, lib_path, SERVER_CLASS_PATH, SERVER_NAME, package_name, version_code);
+    start_server(apk_path, lib_path, SERVER_CLASS_PATH, SERVER_NAME, package_name, version);
     exit(EXIT_SUCCESS);
 }
 
