@@ -58,6 +58,8 @@ object ShareUtils {
                         intent.putExtra(Intent.EXTRA_CHOOSER_CUSTOM_ACTIONS, customActions)
                     }
 
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
                     ctx.startActivity(intent)
                 }
         } catch (_: ActivityNotFoundException) {

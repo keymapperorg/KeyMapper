@@ -18,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.FindInPage
 import androidx.compose.material.icons.outlined.Gamepad
@@ -169,6 +170,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                     showAutomaticBackupDialog = true
                 }
             },
+            onShareLogcatClick = viewModel::onShareLogcatClick
         )
     }
 }
@@ -241,6 +243,7 @@ private fun Content(
     onForceVibrateToggled: (Boolean) -> Unit = { },
     onLoggingToggled: (Boolean) -> Unit = { },
     onViewLogClick: () -> Unit = { },
+    onShareLogcatClick: () -> Unit = { },
     onHideHomeScreenAlertsToggled: (Boolean) -> Unit = { },
     onShowDeviceDescriptorsToggled: (Boolean) -> Unit = { },
 ) {
@@ -419,11 +422,18 @@ private fun Content(
             onClick = onViewLogClick,
         )
 
+        OptionPageButton(
+            title = stringResource(R.string.title_pref_share_logcat),
+            text = stringResource(R.string.summary_pref_share_logcat),
+            icon = Icons.Outlined.Android,
+            onClick = onShareLogcatClick,
+        )
+
         Spacer(modifier = Modifier.height(8.dp))
     }
 }
 
-@Preview
+@Preview(heightDp = 1200)
 @Composable
 private fun Preview() {
     KeyMapperTheme {

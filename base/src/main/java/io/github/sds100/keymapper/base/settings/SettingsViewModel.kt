@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.logging.ShareLogcatUseCase
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
@@ -23,7 +24,6 @@ import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.otherwise
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
-import io.github.sds100.keymapper.data.utils.SharedPrefsDataStoreWrapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -37,7 +37,7 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val useCase: ConfigSettingsUseCase,
     private val resourceProvider: ResourceProvider,
-    val sharedPrefsDataStoreWrapper: SharedPrefsDataStoreWrapper,
+    private val shareLogcatUseCase: ShareLogcatUseCase,
     dialogProvider: DialogProvider,
     navigationProvider: NavigationProvider,
 ) : ViewModel(),
@@ -371,6 +371,18 @@ class SettingsViewModel @Inject constructor(
     fun onViewLogClick() {
         viewModelScope.launch {
             navigate("log", NavDestination.Log)
+        }
+    }
+
+    fun onShareLogcatClick() {
+        viewModelScope.launch {
+            shareLogcatUseCase.share().onFailure { error ->
+                val dialog = DialogModel.Ok(
+                    title = getString(R.string.dialog_title_share_logcat_error),
+                    message = error.getFullMessage(this@SettingsViewModel),
+                )
+                showDialog("logcat_error", dialog)
+            }
         }
     }
 

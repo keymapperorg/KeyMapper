@@ -5,4 +5,5 @@ import io.github.sds100.keymapper.common.utils.KMResult
 interface ShellAdapter {
     fun run(vararg command: String, waitFor: Boolean = false): Boolean
     fun execute(command: String): KMResult<*>
+    fun executeWithOutput(command: String): KMResult<String>
 }

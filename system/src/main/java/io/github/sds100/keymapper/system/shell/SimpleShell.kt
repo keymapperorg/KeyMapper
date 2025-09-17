@@ -33,4 +33,27 @@ class SimpleShell @Inject constructor() : ShellAdapter {
             return KMError.Exception(e)
         }
     }
+
+    override fun executeWithOutput(command: String): KMResult<String> {
+        try {
+            val process = Runtime.getRuntime().exec(command)
+
+            process.waitFor()
+
+            if (process.exitValue() != 0) {
+                val errorLines = with(process.errorStream.bufferedReader()) {
+                    readLines()
+                }
+                return KMError.Exception(IOException(errorLines.joinToString("\n")))
+            }
+
+            val lines = with(process.inputStream.bufferedReader()) {
+                readLines()
+            }
+
+            return Success(lines.joinToString("\n"))
+        } catch (e: IOException) {
+            return KMError.Exception(e)
+        }
+    }
 }
