@@ -407,7 +407,7 @@ private fun RemapStatusButton(modifier: Modifier = Modifier, remapStatus: RemapS
         RemapStatus.UNCERTAIN -> RemapStatusRow(
             modifier = modifier,
             color = LocalCustomColorsPalette.current.amber,
-            text = stringResource(R.string.trigger_setup_status_remap_button_possible),
+            text = stringResource(R.string.trigger_setup_status_might_remap_button),
         )
 
         RemapStatus.SUPPORTED -> RemapStatusRow(
@@ -681,7 +681,7 @@ private fun KeyboardTriggerSetupBottomSheet(
         RemapStatusRow(
             modifier = Modifier.fillMaxWidth(),
             color = LocalCustomColorsPalette.current.green,
-            text = stringResource(R.string.trigger_setup_status_feature_possible),
+            text = stringResource(R.string.trigger_setup_status_remap_device_possible),
         )
 
         HeaderText(text = stringResource(R.string.trigger_setup_options_title))
