@@ -170,7 +170,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                     showAutomaticBackupDialog = true
                 }
             },
-            onShareLogcatClick = viewModel::onShareLogcatClick
+            onShareLogcatClick = viewModel::onShareLogcatClick,
         )
     }
 }

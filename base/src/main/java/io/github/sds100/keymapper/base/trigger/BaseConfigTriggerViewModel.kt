@@ -230,7 +230,7 @@ abstract class BaseConfigTriggerViewModel(
             val showPowerButtonEmergencyTip = trigger.keys.any {
                 it is KeyCodeTriggerKey && KeyEventUtils.isPowerButtonKey(
                     it.keyCode,
-                    it.scanCode ?: -1
+                    it.scanCode ?: -1,
                 )
             }
 
@@ -242,7 +242,7 @@ abstract class BaseConfigTriggerViewModel(
                 triggerModeButtonsEnabled = triggerModeButtonsEnabled,
                 triggerModeButtonsVisible = triggerModeButtonsVisible,
                 checkedTriggerMode = trigger.mode,
-                showPowerButtonEmergencyTip = showPowerButtonEmergencyTip
+                showPowerButtonEmergencyTip = showPowerButtonEmergencyTip,
             )
         }
     }
@@ -547,7 +547,7 @@ abstract class BaseConfigTriggerViewModel(
 
                 is RecordTriggerState.Completed,
                 RecordTriggerState.Idle,
-                    -> recordTrigger.startRecording(enableEvdevRecording = false)
+                -> recordTrigger.startRecording(enableEvdevRecording = false)
             }
 
             // Show dialog if the accessibility service is disabled or crashed
@@ -740,7 +740,7 @@ sealed class ConfigTriggerState {
         val checkedTriggerMode: TriggerMode = TriggerMode.Undefined,
         val triggerModeButtonsEnabled: Boolean = false,
         val triggerModeButtonsVisible: Boolean = false,
-        val showPowerButtonEmergencyTip: Boolean = false
+        val showPowerButtonEmergencyTip: Boolean = false,
     ) : ConfigTriggerState()
 }
 

@@ -22,7 +22,7 @@ class ShareLogcatUseCaseImpl @Inject constructor(
     @ApplicationContext private val ctx: Context,
     private val fileAdapter: FileAdapter,
     private val shellAdapter: ShellAdapter,
-    private val buildConfigProvider: BuildConfigProvider
+    private val buildConfigProvider: BuildConfigProvider,
 ) : ShareLogcatUseCase {
 
     override suspend fun share(): KMResult<Unit> {

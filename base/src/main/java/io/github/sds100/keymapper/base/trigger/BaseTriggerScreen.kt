@@ -227,7 +227,7 @@ private fun TriggerScreenVertical(
                         PowerButtonEmergencyTipCard(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
+                                .padding(horizontal = 16.dp),
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                     }
@@ -360,7 +360,7 @@ private fun TriggerScreenHorizontal(
                             PowerButtonEmergencyTipCard(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 8.dp)
+                                    .padding(horizontal = 8.dp),
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                         }
@@ -633,7 +633,7 @@ private val previewState =
         checkedTriggerMode = TriggerMode.Sequence,
         triggerModeButtonsEnabled = true,
         triggerModeButtonsVisible = true,
-        showPowerButtonEmergencyTip = true
+        showPowerButtonEmergencyTip = true,
     )
 
 @Preview(device = Devices.PIXEL)
