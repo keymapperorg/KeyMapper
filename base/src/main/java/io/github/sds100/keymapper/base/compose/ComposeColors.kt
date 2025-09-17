@@ -111,8 +111,8 @@ object ComposeColors {
     val onOrangeContainerDark = Color(0xFF331A00)
     val amberDark = Color(0xFFFFECB3)
     val onAmberDark = Color(0xFF000000)
-    val amberContainerDark = Color(0xFFFFE082)
-    val onAmberContainerDark = Color(0xFFFFF3CC)
+    val amberContainerDark = Color(0x33FFF4CF)
+    val onAmberContainerDark = Color(0xFFFFFFFF)
     val discordDark = Color(0xFF5865F2)
     val onDiscordDark = Color(0xFFFFFFFF)
 }
