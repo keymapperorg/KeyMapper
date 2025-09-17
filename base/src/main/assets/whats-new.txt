@@ -1,5 +1,9 @@
-⌨️ Action to move cursor to previous/next character, word, line, paragraph, or page.
+Version 4.0! 🎉
 
-Many other bug fixes and optimisations.
+📲 You can now remap buttons when the screen is off for FREE using PRO mode!
+
+⏻ Remap your power button and more
+
+Many other bug fixes and optimisations
 
 See all the changes at http://changelog.keymapper.club.
