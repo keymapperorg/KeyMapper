@@ -1684,8 +1684,8 @@
     <string name="trigger_setup_power_title">Power button</string>
     <string name="trigger_setup_assistant_trigger_title">Assistant trigger</string>
     <string name="trigger_setup_assistant_trigger_add_on">Assistant trigger add-on</string>
-    <string name="trigger_setup_mouse_title">Mouse buttons</string>
-    <string name="trigger_setup_gamepad_title">Gamepad buttons</string>
+    <string name="trigger_setup_mouse_title">Mouse button</string>
+    <string name="trigger_setup_gamepad_title">Gamepad button</string>
     <string name="trigger_setup_other_title">Other button</string>
     <string name="trigger_setup_fingerprint_reader_title">Fingerprint reader gesture</string>
     <string name="trigger_setup_no_trigger_detected_title">No trigger detected</string>
