@@ -15,7 +15,6 @@ import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.phone.CallState
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.power.PowerAdapter
-import timber.log.Timber
 import java.time.LocalTime
 
 /**
@@ -153,12 +152,6 @@ class LazyConstraintSnapshot(
                 } else {
                     localTime.isAfter(constraint.startTime) && localTime.isBefore(constraint.endTime)
                 }
-        }
-
-        if (isSatisfied) {
-            Timber.d("Constraint satisfied: $constraint")
-        } else {
-            Timber.d("Constraint not satisfied: $constraint")
         }
 
         return isSatisfied
