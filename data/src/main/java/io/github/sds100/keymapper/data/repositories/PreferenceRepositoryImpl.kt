@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -28,7 +29,7 @@ class PreferenceRepositoryImpl @Inject constructor(
     override fun <T> get(key: Preferences.Key<T>): Flow<T?> = dataStore.data.map { it[key] }.distinctUntilChanged()
 
     override fun <T> set(key: Preferences.Key<T>, value: T?) {
-        coroutineScope.launch {
+        coroutineScope.launch(Dispatchers.IO) {
             dataStore.updateData {
                 val prefs = it.toMutablePreferences()
 
@@ -50,7 +51,7 @@ class PreferenceRepositoryImpl @Inject constructor(
     }
 
     override fun <T> update(key: Preferences.Key<T>, update: suspend (T?) -> T?) {
-        coroutineScope.launch {
+        coroutineScope.launch(Dispatchers.IO) {
             dataStore.updateData {
                 val prefs = it.toMutablePreferences()
 
