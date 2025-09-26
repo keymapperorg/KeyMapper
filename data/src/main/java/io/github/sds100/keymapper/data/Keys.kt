@@ -125,4 +125,6 @@ object Keys {
      * Whether the user has started the system bridge before.
      */
     val isSystemBridgeUsed = booleanPreferencesKey("key_is_system_bridge_used")
+
+    val isCleanShutdown = booleanPreferencesKey("key_is_clean_shutdown")
 }

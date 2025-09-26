@@ -126,9 +126,18 @@ class SystemBridgeAutoStarter @Inject constructor(
     fun init() {
         coroutineScope.launch {
             // The Key Mapper process may not necessarily be started on boot due to the
-            // on boot receiver so assume if it is started within 30 seconds of boot that
+            // on boot receiver so assume if it is started within a minute of boot that
             // it should be auto started.
-            val isBoot = SystemClock.uptimeMillis() < 30000
+            val isBoot = SystemClock.uptimeMillis() < 60000
+
+            // Do not autostart if the device was force rebooted. This may be a sign that PRO mode
+            // was broken and the user was trying to reset it.
+            val isCleanShutdown = preferences.get(Keys.isCleanShutdown).map { it ?: false }.first()
+
+            Timber.i("SystemBridgeAutoStarter init: isBoot=$isBoot, isCleanShutdown=$isCleanShutdown")
+
+            // Reset the value after reading it.
+            preferences.set(Keys.isCleanShutdown, false)
 
             val isBootAutoStartEnabled = preferences.get(Keys.isProModeAutoStartBootEnabled)
                 .map { it ?: PreferenceDefaults.PRO_MODE_AUTOSTART_BOOT }
@@ -140,7 +149,7 @@ class SystemBridgeAutoStarter @Inject constructor(
 
             val connectionState = connectionManager.connectionState.value
 
-            if (isBoot && isBootAutoStartEnabled && connectionState !is SystemBridgeConnectionState.Connected) {
+            if (isBoot && isCleanShutdown && isBootAutoStartEnabled && connectionState !is SystemBridgeConnectionState.Connected) {
                 val autoStartType = autoStartTypeFlow.first()
 
                 if (autoStartType != null) {

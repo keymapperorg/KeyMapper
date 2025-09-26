@@ -364,6 +364,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
     private fun getKeyMapperAppTask(): ActivityManager.AppTask? {
         val task = activityManager.appTasks
             .firstOrNull { it.taskInfo.topActivity?.className == keyMapperClassProvider.getMainActivity().name }
+
         return task
     }
 }

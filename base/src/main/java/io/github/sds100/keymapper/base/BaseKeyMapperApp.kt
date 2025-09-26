@@ -1,7 +1,10 @@
 package io.github.sds100.keymapper.base
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.UserManager
 import android.util.Log
@@ -35,6 +38,7 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.root.SuAdapterImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -100,6 +104,25 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
     private val initLock: Any = Any()
     private var initialized = false
 
+    private val broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            context ?: return
+            intent ?: return
+
+            when (intent.action) {
+                Intent.ACTION_SHUTDOWN -> {
+                    Timber.i("Clean shutdown")
+                    settingsRepository.set(Keys.isCleanShutdown, true)
+
+                    // Block until the value is persisted.
+                    runBlocking {
+                        settingsRepository.get(Keys.isCleanShutdown).first { it == true }
+                    }
+                }
+            }
+        }
+    }
+
     override fun onCreate() {
         val priorExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
 
@@ -123,7 +146,7 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
 
         super.onCreate()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && userManager?.isUserUnlocked == false) {
+        if (userManager?.isUserUnlocked == false) {
             Log.i(tag, "KeyMapperApp: Delay init because locked.")
             // If the device is still encrypted and locked do not initialize anything that
             // may potentially need the encrypted app storage like databases.
@@ -137,6 +160,8 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
     }
 
     fun onBootUnlocked() {
+        Log.i(tag, "KeyMapperApp: onBootUnlocked")
+
         synchronized(initLock) {
             if (!initialized) {
                 init()
@@ -147,6 +172,12 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
 
     private fun init() {
         Log.i(tag, "KeyMapperApp: Init")
+
+        val intentFilter = IntentFilter().apply {
+            addAction(Intent.ACTION_SHUTDOWN)
+        }
+
+        registerReceiver(broadcastReceiver, intentFilter)
 
         settingsRepository.get(Keys.darkTheme)
             .map { it?.toIntOrNull() }
