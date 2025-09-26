@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.base.onboarding
 import androidx.datastore.preferences.core.Preferences
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.canUseImeToPerform
-import io.github.sds100.keymapper.base.purchasing.PurchasingManager
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.base.utils.VersionHelper
 import io.github.sds100.keymapper.common.BuildConfigProvider
@@ -35,7 +34,6 @@ class OnboardingUseCaseImpl @Inject constructor(
     private val shizukuAdapter: ShizukuAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val packageManagerAdapter: PackageManagerAdapter,
-    private val purchasingManager: PurchasingManager,
     private val keyMapRepository: KeyMapRepository,
     private val buildConfigProvider: BuildConfigProvider,
 ) : PreferenceRepository by settingsRepository,
@@ -60,14 +58,6 @@ class OnboardingUseCaseImpl @Inject constructor(
         settingsRepository.set(Keys.acknowledgedGuiKeyboard, true)
     }
 
-    override var shownParallelTriggerOrderExplanation by PrefDelegate(
-        Keys.shownParallelTriggerOrderExplanation,
-        false,
-    )
-    override var shownSequenceTriggerExplanation by PrefDelegate(
-        Keys.shownSequenceTriggerExplanation,
-        false,
-    )
     override val showWhatsNew = get(Keys.lastInstalledVersionCodeHomeScreen)
         .map { (it ?: -1) < buildConfigProvider.versionCode }
 
@@ -193,9 +183,6 @@ interface OnboardingUseCase {
 
     fun isTvDevice(): Boolean
     fun neverShowGuiKeyboardPromptsAgain()
-
-    var shownParallelTriggerOrderExplanation: Boolean
-    var shownSequenceTriggerExplanation: Boolean
 
     val showFloatingButtonFeatureNotification: Flow<Boolean>
     fun showedFloatingButtonFeatureNotification()

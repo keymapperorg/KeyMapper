@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.base.trigger
 
 import android.content.res.Configuration
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,23 +11,16 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -47,6 +39,7 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.keymaps.ShortcutButton
+import io.github.sds100.keymapper.base.onboarding.TipCard
 import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.compose.DraggableItem
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
@@ -111,10 +104,27 @@ fun BaseTriggerScreen(
     }
 
     val configState by viewModel.state.collectAsStateWithLifecycle()
+    val tipModel by viewModel.triggerTip.collectAsStateWithLifecycle()
 
     when (val state = configState) {
         is State.Loading -> Loading(modifier = modifier)
         is State.Data -> {
+            val tipContent: @Composable () -> Unit = {
+                tipModel?.let { tip ->
+                    TipCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        title = tip.title,
+                        message = tip.message,
+                        isDismissable = tip.isDismissable,
+                        onDismiss = viewModel::onDismissClick,
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+                }
+            }
+
             if (isHorizontalLayout()) {
                 TriggerScreenHorizontal(
                     modifier = modifier,
@@ -133,6 +143,7 @@ fun BaseTriggerScreen(
                         viewModel.showDiscoverTriggersBottomSheet = true
                     },
                     discoverScreenContent = discoverScreenContent,
+                    tipContent = tipContent,
                 )
             } else {
                 TriggerScreenVertical(
@@ -152,6 +163,7 @@ fun BaseTriggerScreen(
                         viewModel.showDiscoverTriggersBottomSheet = true
                     },
                     discoverScreenContent = discoverScreenContent,
+                    tipContent = tipContent,
                 )
             }
         }
@@ -195,6 +207,7 @@ private fun TriggerScreenVertical(
     onFixErrorClick: (TriggerError) -> Unit = {},
     onAddMoreTriggerKeysClick: () -> Unit = {},
     discoverScreenContent: @Composable () -> Unit = {},
+    tipContent: @Composable () -> Unit = {},
 ) {
     Surface(modifier = modifier) {
         Column {
@@ -223,14 +236,7 @@ private fun TriggerScreenVertical(
                 is ConfigTriggerState.Loaded -> {
                     Spacer(Modifier.height(8.dp))
 
-                    if (configState.showPowerButtonEmergencyTip) {
-                        PowerButtonEmergencyTipCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
+                    tipContent()
 
                     TriggerList(
                         modifier = Modifier.weight(1f),
@@ -306,6 +312,7 @@ private fun TriggerScreenHorizontal(
     onFixErrorClick: (TriggerError) -> Unit = {},
     onAddMoreTriggerKeysClick: () -> Unit = {},
     discoverScreenContent: @Composable () -> Unit = {},
+    tipContent: @Composable () -> Unit = {},
 ) {
     Surface(modifier = modifier) {
         when (configState) {
@@ -356,14 +363,7 @@ private fun TriggerScreenHorizontal(
                     ) {
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        if (configState.showPowerButtonEmergencyTip) {
-                            PowerButtonEmergencyTipCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 8.dp),
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                        }
+                        tipContent()
 
                         if (configState.clickTypeButtons.isNotEmpty()) {
                             ClickTypeSegmentedButtons(
@@ -556,44 +556,6 @@ private fun TriggerModeSegmentedButtons(
     )
 }
 
-@Composable
-private fun PowerButtonEmergencyTipCard(
-    modifier: Modifier = Modifier,
-) {
-    OutlinedCard(
-        modifier = modifier,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
-        elevation = CardDefaults.elevatedCardElevation(),
-    ) {
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Icon(
-                imageVector = Icons.Rounded.Info,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.tertiary,
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Text(
-                text = stringResource(R.string.pro_mode_emergency_tip_title),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            text = stringResource(R.string.pro_mode_emergency_tip_text),
-            style = MaterialTheme.typography.bodyMedium,
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-    }
-}
-
 private val sampleList = listOf(
     TriggerKeyListItemModel.KeyEvent(
         id = "id1",
@@ -633,7 +595,6 @@ private val previewState =
         checkedTriggerMode = TriggerMode.Sequence,
         triggerModeButtonsEnabled = true,
         triggerModeButtonsVisible = true,
-        showPowerButtonEmergencyTip = true,
     )
 
 @Preview(device = Devices.PIXEL)
@@ -701,6 +662,18 @@ private fun HorizontalPreview() {
             recordTriggerState = RecordTriggerState.Idle,
             discoverScreenContent = {
                 TriggerDiscoverScreen()
+            },
+            tipContent = {
+                TipCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    title = "Tip Title",
+                    message = "This is a tip message to help the user understand something about the current screen. It can be quite long so it should wrap properly.",
+                    onDismiss = {},
+                )
+
+                Spacer(Modifier.height(8.dp))
             },
         )
     }

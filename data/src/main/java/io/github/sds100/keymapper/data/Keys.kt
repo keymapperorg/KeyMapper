@@ -52,6 +52,12 @@ object Keys {
         booleanPreferencesKey("key_shown_parallel_trigger_order_warning")
     val shownSequenceTriggerExplanation =
         booleanPreferencesKey("key_shown_sequence_trigger_explanation_dialog")
+    val shownTriggerConstraintsTip =
+        booleanPreferencesKey("key_shown_trigger_constraints_tip")
+    val shownCapsLockTip =
+        booleanPreferencesKey("key_shown_caps_lock_tip")
+    val shownScreenPinningTip =
+        booleanPreferencesKey("key_shown_screen_pinning_tip")
     val lastInstalledVersionCodeHomeScreen =
         intPreferencesKey("last_installed_version_home_screen")
     val lastInstalledVersionCodeBackground =
@@ -68,8 +74,8 @@ object Keys {
     val savedWifiSSIDs = stringSetPreferencesKey("key_saved_wifi_ssids")
 
     val neverShowDndAccessError = booleanPreferencesKey("key_never_show_dnd_error")
-    val neverShowTriggerKeyboardIconExplanation =
-        booleanPreferencesKey("key_never_show_keyboard_icon_explanation")
+    val shownTriggerKeyboardIconExplanation =
+        booleanPreferencesKey("key_shown_keyboard_icon_explanation")
 
     val neverShowDpadImeTriggerError =
         booleanPreferencesKey("key_never_show_dpad_ime_trigger_error")

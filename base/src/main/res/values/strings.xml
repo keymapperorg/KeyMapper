@@ -425,14 +425,15 @@
     <string name="dialog_message_write_secure_settings">A PC/Mac is required to grant this permission. Read the online guide.</string>
 
     <string name="dialog_message_cant_find_accessibility_settings_page">Your device doesn\'t seem to have an accessibility services settings page. Tap \"guide\" to read the online guide that explains how to fix this.</string>
-    <string name="dialog_message_parallel_trigger_order">The keys need to be listed from top to bottom in the order that they will be held down.</string>
-    <string name="dialog_message_sequence_trigger_explanation">A \"sequence\" trigger has a timeout unlike parallel triggers. This means after you press the first key, you will have a set amount of time to input the rest of the keys in the trigger. All the keys that you have added to the trigger won\'t do their usual action until the timeout has been reached. You can change this timeout in the "Options" tab.</string>
+    <string name="dialog_message_parallel_trigger_order">You must hold down the keys in the order that they are listed.</string>
+    <string name="dialog_message_sequence_trigger_explanation">There is a timeout to input this trigger. You can change this timeout in the "Options" tab.</string>
+    <string name="tip_parallel_trigger_title">How to use this trigger</string>
+    <string name="tip_sequence_trigger_title">Sequence triggers</string>
     <string name="dialog_message_bt_constraint_limitation">Android doesn\'t allow apps to get a list of connected (not paired) Bluetooth devices. Apps can only detect when they are connected and disconnected. So if your Bluetooth device is already connected to your device when the accessibility service starts, you will have to reconnect it for the app to know it is connected.</string>
     <string name="dialog_title_change_location_or_disable">Automatic backup</string>
     <string name="dialog_message_change_location_or_disable">Change location or turn off automatic back up?</string>
     <string name="dialog_message_password_screen_lock_warning">If you have any other screen lock chosen, such as PIN or Pattern then you don\'t have to worry. But if you have a Password screen lock you will *NOT* be able to unlock your phone if you use the Key Mapper Basic Input Method because it doesn\'t have a GUI. You can grant Key Mapper WRITE_SECURE_SETTINGS permission so it can show a notification to switch to and from the keyboard. There is a guide on how to do this if you tap the question mark at the bottom of the screen.</string>
     <string name="dialog_message_select_compatible_ime">Select the input method for actions that require one. You can change this later by tapping \"Select keyboard for actions\" in the bottom menu of the home screen.</string>
-    <string name="dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout">You need to choose the \"Caps Lock to camera\" keyboard layout for your keyboard otherwise the Caps Lock key will still lock caps. You can find this setting in your device settings -> Languages and Input -> Physical Keyboard -> Tap on your keyboard -> Set Up Keyboard Layouts. This will remap the Caps Lock key to KEYCODE_CAMERA so Key Mapper can remap it properly.\n\nAfter you\'ve done this you must remove the Caps Lock trigger key and record the Caps Lock key again. It should say \"Camera\" instead of \"Caps Lock\" if you did the steps correctly.</string>
     <string name="dialog_message_settings_no_external_devices_connected">No external devices connected.</string>
 
     <string name="dialog_title_install_gui_keyboard">Install the Key Mapper GUI Keyboard</string>
@@ -470,7 +471,6 @@
 
     <string name="dialog_message_restart_accessibility_service">Restart the accessibility service by turning it <i>off</i> and <i>on</i>.</string>
 
-    <string name="dialog_message_screen_pinning_warning">Using this trigger may cause a black screen when you unlock your device after using the screen pinning setting in your device\'s settings. This can be fixed with a reboot. This doesn\'t happen on all devices so beware and turn off the setting if it does!</string>
 
     <string name="dialog_title_key_mapper_crashed">Key Mapper was interrupted</string>
     <string name="dialog_message_key_mapper_crashed">Key Mapper tried to run in the background but was stopped by the system.\nThis can happen if you have battery or memory optimization turned on.\n\nTo fix this, you can try following an online guide. You should also restart the service when you\'re done.</string>
@@ -490,8 +490,6 @@
     <string name="dialog_title_fix_dnd_trigger_error">Grant Do Not Disturb access</string>
     <string name="dialog_message_fix_dnd_trigger_error">You will be taken to your device\'s settings page to manage which apps can modify the Do Not Disturb state. This is <b>not present on some devices</b> so tap don\'t show again if you do not see Key Mapper in the list.</string>
 
-    <string name="dialog_title_keyboard_icon_means_ime_detection">Good to know!</string>
-    <string name="dialog_message_keyboard_icon_means_ime_detection">If you see this symbol (⌨) next to a trigger key then you MUST use a Key Mapper keyboard for it to be detected. This is a restriction in Android and is only required for some buttons.</string>
 
     <string name="dialog_upgrade_gui_keyboard_title">Important!</string>
     <string name="dialog_upgrade_gui_keyboard_message">You must update the Key Mapper GUI Keyboard so it is compatible with this version of Key Mapper. Some key maps may not work until you update!</string>
@@ -1346,8 +1344,14 @@
     <string name="floating_buttons_product_description">Floating buttons display over the apps you want. They work just like real buttons, and you can place, style, and map them however you like.</string>
     <string name="floating_button_text_key_map_list_item">Floating button %s (%s)</string>
     <string name="deleted_floating_button_text_key_map_list_item">Deleted floating button</string>
-    <string name="floating_buttons_all_done_constraints_dialog_title">Constraints</string>
-    <string name="floating_buttons_all_done_constraints_dialog_message">Do you want this button to only be on screen in some apps? Add an “App in foreground” constraint for this key map in the “Constraints” tab.</string>
+    <string name="tip_caps_lock_title">Caps lock remapping</string>
+    <string name="tip_caps_lock_text">To remap Caps Lock, change your physical keyboard layout in settings to \'Caps Lock to camera\', then re-record this trigger.</string>
+    <string name="tip_screen_pinning_title">App pinning warning</string>
+    <string name="tip_screen_pinning_text">Using the back button as a trigger may conflict with app pinning, causing a black screen on unlock. A reboot will fix it.</string>
+    <string name="tip_ime_detection_title">Keyboard icon</string>
+    <string name="tip_ime_detection_text">The ⌨ symbol means you must use a Key Mapper keyboard for this trigger to work due to an Android restriction.</string>
+    <string name="trigger_constraints_tip_title">Limit to specific apps?</string>
+    <string name="trigger_constraints_tip_text">Add constraints in the Constraints tab.</string>
     <string name="choose_floating_layout_title">Choose a layout</string>
     <string name="bottom_app_bar_back_content_description">Back</string>
     <string name="bottom_app_bar_help_content_description">Help</string>

@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.base.trigger
 
-import android.view.KeyEvent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -13,39 +12,32 @@ import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapOptionsViewModel
 import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
+import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegate
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
-import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
-import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
-import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.mapData
-import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -58,6 +50,7 @@ abstract class BaseConfigTriggerViewModel(
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
+    onboardingTipDelegate: OnboardingTipDelegate,
     triggerSetupDelegate: TriggerSetupDelegate,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
@@ -66,7 +59,8 @@ abstract class BaseConfigTriggerViewModel(
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider,
-    TriggerSetupDelegate by triggerSetupDelegate {
+    TriggerSetupDelegate by triggerSetupDelegate,
+    OnboardingTipDelegate by onboardingTipDelegate {
 
     companion object {
         private const val DEVICE_ID_ANY = "any"
@@ -136,16 +130,6 @@ abstract class BaseConfigTriggerViewModel(
                     is RecordedKey.KeyEvent -> onRecordKeyEvent(key)
                 }
             }
-        }
-
-        viewModelScope.launch {
-            config.keyMap
-                .mapNotNull { it.dataOrNull()?.trigger?.mode }
-                .distinctUntilChanged()
-                .drop(1)
-                .collectLatest { mode ->
-                    onTriggerModeChanged(mode)
-                }
         }
 
         // Drop the first state in case it is in the Completed state so the
@@ -227,13 +211,6 @@ abstract class BaseConfigTriggerViewModel(
                 else -> null
             }
 
-            val showPowerButtonEmergencyTip = trigger.keys.any {
-                it is KeyCodeTriggerKey && KeyEventUtils.isPowerButtonKey(
-                    it.keyCode,
-                    it.scanCode ?: -1,
-                )
-            }
-
             ConfigTriggerState.Loaded(
                 triggerKeys = triggerKeys,
                 isReorderingEnabled = isReorderingEnabled,
@@ -242,7 +219,6 @@ abstract class BaseConfigTriggerViewModel(
                 triggerModeButtonsEnabled = triggerModeButtonsEnabled,
                 triggerModeButtonsVisible = triggerModeButtonsVisible,
                 checkedTriggerMode = trigger.mode,
-                showPowerButtonEmergencyTip = showPowerButtonEmergencyTip,
             )
         }
     }
@@ -364,37 +340,6 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    private suspend fun onTriggerModeChanged(mode: TriggerMode) {
-        if (mode is TriggerMode.Parallel) {
-            if (onboarding.shownParallelTriggerOrderExplanation) {
-                return
-            }
-
-            val dialog = DialogModel.Ok(
-                message = getString(R.string.dialog_message_parallel_trigger_order),
-            )
-
-            showDialog("parallel_trigger_order", dialog) ?: return
-
-            onboarding.shownParallelTriggerOrderExplanation = true
-        }
-
-        if (mode is TriggerMode.Sequence) {
-            if (onboarding.shownSequenceTriggerExplanation) {
-                return
-            }
-
-            val dialog = DialogModel.Ok(
-                message = getString(R.string.dialog_message_sequence_trigger_explanation),
-            )
-
-            showDialog("sequence_trigger_explanation", dialog)
-                ?: return
-
-            onboarding.shownSequenceTriggerExplanation = true
-        }
-    }
-
     private suspend fun onRecordKeyEvent(key: RecordedKey.KeyEvent) {
         val triggerDevice = if (key.isExternalDevice) {
             KeyEventTriggerDevice.External(key.deviceDescriptor, key.deviceName)
@@ -408,40 +353,6 @@ abstract class BaseConfigTriggerViewModel(
             triggerDevice,
             key.detectionSource != InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         )
-
-        if (key.keyCode == KeyEvent.KEYCODE_CAPS_LOCK) {
-            val dialog = DialogModel.Ok(
-                message = getString(R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout),
-            )
-
-            showDialog("caps_lock_message", dialog)
-        }
-
-        if (key.keyCode == KeyEvent.KEYCODE_BACK) {
-            val dialog = DialogModel.Ok(
-                message = getString(R.string.dialog_message_screen_pinning_warning),
-            )
-
-            showDialog("screen_pinning_message", dialog)
-        }
-
-        // Issue #491. Some key codes can only be detected through an input method. This will
-        // be shown to the user by showing a keyboard icon next to the trigger key name so
-        // explain this to the user.
-        if (key.detectionSource == InputEventDetectionSource.INPUT_METHOD && displayKeyMap.showTriggerKeyboardIconExplanation.first()) {
-            val dialog = DialogModel.Alert(
-                title = getString(R.string.dialog_title_keyboard_icon_means_ime_detection),
-                message = getString(R.string.dialog_message_keyboard_icon_means_ime_detection),
-                negativeButtonText = getString(R.string.neg_dont_show_again),
-                positiveButtonText = getString(R.string.pos_ok),
-            )
-
-            val response = showDialog("keyboard_icon_explanation", dialog)
-
-            if (response == DialogResponse.NEGATIVE) {
-                displayKeyMap.neverShowTriggerKeyboardIconExplanation()
-            }
-        }
     }
 
     private suspend fun onRecordEvdevEvent(key: RecordedKey.EvdevEvent) {
@@ -547,7 +458,7 @@ abstract class BaseConfigTriggerViewModel(
 
                 is RecordTriggerState.Completed,
                 RecordTriggerState.Idle,
-                -> recordTrigger.startRecording(enableEvdevRecording = false)
+                    -> recordTrigger.startRecording(enableEvdevRecording = false)
             }
 
             // Show dialog if the accessibility service is disabled or crashed
@@ -740,7 +651,6 @@ sealed class ConfigTriggerState {
         val checkedTriggerMode: TriggerMode = TriggerMode.Undefined,
         val triggerModeButtonsEnabled: Boolean = false,
         val triggerModeButtonsVisible: Boolean = false,
-        val showPowerButtonEmergencyTip: Boolean = false,
     ) : ConfigTriggerState()
 }
 
