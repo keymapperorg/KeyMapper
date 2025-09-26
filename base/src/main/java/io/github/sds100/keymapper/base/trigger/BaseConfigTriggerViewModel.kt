@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.base.trigger
 
-import android.view.KeyEvent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -19,13 +18,10 @@ import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
-import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
-import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
-import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.KMError
@@ -357,40 +353,6 @@ abstract class BaseConfigTriggerViewModel(
             triggerDevice,
             key.detectionSource != InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         )
-
-        if (key.keyCode == KeyEvent.KEYCODE_CAPS_LOCK) {
-            val dialog = DialogModel.Ok(
-                message = getString(R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout),
-            )
-
-            showDialog("caps_lock_message", dialog)
-        }
-
-        if (key.keyCode == KeyEvent.KEYCODE_BACK) {
-            val dialog = DialogModel.Ok(
-                message = getString(R.string.dialog_message_screen_pinning_warning),
-            )
-
-            showDialog("screen_pinning_message", dialog)
-        }
-
-        // Issue #491. Some key codes can only be detected through an input method. This will
-        // be shown to the user by showing a keyboard icon next to the trigger key name so
-        // explain this to the user.
-        if (key.detectionSource == InputEventDetectionSource.INPUT_METHOD && displayKeyMap.showTriggerKeyboardIconExplanation.first()) {
-            val dialog = DialogModel.Alert(
-                title = getString(R.string.dialog_title_keyboard_icon_means_ime_detection),
-                message = getString(R.string.dialog_message_keyboard_icon_means_ime_detection),
-                negativeButtonText = getString(R.string.neg_dont_show_again),
-                positiveButtonText = getString(R.string.pos_ok),
-            )
-
-            val response = showDialog("keyboard_icon_explanation", dialog)
-
-            if (response == DialogResponse.NEGATIVE) {
-                displayKeyMap.neverShowTriggerKeyboardIconExplanation()
-            }
-        }
     }
 
     private suspend fun onRecordEvdevEvent(key: RecordedKey.EvdevEvent) {

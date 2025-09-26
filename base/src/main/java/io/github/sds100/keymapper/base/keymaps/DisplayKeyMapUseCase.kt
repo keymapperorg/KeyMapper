@@ -111,21 +111,8 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
         )
     }
 
-    override val showTriggerKeyboardIconExplanation: Flow<Boolean> =
-        settingsRepository.get(Keys.neverShowTriggerKeyboardIconExplanation).map { neverShow ->
-            if (neverShow == null) {
-                true
-            } else {
-                !neverShow
-            }
-        }
-
     override val showDeviceDescriptors: Flow<Boolean> =
         settingsRepository.get(Keys.showDeviceDescriptors).map { it == true }
-
-    override fun neverShowTriggerKeyboardIconExplanation() {
-        settingsRepository.set(Keys.neverShowTriggerKeyboardIconExplanation, true)
-    }
 
     override fun neverShowDpadImeSetupError() {
         settingsRepository.set(Keys.neverShowDpadImeTriggerError, true)
@@ -230,8 +217,6 @@ interface DisplayKeyMapUseCase :
     val triggerErrorSnapshot: Flow<TriggerErrorSnapshot>
     suspend fun isFloatingButtonsPurchased(): Boolean
     suspend fun fixTriggerError(error: TriggerError)
-    val showTriggerKeyboardIconExplanation: Flow<Boolean>
-    fun neverShowTriggerKeyboardIconExplanation()
     override val showDeviceDescriptors: Flow<Boolean>
 
     fun neverShowDpadImeSetupError()
