@@ -5,8 +5,8 @@ import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
@@ -15,8 +15,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import timber.log.Timber
-import kotlin.collections.set
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -34,36 +32,31 @@ class AndroidCameraAdapter @Inject constructor(
     )
     private val isFlashEnabledMap = MutableStateFlow(initialMap)
 
-    private val torchCallback by lazy {
-        @RequiresApi(Build.VERSION_CODES.M)
-        object : CameraManager.TorchCallback() {
-            override fun onTorchModeChanged(cameraId: String, enabled: Boolean) {
-                super.onTorchModeChanged(cameraId, enabled)
+    private val torchCallback = object : CameraManager.TorchCallback() {
+        override fun onTorchModeChanged(cameraId: String, enabled: Boolean) {
+            super.onTorchModeChanged(cameraId, enabled)
 
-                cameraManager.apply {
-                    try {
-                        val camera = getCameraCharacteristics(cameraId)
-                        val lensFacing = camera.get(CameraCharacteristics.LENS_FACING)!!
+            cameraManager.apply {
+                try {
+                    val camera = getCameraCharacteristics(cameraId)
+                    val lensFacing = camera.get(CameraCharacteristics.LENS_FACING)!!
 
-                        when (lensFacing) {
-                            CameraCharacteristics.LENS_FACING_FRONT ->
-                                updateState(CameraLens.FRONT, enabled)
+                    when (lensFacing) {
+                        CameraCharacteristics.LENS_FACING_FRONT ->
+                            updateState(CameraLens.FRONT, enabled)
 
-                            CameraCharacteristics.LENS_FACING_BACK ->
-                                updateState(CameraLens.BACK, enabled)
-                        }
-                    } catch (e: Exception) {
-                        Timber.e(e)
+                        CameraCharacteristics.LENS_FACING_BACK ->
+                            updateState(CameraLens.BACK, enabled)
                     }
+                } catch (e: Exception) {
+                    Timber.e(e)
                 }
             }
         }
     }
 
     init {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            cameraManager.registerTorchCallback(torchCallback, null)
-        }
+        cameraManager.registerTorchCallback(torchCallback, null)
     }
 
     override fun getFlashInfo(lens: CameraLens): CameraFlashInfo? {
@@ -138,11 +131,13 @@ class AndroidCameraAdapter @Inject constructor(
         return null
     }
 
-    override fun enableFlashlight(lens: CameraLens, strengthPercent: Float?): KMResult<*> = setFlashlightMode(true, lens, strengthPercent)
+    override fun enableFlashlight(lens: CameraLens, strengthPercent: Float?): KMResult<*> =
+        setFlashlightMode(true, lens, strengthPercent)
 
     override fun disableFlashlight(lens: CameraLens): KMResult<*> = setFlashlightMode(false, lens)
 
-    override fun toggleFlashlight(lens: CameraLens, strengthPercent: Float?): KMResult<*> = setFlashlightMode(!isFlashEnabledMap.value[lens]!!, lens, strengthPercent)
+    override fun toggleFlashlight(lens: CameraLens, strengthPercent: Float?): KMResult<*> =
+        setFlashlightMode(!isFlashEnabledMap.value[lens]!!, lens, strengthPercent)
 
     override fun isFlashlightOn(lens: CameraLens): Boolean = isFlashEnabledMap.value[lens] ?: false
 
@@ -172,14 +167,10 @@ class AndroidCameraAdapter @Inject constructor(
 
             val currentStrength = cameraManager.getTorchStrengthLevel(cameraId)
 
-            val maxStrength = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                getCharacteristicForLens(
-                    lens,
-                    CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL,
-                )
-            } else {
-                null
-            }
+            val maxStrength = getCharacteristicForLens(
+                lens,
+                CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL,
+            )
 
             if (maxStrength != null) {
                 val newStrength =
@@ -206,9 +197,6 @@ class AndroidCameraAdapter @Inject constructor(
         lens: CameraLens,
         strengthPercent: Float? = null,
     ): KMResult<*> {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
-        }
 
         try {
             val cameraId = getFlashlightCameraIdForLens(lens)
