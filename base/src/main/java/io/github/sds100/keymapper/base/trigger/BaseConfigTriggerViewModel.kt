@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapOptionsViewModel
 import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
+import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegate
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
@@ -30,22 +31,17 @@ import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.mapData
-import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -58,6 +54,7 @@ abstract class BaseConfigTriggerViewModel(
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
+    onboardingTipDelegate: OnboardingTipDelegate,
     triggerSetupDelegate: TriggerSetupDelegate,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
@@ -66,7 +63,8 @@ abstract class BaseConfigTriggerViewModel(
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider,
-    TriggerSetupDelegate by triggerSetupDelegate {
+    TriggerSetupDelegate by triggerSetupDelegate,
+    OnboardingTipDelegate by onboardingTipDelegate {
 
     companion object {
         private const val DEVICE_ID_ANY = "any"
@@ -136,16 +134,6 @@ abstract class BaseConfigTriggerViewModel(
                     is RecordedKey.KeyEvent -> onRecordKeyEvent(key)
                 }
             }
-        }
-
-        viewModelScope.launch {
-            config.keyMap
-                .mapNotNull { it.dataOrNull()?.trigger?.mode }
-                .distinctUntilChanged()
-                .drop(1)
-                .collectLatest { mode ->
-                    onTriggerModeChanged(mode)
-                }
         }
 
         // Drop the first state in case it is in the Completed state so the
@@ -227,13 +215,6 @@ abstract class BaseConfigTriggerViewModel(
                 else -> null
             }
 
-            val showPowerButtonEmergencyTip = trigger.keys.any {
-                it is KeyCodeTriggerKey && KeyEventUtils.isPowerButtonKey(
-                    it.keyCode,
-                    it.scanCode ?: -1,
-                )
-            }
-
             ConfigTriggerState.Loaded(
                 triggerKeys = triggerKeys,
                 isReorderingEnabled = isReorderingEnabled,
@@ -242,7 +223,6 @@ abstract class BaseConfigTriggerViewModel(
                 triggerModeButtonsEnabled = triggerModeButtonsEnabled,
                 triggerModeButtonsVisible = triggerModeButtonsVisible,
                 checkedTriggerMode = trigger.mode,
-                showPowerButtonEmergencyTip = showPowerButtonEmergencyTip,
             )
         }
     }
@@ -361,37 +341,6 @@ abstract class BaseConfigTriggerViewModel(
                     label = name,
                 )
             }
-        }
-    }
-
-    private suspend fun onTriggerModeChanged(mode: TriggerMode) {
-        if (mode is TriggerMode.Parallel) {
-            if (onboarding.shownParallelTriggerOrderExplanation) {
-                return
-            }
-
-            val dialog = DialogModel.Ok(
-                message = getString(R.string.dialog_message_parallel_trigger_order),
-            )
-
-            showDialog("parallel_trigger_order", dialog) ?: return
-
-            onboarding.shownParallelTriggerOrderExplanation = true
-        }
-
-        if (mode is TriggerMode.Sequence) {
-            if (onboarding.shownSequenceTriggerExplanation) {
-                return
-            }
-
-            val dialog = DialogModel.Ok(
-                message = getString(R.string.dialog_message_sequence_trigger_explanation),
-            )
-
-            showDialog("sequence_trigger_explanation", dialog)
-                ?: return
-
-            onboarding.shownSequenceTriggerExplanation = true
         }
     }
 
@@ -547,7 +496,7 @@ abstract class BaseConfigTriggerViewModel(
 
                 is RecordTriggerState.Completed,
                 RecordTriggerState.Idle,
-                -> recordTrigger.startRecording(enableEvdevRecording = false)
+                    -> recordTrigger.startRecording(enableEvdevRecording = false)
             }
 
             // Show dialog if the accessibility service is disabled or crashed
@@ -740,7 +689,6 @@ sealed class ConfigTriggerState {
         val checkedTriggerMode: TriggerMode = TriggerMode.Undefined,
         val triggerModeButtonsEnabled: Boolean = false,
         val triggerModeButtonsVisible: Boolean = false,
-        val showPowerButtonEmergencyTip: Boolean = false,
     ) : ConfigTriggerState()
 }
 

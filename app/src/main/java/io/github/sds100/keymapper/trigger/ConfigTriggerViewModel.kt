@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.trigger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
+import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegate
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.base.trigger.BaseConfigTriggerViewModel
@@ -23,6 +24,7 @@ class ConfigTriggerViewModel @Inject constructor(
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
+    onboardingTipDelegate: OnboardingTipDelegate,
     triggerSetupDelegate: TriggerSetupDelegate,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
@@ -34,6 +36,7 @@ class ConfigTriggerViewModel @Inject constructor(
     createKeyMapShortcut = createKeyMapShortcut,
     displayKeyMap = displayKeyMap,
     fingerprintGesturesSupported = fingerprintGesturesSupported,
+    onboardingTipDelegate = onboardingTipDelegate,
     triggerSetupDelegate = triggerSetupDelegate,
     resourceProvider = resourceProvider,
     navigationProvider = navigationProvider,

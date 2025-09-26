@@ -33,6 +33,8 @@ import io.github.sds100.keymapper.base.logging.DisplayLogUseCase
 import io.github.sds100.keymapper.base.logging.DisplayLogUseCaseImpl
 import io.github.sds100.keymapper.base.logging.ShareLogcatUseCase
 import io.github.sds100.keymapper.base.logging.ShareLogcatUseCaseImpl
+import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegate
+import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegateImpl
 import io.github.sds100.keymapper.base.promode.SystemBridgeSetupUseCase
 import io.github.sds100.keymapper.base.promode.SystemBridgeSetupUseCaseImpl
 import io.github.sds100.keymapper.base.settings.ConfigSettingsUseCase
@@ -156,4 +158,8 @@ abstract class BaseViewModelHiltModule {
     @Binds
     @ViewModelScoped
     abstract fun bindShareLogcatUseCase(impl: ShareLogcatUseCaseImpl): ShareLogcatUseCase
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindOnboardingTipDelegate(impl: OnboardingTipDelegateImpl): OnboardingTipDelegate
 }

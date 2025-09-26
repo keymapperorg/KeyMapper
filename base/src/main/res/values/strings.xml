@@ -425,8 +425,10 @@
     <string name="dialog_message_write_secure_settings">A PC/Mac is required to grant this permission. Read the online guide.</string>
 
     <string name="dialog_message_cant_find_accessibility_settings_page">Your device doesn\'t seem to have an accessibility services settings page. Tap \"guide\" to read the online guide that explains how to fix this.</string>
-    <string name="dialog_message_parallel_trigger_order">The keys need to be listed from top to bottom in the order that they will be held down.</string>
-    <string name="dialog_message_sequence_trigger_explanation">A \"sequence\" trigger has a timeout unlike parallel triggers. This means after you press the first key, you will have a set amount of time to input the rest of the keys in the trigger. All the keys that you have added to the trigger won\'t do their usual action until the timeout has been reached. You can change this timeout in the "Options" tab.</string>
+    <string name="dialog_message_parallel_trigger_order">You must hold down the keys in the order that they are listed.</string>
+    <string name="dialog_message_sequence_trigger_explanation">There is a timeout to input this trigger. You can change this timeout in the "Options" tab.</string>
+    <string name="tip_parallel_trigger_title">How to use this trigger</string>
+    <string name="tip_sequence_trigger_title">Sequence triggers</string>
     <string name="dialog_message_bt_constraint_limitation">Android doesn\'t allow apps to get a list of connected (not paired) Bluetooth devices. Apps can only detect when they are connected and disconnected. So if your Bluetooth device is already connected to your device when the accessibility service starts, you will have to reconnect it for the app to know it is connected.</string>
     <string name="dialog_title_change_location_or_disable">Automatic backup</string>
     <string name="dialog_message_change_location_or_disable">Change location or turn off automatic back up?</string>
@@ -1346,8 +1348,8 @@
     <string name="floating_buttons_product_description">Floating buttons display over the apps you want. They work just like real buttons, and you can place, style, and map them however you like.</string>
     <string name="floating_button_text_key_map_list_item">Floating button %s (%s)</string>
     <string name="deleted_floating_button_text_key_map_list_item">Deleted floating button</string>
-    <string name="floating_buttons_all_done_constraints_dialog_title">Constraints</string>
-    <string name="floating_buttons_all_done_constraints_dialog_message">Do you want this button to only be on screen in some apps? Add an “App in foreground” constraint for this key map in the “Constraints” tab.</string>
+    <string name="trigger_constraints_tip_title">Limit to specific apps?</string>
+    <string name="trigger_constraints_tip_text">Add constraints in the Constraints tab.</string>
     <string name="choose_floating_layout_title">Choose a layout</string>
     <string name="bottom_app_bar_back_content_description">Back</string>
     <string name="bottom_app_bar_help_content_description">Help</string>
