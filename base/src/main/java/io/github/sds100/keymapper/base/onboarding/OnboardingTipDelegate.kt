@@ -29,8 +29,9 @@ class OnboardingTipDelegateImpl @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
     private val configTriggerUseCase: ConfigTriggerUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
-    resourceProvider: ResourceProvider
-) : OnboardingTipDelegate, PreferenceRepository by preferenceRepository,
+    resourceProvider: ResourceProvider,
+) : OnboardingTipDelegate,
+    PreferenceRepository by preferenceRepository,
     ResourceProvider by resourceProvider {
 
     companion object {
@@ -139,11 +140,10 @@ class OnboardingTipDelegateImpl @Inject constructor(
                     id = POWER_BUTTON_EMERGENCY_TIP_ID,
                     title = getString(R.string.pro_mode_emergency_tip_title),
                     message = getString(R.string.pro_mode_emergency_tip_text),
-                    isDismissable = false
+                    isDismissable = false,
                 )
 
                 triggerTip.value = tipModel
-
             }
 
             trigger.mode is TriggerMode.Parallel && !shownParallelTriggerOrderExplanation -> {
@@ -151,19 +151,18 @@ class OnboardingTipDelegateImpl @Inject constructor(
                     id = PARALLEL_TRIGGER_TIP_ID,
                     title = getString(R.string.tip_parallel_trigger_title),
                     message = getString(R.string.dialog_message_parallel_trigger_order),
-                    isDismissable = true
+                    isDismissable = true,
                 )
 
                 triggerTip.value = tipModel
             }
 
             trigger.mode is TriggerMode.Sequence && !shownSequenceTriggerExplanation -> {
-
                 val tipModel = OnboardingTipModel(
                     id = SEQUENCE_TRIGGER_TIP_ID,
                     title = getString(R.string.tip_sequence_trigger_title),
                     message = getString(R.string.dialog_message_sequence_trigger_explanation),
-                    isDismissable = true
+                    isDismissable = true,
                 )
 
                 triggerTip.value = tipModel
@@ -174,7 +173,7 @@ class OnboardingTipDelegateImpl @Inject constructor(
                     id = TRIGGER_CONSTRAINTS_TIP_ID,
                     title = getString(R.string.trigger_constraints_tip_title),
                     message = getString(R.string.trigger_constraints_tip_text),
-                    isDismissable = true
+                    isDismissable = true,
                 )
 
                 triggerTip.value = tipModel

@@ -39,13 +39,13 @@ fun TipCard(
         elevation = CardDefaults.elevatedCardElevation(),
     ) {
         Box(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Column {
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
                     modifier = Modifier.padding(start = 16.dp, end = 48.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Info,
@@ -78,7 +78,7 @@ fun TipCard(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(4.dp),
-                    onClick = onDismiss
+                    onClick = onDismiss,
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Close,

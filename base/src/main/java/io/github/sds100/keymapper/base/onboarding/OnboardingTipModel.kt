@@ -4,5 +4,5 @@ data class OnboardingTipModel(
     val id: String,
     val title: String,
     val message: String,
-    val isDismissable: Boolean
+    val isDismissable: Boolean,
 )

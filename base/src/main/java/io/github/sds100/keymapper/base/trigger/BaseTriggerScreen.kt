@@ -143,7 +143,7 @@ fun BaseTriggerScreen(
                         viewModel.showDiscoverTriggersBottomSheet = true
                     },
                     discoverScreenContent = discoverScreenContent,
-                    tipContent = tipContent
+                    tipContent = tipContent,
                 )
             } else {
                 TriggerScreenVertical(
@@ -163,7 +163,7 @@ fun BaseTriggerScreen(
                         viewModel.showDiscoverTriggersBottomSheet = true
                     },
                     discoverScreenContent = discoverScreenContent,
-                    tipContent = tipContent
+                    tipContent = tipContent,
                 )
             }
         }
@@ -207,7 +207,7 @@ private fun TriggerScreenVertical(
     onFixErrorClick: (TriggerError) -> Unit = {},
     onAddMoreTriggerKeysClick: () -> Unit = {},
     discoverScreenContent: @Composable () -> Unit = {},
-    tipContent: @Composable () -> Unit = {}
+    tipContent: @Composable () -> Unit = {},
 ) {
     Surface(modifier = modifier) {
         Column {
@@ -312,7 +312,7 @@ private fun TriggerScreenHorizontal(
     onFixErrorClick: (TriggerError) -> Unit = {},
     onAddMoreTriggerKeysClick: () -> Unit = {},
     discoverScreenContent: @Composable () -> Unit = {},
-    tipContent: @Composable () -> Unit = {}
+    tipContent: @Composable () -> Unit = {},
 ) {
     Surface(modifier = modifier) {
         when (configState) {
@@ -674,7 +674,7 @@ private fun HorizontalPreview() {
                 )
 
                 Spacer(Modifier.height(8.dp))
-            }
+            },
         )
     }
 }
