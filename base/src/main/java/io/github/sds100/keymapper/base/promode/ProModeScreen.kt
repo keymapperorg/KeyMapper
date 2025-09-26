@@ -402,6 +402,8 @@ private fun LoadedContent(
             isChecked = autoStartAtBoot,
             onCheckedChange = onAutoStartAtBootToggled,
         )
+
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }
 
