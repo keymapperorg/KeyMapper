@@ -34,13 +34,13 @@ internal class AdbMdns(
 
     private val nsdManager: NsdManager = ctx.getSystemService(NsdManager::class.java)
 
-    private val serviceDiscoveredChannel: Channel<NsdServiceInfo> = Channel(capacity = 10)
+    private var serviceDiscoveredChannel: Channel<NsdServiceInfo>? = null
 
     /**
      * Only one service can be resolved at a time.
      * A null value is sent if the service failed to resolve.
      */
-    private val serviceResolvedChannel: Channel<NsdServiceInfo?> = Channel(capacity = 1)
+    private var serviceResolvedChannel: Channel<NsdServiceInfo?>? = null
 
     private val isDiscovering: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val discoveredPort: MutableStateFlow<Int?> = MutableStateFlow(null)
@@ -48,24 +48,24 @@ internal class AdbMdns(
 
     private val resolveListener: NsdManager.ResolveListener = object : NsdManager.ResolveListener {
         override fun onResolveFailed(nsdServiceInfo: NsdServiceInfo, i: Int) {
-            serviceResolvedChannel.trySendBlocking(null)
+            serviceResolvedChannel?.trySendBlocking(null)
         }
 
         override fun onServiceResolved(nsdServiceInfo: NsdServiceInfo) {
             Timber.d("onServiceResolved: ${nsdServiceInfo.serviceName} ${nsdServiceInfo.host} ${nsdServiceInfo.port} ${nsdServiceInfo.serviceType}")
-            serviceResolvedChannel.trySendBlocking(nsdServiceInfo)
+            serviceResolvedChannel?.trySendBlocking(nsdServiceInfo)
         }
 
         override fun onResolutionStopped(serviceInfo: NsdServiceInfo) {
             super.onResolutionStopped(serviceInfo)
 
-            serviceResolvedChannel.trySendBlocking(null)
+            serviceResolvedChannel?.trySendBlocking(null)
         }
 
         override fun onStopResolutionFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
             super.onStopResolutionFailed(serviceInfo, errorCode)
 
-            serviceResolvedChannel.trySendBlocking(null)
+            serviceResolvedChannel?.trySendBlocking(null)
         }
     }
 
@@ -95,7 +95,7 @@ internal class AdbMdns(
                 Timber.d("onServiceFound: ${serviceInfo.serviceName} ${serviceInfo.host} ${serviceInfo.port} ${serviceInfo.serviceType}")
 
                 // You can only resolve one service at a time and they can take some time to resolve.
-                serviceDiscoveredChannel.trySend(serviceInfo)
+                serviceDiscoveredChannel?.trySend(serviceInfo)
             }
 
             override fun onServiceLost(serviceInfo: NsdServiceInfo) {
@@ -129,6 +129,9 @@ internal class AdbMdns(
         // Wait for it to stop discovering
         isDiscovering.first { !it }
 
+        serviceDiscoveredChannel = Channel(capacity = 10)
+        serviceResolvedChannel = Channel(capacity = 1)
+
         nsdManager.discoverServices(
             serviceType.id,
             NsdManager.PROTOCOL_DNS_SD,
@@ -138,10 +141,10 @@ internal class AdbMdns(
         try {
             withTimeout(10000L) {
                 while (port == null) {
-                    val service = serviceDiscoveredChannel.receive()
+                    val service = serviceDiscoveredChannel?.receive()
                     nsdManager.resolveService(service, resolveListener)
 
-                    val resolvedService = serviceResolvedChannel.receive()
+                    val resolvedService = serviceResolvedChannel?.receive()
 
                     if (resolvedService == null) {
                         continue
@@ -183,15 +186,8 @@ internal class AdbMdns(
             nsdManager.stopServiceDiscovery(discoveryListener)
         }
 
-        // Clear the resolve channel if there is anything left.
-        while (!serviceResolvedChannel.isEmpty) {
-            serviceResolvedChannel.tryReceive()
-        }
-
-        // Clear the discovered channel if there is anything left.
-        while (!serviceDiscoveredChannel.isEmpty) {
-            serviceDiscoveredChannel.tryReceive()
-        }
+        serviceResolvedChannel?.cancel()
+        serviceDiscoveredChannel?.cancel()
     }
 
     private fun isPortAvailable(port: Int): Boolean {
