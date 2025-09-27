@@ -20,27 +20,27 @@ class ConstraintUiHelper(
 
     private val timeFormatter by lazy { TimeUtils.localeDateFormatter(FormatStyle.SHORT) }
 
-    fun getTitle(constraint: Constraint): String = when (constraint) {
-        is Constraint.AppInForeground ->
-            getAppName(constraint.packageName).handle(
+    fun getTitle(constraint: Constraint): String = when (constraint.data) {
+        is ConstraintData.AppInForeground ->
+            getAppName(constraint.data.packageName).handle(
                 onSuccess = { getString(R.string.constraint_app_foreground_description, it) },
                 onError = { getString(R.string.constraint_choose_app_foreground) },
             )
 
-        is Constraint.AppNotInForeground ->
-            getAppName(constraint.packageName).handle(
+        is ConstraintData.AppNotInForeground ->
+            getAppName(constraint.data.packageName).handle(
                 onSuccess = { getString(R.string.constraint_app_not_foreground_description, it) },
                 onError = { getString(R.string.constraint_choose_app_not_foreground) },
             )
 
-        is Constraint.AppPlayingMedia ->
-            getAppName(constraint.packageName).handle(
+        is ConstraintData.AppPlayingMedia ->
+            getAppName(constraint.data.packageName).handle(
                 onSuccess = { getString(R.string.constraint_app_playing_media_description, it) },
                 onError = { getString(R.string.constraint_choose_app_playing_media) },
             )
 
-        is Constraint.AppNotPlayingMedia ->
-            getAppName(constraint.packageName).handle(
+        is ConstraintData.AppNotPlayingMedia ->
+            getAppName(constraint.data.packageName).handle(
                 onSuccess = {
                     getString(
                         R.string.constraint_app_not_playing_media_description,
@@ -50,23 +50,23 @@ class ConstraintUiHelper(
                 onError = { getString(R.string.constraint_choose_app_playing_media) },
             )
 
-        is Constraint.MediaPlaying -> getString(R.string.constraint_choose_media_playing)
-        is Constraint.NoMediaPlaying -> getString(R.string.constraint_choose_media_not_playing)
+        is ConstraintData.MediaPlaying -> getString(R.string.constraint_choose_media_playing)
+        is ConstraintData.NoMediaPlaying -> getString(R.string.constraint_choose_media_not_playing)
 
-        is Constraint.BtDeviceConnected ->
+        is ConstraintData.BtDeviceConnected ->
             getString(
                 R.string.constraint_bt_device_connected_description,
-                constraint.deviceName,
+                constraint.data.deviceName,
             )
 
-        is Constraint.BtDeviceDisconnected ->
+        is ConstraintData.BtDeviceDisconnected ->
             getString(
                 R.string.constraint_bt_device_disconnected_description,
-                constraint.deviceName,
+                constraint.data.deviceName,
             )
 
-        is Constraint.OrientationCustom -> {
-            val resId = when (constraint.orientation) {
+        is ConstraintData.OrientationCustom -> {
+            val resId = when (constraint.data.orientation) {
                 Orientation.ORIENTATION_0 -> R.string.constraint_choose_orientation_0
                 Orientation.ORIENTATION_90 -> R.string.constraint_choose_orientation_90
                 Orientation.ORIENTATION_180 -> R.string.constraint_choose_orientation_180
@@ -76,94 +76,94 @@ class ConstraintUiHelper(
             getString(resId)
         }
 
-        is Constraint.OrientationLandscape ->
+        is ConstraintData.OrientationLandscape ->
             getString(R.string.constraint_choose_orientation_landscape)
 
-        is Constraint.OrientationPortrait ->
+        is ConstraintData.OrientationPortrait ->
             getString(R.string.constraint_choose_orientation_portrait)
 
-        is Constraint.ScreenOff ->
+        is ConstraintData.ScreenOff ->
             getString(R.string.constraint_screen_off_description)
 
-        is Constraint.ScreenOn ->
+        is ConstraintData.ScreenOn ->
             getString(R.string.constraint_screen_on_description)
 
-        is Constraint.FlashlightOff -> if (constraint.lens == CameraLens.FRONT) {
+        is ConstraintData.FlashlightOff -> if (constraint.data.lens == CameraLens.FRONT) {
             getString(R.string.constraint_front_flashlight_off_description)
         } else {
             getString(R.string.constraint_flashlight_off_description)
         }
 
-        is Constraint.FlashlightOn -> if (constraint.lens == CameraLens.FRONT) {
+        is ConstraintData.FlashlightOn -> if (constraint.data.lens == CameraLens.FRONT) {
             getString(R.string.constraint_front_flashlight_on_description)
         } else {
             getString(R.string.constraint_flashlight_on_description)
         }
 
-        is Constraint.WifiConnected -> {
-            if (constraint.ssid == null) {
+        is ConstraintData.WifiConnected -> {
+            if (constraint.data.ssid == null) {
                 getString(R.string.constraint_wifi_connected_any_description)
             } else {
-                getString(R.string.constraint_wifi_connected_description, constraint.ssid)
+                getString(R.string.constraint_wifi_connected_description, constraint.data.ssid)
             }
         }
 
-        is Constraint.WifiDisconnected -> {
-            if (constraint.ssid == null) {
+        is ConstraintData.WifiDisconnected -> {
+            if (constraint.data.ssid == null) {
                 getString(R.string.constraint_wifi_disconnected_any_description)
             } else {
-                getString(R.string.constraint_wifi_disconnected_description, constraint.ssid)
+                getString(R.string.constraint_wifi_disconnected_description, constraint.data.ssid)
             }
         }
 
-        is Constraint.WifiOff -> getString(R.string.constraint_wifi_off)
-        is Constraint.WifiOn -> getString(R.string.constraint_wifi_on)
+        is ConstraintData.WifiOff -> getString(R.string.constraint_wifi_off)
+        is ConstraintData.WifiOn -> getString(R.string.constraint_wifi_on)
 
-        is Constraint.ImeChosen -> {
-            val label = getInputMethodLabel(constraint.imeId).valueIfFailure {
-                constraint.imeLabel
+        is ConstraintData.ImeChosen -> {
+            val label = getInputMethodLabel(constraint.data.imeId).valueIfFailure {
+                constraint.data.imeLabel
             }
 
             getString(R.string.constraint_ime_chosen_description, label)
         }
 
-        is Constraint.ImeNotChosen -> {
-            val label = getInputMethodLabel(constraint.imeId).valueIfFailure {
-                constraint.imeLabel
+        is ConstraintData.ImeNotChosen -> {
+            val label = getInputMethodLabel(constraint.data.imeId).valueIfFailure {
+                constraint.data.imeLabel
             }
 
             getString(R.string.constraint_ime_not_chosen_description, label)
         }
 
-        is Constraint.DeviceIsLocked -> getString(R.string.constraint_device_is_locked)
-        is Constraint.DeviceIsUnlocked -> getString(R.string.constraint_device_is_unlocked)
-        is Constraint.InPhoneCall -> getString(R.string.constraint_in_phone_call)
-        is Constraint.NotInPhoneCall -> getString(R.string.constraint_not_in_phone_call)
-        is Constraint.PhoneRinging -> getString(R.string.constraint_phone_ringing)
-        is Constraint.Charging -> getString(R.string.constraint_charging)
-        is Constraint.Discharging -> getString(R.string.constraint_discharging)
-        is Constraint.LockScreenShowing -> getString(R.string.constraint_lock_screen_showing)
-        is Constraint.LockScreenNotShowing -> getString(R.string.constraint_lock_screen_not_showing)
-        is Constraint.Time -> getString(
+        is ConstraintData.DeviceIsLocked -> getString(R.string.constraint_device_is_locked)
+        is ConstraintData.DeviceIsUnlocked -> getString(R.string.constraint_device_is_unlocked)
+        is ConstraintData.InPhoneCall -> getString(R.string.constraint_in_phone_call)
+        is ConstraintData.NotInPhoneCall -> getString(R.string.constraint_not_in_phone_call)
+        is ConstraintData.PhoneRinging -> getString(R.string.constraint_phone_ringing)
+        is ConstraintData.Charging -> getString(R.string.constraint_charging)
+        is ConstraintData.Discharging -> getString(R.string.constraint_discharging)
+        is ConstraintData.LockScreenShowing -> getString(R.string.constraint_lock_screen_showing)
+        is ConstraintData.LockScreenNotShowing -> getString(R.string.constraint_lock_screen_not_showing)
+        is ConstraintData.Time -> getString(
             R.string.constraint_time_formatted,
             arrayOf(
-                timeFormatter.format(constraint.startTime),
-                timeFormatter.format(constraint.endTime),
+                timeFormatter.format(constraint.data.startTime),
+                timeFormatter.format(constraint.data.endTime),
             ),
         )
     }
 
-    fun getIcon(constraint: Constraint): ComposeIconInfo = when (constraint) {
-        is Constraint.AppInForeground -> getAppIconInfo(constraint.packageName)
+    fun getIcon(constraint: Constraint): ComposeIconInfo = when (constraint.data) {
+        is ConstraintData.AppInForeground -> getAppIconInfo(constraint.data.packageName)
             ?: ComposeIconInfo.Vector(Icons.Rounded.Android)
 
-        is Constraint.AppNotInForeground -> getAppIconInfo(constraint.packageName)
+        is ConstraintData.AppNotInForeground -> getAppIconInfo(constraint.data.packageName)
             ?: ComposeIconInfo.Vector(Icons.Rounded.Android)
 
-        is Constraint.AppPlayingMedia -> getAppIconInfo(constraint.packageName)
+        is ConstraintData.AppPlayingMedia -> getAppIconInfo(constraint.data.packageName)
             ?: ComposeIconInfo.Vector(Icons.Rounded.Android)
 
-        is Constraint.AppNotPlayingMedia -> getAppIconInfo(constraint.packageName)
+        is ConstraintData.AppNotPlayingMedia -> getAppIconInfo(constraint.data.packageName)
             ?: ComposeIconInfo.Vector(Icons.Rounded.Android)
 
         else -> ConstraintUtils.getIcon(constraint.id)

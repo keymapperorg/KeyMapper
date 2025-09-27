@@ -6,6 +6,7 @@ import io.github.sds100.keymapper.base.backup.BackupManager
 import io.github.sds100.keymapper.base.backup.BackupManagerImpl
 import io.github.sds100.keymapper.base.backup.BackupUtils
 import io.github.sds100.keymapper.base.constraints.Constraint
+import io.github.sds100.keymapper.base.constraints.ConstraintData
 import io.github.sds100.keymapper.base.constraints.ConstraintEntityMapper
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.constraints.ConstraintModeEntityMapper
@@ -245,8 +246,9 @@ class ListKeyMapsUseCaseImpl @Inject constructor(
         }
     }
 
-    override suspend fun addGroupConstraint(constraint: Constraint) {
+    override suspend fun addGroupConstraint(constraintData: ConstraintData) {
         keyMapListGroupUid.value?.also { groupUid ->
+            val constraint = Constraint(data = constraintData)
             val constraintEntity = ConstraintEntityMapper.toEntity(constraint)
             var groupEntity = groupRepository.getGroup(groupUid) ?: return
 
@@ -368,7 +370,7 @@ interface ListKeyMapsUseCase : DisplayKeyMapUseCase {
     suspend fun popGroup()
     suspend fun deleteGroup()
     suspend fun renameGroup(name: String): Boolean
-    suspend fun addGroupConstraint(constraint: Constraint)
+    suspend fun addGroupConstraint(constraintData: ConstraintData)
     suspend fun removeGroupConstraint(constraintUid: String)
     suspend fun setGroupConstraintMode(mode: ConstraintMode)
     fun getGroups(parentUid: String?): Flow<List<Group>>

@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.actions
 
 import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.base.constraints.ConfigConstraintsUseCase
-import io.github.sds100.keymapper.base.constraints.Constraint
+import io.github.sds100.keymapper.base.constraints.ConstraintData
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapState
 import io.github.sds100.keymapper.base.keymaps.GetDefaultKeyMapOptionsUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
@@ -221,11 +221,11 @@ class ConfigActionsUseCaseImpl @Inject constructor(
         }
 
         if (data is ActionData.AnswerCall) {
-            configConstraints.addConstraint(Constraint.PhoneRinging())
+            configConstraints.addConstraint(ConstraintData.PhoneRinging)
         }
 
         if (data is ActionData.EndCall) {
-            configConstraints.addConstraint(Constraint.InPhoneCall())
+            configConstraints.addConstraint(ConstraintData.InPhoneCall)
         }
 
         return Action(

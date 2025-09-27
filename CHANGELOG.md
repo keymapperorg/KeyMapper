@@ -25,6 +25,7 @@
 ## Fixed
 
 - Restoring subgroups works and does not freeze Key Mapper
+- Do not show duplicate constraint shortcuts
 
 ## [3.2.1](https://github.com/sds100/KeyMapper/releases/tag/v3.2.1)
 

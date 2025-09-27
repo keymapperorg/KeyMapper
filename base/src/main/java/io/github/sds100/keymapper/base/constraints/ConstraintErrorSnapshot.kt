@@ -36,34 +36,34 @@ class LazyConstraintErrorSnapshot(
     }
 
     override fun getError(constraint: Constraint): KMError? {
-        when (constraint) {
-            is Constraint.AppInForeground -> return getAppError(constraint.packageName)
-            is Constraint.AppNotInForeground -> return getAppError(constraint.packageName)
+        when (constraint.data) {
+            is ConstraintData.AppInForeground -> return getAppError(constraint.data.packageName)
+            is ConstraintData.AppNotInForeground -> return getAppError(constraint.data.packageName)
 
-            is Constraint.AppPlayingMedia -> {
+            is ConstraintData.AppPlayingMedia -> {
                 if (!isPermissionGranted(Permission.NOTIFICATION_LISTENER)) {
                     return SystemError.PermissionDenied(Permission.NOTIFICATION_LISTENER)
                 }
 
-                return getAppError(constraint.packageName)
+                return getAppError(constraint.data.packageName)
             }
 
-            is Constraint.AppNotPlayingMedia -> {
+            is ConstraintData.AppNotPlayingMedia -> {
                 if (!isPermissionGranted(Permission.NOTIFICATION_LISTENER)) {
                     return SystemError.PermissionDenied(Permission.NOTIFICATION_LISTENER)
                 }
 
-                return getAppError(constraint.packageName)
+                return getAppError(constraint.data.packageName)
             }
 
-            Constraint.MediaPlaying, Constraint.NoMediaPlaying -> {
+            ConstraintData.MediaPlaying, ConstraintData.NoMediaPlaying -> {
                 if (!isPermissionGranted(Permission.NOTIFICATION_LISTENER)) {
                     return SystemError.PermissionDenied(Permission.NOTIFICATION_LISTENER)
                 }
             }
 
-            is Constraint.BtDeviceConnected,
-            is Constraint.BtDeviceDisconnected,
+            is ConstraintData.BtDeviceConnected,
+            is ConstraintData.BtDeviceDisconnected,
             -> {
                 if (!systemFeatureAdapter.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
                     return KMError.SystemFeatureNotSupported(PackageManager.FEATURE_BLUETOOTH)
@@ -74,53 +74,53 @@ class LazyConstraintErrorSnapshot(
                 }
             }
 
-            is Constraint.OrientationCustom,
-            Constraint.OrientationLandscape,
-            Constraint.OrientationPortrait,
+            is ConstraintData.OrientationCustom,
+            ConstraintData.OrientationLandscape,
+            ConstraintData.OrientationPortrait,
             ->
                 if (!isPermissionGranted(Permission.WRITE_SETTINGS)) {
                     return SystemError.PermissionDenied(Permission.WRITE_SETTINGS)
                 }
 
-            is Constraint.FlashlightOn -> {
+            is ConstraintData.FlashlightOn -> {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                     return KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
                 }
 
-                if (!flashLenses.contains(constraint.lens)) {
-                    return when (constraint.lens) {
+                if (!flashLenses.contains(constraint.data.lens)) {
+                    return when (constraint.data.lens) {
                         CameraLens.FRONT -> KMError.FrontFlashNotFound
                         CameraLens.BACK -> KMError.BackFlashNotFound
                     }
                 }
             }
 
-            is Constraint.FlashlightOff -> {
+            is ConstraintData.FlashlightOff -> {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                     return KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
                 }
 
-                if (!flashLenses.contains(constraint.lens)) {
-                    return when (constraint.lens) {
+                if (!flashLenses.contains(constraint.data.lens)) {
+                    return when (constraint.data.lens) {
                         CameraLens.FRONT -> KMError.FrontFlashNotFound
                         CameraLens.BACK -> KMError.BackFlashNotFound
                     }
                 }
             }
 
-            is Constraint.WifiConnected, is Constraint.WifiDisconnected -> {
+            is ConstraintData.WifiConnected, is ConstraintData.WifiDisconnected -> {
                 if (!isPermissionGranted(Permission.ACCESS_FINE_LOCATION)) {
                     return SystemError.PermissionDenied(Permission.ACCESS_FINE_LOCATION)
                 }
             }
 
-            is Constraint.ImeChosen -> {
-                if (inputMethods.none { it.id == constraint.imeId }) {
-                    return KMError.InputMethodNotFound(constraint.imeLabel)
+            is ConstraintData.ImeChosen -> {
+                if (inputMethods.none { it.id == constraint.data.imeId }) {
+                    return KMError.InputMethodNotFound(constraint.data.imeLabel)
                 }
             }
 
-            is Constraint.InPhoneCall, is Constraint.PhoneRinging, is Constraint.NotInPhoneCall -> {
+            is ConstraintData.InPhoneCall, is ConstraintData.PhoneRinging, is ConstraintData.NotInPhoneCall -> {
                 if (!isPermissionGranted(Permission.READ_PHONE_STATE)) {
                     return SystemError.PermissionDenied(Permission.READ_PHONE_STATE)
                 }

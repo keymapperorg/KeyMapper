@@ -88,7 +88,7 @@ fun TimeConstraintBottomSheet(viewModel: ChooseConstraintViewModel) {
 private fun TimeConstraintBottomSheet(
     sheetState: SheetState,
     onDismissRequest: () -> Unit,
-    state: Constraint.Time,
+    state: ConstraintData.Time,
     onSelectStartTime: (Int, Int) -> Unit = { _, _ -> },
     onSelectEndTime: (Int, Int) -> Unit = { _, _ -> },
     onDoneClick: () -> Unit = {},
@@ -282,7 +282,7 @@ private fun Preview() {
         TimeConstraintBottomSheet(
             sheetState = sheetState,
             onDismissRequest = {},
-            state = Constraint.Time(
+            state = ConstraintData.Time(
                 startHour = 0,
                 startMinute = 0,
                 endHour = 23,

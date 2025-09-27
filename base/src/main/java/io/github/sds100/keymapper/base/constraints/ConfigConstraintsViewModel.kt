@@ -54,9 +54,11 @@ class ConfigConstraintsViewModel @Inject constructor(
         MutableStateFlow(State.Loading)
     val state = _state.asStateFlow()
 
-    private val shortcuts: StateFlow<Set<ShortcutModel<Constraint>>> =
-        config.recentlyUsedConstraints.map { actions ->
-            actions.map(::buildShortcut).toSet()
+    private val shortcuts: StateFlow<Set<ShortcutModel<ConstraintData>>> =
+        config.recentlyUsedConstraints.map { constraintDataList ->
+            constraintDataList.map { constraintData ->
+                buildShortcutFromData(constraintData)
+            }.toSet()
         }.stateIn(viewModelScope, SharingStarted.Lazily, emptySet())
 
     private val constraintErrorSnapshot: StateFlow<ConstraintErrorSnapshot?> =
@@ -80,9 +82,9 @@ class ConfigConstraintsViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun onClickShortcut(constraint: Constraint) {
+    fun onClickShortcut(constraintData: ConstraintData) {
         viewModelScope.launch {
-            config.addConstraint(constraint)
+            config.addConstraint(constraintData)
         }
     }
 
@@ -131,7 +133,7 @@ class ConfigConstraintsViewModel @Inject constructor(
 
     fun addConstraint() {
         viewModelScope.launch {
-            val constraint =
+            val constraint: ConstraintData =
                 navigate("add_constraint", NavDestination.ChooseConstraint)
                     ?: return@launch
 
@@ -143,17 +145,18 @@ class ConfigConstraintsViewModel @Inject constructor(
         }
     }
 
-    private fun buildShortcut(constraint: Constraint): ShortcutModel<Constraint> {
+    private fun buildShortcutFromData(constraintData: ConstraintData): ShortcutModel<ConstraintData> {
+        val constraint = Constraint(data = constraintData)
         return ShortcutModel(
             icon = uiHelper.getIcon(constraint),
             text = uiHelper.getTitle(constraint),
-            data = constraint,
+            data = constraintData,
         )
     }
 
     private fun buildState(
         state: ConstraintState,
-        shortcuts: Set<ShortcutModel<Constraint>>,
+        shortcuts: Set<ShortcutModel<ConstraintData>>,
         errorSnapshot: ConstraintErrorSnapshot,
     ): ConfigConstraintsState {
         if (state.constraints.isEmpty()) {
@@ -189,12 +192,12 @@ class ConfigConstraintsViewModel @Inject constructor(
 
 sealed class ConfigConstraintsState {
     data class Empty(
-        val shortcuts: Set<ShortcutModel<Constraint>> = emptySet(),
+        val shortcuts: Set<ShortcutModel<ConstraintData>> = emptySet(),
     ) : ConfigConstraintsState()
 
     data class Loaded(
         val constraintList: List<ConstraintListItemModel>,
         val selectedMode: ConstraintMode,
-        val shortcuts: Set<ShortcutModel<Constraint>> = emptySet(),
+        val shortcuts: Set<ShortcutModel<ConstraintData>> = emptySet(),
     ) : ConfigConstraintsState()
 }

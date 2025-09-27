@@ -4,7 +4,7 @@ import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickCoordinateResult
 import io.github.sds100.keymapper.base.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.base.actions.tapscreen.PickCoordinateResult
-import io.github.sds100.keymapper.base.constraints.Constraint
+import io.github.sds100.keymapper.base.constraints.ConstraintData
 import io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.base.system.intents.ConfigIntentResult
 import io.github.sds100.keymapper.system.apps.ActivityInfo
@@ -111,7 +111,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data object ChooseConstraint : NavDestination<Constraint>(isCompose = true) {
+    data object ChooseConstraint : NavDestination<ConstraintData>(isCompose = true) {
         override val id: String = ID_CHOOSE_CONSTRAINT
     }
 

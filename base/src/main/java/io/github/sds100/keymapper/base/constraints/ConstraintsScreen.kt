@@ -82,7 +82,7 @@ private fun ConstraintsScreen(
     onAddClick: () -> Unit = {},
     onRemoveClick: (String) -> Unit = {},
     onFixErrorClick: (String) -> Unit = {},
-    onClickShortcut: (Constraint) -> Unit = {},
+    onClickShortcut: (ConstraintData) -> Unit = {},
     onSelectMode: (ConstraintMode) -> Unit = {},
 ) {
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
@@ -247,10 +247,10 @@ private fun Loading(modifier: Modifier = Modifier) {
 private fun ConstraintList(
     modifier: Modifier = Modifier,
     constraintList: List<ConstraintListItemModel>,
-    shortcuts: Set<ShortcutModel<Constraint>>,
+    shortcuts: Set<ShortcutModel<ConstraintData>>,
     onRemoveClick: (String) -> Unit,
     onFixErrorClick: (String) -> Unit,
-    onClickShortcut: (Constraint) -> Unit,
+    onClickShortcut: (ConstraintData) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
 
@@ -307,7 +307,7 @@ private fun EmptyPreview() {
                         ShortcutModel(
                             icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
                             text = "Flashlight is on",
-                            data = Constraint.FlashlightOn(lens = CameraLens.BACK),
+                            data = ConstraintData.FlashlightOn(lens = CameraLens.BACK),
                         ),
                     ),
                 ),
@@ -347,7 +347,7 @@ private fun LoadedPreview() {
                         ShortcutModel(
                             icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
                             text = "Flashlight is on",
-                            data = Constraint.FlashlightOn(lens = CameraLens.BACK),
+                            data = ConstraintData.FlashlightOn(lens = CameraLens.BACK),
                         ),
                     ),
                     selectedMode = ConstraintMode.AND,
