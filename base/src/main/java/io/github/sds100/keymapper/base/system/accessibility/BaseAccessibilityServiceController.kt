@@ -317,23 +317,21 @@ abstract class BaseAccessibilityServiceController(
         service.notificationTimeout = serviceNotificationTimeout.value
 
         // check if fingerprint gestures are supported
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val isFingerprintGestureRequested =
-                serviceFlags.value.hasFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
-            requestFingerprintGestureDetection()
+        val isFingerprintGestureRequested =
+            serviceFlags.value.hasFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
+        requestFingerprintGestureDetection()
 
-            /* Don't update whether fingerprint gesture detection is supported if it has
-             * been supported at some point. Just in case the fingerprint reader is being
-             * used while this is called. */
-            if (fingerprintGesturesSupported.isSupported.firstBlocking() != true) {
-                fingerprintGesturesSupported.setSupported(
-                    service.isFingerprintGestureDetectionAvailable,
-                )
-            }
+        /* Don't update whether fingerprint gesture detection is supported if it has
+     * been supported at some point. Just in case the fingerprint reader is being
+     * used while this is called. */
+        if (fingerprintGesturesSupported.isSupported.firstBlocking() != true) {
+            fingerprintGesturesSupported.setSupported(
+                service.isFingerprintGestureDetectionAvailable,
+            )
+        }
 
-            if (!isFingerprintGestureRequested) {
-                denyFingerprintGestureDetection()
-            }
+        if (!isFingerprintGestureRequested) {
+            denyFingerprintGestureDetection()
         }
 
         keyEventRelayServiceWrapper.registerClient(
@@ -467,36 +465,28 @@ abstract class BaseAccessibilityServiceController(
     }
 
     private fun requestFingerprintGestureDetection() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Timber.d("Accessibility service: request fingerprint gesture detection")
-            serviceFlags.value =
-                serviceFlags.value.withFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
-        }
+        Timber.d("Accessibility service: request fingerprint gesture detection")
+        serviceFlags.value =
+            serviceFlags.value.withFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
     }
 
     private fun denyFingerprintGestureDetection() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Timber.d("Accessibility service: deny fingerprint gesture detection")
-            serviceFlags.value =
-                serviceFlags.value.minusFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
-        }
+        Timber.d("Accessibility service: deny fingerprint gesture detection")
+        serviceFlags.value =
+            serviceFlags.value.minusFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
     }
 
     private fun enableAccessibilityVolumeStream() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            serviceFeedbackType.value =
-                serviceFeedbackType.value.withFlag(AccessibilityServiceInfo.FEEDBACK_AUDIBLE)
-            serviceFlags.value =
-                serviceFlags.value.withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
-        }
+        serviceFeedbackType.value =
+            serviceFeedbackType.value.withFlag(AccessibilityServiceInfo.FEEDBACK_AUDIBLE)
+        serviceFlags.value =
+            serviceFlags.value.withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
     }
 
     private fun disableAccessibilityVolumeStream() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            serviceFeedbackType.value =
-                serviceFeedbackType.value.minusFlag(AccessibilityServiceInfo.FEEDBACK_AUDIBLE)
-            serviceFlags.value =
-                serviceFlags.value.minusFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
-        }
+        serviceFeedbackType.value =
+            serviceFeedbackType.value.minusFlag(AccessibilityServiceInfo.FEEDBACK_AUDIBLE)
+        serviceFlags.value =
+            serviceFlags.value.minusFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
     }
 }
