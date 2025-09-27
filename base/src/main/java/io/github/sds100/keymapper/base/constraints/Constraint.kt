@@ -514,7 +514,7 @@ object ConstraintEntityMapper {
             ConstraintEntity.FLASHLIGHT_OFF,
             EntityExtra(
                 ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS,
-                LENS_MAP[constraint.data.lens]!!
+                LENS_MAP[constraint.data.lens]!!,
             ),
         )
 
@@ -523,7 +523,7 @@ object ConstraintEntityMapper {
             ConstraintEntity.FLASHLIGHT_ON,
             EntityExtra(
                 ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS,
-                LENS_MAP[constraint.data.lens]!!
+                LENS_MAP[constraint.data.lens]!!,
             ),
         )
 
