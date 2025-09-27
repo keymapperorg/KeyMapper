@@ -259,10 +259,7 @@
     <string name="constraint_wifi_off">WiFi is off</string>
     <string name="constraint_wifi_connected">Connected to a WiFi network</string>
     <string name="constraint_wifi_disconnected">Disconnected from a WiFi network</string>
-    <string name="constraint_wifi_message_cant_list_networks">You will have to type the SSID manually because apps aren\'t allowed to query the list of known WiFi networks on Android 10 and newer.
-
-    Leave it empty if any WiFi network should be matched.</string>
-    <string name="constraint_wifi_pick_network_any">Any</string>
+    <string name="constraint_wifi_message_cant_list_networks">Leave it empty if any WiFi network should be matched.</string>
     <string name="constraint_wifi_connected_description">Connected to %s WiFi</string>
     <string name="constraint_wifi_disconnected_description">Disconnected from %s WiFi</string>
     <string name="constraint_wifi_connected_any_description">Connected to any WiFi</string>

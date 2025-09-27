@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.system.network
 
+import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -9,11 +10,13 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.provider.Settings
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -74,10 +77,14 @@ class AndroidNetworkAdapter @Inject constructor(
 
     private val isWifiEnabled = MutableStateFlow(isWifiEnabled())
 
-    private val networkCallback: ConnectivityManager.NetworkCallback =
-        object : ConnectivityManager.NetworkCallback() {
+    // This requires Android S+ because of the FLAG_INCLUDE_LOCATION_INFO, which is needed
+    // to get the SSID.
+    private val networkCallback: ConnectivityManager.NetworkCallback by lazy {
+        @RequiresApi(Build.VERSION_CODES.S)
+        object : ConnectivityManager.NetworkCallback(FLAG_INCLUDE_LOCATION_INFO) {
             override fun onAvailable(network: Network) {
                 super.onAvailable(network)
+
                 isWifiConnected.update { getIsWifiConnected() }
             }
 
@@ -88,6 +95,7 @@ class AndroidNetworkAdapter @Inject constructor(
                 // If multiple Wi-Fi networks were available and one is lost,
                 // another might still be active.
                 isWifiConnected.update { getIsWifiConnected() }
+                connectedWifiSSIDFlow.update { getWifiSSID() }
             }
 
             override fun onCapabilitiesChanged(
@@ -97,8 +105,23 @@ class AndroidNetworkAdapter @Inject constructor(
                 super.onCapabilitiesChanged(network, networkCapabilities)
 
                 isWifiConnected.update { getIsWifiConnected() }
+
+                val wifiInfo = networkCapabilities.transportInfo as? WifiInfo
+
+                // Do nothing if this network is not a wifi network
+                if (wifiInfo == null) {
+                    return
+                }
+
+                Timber.i("onCapabilitiesChanged, found SSID: ${wifiInfo.ssid}")
+
+                val ssid = wifiInfo.ssid?.takeIf { it != WifiManager.UNKNOWN_SSID }
+                    ?.removeSurrounding("\"")
+
+                connectedWifiSSIDFlow.update { ssid }
             }
         }
+    }
 
     init {
         IntentFilter().apply {
@@ -113,11 +136,13 @@ class AndroidNetworkAdapter @Inject constructor(
             )
         }
 
-        val networkRequest = NetworkRequest.Builder()
-            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-            .build()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val networkRequest = NetworkRequest.Builder()
+                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                .build()
 
-        connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
+            connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
+        }
     }
 
     override fun isWifiEnabled(): Boolean = wifiManager.isWifiEnabled
@@ -142,6 +167,7 @@ class AndroidNetworkAdapter @Inject constructor(
         }
     }
 
+    @SuppressLint("MissingPermission")
     override fun isMobileDataEnabled(): Boolean {
         return telephonyManager.isDataEnabled
     }
@@ -177,10 +203,20 @@ class AndroidNetworkAdapter @Inject constructor(
     /**
      * @return Null on Android 10+ because there is no API to do this anymore.
      */
-    override fun getKnownWifiSSIDs(): List<String>? {
+    @SuppressLint("MissingPermission")
+    override fun getKnownWifiSSIDs(): List<String> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            return null
+            // On Android Q and above, apps can't access the list of configured Wi-Fi networks.
+            // As a fallback, we return the currently connected network's SSID.
+            val ssid = getWifiSSID()
+
+            return if (ssid != null) {
+                listOf(ssid)
+            } else {
+                emptyList()
+            }
         } else {
+            @Suppress("DEPRECATION")
             return wifiManager.configuredNetworks?.map {
                 it.SSID.removeSurrounding("\"")
             } ?: emptyList()
@@ -250,6 +286,9 @@ class AndroidNetworkAdapter @Inject constructor(
     }
 
     private fun getIsWifiConnected(): Boolean {
+        @Suppress("DEPRECATION")
+        // The deprecation notice is advice to use the callback instead. getAllNetworks() still
+        // functions
         return connectivityManager.allNetworks.any { network ->
             connectivityManager.getNetworkCapabilities(network)
                 ?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ?: false

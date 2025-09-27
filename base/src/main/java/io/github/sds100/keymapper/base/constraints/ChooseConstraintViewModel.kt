@@ -137,14 +137,14 @@ class ChooseConstraintViewModel @Inject constructor(
                 ConstraintId.APP_NOT_IN_FOREGROUND,
                 ConstraintId.APP_PLAYING_MEDIA,
                 ConstraintId.APP_NOT_PLAYING_MEDIA,
-                -> onSelectAppConstraint(constraintType)
+                    -> onSelectAppConstraint(constraintType)
 
                 ConstraintId.MEDIA_PLAYING -> returnResult.emit(ConstraintData.MediaPlaying)
                 ConstraintId.MEDIA_NOT_PLAYING -> returnResult.emit(ConstraintData.NoMediaPlaying)
 
                 ConstraintId.BT_DEVICE_CONNECTED,
                 ConstraintId.BT_DEVICE_DISCONNECTED,
-                -> onSelectBluetoothConstraint(
+                    -> onSelectBluetoothConstraint(
                     constraintType,
                 )
 
@@ -185,13 +185,13 @@ class ChooseConstraintViewModel @Inject constructor(
 
                 ConstraintId.WIFI_CONNECTED,
                 ConstraintId.WIFI_DISCONNECTED,
-                -> onSelectWifiConnectedConstraint(
+                    -> onSelectWifiConnectedConstraint(
                     constraintType,
                 )
 
                 ConstraintId.IME_CHOSEN,
                 ConstraintId.IME_NOT_CHOSEN,
-                -> onSelectImeChosenConstraint(constraintType)
+                    -> onSelectImeChosenConstraint(constraintType)
 
                 ConstraintId.DEVICE_IS_LOCKED ->
                     returnResult.emit(ConstraintData.DeviceIsLocked)
@@ -272,45 +272,32 @@ class ChooseConstraintViewModel @Inject constructor(
     }
 
     private suspend fun onSelectWifiConnectedConstraint(type: ConstraintId) {
-        val knownSSIDs = useCase.getKnownWiFiSSIDs()
+        val knownSSIDs: List<String> = useCase.getKnownWiFiSSIDs()
 
         val chosenSSID: String?
 
-        if (knownSSIDs == null) {
-            val savedWifiSSIDs = useCase.getSavedWifiSSIDs().first()
+        val savedWifiSSIDs: List<String> = useCase.getSavedWifiSSIDs().first()
 
-            val dialog = DialogModel.Text(
-                hint = getString(R.string.hint_wifi_ssid),
-                allowEmpty = true,
-                message = getString(R.string.constraint_wifi_message_cant_list_networks),
-                autoCompleteEntries = savedWifiSSIDs,
-            )
+        val ssidEntries = buildList {
+            addAll(savedWifiSSIDs)
+            addAll(knownSSIDs)
+        }.distinct()
 
-            val ssidText = showDialog("type_ssid", dialog) ?: return
+        val dialog = DialogModel.Text(
+            hint = getString(R.string.hint_wifi_ssid),
+            allowEmpty = true,
+            message = getString(R.string.constraint_wifi_message_cant_list_networks),
+            autoCompleteEntries = ssidEntries,
+        )
 
-            if (ssidText.isBlank()) {
-                chosenSSID = null
-            } else {
-                chosenSSID = ssidText
+        val ssidText = showDialog("type_ssid", dialog) ?: return
 
-                useCase.saveWifiSSID(chosenSSID)
-            }
+        if (ssidText.isBlank()) {
+            chosenSSID = null
         } else {
-            val anySSIDItem =
-                "any" to getString(R.string.constraint_wifi_pick_network_any)
+            chosenSSID = ssidText
 
-            val ssidItems = knownSSIDs.map { "ssid_$it" to it }
-
-            val items = listOf(anySSIDItem).plus(ssidItems)
-
-            val chosenItem =
-                showDialog("choose_ssid", DialogModel.SingleChoice(items)) ?: return
-
-            if (chosenItem == anySSIDItem.first) {
-                chosenSSID = null
-            } else {
-                chosenSSID = items.single { it.first == chosenItem }.second
-            }
+            useCase.saveWifiSSID(chosenSSID)
         }
 
         when (type) {

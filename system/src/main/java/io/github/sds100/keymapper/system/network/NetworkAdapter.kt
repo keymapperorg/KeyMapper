@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface NetworkAdapter {
     val connectedWifiSSIDFlow: Flow<String?>
-
     val isWifiConnected: Flow<Boolean>
 
     fun isWifiEnabled(): Boolean
@@ -21,7 +20,7 @@ interface NetworkAdapter {
     fun enableMobileData(): KMResult<*>
     fun disableMobileData(): KMResult<*>
 
-    fun getKnownWifiSSIDs(): List<String>?
+    fun getKnownWifiSSIDs(): List<String>
 
     suspend fun sendHttpRequest(
         method: HttpMethod,
