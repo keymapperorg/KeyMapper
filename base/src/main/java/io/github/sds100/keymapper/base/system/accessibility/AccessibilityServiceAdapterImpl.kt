@@ -2,11 +2,6 @@ package io.github.sds100.keymapper.base.system.accessibility
 
 import android.content.ActivityNotFoundException
 import android.content.Context
-import android.database.ContentObserver
-import android.net.Uri
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.provider.Settings
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.BuildConfigProvider
@@ -55,22 +50,7 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
 
     init {
         // use job scheduler because there is there is a much shorter delay when the app is in the background
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            JobSchedulerHelper.observeEnabledAccessibilityServices(ctx)
-        } else {
-            val uri = Settings.Secure.getUriFor(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
-            val observer = object : ContentObserver(Handler(Looper.getMainLooper())) {
-                override fun onChange(selfChange: Boolean, uri: Uri?) {
-                    super.onChange(selfChange, uri)
-
-                    coroutineScope.launch {
-                        state.value = getState()
-                    }
-                }
-            }
-
-            ctx.contentResolver.registerContentObserver(uri, false, observer)
-        }
+        JobSchedulerHelper.observeEnabledAccessibilityServices(ctx)
 
         coroutineScope.launch {
             state.value = getState()

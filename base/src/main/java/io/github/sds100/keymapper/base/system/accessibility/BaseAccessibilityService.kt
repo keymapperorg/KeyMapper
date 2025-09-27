@@ -38,8 +38,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
-abstract class BaseAccessibilityService :
-    AccessibilityService(),
+abstract class BaseAccessibilityService : AccessibilityService(),
     LifecycleOwner,
     IAccessibilityService,
     SavedStateRegistryOwner {
@@ -68,18 +67,11 @@ abstract class BaseAccessibilityService :
     override val activeWindowPackage: Flow<String?> = _activeWindowPackage
 
     override val isFingerprintGestureDetectionAvailable: Boolean
-        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        get() =
             fingerprintGestureController.isGestureDetectionAvailable
-        } else {
-            false
-        }
 
     private val _isKeyboardHidden by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            MutableStateFlow(softKeyboardController.showMode == SHOW_MODE_HIDDEN)
-        } else {
-            MutableStateFlow(false)
-        }
+        MutableStateFlow(softKeyboardController.showMode == SHOW_MODE_HIDDEN)
     }
 
     override val isKeyboardHidden: Flow<Boolean>
