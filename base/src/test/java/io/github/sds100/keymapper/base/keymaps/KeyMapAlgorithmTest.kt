@@ -644,7 +644,7 @@ class KeyMapAlgorithmTest {
                     constraintState = ConstraintState(
                         constraints = setOf(
                             Constraint(data = ConstraintData.WifiOn),
-                            Constraint(data = ConstraintData.DeviceIsLocked)
+                            Constraint(data = ConstraintData.DeviceIsLocked),
                         ),
                         mode = ConstraintMode.OR,
                     ),
@@ -653,14 +653,14 @@ class KeyMapAlgorithmTest {
                     ConstraintState(
                         constraints = setOf(
                             Constraint(data = ConstraintData.LockScreenNotShowing),
-                            Constraint(data = ConstraintData.DeviceIsLocked)
+                            Constraint(data = ConstraintData.DeviceIsLocked),
                         ),
                         mode = ConstraintMode.AND,
                     ),
                     ConstraintState(
                         constraints = setOf(
                             Constraint(data = ConstraintData.AppInForeground(packageName = "app")),
-                            Constraint(data = ConstraintData.DeviceIsUnlocked)
+                            Constraint(data = ConstraintData.DeviceIsUnlocked),
                         ),
                         mode = ConstraintMode.OR,
                     ),
@@ -695,7 +695,7 @@ class KeyMapAlgorithmTest {
                         constraintState = ConstraintState(
                             constraints = setOf(
                                 Constraint(data = ConstraintData.WifiOn),
-                                Constraint(data = ConstraintData.DeviceIsLocked)
+                                Constraint(data = ConstraintData.DeviceIsLocked),
                             ),
                             mode = ConstraintMode.OR,
                         ),
@@ -704,14 +704,14 @@ class KeyMapAlgorithmTest {
                         ConstraintState(
                             constraints = setOf(
                                 Constraint(data = ConstraintData.LockScreenNotShowing),
-                                Constraint(data = ConstraintData.DeviceIsLocked)
+                                Constraint(data = ConstraintData.DeviceIsLocked),
                             ),
                             mode = ConstraintMode.AND,
                         ),
                         ConstraintState(
                             constraints = setOf(
                                 Constraint(data = ConstraintData.AppInForeground(packageName = "app")),
-                                Constraint(data = ConstraintData.DeviceIsUnlocked)
+                                Constraint(data = ConstraintData.DeviceIsUnlocked),
                             ),
                             mode = ConstraintMode.OR,
                         ),
@@ -1679,7 +1679,7 @@ class KeyMapAlgorithmTest {
                 actionList = listOf(Action(data = actionData)),
                 constraintState = ConstraintState(
                     constraints = setOf(
-                        Constraint(data = ConstraintData.FlashlightOn(lens = CameraLens.BACK))
+                        Constraint(data = ConstraintData.FlashlightOn(lens = CameraLens.BACK)),
                     ),
                 ),
             )
