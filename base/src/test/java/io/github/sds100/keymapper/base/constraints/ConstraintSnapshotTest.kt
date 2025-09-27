@@ -18,8 +18,8 @@ class ConstraintSnapshotTest {
         val state1 = ConstraintState(
             constraints =
             setOf(
-                Constraint.AppInForeground(packageName = "key_mapper"),
-                Constraint.Discharging(),
+                Constraint(data = ConstraintData.AppInForeground(packageName = "key_mapper")),
+                Constraint(data = ConstraintData.Discharging),
             ),
             mode = ConstraintMode.AND,
         )
@@ -28,8 +28,8 @@ class ConstraintSnapshotTest {
             ConstraintState(
                 constraints =
                 setOf(
-                    Constraint.LockScreenNotShowing(),
-                    Constraint.DeviceIsUnlocked(),
+                    Constraint(data = ConstraintData.LockScreenNotShowing),
+                    Constraint(data = ConstraintData.DeviceIsUnlocked),
                 ),
                 mode = ConstraintMode.OR,
             )
@@ -38,8 +38,8 @@ class ConstraintSnapshotTest {
             ConstraintState(
                 constraints =
                 setOf(
-                    Constraint.LockScreenShowing(),
-                    Constraint.DeviceIsUnlocked(),
+                    Constraint(data = ConstraintData.LockScreenShowing),
+                    Constraint(data = ConstraintData.DeviceIsUnlocked),
                 ),
                 mode = ConstraintMode.AND,
             )
@@ -58,8 +58,8 @@ class ConstraintSnapshotTest {
         val state1 = ConstraintState(
             constraints =
             setOf(
-                Constraint.AppInForeground(packageName = "key_mapper"),
-                Constraint.Discharging(),
+                Constraint(data = ConstraintData.AppInForeground(packageName = "key_mapper")),
+                Constraint(data = ConstraintData.Discharging),
             ),
             mode = ConstraintMode.AND,
         )
@@ -68,8 +68,8 @@ class ConstraintSnapshotTest {
             ConstraintState(
                 constraints =
                 setOf(
-                    Constraint.Charging(),
-                    Constraint.DeviceIsUnlocked(),
+                    Constraint(data = ConstraintData.Charging),
+                    Constraint(data = ConstraintData.DeviceIsUnlocked),
                 ),
                 mode = ConstraintMode.OR,
             )
@@ -88,8 +88,8 @@ class ConstraintSnapshotTest {
         val state1 = ConstraintState(
             constraints =
             setOf(
-                Constraint.AppInForeground(packageName = "key_mapper"),
-                Constraint.Charging(),
+                Constraint(data = ConstraintData.AppInForeground(packageName = "key_mapper")),
+                Constraint(data = ConstraintData.Charging),
             ),
             mode = ConstraintMode.AND,
         )
@@ -98,8 +98,8 @@ class ConstraintSnapshotTest {
             ConstraintState(
                 constraints =
                 setOf(
-                    Constraint.Charging(),
-                    Constraint.DeviceIsUnlocked(),
+                    Constraint(data = ConstraintData.Charging),
+                    Constraint(data = ConstraintData.DeviceIsUnlocked),
                 ),
                 mode = ConstraintMode.OR,
             )
@@ -113,13 +113,13 @@ class ConstraintSnapshotTest {
 
         val state1 = ConstraintState(
             constraints =
-            setOf(Constraint.AppInForeground(packageName = "key_mapper")),
+                setOf(Constraint(data = ConstraintData.AppInForeground(packageName = "key_mapper"))),
         )
 
         val state2 =
             ConstraintState(
                 constraints =
-                setOf(Constraint.Charging()),
+                    setOf(Constraint(data = ConstraintData.Charging)),
             )
 
         assertThat(snapshot.isSatisfied(state1, state2), `is`(true))
@@ -131,13 +131,13 @@ class ConstraintSnapshotTest {
 
         val state1 = ConstraintState(
             constraints =
-            setOf(Constraint.AppInForeground(packageName = "google")),
+                setOf(Constraint(data = ConstraintData.AppInForeground(packageName = "google"))),
         )
 
         val state2 =
             ConstraintState(
                 constraints =
-                setOf(Constraint.AppInForeground(packageName = "google1")),
+                    setOf(Constraint(data = ConstraintData.AppInForeground(packageName = "google1"))),
             )
 
         assertThat(snapshot.isSatisfied(state1, state2), `is`(false))
@@ -149,13 +149,13 @@ class ConstraintSnapshotTest {
 
         val state1 = ConstraintState(
             constraints =
-            setOf(Constraint.AppInForeground(packageName = "google")),
+                setOf(Constraint(data = ConstraintData.AppInForeground(packageName = "google"))),
         )
 
         val state2 =
             ConstraintState(
                 constraints =
-                setOf(Constraint.AppInForeground(packageName = "key_mapper")),
+                    setOf(Constraint(data = ConstraintData.AppInForeground(packageName = "key_mapper"))),
             )
 
         assertThat(snapshot.isSatisfied(state1, state2), `is`(false))
@@ -184,7 +184,7 @@ class ConstraintSnapshotTest {
     @Test
     fun `When one constraint and unsatisfied return false`() {
         val snapshot = TestConstraintSnapshot(appInForeground = "key_mapper")
-        val constraint = Constraint.AppInForeground(packageName = "google")
+        val constraint = Constraint(data = ConstraintData.AppInForeground(packageName = "google"))
         val state = ConstraintState(constraints = setOf(constraint))
         assertThat(snapshot.isSatisfied(state), `is`(false))
     }
@@ -192,7 +192,8 @@ class ConstraintSnapshotTest {
     @Test
     fun `When one constraint and satisfied return true`() {
         val snapshot = TestConstraintSnapshot(appInForeground = "key_mapper")
-        val constraint = Constraint.AppInForeground(packageName = "key_mapper")
+        val constraint =
+            Constraint(data = ConstraintData.AppInForeground(packageName = "key_mapper"))
         val state = ConstraintState(constraints = setOf(constraint))
         assertThat(snapshot.isSatisfied(state), `is`(true))
     }

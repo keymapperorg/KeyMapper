@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.base.actions.ActionErrorSnapshot
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.base.actions.RepeatMode
 import io.github.sds100.keymapper.base.constraints.Constraint
+import io.github.sds100.keymapper.base.constraints.ConstraintData
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.base.constraints.ConstraintState
@@ -641,22 +642,25 @@ class KeyMapAlgorithmTest {
                     trigger = trigger,
                     actionList = listOf(TEST_ACTION),
                     constraintState = ConstraintState(
-                        constraints = setOf(Constraint.WifiOn(), Constraint.DeviceIsLocked()),
+                        constraints = setOf(
+                            Constraint(data = ConstraintData.WifiOn),
+                            Constraint(data = ConstraintData.DeviceIsLocked)
+                        ),
                         mode = ConstraintMode.OR,
                     ),
                 ),
                 groupConstraintStates = listOf(
                     ConstraintState(
                         constraints = setOf(
-                            Constraint.LockScreenNotShowing(),
-                            Constraint.DeviceIsLocked(),
+                            Constraint(data = ConstraintData.LockScreenNotShowing),
+                            Constraint(data = ConstraintData.DeviceIsLocked)
                         ),
                         mode = ConstraintMode.AND,
                     ),
                     ConstraintState(
                         constraints = setOf(
-                            Constraint.AppInForeground(packageName = "app"),
-                            Constraint.DeviceIsUnlocked(),
+                            Constraint(data = ConstraintData.AppInForeground(packageName = "app")),
+                            Constraint(data = ConstraintData.DeviceIsUnlocked)
                         ),
                         mode = ConstraintMode.OR,
                     ),
@@ -689,22 +693,25 @@ class KeyMapAlgorithmTest {
                         trigger = trigger,
                         actionList = listOf(TEST_ACTION),
                         constraintState = ConstraintState(
-                            constraints = setOf(Constraint.WifiOn(), Constraint.DeviceIsLocked()),
+                            constraints = setOf(
+                                Constraint(data = ConstraintData.WifiOn),
+                                Constraint(data = ConstraintData.DeviceIsLocked)
+                            ),
                             mode = ConstraintMode.OR,
                         ),
                     ),
                     groupConstraintStates = listOf(
                         ConstraintState(
                             constraints = setOf(
-                                Constraint.LockScreenNotShowing(),
-                                Constraint.DeviceIsLocked(),
+                                Constraint(data = ConstraintData.LockScreenNotShowing),
+                                Constraint(data = ConstraintData.DeviceIsLocked)
                             ),
                             mode = ConstraintMode.AND,
                         ),
                         ConstraintState(
                             constraints = setOf(
-                                Constraint.AppInForeground(packageName = "app"),
-                                Constraint.DeviceIsUnlocked(),
+                                Constraint(data = ConstraintData.AppInForeground(packageName = "app")),
+                                Constraint(data = ConstraintData.DeviceIsUnlocked)
                             ),
                             mode = ConstraintMode.OR,
                         ),
@@ -1501,12 +1508,14 @@ class KeyMapAlgorithmTest {
             val shortPressTrigger = singleKeyTrigger(
                 triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
             )
-            val shortPressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOn()))
+            val shortPressConstraints =
+                ConstraintState(constraints = setOf(Constraint(data = ConstraintData.WifiOn)))
 
             val longPressTrigger = singleKeyTrigger(
                 triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
             )
-            val doublePressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOff()))
+            val doublePressConstraints =
+                ConstraintState(constraints = setOf(Constraint(data = ConstraintData.WifiOff)))
 
             loadKeyMaps(
                 KeyMap(
@@ -1542,12 +1551,14 @@ class KeyMapAlgorithmTest {
             val shortPressTrigger = singleKeyTrigger(
                 triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
             )
-            val shortPressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOn()))
+            val shortPressConstraints =
+                ConstraintState(constraints = setOf(Constraint(data = ConstraintData.WifiOn)))
 
             val doublePressTrigger = singleKeyTrigger(
                 triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.DOUBLE_PRESS),
             )
-            val doublePressConstraints = ConstraintState(constraints = setOf(Constraint.WifiOff()))
+            val doublePressConstraints =
+                ConstraintState(constraints = setOf(Constraint(data = ConstraintData.WifiOff)))
 
             loadKeyMaps(
                 KeyMap(
@@ -1667,7 +1678,9 @@ class KeyMapAlgorithmTest {
                 ),
                 actionList = listOf(Action(data = actionData)),
                 constraintState = ConstraintState(
-                    constraints = setOf(Constraint.FlashlightOn(lens = CameraLens.BACK)),
+                    constraints = setOf(
+                        Constraint(data = ConstraintData.FlashlightOn(lens = CameraLens.BACK))
+                    ),
                 ),
             )
 

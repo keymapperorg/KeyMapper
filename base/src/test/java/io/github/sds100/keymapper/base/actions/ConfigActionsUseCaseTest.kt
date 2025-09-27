@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.actions
 
 import android.view.KeyEvent
 import io.github.sds100.keymapper.base.constraints.ConfigConstraintsUseCase
-import io.github.sds100.keymapper.base.constraints.Constraint
+import io.github.sds100.keymapper.base.constraints.ConstraintData
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapStateImpl
 import io.github.sds100.keymapper.base.keymaps.KeyMap
@@ -88,7 +88,7 @@ class ConfigActionsUseCaseTest {
             useCase.addAction(action)
 
             // THEN
-            verify(mockConfigConstraintsUseCase).addConstraint(any<Constraint.PhoneRinging>())
+            verify(mockConfigConstraintsUseCase).addConstraint(any<ConstraintData.PhoneRinging>())
         }
 
     /**
@@ -106,7 +106,7 @@ class ConfigActionsUseCaseTest {
             useCase.addAction(action)
 
             // THEN
-            verify(mockConfigConstraintsUseCase).addConstraint(any<Constraint.InPhoneCall>())
+            verify(mockConfigConstraintsUseCase).addConstraint(any<ConstraintData.InPhoneCall>())
         }
 
     /**
