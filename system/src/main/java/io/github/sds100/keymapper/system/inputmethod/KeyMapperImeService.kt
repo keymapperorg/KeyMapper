@@ -7,9 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.inputmethodservice.InputMethodService
-import android.os.Build
 import android.os.UserManager
-import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
@@ -19,6 +17,7 @@ import androidx.core.content.getSystemService
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.common.BuildConfigProvider
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -147,13 +146,9 @@ class KeyMapperImeService : InputMethodService() {
         // IMPORTANT! Select a keyboard with an actual GUI if the user needs
         // to unlock their device. This must not be in onCreate because
         // the switchInputMethod does not work there.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && userManager?.isUserUnlocked == false) {
+        if (userManager?.isUserUnlocked == false) {
             selectNonBasicKeyboard()
-        } else if (
-            !restarting &&
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1 &&
-            keyguardManager?.isDeviceLocked == true
-        ) {
+        } else if (!restarting && keyguardManager?.isDeviceLocked == true) {
             selectNonBasicKeyboard()
         }
     }
@@ -224,12 +219,11 @@ class KeyMapperImeService : InputMethodService() {
                     it.packageName != "io.github.sds100.keymapper.ci"
             }
             // Select a random one in case one of them can't be used on the lock screen such as
-            // the Google Voice Typing keyboard. This is critical because i
-            // f an input method can't be used
+            // the Google Voice Typing keyboard. This is critical because if an input method can't be used
             // then it will select the Key Mapper Basic Input method again and loop forever.
             .randomOrNull()
             ?.also {
-                Log.e(
+                Timber.e(
                     KeyMapperImeService::class.simpleName,
                     "Device is locked! Select ${it.id} input method",
                 )
