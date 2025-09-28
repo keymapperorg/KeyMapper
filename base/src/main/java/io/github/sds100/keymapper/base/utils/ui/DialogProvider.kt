@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.base.utils.ui
 
 import android.content.Context
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.databinding.ViewDataBinding
@@ -12,7 +11,6 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.base.databinding.DialogChooseAppStoreBinding
 import io.github.sds100.keymapper.system.url.UrlUtils
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -157,21 +155,6 @@ fun DialogProvider.showDialogs(
                 is DialogModel.Toast -> {
                     Toast.makeText(ctx, event.ui.text, Toast.LENGTH_SHORT).show()
                     response = Unit
-                }
-
-                is DialogModel.ChooseAppStore -> {
-                    val view = DialogChooseAppStoreBinding.inflate(LayoutInflater.from(ctx)).apply {
-                        model = event.ui.model
-                    }.root
-
-                    response = ctx.materialAlertDialogCustomView(
-                        lifecycleOwner,
-                        event.ui.title,
-                        event.ui.message,
-                        positiveButtonText = event.ui.positiveButtonText,
-                        negativeButtonText = event.ui.negativeButtonText,
-                        view = view,
-                    )
                 }
 
                 is DialogModel.OpenUrl -> {

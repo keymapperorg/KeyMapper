@@ -12,15 +12,11 @@ import io.github.sds100.keymapper.base.utils.isFixable
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
-import io.github.sds100.keymapper.base.utils.ui.ChooseAppStoreModel
-import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
-import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
@@ -140,13 +136,6 @@ class ConfigActionsViewModel @Inject constructor(
         viewModelScope.launch {
             val actionData = navigate("add_action", NavDestination.ChooseAction) ?: return@launch
 
-            val showInstallGuiKeyboardPrompt =
-                onboarding.showInstallGuiKeyboardPrompt(actionData)
-
-            when {
-                showInstallGuiKeyboardPrompt -> promptToInstallGuiKeyboard()
-            }
-
             config.addAction(actionData)
         }
     }
@@ -265,48 +254,6 @@ class ConfigActionsViewModel @Inject constructor(
                     dialogProvider = this,
                     restartService = displayAction::restartAccessibilityService,
                 )
-            }
-        }
-    }
-
-    private suspend fun promptToInstallGuiKeyboard() {
-        if (onboarding.isTvDevice()) {
-            val appStoreModel = ChooseAppStoreModel(
-                githubLink = getString(R.string.url_github_keymapper_leanback_keyboard),
-            )
-
-            val dialog = DialogModel.ChooseAppStore(
-                title = getString(R.string.dialog_title_install_leanback_keyboard),
-                message = getString(R.string.dialog_message_install_leanback_keyboard),
-                appStoreModel,
-                positiveButtonText = getString(R.string.pos_never_show_again),
-                negativeButtonText = getString(R.string.neg_cancel),
-            )
-
-            val response = showDialog("download_leanback_ime", dialog) ?: return
-
-            if (response == DialogResponse.POSITIVE) {
-                onboarding.neverShowGuiKeyboardPromptsAgain()
-            }
-        } else {
-            val appStoreModel = ChooseAppStoreModel(
-                playStoreLink = getString(R.string.url_play_store_keymapper_gui_keyboard),
-                fdroidLink = getString(R.string.url_fdroid_keymapper_gui_keyboard),
-                githubLink = getString(R.string.url_github_keymapper_gui_keyboard),
-            )
-
-            val dialog = DialogModel.ChooseAppStore(
-                title = getString(R.string.dialog_title_install_gui_keyboard),
-                message = getString(R.string.dialog_message_install_gui_keyboard),
-                appStoreModel,
-                positiveButtonText = getString(R.string.pos_never_show_again),
-                negativeButtonText = getString(R.string.neg_cancel),
-            )
-
-            val response = showDialog("download_gui_keyboard", dialog) ?: return
-
-            if (response == DialogResponse.POSITIVE) {
-                onboarding.neverShowGuiKeyboardPromptsAgain()
             }
         }
     }

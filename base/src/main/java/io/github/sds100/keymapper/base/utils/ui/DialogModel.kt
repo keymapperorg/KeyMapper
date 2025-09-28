@@ -35,14 +35,6 @@ sealed class DialogModel<R> {
 
     data class Toast(val text: String) : DialogModel<Unit>()
 
-    data class ChooseAppStore(
-        val title: CharSequence,
-        val message: CharSequence,
-        val model: ChooseAppStoreModel,
-        val positiveButtonText: CharSequence? = null,
-        val negativeButtonText: CharSequence? = null,
-    ) : DialogModel<DialogResponse>()
-
     data class OpenUrl(val url: String) : DialogModel<Unit>()
 }
 

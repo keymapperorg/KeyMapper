@@ -334,12 +334,6 @@
     <string name="url_floating_layouts_guide" translatable="false">https://docs.keymapper.club/redirects/floating-layouts</string>
     <string name="url_floating_button_config_guide" translatable="false">https://docs.keymapper.club/redirects/floating-button-config</string>
 
-    <string name="url_play_store_keymapper_gui_keyboard" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin</string>
-    <string name="url_fdroid_keymapper_gui_keyboard" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin</string>
-    <string name="url_github_keymapper_gui_keyboard" translatable="false">https://github.com/keymapperorg/KeyMapperKeyboard/releases</string>
-
-    <string name="url_github_keymapper_leanback_keyboard" translatable="false">https://github.com/keymapperorg/KeyMapperLeanbackKeyboard/releases</string>
-
     <string name="url_github_create_issue_bug" translatable="false">https://github.com/keymapperorg/KeyMapper/issues/new/choose</string>
     <!-- URLs -->
 
@@ -433,36 +427,6 @@
     <string name="dialog_message_select_compatible_ime">Select the input method for actions that require one. You can change this later by tapping \"Select keyboard for actions\" in the bottom menu of the home screen.</string>
     <string name="dialog_message_settings_no_external_devices_connected">No external devices connected.</string>
 
-    <string name="dialog_title_install_gui_keyboard">Install the Key Mapper GUI Keyboard</string>
-    <string name="dialog_message_install_gui_keyboard">This is highly recommended! This is a proper keyboard that you can use with Key Mapper. The one built-in to Key Mapper has no on-screen keyboard. Choose where you want to install it from.</string>
-
-    <string name="dialog_title_install_leanback_keyboard">Install the Key Mapper Leanback Keyboard</string>
-    <string name="dialog_message_install_leanback_keyboard">This is highly recommended! This is a proper keyboard for Android TV that you can use with Key Mapper. The one built-in to Key Mapper has no on-screen keyboard. Choose where you want to install it from.</string>
-
-    <string name="dialog_title_choose_download_gui_keyboard">Install the Key Mapper GUI Keyboard</string>
-    <string name="dialog_message_choose_download_gui_keyboard">Choose where you want to download it from.</string>
-
-    <string name="dialog_title_choose_download_leanback_keyboard">Install the Key Mapper Leanback Keyboard</string>
-    <string name="dialog_message_choose_download_leanback_keyboard">Choose where you want to download it from.</string>
-
-    <string name="dialog_title_install_shizuku_or_gui_keyboard">This action needs some extra setting up</string>
-    <string name="dialog_message_install_shizuku_or_gui_keyboard">There are 3 ways that you can set up your device to use this action. Here are the advantages and disadvantages of each.
-
-        \n\n<b>1. Download Shizuku (recommended).</b> You do not have to use a different on-screen keyboard to the one that you are already using but it will require a minute of setting up every time you reboot your device.
-
-        \n\n<b>2. Download the Key Mapper GUI Keyboard.</b> This is an on-screen keyboard that you can use with Key Mapper but you will not be able to use the keyboard that you are currently using, such as Gboard.
-
-        \n\n<b>3. Do nothing and use the built-in Key Mapper keyboard.</b> This is not recommended since you will have <b>no</b> on-screen keyboard when you use Key Mapper! There are no advantages.</string>
-
-    <string name="dialog_title_install_shizuku_or_leanback_keyboard">This action needs some extra setting up</string>
-    <string name="dialog_message_install_shizuku_or_leanback_keyboard">There are 3 ways that you can set up your device to use this action. Here are the advantages and disadvantages of each.
-
-        \n\n<b>1. Download Shizuku (recommended).</b> You do not have to use a different on-screen keyboard to the one that you are already using but it will require a minute of setting up every time you reboot your device.
-
-        \n\n<b>2. Download the Key Mapper Leanback Keyboard.</b> This is an on-screen keyboard optimised for Android TV that you can use with Key Mapper but you will not be able to use the keyboard that you are currently using, such as Gboard.
-
-        \n\n<b>3. Do nothing and use the built-in Key Mapper keyboard.</b> This is not recommended since you will have <b>no</b> on-screen keyboard when you use Key Mapper! There are no advantages.</string>
-
     <string name="dialog_title_disable_battery_optimisation">Disable battery optimisation</string>
     <string name="dialog_message_disable_battery_optimisation">You <b>MUST</b> read this <b>all</b> otherwise you will get <b>frustrated</b> in the future!\n\nTapping \"fix partially\" <b>might</b> prevent Android from stopping the app while it is in the background.\n\n<b>This is NOT ENOUGH</b>. Your OEM\'s skin such as MIUI or Samsung Experience may have other app killing features so you MUST turn them off for Key Mapper as well by following the online guide at dontkillmyapp.com.</string>
 
@@ -486,12 +450,6 @@
 
     <string name="dialog_title_fix_dnd_trigger_error">Grant Do Not Disturb access</string>
     <string name="dialog_message_fix_dnd_trigger_error">You will be taken to your device\'s settings page to manage which apps can modify the Do Not Disturb state. This is <b>not present on some devices</b> so tap don\'t show again if you do not see Key Mapper in the list.</string>
-
-
-    <string name="dialog_upgrade_gui_keyboard_title">Important!</string>
-    <string name="dialog_upgrade_gui_keyboard_message">You must update the Key Mapper GUI Keyboard so it is compatible with this version of Key Mapper. Some key maps may not work until you update!</string>
-    <string name="dialog_upgrade_gui_keyboard_positive">Update now</string>
-    <string name="dialog_upgrade_gui_keyboard_neutral">Ignore</string>
 
     <string name="dialog_message_sort_sort_by">Sort by</string>
     <string name="sorting_drag_and_drop_list_help">Drag the handles to adjust priorities. The item at the top is the most important. You can also tap any item to reverse its sort order.</string>
@@ -527,11 +485,6 @@
     <string name="neutral_go_to_settings">Settings</string>
     <string name="neutral_intent_docs">Docs</string>
     <string name="neutral_changelog">Changelog</string>
-
-    <string name="dialog_button_install_shizuku">Shizuku</string>
-    <string name="dialog_button_install_gui_keyboard">Key Mapper GUI Keyboard</string>
-    <string name="dialog_button_install_leanback_keyboard">Key Mapper Leanback Keyboard</string>
-    <string name="dialog_button_install_nothing">Do nothing</string>
 
     <string name="dialog_button_fix">Fix</string>
 
@@ -1294,20 +1247,6 @@
     <string name="purchase_thank_you_message">Your purchase was successful. As a paying user of Key\u00A0Mapper you will receive priority support to help you use the app. There is now a button in the shop to contact the developer.</string>
     <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
     <string name="purchasing_download_key_mapper_from_google_play">Download Play build</string>
-
-    <!--  Dpad trigger setup bottom sheet  -->
-    <string name="dpad_trigger_setup_bottom_sheet_title">Want to remap DPAD buttons?</string>
-    <string name="dpad_trigger_setup_bottom_sheet_text">You must set up the Key Mapper GUI Keyboard following the steps below.</string>
-    <string name="setup_gui_keyboard_install_keyboard_text">1. Install the keyboard app</string>
-    <string name="setup_gui_keyboard_install_keyboard_button">Install</string>
-    <string name="setup_gui_keyboard_install_keyboard_button_disabled">Installed</string>
-    <string name="setup_gui_keyboard_enable_keyboard_text">2. Enable the keyboard</string>
-    <string name="setup_gui_keyboard_enable_keyboard_button">Enable</string>
-    <string name="setup_gui_keyboard_enable_keyboard_button_disabled">Enabled</string>
-    <string name="setup_gui_keyboard_choose_keyboard_text">3. Use the keyboard</string>
-    <string name="setup_gui_keyboard_choose_keyboard_button">Change keyboard</string>
-    <string name="setup_gui_keyboard_choose_keyboard_button_disabled">Keyboard selected</string>
-    <string name="dpad_trigger_setup_setup_complete_text">Setup complete! Tap \'Done\' and your DPAD trigger should work.</string>
 
     <!-- No keys recorded bottom sheet -->
     <string name="no_keys_recorded_bottom_sheet_title">Button not detected?</string>
