@@ -80,21 +80,21 @@ class SwitchImeAsyncImpl @Inject constructor(
         // First try using the accessibility service, and if that fails then
         // try WRITE_SECURE_SETTINGS if possible. Otherwise return the accessibility service
         // error.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return serviceAdapter.sendAsync(AccessibilityServiceEvent.ChangeIme(imeId))
-                .otherwise { error ->
-                    if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
-                        SettingsUtils.putSecureSetting(
-                            ctx,
-                            Settings.Secure.DEFAULT_INPUT_METHOD,
-                            imeId,
-                        )
-                        Success(Unit)
-                    } else {
-                        error
-                    }
-                }
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            return serviceAdapter.sendAsync(AccessibilityServiceEvent.ChangeIme(imeId))
+//                .otherwise { error ->
+//                    if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
+//                        SettingsUtils.putSecureSetting(
+//                            ctx,
+//                            Settings.Secure.DEFAULT_INPUT_METHOD,
+//                            imeId,
+//                        )
+//                        Success(Unit)
+//                    } else {
+//                        error
+//                    }
+//                }
+//        }
 
         if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
             SettingsUtils.putSecureSetting(

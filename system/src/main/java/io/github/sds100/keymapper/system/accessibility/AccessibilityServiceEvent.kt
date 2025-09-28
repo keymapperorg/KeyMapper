@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.system.accessibility
 
 import android.os.Build
+import android.view.inputmethod.EditorInfo
 import androidx.annotation.RequiresApi
 import kotlinx.serialization.Serializable
 
@@ -32,14 +33,13 @@ abstract class AccessibilityServiceEvent {
     @Serializable
     data object DisableService : AccessibilityServiceEvent()
 
-    @Serializable
-    data class OnInputStartedChange(val isInputStarted: Boolean, val restarting: Boolean = false) :
-        AccessibilityServiceEvent()
-
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @Serializable
     data class EnableInputMethod(val imeId: String) : AccessibilityServiceEvent()
 
     @Serializable
     data class GlobalAction(val action: Int) : AccessibilityServiceEvent()
+
+    data class OnKeyMapperImeStartInput(val attribute: EditorInfo, val restarting: Boolean) :
+        AccessibilityServiceEvent()
 }

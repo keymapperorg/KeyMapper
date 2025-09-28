@@ -17,6 +17,8 @@ import androidx.core.content.getSystemService
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -57,6 +59,9 @@ class KeyMapperImeService : InputMethodService() {
     private val keyguardManager: KeyguardManager? by lazy {
         getSystemService<KeyguardManager>()
     }
+
+    @Inject
+    lateinit var serviceAdapter: AccessibilityServiceAdapter
 
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -150,6 +155,15 @@ class KeyMapperImeService : InputMethodService() {
             selectNonBasicKeyboard()
         } else if (!restarting && keyguardManager?.isDeviceLocked == true) {
             selectNonBasicKeyboard()
+        }
+
+        if (attribute != null) {
+            serviceAdapter.sendAsync(
+                AccessibilityServiceEvent.OnKeyMapperImeStartInput(
+                    attribute = attribute,
+                    restarting = restarting
+                )
+            )
         }
     }
 

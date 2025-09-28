@@ -6,7 +6,6 @@ import android.os.Build
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityNodeInfo
 import android.view.inputmethod.EditorInfo
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
@@ -113,8 +112,12 @@ abstract class BaseAccessibilityServiceController(
             null
         }
 
-    private val autoSwitchImeController: AutoSwitchImeController by lazy {
-        autoSwitchImeControllerFactory.create(service, service.lifecycleScope)
+    private val autoSwitchImeController: AutoSwitchImeController? by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            autoSwitchImeControllerFactory.create(service, service.lifecycleScope)
+        } else {
+            null
+        }
     }
 
     val isPaused: StateFlow<Boolean> =
@@ -274,8 +277,13 @@ abstract class BaseAccessibilityServiceController(
             }
         }
 
-        val imeInputFocusEvents =
-            AccessibilityEvent.TYPE_VIEW_FOCUSED or AccessibilityEvent.TYPE_VIEW_CLICKED
+        // The accessibility event is only used on older than SDK 33. On newer versions the
+        // accessibility input method API is used.
+        val imeInputStartedEvents = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            AccessibilityEvent.TYPE_WINDOWS_CHANGED
+        } else {
+            0
+        }
 
         val recordNodeEvents =
             AccessibilityEvent.TYPE_VIEW_FOCUSED or AccessibilityEvent.TYPE_VIEW_CLICKED
@@ -291,10 +299,10 @@ abstract class BaseAccessibilityServiceController(
 
                     if (!changeImeOnInputFocus && recordState == RecordAccessibilityNodeState.Idle) {
                         newEventTypes =
-                            newEventTypes and (imeInputFocusEvents or recordNodeEvents).inv()
+                            newEventTypes and (imeInputStartedEvents or recordNodeEvents).inv()
                     } else {
                         if (changeImeOnInputFocus) {
-                            newEventTypes = newEventTypes or imeInputFocusEvents
+                            newEventTypes = newEventTypes or imeInputStartedEvents
                         }
 
                         if (recordState is RecordAccessibilityNodeState.CountingDown) {
@@ -315,7 +323,9 @@ abstract class BaseAccessibilityServiceController(
             }.collect()
         }
 
-        autoSwitchImeController.init()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            autoSwitchImeController?.init()
+        }
     }
 
     open fun onServiceConnected() {
@@ -400,36 +410,24 @@ abstract class BaseAccessibilityServiceController(
     open fun onAccessibilityEvent(event: AccessibilityEvent) {
         accessibilityNodeRecorder.onAccessibilityEvent(event)
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            autoSwitchImeController?.onAccessibilityEvent(event)
+        }
+
         if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             setupAssistantController?.onAccessibilityEvent(event)
         }
 
-        // On SDK 33 and newer, the accessibility input method API is used. See onStartInput and
-        // onFinishInput. This is more reliable.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && changeImeOnInputFocusFlow.value) {
-            val focussedNode =
-                service.findFocussedNode(AccessibilityNodeInfo.FOCUS_INPUT)
-
-            val isInputStarted = focussedNode?.isEditable == true && focussedNode.isFocused
-
-            outputEvents.tryEmit(AccessibilityServiceEvent.OnInputStartedChange(isInputStarted = isInputStarted))
-
-            if (isInputStarted) {
-                Timber.d("Input started")
-            } else {
-                Timber.d("Input stopped")
-            }
-        }
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun onStartInput(attribute: EditorInfo, restarting: Boolean) {
-        autoSwitchImeController.onStartInput(attribute, restarting)
+        autoSwitchImeController?.onStartInput(attribute, restarting)
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun onFinishInput() {
-        autoSwitchImeController.onFinishInput()
+        autoSwitchImeController?.onFinishInput()
     }
 
     fun onFingerprintGesture(type: FingerprintGestureType) {
@@ -480,6 +478,12 @@ abstract class BaseAccessibilityServiceController(
 
             is AccessibilityServiceEvent.GlobalAction -> {
                 service.doGlobalAction(event.action)
+            }
+
+            is AccessibilityServiceEvent.OnKeyMapperImeStartInput -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    autoSwitchImeController?.onStartInput(event.attribute, event.restarting)
+                }
             }
 
             else -> Unit
