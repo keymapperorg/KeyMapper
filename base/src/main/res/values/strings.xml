@@ -858,7 +858,8 @@
     <string name="error_failed_to_dispatch_gesture">Failed to input gesture!</string>
     <string name="error_failed_to_modify_system_setting">Failed to modify system setting %s!</string>
     <string name="error_ime_disabled">You need to enable %s!</string>
-    <string name="error_failed_to_change_ime">Failed to change ime!</string>
+    <string name="error_failed_to_change_ime">Failed to change input method!</string>
+    <string name="error_failed_to_enable_ime">Failed to enable input method!</string>
     <string name="error_no_camera_app">Your device has no camera app!</string>
     <string name="error_no_device_assistant">Your device has no assistant!</string>
     <string name="error_no_settings_app">Your device has no settings app!</string>

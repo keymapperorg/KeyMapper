@@ -41,6 +41,7 @@ class OnboardingUseCaseImpl @Inject constructor(
 
     override var shownAppIntro by PrefDelegate(Keys.shownAppIntro, false)
 
+    // TODO remove
     override suspend fun showInstallGuiKeyboardPrompt(action: ActionData): Boolean {
         val acknowledged = settingsRepository.get(Keys.acknowledgedGuiKeyboard).first()
         val isGuiKeyboardInstalled =

@@ -20,7 +20,6 @@ import io.github.sds100.keymapper.base.logging.KeyMapperLoggingTree
 import io.github.sds100.keymapper.base.promode.SystemBridgeAutoStarter
 import io.github.sds100.keymapper.base.settings.Theme
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
-import io.github.sds100.keymapper.base.system.inputmethod.AutoSwitchImeController
 import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.base.system.permissions.AutoGrantPermissionController
 import io.github.sds100.keymapper.common.utils.Constants
@@ -57,9 +56,6 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
 
     @Inject
     lateinit var notificationController: NotificationController
-
-    @Inject
-    lateinit var autoSwitchImeController: AutoSwitchImeController
 
     @Inject
     lateinit var packageManagerAdapter: AndroidPackageManagerAdapter
@@ -198,8 +194,6 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
         Timber.plant(loggingTree)
 
         notificationController.init()
-
-        autoSwitchImeController.init()
 
         processLifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
             @Suppress("DEPRECATION")

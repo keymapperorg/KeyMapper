@@ -1,9 +1,11 @@
 package io.github.sds100.keymapper.system.accessibility
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import kotlinx.serialization.Serializable
 
 @Serializable
-abstract class AccessibilityServiceEvent  {
+abstract class AccessibilityServiceEvent {
 
     @Serializable
     data class Ping(val key: String) : AccessibilityServiceEvent()
@@ -23,6 +25,7 @@ abstract class AccessibilityServiceEvent  {
     @Serializable
     data object ShowKeyboard : AccessibilityServiceEvent()
 
+    @RequiresApi(Build.VERSION_CODES.R)
     @Serializable
     data class ChangeIme(val imeId: String) : AccessibilityServiceEvent()
 
@@ -30,8 +33,10 @@ abstract class AccessibilityServiceEvent  {
     data object DisableService : AccessibilityServiceEvent()
 
     @Serializable
-    data class OnInputFocusChange(val isFocussed: Boolean) : AccessibilityServiceEvent()
+    data class OnInputStartedChange(val isInputStarted: Boolean, val restarting: Boolean = false) :
+        AccessibilityServiceEvent()
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @Serializable
     data class EnableInputMethod(val imeId: String) : AccessibilityServiceEvent()
 

@@ -10,6 +10,7 @@ import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingError
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
+import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.base.trigger.TriggerError
 import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
@@ -49,6 +50,7 @@ import javax.inject.Inject
 @ViewModelScoped
 class DisplayKeyMapUseCaseImpl @Inject constructor(
     private val permissionAdapter: PermissionAdapter,
+    private val switchImeInterface: SwitchImeInterface,
     private val inputMethodAdapter: InputMethodAdapter,
     private val packageManagerAdapter: PackageManagerAdapter,
     private val settingsRepository: PreferenceRepository,
@@ -63,7 +65,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
     GetActionErrorUseCase by getActionErrorUseCase,
     GetConstraintErrorUseCase by getConstraintErrorUseCase {
     private val keyMapperImeHelper =
-        KeyMapperImeHelper(inputMethodAdapter, buildConfigProvider.packageName)
+        KeyMapperImeHelper(switchImeInterface, inputMethodAdapter, buildConfigProvider.packageName)
 
     private val showDpadImeSetupError: Flow<Boolean> =
         settingsRepository.get(Keys.neverShowDpadImeTriggerError).map { neverShow ->
@@ -164,7 +166,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
                 }
 
             KMError.NoCompatibleImeEnabled -> keyMapperImeHelper.enableCompatibleInputMethods()
-            is SystemError.ImeDisabled -> inputMethodAdapter.enableIme(error.ime.id)
+            is SystemError.ImeDisabled -> switchImeInterface.enableIme(error.ime.id)
             is SystemError.PermissionDenied -> permissionAdapter.request(error.permission)
             is KMError.ShizukuNotStarted -> packageManagerAdapter.openApp(ShizukuUtils.SHIZUKU_PACKAGE)
             is KMError.CantDetectKeyEventsInPhoneCall -> {

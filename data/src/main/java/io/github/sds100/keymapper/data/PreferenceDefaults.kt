@@ -3,7 +3,7 @@ package io.github.sds100.keymapper.data
 object PreferenceDefaults {
     const val DARK_THEME = "2"
 
-    const val SHOW_TOAST_WHEN_AUTO_CHANGE_IME = true
+    const val SHOW_TOAST_WHEN_AUTO_CHANGE_IME = false
     const val CHANGE_IME_ON_INPUT_FOCUS = false
 
     const val FORCE_VIBRATE = false

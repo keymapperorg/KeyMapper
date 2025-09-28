@@ -133,7 +133,8 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
             this.ime.label,
         )
 
-        KMError.FailedToChangeIme -> resourceProvider.getString(R.string.error_failed_to_change_ime)
+        KMError.SwitchImeFailed -> resourceProvider.getString(R.string.error_failed_to_change_ime)
+        KMError.EnableImeFailed -> resourceProvider.getString(R.string.error_failed_to_enable_ime)
         KMError.NoCameraApp -> resourceProvider.getString(R.string.error_no_camera_app)
         KMError.NoDeviceAssistant -> resourceProvider.getString(R.string.error_no_device_assistant)
         KMError.NoSettingsApp -> resourceProvider.getString(R.string.error_no_settings_app)
@@ -234,7 +235,7 @@ val KMError.isFixable: Boolean
         is KMError.ShizukuNotStarted,
         is KMError.CantDetectKeyEventsInPhoneCall,
         is SystemBridgeError.Disconnected,
-        -> true
+            -> true
 
         else -> false
     }

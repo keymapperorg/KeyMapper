@@ -7,6 +7,8 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import android.view.inputmethod.EditorInfo
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.base.actions.ActionData
@@ -22,6 +24,7 @@ import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCa
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.TriggerKeyMapEvent
 import io.github.sds100.keymapper.base.promode.SystemBridgeSetupAssistantController
+import io.github.sds100.keymapper.base.system.inputmethod.AutoSwitchImeController
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.firstBlocking
@@ -66,6 +69,7 @@ abstract class BaseAccessibilityServiceController(
     private val inputEventHub: InputEventHub,
     private val recordTriggerController: RecordTriggerController,
     private val setupAssistantControllerFactory: SystemBridgeSetupAssistantController.Factory,
+    private val autoSwitchImeControllerFactory: AutoSwitchImeController.Factory
 ) {
     companion object {
         private const val DEFAULT_NOTIFICATION_TIMEOUT = 200L
@@ -108,6 +112,10 @@ abstract class BaseAccessibilityServiceController(
         } else {
             null
         }
+
+    private val autoSwitchImeController: AutoSwitchImeController by lazy {
+        autoSwitchImeControllerFactory.create(service, service.lifecycleScope)
+    }
 
     val isPaused: StateFlow<Boolean> =
         pauseKeyMapsUseCase.isPaused
@@ -210,18 +218,16 @@ abstract class BaseAccessibilityServiceController(
             }
         }.launchIn(service.lifecycleScope)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            combine(
-                detectKeyMapsUseCase.requestFingerprintGestureDetection,
-                isPaused,
-            ) { request, isPaused ->
-                if (request && !isPaused) {
-                    requestFingerprintGestureDetection()
-                } else {
-                    denyFingerprintGestureDetection()
-                }
-            }.launchIn(service.lifecycleScope)
-        }
+        combine(
+            detectKeyMapsUseCase.requestFingerprintGestureDetection,
+            isPaused,
+        ) { request, isPaused ->
+            if (request && !isPaused) {
+                requestFingerprintGestureDetection()
+            } else {
+                denyFingerprintGestureDetection()
+            }
+        }.launchIn(service.lifecycleScope)
 
         pauseKeyMapsUseCase.isPaused.distinctUntilChanged().onEach {
             triggerKeyMapFromOtherAppsController.reset()
@@ -308,6 +314,8 @@ abstract class BaseAccessibilityServiceController(
                 }
             }.collect()
         }
+
+        autoSwitchImeController.init()
     }
 
     open fun onServiceConnected() {
@@ -396,22 +404,32 @@ abstract class BaseAccessibilityServiceController(
             setupAssistantController?.onAccessibilityEvent(event)
         }
 
-        if (changeImeOnInputFocusFlow.value) {
+        // On SDK 33 and newer, the accessibility input method API is used. See onStartInput and
+        // onFinishInput. This is more reliable.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && changeImeOnInputFocusFlow.value) {
             val focussedNode =
                 service.findFocussedNode(AccessibilityNodeInfo.FOCUS_INPUT)
 
-            if (focussedNode?.isEditable == true && focussedNode.isFocused) {
-                Timber.d("Got input focus")
-                service.lifecycleScope.launch {
-                    outputEvents.emit(AccessibilityServiceEvent.OnInputFocusChange(isFocussed = true))
-                }
+            val isInputStarted = focussedNode?.isEditable == true && focussedNode.isFocused
+
+            outputEvents.tryEmit(AccessibilityServiceEvent.OnInputStartedChange(isInputStarted = isInputStarted))
+
+            if (isInputStarted) {
+                Timber.d("Input started")
             } else {
-                Timber.d("Lost input focus")
-                service.lifecycleScope.launch {
-                    outputEvents.emit(AccessibilityServiceEvent.OnInputFocusChange(isFocussed = false))
-                }
+                Timber.d("Input stopped")
             }
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun onStartInput(attribute: EditorInfo, restarting: Boolean) {
+        autoSwitchImeController.onStartInput(attribute, restarting)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun onFinishInput() {
+        autoSwitchImeController.onFinishInput()
     }
 
     fun onFingerprintGesture(type: FingerprintGestureType) {
@@ -438,14 +456,18 @@ abstract class BaseAccessibilityServiceController(
 
             is AccessibilityServiceEvent.HideKeyboard -> service.hideKeyboard()
             is AccessibilityServiceEvent.ShowKeyboard -> service.showKeyboard()
-            is AccessibilityServiceEvent.ChangeIme -> service.switchIme(event.imeId)
+            is AccessibilityServiceEvent.ChangeIme ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    service.switchIme(event.imeId)
+                }
+
             is AccessibilityServiceEvent.DisableService ->
                 service.disableSelf()
 
             is TriggerKeyMapEvent -> triggerKeyMapFromIntent(event.uid)
 
             is AccessibilityServiceEvent.EnableInputMethod -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                service.setInputMethodEnabled(event.imeId, true)
+                service.enableIme(event.imeId)
             }
 
             is RecordAccessibilityNodeEvent.StartRecordingNodes -> {

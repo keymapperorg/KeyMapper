@@ -27,7 +27,7 @@ class SuAdapterImpl @Inject constructor() : SuAdapter {
         invalidateIsRooted()
     }
 
-    override fun execute(command: String, block: Boolean): KMResult<*> {
+    override fun execute(command: String, block: Boolean): KMResult<Unit> {
         if (!isRootGranted.firstBlocking()) {
             return SystemError.PermissionDenied(Permission.ROOT)
         }
@@ -67,5 +67,5 @@ interface SuAdapter {
     val isRootGranted: StateFlow<Boolean>
 
     fun requestPermission()
-    fun execute(command: String, block: Boolean = false): KMResult<*>
+    fun execute(command: String, block: Boolean = false): KMResult<Unit>
 }

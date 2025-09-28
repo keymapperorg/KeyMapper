@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.base.trigger
 
 import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
+import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import kotlinx.coroutines.flow.Flow
@@ -9,11 +10,12 @@ import javax.inject.Inject
 
 @ViewModelScoped
 class SetupInputMethodUseCaseImpl @Inject constructor(
+    private val switchImeInterface: SwitchImeInterface,
     private val inputMethodAdapter: InputMethodAdapter,
     private val buildConfigProvider: BuildConfigProvider,
 ) : SetupInputMethodUseCase {
     private val keyMapperImeHelper =
-        KeyMapperImeHelper(inputMethodAdapter, buildConfigProvider.packageName)
+        KeyMapperImeHelper(switchImeInterface,inputMethodAdapter, buildConfigProvider.packageName)
 
     override val isEnabled: Flow<Boolean> = keyMapperImeHelper.isCompatibleImeEnabledFlow
 

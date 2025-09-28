@@ -35,6 +35,8 @@ import io.github.sds100.keymapper.base.system.inputmethod.ShowHideInputMethodUse
 import io.github.sds100.keymapper.base.system.inputmethod.ShowHideInputMethodUseCaseImpl
 import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCaseImpl
+import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeAsyncImpl
+import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.base.system.inputmethod.ToggleCompatibleImeUseCase
 import io.github.sds100.keymapper.base.system.inputmethod.ToggleCompatibleImeUseCaseImpl
 import io.github.sds100.keymapper.base.system.notifications.AndroidNotificationAdapter
@@ -158,4 +160,8 @@ abstract class BaseSingletonHiltModule {
     @Binds
     @Singleton
     abstract fun bindGetDefaultKeyMapOptionsUseCas(impl: GetDefaultKeyMapOptionsUseCaseImpl): GetDefaultKeyMapOptionsUseCase
+
+    @Binds
+    @Singleton
+    abstract fun bindSwitchImeInterface(impl: SwitchImeAsyncImpl): SwitchImeInterface
 }

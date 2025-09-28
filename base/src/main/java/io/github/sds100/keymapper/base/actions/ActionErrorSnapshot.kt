@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.base.actions
 import android.os.Build
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
+import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
@@ -29,6 +30,7 @@ import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 class LazyActionErrorSnapshot(
     private val packageManager: PackageManagerAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
+    private val switchImeInterface: SwitchImeInterface,
     private val permissionAdapter: PermissionAdapter,
     systemFeatureAdapter: SystemFeatureAdapter,
     cameraAdapter: CameraAdapter,
@@ -44,7 +46,7 @@ class LazyActionErrorSnapshot(
         permissionAdapter,
     ) {
     private val keyMapperImeHelper =
-        KeyMapperImeHelper(inputMethodAdapter, buildConfigProvider.packageName)
+        KeyMapperImeHelper(switchImeInterface, inputMethodAdapter, buildConfigProvider.packageName)
 
     private val isCompatibleImeEnabled by lazy { keyMapperImeHelper.isCompatibleImeEnabled() }
     private val isCompatibleImeChosen by lazy { keyMapperImeHelper.isCompatibleImeChosen() }

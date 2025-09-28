@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.base.actions
 
 import android.os.Build
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
+import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.data.Keys
@@ -27,6 +28,7 @@ import javax.inject.Singleton
 class GetActionErrorUseCaseImpl @Inject constructor(
     private val packageManagerAdapter: PackageManagerAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
+    private val switchImeInterface: SwitchImeInterface,
     private val permissionAdapter: PermissionAdapter,
     private val systemFeatureAdapter: SystemFeatureAdapter,
     private val cameraAdapter: CameraAdapter,
@@ -66,6 +68,7 @@ class GetActionErrorUseCaseImpl @Inject constructor(
         return LazyActionErrorSnapshot(
             packageManagerAdapter,
             inputMethodAdapter,
+            switchImeInterface,
             permissionAdapter,
             systemFeatureAdapter,
             cameraAdapter,

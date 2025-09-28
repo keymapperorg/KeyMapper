@@ -23,8 +23,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
@@ -42,7 +40,8 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
 ) : AccessibilityServiceAdapter {
 
     private val ctx = context.applicationContext
-    override val eventReceiver = MutableSharedFlow<AccessibilityServiceEvent>()
+    override val eventReceiver =
+        MutableSharedFlow<AccessibilityServiceEvent>(extraBufferCapacity = 10)
 
     val eventsToService = MutableSharedFlow<AccessibilityServiceEvent>()
 
@@ -54,16 +53,32 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
 
         coroutineScope.launch {
             state.value = getState()
-        }
 
-        eventReceiver.onEach {
-            Timber.d("Received event from service: $it")
-        }.launchIn(coroutineScope)
+            eventReceiver.collect {
+                Timber.d("Received event from service: $it")
+            }
+        }
     }
 
-    override fun sendAsync(event: AccessibilityServiceEvent) {
-        coroutineScope.launch {
-            eventsToService.emit(event)
+    override fun sendAsync(event: AccessibilityServiceEvent): KMResult<Unit> {
+        val state = state.value
+
+        when (state) {
+            AccessibilityServiceState.DISABLED -> {
+                return KMError.AccessibilityServiceDisabled
+            }
+
+            AccessibilityServiceState.CRASHED -> {
+                return KMError.AccessibilityServiceCrashed
+            }
+
+            AccessibilityServiceState.ENABLED -> {
+                coroutineScope.launch {
+                    eventsToService.emit(event)
+                }
+
+                return Success(Unit)
+            }
         }
     }
 

@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.promode.SystemBridgeSetupAssistantController
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeRecorder
 import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilityServiceController
+import io.github.sds100.keymapper.base.system.inputmethod.AutoSwitchImeController
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
@@ -30,6 +31,7 @@ class AccessibilityServiceController @AssistedInject constructor(
     inputEventHub: InputEventHub,
     recordTriggerController: RecordTriggerController,
     setupAssistantControllerFactory: SystemBridgeSetupAssistantController.Factory,
+    autoSwitchImeControllerFactory: AutoSwitchImeController.Factory
 ) : BaseAccessibilityServiceController(
     service = service,
     accessibilityNodeRecorderFactory = accessibilityNodeRecorderFactory,
@@ -43,6 +45,7 @@ class AccessibilityServiceController @AssistedInject constructor(
     inputEventHub = inputEventHub,
     recordTriggerController = recordTriggerController,
     setupAssistantControllerFactory = setupAssistantControllerFactory,
+    autoSwitchImeControllerFactory = autoSwitchImeControllerFactory
 ) {
     @AssistedFactory
     interface Factory {

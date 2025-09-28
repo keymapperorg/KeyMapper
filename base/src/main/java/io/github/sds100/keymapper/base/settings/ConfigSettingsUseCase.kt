@@ -4,10 +4,12 @@ import androidx.datastore.preferences.core.Preferences
 import io.github.sds100.keymapper.base.actions.sound.SoundFileInfo
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
+import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -32,6 +34,7 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
     private val preferences: PreferenceRepository,
     private val permissionAdapter: PermissionAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
+    private val switchImeInterface: SwitchImeInterface,
     private val soundsManager: SoundsManager,
     private val suAdapter: SuAdapter,
     private val packageManagerAdapter: PackageManagerAdapter,
@@ -43,6 +46,7 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
 
     private val imeHelper by lazy {
         KeyMapperImeHelper(
+            switchImeInterface,
             inputMethodAdapter,
             buildConfigProvider.packageName,
         )
@@ -95,7 +99,7 @@ class ConfigSettingsUseCaseImpl @Inject constructor(
     }
 
     override suspend fun chooseCompatibleIme(): KMResult<ImeInfo> =
-        imeHelper.chooseCompatibleInputMethod()
+        imeHelper.chooseCompatibleInputMethod().then { inputMethodAdapter.getInfoById(it) }
 
     override suspend fun showImePicker(): KMResult<*> =
         inputMethodAdapter.showImePicker(fromForeground = true)

@@ -5,7 +5,6 @@ import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.onSuccess
-import io.github.sds100.keymapper.common.utils.suspendThen
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
@@ -13,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class KeyMapperImeHelper(
+    private val switchImeInterface: SwitchImeInterface,
     private val imeAdapter: InputMethodAdapter,
     private val packageName: String,
 ) {
@@ -57,32 +57,34 @@ class KeyMapperImeHelper(
                 }
             }
 
-    suspend fun enableCompatibleInputMethods() {
+    fun enableCompatibleInputMethods() {
         keyMapperImePackageList.forEach { packageName ->
             imeAdapter.getInfoByPackageName(packageName).onSuccess {
-                imeAdapter.enableIme(it.id)
+                switchImeInterface.enableIme(it.id)
             }
         }
     }
 
-    suspend fun chooseCompatibleInputMethod(): KMResult<ImeInfo> =
-        getLastUsedCompatibleImeId().suspendThen {
-            imeAdapter.chooseImeWithoutUserInput(it)
+    fun chooseCompatibleInputMethod(): KMResult<String> =
+        getLastUsedCompatibleImeId().then { imeId ->
+            switchImeInterface.switchIme(imeId).then { Success(imeId) }
         }
 
-    suspend fun chooseLastUsedIncompatibleInputMethod(): KMResult<ImeInfo> =
-        getLastUsedIncompatibleImeId().then {
-            imeAdapter.chooseImeWithoutUserInput(it)
+    fun chooseLastUsedIncompatibleInputMethod(): KMResult<String> =
+        getLastUsedIncompatibleImeId().then { imeId ->
+            switchImeInterface.switchIme(imeId).then { Success(imeId) }
         }
 
-    suspend fun toggleCompatibleInputMethod(): KMResult<ImeInfo> = if (isCompatibleImeChosen()) {
-        chooseLastUsedIncompatibleInputMethod()
-    } else {
-        chooseCompatibleInputMethod()
+    fun toggleCompatibleInputMethod(): KMResult<String> {
+        return if (isCompatibleImeChosen()) {
+            chooseLastUsedIncompatibleInputMethod()
+        } else {
+            chooseCompatibleInputMethod()
+        }
     }
 
     fun isCompatibleImeChosen(): Boolean {
-        val chosenIme = imeAdapter.chosenIme.value ?: return false
+        val chosenIme = imeAdapter.getChosenIme() ?: return false
 
         return isKeyMapperInputMethod(chosenIme.packageName, packageName)
     }
