@@ -136,7 +136,6 @@ class OnboardingUseCaseImpl @Inject constructor(
         val key = when (tapTarget) {
             OnboardingTapTarget.CREATE_KEY_MAP -> Keys.shownTapTargetCreateKeyMap
             OnboardingTapTarget.CHOOSE_ACTION -> Keys.shownTapTargetChooseAction
-            OnboardingTapTarget.CHOOSE_CONSTRAINT -> Keys.shownTapTargetChooseConstraint
         }
         return key
     }
@@ -164,7 +163,6 @@ class OnboardingUseCaseImpl @Inject constructor(
         return when (tapTarget) {
             OnboardingTapTarget.CREATE_KEY_MAP -> keyMapList.isEmpty()
             OnboardingTapTarget.CHOOSE_ACTION -> keyMapList.all { it.actionList.isEmpty() }
-            OnboardingTapTarget.CHOOSE_CONSTRAINT -> keyMapList.all { it.constraintList.isEmpty() }
         }
     }
 

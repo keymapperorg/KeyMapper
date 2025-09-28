@@ -106,8 +106,8 @@ object Keys {
     val shownTapTargetChooseAction =
         booleanPreferencesKey("key_shown_tap_target_choose_action")
 
-    val shownTapTargetChooseConstraint =
-        booleanPreferencesKey("key_shown_tap_target_choose_constraint")
+//    val shownTapTargetChooseConstraint =
+//        booleanPreferencesKey("key_shown_tap_target_choose_constraint")
 
     val skipTapTargetTutorial =
         booleanPreferencesKey("key_skip_tap_target_tutorial")
