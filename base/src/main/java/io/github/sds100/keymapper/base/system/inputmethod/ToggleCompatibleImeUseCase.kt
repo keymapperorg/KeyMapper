@@ -24,7 +24,7 @@ class ToggleCompatibleImeUseCaseImpl @Inject constructor(
     private val buildConfigProvider: BuildConfigProvider,
     private val switchImeInterface: SwitchImeInterface,
     private val serviceAdapter: AccessibilityServiceAdapter,
-    private val permissionAdapter: PermissionAdapter
+    private val permissionAdapter: PermissionAdapter,
 ) : ToggleCompatibleImeUseCase {
     private val keyMapperImeHelper =
         KeyMapperImeHelper(switchImeInterface, inputMethodAdapter, buildConfigProvider.packageName)

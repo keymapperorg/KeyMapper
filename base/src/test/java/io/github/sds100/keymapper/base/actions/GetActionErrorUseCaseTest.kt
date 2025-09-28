@@ -60,6 +60,7 @@ class GetActionErrorUseCaseTest {
         useCase = GetActionErrorUseCaseImpl(
             packageManagerAdapter = mock(),
             inputMethodAdapter = fakeInputMethodAdapter,
+            switchImeInterface = mock(),
             permissionAdapter = mockPermissionAdapter,
             systemFeatureAdapter = mock(),
             cameraAdapter = mock(),

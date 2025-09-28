@@ -36,7 +36,7 @@ class SwitchImeAsyncImpl @Inject constructor(
     private val inputMethodAdapter: InputMethodAdapter,
     private val buildConfigProvider: BuildConfigProvider,
     private val permissionAdapter: PermissionAdapter,
-    private val suAdapter: SuAdapter
+    private val suAdapter: SuAdapter,
 ) : SwitchImeInterface {
 
     override fun enableIme(imeId: String): KMResult<Unit> {
@@ -59,8 +59,8 @@ class SwitchImeAsyncImpl @Inject constructor(
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && imeId == keyMapperImeInfo.id) {
                     serviceAdapter.sendAsync(
                         AccessibilityServiceEvent.EnableInputMethod(
-                            keyMapperImeInfo.id
-                        )
+                            keyMapperImeInfo.id,
+                        ),
                     )
                 } else {
                     suAdapter.execute("ime enable $imeId")

@@ -31,7 +31,7 @@ class AccessibilityServiceController @AssistedInject constructor(
     inputEventHub: InputEventHub,
     recordTriggerController: RecordTriggerController,
     setupAssistantControllerFactory: SystemBridgeSetupAssistantController.Factory,
-    autoSwitchImeControllerFactory: AutoSwitchImeController.Factory
+    autoSwitchImeControllerFactory: AutoSwitchImeController.Factory,
 ) : BaseAccessibilityServiceController(
     service = service,
     accessibilityNodeRecorderFactory = accessibilityNodeRecorderFactory,
@@ -45,7 +45,7 @@ class AccessibilityServiceController @AssistedInject constructor(
     inputEventHub = inputEventHub,
     recordTriggerController = recordTriggerController,
     setupAssistantControllerFactory = setupAssistantControllerFactory,
-    autoSwitchImeControllerFactory = autoSwitchImeControllerFactory
+    autoSwitchImeControllerFactory = autoSwitchImeControllerFactory,
 ) {
     @AssistedFactory
     interface Factory {

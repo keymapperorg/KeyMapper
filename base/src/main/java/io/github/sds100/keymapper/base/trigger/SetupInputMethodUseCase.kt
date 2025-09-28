@@ -15,7 +15,7 @@ class SetupInputMethodUseCaseImpl @Inject constructor(
     private val buildConfigProvider: BuildConfigProvider,
 ) : SetupInputMethodUseCase {
     private val keyMapperImeHelper =
-        KeyMapperImeHelper(switchImeInterface,inputMethodAdapter, buildConfigProvider.packageName)
+        KeyMapperImeHelper(switchImeInterface, inputMethodAdapter, buildConfigProvider.packageName)
 
     override val isEnabled: Flow<Boolean> = keyMapperImeHelper.isCompatibleImeEnabledFlow
 

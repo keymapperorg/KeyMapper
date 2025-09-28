@@ -62,24 +62,24 @@ class AutoSwitchImeController @AssistedInject constructor(
     interface Factory {
         fun create(
             accessibilityService: BaseAccessibilityService,
-            coroutineScope: CoroutineScope
+            coroutineScope: CoroutineScope,
         ): AutoSwitchImeController
     }
 
     private val imeHelper: KeyMapperImeHelper = KeyMapperImeHelper(
         service,
         inputMethodAdapter,
-        buildConfigProvider.packageName
+        buildConfigProvider.packageName,
     )
 
     private val devicesThatToggleKeyboard: Set<String> by PrefDelegate(
         Keys.devicesThatChangeIme,
-        emptySet()
+        emptySet(),
     )
 
     private val changeImeOnDeviceConnect: Boolean by PrefDelegate(
         Keys.changeImeOnDeviceConnect,
-        false
+        false,
     )
 
     private val toggleKeyboardOnToggleKeymaps by PrefDelegate(
@@ -115,13 +115,13 @@ class AutoSwitchImeController @AssistedInject constructor(
     private val changeImeOnStartInput: StateFlow<Boolean> = combine(
         changeImeOnInputFocusPreference,
         changeImeOnToggleKeyMaps,
-        pauseKeyMapsUseCase.isPaused
+        pauseKeyMapsUseCase.isPaused,
     ) { changeOnFocus, toggleOnKeyMaps, isPaused ->
         changeOnFocus && (!toggleOnKeyMaps || !isPaused)
     }.stateIn(
         coroutineScope,
         SharingStarted.Eagerly,
-        false
+        false,
     )
 
     private var isImeBeingSwitched = false
@@ -157,8 +157,8 @@ class AutoSwitchImeController @AssistedInject constructor(
         // a fallback.
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&
-            changeImeOnStartInput.value
-            && event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED
+            changeImeOnStartInput.value &&
+            event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED
         ) {
             if (isImeBeingSwitched) {
                 isImeBeingSwitched = false

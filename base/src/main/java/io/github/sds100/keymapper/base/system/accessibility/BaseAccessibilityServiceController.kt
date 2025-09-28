@@ -68,7 +68,7 @@ abstract class BaseAccessibilityServiceController(
     private val inputEventHub: InputEventHub,
     private val recordTriggerController: RecordTriggerController,
     private val setupAssistantControllerFactory: SystemBridgeSetupAssistantController.Factory,
-    private val autoSwitchImeControllerFactory: AutoSwitchImeController.Factory
+    private val autoSwitchImeControllerFactory: AutoSwitchImeController.Factory,
 ) {
     companion object {
         private const val DEFAULT_NOTIFICATION_TIMEOUT = 200L
@@ -340,8 +340,8 @@ abstract class BaseAccessibilityServiceController(
         requestFingerprintGestureDetection()
 
         /* Don't update whether fingerprint gesture detection is supported if it has
-     * been supported at some point. Just in case the fingerprint reader is being
-     * used while this is called. */
+         * been supported at some point. Just in case the fingerprint reader is being
+         * used while this is called. */
         if (fingerprintGesturesSupported.isSupported.firstBlocking() != true) {
             fingerprintGesturesSupported.setSupported(
                 service.isFingerprintGestureDetectionAvailable,
@@ -417,7 +417,6 @@ abstract class BaseAccessibilityServiceController(
         if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             setupAssistantController?.onAccessibilityEvent(event)
         }
-
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)

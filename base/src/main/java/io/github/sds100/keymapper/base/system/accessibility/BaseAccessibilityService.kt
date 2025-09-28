@@ -41,7 +41,8 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
-abstract class BaseAccessibilityService : AccessibilityService(),
+abstract class BaseAccessibilityService :
+    AccessibilityService(),
     LifecycleOwner,
     IAccessibilityService,
     SavedStateRegistryOwner {

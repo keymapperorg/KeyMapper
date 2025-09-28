@@ -53,6 +53,7 @@ class PerformActionsUseCaseTest {
         useCase = PerformActionsUseCaseImpl(
             service = mockAccessibilityService,
             inputMethodAdapter = mock(),
+            switchImeInterface = mock(),
             fileAdapter = mock(),
             suAdapter = mock {},
             shell = mock(),
