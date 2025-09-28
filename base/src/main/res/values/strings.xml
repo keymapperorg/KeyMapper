@@ -4,7 +4,7 @@
 
     <string name="accessibility_service_explanation">Key Mapper requires the use of an accessibility service so that it can detect and change what your button presses do while you are outside of the app. Your key maps will only work once you have enabled the accessibility service. It must also be turned on to create a trigger and test actions.</string>
     <string name="selection_count"> selected</string>
-    <string name="ime_service_label" translatable="false">Key Mapper Basic Input Method</string>
+    <string name="ime_service_label" translatable="false">Key Mapper Input Method</string>
     <string name="enable">Enable</string>
     <string name="shrug" translatable="false">¯\\_(ツ)_/¯</string>
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNothing here!</string>
@@ -429,15 +429,15 @@
     <string name="dialog_message_bt_constraint_limitation">Android doesn\'t allow apps to get a list of connected (not paired) Bluetooth devices. Apps can only detect when they are connected and disconnected. So if your Bluetooth device is already connected to your device when the accessibility service starts, you will have to reconnect it for the app to know it is connected.</string>
     <string name="dialog_title_change_location_or_disable">Automatic backup</string>
     <string name="dialog_message_change_location_or_disable">Change location or turn off automatic back up?</string>
-    <string name="dialog_message_password_screen_lock_warning">If you have any other screen lock chosen, such as PIN or Pattern then you don\'t have to worry. But if you have a Password screen lock you will *NOT* be able to unlock your phone if you use the Key Mapper Basic Input Method because it doesn\'t have a GUI. You can grant Key Mapper WRITE_SECURE_SETTINGS permission so it can show a notification to switch to and from the keyboard. There is a guide on how to do this if you tap the question mark at the bottom of the screen.</string>
+    <string name="dialog_message_password_screen_lock_warning">If you have any other screen lock chosen, such as PIN or Pattern then you don\'t have to worry. But if you have a Password screen lock you will *NOT* be able to unlock your phone if you use the Key Mapper Input Method because it doesn\'t have a GUI. You can grant Key Mapper WRITE_SECURE_SETTINGS permission so it can show a notification to switch to and from the keyboard. There is a guide on how to do this if you tap the question mark at the bottom of the screen.</string>
     <string name="dialog_message_select_compatible_ime">Select the input method for actions that require one. You can change this later by tapping \"Select keyboard for actions\" in the bottom menu of the home screen.</string>
     <string name="dialog_message_settings_no_external_devices_connected">No external devices connected.</string>
 
     <string name="dialog_title_install_gui_keyboard">Install the Key Mapper GUI Keyboard</string>
-    <string name="dialog_message_install_gui_keyboard">This is highly recommended! This is a proper keyboard that you can use with Key Mapper. The one built-in to Key Mapper (the Basic Input Method) has no on-screen keyboard. Choose where you want to install it from.</string>
+    <string name="dialog_message_install_gui_keyboard">This is highly recommended! This is a proper keyboard that you can use with Key Mapper. The one built-in to Key Mapper has no on-screen keyboard. Choose where you want to install it from.</string>
 
     <string name="dialog_title_install_leanback_keyboard">Install the Key Mapper Leanback Keyboard</string>
-    <string name="dialog_message_install_leanback_keyboard">This is highly recommended! This is a proper keyboard for Android TV that you can use with Key Mapper. The one built-in to Key Mapper (the Basic Input Method) has no on-screen keyboard. Choose where you want to install it from.</string>
+    <string name="dialog_message_install_leanback_keyboard">This is highly recommended! This is a proper keyboard for Android TV that you can use with Key Mapper. The one built-in to Key Mapper has no on-screen keyboard. Choose where you want to install it from.</string>
 
     <string name="dialog_title_choose_download_gui_keyboard">Install the Key Mapper GUI Keyboard</string>
     <string name="dialog_message_choose_download_gui_keyboard">Choose where you want to download it from.</string>
