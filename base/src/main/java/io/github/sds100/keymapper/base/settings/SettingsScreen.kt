@@ -74,6 +74,7 @@ import io.github.sds100.keymapper.system.files.FileUtils
 import kotlinx.coroutines.launch
 
 private val isProModeSupported = Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API
+private val isAutoSwitchImeSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
 @Composable
 fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) {
@@ -371,11 +372,7 @@ private fun Content(
         Spacer(modifier = Modifier.height(8.dp))
 
         OptionPageButton(
-            title = if (isProModeSupported) {
-                stringResource(R.string.title_pref_pro_mode)
-            } else {
-                stringResource(R.string.title_pref_pro_mode)
-            },
+            title = stringResource(R.string.title_pref_pro_mode),
             text = if (isProModeSupported) {
                 stringResource(R.string.summary_pref_pro_mode)
             } else {
@@ -386,13 +383,22 @@ private fun Content(
             },
             icon = KeyMapperIcons.ProModeIcon,
             onClick = onProModeClick,
+            enabled = isProModeSupported,
         )
 
         OptionPageButton(
             title = stringResource(R.string.title_pref_automatically_change_ime),
-            text = stringResource(R.string.summary_pref_automatically_change_ime),
+            text = if (isAutoSwitchImeSupported) {
+                stringResource(R.string.summary_pref_automatically_change_ime)
+            } else {
+                stringResource(
+                    R.string.error_sdk_version_too_low,
+                    BuildUtils.getSdkVersionName(Build.VERSION_CODES.R),
+                )
+            },
             icon = Icons.Rounded.Keyboard,
             onClick = onAutomaticChangeImeClick,
+            enabled = isAutoSwitchImeSupported,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -436,6 +442,18 @@ private fun Content(
 @Preview(heightDp = 1200)
 @Composable
 private fun Preview() {
+    KeyMapperTheme {
+        SettingsScreen(modifier = Modifier.fillMaxSize(), onBackClick = {}) {
+            Content(
+                state = MainSettingsState(),
+            )
+        }
+    }
+}
+
+@Preview(heightDp = 1200, apiLevel = Build.VERSION_CODES.P)
+@Composable
+private fun PreviewSdk28() {
     KeyMapperTheme {
         SettingsScreen(modifier = Modifier.fillMaxSize(), onBackClick = {}) {
             Content(
