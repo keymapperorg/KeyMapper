@@ -450,15 +450,3 @@ private fun Preview() {
         }
     }
 }
-
-@Preview(heightDp = 1200, apiLevel = Build.VERSION_CODES.P)
-@Composable
-private fun PreviewSdk28() {
-    KeyMapperTheme {
-        SettingsScreen(modifier = Modifier.fillMaxSize(), onBackClick = {}) {
-            Content(
-                state = MainSettingsState(),
-            )
-        }
-    }
-}
