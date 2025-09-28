@@ -24,8 +24,8 @@ object Keys {
     val showToastWhenAutoChangingIme =
         booleanPreferencesKey("pref_show_toast_when_auto_changing_ime")
 
-    val devicesThatShowImePicker = stringSetPreferencesKey("pref_devices_show_ime_picker")
-    val showImePickerOnDeviceConnect = booleanPreferencesKey("pref_auto_show_ime_picker")
+//    val devicesThatShowImePicker = stringSetPreferencesKey("pref_devices_show_ime_picker")
+//    val showImePickerOnDeviceConnect = booleanPreferencesKey("pref_auto_show_ime_picker")
 
     val forceVibrate = booleanPreferencesKey("pref_force_vibrate")
     val defaultLongPressDelay = intPreferencesKey("pref_long_press_delay")

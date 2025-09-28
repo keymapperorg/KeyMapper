@@ -40,11 +40,7 @@ class AutoSwitchImeController @Inject constructor(
     private val devicesThatToggleKeyboard
         by PrefDelegate(Keys.devicesThatChangeIme, emptySet())
 
-    private val devicesThatShowImePicker
-        by PrefDelegate(Keys.devicesThatShowImePicker, emptySet())
-
     private val changeImeOnDeviceConnect by PrefDelegate(Keys.changeImeOnDeviceConnect, false)
-    private val showImePickerOnBtConnect by PrefDelegate(Keys.showImePickerOnDeviceConnect, false)
 
     private val toggleKeyboardOnToggleKeymaps by PrefDelegate(
         Keys.toggleKeyboardOnToggleKeymaps,
@@ -68,20 +64,12 @@ class AutoSwitchImeController @Inject constructor(
         }.launchIn(coroutineScope)
 
         devicesAdapter.onInputDeviceConnect.onEach { device ->
-            if (showImePickerOnBtConnect && devicesThatShowImePicker.contains(device.descriptor)) {
-                inputMethodAdapter.showImePicker(fromForeground = false)
-            }
-
             if (changeImeOnDeviceConnect && devicesThatToggleKeyboard.contains(device.descriptor)) {
                 chooseCompatibleIme(imePickerAllowed = true)
             }
         }.launchIn(coroutineScope)
 
         devicesAdapter.onInputDeviceDisconnect.onEach { device ->
-            if (showImePickerOnBtConnect && devicesThatShowImePicker.contains(device.descriptor)) {
-                inputMethodAdapter.showImePicker(fromForeground = false)
-            }
-
             if (changeImeOnDeviceConnect && devicesThatToggleKeyboard.contains(device.descriptor)) {
                 chooseIncompatibleIme(imePickerAllowed = true)
             }
