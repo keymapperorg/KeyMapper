@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.inputmethodservice.InputMethodService
+import android.os.Build
 import android.os.UserManager
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -157,7 +158,9 @@ class KeyMapperImeService : InputMethodService() {
             selectNonBasicKeyboard()
         }
 
-        if (attribute != null) {
+        // Only send the start input event on versions before the accessibility
+        // input method API was introduced
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && attribute != null) {
             serviceAdapter.sendAsync(
                 AccessibilityServiceEvent.OnKeyMapperImeStartInput(
                     attribute = attribute,

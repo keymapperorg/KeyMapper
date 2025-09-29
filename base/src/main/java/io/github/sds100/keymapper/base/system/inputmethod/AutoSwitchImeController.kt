@@ -165,10 +165,7 @@ class AutoSwitchImeController @AssistedInject constructor(
                 return
             }
 
-            val imeWindow: AccessibilityWindowInfo? =
-                service.windows.find { it.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD }
-
-            val isInputStarted = imeWindow != null && imeWindow.root?.isVisibleToUser == true
+            val isInputStarted = isImeWindowVisible()
 
             if (isInputStarted) {
                 if (chooseIncompatibleIme()) {
@@ -182,16 +179,27 @@ class AutoSwitchImeController @AssistedInject constructor(
         }
     }
 
+    private fun isImeWindowVisible(): Boolean {
+        val imeWindow: AccessibilityWindowInfo? =
+            service.windows.find { it.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD }
+
+        return imeWindow != null && imeWindow.root?.isVisibleToUser == true
+    }
+
     fun onStartInput(attribute: EditorInfo, restarting: Boolean) {
         if (!changeImeOnStartInput.value) {
             return
         }
 
-        // Make sure the input type actually accepts text. Sometimes the input method
-        // can be started even when the user isn't typing.
+        // Make sure the input type actually accepts text because sometimes the input method
+        // can be started even when the user isn't typing, such as in Minecraft.
         // One must use the mask because other bits are used for flags.
+        // There are cases where the ime is showing but the app reports no TYPE_CLASS for some reason
+        // such as in the Reddit search bar so as a fallback check for a label or hint.
         val isValidInputStarted =
             (attribute.inputType and EditorInfo.TYPE_MASK_CLASS) != EditorInfo.TYPE_NULL
+                || attribute.label != null
+                || attribute.hintText != null
 
         val result = if (isValidInputStarted) {
             chooseIncompatibleIme()
