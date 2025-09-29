@@ -83,7 +83,6 @@ object KeyEventUtils {
         KeyEvent.KEYCODE_APOSTROPHE,
         KeyEvent.KEYCODE_SLASH,
         KeyEvent.KEYCODE_AT,
-        KeyEvent.KEYCODE_ALT_LEFT,
         KeyEvent.KEYCODE_HEADSETHOOK,
         KeyEvent.KEYCODE_FOCUS,
         KeyEvent.KEYCODE_PLUS,
@@ -116,7 +115,6 @@ object KeyEventUtils {
         KeyEvent.KEYCODE_BUTTON_SELECT,
         KeyEvent.KEYCODE_BUTTON_MODE,
         KeyEvent.KEYCODE_ESCAPE,
-        KeyEvent.KEYCODE_DEL,
         KeyEvent.KEYCODE_CTRL_LEFT,
         KeyEvent.KEYCODE_CTRL_RIGHT,
         KeyEvent.KEYCODE_CAPS_LOCK,
@@ -226,7 +224,6 @@ object KeyEventUtils {
         KeyEvent.KEYCODE_RO,
         KeyEvent.KEYCODE_KANA,
         KeyEvent.KEYCODE_ASSIST,
-        KeyEvent.KEYCODE_POWER,
         KeyEvent.KEYCODE_BRIGHTNESS_DOWN,
         KeyEvent.KEYCODE_BRIGHTNESS_UP,
         KeyEvent.KEYCODE_MEDIA_AUDIO_TRACK,
@@ -323,7 +320,7 @@ object KeyEventUtils {
         KeyEvent.KEYCODE_MACRO_4,
         KeyEvent.KEYCODE_EMOJI_PICKER,
         KeyEvent.KEYCODE_SCREENSHOT,
-    )
+    ).distinct().toIntArray()
 
     val MODIFIER_KEYCODES: Set<Int>
         get() = setOf(
