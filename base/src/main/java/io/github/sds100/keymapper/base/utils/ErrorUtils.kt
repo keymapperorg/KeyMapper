@@ -235,7 +235,7 @@ val KMError.isFixable: Boolean
         is KMError.ShizukuNotStarted,
         is KMError.CantDetectKeyEventsInPhoneCall,
         is SystemBridgeError.Disconnected,
-            -> true
+        -> true
 
         else -> false
     }

@@ -113,13 +113,13 @@ class ConstraintSnapshotTest {
 
         val state1 = ConstraintState(
             constraints =
-                setOf(Constraint(data = ConstraintData.AppInForeground(packageName = "key_mapper"))),
+            setOf(Constraint(data = ConstraintData.AppInForeground(packageName = "key_mapper"))),
         )
 
         val state2 =
             ConstraintState(
                 constraints =
-                    setOf(Constraint(data = ConstraintData.Charging)),
+                setOf(Constraint(data = ConstraintData.Charging)),
             )
 
         assertThat(snapshot.isSatisfied(state1, state2), `is`(true))
@@ -131,13 +131,13 @@ class ConstraintSnapshotTest {
 
         val state1 = ConstraintState(
             constraints =
-                setOf(Constraint(data = ConstraintData.AppInForeground(packageName = "google"))),
+            setOf(Constraint(data = ConstraintData.AppInForeground(packageName = "google"))),
         )
 
         val state2 =
             ConstraintState(
                 constraints =
-                    setOf(Constraint(data = ConstraintData.AppInForeground(packageName = "google1"))),
+                setOf(Constraint(data = ConstraintData.AppInForeground(packageName = "google1"))),
             )
 
         assertThat(snapshot.isSatisfied(state1, state2), `is`(false))
@@ -149,13 +149,13 @@ class ConstraintSnapshotTest {
 
         val state1 = ConstraintState(
             constraints =
-                setOf(Constraint(data = ConstraintData.AppInForeground(packageName = "google"))),
+            setOf(Constraint(data = ConstraintData.AppInForeground(packageName = "google"))),
         )
 
         val state2 =
             ConstraintState(
                 constraints =
-                    setOf(Constraint(data = ConstraintData.AppInForeground(packageName = "key_mapper"))),
+                setOf(Constraint(data = ConstraintData.AppInForeground(packageName = "key_mapper"))),
             )
 
         assertThat(snapshot.isSatisfied(state1, state2), `is`(false))
