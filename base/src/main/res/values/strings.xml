@@ -73,10 +73,10 @@
 
     <string name="trigger_error_dnd_access_denied">Permission required to work properly in Do Not Disturb mode!</string>
     <string name="trigger_error_cant_detect_in_phone_call">This trigger won\'t work while ringing or in a phone call!</string>
-    <string name="trigger_error_cant_detect_in_phone_call_explanation">Android doesn\'t let accessibility services detect volume button presses while your phone is ringing or it is in a phone call but it does let input method services detect them. Therefore, you must use one of the Key Mapper keyboards if you want this trigger to work.</string>
+    <string name="trigger_error_cant_detect_in_phone_call_explanation">Android doesn\'t let accessibility services detect volume button presses while your phone is ringing or it is in a phone call but it does let input method services detect them. Therefore, you must use the Key Mapper Input Method if you want this trigger to work.</string>
     <string name="trigger_error_gesture_stroke_count_too_high">Too many fingers to perform gesture due to android limitations.</string>
     <string name="trigger_error_gesture_duration_too_high">Gesture duration is too high due to android limitations.</string>
-    <string name="trigger_error_dpad_ime_not_selected">You must be using a Key Mapper keyboard for DPAD triggers to work!</string>
+    <string name="trigger_error_dpad_ime_not_selected">You must be using the Key Mapper Input Method for DPAD triggers to work!</string>
 
     <string name="home_error_is_battery_optimised">Your key maps will stop working randomly!</string>
     <string name="home_error_key_maps_paused">Your key maps are paused!</string>
@@ -493,7 +493,7 @@
     <!-- Notification strings -->
     <string name="notification_channel_toggle_mappings">Pause/Resume key maps</string>
     <string name="notification_channel_keyboard_hidden">Keyboard is hidden warning</string>
-    <string name="notification_channel_toggle_keyboard">Toggle Key Mapper keyboard</string>
+    <string name="notification_channel_toggle_keyboard">Toggle Key Mapper Input Method</string>
     <string name="notification_channel_new_features">New features</string>
 
     <string name="notification_keymaps_resumed_title">Running</string>
@@ -520,8 +520,8 @@
     <string name="notification_keyboard_hidden_title">Keyboard is hidden!</string>
     <string name="notification_keyboard_hidden_text">Tap \'show keyboard\' to start showing the keyboard again.</string>
 
-    <string name="notification_toggle_keyboard_title">Toggle Key Mapper keyboard</string>
-    <string name="notification_toggle_keyboard_text">Tap \'toggle\' to switch to and from the Key Mapper keyboard.</string>
+    <string name="notification_toggle_keyboard_title">Toggle Key Mapper Input Method</string>
+    <string name="notification_toggle_keyboard_text">Tap \'toggle\' to switch to and from the Key Mapper Input Method.</string>
     <string name="notification_toggle_keyboard_action">Toggle</string>
 
     <!-- Notification strings -->
@@ -558,10 +558,10 @@
     <string name="summary_pref_automatic_backup_location_disabled">Periodically back up your key maps</string>
 
     <string name="title_pref_auto_change_ime_on_connection">Automatically change the on-screen keyboard when a device (e.g a keyboard) connects/disconnects</string>
-    <string name="summary_pref_auto_change_ime_on_connection">The last used Key Mapper keyboard will be automatically selected when a chosen device is connected. Your normal keyboard will be automatically selected when the device disconnects.</string>
+    <string name="summary_pref_auto_change_ime_on_connection">The Key Mapper Input Method will be automatically selected when a chosen device is connected. Your normal keyboard will be automatically selected when the device disconnects.</string>
 
     <string name="title_pref_auto_change_ime_on_input_focus">Automatically change the on-screen keyboard when you start inputting text</string>
-    <string name="summary_pref_auto_change_ime_on_input_focus">The last used non Key Mapper keyboard will be automatically selected when you try to open the keyboard. Your Key Mapper keyboard will be automatically selected once you stop using the keyboard.</string>
+    <string name="summary_pref_auto_change_ime_on_input_focus">The last used normal on-screen keyboard will be automatically selected when you try to open the keyboard. The Key Mapper Input Method will be automatically selected once you stop using the keyboard.</string>
 
     <string name="title_pref_show_toast_when_auto_changing_ime">On-screen message</string>
     <string name="summary_pref_show_toast_when_auto_changing_ime">Show when automatically changing the keyboard</string>
@@ -572,11 +572,11 @@
     <string name="title_pref_dark_theme">Choose theme</string>
     <string name="summary_pref_dark_theme">Light and dark themes available</string>
 
-    <string name="summary_pref_show_toggle_keyboard_notification">Switch between the Key Mapper keyboard and your default keyboard when you tap the notification.</string>
-    <string name="title_pref_show_toggle_keyboard_notification">Toggle Key Mapper keyboard notification</string>
+    <string name="summary_pref_show_toggle_keyboard_notification">Switch between the Key Mapper Input Method and your normal keyboard when you tap the notification.</string>
+    <string name="title_pref_show_toggle_keyboard_notification">Toggle Key Mapper Input Method notification</string>
 
     <string name="title_pref_toggle_keyboard_on_toggle_keymaps">Automatically change the keyboard when toggling key maps</string>
-    <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Automatically select the Key Mapper keyboard when you resume your key maps and select your default keyboard when pausing them.</string>
+    <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Automatically select the Key Mapper Input Method when you resume your key maps and select your default keyboard when pausing them.</string>
 
     <string name="title_pref_hide_home_screen_alerts">Hide home screen alerts</string>
     <string name="summary_pref_hide_home_screen_alerts">Hide the alerts at the top of the home screen</string>
@@ -634,10 +634,6 @@
 
     <string name="title_pref_category_write_secure_settings">Require WRITE_SECURE_SETTINGS permission</string>
     <string name="summary_pref_category_write_secure_settings">These options are only enabled if Key Mapper has WRITE_SECURE_SETTINGS permission. Click the button below to learn how to grant the permission.</string>
-
-    <string name="title_pref_category_shizuku">Shizuku support</string>
-    <string name="summary_pref_category_shizuku">Shizuku is an app that allows Key Mapper to do things that only system apps can do. You don\'t need to use the Key Mapper keyboard for example. Tap to learn how to set this up.</string>
-    <string name="summary_pref_category_shizuku_follow_steps">Follow these steps to set up Shizuku</string>
 
     <string name="title_pref_automatically_change_ime">Automatically switch keyboard</string>
     <string name="summary_pref_automatically_change_ime">Switch when needed then switch back</string>
@@ -708,7 +704,7 @@
     <string name="tile_running_subtitle">Running</string>
     <string name="tile_service_disabled">Service Disabled</string>
     <string name="tile_accessibility_service_disabled_content_description">Key Mapper accessibility service is disabled</string>
-    <string name="tile_toggle_keymapper_keyboard">Toggle Key Mapper keyboard</string>
+    <string name="tile_toggle_keymapper_keyboard">Toggle Key Mapper Input Method</string>
     <!-- Tiles -->
 
     <!-- Meta States -->
@@ -736,7 +732,7 @@
     <!-- Meta States -->
 
     <!-- Error messages -->
-    <string name="error_ime_must_be_chosen">You must be using one of the Key Mapper keyboards for this action to work!</string>
+    <string name="error_ime_must_be_chosen">You must be using the Key Mapper Input Method for this action to work!</string>
 
     <string name="error_app_isnt_installed">The app with package name %s isn\'t installed!</string>
 
@@ -778,7 +774,7 @@
     <string name="error_accessibility_service_crashed">The accessibility service needs to be restarted!</string>
     <string name="error_launcher_shortcuts_not_supported">Your launcher doesn\'t support shortcuts.</string>
 
-    <string name="error_key_mapper_ime_service_disabled">A Key Mapper keyboard needs to be enabled!</string>
+    <string name="error_key_mapper_ime_service_disabled">The Key Mapper Input Method needs to be enabled!</string>
     <string name="error_ime_not_found">Can\'t find the %s input method</string>
     <string name="error_cant_show_ime_picker_in_background">The input method picker can\'t be shown!</string>
     <string name="error_failed_to_find_accessibility_node">Failed to find accessibility node!</string>
@@ -804,7 +800,7 @@
     <string name="error_backup_version_too_new">You will need to update Key Mapper to the latest version to use this backup.</string>
     <string name="error_voice_assistant_not_found">There is no voice assistant installed!</string>
     <string name="error_insufficient_permissions">Insufficient permissions</string>
-    <string name="error_no_incompatible_input_methods_installed">You only have Key Mapper keyboards installed!</string>
+    <string name="error_no_incompatible_input_methods_installed">You have no on-screen keyboards installed!</string>
     <string name="error_no_media_sessions">There are no apps playing media!</string>
     <string name="error_source_file_not_found">Source file not found! %s</string>
     <string name="error_target_file_not_found">Target file not found! %s</string>
@@ -1284,7 +1280,7 @@
     <string name="tip_screen_pinning_title">App pinning warning</string>
     <string name="tip_screen_pinning_text">Using the back button as a trigger may conflict with app pinning, causing a black screen on unlock. A reboot will fix it.</string>
     <string name="tip_ime_detection_title">Keyboard icon</string>
-    <string name="tip_ime_detection_text">The ⌨ symbol means you must use a Key Mapper keyboard for this trigger to work due to an Android restriction.</string>
+    <string name="tip_ime_detection_text">The ⌨ symbol means you must use the Key Mapper input method for this trigger to work due to an Android restriction.</string>
     <string name="trigger_constraints_tip_title">Limit to specific apps?</string>
     <string name="trigger_constraints_tip_text">Add constraints in the Constraints tab.</string>
     <string name="choose_floating_layout_title">Choose a layout</string>
