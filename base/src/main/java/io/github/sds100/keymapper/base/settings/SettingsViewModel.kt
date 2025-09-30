@@ -20,8 +20,6 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.onFailure
-import io.github.sds100.keymapper.common.utils.onSuccess
-import io.github.sds100.keymapper.common.utils.otherwise
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import kotlinx.coroutines.flow.Flow
@@ -113,85 +111,6 @@ class SettingsViewModel @Inject constructor(
     fun setAutomaticBackupLocation(uri: String) = useCase.setAutomaticBackupLocation(uri)
 
     fun disableAutomaticBackup() = useCase.disableAutomaticBackup()
-
-    fun onChooseCompatibleImeClick() {
-        viewModelScope.launch {
-            useCase
-                .chooseCompatibleIme()
-                .onSuccess { ime ->
-                    val snackBar =
-                        DialogModel.SnackBar(
-                            message = getString(
-                                R.string.toast_chose_keyboard,
-                                ime.label,
-                            ),
-                        )
-                    showDialog("chose_ime_success", snackBar)
-                }
-                .otherwise {
-                    useCase.showImePicker()
-                }
-                .onFailure { error ->
-                    val snackBar =
-                        DialogModel.SnackBar(message = error.getFullMessage(this@SettingsViewModel))
-                    showDialog("chose_ime_error", snackBar)
-                }
-        }
-    }
-
-    fun onDeleteSoundFilesClick() {
-        viewModelScope.launch {
-            val soundFiles = useCase.getSoundFiles()
-
-            if (soundFiles.isEmpty()) {
-                showDialog(
-                    "no sound files",
-                    DialogModel.Toast(getString(R.string.toast_no_sound_files)),
-                )
-                return@launch
-            }
-
-            val dialog = DialogModel.MultiChoice(
-                items = soundFiles.map { MultiChoiceItem(it.uid, it.name) },
-            )
-
-            val selectedFiles = showDialog("select_sound_files_to_delete", dialog) ?: return@launch
-
-            useCase.deleteSoundFiles(selectedFiles)
-        }
-    }
-
-    fun requestWriteSecureSettingsPermission() {
-        useCase.requestWriteSecureSettingsPermission()
-    }
-
-    fun requestShizukuPermission() {
-        useCase.requestShizukuPermission()
-    }
-
-    fun downloadShizuku() {
-        useCase.downloadShizuku()
-    }
-
-    fun openShizukuApp() {
-        useCase.openShizukuApp()
-    }
-
-    fun isNotificationPermissionGranted(): Boolean = useCase.isNotificationsPermissionGranted()
-
-    fun requestNotificationsPermission() {
-        useCase.requestNotificationsPermission()
-    }
-
-    fun onEnableCompatibleImeClick() {
-        viewModelScope.launch {
-            useCase.enableCompatibleIme()
-        }
-    }
-
-    fun resetDefaultMappingOptions() {
-        useCase.resetDefaultMappingOptions()
-    }
 
     fun chooseDevicesForPreference(prefKey: Preferences.Key<Set<String>>) {
         viewModelScope.launch {
@@ -315,12 +234,6 @@ class SettingsViewModel @Inject constructor(
     override fun onSequenceTriggerTimeoutChanged(timeout: Int) {
         viewModelScope.launch {
             useCase.setPreference(Keys.defaultSequenceTriggerTimeout, timeout)
-        }
-    }
-
-    fun onAutomaticChangeImeSettingsClick() {
-        viewModelScope.launch {
-            navigate("automatic_change_ime", NavDestination.AutomaticChangeImeSettings)
         }
     }
 
