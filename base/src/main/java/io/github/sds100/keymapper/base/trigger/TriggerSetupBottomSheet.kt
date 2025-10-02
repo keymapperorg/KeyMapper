@@ -254,6 +254,7 @@ private fun GamepadTriggerSetupBottomSheet(
                     isChosen = state.isImeChosen,
                     onEnableClick = onEnableInputMethodClick,
                     onChooseClick = onChooseInputMethodClick,
+                    enablingRequiresUserInput = state.enablingRequiresUserInput
                 )
             }
 
@@ -863,6 +864,7 @@ fun InputMethodRequirementRow(
     modifier: Modifier = Modifier,
     isEnabled: Boolean,
     isChosen: Boolean,
+    enablingRequiresUserInput: Boolean,
     onEnableClick: () -> Unit,
     onChooseClick: () -> Unit,
 ) {
@@ -871,7 +873,7 @@ fun InputMethodRequirementRow(
         text = stringResource(R.string.trigger_setup_input_method_title),
     ) {
         val enabledText = when {
-            !isEnabled -> stringResource(R.string.trigger_setup_input_method_enable_button)
+            !isEnabled && enablingRequiresUserInput -> stringResource(R.string.trigger_setup_input_method_enable_button)
             !isChosen -> stringResource(R.string.trigger_setup_input_method_choose_button)
             else -> ""
         }
@@ -1334,6 +1336,7 @@ private fun GamepadDpadPreview() {
                 isImeChosen = true,
                 areRequirementsMet = true,
                 recordTriggerState = RecordTriggerState.Idle,
+                enablingRequiresUserInput = true
             ),
         )
     }
@@ -1358,6 +1361,7 @@ private fun GamepadDpadDisabledPreview() {
                 isImeChosen = false,
                 areRequirementsMet = false,
                 recordTriggerState = RecordTriggerState.Idle,
+                enablingRequiresUserInput = true
             ),
         )
     }

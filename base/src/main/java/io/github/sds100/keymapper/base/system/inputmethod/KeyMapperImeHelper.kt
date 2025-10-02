@@ -6,6 +6,7 @@ import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.then
+import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import kotlinx.coroutines.flow.Flow
@@ -57,12 +58,17 @@ class KeyMapperImeHelper(
                 }
             }
 
-    fun enableCompatibleInputMethods() {
-        keyMapperImePackageList.forEach { packageName ->
-            imeAdapter.getInfoByPackageName(packageName).onSuccess {
-                switchImeInterface.enableIme(it.id)
-            }
+    fun enableCompatibleInputMethods(): KMResult<Unit> {
+        var result: KMResult<Unit>? = null
+
+        for (imePackageName in keyMapperImePackageList) {
+            val imeId =
+                imeAdapter.getInfoByPackageName(imePackageName).valueOrNull()?.id ?: continue
+
+            result = switchImeInterface.enableIme(imeId)
         }
+
+        return result ?: KMError.InputMethodNotFound(packageName)
     }
 
     fun chooseCompatibleInputMethod(): KMResult<String> =

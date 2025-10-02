@@ -197,9 +197,9 @@ class AutoSwitchImeController @AssistedInject constructor(
         // There are cases where the ime is showing but the app reports no TYPE_CLASS for some reason
         // such as in the Reddit search bar so as a fallback check for a label or hint.
         val isValidInputStarted =
-            (attribute.inputType and EditorInfo.TYPE_MASK_CLASS) != EditorInfo.TYPE_NULL
-                || attribute.label != null
-                || attribute.hintText != null
+            (attribute.inputType and EditorInfo.TYPE_MASK_CLASS) != EditorInfo.TYPE_NULL ||
+                attribute.label != null ||
+                attribute.hintText != null
 
         val result = if (isValidInputStarted) {
             chooseIncompatibleIme()

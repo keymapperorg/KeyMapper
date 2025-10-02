@@ -63,6 +63,7 @@ sealed class TriggerSetupState {
         data class Dpad(
             override val isAccessibilityServiceEnabled: Boolean,
             val isImeEnabled: Boolean,
+            val enablingRequiresUserInput: Boolean,
             val isImeChosen: Boolean,
             override val areRequirementsMet: Boolean,
             override val recordTriggerState: RecordTriggerState,

@@ -140,6 +140,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
                             isImeChosen = isImeChosen,
                             areRequirementsMet = areRequirementsMet,
                             recordTriggerState = recordTriggerState,
+                            enablingRequiresUserInput = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
                         )
                     }
                 }
