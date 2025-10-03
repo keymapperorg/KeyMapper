@@ -232,6 +232,14 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
             appCoroutineScope.launch {
                 systemBridgeConnectionManager.connectionState.collect { state ->
                     if (state is SystemBridgeConnectionState.Connected) {
+                        val isUsed =
+                            settingsRepository.get(Keys.isSystemBridgeUsed).first() ?: false
+
+                        // Enable the setting to use PRO mode for key event actions the first time they use PRO mode.
+                        if (!isUsed) {
+                            settingsRepository.set(Keys.keyEventActionsUseSystemBridge, true)
+                        }
+
                         settingsRepository.set(Keys.isSystemBridgeUsed, true)
                     }
                 }

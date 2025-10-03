@@ -1,9 +1,6 @@
 ---
-description: 
-globs: 
-alwaysApply: false
+alwaysApply: true
 ---
-
 # Android Native (Jetpack Compose)
 
 # Android Jetpack Compose .cursorrules
@@ -58,6 +55,9 @@ app/
 8. Use proper theming with `MaterialTheme`
 9. Follow accessibility guidelines
 10. Implement proper animation patterns
+11. Modifier is always the first parameter
+12. Use io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette for non-standard colors that are not in MaterialTheme.colorScheme
+13. Check icons in io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons.
 
 ## Performance Guidelines
 1. Minimize recomposition using proper keys

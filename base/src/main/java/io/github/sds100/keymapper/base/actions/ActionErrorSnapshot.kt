@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.base.actions
 
-import android.os.Build
+import android.annotation.SuppressLint
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
@@ -65,16 +65,17 @@ class LazyActionErrorSnapshot(
     }
 
     private val isSystemBridgeConnected: Boolean by lazy {
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
+        if (buildConfigProvider.sdkInt >= Constants.SYSTEM_BRIDGE_MIN_API) {
+            @SuppressLint("NewApi")
             systemBridgeConnectionManager.connectionState.value is SystemBridgeConnectionState.Connected
         } else {
             false
         }
     }
 
-    private val isSystemBridgeUsed: Boolean by lazy {
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
-            preferenceRepository.get(Keys.isSystemBridgeUsed).firstBlocking() ?: false
+    private val keyEventActionsUseSystemBridge: Boolean by lazy {
+        if (buildConfigProvider.sdkInt >= Constants.SYSTEM_BRIDGE_MIN_API) {
+            preferenceRepository.get(Keys.keyEventActionsUseSystemBridge).firstBlocking() ?: false
         } else {
             false
         }
@@ -120,22 +121,28 @@ class LazyActionErrorSnapshot(
             return isSupportedError
         }
 
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API && action.canUseSystemBridgeToPerform() && isSystemBridgeUsed) {
-            // Only throw an error if they aren't using another compatible back up option
-            if (!(action.canUseImeToPerform() && isCompatibleImeChosen) && !isSystemBridgeConnected) {
-                return SystemBridgeError.Disconnected
-            }
+        if (buildConfigProvider.sdkInt >= Constants.SYSTEM_BRIDGE_MIN_API && action is ActionData.InputKeyEvent && keyEventActionsUseSystemBridge && !isSystemBridgeConnected) {
+            return KMError.KeyEventActionError(SystemBridgeError.Disconnected)
         } else if (action.canUseImeToPerform()) {
             if (!isCompatibleImeEnabled) {
-                return KMError.NoCompatibleImeEnabled
+                if (action is ActionData.InputKeyEvent) {
+                    return KMError.KeyEventActionError(KMError.NoCompatibleImeEnabled)
+                } else {
+                    return KMError.NoCompatibleImeEnabled
+                }
             }
 
             if (!isCompatibleImeChosen) {
-                return KMError.NoCompatibleImeChosen
+                if (action is ActionData.InputKeyEvent) {
+                    return KMError.KeyEventActionError(KMError.NoCompatibleImeChosen)
+                } else {
+                    return KMError.NoCompatibleImeChosen
+                }
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API &&
+        @SuppressLint("NewApi")
+        if (buildConfigProvider.sdkInt >= Constants.SYSTEM_BRIDGE_MIN_API &&
             ActionUtils.isSystemBridgeRequired(action.id) &&
             !isSystemBridgeConnected
         ) {

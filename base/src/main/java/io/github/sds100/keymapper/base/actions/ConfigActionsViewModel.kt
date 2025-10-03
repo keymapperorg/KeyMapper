@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionDelegate
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
-import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.isFixable
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
@@ -44,7 +44,7 @@ class ConfigActionsViewModel @Inject constructor(
     private val createAction: CreateActionUseCase,
     private val testAction: TestActionUseCase,
     private val config: ConfigActionsUseCase,
-    private val onboarding: OnboardingUseCase,
+    fixKeyEventActionDelegate: FixKeyEventActionDelegate,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
@@ -52,7 +52,8 @@ class ConfigActionsViewModel @Inject constructor(
     ActionOptionsBottomSheetCallback,
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
-    NavigationProvider by navigationProvider {
+    NavigationProvider by navigationProvider,
+    FixKeyEventActionDelegate by fixKeyEventActionDelegate {
 
     val createActionDelegate =
         CreateActionDelegate(viewModelScope, createAction, this, this, this)
@@ -111,22 +112,30 @@ class ConfigActionsViewModel @Inject constructor(
             val error =
                 actionErrorSnapshot.filterNotNull().first().getError(actionData) ?: return@launch
 
-            if (error == SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
-                viewModelScope.launch {
-                    ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+            when (error) {
+                SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY) -> {
+                    viewModelScope.launch {
+                        ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+                            resourceProvider = this@ConfigActionsViewModel,
+                            dialogProvider = this@ConfigActionsViewModel,
+                            neverShowDndTriggerErrorAgain = { displayAction.neverShowDndTriggerError() },
+                            fixError = { displayAction.fixError(error) },
+                        )
+                    }
+                }
+
+                is KMError.KeyEventActionError -> {
+                    showFixKeyEventActionBottomSheet()
+                }
+
+                else -> {
+                    ViewModelHelper.showFixErrorDialog(
                         resourceProvider = this@ConfigActionsViewModel,
                         dialogProvider = this@ConfigActionsViewModel,
-                        neverShowDndTriggerErrorAgain = { displayAction.neverShowDndTriggerError() },
-                        fixError = { displayAction.fixError(error) },
-                    )
-                }
-            } else {
-                ViewModelHelper.showFixErrorDialog(
-                    resourceProvider = this@ConfigActionsViewModel,
-                    dialogProvider = this@ConfigActionsViewModel,
-                    error,
-                ) {
-                    displayAction.fixError(error)
+                        error,
+                    ) {
+                        displayAction.fixError(error)
+                    }
                 }
             }
         }

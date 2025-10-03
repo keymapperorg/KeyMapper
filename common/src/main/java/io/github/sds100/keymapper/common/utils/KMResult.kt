@@ -90,6 +90,7 @@ abstract class KMError : KMResult<Nothing>() {
     data object MalformedUrl : KMError()
 
     data object UiElementNotFound : KMError()
+    data class KeyEventActionError(val baseError: KMError) : KMError()
 }
 
 inline fun <T> KMResult<T>.onSuccess(f: (T) -> Unit): KMResult<T> {

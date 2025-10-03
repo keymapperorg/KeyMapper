@@ -14,6 +14,8 @@ import io.github.sds100.keymapper.base.actions.TestActionUseCase
 import io.github.sds100.keymapper.base.actions.TestActionUseCaseImpl
 import io.github.sds100.keymapper.base.actions.keyevent.ConfigKeyEventUseCase
 import io.github.sds100.keymapper.base.actions.keyevent.ConfigKeyEventUseCaseImpl
+import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionDelegate
+import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionDelegateImpl
 import io.github.sds100.keymapper.base.actions.sound.ChooseSoundFileUseCase
 import io.github.sds100.keymapper.base.actions.sound.ChooseSoundFileUseCaseImpl
 import io.github.sds100.keymapper.base.backup.BackupRestoreMappingsUseCase
@@ -162,4 +164,8 @@ abstract class BaseViewModelHiltModule {
     @Binds
     @ViewModelScoped
     abstract fun bindOnboardingTipDelegate(impl: OnboardingTipDelegateImpl): OnboardingTipDelegate
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindFixKeyEventActionDelegate(impl: FixKeyEventActionDelegateImpl): FixKeyEventActionDelegate
 }

@@ -779,6 +779,7 @@
     <string name="error_cant_show_ime_picker_in_background">The input method picker can\'t be shown!</string>
     <string name="error_failed_to_find_accessibility_node">Failed to find accessibility node!</string>
     <string name="error_failed_to_perform_accessibility_global_action">Failed perform global action %s!</string>
+    <string name="error_fix_key_event_action">This action needs setting up</string>
 
     <string name="error_battery_optimisation_activity_not_found">Battery optimisation settings not found! If it exists, open it manually.</string>
 
@@ -1667,5 +1668,17 @@
     <string name="trigger_setup_input_method_choose_button">Choose</string>
     <string name="trigger_setup_input_method_running_button">Running</string>
     <!-- Trigger Setup bottom sheet -->
+
+    <!--  fix key event action bottom sheet  -->
+    <string name="fix_key_event_action_title">Fix key event action</string>
+    <string name="fix_key_event_action_text">There are extra steps to use this action. Select which method you want to use:</string>
+    <string name="fix_key_event_action_input_method_title">Key Mapper input method</string>
+    <string name="fix_key_event_action_input_method_text">No on-screen keyboard</string>
+    <string name="fix_key_event_action_pro_mode_text">Can use your normal on-screen keyboard at all times</string>
+    <string name="fix_key_event_action_enable_input_method_button">Enable Key Mapper input method</string>
+    <string name="fix_key_event_action_use_input_method_button">Use Key Mapper input method</string>
+    <string name="fix_key_event_action_auto_switch_ime_text">Automatically switch to normal on-screen keyboard when typing</string>
+    <string name="fix_key_event_action_change_in_settings_caption">You can always change this in Settings</string>
+    <string name="fix_key_event_action_setup_title">Setup</string>
 
 </resources>

@@ -134,4 +134,7 @@ object Keys {
     val isSystemBridgeUsed = booleanPreferencesKey("key_is_system_bridge_used")
 
     val isCleanShutdown = booleanPreferencesKey("key_is_clean_shutdown")
+
+    val keyEventActionsUseSystemBridge =
+        booleanPreferencesKey("key_key_event_actions_use_system_bridge")
 }

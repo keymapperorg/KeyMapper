@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionBottomSheet
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
 import io.github.sds100.keymapper.base.keymaps.ShortcutRow
@@ -63,6 +64,24 @@ fun ActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewMod
             state = optionsState!!,
             onDismissRequest = { viewModel.actionOptionsUid.update { null } },
             callback = viewModel,
+        )
+    }
+
+    val fixKeyEventActionState by viewModel.fixKeyEventActionState.collectAsStateWithLifecycle()
+
+    if (fixKeyEventActionState != null) {
+        FixKeyEventActionBottomSheet(
+            modifier = Modifier.systemBarsPadding(),
+            state = fixKeyEventActionState!!,
+            sheetState = sheetState,
+            onDismissRequest = viewModel::dismissFixKeyEventActionBottomSheet,
+            onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
+            onEnableProModeClick = viewModel::onEnableProModeForKeyEventActionsClick,
+            onEnableInputMethodClick = viewModel::onEnableImeClick,
+            onChooseInputMethodClick = viewModel::onChooseImeClick,
+            onDoneClick = viewModel::dismissFixKeyEventActionBottomSheet,
+            onSelectProMode = viewModel::onSelectProMode,
+            onSelectInputMethod = viewModel::onSelectInputMethod
         )
     }
 

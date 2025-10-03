@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base
 
+import android.os.Build
 import com.github.salomonbrys.kotson.get
 import com.google.gson.Gson
 import com.google.gson.JsonParser
@@ -118,7 +119,7 @@ class BackupManagerTest {
                 on { layouts } doReturn MutableStateFlow(State.Data(emptyList()))
             },
             groupRepository = mockGroupRepository,
-            buildConfigProvider = TestBuildConfigProvider(),
+            buildConfigProvider = TestBuildConfigProvider(sdkInt = Build.VERSION_CODES.TIRAMISU),
         )
 
         parser = JsonParser()

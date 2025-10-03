@@ -863,11 +863,6 @@ fun ActionData.canUseImeToPerform(): Boolean = when (this) {
     else -> false
 }
 
-fun ActionData.canUseSystemBridgeToPerform(): Boolean = when (this) {
-    is ActionData.InputKeyEvent -> true
-    else -> false
-}
-
 fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.App,
     is ActionData.AppShortcut,
