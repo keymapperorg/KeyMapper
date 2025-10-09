@@ -81,7 +81,8 @@ fun ActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewMod
             onChooseInputMethodClick = viewModel::onChooseImeClick,
             onDoneClick = viewModel::dismissFixKeyEventActionBottomSheet,
             onSelectProMode = viewModel::onSelectProMode,
-            onSelectInputMethod = viewModel::onSelectInputMethod
+            onSelectInputMethod = viewModel::onSelectInputMethod,
+            onAutoSwitchImeCheckedChange = viewModel::onAutoSwitchImeCheckedChange,
         )
     }
 

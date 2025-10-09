@@ -144,7 +144,8 @@ fun HomeKeyMapListScreen(
             onChooseInputMethodClick = viewModel::onChooseImeClick,
             onDoneClick = viewModel::dismissFixKeyEventActionBottomSheet,
             onSelectProMode = viewModel::onSelectProMode,
-            onSelectInputMethod = viewModel::onSelectInputMethod
+            onSelectInputMethod = viewModel::onSelectInputMethod,
+            onAutoSwitchImeCheckedChange = viewModel::onAutoSwitchImeCheckedChange,
         )
     }
 

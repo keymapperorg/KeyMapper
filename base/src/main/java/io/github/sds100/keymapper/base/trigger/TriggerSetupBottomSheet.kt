@@ -254,7 +254,7 @@ private fun GamepadTriggerSetupBottomSheet(
                     isChosen = state.isImeChosen,
                     onEnableClick = onEnableInputMethodClick,
                     onChooseClick = onChooseInputMethodClick,
-                    enablingRequiresUserInput = state.enablingRequiresUserInput
+                    enablingRequiresUserInput = state.enablingRequiresUserInput,
                 )
             }
 
@@ -884,7 +884,7 @@ fun InputMethodRequirementRow(
             enabledText = enabledText,
             disabledText = disabledText,
             isEnabled = !isEnabled || !isChosen,
-            onClick = if (isEnabled) onChooseClick else onEnableClick,
+            onClick = if (!isEnabled && enablingRequiresUserInput) onEnableClick else onChooseClick,
         )
     }
 }
@@ -1336,7 +1336,7 @@ private fun GamepadDpadPreview() {
                 isImeChosen = true,
                 areRequirementsMet = true,
                 recordTriggerState = RecordTriggerState.Idle,
-                enablingRequiresUserInput = true
+                enablingRequiresUserInput = true,
             ),
         )
     }
@@ -1361,7 +1361,7 @@ private fun GamepadDpadDisabledPreview() {
                 isImeChosen = false,
                 areRequirementsMet = false,
                 recordTriggerState = RecordTriggerState.Idle,
-                enablingRequiresUserInput = true
+                enablingRequiresUserInput = true,
             ),
         )
     }

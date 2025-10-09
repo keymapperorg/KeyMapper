@@ -4,6 +4,7 @@ import io.github.sds100.keymapper.base.trigger.ProModeStatus
 
 sealed class FixKeyEventActionState {
     abstract val isAccessibilityServiceEnabled: Boolean
+    abstract val proModeStatus: ProModeStatus
 
     data class InputMethod(
         val isEnabled: Boolean,
@@ -13,11 +14,13 @@ sealed class FixKeyEventActionState {
          * show one button that both enables and chooses the input method.
          */
         val enablingRequiresUserInput: Boolean,
-        override val isAccessibilityServiceEnabled: Boolean
+        val isAutoSwitchImeEnabled: Boolean,
+        override val isAccessibilityServiceEnabled: Boolean,
+        override val proModeStatus: ProModeStatus,
     ) : FixKeyEventActionState()
 
     data class ProMode(
-        val proModeStatus: ProModeStatus,
-        override val isAccessibilityServiceEnabled: Boolean
+        override val isAccessibilityServiceEnabled: Boolean,
+        override val proModeStatus: ProModeStatus,
     ) : FixKeyEventActionState()
 }

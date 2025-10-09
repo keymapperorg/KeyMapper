@@ -239,7 +239,7 @@ val KMError.isFixable: Boolean
         is KMError.CantDetectKeyEventsInPhoneCall,
         is SystemBridgeError.Disconnected,
         is KMError.KeyEventActionError,
-            -> true
+        -> true
 
         else -> false
     }

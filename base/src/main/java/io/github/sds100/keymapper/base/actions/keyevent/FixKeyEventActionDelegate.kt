@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.common.utils.Constants
+import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -84,27 +86,32 @@ class FixKeyEventActionDelegateImpl @Inject constructor(
             if (isProModeSelected) {
                 combine(
                     proModeStatus,
-                    controlAccessibilityServiceUseCase.serviceState
+                    controlAccessibilityServiceUseCase.serviceState,
                 ) { proModeStatus, serviceState ->
                     FixKeyEventActionState.ProMode(
                         proModeStatus = proModeStatus,
-                        isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED
+                        isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
                     )
                 }
             } else {
                 combine(
+                    proModeStatus,
                     setupInputMethodUseCase.isEnabled,
                     setupInputMethodUseCase.isChosen,
-                    controlAccessibilityServiceUseCase.serviceState
-                ) { isEnabled, isChosen, serviceState ->
+                    controlAccessibilityServiceUseCase.serviceState,
+                    preferenceRepository.get(Keys.changeImeOnInputFocus),
+                ) { proModeStatus, isEnabled, isChosen, serviceState, changeImeOnInputFocus ->
                     val enablingRequiresUserInput =
-                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                        Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
 
                     FixKeyEventActionState.InputMethod(
                         isEnabled = isEnabled,
                         isChosen = isChosen,
                         enablingRequiresUserInput = enablingRequiresUserInput,
-                        isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED
+                        isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
+                        proModeStatus = proModeStatus,
+                        isAutoSwitchImeEnabled = changeImeOnInputFocus
+                            ?: PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS,
                     )
                 }
             }
@@ -153,7 +160,9 @@ class FixKeyEventActionDelegateImpl @Inject constructor(
 
     override fun onChooseImeClick() {
         viewModelScope.launch {
-            setupInputMethodUseCase.chooseInputMethod()
+            setupInputMethodUseCase.chooseInputMethod().onFailure {
+                Timber.e("Failed to choose input method when fixing key event action. Error: $it")
+            }
         }
     }
 
@@ -163,6 +172,12 @@ class FixKeyEventActionDelegateImpl @Inject constructor(
 
     override fun onSelectInputMethod() {
         preferenceRepository.set(Keys.keyEventActionsUseSystemBridge, false)
+    }
+
+    override fun onAutoSwitchImeCheckedChange(checked: Boolean) {
+        viewModelScope.launch {
+            preferenceRepository.set(Keys.changeImeOnInputFocus, checked)
+        }
     }
 }
 
@@ -175,7 +190,7 @@ interface FixKeyEventActionDelegate {
     fun onEnableProModeForKeyEventActionsClick()
     fun onEnableImeClick()
     fun onChooseImeClick()
-
     fun onSelectProMode()
     fun onSelectInputMethod()
+    fun onAutoSwitchImeCheckedChange(checked: Boolean)
 }

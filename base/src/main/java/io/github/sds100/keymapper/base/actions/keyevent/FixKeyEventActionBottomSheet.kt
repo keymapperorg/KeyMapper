@@ -44,7 +44,9 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.trigger.AccessibilityServiceRequirementRow
+import io.github.sds100.keymapper.base.trigger.InputMethodRequirementRow
 import io.github.sds100.keymapper.base.trigger.ProModeStatus
+import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.base.utils.ui.compose.HeaderText
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.ProModeIcon
@@ -63,6 +65,7 @@ fun FixKeyEventActionBottomSheet(
     onEnableInputMethodClick: () -> Unit = {},
     onChooseInputMethodClick: () -> Unit = {},
     onDoneClick: () -> Unit = {},
+    onAutoSwitchImeCheckedChange: (Boolean) -> Unit = {},
 ) {
     ModalBottomSheet(
         modifier = modifier,
@@ -96,7 +99,7 @@ fun FixKeyEventActionBottomSheet(
                 FixKeyEventActionOptionCard(
                     onClick = onSelectInputMethod,
                     selected = state is FixKeyEventActionState.InputMethod,
-                    title = stringResource(R.string.trigger_setup_input_method_title),
+                    title = stringResource(R.string.fix_key_event_action_input_method_title),
                     icon = Icons.Rounded.Keyboard,
                 ) {
                     val annotatedText = buildAnnotatedString {
@@ -111,64 +114,74 @@ fun FixKeyEventActionBottomSheet(
                                 Placeholder(
                                     width = MaterialTheme.typography.bodyLarge.fontSize,
                                     height = MaterialTheme.typography.bodyLarge.fontSize,
-                                    placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter
-                                )
+                                    placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
+                                ),
                             ) {
                                 Icon(
                                     imageVector = Icons.Rounded.Remove,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.error
+                                    tint = MaterialTheme.colorScheme.error,
                                 )
-                            }
-                        )
+                            },
+                        ),
                     )
                     Text(
                         annotatedText,
                         inlineContent = inlineContent,
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
 
-                // TODO show disabled state on < Android Q
+                val isProModeUnsupported = state.proModeStatus == ProModeStatus.UNSUPPORTED
+
                 FixKeyEventActionOptionCard(
                     onClick = onSelectProMode,
                     selected = state is FixKeyEventActionState.ProMode,
                     title = stringResource(R.string.pro_mode_app_bar_title),
                     icon = KeyMapperIcons.ProModeIcon,
+                    enabled = !isProModeUnsupported,
                 ) {
-                    val annotatedText = buildAnnotatedString {
-                        appendInlineContent("icon", "[icon]")
-                        append(" ")
-                        append(stringResource(R.string.fix_key_event_action_pro_mode_text))
-                    }
-                    val inlineContent = mapOf(
-                        Pair(
-                            "icon",
-                            InlineTextContent(
-                                Placeholder(
-                                    width = MaterialTheme.typography.bodyLarge.fontSize,
-                                    height = MaterialTheme.typography.bodyLarge.fontSize,
-                                    placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter
-                                )
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Add,
-                                    contentDescription = null,
-                                    tint = LocalCustomColorsPalette.current.green
-                                )
-                            }
+                    if (isProModeUnsupported) {
+                        Text(
+                            stringResource(R.string.trigger_setup_pro_mode_unsupported),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error,
                         )
-                    )
-                    Text(
-                        annotatedText,
-                        inlineContent = inlineContent,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+                    } else {
+                        val annotatedText = buildAnnotatedString {
+                            appendInlineContent("icon", "[icon]")
+                            append(" ")
+                            append(stringResource(R.string.fix_key_event_action_pro_mode_text))
+                        }
+                        val inlineContent = mapOf(
+                            Pair(
+                                "icon",
+                                InlineTextContent(
+                                    Placeholder(
+                                        width = MaterialTheme.typography.bodyLarge.fontSize,
+                                        height = MaterialTheme.typography.bodyLarge.fontSize,
+                                        placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
+                                    ),
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Add,
+                                        contentDescription = null,
+                                        tint = LocalCustomColorsPalette.current.green,
+                                    )
+                                },
+                            ),
+                        )
+                        Text(
+                            annotatedText,
+                            inlineContent = inlineContent,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
                 }
 
                 Text(
                     stringResource(R.string.fix_key_event_action_change_in_settings_caption),
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.labelMedium,
                 )
             }
 
@@ -177,16 +190,31 @@ fun FixKeyEventActionBottomSheet(
             AccessibilityServiceRequirementRow(
                 modifier = Modifier.fillMaxWidth(),
                 isServiceEnabled = state.isAccessibilityServiceEnabled,
-                onClick = onEnableAccessibilityServiceClick
+                onClick = onEnableAccessibilityServiceClick,
             )
 
             when (state) {
                 is FixKeyEventActionState.InputMethod -> {
+                    InputMethodRequirementRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        isChosen = state.isChosen,
+                        isEnabled = state.isEnabled,
+                        enablingRequiresUserInput = state.enablingRequiresUserInput,
+                        onEnableClick = onEnableInputMethodClick,
+                        onChooseClick = onChooseInputMethodClick,
+                    )
 
+                    HeaderText(text = stringResource(R.string.fix_key_event_action_options_title))
+
+                    CheckBoxText(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(R.string.fix_key_event_action_auto_switch_ime_text),
+                        isChecked = state.isAutoSwitchImeEnabled,
+                        onCheckedChange = onAutoSwitchImeCheckedChange,
+                    )
                 }
 
                 is FixKeyEventActionState.ProMode -> {
-
                 }
             }
 
@@ -204,13 +232,18 @@ private fun FixKeyEventActionOptionCard(
     selected: Boolean,
     title: String,
     icon: ImageVector,
-    content: @Composable ColumnScope.() -> Unit
+    enabled: Boolean = true,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
-    OutlinedCard(modifier = modifier.fillMaxWidth(), onClick = onClick) {
+    OutlinedCard(
+        modifier = modifier.fillMaxWidth(),
+        onClick = onClick,
+        enabled = enabled,
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, top = 16.dp, end = 8.dp, bottom = 16.dp)
+                .padding(start = 16.dp, top = 16.dp, end = 8.dp, bottom = 16.dp),
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -218,7 +251,7 @@ private fun FixKeyEventActionOptionCard(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleMedium,
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -227,7 +260,8 @@ private fun FixKeyEventActionOptionCard(
             RadioButton(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 selected = selected,
-                onClick = onClick
+                onClick = onClick,
+                enabled = enabled,
             )
         }
     }
@@ -251,6 +285,8 @@ private fun InputMethodPreview() {
                 isChosen = true,
                 enablingRequiresUserInput = true,
                 isAccessibilityServiceEnabled = true,
+                isAutoSwitchImeEnabled = true,
+                proModeStatus = ProModeStatus.ENABLED,
             ),
         )
     }
@@ -271,6 +307,31 @@ private fun ProModePreview() {
             sheetState = sheetState,
             state = FixKeyEventActionState.ProMode(
                 proModeStatus = ProModeStatus.ENABLED,
+                isAccessibilityServiceEnabled = true,
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun ProModeUnsupportedPreview() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = SheetValue.Expanded,
+        )
+
+        FixKeyEventActionBottomSheet(
+            sheetState = sheetState,
+            state = FixKeyEventActionState.InputMethod(
+                proModeStatus = ProModeStatus.UNSUPPORTED,
+                isEnabled = true,
+                isChosen = true,
+                enablingRequiresUserInput = true,
+                isAutoSwitchImeEnabled = false,
                 isAccessibilityServiceEnabled = true,
             ),
         )

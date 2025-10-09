@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -140,7 +142,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
                             isImeChosen = isImeChosen,
                             areRequirementsMet = areRequirementsMet,
                             recordTriggerState = recordTriggerState,
-                            enablingRequiresUserInput = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+                            enablingRequiresUserInput = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU,
                         )
                     }
                 }
@@ -404,7 +406,9 @@ class TriggerSetupDelegateImpl @Inject constructor(
 
     override fun onChooseImeClick() {
         viewModelScope.launch {
-            setupInputMethodUseCase.chooseInputMethod()
+            setupInputMethodUseCase.chooseInputMethod().onFailure {
+                Timber.e("Failed to choose input method when setting up trigger. Error: $it")
+            }
         }
     }
 

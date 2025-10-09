@@ -39,7 +39,7 @@ class AndroidInputMethodAdapter @Inject constructor(
         const val SETTINGS_SECURE_SUBTYPE_HISTORY_KEY = "input_methods_subtype_history"
     }
 
-    override val inputMethodHistory by lazy {
+    override val inputMethodHistory: MutableStateFlow<List<ImeInfo>> by lazy {
         val initialValues = getImeHistory().mapNotNull { getInfoById(it).valueOrNull() }
         MutableStateFlow(initialValues)
     }

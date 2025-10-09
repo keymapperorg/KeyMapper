@@ -1663,7 +1663,7 @@
     <string name="trigger_setup_gamepad_type_dpad">D-Pad button</string>
     <string name="trigger_setup_gamepad_type_simple_buttons">Other simple buttons</string>
     <string name="trigger_setup_gamepad_information_dpad">You will not be able to use your normal on-screen keyboard when remapping DPAD buttons.</string>
-    <string name="trigger_setup_input_method_title">Key Mapper Input method</string>
+    <string name="trigger_setup_input_method_title">Key Mapper input method</string>
     <string name="trigger_setup_input_method_enable_button">Enable</string>
     <string name="trigger_setup_input_method_choose_button">Choose</string>
     <string name="trigger_setup_input_method_running_button">Running</string>
@@ -1680,5 +1680,6 @@
     <string name="fix_key_event_action_auto_switch_ime_text">Automatically switch to normal on-screen keyboard when typing</string>
     <string name="fix_key_event_action_change_in_settings_caption">You can always change this in Settings</string>
     <string name="fix_key_event_action_setup_title">Setup</string>
+    <string name="fix_key_event_action_options_title">Options</string>
 
 </resources>
