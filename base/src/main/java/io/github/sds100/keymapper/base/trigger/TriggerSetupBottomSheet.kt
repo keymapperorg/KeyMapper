@@ -2,12 +2,7 @@
 
 package io.github.sds100.keymapper.base.trigger
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,11 +21,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material.icons.outlined.Mouse
-import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material.icons.rounded.Keyboard
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -61,9 +54,12 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
+import io.github.sds100.keymapper.base.utils.ui.compose.AccessibilityServiceRequirementRow
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.base.utils.ui.compose.HeaderText
+import io.github.sds100.keymapper.base.utils.ui.compose.InputMethodRequirementRow
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
+import io.github.sds100.keymapper.base.utils.ui.compose.ProModeRequirementRow
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.IndeterminateQuestionBox
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
@@ -807,110 +803,6 @@ fun RemapStatusRow(
 }
 
 @Composable
-private fun ProModeRequirementRow(
-    modifier: Modifier = Modifier,
-    isVisible: Boolean,
-    proModeStatus: ProModeStatus,
-    onClick: () -> Unit,
-) {
-    AnimatedVisibility(
-        visible = isVisible,
-        enter = fadeIn(animationSpec = tween(200)),
-        exit = fadeOut(animationSpec = tween(200)) + shrinkVertically(animationSpec = tween(200)),
-    ) {
-        TriggerRequirementRow(
-            modifier = modifier,
-            text = stringResource(R.string.trigger_setup_pro_mode_title),
-        ) {
-            if (proModeStatus == ProModeStatus.UNSUPPORTED) {
-                Text(
-                    text = stringResource(R.string.trigger_setup_pro_mode_unsupported),
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            } else {
-                TriggerRequirementButton(
-                    enabledText = stringResource(R.string.trigger_setup_pro_mode_enable_button),
-                    disabledText = stringResource(R.string.trigger_setup_pro_mode_running_button),
-                    isEnabled = proModeStatus != ProModeStatus.ENABLED,
-                    onClick = onClick,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun AccessibilityServiceRequirementRow(
-    modifier: Modifier = Modifier,
-    isServiceEnabled: Boolean,
-    onClick: () -> Unit,
-) {
-    TriggerRequirementRow(
-        modifier = modifier,
-        text = stringResource(R.string.trigger_setup_accessibility_service_title),
-    ) {
-        TriggerRequirementButton(
-            enabledText = stringResource(R.string.trigger_setup_accessibility_service_enable_button),
-            disabledText = stringResource(R.string.trigger_setup_accessibility_service_running_button),
-            isEnabled = !isServiceEnabled,
-            onClick = onClick,
-        )
-    }
-}
-
-@Composable
-fun InputMethodRequirementRow(
-    modifier: Modifier = Modifier,
-    isEnabled: Boolean,
-    isChosen: Boolean,
-    enablingRequiresUserInput: Boolean,
-    onEnableClick: () -> Unit,
-    onChooseClick: () -> Unit,
-) {
-    TriggerRequirementRow(
-        modifier = modifier,
-        text = stringResource(R.string.trigger_setup_input_method_title),
-    ) {
-        val enabledText = when {
-            !isEnabled && enablingRequiresUserInput -> stringResource(R.string.trigger_setup_input_method_enable_button)
-            !isChosen -> stringResource(R.string.trigger_setup_input_method_choose_button)
-            else -> ""
-        }
-
-        val disabledText = stringResource(R.string.trigger_setup_input_method_running_button)
-
-        TriggerRequirementButton(
-            enabledText = enabledText,
-            disabledText = disabledText,
-            isEnabled = !isEnabled || !isChosen,
-            onClick = if (!isEnabled && enablingRequiresUserInput) onEnableClick else onChooseClick,
-        )
-    }
-}
-
-@Composable
-fun TriggerRequirementRow(
-    modifier: Modifier = Modifier,
-    text: String,
-    actionContent: @Composable () -> Unit,
-) {
-    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        Spacer(Modifier.width(8.dp))
-
-        Text(
-            modifier = Modifier.weight(1f),
-            text = text,
-            style = MaterialTheme.typography.bodyLarge,
-        )
-
-        Spacer(Modifier.width(8.dp))
-
-        actionContent()
-    }
-}
-
-@Composable
 fun TriggerRequirementsNotMetButton(modifier: Modifier = Modifier) {
     FilledTonalButton(modifier = modifier, onClick = {}, enabled = false) {
         Text(stringResource(R.string.trigger_setup_requirements_not_met_button))
@@ -921,33 +813,6 @@ fun TriggerRequirementsNotMetButton(modifier: Modifier = Modifier) {
 fun AddTriggerButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
     Button(modifier = modifier, onClick = onClick) {
         Text(stringResource(R.string.trigger_setup_add_trigger_button))
-    }
-}
-
-@Composable
-fun TriggerRequirementButton(
-    modifier: Modifier = Modifier,
-    enabledText: String,
-    disabledText: String,
-    isEnabled: Boolean,
-    colors: ButtonColors = ButtonDefaults.filledTonalButtonColors(),
-    onClick: () -> Unit,
-) {
-    FilledTonalButton(
-        modifier = modifier,
-        onClick = onClick,
-        enabled = isEnabled,
-        colors = colors,
-    ) {
-        if (isEnabled) {
-            Text(text = enabledText)
-        } else {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Rounded.Check, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = disabledText)
-            }
-        }
     }
 }
 

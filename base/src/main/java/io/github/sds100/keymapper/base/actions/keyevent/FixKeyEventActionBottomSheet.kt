@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.actions.keyevent
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -19,6 +20,8 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Keyboard
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -43,11 +46,13 @@ import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
-import io.github.sds100.keymapper.base.trigger.AccessibilityServiceRequirementRow
-import io.github.sds100.keymapper.base.trigger.InputMethodRequirementRow
 import io.github.sds100.keymapper.base.trigger.ProModeStatus
+import io.github.sds100.keymapper.base.utils.ui.compose.AccessibilityServiceRequirementRow
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.base.utils.ui.compose.HeaderText
+import io.github.sds100.keymapper.base.utils.ui.compose.InputMethodRequirementRow
+import io.github.sds100.keymapper.base.utils.ui.compose.ProModeRequirementRow
+import io.github.sds100.keymapper.base.utils.ui.compose.filledTonalButtonColorsError
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.ProModeIcon
 
@@ -190,6 +195,7 @@ fun FixKeyEventActionBottomSheet(
             AccessibilityServiceRequirementRow(
                 modifier = Modifier.fillMaxWidth(),
                 isServiceEnabled = state.isAccessibilityServiceEnabled,
+                buttonColors = ButtonDefaults.filledTonalButtonColorsError(),
                 onClick = onEnableAccessibilityServiceClick,
             )
 
@@ -200,6 +206,7 @@ fun FixKeyEventActionBottomSheet(
                         isChosen = state.isChosen,
                         isEnabled = state.isEnabled,
                         enablingRequiresUserInput = state.enablingRequiresUserInput,
+                        buttonColors = ButtonDefaults.filledTonalButtonColorsError(),
                         onEnableClick = onEnableInputMethodClick,
                         onChooseClick = onChooseInputMethodClick,
                     )
@@ -215,6 +222,13 @@ fun FixKeyEventActionBottomSheet(
                 }
 
                 is FixKeyEventActionState.ProMode -> {
+                    ProModeRequirementRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        isVisible = true,
+                        proModeStatus = state.proModeStatus,
+                        buttonColors = ButtonDefaults.filledTonalButtonColorsError(),
+                        onClick = onEnableProModeClick,
+                    )
                 }
             }
 
@@ -235,10 +249,24 @@ private fun FixKeyEventActionOptionCard(
     enabled: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    val cardBorder = if (selected) {
+        BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+    } else {
+        CardDefaults.outlinedCardBorder()
+    }
+
+    val cardElevation = if (selected) {
+        CardDefaults.outlinedCardElevation(defaultElevation = 1.dp)
+    } else {
+        CardDefaults.outlinedCardElevation()
+    }
+
     OutlinedCard(
         modifier = modifier.fillMaxWidth(),
         onClick = onClick,
         enabled = enabled,
+        border = cardBorder,
+        elevation = cardElevation
     ) {
         Row(
             modifier = Modifier
@@ -306,7 +334,7 @@ private fun ProModePreview() {
         FixKeyEventActionBottomSheet(
             sheetState = sheetState,
             state = FixKeyEventActionState.ProMode(
-                proModeStatus = ProModeStatus.ENABLED,
+                proModeStatus = ProModeStatus.DISABLED,
                 isAccessibilityServiceEnabled = true,
             ),
         )
@@ -328,8 +356,8 @@ private fun ProModeUnsupportedPreview() {
             sheetState = sheetState,
             state = FixKeyEventActionState.InputMethod(
                 proModeStatus = ProModeStatus.UNSUPPORTED,
-                isEnabled = true,
-                isChosen = true,
+                isEnabled = false,
+                isChosen = false,
                 enablingRequiresUserInput = true,
                 isAutoSwitchImeEnabled = false,
                 isAccessibilityServiceEnabled = true,

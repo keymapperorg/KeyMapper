@@ -49,7 +49,7 @@ class GetActionErrorUseCaseImpl @Inject constructor(
         if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             merge(
                 systemBridgeConnectionManager.connectionState.drop(1).map { },
-                preferenceRepository.get(Keys.isSystemBridgeUsed),
+                preferenceRepository.get(Keys.keyEventActionsUseSystemBridge),
             )
         } else {
             emptyFlow()
