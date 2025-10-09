@@ -86,7 +86,7 @@ class GetActionErrorUseCaseTest {
     private fun setupKeyEventActionTest(
         chosenIme: ImeInfo,
         isSystemBridgeUsed: Boolean = false,
-        isSystemBridgeConnected: Boolean = false
+        isSystemBridgeConnected: Boolean = false,
     ) {
         whenever(mockPermissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)).then { true }
         fakeInputMethodAdapter.chosenIme.value = chosenIme
@@ -101,7 +101,7 @@ class GetActionErrorUseCaseTest {
 
         whenever(mockSystemBridgeConnectionManager.connectionState).then {
             MutableStateFlow(
-                connectionState
+                connectionState,
             )
         }
     }
@@ -191,7 +191,7 @@ class GetActionErrorUseCaseTest {
             val errors = useCase.actionErrorSnapshot.first().getErrors(listOf(action))
             assertThat(
                 errors[action],
-                `is`(KMError.KeyEventActionError(KMError.NoCompatibleImeChosen))
+                `is`(KMError.KeyEventActionError(KMError.NoCompatibleImeChosen)),
             )
         }
 
@@ -254,7 +254,7 @@ class GetActionErrorUseCaseTest {
             setupKeyEventActionTest(
                 chosenIme = GBOARD_IME_INFO,
                 isSystemBridgeUsed = true,
-                isSystemBridgeConnected = true
+                isSystemBridgeConnected = true,
             )
 
             val actions = listOf(
@@ -272,7 +272,7 @@ class GetActionErrorUseCaseTest {
             setupKeyEventActionTest(
                 chosenIme = GUI_KEYBOARD_IME_INFO,
                 isSystemBridgeUsed = true,
-                isSystemBridgeConnected = false
+                isSystemBridgeConnected = false,
             )
 
             val actions = listOf(
@@ -290,7 +290,7 @@ class GetActionErrorUseCaseTest {
             setupKeyEventActionTest(
                 chosenIme = GBOARD_IME_INFO,
                 isSystemBridgeUsed = true,
-                isSystemBridgeConnected = false
+                isSystemBridgeConnected = false,
             )
 
             val actions = listOf(

@@ -96,7 +96,10 @@ class LazyActionErrorSnapshot(
 
             var error = getError(action)
 
-            if (error == KMError.NoCompatibleImeChosen && currentImeFromActions != null) {
+            val isImeNotChosenError =
+                error == KMError.NoCompatibleImeChosen || (error is KMError.KeyEventActionError && error.baseError == KMError.NoCompatibleImeChosen)
+
+            if (isImeNotChosenError && currentImeFromActions != null) {
                 val isCurrentImeCompatible =
                     KeyMapperImeHelper.isKeyMapperInputMethod(
                         currentImeFromActions.packageName,
@@ -121,8 +124,10 @@ class LazyActionErrorSnapshot(
             return isSupportedError
         }
 
-        if (buildConfigProvider.sdkInt >= Constants.SYSTEM_BRIDGE_MIN_API && action is ActionData.InputKeyEvent && keyEventActionsUseSystemBridge && !isSystemBridgeConnected) {
-            return KMError.KeyEventActionError(SystemBridgeError.Disconnected)
+        if (buildConfigProvider.sdkInt >= Constants.SYSTEM_BRIDGE_MIN_API && action is ActionData.InputKeyEvent && keyEventActionsUseSystemBridge) {
+            if (!isSystemBridgeConnected) {
+                return KMError.KeyEventActionError(SystemBridgeError.Disconnected)
+            }
         } else if (action.canUseImeToPerform()) {
             if (!isCompatibleImeEnabled) {
                 if (action is ActionData.InputKeyEvent) {
