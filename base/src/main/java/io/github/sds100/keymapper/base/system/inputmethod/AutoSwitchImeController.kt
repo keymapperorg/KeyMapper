@@ -58,7 +58,7 @@ class AutoSwitchImeController @AssistedInject constructor(
     private val toastAdapter: ToastAdapter,
     private val resourceProvider: ResourceProvider,
     private val buildConfigProvider: BuildConfigProvider,
-    private val lockScreenAdapter: LockScreenAdapter
+    private val lockScreenAdapter: LockScreenAdapter,
 ) : PreferenceRepository by preferenceRepository {
 
     @AssistedFactory
