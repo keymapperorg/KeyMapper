@@ -153,9 +153,9 @@ class KeyMapperImeService : InputMethodService() {
         // to unlock their device. This must not be in onCreate because
         // the switchInputMethod does not work there.
         if (userManager?.isUserUnlocked == false) {
-            selectNonBasicKeyboard()
+            chooseIncompatibleIme()
         } else if (!restarting && keyguardManager?.isDeviceLocked == true) {
-            selectNonBasicKeyboard()
+            chooseIncompatibleIme()
         }
 
         // Only send the start input event on versions before the accessibility
@@ -226,14 +226,14 @@ class KeyMapperImeService : InputMethodService() {
     }
 
     @SuppressLint("LogNotTimber")
-    private fun selectNonBasicKeyboard() {
+    private fun chooseIncompatibleIme() {
         inputMethodManager ?: return
+
+        Timber.d("KeyMapperImeService: Choosing incompatible IME because device is locked")
 
         inputMethodManager!!.enabledInputMethodList
             .filter {
-                it.packageName != "io.github.sds100.keymapper" &&
-                    it.packageName != "io.github.sds100.keymapper.debug" &&
-                    it.packageName != "io.github.sds100.keymapper.ci"
+                !it.packageName.contains("io.github.sds100.keymapper")
             }
             // Select a random one in case one of them can't be used on the lock screen such as
             // the Google Voice Typing keyboard. This is critical because if an input method can't be used

@@ -25,6 +25,7 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.data.utils.PrefDelegate
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
+import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.popup.ToastAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -35,6 +36,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import timber.log.Timber
 
 /**
  * This requires Android 11+ because this is when the accessibility service API for switching
@@ -56,6 +58,7 @@ class AutoSwitchImeController @AssistedInject constructor(
     private val toastAdapter: ToastAdapter,
     private val resourceProvider: ResourceProvider,
     private val buildConfigProvider: BuildConfigProvider,
+    private val lockScreenAdapter: LockScreenAdapter
 ) : PreferenceRepository by preferenceRepository {
 
     @AssistedFactory
@@ -152,7 +155,7 @@ class AutoSwitchImeController @AssistedInject constructor(
 
     fun onAccessibilityEvent(event: AccessibilityEvent) {
         // On SDK 33 and newer, the more reliable accessibility input method API is used.
-        // See onStartInput and onFinishInput. On my OxygenOS 11 it can not detect the Key Mapper
+        // See onStartInput and onFinishInput. On OxygenOS 11 it can not detect the Key Mapper
         // Basic input method window so onStartInput is also called from the KeyMapperImeService as
         // a fallback.
 
@@ -203,8 +206,15 @@ class AutoSwitchImeController @AssistedInject constructor(
 
         val result = if (isValidInputStarted) {
             chooseIncompatibleIme()
-        } else {
+        } else if (!lockScreenAdapter.isLocked()) {
+            // Do not choose the key mapper ime if the lock screen is showing
+            // in case the user needs the keyboard to unlock. This would also
+            // clash and cause infinite loops with the safety feature to
+            // auto-switch inside the KeyMapperImeService
+            // that switches regardless of whether any auto-switching features are enabled.
             chooseCompatibleIme()
+        } else {
+            false
         }
 
         // Drop the next event if the IME was just changed to prevent an infinite loop.
@@ -223,7 +233,14 @@ class AutoSwitchImeController @AssistedInject constructor(
             return
         }
 
-        chooseCompatibleIme()
+        if (!lockScreenAdapter.isLocked()) {
+            // Do not choose the key mapper ime if the lock screen is showing
+            // in case the user needs the keyboard to unlock. This would also
+            // clash and cause infinite loops with the safety feature to
+            // auto-switch inside the KeyMapperImeService
+            // that switches regardless of whether any auto-switching features are enabled.
+            chooseCompatibleIme()
+        }
     }
 
     private fun chooseIncompatibleIme(): Boolean {
@@ -231,6 +248,8 @@ class AutoSwitchImeController @AssistedInject constructor(
         if (!imeHelper.isCompatibleImeChosen()) {
             return false
         }
+
+        Timber.d("AutoSwitchImeController: Choosing incompatible IME")
 
         return imeHelper.chooseLastUsedIncompatibleInputMethod()
             .onSuccess { imeId ->
@@ -249,6 +268,8 @@ class AutoSwitchImeController @AssistedInject constructor(
         if (imeHelper.isCompatibleImeChosen()) {
             return false
         }
+
+        Timber.d("AutoSwitchImeController: Choosing compatible IME")
 
         return imeHelper.chooseCompatibleInputMethod()
             .onSuccess { imeId ->
