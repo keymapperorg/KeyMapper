@@ -266,7 +266,7 @@ private fun FixKeyEventActionOptionCard(
         onClick = onClick,
         enabled = enabled,
         border = cardBorder,
-        elevation = cardElevation
+        elevation = cardElevation,
     ) {
         Row(
             modifier = Modifier

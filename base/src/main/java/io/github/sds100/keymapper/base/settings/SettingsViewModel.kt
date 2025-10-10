@@ -67,7 +67,7 @@ class SettingsViewModel @Inject constructor(
             forceVibrate = values[3] as Boolean? ?: false,
             hideHomeScreenAlerts = values[4] as Boolean? ?: false,
             showDeviceDescriptors = values[5] as Boolean? ?: false,
-            keyEventActionsUseSystemBridege = values[6] as Boolean? ?: false
+            keyEventActionsUseSystemBridege = values[6] as Boolean? ?: false,
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, MainSettingsState())
 
@@ -338,7 +338,7 @@ data class MainSettingsState(
     val loggingEnabled: Boolean = false,
     val hideHomeScreenAlerts: Boolean = false,
     val showDeviceDescriptors: Boolean = false,
-    val keyEventActionsUseSystemBridege: Boolean = false
+    val keyEventActionsUseSystemBridege: Boolean = false,
 )
 
 data class DefaultSettingsState(
