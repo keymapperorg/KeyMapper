@@ -58,6 +58,7 @@ class SettingsViewModel @Inject constructor(
         useCase.getPreference(Keys.forceVibrate),
         useCase.getPreference(Keys.hideHomeScreenAlerts),
         useCase.getPreference(Keys.showDeviceDescriptors),
+        useCase.getPreference(Keys.keyEventActionsUseSystemBridge),
     ) { values ->
         MainSettingsState(
             theme = values[0] as Theme,
@@ -66,6 +67,7 @@ class SettingsViewModel @Inject constructor(
             forceVibrate = values[3] as Boolean? ?: false,
             hideHomeScreenAlerts = values[4] as Boolean? ?: false,
             showDeviceDescriptors = values[5] as Boolean? ?: false,
+            keyEventActionsUseSystemBridege = values[6] as Boolean? ?: false
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, MainSettingsState())
 
@@ -299,6 +301,12 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun onKeyEventActionMethodSelected(isProModeSelected: Boolean) {
+        viewModelScope.launch {
+            useCase.setPreference(Keys.keyEventActionsUseSystemBridge, isProModeSelected)
+        }
+    }
+
     fun onHideHomeScreenAlertsToggled(enabled: Boolean) {
         viewModelScope.launch {
             useCase.setPreference(Keys.hideHomeScreenAlerts, enabled)
@@ -330,6 +338,7 @@ data class MainSettingsState(
     val loggingEnabled: Boolean = false,
     val hideHomeScreenAlerts: Boolean = false,
     val showDeviceDescriptors: Boolean = false,
+    val keyEventActionsUseSystemBridege: Boolean = false
 )
 
 data class DefaultSettingsState(
