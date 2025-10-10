@@ -6,7 +6,8 @@ import android.os.Build
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityNodeInfo
+import android.view.inputmethod.EditorInfo
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.base.actions.ActionData
@@ -22,6 +23,7 @@ import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCa
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.TriggerKeyMapEvent
 import io.github.sds100.keymapper.base.promode.SystemBridgeSetupAssistantController
+import io.github.sds100.keymapper.base.system.inputmethod.AutoSwitchImeController
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.firstBlocking
@@ -66,6 +68,7 @@ abstract class BaseAccessibilityServiceController(
     private val inputEventHub: InputEventHub,
     private val recordTriggerController: RecordTriggerController,
     private val setupAssistantControllerFactory: SystemBridgeSetupAssistantController.Factory,
+    private val autoSwitchImeControllerFactory: AutoSwitchImeController.Factory,
 ) {
     companion object {
         private const val DEFAULT_NOTIFICATION_TIMEOUT = 200L
@@ -108,6 +111,14 @@ abstract class BaseAccessibilityServiceController(
         } else {
             null
         }
+
+    private val autoSwitchImeController: AutoSwitchImeController? by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            autoSwitchImeControllerFactory.create(service, service.lifecycleScope)
+        } else {
+            null
+        }
+    }
 
     val isPaused: StateFlow<Boolean> =
         pauseKeyMapsUseCase.isPaused
@@ -210,18 +221,16 @@ abstract class BaseAccessibilityServiceController(
             }
         }.launchIn(service.lifecycleScope)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            combine(
-                detectKeyMapsUseCase.requestFingerprintGestureDetection,
-                isPaused,
-            ) { request, isPaused ->
-                if (request && !isPaused) {
-                    requestFingerprintGestureDetection()
-                } else {
-                    denyFingerprintGestureDetection()
-                }
-            }.launchIn(service.lifecycleScope)
-        }
+        combine(
+            detectKeyMapsUseCase.requestFingerprintGestureDetection,
+            isPaused,
+        ) { request, isPaused ->
+            if (request && !isPaused) {
+                requestFingerprintGestureDetection()
+            } else {
+                denyFingerprintGestureDetection()
+            }
+        }.launchIn(service.lifecycleScope)
 
         pauseKeyMapsUseCase.isPaused.distinctUntilChanged().onEach {
             triggerKeyMapFromOtherAppsController.reset()
@@ -268,8 +277,13 @@ abstract class BaseAccessibilityServiceController(
             }
         }
 
-        val imeInputFocusEvents =
-            AccessibilityEvent.TYPE_VIEW_FOCUSED or AccessibilityEvent.TYPE_VIEW_CLICKED
+        // The accessibility event is only used on older than SDK 33. On newer versions the
+        // accessibility input method API is used.
+        val imeInputStartedEvents = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            AccessibilityEvent.TYPE_WINDOWS_CHANGED
+        } else {
+            0
+        }
 
         val recordNodeEvents =
             AccessibilityEvent.TYPE_VIEW_FOCUSED or AccessibilityEvent.TYPE_VIEW_CLICKED
@@ -285,10 +299,10 @@ abstract class BaseAccessibilityServiceController(
 
                     if (!changeImeOnInputFocus && recordState == RecordAccessibilityNodeState.Idle) {
                         newEventTypes =
-                            newEventTypes and (imeInputFocusEvents or recordNodeEvents).inv()
+                            newEventTypes and (imeInputStartedEvents or recordNodeEvents).inv()
                     } else {
                         if (changeImeOnInputFocus) {
-                            newEventTypes = newEventTypes or imeInputFocusEvents
+                            newEventTypes = newEventTypes or imeInputStartedEvents
                         }
 
                         if (recordState is RecordAccessibilityNodeState.CountingDown) {
@@ -308,6 +322,10 @@ abstract class BaseAccessibilityServiceController(
                 }
             }.collect()
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            autoSwitchImeController?.init()
+        }
     }
 
     open fun onServiceConnected() {
@@ -317,23 +335,21 @@ abstract class BaseAccessibilityServiceController(
         service.notificationTimeout = serviceNotificationTimeout.value
 
         // check if fingerprint gestures are supported
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val isFingerprintGestureRequested =
-                serviceFlags.value.hasFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
-            requestFingerprintGestureDetection()
+        val isFingerprintGestureRequested =
+            serviceFlags.value.hasFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
+        requestFingerprintGestureDetection()
 
-            /* Don't update whether fingerprint gesture detection is supported if it has
-             * been supported at some point. Just in case the fingerprint reader is being
-             * used while this is called. */
-            if (fingerprintGesturesSupported.isSupported.firstBlocking() != true) {
-                fingerprintGesturesSupported.setSupported(
-                    service.isFingerprintGestureDetectionAvailable,
-                )
-            }
+        /* Don't update whether fingerprint gesture detection is supported if it has
+         * been supported at some point. Just in case the fingerprint reader is being
+         * used while this is called. */
+        if (fingerprintGesturesSupported.isSupported.firstBlocking() != true) {
+            fingerprintGesturesSupported.setSupported(
+                service.isFingerprintGestureDetectionAvailable,
+            )
+        }
 
-            if (!isFingerprintGestureRequested) {
-                denyFingerprintGestureDetection()
-            }
+        if (!isFingerprintGestureRequested) {
+            denyFingerprintGestureDetection()
         }
 
         keyEventRelayServiceWrapper.registerClient(
@@ -394,26 +410,23 @@ abstract class BaseAccessibilityServiceController(
     open fun onAccessibilityEvent(event: AccessibilityEvent) {
         accessibilityNodeRecorder.onAccessibilityEvent(event)
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            autoSwitchImeController?.onAccessibilityEvent(event)
+        }
+
         if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             setupAssistantController?.onAccessibilityEvent(event)
         }
+    }
 
-        if (changeImeOnInputFocusFlow.value) {
-            val focussedNode =
-                service.findFocussedNode(AccessibilityNodeInfo.FOCUS_INPUT)
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun onStartInput(attribute: EditorInfo, restarting: Boolean) {
+        autoSwitchImeController?.onStartInput(attribute, restarting)
+    }
 
-            if (focussedNode?.isEditable == true && focussedNode.isFocused) {
-                Timber.d("Got input focus")
-                service.lifecycleScope.launch {
-                    outputEvents.emit(AccessibilityServiceEvent.OnInputFocusChange(isFocussed = true))
-                }
-            } else {
-                Timber.d("Lost input focus")
-                service.lifecycleScope.launch {
-                    outputEvents.emit(AccessibilityServiceEvent.OnInputFocusChange(isFocussed = false))
-                }
-            }
-        }
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun onFinishInput() {
+        autoSwitchImeController?.onFinishInput()
     }
 
     fun onFingerprintGesture(type: FingerprintGestureType) {
@@ -440,14 +453,18 @@ abstract class BaseAccessibilityServiceController(
 
             is AccessibilityServiceEvent.HideKeyboard -> service.hideKeyboard()
             is AccessibilityServiceEvent.ShowKeyboard -> service.showKeyboard()
-            is AccessibilityServiceEvent.ChangeIme -> service.switchIme(event.imeId)
+            is AccessibilityServiceEvent.ChangeIme ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    service.switchIme(event.imeId)
+                }
+
             is AccessibilityServiceEvent.DisableService ->
                 service.disableSelf()
 
             is TriggerKeyMapEvent -> triggerKeyMapFromIntent(event.uid)
 
             is AccessibilityServiceEvent.EnableInputMethod -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                service.setInputMethodEnabled(event.imeId, true)
+                service.enableIme(event.imeId)
             }
 
             is RecordAccessibilityNodeEvent.StartRecordingNodes -> {
@@ -462,41 +479,39 @@ abstract class BaseAccessibilityServiceController(
                 service.doGlobalAction(event.action)
             }
 
+            is AccessibilityServiceEvent.OnKeyMapperImeStartInput -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    autoSwitchImeController?.onStartInput(event.attribute, event.restarting)
+                }
+            }
+
             else -> Unit
         }
     }
 
     private fun requestFingerprintGestureDetection() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Timber.d("Accessibility service: request fingerprint gesture detection")
-            serviceFlags.value =
-                serviceFlags.value.withFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
-        }
+        Timber.d("Accessibility service: request fingerprint gesture detection")
+        serviceFlags.value =
+            serviceFlags.value.withFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
     }
 
     private fun denyFingerprintGestureDetection() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Timber.d("Accessibility service: deny fingerprint gesture detection")
-            serviceFlags.value =
-                serviceFlags.value.minusFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
-        }
+        Timber.d("Accessibility service: deny fingerprint gesture detection")
+        serviceFlags.value =
+            serviceFlags.value.minusFlag(AccessibilityServiceInfo.FLAG_REQUEST_FINGERPRINT_GESTURES)
     }
 
     private fun enableAccessibilityVolumeStream() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            serviceFeedbackType.value =
-                serviceFeedbackType.value.withFlag(AccessibilityServiceInfo.FEEDBACK_AUDIBLE)
-            serviceFlags.value =
-                serviceFlags.value.withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
-        }
+        serviceFeedbackType.value =
+            serviceFeedbackType.value.withFlag(AccessibilityServiceInfo.FEEDBACK_AUDIBLE)
+        serviceFlags.value =
+            serviceFlags.value.withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
     }
 
     private fun disableAccessibilityVolumeStream() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            serviceFeedbackType.value =
-                serviceFeedbackType.value.minusFlag(AccessibilityServiceInfo.FEEDBACK_AUDIBLE)
-            serviceFlags.value =
-                serviceFlags.value.minusFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
-        }
+        serviceFeedbackType.value =
+            serviceFeedbackType.value.minusFlag(AccessibilityServiceInfo.FEEDBACK_AUDIBLE)
+        serviceFlags.value =
+            serviceFlags.value.minusFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
     }
 }

@@ -74,8 +74,6 @@ fun BaseConfigKeyMapScreen(
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
     showActionTapTarget: Boolean = false,
     onActionTapTargetCompleted: () -> Unit = {},
-    showConstraintTapTarget: Boolean = false,
-    onConstraintTapTargetCompleted: () -> Unit = {},
     onSkipTutorialClick: () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
@@ -132,13 +130,12 @@ fun BaseConfigKeyMapScreen(
                         for ((index, tab) in tabs.withIndex()) {
                             val tapTarget: OnboardingTapTarget? = when {
                                 showActionTapTarget && tab == ConfigKeyMapTab.ACTIONS -> OnboardingTapTarget.CHOOSE_ACTION
-                                showConstraintTapTarget && (tab == ConfigKeyMapTab.CONSTRAINTS || tab == ConfigKeyMapTab.CONSTRAINTS_AND_OPTIONS) -> OnboardingTapTarget.CHOOSE_CONSTRAINT
                                 else -> null
                             }
 
                             IntroShowcase(
                                 showIntroShowCase = tapTarget != null,
-                                onShowCaseCompleted = if (tapTarget == OnboardingTapTarget.CHOOSE_ACTION) onActionTapTargetCompleted else onConstraintTapTargetCompleted,
+                                onShowCaseCompleted = onActionTapTargetCompleted,
                                 dismissOnClickOutside = true,
                             ) {
                                 var tabModifier: Modifier = Modifier

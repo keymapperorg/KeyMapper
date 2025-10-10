@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -53,6 +54,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.canopas.lib.showcase.IntroShowcase
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionBottomSheet
 import io.github.sds100.keymapper.base.backup.ImportExportState
 import io.github.sds100.keymapper.base.backup.RestoreType
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
@@ -125,6 +127,25 @@ fun HomeKeyMapListScreen(
                 viewModel.onDeleteSelectedKeyMapsClick()
                 showDeleteDialog = false
             },
+        )
+    }
+
+    val fixKeyEventActionState by viewModel.fixKeyEventActionState.collectAsStateWithLifecycle()
+
+    if (fixKeyEventActionState != null) {
+        FixKeyEventActionBottomSheet(
+            modifier = Modifier.systemBarsPadding(),
+            state = fixKeyEventActionState!!,
+            sheetState = sheetState,
+            onDismissRequest = viewModel::dismissFixKeyEventActionBottomSheet,
+            onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
+            onEnableProModeClick = viewModel::onEnableProModeForKeyEventActionsClick,
+            onEnableInputMethodClick = viewModel::onEnableImeClick,
+            onChooseInputMethodClick = viewModel::onChooseImeClick,
+            onDoneClick = viewModel::dismissFixKeyEventActionBottomSheet,
+            onSelectProMode = viewModel::onSelectProMode,
+            onSelectInputMethod = viewModel::onSelectInputMethod,
+            onAutoSwitchImeCheckedChange = viewModel::onAutoSwitchImeCheckedChange,
         )
     }
 

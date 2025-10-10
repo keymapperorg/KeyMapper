@@ -24,8 +24,8 @@ object Keys {
     val showToastWhenAutoChangingIme =
         booleanPreferencesKey("pref_show_toast_when_auto_changing_ime")
 
-    val devicesThatShowImePicker = stringSetPreferencesKey("pref_devices_show_ime_picker")
-    val showImePickerOnDeviceConnect = booleanPreferencesKey("pref_auto_show_ime_picker")
+//    val devicesThatShowImePicker = stringSetPreferencesKey("pref_devices_show_ime_picker")
+//    val showImePickerOnDeviceConnect = booleanPreferencesKey("pref_auto_show_ime_picker")
 
     val forceVibrate = booleanPreferencesKey("pref_force_vibrate")
     val defaultLongPressDelay = intPreferencesKey("pref_long_press_delay")
@@ -40,7 +40,8 @@ object Keys {
     val automaticBackupLocation = stringPreferencesKey("pref_automatic_backup_location")
     val mappingsPaused = booleanPreferencesKey("pref_keymaps_paused")
     val hideHomeScreenAlerts = booleanPreferencesKey("pref_hide_home_screen_alerts")
-    val acknowledgedGuiKeyboard = booleanPreferencesKey("pref_acknowledged_gui_keyboard")
+
+    //    val acknowledgedGuiKeyboard = booleanPreferencesKey("pref_acknowledged_gui_keyboard")
     val showDeviceDescriptors = booleanPreferencesKey("pref_show_device_descriptors")
 
     //    val approvedAssistantTriggerFeaturePrompt =
@@ -106,8 +107,8 @@ object Keys {
     val shownTapTargetChooseAction =
         booleanPreferencesKey("key_shown_tap_target_choose_action")
 
-    val shownTapTargetChooseConstraint =
-        booleanPreferencesKey("key_shown_tap_target_choose_constraint")
+//    val shownTapTargetChooseConstraint =
+//        booleanPreferencesKey("key_shown_tap_target_choose_constraint")
 
     val skipTapTargetTutorial =
         booleanPreferencesKey("key_skip_tap_target_tutorial")
@@ -133,4 +134,7 @@ object Keys {
     val isSystemBridgeUsed = booleanPreferencesKey("key_is_system_bridge_used")
 
     val isCleanShutdown = booleanPreferencesKey("key_is_clean_shutdown")
+
+    val keyEventActionsUseSystemBridge =
+        booleanPreferencesKey("key_key_event_actions_use_system_bridge")
 }

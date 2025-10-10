@@ -40,6 +40,8 @@ class AppHiltModule {
             get() = BuildConfig.VERSION_NAME
         override val versionCode: Int
             get() = BuildConfig.VERSION_CODE
+        override val sdkInt: Int
+            get() = Build.VERSION.SDK_INT
     }
 
     @Singleton

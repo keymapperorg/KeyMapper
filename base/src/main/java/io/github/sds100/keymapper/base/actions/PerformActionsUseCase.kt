@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeAct
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityNodeModel
 import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
+import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
@@ -34,6 +35,7 @@ import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.otherwise
 import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.common.utils.then
+import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
@@ -79,6 +81,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     @Assisted
     private val service: IAccessibilityService,
     private val inputMethodAdapter: InputMethodAdapter,
+    private val switchImeInterface: SwitchImeInterface,
     private val fileAdapter: FileAdapter,
     private val suAdapter: SuAdapter,
     private val shell: ShellAdapter,
@@ -273,13 +276,17 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.SwitchKeyboard -> {
-                result = inputMethodAdapter
-                    .chooseImeWithoutUserInput(action.imeId)
-                    .onSuccess {
+                result = switchImeInterface
+                    .switchIme(action.imeId)
+                    .onSuccess { imeId ->
+                        val imeInfo = inputMethodAdapter.getInfoById(action.imeId).valueOrNull()
+                            ?: return@onSuccess
+
                         val message = resourceProvider.getString(
                             R.string.toast_chose_keyboard,
-                            it.label,
+                            imeInfo.label,
                         )
+
                         toastAdapter.show(message)
                     }
             }

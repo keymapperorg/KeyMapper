@@ -1,30 +1,55 @@
 package io.github.sds100.keymapper.base.system.inputmethod
 
+import android.os.Build
+import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityWindowInfo
+import android.view.inputmethod.EditorInfo
+import androidx.annotation.RequiresApi
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
+import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilityService
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.isSuccess
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
-import io.github.sds100.keymapper.common.utils.otherwise
+import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.data.utils.PrefDelegate
-import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
-import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
+import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.popup.ToastAdapter
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import timber.log.Timber
-import javax.inject.Inject
 
-class AutoSwitchImeController @Inject constructor(
+/**
+ * This requires Android 11+ because this is when the accessibility service API for switching
+ * input methods was introduced. On older versions one would have to use WRITE_SECURE_SETTINGS
+ * permission, and it is not worth the effort to build a UI to explain this in the app.
+ */
+@RequiresApi(Build.VERSION_CODES.R)
+class AutoSwitchImeController @AssistedInject constructor(
+    // Use the accessibility service so the calls are synchronous. This will reduce race conditions
+    // checking which input method is chosen when they start/finish.
+    @Assisted
+    private val service: BaseAccessibilityService,
+    @Assisted
     private val coroutineScope: CoroutineScope,
     private val preferenceRepository: PreferenceRepository,
     private val inputMethodAdapter: InputMethodAdapter,
@@ -32,139 +57,242 @@ class AutoSwitchImeController @Inject constructor(
     private val devicesAdapter: DevicesAdapter,
     private val toastAdapter: ToastAdapter,
     private val resourceProvider: ResourceProvider,
-    private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
     private val buildConfigProvider: BuildConfigProvider,
+    private val lockScreenAdapter: LockScreenAdapter,
 ) : PreferenceRepository by preferenceRepository {
-    private val imeHelper = KeyMapperImeHelper(inputMethodAdapter, buildConfigProvider.packageName)
 
-    private val devicesThatToggleKeyboard
-        by PrefDelegate(Keys.devicesThatChangeIme, emptySet())
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            accessibilityService: BaseAccessibilityService,
+            coroutineScope: CoroutineScope,
+        ): AutoSwitchImeController
+    }
 
-    private val devicesThatShowImePicker
-        by PrefDelegate(Keys.devicesThatShowImePicker, emptySet())
+    private val imeHelper: KeyMapperImeHelper = KeyMapperImeHelper(
+        service,
+        inputMethodAdapter,
+        buildConfigProvider.packageName,
+    )
 
-    private val changeImeOnDeviceConnect by PrefDelegate(Keys.changeImeOnDeviceConnect, false)
-    private val showImePickerOnBtConnect by PrefDelegate(Keys.showImePickerOnDeviceConnect, false)
+    private val devicesThatToggleKeyboard: Set<String> by PrefDelegate(
+        Keys.devicesThatChangeIme,
+        emptySet(),
+    )
+
+    private val changeImeOnDeviceConnect: Boolean by PrefDelegate(
+        Keys.changeImeOnDeviceConnect,
+        false,
+    )
 
     private val toggleKeyboardOnToggleKeymaps by PrefDelegate(
         Keys.toggleKeyboardOnToggleKeymaps,
         false,
     )
 
-    private var changeImeOnInputFocus: Boolean = false
+    private var showToast: StateFlow<Boolean> =
+        preferenceRepository.get(Keys.showToastWhenAutoChangingIme)
+            .map { it ?: PreferenceDefaults.SHOW_TOAST_WHEN_AUTO_CHANGE_IME }
+            .stateIn(
+                coroutineScope,
+                SharingStarted.Eagerly,
+                PreferenceDefaults.SHOW_TOAST_WHEN_AUTO_CHANGE_IME,
+            )
 
-    private var showToast: Boolean = PreferenceDefaults.SHOW_TOAST_WHEN_AUTO_CHANGE_IME
+    private val changeImeOnInputFocusPreference: Flow<Boolean> =
+        preferenceRepository
+            .get(Keys.changeImeOnInputFocus)
+            .map { it ?: PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS }
+
+    private val changeImeOnToggleKeyMaps: Flow<Boolean> =
+        preferenceRepository
+            .get(Keys.toggleKeyboardOnToggleKeymaps)
+            .map { it ?: false }
+
+    /**
+     * Only change the input method when input is started/finished if the user has enabled
+     * the setting, and key maps are resumed if the option to switch ime on toggle key maps
+     * is also enabled. This prevents the IME immediately changing again when
+     * the user pauses their key maps.
+     */
+    private val changeImeOnStartInput: StateFlow<Boolean> = combine(
+        changeImeOnInputFocusPreference,
+        changeImeOnToggleKeyMaps,
+        pauseKeyMapsUseCase.isPaused,
+    ) { changeOnFocus, toggleOnKeyMaps, isPaused ->
+        changeOnFocus && (!toggleOnKeyMaps || !isPaused)
+    }.stateIn(
+        coroutineScope,
+        SharingStarted.Eagerly,
+        false,
+    )
+
+    private var isImeBeingSwitched = false
 
     fun init() {
         pauseKeyMapsUseCase.isPaused.onEach { isPaused ->
-
             if (!toggleKeyboardOnToggleKeymaps) return@onEach
 
             if (isPaused) {
-                chooseIncompatibleIme(imePickerAllowed = true)
+                chooseIncompatibleIme()
             } else {
-                chooseCompatibleIme(imePickerAllowed = true)
+                chooseCompatibleIme()
             }
         }.launchIn(coroutineScope)
 
         devicesAdapter.onInputDeviceConnect.onEach { device ->
-            if (showImePickerOnBtConnect && devicesThatShowImePicker.contains(device.descriptor)) {
-                inputMethodAdapter.showImePicker(fromForeground = false)
-            }
-
             if (changeImeOnDeviceConnect && devicesThatToggleKeyboard.contains(device.descriptor)) {
-                chooseCompatibleIme(imePickerAllowed = true)
+                chooseCompatibleIme()
             }
         }.launchIn(coroutineScope)
 
         devicesAdapter.onInputDeviceDisconnect.onEach { device ->
-            if (showImePickerOnBtConnect && devicesThatShowImePicker.contains(device.descriptor)) {
-                inputMethodAdapter.showImePicker(fromForeground = false)
-            }
-
             if (changeImeOnDeviceConnect && devicesThatToggleKeyboard.contains(device.descriptor)) {
-                chooseIncompatibleIme(imePickerAllowed = true)
-            }
-        }.launchIn(coroutineScope)
-
-        preferenceRepository.get(Keys.changeImeOnInputFocus).onEach {
-            changeImeOnInputFocus = it ?: PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS
-        }.launchIn(coroutineScope)
-
-        preferenceRepository.get(Keys.showToastWhenAutoChangingIme).onEach {
-            showToast = it ?: false
-        }.launchIn(coroutineScope)
-
-        accessibilityServiceAdapter.eventReceiver.onEach { event ->
-            when (event) {
-                is AccessibilityServiceEvent.OnInputFocusChange -> {
-                    if (!changeImeOnInputFocus) {
-                        return@onEach
-                    }
-
-                    if (event.isFocussed) {
-                        Timber.d("Choose normal keyboard because got input focus")
-                        chooseIncompatibleIme(imePickerAllowed = false)
-                    } else {
-                        Timber.d("Choose key mapper keyboard because lost input focus")
-                        chooseCompatibleIme(imePickerAllowed = false)
-                    }
-                }
-
-                else -> Unit
+                chooseIncompatibleIme()
             }
         }.launchIn(coroutineScope)
     }
 
-    private suspend fun chooseIncompatibleIme(imePickerAllowed: Boolean) {
+    fun onAccessibilityEvent(event: AccessibilityEvent) {
+        // On SDK 33 and newer, the more reliable accessibility input method API is used.
+        // See onStartInput and onFinishInput. On OxygenOS 11 it can not detect the Key Mapper
+        // Basic input method window so onStartInput is also called from the KeyMapperImeService as
+        // a fallback.
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&
+            changeImeOnStartInput.value &&
+            event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED
+        ) {
+            if (isImeBeingSwitched) {
+                isImeBeingSwitched = false
+                return
+            }
+
+            val isInputStarted = isImeWindowVisible()
+
+            if (isInputStarted) {
+                if (chooseIncompatibleIme()) {
+                    isImeBeingSwitched = true
+                }
+            } else {
+                if (chooseCompatibleIme()) {
+                    isImeBeingSwitched = true
+                }
+            }
+        }
+    }
+
+    private fun isImeWindowVisible(): Boolean {
+        val imeWindow: AccessibilityWindowInfo? =
+            service.windows.find { it.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD }
+
+        return imeWindow != null && imeWindow.root?.isVisibleToUser == true
+    }
+
+    fun onStartInput(attribute: EditorInfo, restarting: Boolean) {
+        if (!changeImeOnStartInput.value) {
+            return
+        }
+
+        // Make sure the input type actually accepts text because sometimes the input method
+        // can be started even when the user isn't typing, such as in Minecraft.
+        // One must use the mask because other bits are used for flags.
+        // There are cases where the ime is showing but the app reports no TYPE_CLASS for some reason
+        // such as in the Reddit search bar so as a fallback check for a label or hint.
+        val isValidInputStarted =
+            (attribute.inputType and EditorInfo.TYPE_MASK_CLASS) != EditorInfo.TYPE_NULL ||
+                attribute.label != null ||
+                attribute.hintText != null
+
+        val result = if (isValidInputStarted) {
+            chooseIncompatibleIme()
+        } else if (!lockScreenAdapter.isLocked()) {
+            // Do not choose the key mapper ime if the lock screen is showing
+            // in case the user needs the keyboard to unlock. This would also
+            // clash and cause infinite loops with the safety feature to
+            // auto-switch inside the KeyMapperImeService
+            // that switches regardless of whether any auto-switching features are enabled.
+            chooseCompatibleIme()
+        } else {
+            false
+        }
+
+        // Drop the next event if the IME was just changed to prevent an infinite loop.
+        if (result) {
+            isImeBeingSwitched = true
+        }
+    }
+
+    fun onFinishInput() {
+        if (!changeImeOnStartInput.value) {
+            return
+        }
+
+        if (isImeBeingSwitched) {
+            isImeBeingSwitched = false
+            return
+        }
+
+        if (!lockScreenAdapter.isLocked()) {
+            // Do not choose the key mapper ime if the lock screen is showing
+            // in case the user needs the keyboard to unlock. This would also
+            // clash and cause infinite loops with the safety feature to
+            // auto-switch inside the KeyMapperImeService
+            // that switches regardless of whether any auto-switching features are enabled.
+            chooseCompatibleIme()
+        }
+    }
+
+    private fun chooseIncompatibleIme(): Boolean {
         // only choose the keyboard if the correct one isn't already chosen
         if (!imeHelper.isCompatibleImeChosen()) {
-            return
+            return false
         }
 
-        imeHelper.chooseLastUsedIncompatibleInputMethod()
-            .onSuccess { ime ->
-                if (showToast) {
-                    val message =
-                        resourceProvider.getString(R.string.toast_chose_keyboard, ime.label)
-                    toastAdapter.show(message)
-                }
-            }
-            .otherwise {
-                if (imePickerAllowed) {
-                    inputMethodAdapter.showImePicker(fromForeground = false)
-                } else {
-                    Success(Unit)
+        Timber.d("AutoSwitchImeController: Choosing incompatible IME")
+
+        return imeHelper.chooseLastUsedIncompatibleInputMethod()
+            .onSuccess { imeId ->
+                if (showToast.value) {
+                    showToast(imeId)
                 }
             }
             .onFailure { error ->
                 toastAdapter.show(error.getFullMessage(resourceProvider))
             }
+            .isSuccess
     }
 
-    private suspend fun chooseCompatibleIme(imePickerAllowed: Boolean) {
+    private fun chooseCompatibleIme(): Boolean {
         // only choose the keyboard if the correct one isn't already chosen
         if (imeHelper.isCompatibleImeChosen()) {
-            return
+            return false
         }
 
-        imeHelper.chooseCompatibleInputMethod()
-            .onSuccess { ime ->
-                if (showToast) {
-                    val message =
-                        resourceProvider.getString(R.string.toast_chose_keyboard, ime.label)
-                    toastAdapter.show(message)
-                }
-            }
-            .otherwise {
-                if (imePickerAllowed) {
-                    inputMethodAdapter.showImePicker(fromForeground = false)
-                } else {
-                    Success(Unit)
+        Timber.d("AutoSwitchImeController: Choosing compatible IME")
+
+        return imeHelper.chooseCompatibleInputMethod()
+            .onSuccess { imeId ->
+                if (showToast.value) {
+                    showToast(imeId)
                 }
             }
             .onFailure { error ->
-                toastAdapter.show(error.getFullMessage(resourceProvider))
+                // Do not show an error if no IME is enabled, just let this auto switching
+                // feature not work silently. If the user hasn't enabled an IME then they probably
+                // aren't using any feature that requires the IME.
+                if (error != KMError.NoCompatibleImeEnabled) {
+                    toastAdapter.show(error.getFullMessage(resourceProvider))
+                }
             }
+            .isSuccess
+    }
+
+    private fun showToast(imeId: String) {
+        val imeLabel = inputMethodAdapter.getInfoById(imeId).valueOrNull()?.label ?: return
+
+        val message =
+            resourceProvider.getString(R.string.toast_chose_keyboard, imeLabel)
+        toastAdapter.show(message)
     }
 }

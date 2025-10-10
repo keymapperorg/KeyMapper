@@ -44,15 +44,6 @@ class ConfigKeyMapViewModel @Inject constructor(
             showTapTarget && keyMapState.dataOrNull()?.trigger?.keys?.isNotEmpty() ?: false
         }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
-    val showConstraintsTapTarget: StateFlow<Boolean> =
-        combine(
-            onboarding.showTapTarget(OnboardingTapTarget.CHOOSE_CONSTRAINT),
-            configKeyMapState.keyMap,
-        ) { showTapTarget, keyMapState ->
-            // Show the choose constraint tap target if they have added an action.
-            showTapTarget && keyMapState.dataOrNull()?.actionList?.isNotEmpty() ?: false
-        }.stateIn(viewModelScope, SharingStarted.Lazily, false)
-
     fun onDoneClick() {
         configKeyMapState.save()
 
@@ -84,10 +75,6 @@ class ConfigKeyMapViewModel @Inject constructor(
 
     fun onActionTapTargetCompleted() {
         onboarding.completedTapTarget(OnboardingTapTarget.CHOOSE_ACTION)
-    }
-
-    fun onConstraintTapTargetCompleted() {
-        onboarding.completedTapTarget(OnboardingTapTarget.CHOOSE_CONSTRAINT)
     }
 
     fun onSkipTutorialClick() {

@@ -29,6 +29,7 @@ import io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutFragment
 import io.github.sds100.keymapper.base.system.bluetooth.ChooseBluetoothDeviceFragment
 import io.github.sds100.keymapper.base.system.intents.ConfigIntentFragment
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,6 +44,7 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 import javax.inject.Inject
@@ -112,7 +114,10 @@ class NavigationProviderImpl @Inject constructor() : NavigationProvider {
         _onNavigate.subscriptionCount.first { it > 0 }
 
         Timber.d("Navigation: Navigating to ${event.destination} with key ${event.key}")
-        _onNavigate.emit(event)
+
+        withContext(Dispatchers.Main.immediate) {
+            _onNavigate.emit(event)
+        }
     }
 
     override fun onNavResult(result: NavResult) {

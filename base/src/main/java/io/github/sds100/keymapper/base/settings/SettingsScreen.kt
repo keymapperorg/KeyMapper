@@ -5,7 +5,9 @@ import android.content.Intent
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -63,6 +65,7 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionPageButton
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
+import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.base.utils.ui.compose.SwitchPreferenceCompose
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.FolderManaged
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
@@ -74,6 +77,7 @@ import io.github.sds100.keymapper.system.files.FileUtils
 import kotlinx.coroutines.launch
 
 private val isProModeSupported = Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API
+private val isAutoSwitchImeSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
 @Composable
 fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) {
@@ -171,6 +175,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                 }
             },
             onShareLogcatClick = viewModel::onShareLogcatClick,
+            onKeyEventActionMethodSelected = viewModel::onKeyEventActionMethodSelected
         )
     }
 }
@@ -246,11 +251,13 @@ private fun Content(
     onShareLogcatClick: () -> Unit = { },
     onHideHomeScreenAlertsToggled: (Boolean) -> Unit = { },
     onShowDeviceDescriptorsToggled: (Boolean) -> Unit = { },
+    onKeyEventActionMethodSelected: (isProModeSelected: Boolean) -> Unit = {}
 ) {
     Column(
         modifier
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -259,8 +266,6 @@ private fun Content(
             icon = KeyMapperIcons.WandStars,
             text = stringResource(R.string.settings_section_customize_experience_title),
         )
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = stringResource(R.string.title_pref_dark_theme),
@@ -273,7 +278,6 @@ private fun Content(
             Theme.DARK to stringResource(R.string.theme_dark),
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
         KeyMapperSegmentedButtonRow(
             modifier = Modifier.fillMaxWidth(),
@@ -282,7 +286,6 @@ private fun Content(
             onStateSelected = onThemeSelected,
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
         OptionPageButton(
             title = stringResource(R.string.title_pref_show_toggle_keymaps_notification),
@@ -291,7 +294,6 @@ private fun Content(
             onClick = onPauseResumeNotificationClick,
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
         SwitchPreferenceCompose(
             title = stringResource(R.string.title_pref_hide_home_screen_alerts),
@@ -301,7 +303,6 @@ private fun Content(
             onCheckedChange = onHideHomeScreenAlertsToggled,
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
         OptionsHeaderRow(
             modifier = Modifier.fillMaxWidth(),
@@ -309,7 +310,6 @@ private fun Content(
             text = stringResource(R.string.settings_section_key_maps_title),
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
         OptionPageButton(
             title = stringResource(R.string.title_pref_default_options),
@@ -318,7 +318,6 @@ private fun Content(
             onClick = onDefaultOptionsClick,
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
         SwitchPreferenceCompose(
             title = stringResource(R.string.title_pref_force_vibrate),
@@ -328,7 +327,6 @@ private fun Content(
             onCheckedChange = onForceVibrateToggled,
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
         SwitchPreferenceCompose(
             title = stringResource(R.string.title_pref_show_device_descriptors),
@@ -338,7 +336,6 @@ private fun Content(
             onCheckedChange = onShowDeviceDescriptorsToggled,
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
         OptionsHeaderRow(
             modifier = Modifier.fillMaxWidth(),
@@ -346,7 +343,6 @@ private fun Content(
             text = stringResource(R.string.settings_section_data_management_title),
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
         OptionPageButton(
             title = if (state.autoBackupLocation == null) {
@@ -360,7 +356,6 @@ private fun Content(
             onClick = onAutomaticBackupClick,
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
         OptionsHeaderRow(
             modifier = Modifier.fillMaxWidth(),
@@ -368,14 +363,18 @@ private fun Content(
             text = stringResource(R.string.settings_section_power_user_title),
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+
+        KeyEventActionMethodRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            isProModeSelected = state.keyEventActionsUseSystemBridege,
+            onSelected = onKeyEventActionMethodSelected
+        )
+
 
         OptionPageButton(
-            title = if (isProModeSupported) {
-                stringResource(R.string.title_pref_pro_mode)
-            } else {
-                stringResource(R.string.title_pref_pro_mode)
-            },
+            title = stringResource(R.string.title_pref_pro_mode),
             text = if (isProModeSupported) {
                 stringResource(R.string.summary_pref_pro_mode)
             } else {
@@ -386,16 +385,24 @@ private fun Content(
             },
             icon = KeyMapperIcons.ProModeIcon,
             onClick = onProModeClick,
+            enabled = isProModeSupported,
         )
 
         OptionPageButton(
             title = stringResource(R.string.title_pref_automatically_change_ime),
-            text = stringResource(R.string.summary_pref_automatically_change_ime),
+            text = if (isAutoSwitchImeSupported) {
+                stringResource(R.string.summary_pref_automatically_change_ime)
+            } else {
+                stringResource(
+                    R.string.error_sdk_version_too_low,
+                    BuildUtils.getSdkVersionName(Build.VERSION_CODES.R),
+                )
+            },
             icon = Icons.Rounded.Keyboard,
             onClick = onAutomaticChangeImeClick,
+            enabled = isAutoSwitchImeSupported,
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
         OptionsHeaderRow(
             modifier = Modifier.fillMaxWidth(),
@@ -403,7 +410,6 @@ private fun Content(
             text = stringResource(R.string.settings_section_debugging_title),
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
         SwitchPreferenceCompose(
             title = stringResource(R.string.title_pref_toggle_logging),
@@ -412,8 +418,6 @@ private fun Content(
             isChecked = state.loggingEnabled,
             onCheckedChange = onLoggingToggled,
         )
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         OptionPageButton(
             title = stringResource(R.string.title_pref_view_and_share_log),
@@ -433,7 +437,47 @@ private fun Content(
     }
 }
 
-@Preview(heightDp = 1200)
+@Composable
+private fun KeyEventActionMethodRow(
+    modifier: Modifier = Modifier,
+    isProModeSelected: Boolean,
+    onSelected: (isProModeSelected: Boolean) -> Unit
+) {
+    Column(modifier) {
+        val buttonStates = listOf(
+            false to stringResource(R.string.fix_key_event_action_input_method_title),
+            true to stringResource(R.string.pro_mode_app_bar_title)
+        )
+
+        Text(
+            text = stringResource(R.string.title_pref_key_event_actions_use_system_bridge),
+            style = MaterialTheme.typography.bodyLarge
+        )
+
+        Text(
+            text = stringResource(R.string.summary_pref_key_event_actions_use_system_bridge),
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            for ((isProMode, text) in buttonStates) {
+                RadioButtonText(
+                    text = text,
+                    isSelected = isProMode == isProModeSelected,
+                    onSelected = { onSelected(isProMode) },
+                )
+            }
+        }
+    }
+}
+
+@Preview(heightDp = 1500)
 @Composable
 private fun Preview() {
     KeyMapperTheme {

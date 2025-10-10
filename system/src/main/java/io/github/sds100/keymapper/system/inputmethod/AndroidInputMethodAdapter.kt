@@ -4,47 +4,26 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.database.ContentObserver
-import android.net.Uri
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
-import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.Success
-import io.github.sds100.keymapper.common.utils.onFailure
-import io.github.sds100.keymapper.common.utils.onSuccess
-import io.github.sds100.keymapper.common.utils.otherwise
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.system.JobSchedulerHelper
-import io.github.sds100.keymapper.system.SystemError
-import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
-import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
-import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
-import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -53,17 +32,14 @@ import javax.inject.Singleton
 class AndroidInputMethodAdapter @Inject constructor(
     @ApplicationContext private val context: Context,
     private val coroutineScope: CoroutineScope,
-    private val serviceAdapter: AccessibilityServiceAdapter,
-    private val permissionAdapter: PermissionAdapter,
     private val suAdapter: SuAdapter,
-    private val buildConfigProvider: BuildConfigProvider,
 ) : InputMethodAdapter {
 
     companion object {
         const val SETTINGS_SECURE_SUBTYPE_HISTORY_KEY = "input_methods_subtype_history"
     }
 
-    override val inputMethodHistory by lazy {
+    override val inputMethodHistory: MutableStateFlow<List<ImeInfo>> by lazy {
         val initialValues = getImeHistory().mapNotNull { getInfoById(it).valueOrNull() }
         MutableStateFlow(initialValues)
     }
@@ -85,7 +61,11 @@ class AndroidInputMethodAdapter @Inject constructor(
 
     private val inputMethodManager: InputMethodManager = ctx.getSystemService()!!
 
-    override val inputMethods by lazy { MutableStateFlow(getInputMethods()) }
+    override val inputMethods: MutableStateFlow<List<ImeInfo>> by lazy {
+        MutableStateFlow(
+            getInputMethods()
+        )
+    }
 
     override val chosenIme: StateFlow<ImeInfo?> =
         inputMethods
@@ -99,62 +79,9 @@ class AndroidInputMethodAdapter @Inject constructor(
             }
             .stateIn(coroutineScope, SharingStarted.Lazily, getChosenIme())
 
-    override val isUserInputRequiredToChangeIme: Flow<Boolean> = channelFlow {
-        suspend fun invalidate() {
-            when {
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
-                    serviceAdapter.state.first() == AccessibilityServiceState.ENABLED -> send(
-                    true,
-                )
-
-                permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS) -> send(true)
-
-                else -> send(false)
-            }
-        }
-
-        invalidate()
-
-        launch {
-            permissionAdapter.onPermissionsUpdate.collectLatest {
-                invalidate()
-            }
-        }
-
-        launch {
-            serviceAdapter.state.collectLatest {
-                invalidate()
-            }
-        }
-    }
-
     init {
         // use job scheduler because there is there is a much shorter delay when the app is in the background
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            JobSchedulerHelper.observeInputMethods(ctx)
-        } else {
-            val observer = object : ContentObserver(Handler(Looper.getMainLooper())) {
-                override fun onChange(selfChange: Boolean, uri: Uri?) {
-                    super.onChange(selfChange, uri)
-
-                    onInputMethodsUpdate()
-                }
-            }
-
-            ctx.contentResolver.registerContentObserver(
-                Settings.Secure.getUriFor(Settings.Secure.ENABLED_INPUT_METHODS),
-                false,
-                observer,
-            )
-
-            ctx.contentResolver.registerContentObserver(
-                Settings.Secure.getUriFor(
-                    SETTINGS_SECURE_SUBTYPE_HISTORY_KEY,
-                ),
-                false,
-                observer,
-            )
-        }
+        JobSchedulerHelper.observeInputMethods(ctx)
 
         val filter = IntentFilter()
         filter.addAction(Intent.ACTION_INPUT_METHOD_CHANGED)
@@ -181,72 +108,6 @@ class AndroidInputMethodAdapter @Inject constructor(
             }
 
             else -> return KMError.CantShowImePickerInBackground
-        }
-    }
-
-    override suspend fun enableIme(imeId: String): KMResult<*> =
-        enableImeWithoutUserInput(imeId).otherwise {
-            try {
-                val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
-                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_NEW_TASK
-
-                ctx.startActivity(intent)
-                Success(Unit)
-            } catch (e: Exception) {
-                KMError.CantFindImeSettings
-            }
-        }
-
-    private suspend fun enableImeWithoutUserInput(imeId: String): KMResult<*> {
-        return getInfoByPackageName(buildConfigProvider.packageName).then { keyMapperImeInfo ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && imeId == keyMapperImeInfo.id) {
-                serviceAdapter.send(AccessibilityServiceEvent.EnableInputMethod(keyMapperImeInfo.id))
-            } else {
-                suAdapter.execute("ime enable $imeId")
-            }
-        }
-    }
-
-    override suspend fun chooseImeWithoutUserInput(imeId: String): KMResult<ImeInfo> {
-        getInfoById(imeId).onSuccess {
-            if (!it.isEnabled) {
-                return SystemError.ImeDisabled(it)
-            }
-        }.onFailure {
-            return it
-        }
-
-        var failed = true
-
-        if (failed && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && serviceAdapter.state.value == AccessibilityServiceState.ENABLED) {
-            serviceAdapter.send(AccessibilityServiceEvent.ChangeIme(imeId)).onSuccess {
-                failed = false
-            }
-        }
-
-        if (failed && permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
-            SettingsUtils.putSecureSetting(
-                ctx,
-                Settings.Secure.DEFAULT_INPUT_METHOD,
-                imeId,
-            )
-
-            failed = false
-        }
-
-        if (failed) {
-            return KMError.FailedToChangeIme
-        }
-
-        // wait for the ime to change and then return the info of the ime
-        val didImeChange = withTimeoutOrNull(2000) {
-            chosenIme.first { it?.id == imeId }
-        }
-
-        if (didImeChange != null) {
-            return Success(didImeChange)
-        } else {
-            return KMError.FailedToChangeIme
         }
     }
 
@@ -299,7 +160,7 @@ class AndroidInputMethodAdapter @Inject constructor(
         SETTINGS_SECURE_SUBTYPE_HISTORY_KEY,
     )
 
-    private fun getChosenIme(): ImeInfo? {
+    override fun getChosenIme(): ImeInfo? {
         val chosenImeId = getChosenImeId()
 
         return getInfoById(chosenImeId).valueOrNull()

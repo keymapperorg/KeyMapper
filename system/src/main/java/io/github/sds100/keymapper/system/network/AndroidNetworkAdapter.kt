@@ -113,8 +113,6 @@ class AndroidNetworkAdapter @Inject constructor(
                     return
                 }
 
-                Timber.i("onCapabilitiesChanged, found SSID: ${wifiInfo.ssid}")
-
                 val ssid = wifiInfo.ssid?.takeIf { it != WifiManager.UNKNOWN_SSID }
                     ?.removeSurrounding("\"")
 

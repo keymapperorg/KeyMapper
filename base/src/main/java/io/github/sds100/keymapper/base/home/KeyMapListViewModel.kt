@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.ActionErrorSnapshot
+import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionDelegate
 import io.github.sds100.keymapper.base.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.base.backup.ImportExportState
 import io.github.sds100.keymapper.base.backup.RestoreType
@@ -80,11 +81,13 @@ class KeyMapListViewModel(
     private val backupRestore: BackupRestoreMappingsUseCase,
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
     private val onboarding: OnboardingUseCase,
-    private val navigationProvider: NavigationProvider,
-    private val dialogProvider: DialogProvider,
+    fixKeyEventActionDelegate: FixKeyEventActionDelegate,
+    navigationProvider: NavigationProvider,
+    dialogProvider: DialogProvider,
 ) : DialogProvider by dialogProvider,
     ResourceProvider by resourceProvider,
-    NavigationProvider by navigationProvider {
+    NavigationProvider by navigationProvider,
+    FixKeyEventActionDelegate by fixKeyEventActionDelegate {
 
     private companion object {
         const val ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM = "accessibility_service_disabled"
@@ -535,6 +538,8 @@ class KeyMapListViewModel(
                         fixError = { listKeyMaps.fixError(error) },
                     )
                 }
+
+                is KMError.KeyEventActionError -> showFixKeyEventActionBottomSheet()
 
                 else -> {
                     ViewModelHelper.showFixErrorDialog(

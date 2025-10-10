@@ -4,23 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionDelegate
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
-import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.isFixable
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
-import io.github.sds100.keymapper.base.utils.ui.ChooseAppStoreModel
-import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
-import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
@@ -48,7 +44,7 @@ class ConfigActionsViewModel @Inject constructor(
     private val createAction: CreateActionUseCase,
     private val testAction: TestActionUseCase,
     private val config: ConfigActionsUseCase,
-    private val onboarding: OnboardingUseCase,
+    fixKeyEventActionDelegate: FixKeyEventActionDelegate,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
@@ -56,7 +52,8 @@ class ConfigActionsViewModel @Inject constructor(
     ActionOptionsBottomSheetCallback,
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
-    NavigationProvider by navigationProvider {
+    NavigationProvider by navigationProvider,
+    FixKeyEventActionDelegate by fixKeyEventActionDelegate {
 
     val createActionDelegate =
         CreateActionDelegate(viewModelScope, createAction, this, this, this)
@@ -115,22 +112,30 @@ class ConfigActionsViewModel @Inject constructor(
             val error =
                 actionErrorSnapshot.filterNotNull().first().getError(actionData) ?: return@launch
 
-            if (error == SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
-                viewModelScope.launch {
-                    ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+            when (error) {
+                SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY) -> {
+                    viewModelScope.launch {
+                        ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+                            resourceProvider = this@ConfigActionsViewModel,
+                            dialogProvider = this@ConfigActionsViewModel,
+                            neverShowDndTriggerErrorAgain = { displayAction.neverShowDndTriggerError() },
+                            fixError = { displayAction.fixError(error) },
+                        )
+                    }
+                }
+
+                is KMError.KeyEventActionError -> {
+                    showFixKeyEventActionBottomSheet()
+                }
+
+                else -> {
+                    ViewModelHelper.showFixErrorDialog(
                         resourceProvider = this@ConfigActionsViewModel,
                         dialogProvider = this@ConfigActionsViewModel,
-                        neverShowDndTriggerErrorAgain = { displayAction.neverShowDndTriggerError() },
-                        fixError = { displayAction.fixError(error) },
-                    )
-                }
-            } else {
-                ViewModelHelper.showFixErrorDialog(
-                    resourceProvider = this@ConfigActionsViewModel,
-                    dialogProvider = this@ConfigActionsViewModel,
-                    error,
-                ) {
-                    displayAction.fixError(error)
+                        error,
+                    ) {
+                        displayAction.fixError(error)
+                    }
                 }
             }
         }
@@ -139,13 +144,6 @@ class ConfigActionsViewModel @Inject constructor(
     fun onAddActionClick() {
         viewModelScope.launch {
             val actionData = navigate("add_action", NavDestination.ChooseAction) ?: return@launch
-
-            val showInstallGuiKeyboardPrompt =
-                onboarding.showInstallGuiKeyboardPrompt(actionData)
-
-            when {
-                showInstallGuiKeyboardPrompt -> promptToInstallGuiKeyboard()
-            }
 
             config.addAction(actionData)
         }
@@ -265,48 +263,6 @@ class ConfigActionsViewModel @Inject constructor(
                     dialogProvider = this,
                     restartService = displayAction::restartAccessibilityService,
                 )
-            }
-        }
-    }
-
-    private suspend fun promptToInstallGuiKeyboard() {
-        if (onboarding.isTvDevice()) {
-            val appStoreModel = ChooseAppStoreModel(
-                githubLink = getString(R.string.url_github_keymapper_leanback_keyboard),
-            )
-
-            val dialog = DialogModel.ChooseAppStore(
-                title = getString(R.string.dialog_title_install_leanback_keyboard),
-                message = getString(R.string.dialog_message_install_leanback_keyboard),
-                appStoreModel,
-                positiveButtonText = getString(R.string.pos_never_show_again),
-                negativeButtonText = getString(R.string.neg_cancel),
-            )
-
-            val response = showDialog("download_leanback_ime", dialog) ?: return
-
-            if (response == DialogResponse.POSITIVE) {
-                onboarding.neverShowGuiKeyboardPromptsAgain()
-            }
-        } else {
-            val appStoreModel = ChooseAppStoreModel(
-                playStoreLink = getString(R.string.url_play_store_keymapper_gui_keyboard),
-                fdroidLink = getString(R.string.url_fdroid_keymapper_gui_keyboard),
-                githubLink = getString(R.string.url_github_keymapper_gui_keyboard),
-            )
-
-            val dialog = DialogModel.ChooseAppStore(
-                title = getString(R.string.dialog_title_install_gui_keyboard),
-                message = getString(R.string.dialog_message_install_gui_keyboard),
-                appStoreModel,
-                positiveButtonText = getString(R.string.pos_never_show_again),
-                negativeButtonText = getString(R.string.neg_cancel),
-            )
-
-            val response = showDialog("download_gui_keyboard", dialog) ?: return
-
-            if (response == DialogResponse.POSITIVE) {
-                onboarding.neverShowGuiKeyboardPromptsAgain()
             }
         }
     }

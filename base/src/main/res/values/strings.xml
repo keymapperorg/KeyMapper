@@ -4,7 +4,7 @@
 
     <string name="accessibility_service_explanation">Key Mapper requires the use of an accessibility service so that it can detect and change what your button presses do while you are outside of the app. Your key maps will only work once you have enabled the accessibility service. It must also be turned on to create a trigger and test actions.</string>
     <string name="selection_count"> selected</string>
-    <string name="ime_service_label" translatable="false">Key Mapper Basic Input Method</string>
+    <string name="ime_service_label" translatable="false">Key Mapper Input Method</string>
     <string name="enable">Enable</string>
     <string name="shrug" translatable="false">¯\\_(ツ)_/¯</string>
     <string name="recyclerview_placeholder">¯\\_(ツ)_/¯\n\nNothing here!</string>
@@ -73,10 +73,10 @@
 
     <string name="trigger_error_dnd_access_denied">Permission required to work properly in Do Not Disturb mode!</string>
     <string name="trigger_error_cant_detect_in_phone_call">This trigger won\'t work while ringing or in a phone call!</string>
-    <string name="trigger_error_cant_detect_in_phone_call_explanation">Android doesn\'t let accessibility services detect volume button presses while your phone is ringing or it is in a phone call but it does let input method services detect them. Therefore, you must use one of the Key Mapper keyboards if you want this trigger to work.</string>
+    <string name="trigger_error_cant_detect_in_phone_call_explanation">Android doesn\'t let accessibility services detect volume button presses while your phone is ringing or it is in a phone call but it does let input method services detect them. Therefore, you must use the Key Mapper Input Method if you want this trigger to work.</string>
     <string name="trigger_error_gesture_stroke_count_too_high">Too many fingers to perform gesture due to android limitations.</string>
     <string name="trigger_error_gesture_duration_too_high">Gesture duration is too high due to android limitations.</string>
-    <string name="trigger_error_dpad_ime_not_selected">You must be using a Key Mapper keyboard for DPAD triggers to work!</string>
+    <string name="trigger_error_dpad_ime_not_selected">You must be using the Key Mapper Input Method for DPAD triggers to work!</string>
 
     <string name="home_error_is_battery_optimised">Your key maps will stop working randomly!</string>
     <string name="home_error_key_maps_paused">Your key maps are paused!</string>
@@ -334,12 +334,6 @@
     <string name="url_floating_layouts_guide" translatable="false">https://docs.keymapper.club/redirects/floating-layouts</string>
     <string name="url_floating_button_config_guide" translatable="false">https://docs.keymapper.club/redirects/floating-button-config</string>
 
-    <string name="url_play_store_keymapper_gui_keyboard" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper.inputmethod.latin</string>
-    <string name="url_fdroid_keymapper_gui_keyboard" translatable="false">https://f-droid.org/en/packages/io.github.sds100.keymapper.inputmethod.latin</string>
-    <string name="url_github_keymapper_gui_keyboard" translatable="false">https://github.com/keymapperorg/KeyMapperKeyboard/releases</string>
-
-    <string name="url_github_keymapper_leanback_keyboard" translatable="false">https://github.com/keymapperorg/KeyMapperLeanbackKeyboard/releases</string>
-
     <string name="url_github_create_issue_bug" translatable="false">https://github.com/keymapperorg/KeyMapper/issues/new/choose</string>
     <!-- URLs -->
 
@@ -429,39 +423,9 @@
     <string name="dialog_message_bt_constraint_limitation">Android doesn\'t allow apps to get a list of connected (not paired) Bluetooth devices. Apps can only detect when they are connected and disconnected. So if your Bluetooth device is already connected to your device when the accessibility service starts, you will have to reconnect it for the app to know it is connected.</string>
     <string name="dialog_title_change_location_or_disable">Automatic backup</string>
     <string name="dialog_message_change_location_or_disable">Change location or turn off automatic back up?</string>
-    <string name="dialog_message_password_screen_lock_warning">If you have any other screen lock chosen, such as PIN or Pattern then you don\'t have to worry. But if you have a Password screen lock you will *NOT* be able to unlock your phone if you use the Key Mapper Basic Input Method because it doesn\'t have a GUI. You can grant Key Mapper WRITE_SECURE_SETTINGS permission so it can show a notification to switch to and from the keyboard. There is a guide on how to do this if you tap the question mark at the bottom of the screen.</string>
+    <string name="dialog_message_password_screen_lock_warning">If you have any other screen lock chosen, such as PIN or Pattern then you don\'t have to worry. But if you have a Password screen lock you will *NOT* be able to unlock your phone if you use the Key Mapper Input Method because it doesn\'t have a GUI. You can grant Key Mapper WRITE_SECURE_SETTINGS permission so it can show a notification to switch to and from the keyboard. There is a guide on how to do this if you tap the question mark at the bottom of the screen.</string>
     <string name="dialog_message_select_compatible_ime">Select the input method for actions that require one. You can change this later by tapping \"Select keyboard for actions\" in the bottom menu of the home screen.</string>
     <string name="dialog_message_settings_no_external_devices_connected">No external devices connected.</string>
-
-    <string name="dialog_title_install_gui_keyboard">Install the Key Mapper GUI Keyboard</string>
-    <string name="dialog_message_install_gui_keyboard">This is highly recommended! This is a proper keyboard that you can use with Key Mapper. The one built-in to Key Mapper (the Basic Input Method) has no on-screen keyboard. Choose where you want to install it from.</string>
-
-    <string name="dialog_title_install_leanback_keyboard">Install the Key Mapper Leanback Keyboard</string>
-    <string name="dialog_message_install_leanback_keyboard">This is highly recommended! This is a proper keyboard for Android TV that you can use with Key Mapper. The one built-in to Key Mapper (the Basic Input Method) has no on-screen keyboard. Choose where you want to install it from.</string>
-
-    <string name="dialog_title_choose_download_gui_keyboard">Install the Key Mapper GUI Keyboard</string>
-    <string name="dialog_message_choose_download_gui_keyboard">Choose where you want to download it from.</string>
-
-    <string name="dialog_title_choose_download_leanback_keyboard">Install the Key Mapper Leanback Keyboard</string>
-    <string name="dialog_message_choose_download_leanback_keyboard">Choose where you want to download it from.</string>
-
-    <string name="dialog_title_install_shizuku_or_gui_keyboard">This action needs some extra setting up</string>
-    <string name="dialog_message_install_shizuku_or_gui_keyboard">There are 3 ways that you can set up your device to use this action. Here are the advantages and disadvantages of each.
-
-        \n\n<b>1. Download Shizuku (recommended).</b> You do not have to use a different on-screen keyboard to the one that you are already using but it will require a minute of setting up every time you reboot your device.
-
-        \n\n<b>2. Download the Key Mapper GUI Keyboard.</b> This is an on-screen keyboard that you can use with Key Mapper but you will not be able to use the keyboard that you are currently using, such as Gboard.
-
-        \n\n<b>3. Do nothing and use the built-in Key Mapper keyboard.</b> This is not recommended since you will have <b>no</b> on-screen keyboard when you use Key Mapper! There are no advantages.</string>
-
-    <string name="dialog_title_install_shizuku_or_leanback_keyboard">This action needs some extra setting up</string>
-    <string name="dialog_message_install_shizuku_or_leanback_keyboard">There are 3 ways that you can set up your device to use this action. Here are the advantages and disadvantages of each.
-
-        \n\n<b>1. Download Shizuku (recommended).</b> You do not have to use a different on-screen keyboard to the one that you are already using but it will require a minute of setting up every time you reboot your device.
-
-        \n\n<b>2. Download the Key Mapper Leanback Keyboard.</b> This is an on-screen keyboard optimised for Android TV that you can use with Key Mapper but you will not be able to use the keyboard that you are currently using, such as Gboard.
-
-        \n\n<b>3. Do nothing and use the built-in Key Mapper keyboard.</b> This is not recommended since you will have <b>no</b> on-screen keyboard when you use Key Mapper! There are no advantages.</string>
 
     <string name="dialog_title_disable_battery_optimisation">Disable battery optimisation</string>
     <string name="dialog_message_disable_battery_optimisation">You <b>MUST</b> read this <b>all</b> otherwise you will get <b>frustrated</b> in the future!\n\nTapping \"fix partially\" <b>might</b> prevent Android from stopping the app while it is in the background.\n\n<b>This is NOT ENOUGH</b>. Your OEM\'s skin such as MIUI or Samsung Experience may have other app killing features so you MUST turn them off for Key Mapper as well by following the online guide at dontkillmyapp.com.</string>
@@ -486,12 +450,6 @@
 
     <string name="dialog_title_fix_dnd_trigger_error">Grant Do Not Disturb access</string>
     <string name="dialog_message_fix_dnd_trigger_error">You will be taken to your device\'s settings page to manage which apps can modify the Do Not Disturb state. This is <b>not present on some devices</b> so tap don\'t show again if you do not see Key Mapper in the list.</string>
-
-
-    <string name="dialog_upgrade_gui_keyboard_title">Important!</string>
-    <string name="dialog_upgrade_gui_keyboard_message">You must update the Key Mapper GUI Keyboard so it is compatible with this version of Key Mapper. Some key maps may not work until you update!</string>
-    <string name="dialog_upgrade_gui_keyboard_positive">Update now</string>
-    <string name="dialog_upgrade_gui_keyboard_neutral">Ignore</string>
 
     <string name="dialog_message_sort_sort_by">Sort by</string>
     <string name="sorting_drag_and_drop_list_help">Drag the handles to adjust priorities. The item at the top is the most important. You can also tap any item to reverse its sort order.</string>
@@ -528,11 +486,6 @@
     <string name="neutral_intent_docs">Docs</string>
     <string name="neutral_changelog">Changelog</string>
 
-    <string name="dialog_button_install_shizuku">Shizuku</string>
-    <string name="dialog_button_install_gui_keyboard">Key Mapper GUI Keyboard</string>
-    <string name="dialog_button_install_leanback_keyboard">Key Mapper Leanback Keyboard</string>
-    <string name="dialog_button_install_nothing">Do nothing</string>
-
     <string name="dialog_button_fix">Fix</string>
 
     <!-- Dialog stuff -->
@@ -540,7 +493,7 @@
     <!-- Notification strings -->
     <string name="notification_channel_toggle_mappings">Pause/Resume key maps</string>
     <string name="notification_channel_keyboard_hidden">Keyboard is hidden warning</string>
-    <string name="notification_channel_toggle_keyboard">Toggle Key Mapper keyboard</string>
+    <string name="notification_channel_toggle_keyboard">Toggle Key Mapper Input Method</string>
     <string name="notification_channel_new_features">New features</string>
 
     <string name="notification_keymaps_resumed_title">Running</string>
@@ -567,8 +520,8 @@
     <string name="notification_keyboard_hidden_title">Keyboard is hidden!</string>
     <string name="notification_keyboard_hidden_text">Tap \'show keyboard\' to start showing the keyboard again.</string>
 
-    <string name="notification_toggle_keyboard_title">Toggle Key Mapper keyboard</string>
-    <string name="notification_toggle_keyboard_text">Tap \'toggle\' to switch to and from the Key Mapper keyboard.</string>
+    <string name="notification_toggle_keyboard_title">Toggle Key Mapper Input Method</string>
+    <string name="notification_toggle_keyboard_text">Tap \'toggle\' to switch to and from the Key Mapper Input Method.</string>
     <string name="notification_toggle_keyboard_action">Toggle</string>
 
     <!-- Notification strings -->
@@ -605,10 +558,10 @@
     <string name="summary_pref_automatic_backup_location_disabled">Periodically back up your key maps</string>
 
     <string name="title_pref_auto_change_ime_on_connection">Automatically change the on-screen keyboard when a device (e.g a keyboard) connects/disconnects</string>
-    <string name="summary_pref_auto_change_ime_on_connection">The last used Key Mapper keyboard will be automatically selected when a chosen device is connected. Your normal keyboard will be automatically selected when the device disconnects.</string>
+    <string name="summary_pref_auto_change_ime_on_connection">The Key Mapper Input Method will be automatically selected when a chosen device is connected. Your normal keyboard will be automatically selected when the device disconnects.</string>
 
     <string name="title_pref_auto_change_ime_on_input_focus">Automatically change the on-screen keyboard when you start inputting text</string>
-    <string name="summary_pref_auto_change_ime_on_input_focus">The last used non Key Mapper keyboard will be automatically selected when you try to open the keyboard. Your Key Mapper keyboard will be automatically selected once you stop using the keyboard.</string>
+    <string name="summary_pref_auto_change_ime_on_input_focus">The last used normal on-screen keyboard will be automatically selected when you try to open the keyboard. The Key Mapper Input Method will be automatically selected once you stop using the keyboard.</string>
 
     <string name="title_pref_show_toast_when_auto_changing_ime">On-screen message</string>
     <string name="summary_pref_show_toast_when_auto_changing_ime">Show when automatically changing the keyboard</string>
@@ -619,11 +572,11 @@
     <string name="title_pref_dark_theme">Choose theme</string>
     <string name="summary_pref_dark_theme">Light and dark themes available</string>
 
-    <string name="summary_pref_show_toggle_keyboard_notification">Switch between the Key Mapper keyboard and your default keyboard when you tap the notification.</string>
-    <string name="title_pref_show_toggle_keyboard_notification">Toggle Key Mapper keyboard notification</string>
+    <string name="summary_pref_show_toggle_keyboard_notification">Switch between the Key Mapper Input Method and your normal keyboard when you tap the notification.</string>
+    <string name="title_pref_show_toggle_keyboard_notification">Toggle Key Mapper Input Method notification</string>
 
     <string name="title_pref_toggle_keyboard_on_toggle_keymaps">Automatically change the keyboard when toggling key maps</string>
-    <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Automatically select the Key Mapper keyboard when you resume your key maps and select your default keyboard when pausing them.</string>
+    <string name="summary_pref_toggle_keyboard_on_toggle_keymaps">Automatically select the Key Mapper Input Method when you resume your key maps and select your default keyboard when pausing them.</string>
 
     <string name="title_pref_hide_home_screen_alerts">Hide home screen alerts</string>
     <string name="summary_pref_hide_home_screen_alerts">Hide the alerts at the top of the home screen</string>
@@ -681,10 +634,6 @@
 
     <string name="title_pref_category_write_secure_settings">Require WRITE_SECURE_SETTINGS permission</string>
     <string name="summary_pref_category_write_secure_settings">These options are only enabled if Key Mapper has WRITE_SECURE_SETTINGS permission. Click the button below to learn how to grant the permission.</string>
-
-    <string name="title_pref_category_shizuku">Shizuku support</string>
-    <string name="summary_pref_category_shizuku">Shizuku is an app that allows Key Mapper to do things that only system apps can do. You don\'t need to use the Key Mapper keyboard for example. Tap to learn how to set this up.</string>
-    <string name="summary_pref_category_shizuku_follow_steps">Follow these steps to set up Shizuku</string>
 
     <string name="title_pref_automatically_change_ime">Automatically switch keyboard</string>
     <string name="summary_pref_automatically_change_ime">Switch when needed then switch back</string>
@@ -755,7 +704,7 @@
     <string name="tile_running_subtitle">Running</string>
     <string name="tile_service_disabled">Service Disabled</string>
     <string name="tile_accessibility_service_disabled_content_description">Key Mapper accessibility service is disabled</string>
-    <string name="tile_toggle_keymapper_keyboard">Toggle Key Mapper keyboard</string>
+    <string name="tile_toggle_keymapper_keyboard">Toggle Key Mapper Input Method</string>
     <!-- Tiles -->
 
     <!-- Meta States -->
@@ -783,7 +732,7 @@
     <!-- Meta States -->
 
     <!-- Error messages -->
-    <string name="error_ime_must_be_chosen">You must be using one of the Key Mapper keyboards for this action to work!</string>
+    <string name="error_ime_must_be_chosen">You must be using the Key Mapper Input Method for this action to work!</string>
 
     <string name="error_app_isnt_installed">The app with package name %s isn\'t installed!</string>
 
@@ -825,11 +774,12 @@
     <string name="error_accessibility_service_crashed">The accessibility service needs to be restarted!</string>
     <string name="error_launcher_shortcuts_not_supported">Your launcher doesn\'t support shortcuts.</string>
 
-    <string name="error_key_mapper_ime_service_disabled">A Key Mapper keyboard needs to be enabled!</string>
+    <string name="error_key_mapper_ime_service_disabled">The Key Mapper Input Method needs to be enabled!</string>
     <string name="error_ime_not_found">Can\'t find the %s input method</string>
     <string name="error_cant_show_ime_picker_in_background">The input method picker can\'t be shown!</string>
     <string name="error_failed_to_find_accessibility_node">Failed to find accessibility node!</string>
     <string name="error_failed_to_perform_accessibility_global_action">Failed perform global action %s!</string>
+    <string name="error_fix_key_event_action">This action needs setting up</string>
 
     <string name="error_battery_optimisation_activity_not_found">Battery optimisation settings not found! If it exists, open it manually.</string>
 
@@ -851,14 +801,15 @@
     <string name="error_backup_version_too_new">You will need to update Key Mapper to the latest version to use this backup.</string>
     <string name="error_voice_assistant_not_found">There is no voice assistant installed!</string>
     <string name="error_insufficient_permissions">Insufficient permissions</string>
-    <string name="error_no_incompatible_input_methods_installed">You only have Key Mapper keyboards installed!</string>
+    <string name="error_no_incompatible_input_methods_installed">You have no on-screen keyboards installed!</string>
     <string name="error_no_media_sessions">There are no apps playing media!</string>
     <string name="error_source_file_not_found">Source file not found! %s</string>
     <string name="error_target_file_not_found">Target file not found! %s</string>
     <string name="error_failed_to_dispatch_gesture">Failed to input gesture!</string>
     <string name="error_failed_to_modify_system_setting">Failed to modify system setting %s!</string>
     <string name="error_ime_disabled">You need to enable %s!</string>
-    <string name="error_failed_to_change_ime">Failed to change ime!</string>
+    <string name="error_failed_to_change_ime">Failed to change input method!</string>
+    <string name="error_failed_to_enable_ime">Failed to enable input method!</string>
     <string name="error_no_camera_app">Your device has no camera app!</string>
     <string name="error_no_device_assistant">Your device has no assistant!</string>
     <string name="error_no_settings_app">Your device has no settings app!</string>
@@ -1210,8 +1161,6 @@
     <string name="tap_target_create_key_map_message">A key map is a rule to tell your device what to do when a button is pressed.</string>
     <string name="tap_target_choose_action_title">Choose an action</string>
     <string name="tap_target_choose_action_message">An action is what should happen when you press the trigger.</string>
-    <string name="tap_target_choose_constraint_title">Choose a constraint (optional)</string>
-    <string name="tap_target_choose_constraint_message">If you want the key map to only work in certain situations, for example, when an app is open.</string>
     <!--  Tap targets  -->
 
     <!--  About  -->
@@ -1296,20 +1245,6 @@
     <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
     <string name="purchasing_download_key_mapper_from_google_play">Download Play build</string>
 
-    <!--  Dpad trigger setup bottom sheet  -->
-    <string name="dpad_trigger_setup_bottom_sheet_title">Want to remap DPAD buttons?</string>
-    <string name="dpad_trigger_setup_bottom_sheet_text">You must set up the Key Mapper GUI Keyboard following the steps below.</string>
-    <string name="setup_gui_keyboard_install_keyboard_text">1. Install the keyboard app</string>
-    <string name="setup_gui_keyboard_install_keyboard_button">Install</string>
-    <string name="setup_gui_keyboard_install_keyboard_button_disabled">Installed</string>
-    <string name="setup_gui_keyboard_enable_keyboard_text">2. Enable the keyboard</string>
-    <string name="setup_gui_keyboard_enable_keyboard_button">Enable</string>
-    <string name="setup_gui_keyboard_enable_keyboard_button_disabled">Enabled</string>
-    <string name="setup_gui_keyboard_choose_keyboard_text">3. Use the keyboard</string>
-    <string name="setup_gui_keyboard_choose_keyboard_button">Change keyboard</string>
-    <string name="setup_gui_keyboard_choose_keyboard_button_disabled">Keyboard selected</string>
-    <string name="dpad_trigger_setup_setup_complete_text">Setup complete! Tap \'Done\' and your DPAD trigger should work.</string>
-
     <!-- No keys recorded bottom sheet -->
     <string name="no_keys_recorded_bottom_sheet_title">Button not detected?</string>
     <string name="no_keys_recorded_bottom_sheet_text">You can try using the Key Mapper GUI Keyboard app to record your trigger instead of the accessibility service.</string>
@@ -1346,7 +1281,7 @@
     <string name="tip_screen_pinning_title">App pinning warning</string>
     <string name="tip_screen_pinning_text">Using the back button as a trigger may conflict with app pinning, causing a black screen on unlock. A reboot will fix it.</string>
     <string name="tip_ime_detection_title">Keyboard icon</string>
-    <string name="tip_ime_detection_text">The ⌨ symbol means you must use a Key Mapper keyboard for this trigger to work due to an Android restriction.</string>
+    <string name="tip_ime_detection_text">The ⌨ symbol means you must use the Key Mapper input method for this trigger to work due to an Android restriction.</string>
     <string name="trigger_constraints_tip_title">Limit to specific apps?</string>
     <string name="trigger_constraints_tip_text">Add constraints in the Constraints tab.</string>
     <string name="choose_floating_layout_title">Choose a layout</string>
@@ -1582,6 +1517,9 @@
     <string name="title_pref_pro_mode_auto_start_at_boot">Automatically start at boot</string>
     <string name="summary_pref_pro_mode_auto_start_at_boot">PRO Mode will start itself whenever you turn on or restart your device</string>
 
+    <string name="title_pref_key_event_actions_use_system_bridge">Key event actions</string>
+    <string name="summary_pref_key_event_actions_use_system_bridge">Select how key event actions are run</string>
+
     <string name="pro_mode_emergency_tip_title">Emergency tip</string>
     <string name="pro_mode_emergency_tip_text">If your power button stops working, hold down the power button for 10 seconds and release to disable PRO Mode.</string>
 
@@ -1728,10 +1666,23 @@
     <string name="trigger_setup_gamepad_type_dpad">D-Pad button</string>
     <string name="trigger_setup_gamepad_type_simple_buttons">Other simple buttons</string>
     <string name="trigger_setup_gamepad_information_dpad">You will not be able to use your normal on-screen keyboard when remapping DPAD buttons.</string>
-    <string name="trigger_setup_input_method_title">Key Mapper Keyboard</string>
-    <string name="trigger_setup_input_method_enable_button">Enable keyboard</string>
-    <string name="trigger_setup_input_method_choose_button">Choose keyboard</string>
+    <string name="trigger_setup_input_method_title">Key Mapper input method</string>
+    <string name="trigger_setup_input_method_enable_button">Enable</string>
+    <string name="trigger_setup_input_method_choose_button">Choose</string>
     <string name="trigger_setup_input_method_running_button">Running</string>
     <!-- Trigger Setup bottom sheet -->
+
+    <!--  fix key event action bottom sheet  -->
+    <string name="fix_key_event_action_title">Fix key event action</string>
+    <string name="fix_key_event_action_text">There are extra steps to use this action. Select which method you want to use:</string>
+    <string name="fix_key_event_action_input_method_title">Key Mapper input method</string>
+    <string name="fix_key_event_action_input_method_text">No on-screen keyboard</string>
+    <string name="fix_key_event_action_pro_mode_text">Can use your normal on-screen keyboard at all times</string>
+    <string name="fix_key_event_action_enable_input_method_button">Enable Key Mapper input method</string>
+    <string name="fix_key_event_action_use_input_method_button">Use Key Mapper input method</string>
+    <string name="fix_key_event_action_auto_switch_ime_text">Automatically switch to normal on-screen keyboard when typing</string>
+    <string name="fix_key_event_action_change_in_settings_caption">You can always change this in Settings</string>
+    <string name="fix_key_event_action_setup_title">Setup</string>
+    <string name="fix_key_event_action_options_title">Options</string>
 
 </resources>

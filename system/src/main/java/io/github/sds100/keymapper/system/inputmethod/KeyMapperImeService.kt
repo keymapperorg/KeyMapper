@@ -9,7 +9,6 @@ import android.content.IntentFilter
 import android.inputmethodservice.InputMethodService
 import android.os.Build
 import android.os.UserManager
-import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
@@ -19,6 +18,9 @@ import androidx.core.content.getSystemService
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
+import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -58,6 +60,9 @@ class KeyMapperImeService : InputMethodService() {
     private val keyguardManager: KeyguardManager? by lazy {
         getSystemService<KeyguardManager>()
     }
+
+    @Inject
+    lateinit var serviceAdapter: AccessibilityServiceAdapter
 
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -147,14 +152,21 @@ class KeyMapperImeService : InputMethodService() {
         // IMPORTANT! Select a keyboard with an actual GUI if the user needs
         // to unlock their device. This must not be in onCreate because
         // the switchInputMethod does not work there.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && userManager?.isUserUnlocked == false) {
-            selectNonBasicKeyboard()
-        } else if (
-            !restarting &&
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1 &&
-            keyguardManager?.isDeviceLocked == true
-        ) {
-            selectNonBasicKeyboard()
+        if (userManager?.isUserUnlocked == false) {
+            chooseIncompatibleIme()
+        } else if (!restarting && keyguardManager?.isDeviceLocked == true) {
+            chooseIncompatibleIme()
+        }
+
+        // Only send the start input event on versions before the accessibility
+        // input method API was introduced
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && attribute != null) {
+            serviceAdapter.sendAsync(
+                AccessibilityServiceEvent.OnKeyMapperImeStartInput(
+                    attribute = attribute,
+                    restarting = restarting
+                )
+            )
         }
     }
 
@@ -214,22 +226,21 @@ class KeyMapperImeService : InputMethodService() {
     }
 
     @SuppressLint("LogNotTimber")
-    private fun selectNonBasicKeyboard() {
+    private fun chooseIncompatibleIme() {
         inputMethodManager ?: return
+
+        Timber.d("KeyMapperImeService: Choosing incompatible IME because device is locked")
 
         inputMethodManager!!.enabledInputMethodList
             .filter {
-                it.packageName != "io.github.sds100.keymapper" &&
-                    it.packageName != "io.github.sds100.keymapper.debug" &&
-                    it.packageName != "io.github.sds100.keymapper.ci"
+                !it.packageName.contains("io.github.sds100.keymapper")
             }
             // Select a random one in case one of them can't be used on the lock screen such as
-            // the Google Voice Typing keyboard. This is critical because i
-            // f an input method can't be used
+            // the Google Voice Typing keyboard. This is critical because if an input method can't be used
             // then it will select the Key Mapper Basic Input method again and loop forever.
             .randomOrNull()
             ?.also {
-                Log.e(
+                Timber.e(
                     KeyMapperImeService::class.simpleName,
                     "Device is locked! Select ${it.id} input method",
                 )

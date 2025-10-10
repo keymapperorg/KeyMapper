@@ -3,6 +3,7 @@ package io.github.sds100.keymapper.base.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionDelegate
 import io.github.sds100.keymapper.base.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
@@ -27,6 +28,7 @@ abstract class BaseHomeViewModel(
     resourceProvider: ResourceProvider,
     private val sortKeyMaps: SortKeyMapsUseCase,
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
+    fixKeyEventActionDelegate: FixKeyEventActionDelegate,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
 ) : ViewModel(),
@@ -45,6 +47,7 @@ abstract class BaseHomeViewModel(
             backupRestore,
             showInputMethodPickerUseCase,
             onboarding,
+            fixKeyEventActionDelegate,
             navigationProvider,
             dialogProvider,
         )

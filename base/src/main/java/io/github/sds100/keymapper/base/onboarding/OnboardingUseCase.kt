@@ -1,9 +1,6 @@
 package io.github.sds100.keymapper.base.onboarding
 
 import androidx.datastore.preferences.core.Preferences
-import io.github.sds100.keymapper.base.actions.ActionData
-import io.github.sds100.keymapper.base.actions.canUseImeToPerform
-import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.base.utils.VersionHelper
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.State
@@ -12,7 +9,6 @@ import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.repositories.KeyMapRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.data.utils.PrefDelegate
-import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.leanback.LeanbackAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
@@ -21,7 +17,6 @@ import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -33,30 +28,12 @@ class OnboardingUseCaseImpl @Inject constructor(
     private val leanbackAdapter: LeanbackAdapter,
     private val shizukuAdapter: ShizukuAdapter,
     private val permissionAdapter: PermissionAdapter,
-    private val packageManagerAdapter: PackageManagerAdapter,
     private val keyMapRepository: KeyMapRepository,
     private val buildConfigProvider: BuildConfigProvider,
 ) : PreferenceRepository by settingsRepository,
     OnboardingUseCase {
 
     override var shownAppIntro by PrefDelegate(Keys.shownAppIntro, false)
-
-    override suspend fun showInstallGuiKeyboardPrompt(action: ActionData): Boolean {
-        val acknowledged = settingsRepository.get(Keys.acknowledgedGuiKeyboard).first()
-        val isGuiKeyboardInstalled =
-            packageManagerAdapter.isAppInstalled(KeyMapperImeHelper.KEY_MAPPER_GUI_IME_PACKAGE)
-
-        val isShizukuInstalled = shizukuAdapter.isInstalled.value
-
-        return (acknowledged == null || !acknowledged) &&
-            !isGuiKeyboardInstalled &&
-            !isShizukuInstalled &&
-            action.canUseImeToPerform()
-    }
-
-    override fun neverShowGuiKeyboardPromptsAgain() {
-        settingsRepository.set(Keys.acknowledgedGuiKeyboard, true)
-    }
 
     override val showWhatsNew = get(Keys.lastInstalledVersionCodeHomeScreen)
         .map { (it ?: -1) < buildConfigProvider.versionCode }
@@ -135,7 +112,6 @@ class OnboardingUseCaseImpl @Inject constructor(
         val key = when (tapTarget) {
             OnboardingTapTarget.CREATE_KEY_MAP -> Keys.shownTapTargetCreateKeyMap
             OnboardingTapTarget.CHOOSE_ACTION -> Keys.shownTapTargetChooseAction
-            OnboardingTapTarget.CHOOSE_CONSTRAINT -> Keys.shownTapTargetChooseConstraint
         }
         return key
     }
@@ -163,7 +139,6 @@ class OnboardingUseCaseImpl @Inject constructor(
         return when (tapTarget) {
             OnboardingTapTarget.CREATE_KEY_MAP -> keyMapList.isEmpty()
             OnboardingTapTarget.CHOOSE_ACTION -> keyMapList.all { it.actionList.isEmpty() }
-            OnboardingTapTarget.CHOOSE_CONSTRAINT -> keyMapList.all { it.constraintList.isEmpty() }
         }
     }
 
@@ -175,14 +150,7 @@ class OnboardingUseCaseImpl @Inject constructor(
 interface OnboardingUseCase {
     var shownAppIntro: Boolean
 
-    /**
-     * @return whether to prompt the user to install the Key Mapper GUI Keyboard after adding
-     * this action
-     */
-    suspend fun showInstallGuiKeyboardPrompt(action: ActionData): Boolean
-
     fun isTvDevice(): Boolean
-    fun neverShowGuiKeyboardPromptsAgain()
 
     val showFloatingButtonFeatureNotification: Flow<Boolean>
     fun showedFloatingButtonFeatureNotification()

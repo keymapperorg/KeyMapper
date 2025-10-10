@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.home
 
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionDelegate
 import io.github.sds100.keymapper.base.backup.BackupRestoreMappingsUseCase
 import io.github.sds100.keymapper.base.home.BaseHomeViewModel
 import io.github.sds100.keymapper.base.home.ListKeyMapsUseCase
@@ -24,6 +25,7 @@ class HomeViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
     private val sortKeyMaps: SortKeyMapsUseCase,
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
+    fixKeyEventActionDelegate: FixKeyEventActionDelegate,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
 ) : BaseHomeViewModel(
@@ -35,6 +37,7 @@ class HomeViewModel @Inject constructor(
     resourceProvider,
     sortKeyMaps,
     showInputMethodPickerUseCase,
+    fixKeyEventActionDelegate,
     navigationProvider,
     dialogProvider,
 )

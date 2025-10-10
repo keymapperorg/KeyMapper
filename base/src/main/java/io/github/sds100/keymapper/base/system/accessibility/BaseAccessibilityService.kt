@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.FingerprintGestureController
 import android.accessibilityservice.GestureDescription
 import android.accessibilityservice.GestureDescription.StrokeDescription
+import android.accessibilityservice.InputMethod
 import android.app.ActivityManager
 import android.content.Intent
 import android.content.res.Configuration
@@ -12,6 +13,8 @@ import android.graphics.Point
 import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
+import android.view.inputmethod.EditorInfo
+import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
@@ -68,28 +71,34 @@ abstract class BaseAccessibilityService :
     override val activeWindowPackage: Flow<String?> = _activeWindowPackage
 
     override val isFingerprintGestureDetectionAvailable: Boolean
-        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        get() =
             fingerprintGestureController.isGestureDetectionAvailable
+
+    private val accessibilityInputMethod: InputMethod? =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            object : InputMethod(this) {
+                override fun onStartInput(attribute: EditorInfo, restarting: Boolean) {
+                    super.onStartInput(attribute, restarting)
+
+                    getController()?.onStartInput(attribute, restarting = restarting)
+                }
+
+                override fun onFinishInput() {
+                    super.onFinishInput()
+
+                    getController()?.onFinishInput()
+                }
+            }
         } else {
-            false
+            null
         }
 
     private val _isKeyboardHidden by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            MutableStateFlow(softKeyboardController.showMode == SHOW_MODE_HIDDEN)
-        } else {
-            MutableStateFlow(false)
-        }
+        MutableStateFlow(softKeyboardController.showMode == SHOW_MODE_HIDDEN)
     }
 
     override val isKeyboardHidden: Flow<Boolean>
         get() = _isKeyboardHidden
-
-    override fun switchIme(imeId: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            softKeyboardController.switchToInputMethod(imeId)
-        }
-    }
 
     override var serviceFlags: Int?
         get() = serviceInfo?.flags
@@ -250,10 +259,8 @@ abstract class BaseAccessibilityService :
         return findFocus(focus)?.toModel()
     }
 
-    override fun setInputMethodEnabled(imeId: String, enabled: Boolean) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            softKeyboardController.setInputMethodEnabled(imeId, enabled)
-        }
+    override fun onCreateInputMethod(): InputMethod {
+        return accessibilityInputMethod ?: super.onCreateInputMethod()
     }
 
     override fun hideKeyboard() {
@@ -262,6 +269,26 @@ abstract class BaseAccessibilityService :
 
     override fun showKeyboard() {
         softKeyboardController.showMode = SHOW_MODE_AUTO
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun switchIme(imeId: String): KMResult<Unit> {
+        if (softKeyboardController.switchToInputMethod(imeId)) {
+            return Success(Unit)
+        } else {
+            return KMError.SwitchImeFailed
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    override fun enableIme(imeId: String): KMResult<Unit> {
+        val statusCode = softKeyboardController.setInputMethodEnabled(imeId, true)
+
+        if (statusCode == SoftKeyboardController.ENABLE_IME_SUCCESS) {
+            return Success(Unit)
+        } else {
+            return KMError.EnableImeFailed
+        }
     }
 
     override fun doGlobalAction(action: Int): KMResult<Unit> {

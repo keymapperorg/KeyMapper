@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Key Mapper CI</string>
-    <string name="ime_service_label" translatable="false">Key Mapper CI Basic Input Method</string>
+    <string name="ime_service_label" translatable="false">Key Mapper CI Input Method</string>
 </resources>

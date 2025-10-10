@@ -16,9 +16,4 @@ enum class OnboardingTapTarget(
         titleRes = R.string.tap_target_choose_action_title,
         messageRes = R.string.tap_target_choose_action_message,
     ),
-
-    CHOOSE_CONSTRAINT(
-        titleRes = R.string.tap_target_choose_constraint_title,
-        messageRes = R.string.tap_target_choose_constraint_message,
-    ),
 }

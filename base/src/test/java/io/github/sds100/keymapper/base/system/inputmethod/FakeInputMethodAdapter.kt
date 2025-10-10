@@ -15,21 +15,12 @@ class FakeInputMethodAdapter : InputMethodAdapter {
 
     override val chosenIme = MutableStateFlow<ImeInfo?>(null)
 
-    override val isUserInputRequiredToChangeIme = MutableStateFlow(false)
+    override fun getChosenIme(): ImeInfo? {
+        return chosenIme.value
+    }
 
     override fun showImePicker(fromForeground: Boolean): KMResult<*> {
         return Success(Unit)
-    }
-
-    override suspend fun enableIme(imeId: String): KMResult<*> {
-        return Success(Unit)
-    }
-
-    override suspend fun chooseImeWithoutUserInput(imeId: String): KMResult<ImeInfo> {
-        return inputMethods.value
-            .firstOrNull { it.id == imeId }
-            ?.let { Success(it) }
-            ?: KMError.InputMethodNotFound(imeId)
     }
 
     override fun getInfoById(imeId: String): KMResult<ImeInfo> {

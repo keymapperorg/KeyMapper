@@ -6,4 +6,5 @@ interface BuildConfigProvider {
     val packageName: String
     val version: String
     val versionCode: Int
+    val sdkInt: Int
 }
