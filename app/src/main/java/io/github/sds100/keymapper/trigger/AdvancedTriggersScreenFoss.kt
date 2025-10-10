@@ -15,7 +15,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,20 +36,9 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.openUriSafe
 
-@Composable
-fun AdvancedTriggersScreen(
-    modifier: Modifier = Modifier,
-    onBack: () -> Unit,
-) {
-    AdvancedTriggersScreen(
-        modifier = modifier,
-        onBack = onBack,
-    )
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AdvancedTriggersScreen(
+fun AdvancedTriggersScreenFoss(
     modifier: Modifier = Modifier,
     onBack: () -> Unit,
 ) {
@@ -104,28 +92,6 @@ private fun AdvancedTriggersScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            HorizontalDivider()
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                text = stringResource(R.string.advanced_triggers_sheet_title),
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = stringResource(R.string.advanced_triggers_sheet_text),
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-            )
-
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
@@ -135,10 +101,6 @@ private fun AdvancedTriggersScreen(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
             )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            HorizontalDivider()
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -176,7 +138,7 @@ private fun AdvancedTriggersScreen(
 @Composable
 private fun Preview() {
     KeyMapperTheme {
-        AdvancedTriggersScreen(
+        AdvancedTriggersScreenFoss(
             onBack = {},
         )
     }

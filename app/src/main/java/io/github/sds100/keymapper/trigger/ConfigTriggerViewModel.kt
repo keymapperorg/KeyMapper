@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.trigger
 
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
@@ -11,9 +12,12 @@ import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCase
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.base.trigger.TriggerSetupDelegate
 import io.github.sds100.keymapper.base.trigger.TriggerSetupShortcut
+import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
+import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,7 +52,9 @@ class ConfigTriggerViewModel @Inject constructor(
 
     override fun showTriggerSetup(shortcut: TriggerSetupShortcut) {
         when (shortcut) {
-            TriggerSetupShortcut.ASSISTANT -> showAdvancedTriggersBottomSheet = true
+            TriggerSetupShortcut.ASSISTANT -> viewModelScope.launch {
+                navigate("purchase_assistant_trigger", NavDestination.AdvancedTriggers)
+            }
 
             else -> super.showTriggerSetup(shortcut)
         }

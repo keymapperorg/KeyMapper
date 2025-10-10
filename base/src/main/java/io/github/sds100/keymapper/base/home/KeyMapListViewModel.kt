@@ -513,10 +513,7 @@ class KeyMapListViewModel(
                 TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED, TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> {
                     navigate(
                         "purchase_advanced_trigger",
-                        NavDestination.NewKeyMap(
-                            groupUid = null,
-                            showAdvancedTriggers = true,
-                        ),
+                        NavDestination.AdvancedTriggers,
                     )
                 }
 

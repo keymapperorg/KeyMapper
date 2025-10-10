@@ -43,6 +43,7 @@ import io.github.sds100.keymapper.base.utils.navigation.SetupNavigation
 import io.github.sds100.keymapper.base.utils.navigation.handleRouteArgs
 import io.github.sds100.keymapper.base.utils.navigation.setupFragmentNavigation
 import io.github.sds100.keymapper.home.HomeViewModel
+import io.github.sds100.keymapper.trigger.AdvancedTriggersScreenFoss
 import io.github.sds100.keymapper.trigger.ConfigTriggerViewModel
 import io.github.sds100.keymapper.trigger.TriggerScreen
 import javax.inject.Inject
@@ -153,10 +154,6 @@ class MainFragment : Fragment() {
 
             backStackEntry.handleRouteArgs<NavDestination.NewKeyMap> { args ->
                 keyMapViewModel.loadNewKeyMap(groupUid = args.groupUid)
-
-                if (args.showAdvancedTriggers) {
-                    triggerViewModel.showAdvancedTriggersBottomSheet = true
-                }
             }
 
             ConfigKeyMapScreen(
@@ -185,6 +182,12 @@ class MainFragment : Fragment() {
             )
         }
 
+        composable<NavDestination.AdvancedTriggers> {
+            AdvancedTriggersScreenFoss(
+                modifier = Modifier.fillMaxSize(),
+                onBack = navController::popBackStack,
+            )
+        }
         composable<NavDestination.OpenKeyMap> { backStackEntry ->
             val keyMapViewModel: ConfigKeyMapViewModel = hiltViewModel()
             val triggerViewModel: ConfigTriggerViewModel = hiltViewModel()
@@ -194,10 +197,6 @@ class MainFragment : Fragment() {
 
             backStackEntry.handleRouteArgs<NavDestination.OpenKeyMap> { args ->
                 keyMapViewModel.loadKeyMap(uid = args.keyMapUid)
-
-                if (args.showAdvancedTriggers) {
-                    triggerViewModel.showAdvancedTriggersBottomSheet = true
-                }
             }
 
             ConfigKeyMapScreen(

@@ -38,6 +38,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
         const val ID_INTERACT_UI_ELEMENT_ACTION = "interact_ui_element_action"
         const val ID_PRO_MODE = "pro_mode"
         const val ID_LOG = "log"
+        const val ID_ADVANCED_TRIGGERS = "advanced_triggers"
     }
 
     @Serializable
@@ -141,7 +142,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data class OpenKeyMap(val keyMapUid: String, val showAdvancedTriggers: Boolean = false) :
+    data class OpenKeyMap(val keyMapUid: String) :
         NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_CONFIG_KEY_MAP
     }
@@ -149,7 +150,6 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     @Serializable
     data class NewKeyMap(
         val groupUid: String?,
-        val showAdvancedTriggers: Boolean = false,
         val floatingButtonToUse: String? = null,
     ) : NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_CONFIG_KEY_MAP
@@ -175,5 +175,10 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     @Serializable
     data object Log : NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_LOG
+    }
+
+    @Serializable
+    data object AdvancedTriggers : NavDestination<Unit>(isCompose = true) {
+        override val id: String = ID_ADVANCED_TRIGGERS
     }
 }

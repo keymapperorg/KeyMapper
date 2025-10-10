@@ -16,7 +16,9 @@ import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegate
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
+import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
+import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.LinkType
@@ -90,7 +92,6 @@ abstract class BaseConfigTriggerViewModel(
         fingerprintGesturesSupported.isSupported.map { it ?: false }
             .stateIn(viewModelScope, SharingStarted.Lazily, false)
 
-    var showAdvancedTriggersBottomSheet: Boolean by mutableStateOf(false)
     var showDiscoverTriggersBottomSheet: Boolean by mutableStateOf(false)
 
     val triggerKeyOptionsUid = MutableStateFlow<String?>(null)
@@ -157,7 +158,9 @@ abstract class BaseConfigTriggerViewModel(
 
     fun onAdvancedTriggersClick() {
         onboarding.viewedAdvancedTriggers()
-        showAdvancedTriggersBottomSheet = true
+        viewModelScope.launch {
+            navigate("advanced_triggers_click", NavDestination.AdvancedTriggers)
+        }
     }
 
     private fun buildUiState(

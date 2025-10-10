@@ -1202,17 +1202,38 @@
     <string name="about_team_bydario_role">Translator (Spanish)</string>
     <!--  About  -->
 
+    <!-- Support screen -->
+    <string name="support_key_mapper_title">Support Key Mapper ❤️</string>
+    <string name="support_key_mapper_subtitle">Choose add-ons to upgrade your experience</string>
+    <string name="support_key_mapper_sub_subtitle">Your support keeps Key Mapper alive!</string>
+    <string name="support_key_mapper_quote">"Floating button feature is a game changer"</string>
+    <string name="support_key_mapper_quote_attribution">Google Play reviewer</string>
+    <string name="support_key_mapper_quote_1">Floating buttons is a game changer!</string>
+    <string name="support_key_mapper_quote_2">I\'ve been enjoying the floating buttons feature.</string>
+    <string name="support_key_mapper_quote_3">Floating buttons is a brilliant addition.</string>
+    <string name="support_key_mapper_quote_4">An essential part of my phone experience.</string>
+    <string name="pay_once_unlock_forever">Pay once, unlock forever</string>
+    <string name="watch_video_button">Watch video</string>
+    <string name="buy_now_button">Buy now (%s)</string>
+    <string name="learn_more_button">Learn more</string>
+
+    <string name="on_screen_floating_buttons_title">On-screen floating buttons</string>
+    <string name="on_screen_floating_buttons_description">Make instant shortcuts and macros in any app, game or on your lock screen.</string>
+    <string name="feature_use_in_games">Use in games</string>
+    <string name="feature_use_on_lock_screen">Use on lock screen</string>
+
+    <string name="side_key_assistant_trigger_title">Side key &amp; Assistant trigger</string>
+    <string name="side_key_assistant_trigger_description">Useless side button? Remap the assistant button or your device\'s side key shortcut to whatever you want!</string>
+    <string name="feature_screen_off">Screen off</string>
+    <string name="feature_bixby">Bixby</string>
+    <string name="feature_gemini">Gemini</string>
+
     <!-- Advanced triggers -->
     <string name="assistant_activity_name">Key Mapper: Side Key</string>
     <string name="assistant_any_trigger_name">Any assistant</string>
     <string name="assistant_device_trigger_name">Side key/power button</string>
     <string name="assistant_voice_trigger_name">Voice assistant</string>
-    <string name="advanced_triggers_sheet_title">Advanced triggers</string>
-    <string name="advanced_triggers_sheet_text">The developer doesn\'t believe ads are a sustainable or user-friendly form of monetization so these paid triggers help support development\u00A0❤️. You will be given priority support as well.</string>
-    <string name="assistant_trigger_product_title">Side\u00A0key &amp; Assistant trigger</string>
-    <string name="assistant_trigger_product_description">Did you know you can remap your side key, power button, or device assistant? Instead of launching the assistant or the power menu, your device can perform an action of your choice. It works even when the screen is off!</string>
     <string name="trigger_error_assistant_not_purchased">You must purchase the side key trigger feature.</string>
-    <string name="advanced_triggers_learn_more_button">Learn more</string>
     <string name="trigger_error_floating_buttons_not_purchased">You must purchase floating buttons.</string>
     <string name="trigger_error_floating_button_deleted">Button was deleted.</string>
     <string name="trigger_error_floating_button_deleted_title">Floating button</string>
@@ -1242,7 +1263,7 @@
     <string name="customer_email_body" translatable="false">Please fill the following information so I can help you.\n\n1. Device model:\n2. Android version:\n3. Key maps (make a back up in the home screen menu):\n4. Screenshot of Key Mapper home screen:\n5. Describe the problem you are having:</string>
     <string name="purchase_thank_you_title">Thank you for supporting the app\u00A0❤️!</string>
     <string name="purchase_thank_you_message">Your purchase was successful. As a paying user of Key\u00A0Mapper you will receive priority support to help you use the app. There is now a button in the shop to contact the developer.</string>
-    <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
+    <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this closed source module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
     <string name="purchasing_download_key_mapper_from_google_play">Download Play build</string>
 
     <!-- No keys recorded bottom sheet -->
@@ -1614,7 +1635,7 @@
     <string name="trigger_discover_shortcut_notch">Notch</string>
     <string name="trigger_discover_shortcut_lock_screen">Lock screen</string>
 
-    <string name="trigger_discover_promo_title">Level up your phone</string>
+    <string name="trigger_discover_promo_title">Upgrade your experience</string>
     <string name="trigger_discover_promo_description">Floating buttons are instant shortcuts in any app, game or on your lock screen. Your support keeps Key Mapper alive ❤️</string>
     <string name="trigger_discover_promo_see_action">See it in action</string>
     <string name="trigger_discover_promo_dismiss">Dismiss</string>
