@@ -398,6 +398,7 @@ private fun PreviewChildGroup() {
                     breadcrumbs = groupSampleList(),
                     isEditingGroupName = false,
                     isNewGroup = false,
+                    keyMapsEnabled = null
                 ),
                 listItems = State.Data(keyMapSampleList()),
             ),

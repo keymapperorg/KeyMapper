@@ -354,27 +354,10 @@ class KeyMapListViewModel(
         breadcrumbListItems: List<GroupListItemModel>,
         showThisGroup: Boolean,
     ): KeyMapAppBarState.Selecting {
-        var selectedKeyMapsEnabled: SelectedKeyMapsEnabled? = null
         val keyMaps = keyMapGroup.keyMaps.dataOrNull() ?: emptyList()
 
-        for (keyMap in keyMaps) {
-            if (keyMap.uid in selectionState.selectedIds) {
-                if (selectedKeyMapsEnabled == null) {
-                    selectedKeyMapsEnabled = if (keyMap.isEnabled) {
-                        SelectedKeyMapsEnabled.ALL
-                    } else {
-                        SelectedKeyMapsEnabled.NONE
-                    }
-                } else {
-                    if ((keyMap.isEnabled && selectedKeyMapsEnabled == SelectedKeyMapsEnabled.NONE) ||
-                        (!keyMap.isEnabled && selectedKeyMapsEnabled == SelectedKeyMapsEnabled.ALL)
-                    ) {
-                        selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED
-                        break
-                    }
-                }
-            }
-        }
+        val selectedKeyMapsEnabled: SelectedKeyMapsEnabled? =
+            getKeyMapSelectedState(keyMaps.filter { it.uid in selectionState.selectedIds })
 
         return KeyMapAppBarState.Selecting(
             selectionCount = selectionState.selectedIds.size,
@@ -384,6 +367,31 @@ class KeyMapListViewModel(
             breadcrumbs = breadcrumbListItems,
             showThisGroup = showThisGroup,
         )
+    }
+
+    private fun getKeyMapSelectedState(
+        keyMaps: List<KeyMap>,
+    ): SelectedKeyMapsEnabled? {
+        var selectedKeyMapsEnabled: SelectedKeyMapsEnabled? = null
+
+        for (keyMap in keyMaps) {
+            if (selectedKeyMapsEnabled == null) {
+                selectedKeyMapsEnabled = if (keyMap.isEnabled) {
+                    SelectedKeyMapsEnabled.ALL
+                } else {
+                    SelectedKeyMapsEnabled.NONE
+                }
+            } else {
+                if ((keyMap.isEnabled && selectedKeyMapsEnabled == SelectedKeyMapsEnabled.NONE) ||
+                    (!keyMap.isEnabled && selectedKeyMapsEnabled == SelectedKeyMapsEnabled.ALL)
+                ) {
+                    selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED
+                    break
+                }
+            }
+        }
+
+        return selectedKeyMapsEnabled
     }
 
     private fun buildGroupAppBarState(
@@ -412,6 +420,9 @@ class KeyMapListViewModel(
                 isPaused = isPaused,
             )
         } else {
+            val selectedKeyMapsEnabled: SelectedKeyMapsEnabled? =
+                getKeyMapSelectedState(keyMapGroup.keyMaps.dataOrNull() ?: emptyList())
+
             return KeyMapAppBarState.ChildGroup(
                 groupName = keyMapGroup.group.name,
                 constraints = listItemCreator.buildConstraintChipList(
@@ -424,6 +435,7 @@ class KeyMapListViewModel(
                 breadcrumbs = breadcrumbs,
                 isEditingGroupName = isEditingGroupName,
                 isNewGroup = isNewGroup,
+                keyMapsEnabled = selectedKeyMapsEnabled
             )
         }
     }
@@ -854,6 +866,14 @@ class KeyMapListViewModel(
     fun onGroupConstraintModeChanged(mode: ConstraintMode) {
         coroutineScope.launch {
             listKeyMaps.setGroupConstraintMode(mode)
+        }
+    }
+
+    fun onGroupKeyMapsEnabledChanged(enabled: Boolean) {
+        if (enabled) {
+            listKeyMaps.enableGroupKeyMaps()
+        } else {
+            listKeyMaps.disableGroupKeyMaps()
         }
     }
 

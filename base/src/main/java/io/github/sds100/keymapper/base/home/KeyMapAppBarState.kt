@@ -20,6 +20,10 @@ sealed class KeyMapAppBarState {
         val breadcrumbs: List<GroupListItemModel>,
         val isEditingGroupName: Boolean,
         val isNewGroup: Boolean,
+        /**
+         * If it is null then the Switch should be disabled.
+         */
+        val keyMapsEnabled: SelectedKeyMapsEnabled?,
     ) : KeyMapAppBarState()
 
     data class Selecting(

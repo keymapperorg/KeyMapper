@@ -306,6 +306,18 @@ class ListKeyMapsUseCaseImpl @Inject constructor(
         keyMapRepository.moveToGroup(selectionGroupUid.value, *keyMapUids)
     }
 
+    override fun enableGroupKeyMaps() {
+        keyMapListGroupUid.value?.also { groupUid ->
+            keyMapRepository.enableByGroup(groupUid)
+        }
+    }
+
+    override fun disableGroupKeyMaps() {
+        keyMapListGroupUid.value?.also { groupUid ->
+            keyMapRepository.disableByGroup(groupUid)
+        }
+    }
+
     private fun getKeyMapsByGroup(groupUid: String?): Flow<State<List<KeyMap>>> = channelFlow {
         send(State.Loading)
 
@@ -374,6 +386,8 @@ interface ListKeyMapsUseCase : DisplayKeyMapUseCase {
     suspend fun removeGroupConstraint(constraintUid: String)
     suspend fun setGroupConstraintMode(mode: ConstraintMode)
     fun getGroups(parentUid: String?): Flow<List<Group>>
+    fun enableGroupKeyMaps()
+    fun disableGroupKeyMaps()
 
     val selectionGroupFamily: Flow<GroupFamily>
     suspend fun openSelectionGroup(uid: String?)

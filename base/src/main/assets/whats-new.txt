@@ -4,6 +4,8 @@ Version 4.0! 🎉
 
 ⏻ Remap your power button and more
 
+Enable/disable all the key maps in a group
+
 Many other bug fixes and optimisations
 
 See all the changes at http://changelog.keymapper.club.

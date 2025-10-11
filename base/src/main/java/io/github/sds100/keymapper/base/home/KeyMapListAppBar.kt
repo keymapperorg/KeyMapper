@@ -14,6 +14,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -60,11 +61,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -134,6 +137,7 @@ fun KeyMapListAppBar(
     onRemoveConstraintClick: (String) -> Unit = {},
     onConstraintModeChanged: (ConstraintMode) -> Unit = {},
     onFixConstraintClick: (KMError) -> Unit = {},
+    onKeyMapsEnabledChange: (Boolean) -> Unit = {}
 ) {
     BackHandler(onBack = onBackClick)
 
@@ -278,6 +282,8 @@ fun KeyMapListAppBar(
                     onRemoveConstraintClick = onRemoveConstraintClick,
                     onConstraintModeChanged = onConstraintModeChanged,
                     onFixConstraintClick = onFixConstraintClick,
+                    keyMapsEnabled = state.keyMapsEnabled,
+                    onKeyMapsEnabledChange = onKeyMapsEnabledChange,
                     actions = {
                         AnimatedVisibility(!state.isEditingGroupName) {
                             var expandedDropdown by rememberSaveable { mutableStateOf(false) }
@@ -343,13 +349,13 @@ private fun RootGroupAppBar(
 ) {
     // This is taken from the AppBar color code.
     val colorTransitionFraction by
-        remember(scrollBehavior) {
-            // derivedStateOf to prevent redundant recompositions when the content scrolls.
-            derivedStateOf {
-                val overlappingFraction = scrollBehavior.state.overlappedFraction
-                if (overlappingFraction > 0.01f) 1f else 0f
-            }
+    remember(scrollBehavior) {
+        // derivedStateOf to prevent redundant recompositions when the content scrolls.
+        derivedStateOf {
+            val overlappingFraction = scrollBehavior.state.overlappedFraction
+            if (overlappingFraction > 0.01f) 1f else 0f
         }
+    }
 
     val appBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors()
 
@@ -383,7 +389,7 @@ private fun RootGroupAppBar(
             Surface(color = appBarContainerColor) {
                 HomeWarningList(
                     modifier = Modifier.padding(bottom = 8.dp),
-                    warnings = (state as? KeyMapAppBarState.RootGroup)?.warnings ?: emptyList(),
+                    warnings = state.warnings,
                     onFixClick = onFixWarningClick,
                 )
             }
@@ -426,6 +432,8 @@ private fun ChildGroupAppBar(
     onRemoveConstraintClick: (String) -> Unit = {},
     onConstraintModeChanged: (ConstraintMode) -> Unit = {},
     onFixConstraintClick: (KMError) -> Unit = {},
+    keyMapsEnabled: SelectedKeyMapsEnabled?,
+    onKeyMapsEnabledChange: (Boolean) -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     // Make custom top app bar because the height can not be set to fix the text field error in.
@@ -483,29 +491,58 @@ private fun ChildGroupAppBar(
 
                 Spacer(Modifier.height(8.dp))
 
-                androidx.compose.animation.AnimatedVisibility(
-                    modifier = Modifier.align(Alignment.End),
-                    visible = constraints.size > 1,
+                Row(
+                    modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row {
-                        RadioButtonText(
-                            text = stringResource(R.string.constraint_mode_and),
-                            isSelected = constraintMode == ConstraintMode.AND,
-                            isEnabled = !isEditingGroupName,
-                            onSelected = {
-                                onConstraintModeChanged(ConstraintMode.AND)
-                            },
-                        )
+                    androidx.compose.animation.AnimatedVisibility(
+                        visible = constraints.size > 1,
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            RadioButtonText(
+                                text = stringResource(R.string.constraint_mode_and),
+                                isSelected = constraintMode == ConstraintMode.AND,
+                                isEnabled = !isEditingGroupName,
+                                onSelected = {
+                                    onConstraintModeChanged(ConstraintMode.AND)
+                                },
+                            )
 
-                        RadioButtonText(
-                            text = stringResource(R.string.constraint_mode_or),
-                            isSelected = constraintMode == ConstraintMode.OR,
-                            isEnabled = !isEditingGroupName,
-                            onSelected = {
-                                onConstraintModeChanged(ConstraintMode.OR)
-                            },
-                        )
+                            RadioButtonText(
+                                text = stringResource(R.string.constraint_mode_or),
+                                isSelected = constraintMode == ConstraintMode.OR,
+                                isEnabled = !isEditingGroupName,
+                                onSelected = {
+                                    onConstraintModeChanged(ConstraintMode.OR)
+                                },
+                            )
+
+                            VerticalDivider(
+                                modifier = Modifier.height(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
                     }
+
+                    Spacer(Modifier.width(16.dp))
+
+                    val text = when (keyMapsEnabled) {
+                        SelectedKeyMapsEnabled.ALL -> stringResource(R.string.home_enabled_key_maps_enabled)
+                        SelectedKeyMapsEnabled.MIXED -> stringResource(R.string.home_enabled_key_maps_mixed)
+                        SelectedKeyMapsEnabled.NONE, null -> stringResource(R.string.home_enabled_key_maps_disabled)
+                    }
+
+                    Switch(
+                        checked = keyMapsEnabled == SelectedKeyMapsEnabled.ALL,
+                        onCheckedChange = onKeyMapsEnabledChange,
+                        enabled = keyMapsEnabled != null,
+                    )
+
+                    Spacer(Modifier.width(16.dp))
+
+                    Text(text = text, style = MaterialTheme.typography.bodyMedium)
+
+                    Spacer(Modifier.width(16.dp))
                 }
             }
         }
@@ -950,7 +987,7 @@ private fun groupSampleList(): List<GroupListItemModel> {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showSystemUi = true)
+@Preview
 @Composable
 private fun KeyMapsChildGroupPreview() {
     val state = KeyMapAppBarState.ChildGroup(
@@ -962,6 +999,7 @@ private fun KeyMapsChildGroupPreview() {
         breadcrumbs = groupSampleList(),
         isEditingGroupName = false,
         isNewGroup = false,
+        keyMapsEnabled = SelectedKeyMapsEnabled.ALL
     )
     KeyMapperTheme {
         KeyMapListAppBar(modifier = Modifier.fillMaxWidth(), state = state)
@@ -969,7 +1007,7 @@ private fun KeyMapsChildGroupPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showSystemUi = true)
+@Preview
 @Composable
 private fun KeyMapsChildGroupDarkPreview() {
     val state = KeyMapAppBarState.ChildGroup(
@@ -981,6 +1019,7 @@ private fun KeyMapsChildGroupDarkPreview() {
         breadcrumbs = emptyList(),
         isEditingGroupName = false,
         isNewGroup = false,
+        keyMapsEnabled = SelectedKeyMapsEnabled.MIXED
     )
     KeyMapperTheme(darkTheme = true) {
         KeyMapListAppBar(modifier = Modifier.fillMaxWidth(), state = state)
@@ -988,7 +1027,7 @@ private fun KeyMapsChildGroupDarkPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showSystemUi = true)
+@Preview
 @Composable
 private fun KeyMapsChildGroupEditingPreview() {
     val focusRequester = FocusRequester()
@@ -1008,12 +1047,13 @@ private fun KeyMapsChildGroupEditingPreview() {
             constraints = emptyList(),
             constraintMode = ConstraintMode.AND,
             parentConstraintCount = 1,
+            keyMapsEnabled = SelectedKeyMapsEnabled.NONE
         )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showSystemUi = true)
+@Preview
 @Composable
 private fun KeyMapsChildGroupEditingDarkPreview() {
     val state = KeyMapAppBarState.ChildGroup(
@@ -1025,6 +1065,7 @@ private fun KeyMapsChildGroupEditingDarkPreview() {
         breadcrumbs = emptyList(),
         isEditingGroupName = true,
         isNewGroup = true,
+        keyMapsEnabled = SelectedKeyMapsEnabled.ALL
     )
 
     val focusRequester = FocusRequester()
@@ -1040,7 +1081,7 @@ private fun KeyMapsChildGroupEditingDarkPreview() {
     }
 }
 
-@Preview(showSystemUi = true)
+@Preview
 @Composable
 private fun KeyMapsChildGroupErrorPreview() {
     val focusRequester = FocusRequester()
@@ -1060,6 +1101,7 @@ private fun KeyMapsChildGroupErrorPreview() {
             constraints = emptyList(),
             constraintMode = ConstraintMode.AND,
             parentConstraintCount = 0,
+            keyMapsEnabled = null
         )
     }
 }
@@ -1145,7 +1187,7 @@ private fun HomeStateWarningsDarkPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showSystemUi = true)
+@Preview
 @Composable
 private fun HomeStateSelectingPreview() {
     val state = KeyMapAppBarState.Selecting(
@@ -1162,7 +1204,7 @@ private fun HomeStateSelectingPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showSystemUi = true)
+@Preview
 @Composable
 private fun HomeStateSelectingDisabledPreview() {
     val state = KeyMapAppBarState.Selecting(

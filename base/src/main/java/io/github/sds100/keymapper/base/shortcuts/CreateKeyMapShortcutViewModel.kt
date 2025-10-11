@@ -152,6 +152,7 @@ class CreateKeyMapShortcutViewModel @Inject constructor(
                 isEditingGroupName = false,
                 isNewGroup = false,
                 parentConstraintCount = keyMapGroup.parents.sumOf { it.constraintState.constraints.size },
+                keyMapsEnabled = null
             )
         }
 

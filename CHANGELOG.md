@@ -10,6 +10,7 @@
 - Shortcuts on the trigger screen that guide you how to set up different types of buttons.
 - #1788 dismiss lockscreen when launching app action from lockscreen
 - Show tips for parallel and sequence triggers, and constraints in the trigger screen
+- #397 enable/disable all key maps in a group
 
 ## Removed
 
