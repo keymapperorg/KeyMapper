@@ -33,25 +33,12 @@ class RoomFloatingButtonRepository @Inject constructor(
 
     override fun update(button: FloatingButtonEntity) {
         coroutineScope.launch(dispatchers.default()) {
-            dao.update(
-                FloatingButtonEntity(
-                    uid = button.uid,
-                    layoutUid = button.layoutUid,
-                    text = button.text,
-                    buttonSize = button.buttonSize,
-                    borderOpacity = button.borderOpacity,
-                    backgroundOpacity = button.backgroundOpacity,
-                    x = button.x,
-                    y = button.y,
-                    orientation = button.orientation,
-                    displayWidth = button.displayWidth,
-                    displayHeight = button.displayHeight,
-                ),
-            )
+            dao.update(button)
         }
     }
 
-    override suspend fun get(uid: String): FloatingButtonEntityWithLayout? = dao.getByUidWithLayout(uid)
+    override suspend fun get(uid: String): FloatingButtonEntityWithLayout? =
+        dao.getByUidWithLayout(uid)
 
     override fun delete(vararg uid: String) {
         coroutineScope.launch(dispatchers.default()) {

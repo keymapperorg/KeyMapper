@@ -6,6 +6,8 @@ Version 4.0! 🎉
 
 Enable/disable all the key maps in a group
 
+Option to show floating buttons on top of keyboard or notification panel
+
 Many other bug fixes and optimisations
 
 See all the changes at http://changelog.keymapper.club.

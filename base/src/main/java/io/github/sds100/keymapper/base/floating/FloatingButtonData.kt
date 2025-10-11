@@ -16,6 +16,8 @@ data class FloatingButtonData(
     val layoutName: String,
     val appearance: FloatingButtonAppearance,
     val location: Location,
+    val showOverStatusBar: Boolean,
+    val showOverInputMethod: Boolean,
 ) {
     /**
      * This stores data about where a draggable overlay is located. It needs extra information
@@ -79,6 +81,8 @@ object FloatingButtonEntityMapper {
                 orientation = ConstantTypeConverters.ORIENTATION_MAP.getKey(entity.orientation)!!,
                 displaySize = SizeKM(entity.displayWidth, entity.displayHeight),
             ),
+            showOverStatusBar = entity.showOverStatusBar ?: false,
+            showOverInputMethod = entity.showOverInputMethod ?: false,
         )
     }
 
@@ -95,6 +99,8 @@ object FloatingButtonEntityMapper {
             orientation = ConstantTypeConverters.ORIENTATION_MAP[button.location.orientation]!!,
             displayWidth = button.location.displaySize.width,
             displayHeight = button.location.displaySize.height,
+            showOverStatusBar = button.showOverStatusBar,
+            showOverInputMethod = button.showOverInputMethod,
         )
     }
 }

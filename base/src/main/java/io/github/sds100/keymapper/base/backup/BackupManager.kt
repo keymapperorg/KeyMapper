@@ -257,6 +257,9 @@ class BackupManagerImpl @Inject constructor(
 
                     // Do nothing. Just added columns to the accessibility node table.
                     JsonMigration(19, 20) { json -> json },
+
+                    // Do nothing. Just added columns to floating button entity.
+                    JsonMigration(20, 21) { json -> json },
                 )
 
                 if (keyMapListJsonArray != null) {
