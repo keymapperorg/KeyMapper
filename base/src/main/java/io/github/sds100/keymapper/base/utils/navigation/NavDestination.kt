@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.base.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.base.constraints.ConstraintData
 import io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.base.system.intents.ConfigIntentResult
+import io.github.sds100.keymapper.base.trigger.TriggerSetupShortcut
 import io.github.sds100.keymapper.system.apps.ActivityInfo
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import kotlinx.serialization.Serializable
@@ -151,6 +152,11 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     data class NewKeyMap(
         val groupUid: String?,
         val floatingButtonToUse: String? = null,
+        /**
+         * The trigger shortcut to immediately launch
+         * when navigating to the screen to create a key map.
+         */
+        val triggerSetupShortcut: TriggerSetupShortcut? = null
     ) : NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_CONFIG_KEY_MAP
     }
@@ -177,8 +183,11 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
         override val id: String = ID_LOG
     }
 
+    /**
+     * This returns a trigger setup shortcut if an advanced trigger is used.
+     */
     @Serializable
-    data object AdvancedTriggers : NavDestination<Unit>(isCompose = true) {
+    data object AdvancedTriggers : NavDestination<TriggerSetupShortcut?>(isCompose = true) {
         override val id: String = ID_ADVANCED_TRIGGERS
     }
 }

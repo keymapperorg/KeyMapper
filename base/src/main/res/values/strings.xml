@@ -1218,7 +1218,7 @@
     <string name="learn_more_button">Learn more</string>
 
     <string name="on_screen_floating_buttons_title">On-screen floating buttons</string>
-    <string name="on_screen_floating_buttons_description">Make instant shortcuts and macros in any app, game or on your lock screen.</string>
+    <string name="on_screen_floating_buttons_description">Not enough buttons? Make instant shortcuts and macros in any app, game or on your lock screen!</string>
     <string name="feature_use_in_games">Use in games</string>
     <string name="feature_use_on_lock_screen">Use on lock screen</string>
 
@@ -1261,7 +1261,7 @@
     <string name="purchasing_contact_email" translatable="false">contact@keymapper.club</string>
     <string name="customer_email_subject" translatable="false">Key Mapper Pro query</string>
     <string name="customer_email_body" translatable="false">Please fill the following information so I can help you.\n\n1. Device model:\n2. Android version:\n3. Key maps (make a back up in the home screen menu):\n4. Screenshot of Key Mapper home screen:\n5. Describe the problem you are having:</string>
-    <string name="purchase_thank_you_title">Thank you for supporting the app\u00A0❤️!</string>
+    <string name="purchase_thank_you_title">Thank you for supporting the app!</string>
     <string name="purchase_thank_you_message">Your purchase was successful. As a paying user of Key\u00A0Mapper you will receive priority support to help you use the app. There is now a button in the shop to contact the developer.</string>
     <string name="purchasing_not_implemented_bottom_sheet_text">The advanced triggers are paid feature but you downloaded the FOSS build of Key Mapper that does not include this closed source module or Google Play billing. Please download Key Mapper from Google Play to get access to this feature.</string>
     <string name="purchasing_download_key_mapper_from_google_play">Download Play build</string>
@@ -1539,7 +1539,7 @@
     <string name="summary_pref_pro_mode_auto_start_at_boot">PRO Mode will start itself whenever you turn on or restart your device</string>
 
     <string name="title_pref_key_event_actions_use_system_bridge">Key event actions</string>
-    <string name="summary_pref_key_event_actions_use_system_bridge">Select how key event actions are run</string>
+    <string name="summary_pref_key_event_actions_use_system_bridge">Select how key event actions are performed</string>
 
     <string name="pro_mode_emergency_tip_title">Emergency tip</string>
     <string name="pro_mode_emergency_tip_text">If your power button stops working, hold down the power button for 10 seconds and release to disable PRO Mode.</string>

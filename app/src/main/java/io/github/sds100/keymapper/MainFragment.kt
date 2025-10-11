@@ -154,6 +154,7 @@ class MainFragment : Fragment() {
 
             backStackEntry.handleRouteArgs<NavDestination.NewKeyMap> { args ->
                 keyMapViewModel.loadNewKeyMap(groupUid = args.groupUid)
+                args.triggerSetupShortcut?.let { triggerViewModel.showTriggerSetup(it) }
             }
 
             ConfigKeyMapScreen(

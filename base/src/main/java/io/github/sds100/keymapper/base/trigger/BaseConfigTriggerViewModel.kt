@@ -158,9 +158,17 @@ abstract class BaseConfigTriggerViewModel(
 
     fun onAdvancedTriggersClick() {
         onboarding.viewedAdvancedTriggers()
+
         viewModelScope.launch {
-            navigate("advanced_triggers_click", NavDestination.AdvancedTriggers)
+            navigateToAdvancedTriggers("advanced_triggers_click")
         }
+    }
+
+    suspend fun navigateToAdvancedTriggers(navKey: String) {
+        val result: TriggerSetupShortcut =
+            navigate(navKey, NavDestination.AdvancedTriggers) ?: return
+
+        showTriggerSetup(result)
     }
 
     private fun buildUiState(
@@ -461,7 +469,7 @@ abstract class BaseConfigTriggerViewModel(
 
                 is RecordTriggerState.Completed,
                 RecordTriggerState.Idle,
-                -> recordTrigger.startRecording(enableEvdevRecording = false)
+                    -> recordTrigger.startRecording(enableEvdevRecording = false)
             }
 
             // Show dialog if the accessibility service is disabled or crashed

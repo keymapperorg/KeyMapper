@@ -130,13 +130,13 @@ class NavigationProviderImpl @Inject constructor() : NavigationProvider {
     }
 
     /**
-     * @param data The data in String or JSON format to return.
+     * @param jsonData The data in String or JSON format to return.
      */
-    override suspend fun popBackStackWithResult(data: String) {
+    override suspend fun popBackStackWithResult(jsonData: String) {
         _onReturnResult.subscriptionCount.first { it > 0 }
 
         Timber.d("Navigation: Popping back stack with result")
-        _onReturnResult.emit(data)
+        _onReturnResult.emit(jsonData)
     }
 }
 
@@ -152,7 +152,7 @@ interface NavigationProvider {
     val onReturnResult: StateFlow<String?>
     fun handledReturnResult()
 
-    suspend fun popBackStackWithResult(data: String)
+    suspend fun popBackStackWithResult(jsonData: String)
     suspend fun popBackStack()
 }
 

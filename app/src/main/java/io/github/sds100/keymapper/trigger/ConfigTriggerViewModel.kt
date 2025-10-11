@@ -12,9 +12,7 @@ import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCase
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.base.trigger.TriggerSetupDelegate
 import io.github.sds100.keymapper.base.trigger.TriggerSetupShortcut
-import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
-import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import kotlinx.coroutines.launch
@@ -53,7 +51,7 @@ class ConfigTriggerViewModel @Inject constructor(
     override fun showTriggerSetup(shortcut: TriggerSetupShortcut) {
         when (shortcut) {
             TriggerSetupShortcut.ASSISTANT -> viewModelScope.launch {
-                navigate("purchase_assistant_trigger", NavDestination.AdvancedTriggers)
+                navigateToAdvancedTriggers("purchase_assistant_trigger")
             }
 
             else -> super.showTriggerSetup(shortcut)
