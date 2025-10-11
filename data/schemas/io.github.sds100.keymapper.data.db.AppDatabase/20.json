@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 20,
-    "identityHash": "924d05910c30626072186db67e664837",
+    "identityHash": "f2f5eac59b7bdee472c0dd7ff9bae4b2",
     "entities": [
       {
         "tableName": "keymaps",
@@ -220,7 +220,7 @@
       },
       {
         "tableName": "floating_buttons",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `layout_uid` TEXT NOT NULL, `text` TEXT NOT NULL, `button_size` INTEGER NOT NULL, `x` INTEGER NOT NULL, `y` INTEGER NOT NULL, `orientation` TEXT NOT NULL, `display_width` INTEGER NOT NULL, `display_height` INTEGER NOT NULL, `border_opacity` REAL, `background_opacity` REAL, `show_over_status_bar` INTEGER NOT NULL DEFAULT 0, `show_over_input_method` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`uid`), FOREIGN KEY(`layout_uid`) REFERENCES `floating_layouts`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `layout_uid` TEXT NOT NULL, `text` TEXT NOT NULL, `button_size` INTEGER NOT NULL, `x` INTEGER NOT NULL, `y` INTEGER NOT NULL, `orientation` TEXT NOT NULL, `display_width` INTEGER NOT NULL, `display_height` INTEGER NOT NULL, `border_opacity` REAL, `background_opacity` REAL, PRIMARY KEY(`uid`), FOREIGN KEY(`layout_uid`) REFERENCES `floating_layouts`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "uid",
@@ -285,20 +285,6 @@
             "fieldPath": "backgroundOpacity",
             "columnName": "background_opacity",
             "affinity": "REAL"
-          },
-          {
-            "fieldPath": "showOverStatusBar",
-            "columnName": "show_over_status_bar",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
-          },
-          {
-            "fieldPath": "showOverInputMethod",
-            "columnName": "show_over_input_method",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
           }
         ],
         "primaryKey": {
@@ -468,7 +454,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '924d05910c30626072186db67e664837')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f2f5eac59b7bdee472c0dd7ff9bae4b2')"
     ]
   }
 }

@@ -87,11 +87,11 @@ data class FloatingButtonEntity(
 
     @ColumnInfo(name = KEY_SHOW_OVER_STATUS_BAR)
     @SerializedName(NAME_SHOW_OVER_STATUS_BAR)
-    val showOverStatusBar: Boolean? = false,
+    val showOverStatusBar: Boolean?,
 
     @ColumnInfo(name = KEY_SHOW_OVER_INPUT_METHOD)
     @SerializedName(NAME_SHOW_OVER_INPUT_METHOD)
-    val showOverInputMethod: Boolean? = false,
+    val showOverInputMethod: Boolean?,
 
     ) : Parcelable {
     companion object {
