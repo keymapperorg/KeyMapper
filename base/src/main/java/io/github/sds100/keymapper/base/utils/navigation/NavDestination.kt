@@ -156,7 +156,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
          * The trigger shortcut to immediately launch
          * when navigating to the screen to create a key map.
          */
-        val triggerSetupShortcut: TriggerSetupShortcut? = null
+        val triggerSetupShortcut: TriggerSetupShortcut? = null,
     ) : NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_CONFIG_KEY_MAP
     }

@@ -70,7 +70,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
     private val buildConfigProvider: BuildConfigProvider,
     private val navigationProvider: NavigationProvider,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
-    private val evdevHandleCache: EvdevHandleCache
+    private val evdevHandleCache: EvdevHandleCache,
 ) : DisplayKeyMapUseCase,
     GetActionErrorUseCase by getActionErrorUseCase,
     GetConstraintErrorUseCase by getConstraintErrorUseCase {
@@ -125,12 +125,12 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
     override val triggerErrorSnapshot: Flow<TriggerErrorSnapshot> = combine(
         merge(
             permissionAdapter.onPermissionsUpdate.onStart { emit(Unit) },
-            inputMethodAdapter.chosenIme
+            inputMethodAdapter.chosenIme,
         ),
         purchasesFlow,
         showDpadImeSetupError,
         systemBridgeConnectionState,
-        evdevDevices
+        evdevDevices,
     ) { _, purchases, showDpadImeSetupError, systemBridgeConnectionState, evdevDevices ->
         TriggerErrorSnapshot(
             isKeyMapperImeChosen = keyMapperImeHelper.isCompatibleImeChosen(),
@@ -139,7 +139,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
             purchases = purchases.dataOrNull() ?: Success(emptySet()),
             showDpadImeSetupError = showDpadImeSetupError,
             isSystemBridgeConnected = systemBridgeConnectionState is SystemBridgeConnectionState.Connected,
-            evdevDevices = evdevDevices
+            evdevDevices = evdevDevices,
         )
     }
 

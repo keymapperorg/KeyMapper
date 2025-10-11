@@ -28,7 +28,7 @@ data class TriggerErrorSnapshot(
     /**
      * Can be null if the sdk version is not high enough.
      */
-    val evdevDevices: List<EvdevDeviceInfo>?
+    val evdevDevices: List<EvdevDeviceInfo>?,
 ) {
     companion object {
         private val keysThatRequireDndAccess = arrayOf(

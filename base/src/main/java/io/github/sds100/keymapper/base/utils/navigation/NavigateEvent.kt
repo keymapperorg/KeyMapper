@@ -5,5 +5,5 @@ import androidx.navigation.NavOptions
 data class NavigateEvent(
     val key: String,
     val destination: NavDestination<*>,
-    val navOptions: NavOptions? = null
+    val navOptions: NavOptions? = null,
 )

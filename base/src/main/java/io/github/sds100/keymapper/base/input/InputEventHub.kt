@@ -49,7 +49,7 @@ class InputEventHubImpl @Inject constructor(
     private val systemBridgeConnManager: SystemBridgeConnectionManager,
     private val imeInputEventInjector: ImeInputEventInjector,
     private val preferenceRepository: PreferenceRepository,
-    private val evdevHandlesCache: EvdevHandleCache
+    private val evdevHandlesCache: EvdevHandleCache,
 ) : InputEventHub, IEvdevCallback.Stub() {
 
     companion object {

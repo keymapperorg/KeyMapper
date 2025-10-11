@@ -435,7 +435,7 @@ class KeyMapListViewModel(
                 breadcrumbs = breadcrumbs,
                 isEditingGroupName = isEditingGroupName,
                 isNewGroup = isNewGroup,
-                keyMapsEnabled = selectedKeyMapsEnabled
+                keyMapsEnabled = selectedKeyMapsEnabled,
             )
         }
     }
@@ -532,7 +532,10 @@ class KeyMapListViewModel(
 
                     navigate(
                         "use_advanced_trigger",
-                        NavDestination.NewKeyMap(groupUid = groupUid, triggerSetupShortcut = result)
+                        NavDestination.NewKeyMap(
+                            groupUid = groupUid,
+                            triggerSetupShortcut = result
+                        ),
                     )
                 }
 

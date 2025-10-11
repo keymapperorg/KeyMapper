@@ -137,7 +137,7 @@ fun KeyMapListAppBar(
     onRemoveConstraintClick: (String) -> Unit = {},
     onConstraintModeChanged: (ConstraintMode) -> Unit = {},
     onFixConstraintClick: (KMError) -> Unit = {},
-    onKeyMapsEnabledChange: (Boolean) -> Unit = {}
+    onKeyMapsEnabledChange: (Boolean) -> Unit = {},
 ) {
     BackHandler(onBack = onBackClick)
 
@@ -492,8 +492,9 @@ private fun ChildGroupAppBar(
                 Spacer(Modifier.height(8.dp))
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     androidx.compose.animation.AnimatedVisibility(
                         visible = constraints.size > 1,
@@ -519,7 +520,7 @@ private fun ChildGroupAppBar(
 
                             VerticalDivider(
                                 modifier = Modifier.height(24.dp),
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
                             )
                         }
                     }
@@ -999,7 +1000,7 @@ private fun KeyMapsChildGroupPreview() {
         breadcrumbs = groupSampleList(),
         isEditingGroupName = false,
         isNewGroup = false,
-        keyMapsEnabled = SelectedKeyMapsEnabled.ALL
+        keyMapsEnabled = SelectedKeyMapsEnabled.ALL,
     )
     KeyMapperTheme {
         KeyMapListAppBar(modifier = Modifier.fillMaxWidth(), state = state)
@@ -1019,7 +1020,7 @@ private fun KeyMapsChildGroupDarkPreview() {
         breadcrumbs = emptyList(),
         isEditingGroupName = false,
         isNewGroup = false,
-        keyMapsEnabled = SelectedKeyMapsEnabled.MIXED
+        keyMapsEnabled = SelectedKeyMapsEnabled.MIXED,
     )
     KeyMapperTheme(darkTheme = true) {
         KeyMapListAppBar(modifier = Modifier.fillMaxWidth(), state = state)
@@ -1047,7 +1048,7 @@ private fun KeyMapsChildGroupEditingPreview() {
             constraints = emptyList(),
             constraintMode = ConstraintMode.AND,
             parentConstraintCount = 1,
-            keyMapsEnabled = SelectedKeyMapsEnabled.NONE
+            keyMapsEnabled = SelectedKeyMapsEnabled.NONE,
         )
     }
 }
@@ -1065,7 +1066,7 @@ private fun KeyMapsChildGroupEditingDarkPreview() {
         breadcrumbs = emptyList(),
         isEditingGroupName = true,
         isNewGroup = true,
-        keyMapsEnabled = SelectedKeyMapsEnabled.ALL
+        keyMapsEnabled = SelectedKeyMapsEnabled.ALL,
     )
 
     val focusRequester = FocusRequester()
@@ -1101,7 +1102,7 @@ private fun KeyMapsChildGroupErrorPreview() {
             constraints = emptyList(),
             constraintMode = ConstraintMode.AND,
             parentConstraintCount = 0,
-            keyMapsEnabled = null
+            keyMapsEnabled = null,
         )
     }
 }
