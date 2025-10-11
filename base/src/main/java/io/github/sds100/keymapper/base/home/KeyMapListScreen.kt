@@ -489,6 +489,9 @@ private fun getTriggerErrorMessage(error: TriggerError): String {
         TriggerError.FLOATING_BUTTON_DELETED -> stringResource(R.string.trigger_error_floating_button_deleted)
         TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> stringResource(R.string.trigger_error_floating_buttons_not_purchased)
         TriggerError.PURCHASE_VERIFICATION_FAILED -> stringResource(R.string.trigger_error_product_verification_failed)
+        TriggerError.SYSTEM_BRIDGE_UNSUPPORTED -> stringResource(R.string.trigger_error_system_bridge_unsupported)
+        TriggerError.SYSTEM_BRIDGE_DISCONNECTED -> stringResource(R.string.trigger_error_system_bridge_disconnected)
+        TriggerError.EVDEV_DEVICE_NOT_FOUND -> stringResource(R.string.trigger_error_evdev_device_not_found)
     }
 }
 

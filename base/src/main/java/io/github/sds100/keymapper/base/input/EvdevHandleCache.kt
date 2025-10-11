@@ -11,20 +11,42 @@ import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
-class EvdevHandleCache(
+@Singleton
+class EvdevHandleCache @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val devicesAdapter: DevicesAdapter,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
 ) {
-    private val devicesByPath: MutableMap<String, EvdevDeviceHandle> = ConcurrentHashMap()
+    private val devicesByPath: MutableStateFlow<Map<String, EvdevDeviceHandle>> =
+        MutableStateFlow(emptyMap())
+
+    val devices: StateFlow<List<EvdevDeviceInfo>> =
+        devicesByPath
+            .map { pathMap ->
+                pathMap.values.map { device ->
+                    EvdevDeviceInfo(
+                        name = device.name,
+                        bus = device.bus,
+                        vendor = device.vendor,
+                        product = device.product,
+                    )
+                }
+            }
+            .stateIn(coroutineScope, SharingStarted.Eagerly, emptyList())
 
     init {
         coroutineScope.launch {
@@ -33,7 +55,7 @@ class EvdevHandleCache(
                 systemBridgeConnectionManager.connectionState,
             ) { _, connectionState ->
                 if (connectionState !is SystemBridgeConnectionState.Connected) {
-                    devicesByPath.clear()
+                    devicesByPath.value = emptyMap()
                 } else {
                     invalidate()
                 }
@@ -41,23 +63,12 @@ class EvdevHandleCache(
         }
     }
 
-    fun getDevices(): List<EvdevDeviceInfo> {
-        return devicesByPath.values.map { device ->
-            EvdevDeviceInfo(
-                name = device.name,
-                bus = device.bus,
-                vendor = device.vendor,
-                product = device.product,
-            )
-        }
-    }
-
     fun getByPath(path: String): EvdevDeviceHandle? {
-        return devicesByPath[path]
+        return devicesByPath.value[path]
     }
 
     fun getByInfo(deviceInfo: EvdevDeviceInfo): EvdevDeviceHandle? {
-        return devicesByPath.values.firstOrNull {
+        return devicesByPath.value.values.firstOrNull {
             it.name == deviceInfo.name &&
                 it.bus == deviceInfo.bus &&
                 it.vendor == deviceInfo.vendor &&
@@ -73,7 +84,6 @@ class EvdevHandleCache(
             Timber.e("Failed to get evdev input devices from system bridge $error")
         }.valueIfFailure { emptyMap() }
 
-        devicesByPath.clear()
-        devicesByPath.putAll(newDevices)
+        devicesByPath.value = newDevices
     }
 }

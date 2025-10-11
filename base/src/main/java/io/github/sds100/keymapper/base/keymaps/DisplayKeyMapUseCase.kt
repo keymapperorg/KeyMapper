@@ -1,13 +1,15 @@
 package io.github.sds100.keymapper.base.keymaps
 
 import android.graphics.drawable.Drawable
+import android.os.Build
 import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.base.actions.DisplayActionUseCase
 import io.github.sds100.keymapper.base.actions.GetActionErrorUseCase
 import io.github.sds100.keymapper.base.constraints.DisplayConstraintUseCase
 import io.github.sds100.keymapper.base.constraints.GetConstraintErrorUseCase
+import io.github.sds100.keymapper.base.input.EvdevHandleCache
 import io.github.sds100.keymapper.base.purchasing.ProductId
-import io.github.sds100.keymapper.base.purchasing.PurchasingError
+import io.github.sds100.keymapper.base.purchasing.PurchasingError.ProductNotPurchased
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
@@ -17,6 +19,7 @@ import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
@@ -27,8 +30,11 @@ import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.common.utils.valueIfFailure
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
-import io.github.sds100.keymapper.system.SystemError
+import io.github.sds100.keymapper.system.SystemError.ImeDisabled
+import io.github.sds100.keymapper.system.SystemError.PermissionDenied
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
@@ -42,7 +48,9 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
@@ -61,6 +69,8 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
     private val getConstraintErrorUseCase: GetConstraintErrorUseCase,
     private val buildConfigProvider: BuildConfigProvider,
     private val navigationProvider: NavigationProvider,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
+    private val evdevHandleCache: EvdevHandleCache
 ) : DisplayKeyMapUseCase,
     GetActionErrorUseCase by getActionErrorUseCase,
     GetConstraintErrorUseCase by getConstraintErrorUseCase {
@@ -94,22 +104,42 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
         purchasingManager.purchases.collect(this::send)
     }
 
+    private val systemBridgeConnectionState: Flow<SystemBridgeConnectionState?> =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            systemBridgeConnectionManager.connectionState
+        } else {
+            flowOf(null)
+        }
+
+    private val evdevDevices: Flow<List<EvdevDeviceInfo>?> =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            evdevHandleCache.devices
+        } else {
+            flowOf(null)
+        }
+
     /**
      * Cache the data required for checking errors to reduce the latency of repeatedly checking
      * the errors.
      */
     override val triggerErrorSnapshot: Flow<TriggerErrorSnapshot> = combine(
-        permissionAdapter.onPermissionsUpdate.onStart { emit(Unit) },
+        merge(
+            permissionAdapter.onPermissionsUpdate.onStart { emit(Unit) },
+            inputMethodAdapter.chosenIme
+        ),
         purchasesFlow,
-        inputMethodAdapter.chosenIme,
         showDpadImeSetupError,
-    ) { _, purchases, _, showDpadImeSetupError ->
+        systemBridgeConnectionState,
+        evdevDevices
+    ) { _, purchases, showDpadImeSetupError, systemBridgeConnectionState, evdevDevices ->
         TriggerErrorSnapshot(
             isKeyMapperImeChosen = keyMapperImeHelper.isCompatibleImeChosen(),
             isDndAccessGranted = permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY),
             isRootGranted = permissionAdapter.isGranted(Permission.ROOT),
             purchases = purchases.dataOrNull() ?: Success(emptySet()),
             showDpadImeSetupError = showDpadImeSetupError,
+            isSystemBridgeConnected = systemBridgeConnectionState is SystemBridgeConnectionState.Connected,
+            evdevDevices = evdevDevices
         )
     }
 
@@ -126,24 +156,25 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
 
     override suspend fun fixTriggerError(error: TriggerError) {
         when (error) {
-            TriggerError.DND_ACCESS_DENIED -> fixError(SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY))
+            TriggerError.DND_ACCESS_DENIED -> fixError(PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY))
 
             TriggerError.CANT_DETECT_IN_PHONE_CALL -> fixError(KMError.CantDetectKeyEventsInPhoneCall)
             TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> fixError(
-                PurchasingError.ProductNotPurchased(
+                ProductNotPurchased(
                     ProductId.ASSISTANT_TRIGGER,
                 ),
             )
 
             TriggerError.DPAD_IME_NOT_SELECTED -> fixError(KMError.DpadTriggerImeNotSelected)
-            TriggerError.FLOATING_BUTTON_DELETED -> {}
             TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> fixError(
-                PurchasingError.ProductNotPurchased(
+                ProductNotPurchased(
                     ProductId.FLOATING_BUTTONS,
                 ),
             )
 
             TriggerError.PURCHASE_VERIFICATION_FAILED -> purchasingManager.refresh()
+            TriggerError.SYSTEM_BRIDGE_DISCONNECTED -> fixError(SystemBridgeError.Disconnected)
+            TriggerError.EVDEV_DEVICE_NOT_FOUND, TriggerError.FLOATING_BUTTON_DELETED, TriggerError.SYSTEM_BRIDGE_UNSUPPORTED -> {}
         }
     }
 
@@ -166,8 +197,8 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
                 }
 
             KMError.NoCompatibleImeEnabled -> keyMapperImeHelper.enableCompatibleInputMethods()
-            is SystemError.ImeDisabled -> switchImeInterface.enableIme(error.ime.id)
-            is SystemError.PermissionDenied -> permissionAdapter.request(error.permission)
+            is ImeDisabled -> switchImeInterface.enableIme(error.ime.id)
+            is PermissionDenied -> permissionAdapter.request(error.permission)
             is KMError.ShizukuNotStarted -> packageManagerAdapter.openApp(ShizukuUtils.SHIZUKU_PACKAGE)
             is KMError.CantDetectKeyEventsInPhoneCall -> {
                 if (!keyMapperImeHelper.isCompatibleImeEnabled()) {

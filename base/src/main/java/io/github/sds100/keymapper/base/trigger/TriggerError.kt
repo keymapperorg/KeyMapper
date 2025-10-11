@@ -18,4 +18,10 @@ enum class TriggerError(val isFixable: Boolean) {
     FLOATING_BUTTONS_NOT_PURCHASED(isFixable = true),
 
     PURCHASE_VERIFICATION_FAILED(isFixable = true),
+
+    SYSTEM_BRIDGE_UNSUPPORTED(isFixable = false),
+
+    SYSTEM_BRIDGE_DISCONNECTED(isFixable = true),
+
+    EVDEV_DEVICE_NOT_FOUND(isFixable = false)
 }

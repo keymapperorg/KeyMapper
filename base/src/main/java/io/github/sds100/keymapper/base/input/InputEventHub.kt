@@ -20,7 +20,6 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.IEvdevCallback
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
-import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
@@ -50,7 +49,7 @@ class InputEventHubImpl @Inject constructor(
     private val systemBridgeConnManager: SystemBridgeConnectionManager,
     private val imeInputEventInjector: ImeInputEventInjector,
     private val preferenceRepository: PreferenceRepository,
-    private val devicesAdapter: DevicesAdapter,
+    private val evdevHandlesCache: EvdevHandleCache
 ) : InputEventHub, IEvdevCallback.Stub() {
 
     companion object {
@@ -61,13 +60,6 @@ class InputEventHubImpl @Inject constructor(
 
     // Event queue for processing key events asynchronously in order
     private val keyEventQueue = Channel<InjectKeyEventModel>(capacity = 100)
-
-    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
-    private val evdevHandlesCache: EvdevHandleCache = EvdevHandleCache(
-        coroutineScope,
-        devicesAdapter,
-        systemBridgeConnManager,
-    )
 
     private val logInputEventsEnabled: StateFlow<Boolean> =
         preferenceRepository.get(Keys.log).map { isLogEnabled ->
@@ -268,7 +260,7 @@ class InputEventHubImpl @Inject constructor(
             throw IllegalArgumentException("This client $clientId is not registered when trying to grab devices!")
         }
 
-        val devices = evdevHandlesCache.getDevices().toSet()
+        val devices = evdevHandlesCache.devices.value.toSet()
         clients[clientId] = clients[clientId]!!.copy(grabbedEvdevDevices = devices)
 
         invalidateGrabbedDevicesChannel.trySend(Unit)

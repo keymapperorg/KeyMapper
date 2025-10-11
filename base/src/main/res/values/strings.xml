@@ -77,6 +77,9 @@
     <string name="trigger_error_gesture_stroke_count_too_high">Too many fingers to perform gesture due to android limitations.</string>
     <string name="trigger_error_gesture_duration_too_high">Gesture duration is too high due to android limitations.</string>
     <string name="trigger_error_dpad_ime_not_selected">You must be using the Key Mapper Input Method for DPAD triggers to work!</string>
+    <string name="trigger_error_system_bridge_unsupported">PRO mode is unsupported on this Android version</string>
+    <string name="trigger_error_system_bridge_disconnected">PRO mode not started!</string>
+    <string name="trigger_error_evdev_device_not_found">Trigger device not connected!</string>
 
     <string name="home_error_is_battery_optimised">Your key maps will stop working randomly!</string>
     <string name="home_error_key_maps_paused">Your key maps are paused!</string>

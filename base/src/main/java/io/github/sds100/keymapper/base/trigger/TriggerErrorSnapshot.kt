@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.requiresImeKeyEventForwardingInPhoneCall
 import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingError
+import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
@@ -20,6 +21,14 @@ data class TriggerErrorSnapshot(
     val isRootGranted: Boolean,
     val purchases: KMResult<Set<ProductId>>,
     val showDpadImeSetupError: Boolean,
+    /**
+     * Can be null if the sdk version is not high enough.
+     */
+    val isSystemBridgeConnected: Boolean?,
+    /**
+     * Can be null if the sdk version is not high enough.
+     */
+    val evdevDevices: List<EvdevDeviceInfo>?
 ) {
     companion object {
         private val keysThatRequireDndAccess = arrayOf(
@@ -67,6 +76,20 @@ data class TriggerErrorSnapshot(
 
         if (showDpadImeSetupError && !isKeyMapperImeChosen && containsDpadKey) {
             return TriggerError.DPAD_IME_NOT_SELECTED
+        }
+
+        if (key is EvdevTriggerKey) {
+            if (isSystemBridgeConnected == null) {
+                return TriggerError.SYSTEM_BRIDGE_UNSUPPORTED
+            }
+
+            if (!isSystemBridgeConnected) {
+                return TriggerError.SYSTEM_BRIDGE_DISCONNECTED
+            }
+
+            if (evdevDevices != null && !evdevDevices.contains(key.device)) {
+                return TriggerError.EVDEV_DEVICE_NOT_FOUND
+            }
         }
 
         return null
