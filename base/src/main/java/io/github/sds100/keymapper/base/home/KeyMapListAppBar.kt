@@ -349,13 +349,13 @@ private fun RootGroupAppBar(
 ) {
     // This is taken from the AppBar color code.
     val colorTransitionFraction by
-    remember(scrollBehavior) {
-        // derivedStateOf to prevent redundant recompositions when the content scrolls.
-        derivedStateOf {
-            val overlappingFraction = scrollBehavior.state.overlappedFraction
-            if (overlappingFraction > 0.01f) 1f else 0f
+        remember(scrollBehavior) {
+            // derivedStateOf to prevent redundant recompositions when the content scrolls.
+            derivedStateOf {
+                val overlappingFraction = scrollBehavior.state.overlappedFraction
+                if (overlappingFraction > 0.01f) 1f else 0f
+            }
         }
-    }
 
     val appBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors()
 

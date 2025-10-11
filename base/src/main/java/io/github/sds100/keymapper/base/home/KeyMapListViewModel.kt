@@ -534,7 +534,7 @@ class KeyMapListViewModel(
                         "use_advanced_trigger",
                         NavDestination.NewKeyMap(
                             groupUid = groupUid,
-                            triggerSetupShortcut = result
+                            triggerSetupShortcut = result,
                         ),
                     )
                 }

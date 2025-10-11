@@ -93,7 +93,7 @@ data class FloatingButtonEntity(
     @SerializedName(NAME_SHOW_OVER_INPUT_METHOD)
     val showOverInputMethod: Boolean?,
 
-    ) : Parcelable {
+) : Parcelable {
     companion object {
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_UID = "uid"
