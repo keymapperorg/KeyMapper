@@ -56,15 +56,15 @@ fun AdvancedTriggersScreenFoss(
                     IconButton(onClick = onBack) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.bottom_app_bar_back_content_description)
+                            contentDescription = stringResource(R.string.bottom_app_bar_back_content_description),
                         )
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                ),
             )
-        }
+        },
     ) { contentPadding ->
         Column(
             modifier = Modifier

@@ -1016,7 +1016,7 @@ Deixe em branco se alguma rede Wi-Fi precisar ser correspondida.</string>
     <string name="trigger_error_product_verification_failed">A compra não pode ser verificada. Você tem conexão com a internet?</string>
     <!--  Purchasing  -->
     <string name="unlock_product_button">Desbloquear (%s)</string>
-    <string name="use_product_button">Usar</string>
+    <string name="purchased_product_button">Usar</string>
     <string name="loading_product_button">Carregando…</string>
     <string name="purchased_product_label">Comprado!</string>
     <string name="retry_loading_price_button">Tentar buscar o preço novamente</string>

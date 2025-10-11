@@ -240,7 +240,7 @@ fun SetupNavigation(
             ?.savedStateHandle
             ?.set("request_key", navEvent.key)
 
-        navController.navigate(navEvent.destination)
+        navController.navigate(navEvent.destination, navOptions = navEvent.navOptions)
 
         navigationProvider.handledNavigateRequest()
     }

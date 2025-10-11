@@ -1018,7 +1018,7 @@ Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="trigger_error_product_verification_failed">Satın alma doğrulanamıyor. İnternet bağlantınız var mı?</string>
     <!--  Purchasing  -->
     <string name="unlock_product_button">Kilidi aç (%s)</string>
-    <string name="use_product_button">Kullan</string>
+    <string name="purchased_product_button">Kullan</string>
     <string name="loading_product_button">Yükleniyor…</string>
     <string name="purchased_product_label">Satın alındı!</string>
     <string name="retry_loading_price_button">Fiyatı tekrar almayı dene</string>
