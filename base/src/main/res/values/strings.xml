@@ -1703,7 +1703,8 @@
     <string name="fix_key_event_action_text">There are extra steps to use this action. Select which method you want to use:</string>
     <string name="fix_key_event_action_input_method_title">Key Mapper input method</string>
     <string name="fix_key_event_action_input_method_text">No on-screen keyboard</string>
-    <string name="fix_key_event_action_pro_mode_text">Can use your normal on-screen keyboard at all times</string>
+    <string name="fix_key_event_action_pro_mode_text_1">Can use your normal on-screen keyboard at all times</string>
+    <string name="fix_key_event_action_pro_mode_text_2">Better compatibility with apps and games</string>
     <string name="fix_key_event_action_enable_input_method_button">Enable Key Mapper input method</string>
     <string name="fix_key_event_action_use_input_method_button">Use Key Mapper input method</string>
     <string name="fix_key_event_action_auto_switch_ime_text">Automatically switch to normal on-screen keyboard when typing</string>

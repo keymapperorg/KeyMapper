@@ -156,7 +156,11 @@ fun FixKeyEventActionBottomSheet(
                         val annotatedText = buildAnnotatedString {
                             appendInlineContent("icon", "[icon]")
                             append(" ")
-                            append(stringResource(R.string.fix_key_event_action_pro_mode_text))
+                            append(stringResource(R.string.fix_key_event_action_pro_mode_text_1))
+                            appendLine()
+                            appendInlineContent("icon", "[icon]")
+                            append(" ")
+                            append(stringResource(R.string.fix_key_event_action_pro_mode_text_2))
                         }
                         val inlineContent = mapOf(
                             Pair(
