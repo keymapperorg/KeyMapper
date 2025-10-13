@@ -2,7 +2,7 @@ Version 4.0! 🎉
 
 📲 You can now remap buttons when the screen is off for FREE using PRO mode!
 
-⏻ Remap your power button and more
+Remap your power button and more
 
 Enable/disable all the key maps in a group
 
