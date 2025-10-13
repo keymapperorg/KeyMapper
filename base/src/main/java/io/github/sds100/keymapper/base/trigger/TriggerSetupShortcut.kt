@@ -1,5 +1,8 @@
 package io.github.sds100.keymapper.base.trigger
 
+import androidx.annotation.Keep
+
+@Keep
 enum class TriggerSetupShortcut {
     VOLUME,
     ASSISTANT,
