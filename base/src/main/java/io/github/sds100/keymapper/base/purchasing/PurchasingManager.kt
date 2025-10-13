@@ -10,6 +10,7 @@ interface PurchasingManager {
     val purchases: Flow<State<KMResult<Set<ProductId>>>>
     suspend fun launchPurchasingFlow(product: ProductId): KMResult<Unit>
     suspend fun getProductPrice(product: ProductId): KMResult<String>
+    suspend fun getMetadata(): KMResult<Map<String, Any>>
     suspend fun isPurchased(product: ProductId): KMResult<Boolean>
     fun refresh()
 }

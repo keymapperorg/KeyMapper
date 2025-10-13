@@ -26,5 +26,9 @@ class PurchasingManagerImpl : PurchasingManager {
         return PurchasingError.PurchasingNotImplemented
     }
 
+    override suspend fun getMetadata(): KMResult<Map<String, Any>> {
+        return PurchasingError.PurchasingNotImplemented
+    }
+
     override fun refresh() {}
 }
