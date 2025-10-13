@@ -338,6 +338,7 @@
     <string name="url_floating_button_config_guide" translatable="false">https://docs.keymapper.club/redirects/floating-button-config</string>
 
     <string name="url_github_create_issue_bug" translatable="false">https://github.com/keymapperorg/KeyMapper/issues/new/choose</string>
+    <string name="url_youtube_video" translatable="false">https://youtube.com/shorts/v7l2JYP14L0?feature=share</string>
     <!-- URLs -->
 
     <!-- Activity titles -->
