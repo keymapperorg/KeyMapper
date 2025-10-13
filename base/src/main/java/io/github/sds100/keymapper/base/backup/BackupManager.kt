@@ -158,9 +158,7 @@ class BackupManagerImpl @Inject constructor(
 
             val keyMapsToBackup = allKeyMaps.data.filter { keyMapIds.contains(it.uid) }
 
-            backupAsync(output, keyMapsToBackup)
-
-            Success(Unit)
+            backupAsync(output, keyMapsToBackup).then { Success(Unit) }
         }
     }
 
@@ -177,9 +175,7 @@ class BackupManagerImpl @Inject constructor(
                 .filterIsInstance<State.Data<List<FloatingLayoutEntityWithButtons>>>()
                 .first()
 
-            backupAsync(output, keyMaps.data, groups, layouts.data)
-
-            Success(Unit)
+            backupAsync(output, keyMaps.data, groups, layouts.data).then { Success(Unit) }
         }
     }
 
@@ -571,7 +567,7 @@ class BackupManagerImpl @Inject constructor(
         } catch (e: NoSuchElementException) {
             return KMError.CorruptJsonFile(e.message ?: "")
         } catch (e: Exception) {
-            Timber.e(e)
+            Timber.e("Restore error: $e")
 
             return KMError.Exception(e)
         }
@@ -745,7 +741,7 @@ class BackupManagerImpl @Inject constructor(
                 return@withContext fileAdapter.createZipFile(output, filesToBackup)
                     .then { Success(output) }
             } catch (e: Exception) {
-                Timber.e(e)
+                Timber.e("Backup error: $e")
 
                 return@withContext KMError.Exception(e)
             }

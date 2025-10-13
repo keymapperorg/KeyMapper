@@ -10,6 +10,8 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import com.anggrayudi.storage.file.toDocumentFile
+import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
@@ -19,8 +21,6 @@ import net.lingala.zip4j.ZipFile
 import java.io.File
 import java.io.InputStream
 import java.util.UUID
-import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.sds100.keymapper.common.BuildConfigProvider
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -80,7 +80,8 @@ class AndroidFileAdapter @Inject constructor(
         }
     }
 
-    override fun getPicturesFolder(): String = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).path
+    override fun getPicturesFolder(): String =
+        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).path
 
     override fun createZipFile(destination: IFile, files: Set<IFile>): KMResult<*> {
         val zipUid = UUID.randomUUID().toString()
@@ -104,6 +105,8 @@ class AndroidFileAdapter @Inject constructor(
                     input.copyTo(output)
                 }
             }
+        } catch (e: Exception) {
+            return KMError.Exception(e)
         } finally {
             tempZipFile.delete()
         }
@@ -124,6 +127,8 @@ class AndroidFileAdapter @Inject constructor(
                 }
 
                 ZipFile(tempZipFileCopy).extractAll(destination.path)
+            } catch (e: Exception) {
+                return@withContext KMError.Exception(e)
             } finally {
                 tempZipFileCopy.delete()
             }
