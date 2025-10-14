@@ -101,13 +101,13 @@ class InputEventHubImpl @Inject constructor(
     }
 
     /**
-     * Starts a coroutine that processes key events from the queue in order on the IO thread.=
+     * Starts a coroutine that processes key events from the queue in order on the IO thread.
      **/
     private fun startKeyEventProcessingLoop() {
         coroutineScope.launch(Dispatchers.IO) {
             for (event in keyEventQueue) {
                 try {
-                    injectKeyEvent(event)
+                    injectKeyEvent(event, useSystemBridgeIfAvailable = true)
                 } catch (e: Exception) {
                     Timber.e(e, "Error processing key event: $event")
                 }
@@ -312,11 +312,14 @@ class InputEventHubImpl @Inject constructor(
         }
     }
 
-    override suspend fun injectKeyEvent(event: InjectKeyEventModel): KMResult<Unit> {
+    override suspend fun injectKeyEvent(
+        event: InjectKeyEventModel,
+        useSystemBridgeIfAvailable: Boolean
+    ): KMResult<Unit> {
         val isSysBridgeConnected = Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API &&
             systemBridgeConnManager.connectionState.value is SystemBridgeConnectionState.Connected
 
-        if (isSysBridgeConnected) {
+        if (isSysBridgeConnected && useSystemBridgeIfAvailable) {
             val androidKeyEvent = event.toAndroidKeyEvent(flags = KeyEvent.FLAG_FROM_SYSTEM)
 
             if (logInputEventsEnabled.value) {
@@ -392,9 +395,12 @@ interface InputEventHub {
      * Inject a key event. This may either use the key event relay service or the system
      * bridge depending on the permissions granted to Key Mapper.
      *
-     * Must be suspend so injecting to the systembridge can happen on another thread.
+     * Must be suspend so injecting to the system bridge can happen on another thread.
      */
-    suspend fun injectKeyEvent(event: InjectKeyEventModel): KMResult<Unit>
+    suspend fun injectKeyEvent(
+        event: InjectKeyEventModel,
+        useSystemBridgeIfAvailable: Boolean
+    ): KMResult<Unit>
 
     /**
      * Some callers don't care about the result from injecting and it isn't critical

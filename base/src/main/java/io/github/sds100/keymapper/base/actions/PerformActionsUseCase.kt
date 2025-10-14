@@ -71,13 +71,19 @@ import io.github.sds100.keymapper.system.url.OpenUrlAdapter
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.system.volume.VolumeStream
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import timber.log.Timber
 
 class PerformActionsUseCaseImpl @AssistedInject constructor(
+    @Assisted
+    private val coroutineScope: CoroutineScope,
     @Assisted
     private val service: IAccessibilityService,
     private val inputMethodAdapter: InputMethodAdapter,
@@ -115,6 +121,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         fun create(
+            coroutineScope: CoroutineScope,
             accessibilityService: IAccessibilityService,
         ): PerformActionsUseCaseImpl
     }
@@ -125,6 +132,11 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             inputEventHub,
         )
     }
+
+    private val injectKeyEventsWithSystemBridge: StateFlow<Boolean> =
+        settingsRepository.get(Keys.keyEventActionsUseSystemBridge)
+            .map { it ?: PreferenceDefaults.KEY_EVENT_ACTIONS_USE_SYSTEM_BRIDGE }
+            .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     override suspend fun perform(
         action: ActionData,
@@ -176,10 +188,20 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 )
 
                 if (inputEventAction == InputEventAction.DOWN_UP) {
-                    result = inputEventHub.injectKeyEvent(model)
-                        .then { inputEventHub.injectKeyEvent(model.copy(action = KeyEvent.ACTION_UP)) }
+                    result = inputEventHub.injectKeyEvent(
+                        model,
+                        useSystemBridgeIfAvailable = injectKeyEventsWithSystemBridge.value
+                    )
+                        .then {
+                            inputEventHub.injectKeyEvent(
+                                model.copy(action = KeyEvent.ACTION_UP),
+                                useSystemBridgeIfAvailable = injectKeyEventsWithSystemBridge.value
+                            )
+                        }
                 } else {
-                    result = inputEventHub.injectKeyEvent(model)
+                    result = inputEventHub.injectKeyEvent(
+                        model, useSystemBridgeIfAvailable = injectKeyEventsWithSystemBridge.value
+                    )
                 }
             }
 
@@ -807,8 +829,13 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                         scanCode = Scancode.KEY_POWER,
                         source = InputDevice.SOURCE_UNKNOWN,
                     )
-                    result = inputEventHub.injectKeyEvent(model)
-                        .then { inputEventHub.injectKeyEvent(model.copy(action = KeyEvent.ACTION_UP)) }
+                    result = inputEventHub.injectKeyEvent(model, useSystemBridgeIfAvailable = true)
+                        .then {
+                            inputEventHub.injectKeyEvent(
+                                model.copy(action = KeyEvent.ACTION_UP),
+                                useSystemBridgeIfAvailable = true
+                            )
+                        }
                 } else {
                     result = suAdapter.execute("input keyevent ${KeyEvent.KEYCODE_POWER}")
                 }
