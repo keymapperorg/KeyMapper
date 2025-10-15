@@ -314,7 +314,7 @@ class InputEventHubImpl @Inject constructor(
 
     override suspend fun injectKeyEvent(
         event: InjectKeyEventModel,
-        useSystemBridgeIfAvailable: Boolean
+        useSystemBridgeIfAvailable: Boolean,
     ): KMResult<Unit> {
         val isSysBridgeConnected = Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API &&
             systemBridgeConnManager.connectionState.value is SystemBridgeConnectionState.Connected
@@ -399,7 +399,7 @@ interface InputEventHub {
      */
     suspend fun injectKeyEvent(
         event: InjectKeyEventModel,
-        useSystemBridgeIfAvailable: Boolean
+        useSystemBridgeIfAvailable: Boolean,
     ): KMResult<Unit>
 
     /**

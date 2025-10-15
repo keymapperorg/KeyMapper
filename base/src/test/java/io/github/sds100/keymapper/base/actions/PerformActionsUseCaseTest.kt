@@ -84,7 +84,7 @@ class PerformActionsUseCaseTest {
             ringtoneAdapter = mock(),
             inputEventHub = mockInputEventHub,
             systemBridgeConnectionManager = mock(),
-            coroutineScope = testCoroutineScope
+            coroutineScope = testCoroutineScope,
         )
     }
 

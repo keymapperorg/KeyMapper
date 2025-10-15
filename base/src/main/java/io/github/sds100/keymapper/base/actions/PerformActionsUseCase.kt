@@ -190,17 +190,17 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 if (inputEventAction == InputEventAction.DOWN_UP) {
                     result = inputEventHub.injectKeyEvent(
                         model,
-                        useSystemBridgeIfAvailable = injectKeyEventsWithSystemBridge.value
+                        useSystemBridgeIfAvailable = injectKeyEventsWithSystemBridge.value,
                     )
                         .then {
                             inputEventHub.injectKeyEvent(
                                 model.copy(action = KeyEvent.ACTION_UP),
-                                useSystemBridgeIfAvailable = injectKeyEventsWithSystemBridge.value
+                                useSystemBridgeIfAvailable = injectKeyEventsWithSystemBridge.value,
                             )
                         }
                 } else {
                     result = inputEventHub.injectKeyEvent(
-                        model, useSystemBridgeIfAvailable = injectKeyEventsWithSystemBridge.value
+                        model, useSystemBridgeIfAvailable = injectKeyEventsWithSystemBridge.value,
                     )
                 }
             }
@@ -833,7 +833,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                         .then {
                             inputEventHub.injectKeyEvent(
                                 model.copy(action = KeyEvent.ACTION_UP),
-                                useSystemBridgeIfAvailable = true
+                                useSystemBridgeIfAvailable = true,
                             )
                         }
                 } else {
