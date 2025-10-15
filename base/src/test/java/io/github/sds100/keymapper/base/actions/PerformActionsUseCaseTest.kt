@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.popup.ToastAdapter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -34,6 +35,7 @@ import org.mockito.kotlin.whenever
 class PerformActionsUseCaseTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val testCoroutineScope = TestScope(testDispatcher)
 
     private lateinit var useCase: PerformActionsUseCaseImpl
     private lateinit var fakeDevicesAdapter: FakeDevicesAdapter
@@ -47,7 +49,7 @@ class PerformActionsUseCaseTest {
         mockAccessibilityService = mock()
         mockToastAdapter = mock()
         mockInputEventHub = mock {
-            on { runBlocking { injectKeyEvent(any()) } }.then { Success(Unit) }
+            on { runBlocking { injectKeyEvent(any(), any()) } }.then { Success(Unit) }
         }
 
         useCase = PerformActionsUseCaseImpl(
@@ -82,6 +84,7 @@ class PerformActionsUseCaseTest {
             ringtoneAdapter = mock(),
             inputEventHub = mockInputEventHub,
             systemBridgeConnectionManager = mock(),
+            coroutineScope = testCoroutineScope
         )
     }
 
@@ -147,8 +150,8 @@ class PerformActionsUseCaseTest {
 
             val expectedUpEvent = expectedDownEvent.copy(action = KeyEvent.ACTION_UP)
 
-            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedDownEvent)
-            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedUpEvent)
+            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedDownEvent, false)
+            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedUpEvent, false)
         }
 
     /**
@@ -182,8 +185,8 @@ class PerformActionsUseCaseTest {
 
             val expectedUpEvent = expectedDownEvent.copy(action = KeyEvent.ACTION_UP)
 
-            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedDownEvent)
-            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedUpEvent)
+            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedDownEvent, false)
+            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedUpEvent, false)
         }
 
     /**
@@ -239,8 +242,8 @@ class PerformActionsUseCaseTest {
 
             val expectedUpEvent = expectedDownEvent.copy(action = KeyEvent.ACTION_UP)
 
-            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedDownEvent)
-            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedUpEvent)
+            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedDownEvent, false)
+            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedUpEvent, false)
         }
 
     /**
@@ -303,8 +306,8 @@ class PerformActionsUseCaseTest {
 
             val expectedUpEvent = expectedDownEvent.copy(action = KeyEvent.ACTION_UP)
 
-            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedDownEvent)
-            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedUpEvent)
+            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedDownEvent, false)
+            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedUpEvent, false)
         }
 
     @Test
@@ -349,7 +352,7 @@ class PerformActionsUseCaseTest {
 
             val expectedUpEvent = expectedDownEvent.copy(action = KeyEvent.ACTION_UP)
 
-            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedDownEvent)
-            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedUpEvent)
+            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedDownEvent, false)
+            verify(mockInputEventHub, times(1)).injectKeyEvent(expectedUpEvent, false)
         }
 }
