@@ -21,5 +21,6 @@ interface KeyMapRepository {
     fun disableById(vararg uid: String)
     fun enableByGroup(groupUid: String?)
     fun disableByGroup(groupUid: String?)
+    fun toggleById(vararg uid: String)
     fun moveToGroup(groupUid: String?, vararg uid: String)
 }

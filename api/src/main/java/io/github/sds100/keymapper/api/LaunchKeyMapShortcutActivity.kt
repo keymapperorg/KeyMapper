@@ -33,8 +33,8 @@ class LaunchKeyMapShortcutActivity : ComponentActivity() {
                     Intent(Api.ACTION_TRIGGER_KEYMAP_BY_UID).apply {
                         setPackage(packageName)
 
-                        val uuid = intent.getStringExtra(Api.EXTRA_KEYMAP_UID)
-                        putExtra(Api.EXTRA_KEYMAP_UID, uuid)
+                        val uuid = intent.getStringExtra(Api.EXTRA_KEYMAP_ID)
+                        putExtra(Api.EXTRA_KEYMAP_ID, uuid)
 
                         sendBroadcast(this)
                     }

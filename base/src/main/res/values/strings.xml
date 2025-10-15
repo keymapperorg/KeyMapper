@@ -674,7 +674,7 @@
     <string name="flag_hold_down">Hold down</string>
     <string name="flag_hold_down_until_pressed_again">Hold down until pressed again</string>
     <string name="flag_dont_override_default_action">Do not remap</string>
-    <string name="flag_trigger_from_other_apps">Allow other apps to trigger this key map</string>
+    <string name="flag_trigger_from_other_apps">Allow other apps to control this key map with intents or shortcuts</string>
     <string name="flag_trigger_from_other_apps_copy_uid">Copy key map id</string>
     <string name="flag_detect_from_input_method">⌨</string>
     <!--flags-->

@@ -12,6 +12,7 @@
 - Show tips for parallel and sequence triggers, and constraints in the trigger screen
 - #397 enable/disable all key maps in a group
 - #1773 Option to show floating buttons on top of keyboard or notification panel.
+- #1335 Intent API to enable/disable/toggle a key map.
 
 ## Removed
 

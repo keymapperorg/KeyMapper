@@ -26,7 +26,7 @@ class TriggerKeyMapsBroadcastReceiver : BroadcastReceiver() {
 
         when (intent.action) {
             Api.ACTION_TRIGGER_KEYMAP_BY_UID -> {
-                intent.getStringExtra(Api.EXTRA_KEYMAP_UID)?.let { uid ->
+                intent.getStringExtra(Api.EXTRA_KEYMAP_ID)?.let { uid ->
                     coroutineScope.launch {
                         serviceAdapter.send(TriggerKeyMapEvent(uid))
                     }

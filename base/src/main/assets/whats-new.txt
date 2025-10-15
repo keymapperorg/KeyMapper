@@ -1,13 +1,11 @@
-Version 4.0! 🎉
-
 📲 You can now remap buttons when the screen is off for FREE using PRO mode!
 
-Remap your power button and more
+Remap your power button and more!
 
-Enable/disable all the key maps in a group
+Enable/disable all the key maps in a group. Intent API to enable/disable/toggle a key map.
 
-Option to show floating buttons on top of keyboard or notification panel
+Option to show floating buttons on top of keyboard or notification panel.
 
-Many other bug fixes and optimisations
+Many other bug fixes and optimisations.
 
-See all the changes at http://changelog.keymapper.club.
+See all the changes at http://changelog.keymapper.club

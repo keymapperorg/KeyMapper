@@ -36,6 +36,16 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".EnableKeyMapsBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="io.github.sds100.keymapper.ACTION_ENABLE_KEY_MAP" />
+                <action android:name="io.github.sds100.keymapper.ACTION_DISABLE_KEY_MAP" />
+                <action android:name="io.github.sds100.keymapper.ACTION_TOGGLE_KEY_MAP" />
+            </intent-filter>
+        </receiver>
+
         <!-- Don't require a permission because we want other apps to bind
          to this service. The permission wouldn't be signature-level so
          if a nefarious app wants to talk to Key Mapper they could add the permission anyway. -->
