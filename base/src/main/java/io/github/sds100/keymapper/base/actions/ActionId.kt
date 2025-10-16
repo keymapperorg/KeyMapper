@@ -136,5 +136,5 @@ enum class ActionId {
     DEVICE_CONTROLS,
 
     FORCE_STOP_APP,
-    CLEAR_RECENT_APP
+    CLEAR_RECENT_APP,
 }
