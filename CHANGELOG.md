@@ -13,6 +13,7 @@
 - #397 enable/disable all key maps in a group
 - #1773 Option to show floating buttons on top of keyboard or notification panel.
 - #1335 Intent API to enable/disable/toggle a key map.
+- #114 action to force stop app, and an action to clear an app from recents
 
 ## Removed
 

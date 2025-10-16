@@ -35,4 +35,8 @@ interface ISystemBridge {
    void setNfcEnabled(boolean enable) = 14;
 
    void setAirplaneMode(boolean enable) = 15;
+
+   void forceStopPackage(String packageName) = 16;
+
+   void removeTasks(String packageName) = 17;
 }

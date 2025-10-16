@@ -1098,6 +1098,9 @@
     <string name="action_interact_ui_element_view_id_label">View resource ID</string>
     <string name="action_interact_ui_element_unique_id_label">Unique ID</string>
     <string name="action_interact_ui_element_interaction_types_label">Interaction types</string>
+
+    <string name="action_force_stop_app">Force stop app</string>
+    <string name="action_clear_recent_app">Close and clear app from recents</string>
     <!-- action labels -->
 
     <!-- action category labels -->

@@ -1,4 +1,5 @@
 package android.bluetooth;
+
 import android.content.AttributionSource;
 
 interface IBluetoothManager {

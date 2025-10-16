@@ -23,6 +23,7 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMError.SdkVersionTooLow
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.Success
@@ -628,11 +629,8 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.ToggleSplitScreen -> {
-                result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                result =
                     service.doGlobalAction(AccessibilityService.GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN)
-                } else {
-                    KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.N)
-                }
             }
 
             is ActionData.GoLastApp -> {
@@ -909,6 +907,30 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                         },
                         performAction = { AccessibilityNodeAction(action = action.nodeAction.accessibilityActionId) },
                     ).otherwise { KMError.UiElementNotFound }
+                }
+            }
+
+            ActionData.ForceStopApp -> {
+                val packageName = service.rootNode!!.packageName
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    result = systemBridgeConnectionManager.run { systemBridge ->
+                        systemBridge.forceStopPackage(packageName)
+                    }
+                } else {
+                    result = SdkVersionTooLow(minSdk = Constants.SYSTEM_BRIDGE_MIN_API)
+                }
+            }
+
+            ActionData.ClearRecentApp -> {
+                val packageName = service.rootNode!!.packageName
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    result = systemBridgeConnectionManager.run { systemBridge ->
+                        systemBridge.removeTasks(packageName)
+                    }
+                } else {
+                    result = SdkVersionTooLow(minSdk = Constants.SYSTEM_BRIDGE_MIN_API)
                 }
             }
         }

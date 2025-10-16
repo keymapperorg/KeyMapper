@@ -925,4 +925,14 @@ sealed class ActionData : Comparable<ActionData> {
     ) : ActionData() {
         override val id: ActionId = ActionId.INTERACT_UI_ELEMENT
     }
+
+    @Serializable
+    data object ForceStopApp : ActionData() {
+        override val id: ActionId = ActionId.FORCE_STOP_APP
+    }
+
+    @Serializable
+    data object ClearRecentApp : ActionData() {
+        override val id: ActionId = ActionId.CLEAR_RECENT_APP
+    }
 }

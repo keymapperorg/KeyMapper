@@ -252,7 +252,7 @@ object ActionDataEntityMapper {
 
             ActionId.VOLUME_INCREASE_STREAM,
             ActionId.VOLUME_DECREASE_STREAM,
-            -> {
+                -> {
                 val stream =
                     entity.extras.getData(ActionEntity.EXTRA_STREAM_TYPE).then {
                         VOLUME_STREAM_MAP.getKey(it)!!.success()
@@ -277,7 +277,7 @@ object ActionDataEntityMapper {
             ActionId.VOLUME_TOGGLE_MUTE,
             ActionId.VOLUME_UNMUTE,
             ActionId.VOLUME_MUTE,
-            -> {
+                -> {
                 val showVolumeUi =
                     entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI)
 
@@ -298,7 +298,7 @@ object ActionDataEntityMapper {
             ActionId.TOGGLE_FLASHLIGHT,
             ActionId.ENABLE_FLASHLIGHT,
             ActionId.CHANGE_FLASHLIGHT_STRENGTH,
-            -> {
+                -> {
                 val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
                     LENS_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -324,7 +324,7 @@ object ActionDataEntityMapper {
             }
 
             ActionId.DISABLE_FLASHLIGHT,
-            -> {
+                -> {
                 val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
                     LENS_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -333,7 +333,7 @@ object ActionDataEntityMapper {
 
             ActionId.TOGGLE_DND_MODE,
             ActionId.ENABLE_DND_MODE,
-            -> {
+                -> {
                 val dndMode = entity.extras.getData(ActionEntity.EXTRA_DND_MODE).then {
                     DND_MODE_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -363,7 +363,7 @@ object ActionDataEntityMapper {
             ActionId.STOP_MEDIA_PACKAGE,
             ActionId.STEP_FORWARD_PACKAGE,
             ActionId.STEP_BACKWARD_PACKAGE,
-            -> {
+                -> {
                 val packageName =
                     entity.extras.getData(ActionEntity.EXTRA_PACKAGE_NAME).valueOrNull()
                         ?: return null
@@ -632,6 +632,9 @@ object ActionDataEntityMapper {
 
                 ActionData.MoveCursor(moveType = type, direction = direction)
             }
+
+            ActionId.FORCE_STOP_APP -> ActionData.ForceStopApp
+            ActionId.CLEAR_RECENT_APP -> ActionData.ClearRecentApp
         }
     }
 
@@ -1121,5 +1124,7 @@ object ActionDataEntityMapper {
         ActionId.END_PHONE_CALL to "end_phone_call",
         ActionId.DEVICE_CONTROLS to "device_controls",
         ActionId.HTTP_REQUEST to "http_request",
+        ActionId.FORCE_STOP_APP to "force_stop_app",
+        ActionId.CLEAR_RECENT_APP to "clear_recent_app",
     )
 }

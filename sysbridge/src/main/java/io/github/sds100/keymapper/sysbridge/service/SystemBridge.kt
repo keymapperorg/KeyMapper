@@ -1,6 +1,9 @@
 package io.github.sds100.keymapper.sysbridge.service
 
 import android.annotation.SuppressLint
+import android.app.ActivityTaskManagerApis
+import android.app.IActivityManager
+import android.app.IActivityTaskManager
 import android.bluetooth.IBluetoothManager
 import android.content.AttributionSource
 import android.content.Context
@@ -169,6 +172,8 @@ internal class SystemBridge : ISystemBridge.Stub() {
     private val bluetoothManager: IBluetoothManager?
     private val nfcAdapter: INfcAdapter?
     private val connectivityManager: IConnectivityManager?
+    private val activityManager: IActivityManager
+    private val activityTaskManager: IActivityTaskManager
 
     private val processPackageName: String = when (Process.myUid()) {
         Process.ROOT_UID -> "root"
@@ -189,6 +194,15 @@ internal class SystemBridge : ISystemBridge.Stub() {
         Log.i(TAG, "SystemBridge starting... Version code $versionCode")
 
         waitSystemService(Context.ACTIVITY_SERVICE)
+        activityManager = IActivityManager.Stub.asInterface(
+            ServiceManager.getService(Context.ACTIVITY_SERVICE)
+        )
+
+        waitSystemService("activity_task")
+        activityTaskManager = IActivityTaskManager.Stub.asInterface(
+            ServiceManager.getService("activity_task")
+        )
+
         waitSystemService(Context.USER_SERVICE)
         waitSystemService(Context.APP_OPS_SERVICE)
 
@@ -583,5 +597,28 @@ internal class SystemBridge : ISystemBridge.Stub() {
         }
 
         connectivityManager.setAirplaneMode(enable)
+    }
+
+    override fun forceStopPackage(packageName: String?) {
+        val userId = UserHandleUtils.getCallingUserId()
+
+        activityManager.forceStopPackage(packageName, userId)
+    }
+
+    override fun removeTasks(packageName: String?) {
+        packageName ?: return
+
+        val tasks =
+            ActivityTaskManagerApis.getTasks(
+                activityTaskManager = activityTaskManager,
+                maxNum = 32,
+                filterOnlyVisibleRecents = false,
+                keepIntentExtra = false,
+                displayId = 0
+            ) ?: return
+
+        tasks.filterNotNull()
+            .filter { it.baseActivity?.packageName == packageName }
+            .forEach { activityManager.removeTask(it.taskId) }
     }
 }

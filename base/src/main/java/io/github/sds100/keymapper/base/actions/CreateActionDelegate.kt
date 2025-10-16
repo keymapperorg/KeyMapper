@@ -810,6 +810,8 @@ class CreateActionDelegate(
             }
 
             ActionId.MOVE_CURSOR -> return createMoverCursorAction()
+            ActionId.FORCE_STOP_APP -> return ActionData.ForceStopApp
+            ActionId.CLEAR_RECENT_APP -> return ActionData.ClearRecentApp
         }
     }
 
