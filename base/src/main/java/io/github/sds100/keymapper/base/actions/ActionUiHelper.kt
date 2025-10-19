@@ -576,6 +576,15 @@ class ActionUiHelper(
 
         ActionData.ClearRecentApp -> getString(R.string.action_clear_recent_app)
         ActionData.ForceStopApp -> getString(R.string.action_force_stop_app)
+        is ActionData.ComposeSms -> getString(
+            R.string.action_compose_sms_description,
+            arrayOf(action.message, action.number)
+        )
+
+        is ActionData.SendSms -> getString(
+            R.string.action_send_sms_description,
+            arrayOf(action.message, action.number)
+        )
     }
 
     fun getIcon(action: ActionData): ComposeIconInfo = when (action) {

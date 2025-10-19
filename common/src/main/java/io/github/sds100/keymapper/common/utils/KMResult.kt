@@ -62,6 +62,7 @@ abstract class KMError : KMResult<Nothing>() {
     data object NoAppToOpenUrl : KMError()
     data object NoAppToPhoneCall : KMError()
     data object NoAppToSendSms : KMError()
+    data class SendSmsError(val resultCode: Int) : KMError()
 
     data class NotAFile(val uri: String) : KMError()
     data class NotADirectory(val uri: String) : KMError()

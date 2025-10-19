@@ -15,6 +15,6 @@ interface PhoneAdapter {
     fun startCall(number: String): KMResult<*>
     fun answerCall()
     fun endCall()
-    fun sendSms(number: String, message: String): KMResult<*>
-    fun composeSms(number: String, message: String): KMResult<*>
+    suspend fun sendSms(number: String, message: String): KMResult<Unit>
+    fun composeSms(number: String, message: String): KMResult<Unit>
 }

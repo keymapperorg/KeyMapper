@@ -50,6 +50,14 @@ import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.flow.update
 
 @Composable
+fun HandleActionBottomSheets(delegate: CreateActionDelegate) {
+    EnableFlashlightActionBottomSheet(delegate)
+    ChangeFlashlightStrengthActionBottomSheet(delegate)
+    HttpRequestBottomSheet(delegate)
+    SmsActionBottomSheet(delegate)
+}
+
+@Composable
 fun ChooseActionScreen(
     modifier: Modifier = Modifier,
     viewModel: ChooseActionViewModel,
@@ -57,10 +65,7 @@ fun ChooseActionScreen(
     val state by viewModel.groups.collectAsStateWithLifecycle()
     val query by viewModel.searchQuery.collectAsStateWithLifecycle()
 
-    EnableFlashlightActionBottomSheet(viewModel.createActionDelegate)
-    ChangeFlashlightStrengthActionBottomSheet(viewModel.createActionDelegate)
-    HttpRequestBottomSheet(viewModel.createActionDelegate)
-    SmsActionBottomSheet(viewModel.createActionDelegate)
+    HandleActionBottomSheets(viewModel.createActionDelegate)
 
     ChooseActionScreen(
         modifier = modifier,
@@ -120,7 +125,7 @@ private fun ChooseActionScreen(
                     end = endPadding,
                 ),
 
-        ) {
+            ) {
             when (state) {
                 State.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
 
@@ -225,7 +230,7 @@ private fun PreviewList() {
                                 icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
                             ),
 
-                        ),
+                            ),
                     ),
                     SimpleListItemGroup(
                         header = "Connectivity",
@@ -246,7 +251,7 @@ private fun PreviewList() {
                                 isEnabled = false,
                             ),
 
-                        ),
+                            ),
                     ),
                 ),
             ),
@@ -275,7 +280,7 @@ private fun PreviewGrid() {
                                 icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
                             ),
 
-                        ),
+                            ),
                     ),
                     SimpleListItemGroup(
                         header = "Connectivity",
@@ -305,10 +310,10 @@ private fun PreviewGrid() {
                                 isEnabled = false,
                             ),
 
-                        ),
+                            ),
                     ),
 
-                ),
+                    ),
             ),
         )
     }
