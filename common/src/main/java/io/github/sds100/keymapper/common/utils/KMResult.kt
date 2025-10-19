@@ -37,9 +37,6 @@ abstract class KMError : KMResult<Nothing>() {
     data object NoCompatibleImeEnabled : KMError()
     data object NoCompatibleImeChosen : KMError()
 
-    data object AccessibilityServiceDisabled : KMError()
-    data object AccessibilityServiceCrashed : KMError()
-
     data object CantShowImePickerInBackground : KMError()
     data object CantFindImeSettings : KMError()
     data object GestureStrokeCountTooHigh : KMError()

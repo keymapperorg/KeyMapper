@@ -7,15 +7,15 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.ActionData
+import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
 import io.github.sds100.keymapper.base.system.accessibility.RecordAccessibilityNodeState
 import io.github.sds100.keymapper.base.utils.containsQuery
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
-import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.AccessibilityServiceError
 import io.github.sds100.keymapper.common.utils.NodeInteractionType
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.Success
@@ -47,10 +47,12 @@ import javax.inject.Inject
 @HiltViewModel
 class InteractUiElementViewModel @Inject constructor(
     private val useCase: InteractUiElementUseCase,
+    setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
     resourceProvider: ResourceProvider,
     dialogProvider: DialogProvider,
     navigationProvider: NavigationProvider,
 ) : ViewModel(),
+    SetupAccessibilityServiceDelegate by setupAccessibilityServiceDelegate,
     NavigationProvider by navigationProvider,
     DialogProvider by dialogProvider,
     ResourceProvider by resourceProvider {
@@ -362,18 +364,8 @@ class InteractUiElementViewModel @Inject constructor(
 
     private suspend fun startRecording() {
         useCase.startRecording().onFailure { error ->
-            if (error == KMError.AccessibilityServiceDisabled) {
-                ViewModelHelper.handleAccessibilityServiceStoppedDialog(
-                    this,
-                    this,
-                    startService = { useCase.startService() },
-                )
-            } else if (error == KMError.AccessibilityServiceCrashed) {
-                ViewModelHelper.handleAccessibilityServiceCrashedDialog(
-                    this,
-                    this,
-                    restartService = { useCase.startService() },
-                )
+            if (error is AccessibilityServiceError) {
+                showFixAccessibilityServiceDialog(error)
             }
         }
     }

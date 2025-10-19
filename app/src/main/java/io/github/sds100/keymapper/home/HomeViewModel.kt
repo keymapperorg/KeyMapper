@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.base.home.ListKeyMapsUseCase
 import io.github.sds100.keymapper.base.home.ShowHomeScreenAlertsUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
 import io.github.sds100.keymapper.base.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
@@ -25,6 +26,7 @@ class HomeViewModel @Inject constructor(
     resourceProvider: ResourceProvider,
     private val sortKeyMaps: SortKeyMapsUseCase,
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
+    val setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
     fixKeyEventActionDelegate: FixKeyEventActionDelegate,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
@@ -37,6 +39,7 @@ class HomeViewModel @Inject constructor(
     resourceProvider,
     sortKeyMaps,
     showInputMethodPickerUseCase,
+    setupAccessibilityServiceDelegate,
     fixKeyEventActionDelegate,
     navigationProvider,
     dialogProvider,

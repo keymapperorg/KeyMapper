@@ -327,6 +327,7 @@
     <string name="url_trigger_key_options_guide" translatable="false">https://docs.keymapper.club/redirects/trigger-key-options</string>
     <string name="url_android_11_bug_reset_id_work_around_setting_guide" translatable="false">https://docs.keymapper.club/redirects/android-11-device-id-bug-work-around</string>
     <string name="url_cant_find_accessibility_settings_issue" translatable="false">https://docs.keymapper.club/redirects/cant-find-accessibility-settings</string>
+    <string name="url_restricted_setting" translatable="false">https://docs.keymapper.club/redirects/restricted-settings</string>
     <string name="url_shizuku_setting_benefits" translatable="false">https://docs.keymapper.club/redirects/shizuku-benefits</string>
     <string name="url_settings_guide" translatable="false">https://docs.keymapper.club/redirects/settings</string>
     <string name="url_intent_set_flags_help" translatable="false">https://developer.android.com/reference/android/content/Intent#setFlags(int)</string>
@@ -453,6 +454,9 @@
 
     <string name="dialog_title_accessibility_service_explanation">Accessibility service must be enabled</string>
     <string name="dialog_message_accessibility_service_explanation">@string/accessibility_service_explanation</string>
+
+    <string name="dialog_restricted_setting_message">You may need to allow Restricted Settings.</string>
+    <string name="dialog_restricted_setting_link_text">Tap to read instructions.</string>
 
     <string name="dialog_title_fix_dnd_trigger_error">Grant Do Not Disturb access</string>
     <string name="dialog_message_fix_dnd_trigger_error">You will be taken to your device\'s settings page to manage which apps can modify the Do Not Disturb state. This is <b>not present on some devices</b> so tap don\'t show again if you do not see Key Mapper in the list.</string>

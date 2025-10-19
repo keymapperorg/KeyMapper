@@ -25,6 +25,8 @@ import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementViewMo
 import io.github.sds100.keymapper.base.constraints.ChooseConstraintScreen
 import io.github.sds100.keymapper.base.constraints.ChooseConstraintViewModel
 import io.github.sds100.keymapper.base.logging.LogScreen
+import io.github.sds100.keymapper.base.onboarding.HandleAccessibilityServiceDialogs
+import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegateImpl
 import io.github.sds100.keymapper.base.promode.ProModeScreen
 import io.github.sds100.keymapper.base.promode.ProModeSetupScreen
 import io.github.sds100.keymapper.base.settings.AutomaticChangeImeSettingsScreen
@@ -39,8 +41,11 @@ import kotlinx.serialization.json.Json
 fun BaseMainNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController,
+    setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegateImpl,
     composableDestinations: NavGraphBuilder.() -> Unit = {},
 ) {
+    HandleAccessibilityServiceDialogs(setupAccessibilityServiceDelegate)
+
     NavHost(
         modifier = modifier,
         navController = navController,
