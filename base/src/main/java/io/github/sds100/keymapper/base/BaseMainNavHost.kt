@@ -71,13 +71,13 @@ fun BaseMainNavHost(
         composable<NavDestination.ConfigShellCommand> { backStackEntry ->
             val viewModel: ConfigShellCommandViewModel = hiltViewModel()
 
+            backStackEntry.handleRouteArgs<NavDestination.ConfigShellCommand> { destination ->
+                destination.actionJson?.let { viewModel.loadAction(Json.decodeFromString(it)) }
+            }
+
             ShellCommandActionScreen(
-                state = viewModel.state,
-                onCommandChanged = viewModel::onCommandChanged,
-                onUseRootChanged = viewModel::onUseRootChanged,
-                onTestClick = viewModel::onTestClick,
-                onDoneClick = viewModel::onDoneClick,
-                onCancelClick = viewModel::onCancelClick,
+                modifier = Modifier.fillMaxSize(),
+                viewModel = viewModel
             )
         }
 

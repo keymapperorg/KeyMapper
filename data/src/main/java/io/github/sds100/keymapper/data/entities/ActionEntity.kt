@@ -87,6 +87,8 @@ data class ActionEntity(
         const val EXTRA_HTTP_AUTHORIZATION_HEADER = "extra_http_authorization_header"
         const val EXTRA_SMS_MESSAGE = "extra_sms_message"
         const val EXTRA_SHELL_COMMAND_USE_ROOT = "extra_shell_command_use_root"
+        const val EXTRA_SHELL_COMMAND_DESCRIPTION = "extra_shell_command_description"
+        const val EXTRA_SHELL_COMMAND_TIMEOUT = "extra_shell_command_timeout"
 
         // Accessibility node extras
         const val EXTRA_ACCESSIBILITY_PACKAGE_NAME = "extra_accessibility_package_name"

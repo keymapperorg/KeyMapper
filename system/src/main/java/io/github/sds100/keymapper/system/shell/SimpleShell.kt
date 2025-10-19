@@ -3,30 +3,20 @@ package io.github.sds100.keymapper.system.shell
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class SimpleShell @Inject constructor() : ShellAdapter {
-    /**
-     * @return whether the command was executed successfully
-     */
-    override fun run(vararg command: String, waitFor: Boolean): Boolean = try {
-        val process = Runtime.getRuntime().exec(command)
 
-        if (waitFor) {
-            process.waitFor()
-        }
-
-        true
-    } catch (e: IOException) {
-        false
-    }
-
-    override fun execute(command: String): KMResult<*> {
+    override fun execute(command: String): KMResult<Unit> {
         try {
-            Runtime.getRuntime().exec(command)
+            Runtime.getRuntime().exec(prepareCommand(command))
 
             return Success(Unit)
         } catch (e: IOException) {
@@ -36,7 +26,7 @@ class SimpleShell @Inject constructor() : ShellAdapter {
 
     override fun executeWithOutput(command: String): KMResult<String> {
         try {
-            val process = Runtime.getRuntime().exec(command)
+            val process = Runtime.getRuntime().exec(prepareCommand(command))
 
             process.waitFor()
 
@@ -55,5 +45,43 @@ class SimpleShell @Inject constructor() : ShellAdapter {
         } catch (e: IOException) {
             return KMError.Exception(e)
         }
+    }
+
+    override fun executeWithStreamingOutput(command: String): Flow<KMResult<String>> {
+        return flow {
+            try {
+                val process = Runtime.getRuntime().exec(prepareCommand(command))
+                val outputReader = process.inputStream.bufferedReader()
+                val errorReader = process.errorStream.bufferedReader()
+                val outputLines = mutableListOf<String>()
+
+                // Read output line by line
+                var line: String?
+                while (outputReader.readLine().also { line = it } != null) {
+                    outputLines.add(line!!)
+                    emit(Success(outputLines.joinToString("\n")))
+                }
+
+                process.waitFor()
+
+                // Check for errors after process completes
+                if (process.exitValue() != 0) {
+                    val errorLines = errorReader.readLines()
+                    if (errorLines.isNotEmpty()) {
+                        emit(KMError.Exception(IOException(errorLines.joinToString("\n"))))
+                    }
+                }
+
+                outputReader.close()
+                errorReader.close()
+            } catch (e: IOException) {
+                emit(KMError.Exception(e))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    private fun prepareCommand(command: String): Array<String> {
+        // Execute through sh -c to properly handle multi-line commands and shell syntax
+        return arrayOf("sh", "-c", command)
     }
 }

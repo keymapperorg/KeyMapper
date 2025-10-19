@@ -181,7 +181,6 @@ class AndroidPermissionAdapter @Inject constructor(
         } else if (isGranted(Permission.ROOT)) {
             suAdapter.execute(
                 "pm grant ${buildConfigProvider.packageName} $permissionName",
-                block = true,
             )
 
             if (ContextCompat.checkSelfPermission(ctx, permissionName) == PERMISSION_GRANTED) {

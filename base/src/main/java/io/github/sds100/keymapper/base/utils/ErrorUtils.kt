@@ -209,6 +209,10 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         KMError.InvalidBackup -> resourceProvider.getString(R.string.error_invalid_backup)
         KMError.MalformedUrl -> resourceProvider.getString(R.string.error_malformed_url)
         KMError.UiElementNotFound -> resourceProvider.getString(R.string.error_ui_element_not_found)
+        is KMError.ShellCommandTimeout -> resourceProvider.getString(
+            R.string.error_shell_command_timeout,
+            timeoutMs / 1000,
+        )
         is SystemBridgeError.Disconnected -> resourceProvider.getString(R.string.error_system_bridge_disconnected)
 
         PurchasingError.PurchasingProcessError.Cancelled -> resourceProvider.getString(

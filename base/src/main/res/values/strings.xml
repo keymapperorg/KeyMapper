@@ -471,6 +471,7 @@
     <string name="dialog_message_request_notification_permission">Some actions and options need this permission to work. You can also get notified when there is important news about the app.</string>
 
     <string name="pos_done">Done</string>
+    <string name="pos_kill">Kill</string>
     <string name="pos_grant_write_secure_settings_guide">Guide</string>
     <string name="pos_start_service_with_adb_guide">Guide</string>
     <string name="pos_change_location">Change</string>
@@ -863,6 +864,7 @@
     <string name="error_swipe_screen_must_be_ten_or_less_fingers">Must be %d or less!</string>
 
     <string name="error_ui_element_not_found">UI element not found!</string>
+    <string name="error_shell_command_timeout">Command timed out after %1$d seconds</string>
     <string name="error_system_bridge_disconnected">PRO Mode needs starting</string>
     <!-- Error messages -->
 
@@ -1084,8 +1086,8 @@
 
     <string name="action_shell_command">Shell command</string>
     <string name="action_shell_command_title">Shell command</string>
-    <string name="action_shell_command_command_label">Command</string>
-    <string name="action_shell_command_command_empty_error">Command cannot be empty!</string>
+    <string name="action_shell_command_command_label">Script</string>
+    <string name="action_shell_command_command_empty_error">Script cannot be empty!</string>
     <string name="action_shell_command_use_root_label">Run as root</string>
     <string name="action_shell_command_test_button">Test</string>
     <string name="action_shell_command_output_label">Output</string>
@@ -1752,5 +1754,7 @@
 
     <string name="button_test_sms">Test SMS</string>
     <string name="test_sms_result_ok">Sent successfully!</string>
+    <string name="hint_shell_command_description">Description</string>
+    <string name="hint_shell_command_timeout">Timeout</string>
 
 </resources>

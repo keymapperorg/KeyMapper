@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.actions
 
+import android.util.Base64
 import androidx.core.net.toUri
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -655,10 +656,25 @@ object ActionDataEntityMapper {
 
             ActionId.SHELL_COMMAND -> {
                 val useRoot = entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHELL_COMMAND_USE_ROOT)
+                val description =
+                    entity.extras.getData(ActionEntity.EXTRA_SHELL_COMMAND_DESCRIPTION)
+                        .valueOrNull() ?: return null
+
+                val timeoutMs = entity.extras.getData(ActionEntity.EXTRA_SHELL_COMMAND_TIMEOUT)
+                    .valueOrNull()?.toIntOrNull() ?: 10000
+
+                // Decode Base64 command
+                val command = try {
+                    String(Base64.decode(entity.data, Base64.DEFAULT))
+                } catch (e: Exception) {
+                    return null
+                }
 
                 ActionData.ShellCommand(
-                    command = entity.data,
+                    description = description,
+                    command = command,
                     useRoot = useRoot,
+                    timeoutMs = timeoutMs,
                 )
             }
 
@@ -744,7 +760,11 @@ object ActionDataEntityMapper {
         }
 
         is ActionData.InteractUiElement -> data.description
-        is ActionData.ShellCommand -> data.command
+        is ActionData.ShellCommand -> Base64.encodeToString(
+            data.command.toByteArray(),
+            Base64.DEFAULT
+        ).trim() // Trim to remove trailing newline added by Base64.DEFAULT
+        is ActionData.HttpRequest -> SYSTEM_ACTION_ID_MAP[data.id]!!
         is ActionData.ControlMediaForApp.Rewind -> SYSTEM_ACTION_ID_MAP[data.id]!!
         is ActionData.ControlMediaForApp.Stop -> SYSTEM_ACTION_ID_MAP[data.id]!!
         is ActionData.ControlMedia.Rewind -> SYSTEM_ACTION_ID_MAP[data.id]!!
@@ -1003,6 +1023,11 @@ object ActionDataEntityMapper {
             }
             add(EntityExtra(ActionEntity.EXTRA_MOVE_CURSOR_DIRECTION, directionString))
         }
+
+        is ActionData.ShellCommand -> listOf(
+            EntityExtra(ActionEntity.EXTRA_SHELL_COMMAND_DESCRIPTION, data.description),
+            EntityExtra(ActionEntity.EXTRA_SHELL_COMMAND_TIMEOUT, data.timeoutMs.toString()),
+        )
 
         else -> emptyList()
     }

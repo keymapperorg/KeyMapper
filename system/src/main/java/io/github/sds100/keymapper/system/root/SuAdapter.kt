@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.system.root
 
+import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -7,8 +8,12 @@ import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.system.shell.ShellAdapter
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.update
 import timber.log.Timber
 import javax.inject.Inject
@@ -27,17 +32,13 @@ class SuAdapterImpl @Inject constructor() : SuAdapter {
         invalidateIsRooted()
     }
 
-    override fun execute(command: String, block: Boolean): KMResult<Unit> {
+    override fun execute(command: String): KMResult<Unit> {
         if (!isRootGranted.firstBlocking()) {
             return SystemError.PermissionDenied(Permission.ROOT)
         }
 
         try {
-            if (block) {
-                Shell.cmd(command).exec()
-            } else {
-                Shell.cmd(command).submit()
-            }
+            Shell.cmd(command).exec()
 
             return Success(Unit)
         } catch (e: Exception) {
@@ -63,6 +64,40 @@ class SuAdapterImpl @Inject constructor() : SuAdapter {
         }
     }
 
+    override fun executeWithStreamingOutput(command: String): Flow<KMResult<String>> =
+        callbackFlow {
+            if (!isRootGranted.firstBlocking()) {
+                trySend(SystemError.PermissionDenied(Permission.ROOT))
+                close()
+                return@callbackFlow
+            }
+
+            try {
+                val outputLines = mutableListOf<String>()
+                val errorLines = mutableListOf<String>()
+
+                Shell.cmd(command)
+                    .to(object : CallbackList<String>() {
+                        override fun onAddElement(s: String) {
+                            outputLines.add(s)
+                            trySend(Success(outputLines.joinToString("\n")))
+                        }
+                    })
+                    .to(errorLines)
+                    .submit { result ->
+                        if (!result.isSuccess && errorLines.isNotEmpty()) {
+                            trySend(KMError.Exception(Exception(errorLines.joinToString("\n"))))
+                        }
+                        close()
+                    }
+
+                awaitClose { }
+            } catch (e: Exception) {
+                trySend(KMError.Exception(e))
+                close()
+            }
+        }
+
     fun invalidateIsRooted() {
         try {
             // Close the shell so a new one is started without root permission.
@@ -81,10 +116,8 @@ class SuAdapterImpl @Inject constructor() : SuAdapter {
     }
 }
 
-interface SuAdapter {
+interface SuAdapter : ShellAdapter {
     val isRootGranted: StateFlow<Boolean>
 
     fun requestPermission()
-    fun execute(command: String, block: Boolean = false): KMResult<Unit>
-    fun executeWithOutput(command: String): KMResult<String>
 }

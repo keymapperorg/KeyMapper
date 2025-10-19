@@ -872,7 +872,7 @@ class CreateActionDelegate(
 
                 return navigate(
                     "config_shell_command_action",
-                    NavDestination.ConfigShellCommand(oldAction),
+                    NavDestination.ConfigShellCommand(oldAction?.let { Json.encodeToString(oldAction) }),
                 )
             }
 

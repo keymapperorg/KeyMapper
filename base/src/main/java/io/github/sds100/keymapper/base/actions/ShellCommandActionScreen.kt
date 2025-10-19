@@ -6,16 +6,24 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -30,160 +38,299 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
-import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.base.utils.getFullMessage
+import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
+import io.github.sds100.keymapper.base.utils.ui.compose.SliderOptionText
+import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.Success
 import kotlinx.coroutines.launch
 
 data class ShellCommandActionState(
-    val command: String,
-    val useRoot: Boolean,
-    val testResult: State<String>? = null,
+    val description: String = "",
+    val command: String = "",
+    val useRoot: Boolean = false,
+    /**
+     * UI works with seconds for user-friendliness
+     */
+    val timeoutSeconds: Int = 10,
+    val isRunning: Boolean = false,
+    val testResult: KMResult<String>? = null,
 )
+
+@Composable
+fun ShellCommandActionScreen(
+    modifier: Modifier = Modifier,
+    viewModel: ConfigShellCommandViewModel
+) {
+    ShellCommandActionScreen(
+        modifier = modifier,
+        state = viewModel.state,
+        onDescriptionChanged = viewModel::onDescriptionChanged,
+        onCommandChanged = viewModel::onCommandChanged,
+        onUseRootChanged = viewModel::onUseRootChanged,
+        onTimeoutChanged = viewModel::onTimeoutChanged,
+        onTestClick = viewModel::onTestClick,
+        onKillClick = viewModel::onKillClick,
+        onDoneClick = viewModel::onDoneClick,
+        onCancelClick = viewModel::onCancelClick,
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShellCommandActionScreen(
+private fun ShellCommandActionScreen(
+    modifier: Modifier = Modifier,
     state: ShellCommandActionState,
-    onCommandChanged: (String) -> Unit,
-    onUseRootChanged: (Boolean) -> Unit,
-    onTestClick: () -> Unit,
-    onDoneClick: () -> Unit,
-    onCancelClick: () -> Unit,
+    onDescriptionChanged: (String) -> Unit = {},
+    onCommandChanged: (String) -> Unit = {},
+    onUseRootChanged: (Boolean) -> Unit = {},
+    onTimeoutChanged: (Int) -> Unit = {},
+    onTestClick: () -> Unit = {},
+    onKillClick: () -> Unit = {},
+    onDoneClick: () -> Unit = {},
+    onCancelClick: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
 
+    var descriptionError: String? by rememberSaveable { mutableStateOf(null) }
     var commandError: String? by rememberSaveable { mutableStateOf(null) }
+    val descriptionEmptyErrorString = stringResource(R.string.error_cant_be_empty)
     val commandEmptyErrorString = stringResource(R.string.action_shell_command_command_empty_error)
 
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.action_shell_command_title)) },
             )
         },
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .imePadding()
-                .verticalScroll(scrollState)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = state.command,
-                onValueChange = {
-                    commandError = null
-                    onCommandChanged(it)
+        bottomBar = {
+            BottomAppBar(
+                floatingActionButton = {
+                    ExtendedFloatingActionButton(
+                        onClick = {
+                            var hasError = false
+
+                            if (state.description.isBlank()) {
+                                descriptionError = descriptionEmptyErrorString
+                                hasError = true
+                            }
+
+                            if (state.command.isBlank()) {
+                                commandError = commandEmptyErrorString
+                                hasError = true
+                            }
+
+                            if (hasError) {
+                                scope.launch {
+                                    scrollState.animateScrollTo(0)
+                                }
+                            } else {
+                                onDoneClick()
+                            }
+                        },
+                        text = { Text(stringResource(R.string.pos_done)) },
+                        icon = {
+                            Icon(Icons.Rounded.Check, stringResource(R.string.pos_done))
+                        },
+                        elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
+                    )
                 },
-                label = { Text(stringResource(R.string.action_shell_command_command_label)) },
-                minLines = 3,
-                maxLines = 10,
-                isError = commandError != null,
-                supportingText = {
-                    if (commandError != null) {
-                        Text(
-                            text = commandError!!,
-                            color = MaterialTheme.colorScheme.error,
-                        )
+                actions = {
+                    IconButton(onClick = onCancelClick) {
+                        Icon(Icons.Rounded.Close, stringResource(R.string.neg_cancel))
                     }
                 },
             )
+        },
+    ) { padding ->
+        ShellCommandActionContent(
+            state = state,
+            descriptionError = descriptionError,
+            commandError = commandError,
+            onDescriptionChanged = {
+                descriptionError = null
+                onDescriptionChanged(it)
+            },
+            onCommandChanged = {
+                commandError = null
+                onCommandChanged(it)
+            },
+            onUseRootChanged = onUseRootChanged,
+            onTimeoutChanged = onTimeoutChanged,
+            onTestClick = {
+                if (state.command.isBlank()) {
+                    commandError = commandEmptyErrorString
+                } else {
+                    onTestClick()
+                }
+            },
+            onKillClick = onKillClick,
+            modifier = Modifier.padding(padding),
+        )
+    }
+}
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Checkbox(
-                    checked = state.useRoot,
-                    onCheckedChange = onUseRootChanged,
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.action_shell_command_use_root_label))
-            }
+@Composable
+private fun ShellCommandActionContent(
+    state: ShellCommandActionState,
+    descriptionError: String?,
+    commandError: String?,
+    onDescriptionChanged: (String) -> Unit,
+    onCommandChanged: (String) -> Unit,
+    onUseRootChanged: (Boolean) -> Unit,
+    onTimeoutChanged: (Int) -> Unit,
+    onTestClick: () -> Unit,
+    onKillClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val scrollState = rememberScrollState()
+    val context = LocalContext.current
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .imePadding()
+            .verticalScroll(scrollState)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = state.description,
+            onValueChange = onDescriptionChanged,
+            label = { Text(stringResource(R.string.hint_shell_command_description)) },
+            singleLine = true,
+            isError = descriptionError != null,
+            supportingText = {
+                if (descriptionError != null) {
+                    Text(
+                        text = descriptionError,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+            },
+        )
+
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = state.command,
+            onValueChange = onCommandChanged,
+            label = { Text(stringResource(R.string.action_shell_command_command_label)) },
+            minLines = 3,
+            maxLines = 10,
+            isError = commandError != null,
+            supportingText = {
+                if (commandError != null) {
+                    Text(
+                        text = commandError,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+            },
+        )
+
+        SliderOptionText(
+            modifier = Modifier.fillMaxWidth(),
+            title = stringResource(R.string.hint_shell_command_timeout),
+            defaultValue = 10f,
+            value = state.timeoutSeconds.toFloat(),
+            valueText = { "${it.toInt()}s" },
+            onValueChange = { onTimeoutChanged(it.toInt()) },
+            valueRange = 5f..60f,
+            stepSize = 5,
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            CheckBoxText(
+                modifier = Modifier.weight(1f),
+                text = stringResource(R.string.action_shell_command_use_root_label),
+                isChecked = state.useRoot,
+                onCheckedChange = onUseRootChanged,
+            )
 
             Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    if (state.command.isBlank()) {
-                        commandError = commandEmptyErrorString
-                    } else {
-                        onTestClick()
-                    }
-                },
+                onClick = onTestClick,
+                enabled = !state.isRunning,
             ) {
+                Icon(Icons.Rounded.PlayArrow, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(stringResource(R.string.action_shell_command_test_button))
             }
+        }
 
-            if (state.testResult != null) {
+        if (state.isRunning) {
+            OutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onKillClick,
+            ) {
+                Icon(Icons.Rounded.Close, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(stringResource(R.string.pos_kill))
+            }
+        }
+
+        if (state.isRunning) {
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            Text(
+                text = stringResource(R.string.action_shell_command_testing),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+
+        when (val result = state.testResult) {
+            null -> {}
+            is Success -> {
                 Text(
                     text = stringResource(R.string.action_shell_command_output_label),
                     style = MaterialTheme.typography.titleMedium,
                 )
 
-                when (state.testResult) {
-                    is State.Loading -> {
-                        Text(
-                            text = stringResource(R.string.action_shell_command_testing),
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                    is State.Data -> {
-                        SelectionContainer {
-                            OutlinedTextField(
-                                modifier = Modifier.fillMaxWidth(),
-                                value = state.testResult.data,
-                                onValueChange = {},
-                                readOnly = true,
-                                minLines = 5,
-                                maxLines = 15,
-                                textStyle = MaterialTheme.typography.bodySmall.copy(
-                                    fontFamily = FontFamily.Monospace,
-                                ),
-                            )
-                        }
-                    }
+                SelectionContainer {
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = result.value,
+                        onValueChange = {},
+                        readOnly = true,
+                        minLines = 5,
+                        maxLines = 15,
+                        textStyle = MaterialTheme.typography.bodySmall.copy(
+                            fontFamily = FontFamily.Monospace,
+                        ),
+                    )
                 }
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            is KMError -> {
+                Text(
+                    text = stringResource(R.string.action_shell_command_test_failed),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.error,
+                )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                OutlinedButton(
-                    modifier = Modifier.weight(1f),
-                    onClick = onCancelClick,
-                ) {
-                    Text(stringResource(R.string.neg_cancel))
-                }
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Button(
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        if (state.command.isBlank()) {
-                            commandError = commandEmptyErrorString
-                        } else {
-                            onDoneClick()
-                        }
-                    },
-                ) {
-                    Text(stringResource(R.string.pos_done))
-                }
+                Text(
+                    text = result.getFullMessage(context),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                )
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -194,15 +341,11 @@ private fun PreviewShellCommandActionScreen() {
     KeyMapperTheme {
         ShellCommandActionScreen(
             state = ShellCommandActionState(
+                description = "Hello world script",
                 command = "echo 'Hello World'",
                 useRoot = false,
-                testResult = State.Data("Hello World\n"),
+                testResult = Success("Hello World\nNew line\nNew new line"),
             ),
-            onCommandChanged = {},
-            onUseRootChanged = {},
-            onTestClick = {},
-            onDoneClick = {},
-            onCancelClick = {},
         )
     }
 }
@@ -213,14 +356,40 @@ private fun PreviewShellCommandActionScreenEmpty() {
     KeyMapperTheme {
         ShellCommandActionScreen(
             state = ShellCommandActionState(
+                description = "",
                 command = "",
                 useRoot = true,
             ),
-            onCommandChanged = {},
-            onUseRootChanged = {},
-            onTestClick = {},
-            onDoneClick = {},
-            onCancelClick = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewShellCommandActionScreenError() {
+    KeyMapperTheme {
+        ShellCommandActionScreen(
+            state = ShellCommandActionState(
+                description = "Read secret file",
+                command = "cat /root/secret.txt",
+                useRoot = false,
+                testResult = KMError.Exception(Exception("Permission denied")),
+            ),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewShellCommandActionScreenTesting() {
+    KeyMapperTheme {
+        ShellCommandActionScreen(
+            state = ShellCommandActionState(
+                description = "Count to 10",
+                command = "for i in \$(seq 1 10); do echo \"Line \$i\"; sleep 1; done",
+                useRoot = false,
+                isRunning = true,
+            ),
         )
     }
 }

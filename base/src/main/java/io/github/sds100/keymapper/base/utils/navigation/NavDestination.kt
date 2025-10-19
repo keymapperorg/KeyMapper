@@ -169,7 +169,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data class ConfigShellCommand(val action: ActionData.ShellCommand?) :
+    data class ConfigShellCommand(val actionJson: String?) :
         NavDestination<ActionData.ShellCommand>(isCompose = true) {
         override val id: String = ID_SHELL_COMMAND_ACTION
     }
