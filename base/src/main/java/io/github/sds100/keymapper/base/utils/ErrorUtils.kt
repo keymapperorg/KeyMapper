@@ -1,16 +1,23 @@
 package io.github.sds100.keymapper.base.utils
 
+import android.content.Context
 import android.content.pm.PackageManager
+import android.telephony.SmsManager
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingError
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
 import io.github.sds100.keymapper.common.utils.BuildUtils
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.data.DataError
 import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
+
+fun KMError.getFullMessage(ctx: Context): String {
+    return getFullMessage(ResourceProviderImpl(ctx))
+}
 
 fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
     return when (this) {
@@ -24,6 +31,7 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
                 Permission.WRITE_SECURE_SETTINGS -> R.string.error_need_write_secure_settings_permission
                 Permission.NOTIFICATION_LISTENER -> R.string.error_denied_notification_listener_service_permission
                 Permission.CALL_PHONE -> R.string.error_denied_call_phone_permission
+                Permission.SEND_SMS -> R.string.error_denied_send_sms_permission
                 Permission.ROOT -> R.string.error_requires_root
                 Permission.IGNORE_BATTERY_OPTIMISATION -> R.string.error_battery_optimisation_enabled
                 Permission.SHIZUKU -> R.string.error_shizuku_permission_denied
@@ -115,6 +123,22 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         KMError.AppShortcutCantBeOpened -> resourceProvider.getString(R.string.error_opening_app_shortcut)
         KMError.InsufficientPermissionsToOpenAppShortcut -> resourceProvider.getString(R.string.error_keymapper_doesnt_have_permission_app_shortcut)
         KMError.NoAppToPhoneCall -> resourceProvider.getString(R.string.error_no_app_to_phone_call)
+        KMError.NoAppToSendSms -> resourceProvider.getString(R.string.error_no_app_to_send_sms)
+        is KMError.SendSmsError -> {
+            when (resultCode) {
+                SmsManager.RESULT_ERROR_GENERIC_FAILURE -> resourceProvider.getString(R.string.error_sms_generic_failure)
+                SmsManager.RESULT_ERROR_RADIO_OFF -> resourceProvider.getString(R.string.error_sms_radio_off)
+                SmsManager.RESULT_ERROR_NO_SERVICE -> resourceProvider.getString(R.string.error_sms_no_service)
+                SmsManager.RESULT_ERROR_LIMIT_EXCEEDED -> resourceProvider.getString(R.string.error_sms_limit_exceeded)
+                SmsManager.RESULT_NETWORK_REJECT -> resourceProvider.getString(R.string.error_sms_network_reject)
+                SmsManager.RESULT_NO_MEMORY -> resourceProvider.getString(R.string.error_sms_no_memory)
+                SmsManager.RESULT_INVALID_SMS_FORMAT -> resourceProvider.getString(R.string.error_sms_invalid_format)
+                SmsManager.RESULT_NETWORK_ERROR -> resourceProvider.getString(R.string.error_sms_network_error)
+                SmsManager.RESULT_SMS_BLOCKED_DURING_EMERGENCY -> resourceProvider.getString(R.string.error_sms_blocked_during_emergency)
+                SmsManager.RESULT_RIL_SIM_ABSENT -> resourceProvider.getString(R.string.error_sms_no_sim)
+                else -> resourceProvider.getString(R.string.error_sms_generic_failure)
+            }
+        }
 
         KMError.CameraInUse -> resourceProvider.getString(R.string.error_camera_in_use)
         KMError.CameraError -> resourceProvider.getString(R.string.error_camera_error)
@@ -239,7 +263,7 @@ val KMError.isFixable: Boolean
         is KMError.CantDetectKeyEventsInPhoneCall,
         is SystemBridgeError.Disconnected,
         is KMError.KeyEventActionError,
-        -> true
+            -> true
 
         else -> false
     }

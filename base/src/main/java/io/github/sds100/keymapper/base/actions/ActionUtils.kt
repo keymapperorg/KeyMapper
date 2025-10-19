@@ -40,6 +40,7 @@ import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material.icons.outlined.KeyboardHide
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Message
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Nfc
 import androidx.compose.material.icons.outlined.NotStarted
@@ -235,6 +236,8 @@ object ActionUtils {
         ActionId.PHONE_CALL -> ActionCategory.TELEPHONY
         ActionId.ANSWER_PHONE_CALL -> ActionCategory.TELEPHONY
         ActionId.END_PHONE_CALL -> ActionCategory.TELEPHONY
+        ActionId.SEND_SMS -> ActionCategory.TELEPHONY
+        ActionId.COMPOSE_SMS -> ActionCategory.TELEPHONY
 
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> ActionCategory.NOTIFICATIONS
         ActionId.DISMISS_ALL_NOTIFICATIONS -> ActionCategory.NOTIFICATIONS
@@ -361,6 +364,8 @@ object ActionUtils {
         ActionId.DISMISS_ALL_NOTIFICATIONS -> R.string.action_dismiss_all_notifications
         ActionId.ANSWER_PHONE_CALL -> R.string.action_answer_call
         ActionId.END_PHONE_CALL -> R.string.action_end_call
+        ActionId.SEND_SMS -> R.string.action_send_sms
+        ActionId.COMPOSE_SMS -> R.string.action_compose_sms
         ActionId.DEVICE_CONTROLS -> R.string.action_device_controls
         ActionId.HTTP_REQUEST -> R.string.action_http_request
         ActionId.INTERACT_UI_ELEMENT -> R.string.action_interact_ui_element_title
@@ -482,6 +487,8 @@ object ActionUtils {
         ActionId.DISMISS_ALL_NOTIFICATIONS -> R.drawable.ic_baseline_clear_all_24
         ActionId.ANSWER_PHONE_CALL -> R.drawable.ic_outline_call_24
         ActionId.END_PHONE_CALL -> R.drawable.ic_outline_call_end_24
+        ActionId.SEND_SMS -> R.drawable.ic_outline_message_24
+        ActionId.COMPOSE_SMS -> R.drawable.ic_outline_message_24
         ActionId.DEVICE_CONTROLS -> R.drawable.ic_home_automation
         else -> null
     }
@@ -500,26 +507,26 @@ object ActionUtils {
         ActionId.TOGGLE_DND_MODE,
         ActionId.ENABLE_DND_MODE,
         ActionId.DISABLE_DND_MODE,
-        -> Build.VERSION_CODES.M
+            -> Build.VERSION_CODES.M
 
         ActionId.DISABLE_FLASHLIGHT,
         ActionId.ENABLE_FLASHLIGHT,
         ActionId.TOGGLE_FLASHLIGHT,
-        -> Build.VERSION_CODES.M
+            -> Build.VERSION_CODES.M
 
         ActionId.CHANGE_FLASHLIGHT_STRENGTH,
-        -> Build.VERSION_CODES.TIRAMISU
+            -> Build.VERSION_CODES.TIRAMISU
 
         ActionId.TOGGLE_KEYBOARD,
         ActionId.SHOW_KEYBOARD,
         ActionId.HIDE_KEYBOARD,
-        -> Build.VERSION_CODES.N
+            -> Build.VERSION_CODES.N
 
         ActionId.TEXT_CUT,
         ActionId.TEXT_COPY,
         ActionId.TEXT_PASTE,
         ActionId.SELECT_WORD_AT_CURSOR,
-        -> Build.VERSION_CODES.JELLY_BEAN_MR2
+            -> Build.VERSION_CODES.JELLY_BEAN_MR2
 
         ActionId.SHOW_POWER_MENU -> Build.VERSION_CODES.LOLLIPOP
         ActionId.DEVICE_CONTROLS -> Build.VERSION_CODES.S
@@ -544,20 +551,28 @@ object ActionUtils {
         ActionId.END_PHONE_CALL,
         ActionId.ANSWER_PHONE_CALL,
         ActionId.PHONE_CALL,
-        -> listOf(PackageManager.FEATURE_TELEPHONY)
+            -> listOf(PackageManager.FEATURE_TELEPHONY)
+
+        ActionId.SEND_SMS,
+        ActionId.COMPOSE_SMS,
+            -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            listOf(PackageManager.FEATURE_TELEPHONY_MESSAGING)
+        } else {
+            listOf(PackageManager.FEATURE_TELEPHONY)
+        }
 
         ActionId.SECURE_LOCK_DEVICE,
-        -> listOf(PackageManager.FEATURE_DEVICE_ADMIN)
+            -> listOf(PackageManager.FEATURE_DEVICE_ADMIN)
 
         ActionId.TOGGLE_WIFI,
         ActionId.ENABLE_WIFI,
         ActionId.DISABLE_WIFI,
-        -> listOf(PackageManager.FEATURE_WIFI)
+            -> listOf(PackageManager.FEATURE_WIFI)
 
         ActionId.TOGGLE_MOBILE_DATA,
         ActionId.ENABLE_MOBILE_DATA,
         ActionId.DISABLE_MOBILE_DATA,
-        -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             listOf(PackageManager.FEATURE_TELEPHONY_DATA)
         } else {
             listOf(PackageManager.FEATURE_TELEPHONY)
@@ -566,18 +581,18 @@ object ActionUtils {
         ActionId.TOGGLE_NFC,
         ActionId.ENABLE_NFC,
         ActionId.DISABLE_NFC,
-        -> listOf(PackageManager.FEATURE_NFC)
+            -> listOf(PackageManager.FEATURE_NFC)
 
         ActionId.TOGGLE_BLUETOOTH,
         ActionId.ENABLE_BLUETOOTH,
         ActionId.DISABLE_BLUETOOTH,
-        -> listOf(PackageManager.FEATURE_BLUETOOTH)
+            -> listOf(PackageManager.FEATURE_BLUETOOTH)
 
         ActionId.TOGGLE_FLASHLIGHT,
         ActionId.ENABLE_FLASHLIGHT,
         ActionId.DISABLE_FLASHLIGHT,
         ActionId.CHANGE_FLASHLIGHT_STRENGTH,
-        -> listOf(PackageManager.FEATURE_CAMERA_FLASH)
+            -> listOf(PackageManager.FEATURE_CAMERA_FLASH)
 
         else -> emptyList()
     }
@@ -588,27 +603,27 @@ object ActionUtils {
             ActionId.ENABLE_WIFI,
             ActionId.DISABLE_WIFI,
             ActionId.TOGGLE_WIFI,
-            -> true
+                -> true
 
             ActionId.TOGGLE_MOBILE_DATA,
             ActionId.ENABLE_MOBILE_DATA,
             ActionId.DISABLE_MOBILE_DATA,
-            -> true
+                -> true
 
             ActionId.ENABLE_NFC,
             ActionId.DISABLE_NFC,
             ActionId.TOGGLE_NFC,
-            -> true
+                -> true
 
             ActionId.TOGGLE_AIRPLANE_MODE,
             ActionId.ENABLE_AIRPLANE_MODE,
             ActionId.DISABLE_AIRPLANE_MODE,
-            -> true
+                -> true
 
             ActionId.TOGGLE_BLUETOOTH,
             ActionId.ENABLE_BLUETOOTH,
             ActionId.DISABLE_BLUETOOTH,
-            -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2
+                -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2
 
             ActionId.POWER_ON_OFF_DEVICE -> true
 
@@ -623,7 +638,7 @@ object ActionUtils {
             ActionId.TOGGLE_MOBILE_DATA,
             ActionId.ENABLE_MOBILE_DATA,
             ActionId.DISABLE_MOBILE_DATA,
-            -> return if (isSystemBridgeSupported) {
+                -> return if (isSystemBridgeSupported) {
                 emptyList()
             } else {
                 listOf(Permission.ROOT)
@@ -636,7 +651,7 @@ object ActionUtils {
             ActionId.PREVIOUS_TRACK_PACKAGE,
             ActionId.FAST_FORWARD_PACKAGE,
             ActionId.REWIND_PACKAGE,
-            -> return listOf(Permission.NOTIFICATION_LISTENER)
+                -> return listOf(Permission.NOTIFICATION_LISTENER)
 
             ActionId.VOLUME_UP,
             ActionId.VOLUME_DOWN,
@@ -652,7 +667,7 @@ object ActionUtils {
             ActionId.TOGGLE_DND_MODE,
             ActionId.DISABLE_DND_MODE,
             ActionId.ENABLE_DND_MODE,
-            -> return listOf(Permission.ACCESS_NOTIFICATION_POLICY)
+                -> return listOf(Permission.ACCESS_NOTIFICATION_POLICY)
 
             ActionId.TOGGLE_AUTO_ROTATE,
             ActionId.ENABLE_AUTO_ROTATE,
@@ -661,25 +676,25 @@ object ActionUtils {
             ActionId.LANDSCAPE_MODE,
             ActionId.SWITCH_ORIENTATION,
             ActionId.CYCLE_ROTATIONS,
-            -> return listOf(Permission.WRITE_SETTINGS)
+                -> return listOf(Permission.WRITE_SETTINGS)
 
             ActionId.TOGGLE_AUTO_BRIGHTNESS,
             ActionId.ENABLE_AUTO_BRIGHTNESS,
             ActionId.DISABLE_AUTO_BRIGHTNESS,
             ActionId.INCREASE_BRIGHTNESS,
             ActionId.DECREASE_BRIGHTNESS,
-            -> return listOf(Permission.WRITE_SETTINGS)
+                -> return listOf(Permission.WRITE_SETTINGS)
 
             ActionId.TOGGLE_FLASHLIGHT,
             ActionId.ENABLE_FLASHLIGHT,
             ActionId.DISABLE_FLASHLIGHT,
             ActionId.CHANGE_FLASHLIGHT_STRENGTH,
-            -> return listOf(Permission.CAMERA)
+                -> return listOf(Permission.CAMERA)
 
             ActionId.ENABLE_NFC,
             ActionId.DISABLE_NFC,
             ActionId.TOGGLE_NFC,
-            -> return if (isSystemBridgeSupported) {
+                -> return if (isSystemBridgeSupported) {
                 emptyList()
             } else {
                 listOf(Permission.ROOT)
@@ -697,7 +712,7 @@ object ActionUtils {
             ActionId.TOGGLE_AIRPLANE_MODE,
             ActionId.ENABLE_AIRPLANE_MODE,
             ActionId.DISABLE_AIRPLANE_MODE,
-            -> return if (isSystemBridgeSupported) {
+                -> return if (isSystemBridgeSupported) {
                 emptyList()
             } else {
                 listOf(Permission.ROOT)
@@ -720,13 +735,17 @@ object ActionUtils {
 
             ActionId.DISMISS_ALL_NOTIFICATIONS,
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION,
-            -> return listOf(Permission.NOTIFICATION_LISTENER)
+                -> return listOf(Permission.NOTIFICATION_LISTENER)
 
             ActionId.ANSWER_PHONE_CALL,
             ActionId.END_PHONE_CALL,
-            -> return listOf(Permission.ANSWER_PHONE_CALL)
+                -> return listOf(Permission.ANSWER_PHONE_CALL)
 
             ActionId.PHONE_CALL -> return listOf(Permission.CALL_PHONE)
+
+            ActionId.SEND_SMS,
+            ActionId.COMPOSE_SMS,
+                -> return listOf(Permission.SEND_SMS)
 
             ActionId.ENABLE_BLUETOOTH, ActionId.DISABLE_BLUETOOTH, ActionId.TOGGLE_BLUETOOTH ->
                 // On S_V2 and newer, the system bridge is used which means no permissions are required
@@ -848,6 +867,8 @@ object ActionUtils {
         ActionId.URL -> Icons.Outlined.Link
         ActionId.INTENT -> Icons.Outlined.DataObject
         ActionId.PHONE_CALL -> Icons.Outlined.Call
+        ActionId.SEND_SMS -> Icons.Outlined.Message
+        ActionId.COMPOSE_SMS -> Icons.Outlined.Message
         ActionId.SOUND -> Icons.AutoMirrored.Outlined.VolumeUp
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> Icons.Outlined.ClearAll
         ActionId.DISMISS_ALL_NOTIFICATIONS -> Icons.Outlined.ClearAll
@@ -900,10 +921,12 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.Text,
     is ActionData.Url,
     is ActionData.PhoneCall,
+    is ActionData.SendSms,
+    is ActionData.ComposeSms,
     is ActionData.HttpRequest,
     is ActionData.InteractUiElement,
     is ActionData.MoveCursor,
-    -> true
+        -> true
 
     else -> false
 }

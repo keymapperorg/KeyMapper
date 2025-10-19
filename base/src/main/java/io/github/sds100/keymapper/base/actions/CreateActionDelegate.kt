@@ -21,6 +21,8 @@ import io.github.sds100.keymapper.base.utils.ui.MultiChoiceItem
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.Orientation
+import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.network.HttpMethod
 import io.github.sds100.keymapper.system.volume.DndMode
@@ -51,6 +53,7 @@ class CreateActionDelegate(
     )
 
     var httpRequestBottomSheetState: ActionData.HttpRequest? by mutableStateOf(null)
+    var smsActionBottomSheetState: SmsActionBottomSheetState? by mutableStateOf(null)
 
     init {
         coroutineScope.launch {
@@ -138,6 +141,41 @@ class CreateActionDelegate(
         }
     }
 
+    fun onDoneSmsClick() {
+        val state = smsActionBottomSheetState ?: return
+
+        val action = when (state) {
+            is SmsActionBottomSheetState.ComposeSms -> ActionData.ComposeSms(
+                state.number,
+                state.message,
+            )
+
+            is SmsActionBottomSheetState.SendSms -> ActionData.SendSms(
+                state.number,
+                state.message,
+            )
+        }
+
+        smsActionBottomSheetState = null
+        actionResult.update { action }
+    }
+
+    fun onTestSmsClick() {
+        coroutineScope.launch {
+            (smsActionBottomSheetState as? SmsActionBottomSheetState.SendSms)?.also { state ->
+                smsActionBottomSheetState = state.copy(testResult = State.Loading)
+
+                val result = useCase.testSms(state.number, state.message)
+
+                if (result is SystemError.PermissionDenied) {
+                    useCase.requestPermission(result.permission)
+                } else {
+                    smsActionBottomSheetState = state.copy(testResult = State.Data(result))
+                }
+            }
+        }
+    }
+
     suspend fun editAction(oldData: ActionData) {
         if (!oldData.isEditable()) {
             throw IllegalArgumentException("This action ${oldData.javaClass.name} can't be edited!")
@@ -179,7 +217,7 @@ class CreateActionDelegate(
             ActionId.STOP_MEDIA_PACKAGE,
             ActionId.STEP_FORWARD_PACKAGE,
             ActionId.STEP_BACKWARD_PACKAGE,
-            -> {
+                -> {
                 val packageName =
                     navigate(
                         "choose_app_for_media_action",
@@ -229,7 +267,7 @@ class CreateActionDelegate(
             ActionId.VOLUME_MUTE,
             ActionId.VOLUME_UNMUTE,
             ActionId.VOLUME_TOGGLE_MUTE,
-            -> {
+                -> {
                 val showVolumeUiId = 0
                 val isVolumeUiChecked =
                     when (oldData) {
@@ -272,7 +310,7 @@ class CreateActionDelegate(
 
             ActionId.VOLUME_INCREASE_STREAM,
             ActionId.VOLUME_DECREASE_STREAM,
-            -> {
+                -> {
                 val showVolumeUiId = 0
                 val isVolumeUiChecked = if (oldData is ActionData.Volume.Stream) {
                     oldData.showVolumeUi
@@ -328,7 +366,7 @@ class CreateActionDelegate(
             // don't need to show options for disabling do not disturb
             ActionId.TOGGLE_DND_MODE,
             ActionId.ENABLE_DND_MODE,
-            -> {
+                -> {
                 val items = DndMode.entries
                     .map { it to getString(DndModeStrings.getLabel(it)) }
 
@@ -446,7 +484,7 @@ class CreateActionDelegate(
             }
 
             ActionId.DISABLE_FLASHLIGHT,
-            -> {
+                -> {
                 val items = useCase.getFlashlightLenses().map { lens ->
                     when (lens) {
                         CameraLens.FRONT -> lens to getString(R.string.lens_front)
@@ -689,6 +727,35 @@ class CreateActionDelegate(
                 ) ?: return null
 
                 return ActionData.PhoneCall(text)
+            }
+
+            ActionId.SEND_SMS, ActionId.COMPOSE_SMS -> {
+                val number = when (oldData) {
+                    is ActionData.SendSms -> oldData.number
+                    is ActionData.ComposeSms -> oldData.number
+                    else -> ""
+                }
+
+                val message = when (oldData) {
+                    is ActionData.SendSms -> oldData.message
+                    is ActionData.ComposeSms -> oldData.message
+                    else -> ""
+                }
+
+                smsActionBottomSheetState = if (actionId == ActionId.SEND_SMS) {
+                    SmsActionBottomSheetState.SendSms(
+                        number = number,
+                        message = message,
+                        testResult = null
+                    )
+                } else {
+                    SmsActionBottomSheetState.ComposeSms(
+                        number = number,
+                        message = message,
+                    )
+                }
+
+                return null
             }
 
             ActionId.SOUND -> {

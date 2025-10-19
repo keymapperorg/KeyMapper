@@ -249,6 +249,12 @@ class AndroidPermissionAdapter @Inject constructor(
                 Manifest.permission.CALL_PHONE,
             ) == PERMISSION_GRANTED
 
+        Permission.SEND_SMS ->
+            ContextCompat.checkSelfPermission(
+                ctx,
+                Manifest.permission.SEND_SMS,
+            ) == PERMISSION_GRANTED
+
         Permission.ROOT -> suAdapter.isRootGranted.value
 
         Permission.IGNORE_BATTERY_OPTIMISATION ->

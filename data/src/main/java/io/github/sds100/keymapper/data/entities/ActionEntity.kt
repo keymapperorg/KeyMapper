@@ -85,6 +85,7 @@ data class ActionEntity(
         const val EXTRA_HTTP_BODY = "extra_http_body"
         const val EXTRA_HTTP_DESCRIPTION = "extra_http_description"
         const val EXTRA_HTTP_AUTHORIZATION_HEADER = "extra_http_authorization_header"
+        const val EXTRA_SMS_MESSAGE = "extra_sms_message"
 
         // Accessibility node extras
         const val EXTRA_ACCESSIBILITY_PACKAGE_NAME = "extra_accessibility_package_name"
@@ -172,6 +173,8 @@ data class ActionEntity(
         PINCH_COORDINATE,
         INTENT,
         PHONE_CALL,
+        SEND_SMS,
+        COMPOSE_SMS,
         SOUND,
         INTERACT_UI_ELEMENT,
     }

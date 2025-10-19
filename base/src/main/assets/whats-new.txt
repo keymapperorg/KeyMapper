@@ -2,6 +2,8 @@
 
 Action to force stop an app or clear it from recents.
 
+Action to send SMS message.
+
 Enable/disable all the key maps in a group. Intent API to enable/disable/toggle a key map.
 
 Option to show floating buttons on top of keyboard or notification panel.
