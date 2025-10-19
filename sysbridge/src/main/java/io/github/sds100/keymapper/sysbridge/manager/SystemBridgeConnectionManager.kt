@@ -16,12 +16,12 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.common.models.isSuccess
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.onFailure
-import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
 import io.github.sds100.keymapper.sysbridge.ktx.TAG
 import io.github.sds100.keymapper.sysbridge.starter.SystemBridgeStarter
@@ -130,7 +130,12 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
     private suspend fun restartSystemBridge(systemBridge: ISystemBridge) {
         starter.startSystemBridge(executeCommand = { command ->
             try {
-                systemBridge.executeCommand(command)!!.success()
+                val result = systemBridge.executeCommand(command)!!
+                if (result.isSuccess()) {
+                    Success(result.stdOut)
+                } else {
+                    KMError.Exception(Exception("Command failed with exit code ${result.exitCode}: ${result.stdErr}"))
+                }
             } catch (_: DeadObjectException) {
                 // This exception is expected since it is killing the system bridge
                 Success("")

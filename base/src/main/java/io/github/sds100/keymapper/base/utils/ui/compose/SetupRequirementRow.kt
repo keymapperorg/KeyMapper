@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.base.trigger.ProModeStatus
+import io.github.sds100.keymapper.base.utils.ProModeStatus
 
 @Composable
 fun ProModeRequirementRow(

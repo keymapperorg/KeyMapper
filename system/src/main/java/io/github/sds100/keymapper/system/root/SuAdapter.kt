@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.system.root
 
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
+import io.github.sds100.keymapper.common.models.ShellResult
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
@@ -9,7 +10,6 @@ import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.shell.ShellAdapter
-import io.github.sds100.keymapper.system.shell.ShellResult
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,11 +59,7 @@ class SuAdapterImpl @Inject constructor() : SuAdapter {
             val stderr = result.err.joinToString("\n")
             val exitCode = result.code
 
-            return if (result.isSuccess) {
-                Success(ShellResult.Success(output, exitCode))
-            } else {
-                Success(ShellResult.Error(stderr, exitCode))
-            }
+            return Success(ShellResult(output, stderr, exitCode))
         } catch (e: Exception) {
             return KMError.Exception(e)
         }
@@ -85,7 +81,7 @@ class SuAdapterImpl @Inject constructor() : SuAdapter {
                     .to(object : CallbackList<String>() {
                         override fun onAddElement(s: String) {
                             outputLines.add(s)
-                            trySend(Success(ShellResult.Success(outputLines.joinToString("\n"))))
+                            trySend(Success(ShellResult(outputLines.joinToString("\n"), "", 0)))
                         }
                     })
                     .to(errorLines)
@@ -94,11 +90,7 @@ class SuAdapterImpl @Inject constructor() : SuAdapter {
                         val stderr = errorLines.joinToString("\n")
                         val exitCode = result.code
 
-                        if (result.isSuccess) {
-                            trySend(Success(ShellResult.Success(output, exitCode)))
-                        } else {
-                            trySend(Success(ShellResult.Error(stderr, exitCode)))
-                        }
+                        trySend(Success(ShellResult(output, stderr, exitCode)))
                         close()
                     }
 

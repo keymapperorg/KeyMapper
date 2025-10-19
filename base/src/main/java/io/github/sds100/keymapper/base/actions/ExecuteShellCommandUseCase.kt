@@ -1,10 +1,10 @@
 package io.github.sds100.keymapper.base.actions
 
+import io.github.sds100.keymapper.common.models.ShellResult
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
-import io.github.sds100.keymapper.system.shell.ShellResult
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withTimeout

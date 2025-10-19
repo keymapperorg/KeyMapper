@@ -29,6 +29,7 @@ import android.util.Log
 import android.view.InputEvent
 import com.android.internal.telephony.ITelephony
 import io.github.sds100.keymapper.common.models.EvdevDeviceHandle
+import io.github.sds100.keymapper.common.models.ShellResult
 import io.github.sds100.keymapper.common.utils.UserHandleUtils
 import io.github.sds100.keymapper.sysbridge.IEvdevCallback
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
@@ -508,24 +509,32 @@ internal class SystemBridge : ISystemBridge.Stub() {
         return false
     }
 
-    override fun executeCommand(command: String?): String {
+    override fun executeCommand(command: String?): ShellResult {
         command ?: throw IllegalArgumentException("command is null")
 
         Log.i(TAG, "Executing command: $command")
 
-        val process = Runtime.getRuntime().exec(command)
+        try {
+            val process = Runtime.getRuntime().exec(command)
 
-        val out = with(process.inputStream.bufferedReader()) {
-            readText()
+            process.waitFor()
+
+            val outputLines = with(process.inputStream.bufferedReader()) {
+                readLines()
+            }
+            val errorLines = with(process.errorStream.bufferedReader()) {
+                readLines()
+            }
+
+            val output = outputLines.joinToString("\n")
+            val stderr = errorLines.joinToString("\n")
+            val exitCode = process.exitValue()
+
+            return ShellResult(output, stderr, exitCode)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error executing command: $command", e)
+            return ShellResult("", e.message ?: "Unknown error", -1)
         }
-
-        val err = with(process.errorStream.bufferedReader()) {
-            readText()
-        }
-
-        process.waitFor()
-
-        return "$out\n$err"
     }
 
     override fun getVersionCode(): Int {

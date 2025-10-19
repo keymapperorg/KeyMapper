@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.base.actions.keyevent
 
-import io.github.sds100.keymapper.base.trigger.ProModeStatus
+import io.github.sds100.keymapper.base.utils.ProModeStatus
 
 sealed class FixKeyEventActionState {
     abstract val isAccessibilityServiceEnabled: Boolean

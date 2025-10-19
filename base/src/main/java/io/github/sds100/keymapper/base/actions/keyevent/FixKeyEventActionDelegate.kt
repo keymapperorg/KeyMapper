@@ -4,8 +4,8 @@ import android.os.Build
 import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
 import io.github.sds100.keymapper.base.system.accessibility.ControlAccessibilityServiceUseCase
-import io.github.sds100.keymapper.base.trigger.ProModeStatus
 import io.github.sds100.keymapper.base.trigger.SetupInputMethodUseCase
+import io.github.sds100.keymapper.base.utils.ProModeStatus
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate

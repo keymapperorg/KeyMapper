@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.system.shell
 
+import io.github.sds100.keymapper.common.models.ShellResult
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
@@ -41,11 +42,7 @@ class SimpleShell @Inject constructor() : ShellAdapter {
             val stderr = errorLines.joinToString("\n")
             val exitCode = process.exitValue()
 
-            return if (exitCode == 0) {
-                Success(ShellResult.Success(output, exitCode))
-            } else {
-                Success(ShellResult.Error(stderr, exitCode))
-            }
+            return Success(ShellResult(output, stderr, exitCode))
         } catch (e: IOException) {
             return KMError.Exception(e)
         }
@@ -63,7 +60,7 @@ class SimpleShell @Inject constructor() : ShellAdapter {
                 var line: String?
                 while (outputReader.readLine().also { line = it } != null) {
                     outputLines.add(line!!)
-                    emit(Success(ShellResult.Success(outputLines.joinToString("\n"))))
+                    emit(Success(ShellResult(outputLines.joinToString("\n"), "", 0)))
                 }
 
                 process.waitFor()
@@ -73,12 +70,8 @@ class SimpleShell @Inject constructor() : ShellAdapter {
                 val stderr = errorLines.joinToString("\n")
                 val exitCode = process.exitValue()
 
-                // Emit final result based on exit code
-                if (exitCode == 0) {
-                    emit(Success(ShellResult.Success(outputLines.joinToString("\n"), exitCode)))
-                } else {
-                    emit(Success(ShellResult.Error(stderr, exitCode)))
-                }
+                // Emit final result with both stdout and stderr
+                emit(Success(ShellResult(outputLines.joinToString("\n"), stderr, exitCode)))
 
                 outputReader.close()
                 errorReader.close()

@@ -53,12 +53,13 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.base.utils.ui.compose.SliderOptionText
+import io.github.sds100.keymapper.common.models.ShellResult
+import io.github.sds100.keymapper.common.models.isSuccess
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.system.shell.ShellResult
 import kotlinx.coroutines.launch
 
 data class ShellCommandActionState(
@@ -328,50 +329,46 @@ private fun ShellCommandActionContent(
         when (val result = state.testResult) {
             null -> {}
             is Success -> {
-                when (val shellResult = result.value) {
-                    is ShellResult.Success -> {
-                        Text(
-                            text = stringResource(R.string.action_shell_command_output_label),
-                            style = MaterialTheme.typography.titleMedium,
+                val shellResult = result.value
+                if (shellResult.isSuccess()) {
+                    Text(
+                        text = stringResource(R.string.action_shell_command_output_label),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+
+                    SelectionContainer {
+                        OutlinedTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = shellResult.stdOut,
+                            onValueChange = {},
+                            readOnly = true,
+                            minLines = 5,
+                            maxLines = 15,
+                            textStyle = MaterialTheme.typography.bodySmall.copy(
+                                fontFamily = FontFamily.Monospace,
+                            ),
                         )
-
-                        SelectionContainer {
-                            OutlinedTextField(
-                                modifier = Modifier.fillMaxWidth(),
-                                value = shellResult.stdout,
-                                onValueChange = {},
-                                readOnly = true,
-                                minLines = 5,
-                                maxLines = 15,
-                                textStyle = MaterialTheme.typography.bodySmall.copy(
-                                    fontFamily = FontFamily.Monospace,
-                                ),
-                            )
-                        }
-
                     }
+                } else {
+                    Text(
+                        text = stringResource(R.string.action_shell_command_test_failed),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.error,
+                    )
 
-                    is ShellResult.Error -> {
-                        Text(
-                            text = stringResource(R.string.action_shell_command_test_failed),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.error,
+                    SelectionContainer {
+                        OutlinedTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = shellResult.stdErr,
+                            onValueChange = {},
+                            readOnly = true,
+                            minLines = 5,
+                            maxLines = 15,
+                            isError = true,
+                            textStyle = MaterialTheme.typography.bodySmall.copy(
+                                fontFamily = FontFamily.Monospace,
+                            ),
                         )
-
-                        SelectionContainer {
-                            OutlinedTextField(
-                                modifier = Modifier.fillMaxWidth(),
-                                value = shellResult.stderr,
-                                onValueChange = {},
-                                readOnly = true,
-                                minLines = 5,
-                                maxLines = 15,
-                                isError = true,
-                                textStyle = MaterialTheme.typography.bodySmall.copy(
-                                    fontFamily = FontFamily.Monospace,
-                                ),
-                            )
-                        }
                     }
                 }
 
@@ -413,7 +410,7 @@ private fun PreviewShellCommandActionScreen() {
                 description = "Hello world script",
                 command = "echo 'Hello World'",
                 useRoot = false,
-                testResult = Success(ShellResult.Success("Hello World\nNew line\nNew new line")),
+                testResult = Success(ShellResult("Hello World\nNew line\nNew new line", "", 0)),
             ),
         )
     }
@@ -458,8 +455,9 @@ private fun PreviewShellCommandActionScreenShellError() {
                 command = "ls",
                 useRoot = true,
                 testResult = Success(
-                    ShellResult.Error(
-                        stderr = "ls: .: Permission denied",
+                    ShellResult(
+                        stdOut = "",
+                        stdErr = "ls: .: Permission denied",
                         exitCode = 1
                     )
                 ),
@@ -478,7 +476,7 @@ private fun PreviewShellCommandActionScreenTesting() {
                 command = "for i in \$(seq 1 10); do echo \"Line \$i\"; sleep 1; done",
                 useRoot = false,
                 isRunning = true,
-                testResult = Success(ShellResult.Success("Line 1\nLine 2\nLine 3\nLine 4\nLine 5")),
+                testResult = Success(ShellResult("Line 1\nLine 2\nLine 3\nLine 4\nLine 5", "", 0)),
             ),
         )
     }

@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.trigger
 
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
+import io.github.sds100.keymapper.base.utils.ProModeStatus
 
 sealed class TriggerSetupState {
     data class Volume(

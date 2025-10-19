@@ -2,13 +2,14 @@ package io.github.sds100.keymapper.sysbridge;
 
 import io.github.sds100.keymapper.sysbridge.IEvdevCallback;
 import io.github.sds100.keymapper.common.models.EvdevDeviceHandle;
+import io.github.sds100.keymapper.common.models.ShellResult;
 import android.view.InputEvent;
 
 interface ISystemBridge {
    void destroy() = 16777114;
    int getProcessUid() = 16777113;
    int getVersionCode() = 16777112;
-   String executeCommand(String command) = 16777111;
+   ShellResult executeCommand(String command) = 16777111;
 
    boolean grabEvdevDevice(String devicePath) = 1;
    boolean grabEvdevDeviceArray(in String[] devicePath) = 2;
