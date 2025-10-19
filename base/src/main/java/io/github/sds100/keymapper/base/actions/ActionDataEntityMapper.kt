@@ -39,6 +39,8 @@ object ActionDataEntityMapper {
             ActionEntity.Type.PINCH_COORDINATE -> ActionId.PINCH_SCREEN
             ActionEntity.Type.INTENT -> ActionId.INTENT
             ActionEntity.Type.PHONE_CALL -> ActionId.PHONE_CALL
+            ActionEntity.Type.SEND_SMS -> ActionId.SEND_SMS
+            ActionEntity.Type.COMPOSE_SMS -> ActionId.COMPOSE_SMS
             ActionEntity.Type.SOUND -> ActionId.SOUND
             ActionEntity.Type.SYSTEM_ACTION -> {
                 SYSTEM_ACTION_ID_MAP.getKey(entity.data) ?: return null
@@ -228,6 +230,23 @@ object ActionDataEntityMapper {
             }
 
             ActionId.PHONE_CALL -> ActionData.PhoneCall(number = entity.data)
+
+            ActionId.SEND_SMS, ActionId.COMPOSE_SMS -> {
+                val message = entity.extras.getData(ActionEntity.EXTRA_SMS_MESSAGE)
+                    .valueOrNull() ?: return null
+
+                when (actionId) {
+                    ActionId.SEND_SMS -> ActionData.Sms.SendSms(
+                        number = entity.data,
+                        message = message,
+                    )
+                    ActionId.COMPOSE_SMS -> ActionData.Sms.ComposeSms(
+                        number = entity.data,
+                        message = message,
+                    )
+                    else -> return null
+                }
+            }
 
             ActionId.SOUND -> {
                 val isRingtoneUri = try {
@@ -651,6 +670,8 @@ object ActionDataEntityMapper {
             is ActionData.App -> ActionEntity.Type.APP
             is ActionData.AppShortcut -> ActionEntity.Type.APP_SHORTCUT
             is ActionData.PhoneCall -> ActionEntity.Type.PHONE_CALL
+            is ActionData.Sms.SendSms -> ActionEntity.Type.SEND_SMS
+            is ActionData.Sms.ComposeSms -> ActionEntity.Type.COMPOSE_SMS
             is ActionData.TapScreen -> ActionEntity.Type.TAP_COORDINATE
             is ActionData.SwipeScreen -> ActionEntity.Type.SWIPE_COORDINATE
             is ActionData.PinchScreen -> ActionEntity.Type.PINCH_COORDINATE
@@ -693,6 +714,7 @@ object ActionDataEntityMapper {
         is ActionData.App -> data.packageName
         is ActionData.AppShortcut -> data.uri
         is ActionData.PhoneCall -> data.number
+        is ActionData.Sms -> data.number
         is ActionData.TapScreen -> "${data.x},${data.y}"
         is ActionData.SwipeScreen -> "${data.xStart},${data.yStart},${data.xEnd},${data.yEnd},${data.fingerCount},${data.duration}"
         is ActionData.PinchScreen -> "${data.x},${data.y},${data.distance},${data.pinchType},${data.fingerCount},${data.duration}"
@@ -751,6 +773,10 @@ object ActionDataEntityMapper {
         }.toList()
 
         is ActionData.PhoneCall -> emptyList()
+
+        is ActionData.Sms -> listOf(
+            EntityExtra(ActionEntity.EXTRA_SMS_MESSAGE, data.message),
+        )
 
         is ActionData.DoNotDisturb.Enable -> listOf(
             EntityExtra(ActionEntity.EXTRA_DND_MODE, DND_MODE_MAP[data.dndMode]!!),
