@@ -28,6 +28,8 @@ import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCaseImpl
+import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
+import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegateImpl
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.base.system.accessibility.ControlAccessibilityServiceUseCaseImpl
@@ -170,4 +172,8 @@ abstract class BaseSingletonHiltModule {
     @Binds
     @Singleton
     abstract fun bindEnableKeyMapsUseCase(impl: EnableKeyMapsUseCaseImpl): EnableKeyMapsUseCase
+
+    @Binds
+    @Singleton
+    abstract fun bindSetupAccessibilityServiceDelegate(impl: SetupAccessibilityServiceDelegateImpl): SetupAccessibilityServiceDelegate
 }

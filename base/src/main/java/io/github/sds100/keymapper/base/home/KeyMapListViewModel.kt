@@ -19,6 +19,7 @@ import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
 import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
 import io.github.sds100.keymapper.base.sorting.SortKeyMapsUseCase
 import io.github.sds100.keymapper.base.sorting.SortViewModel
 import io.github.sds100.keymapper.base.system.inputmethod.ShowInputMethodPickerUseCase
@@ -38,6 +39,7 @@ import io.github.sds100.keymapper.base.utils.ui.SelectionState
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.showDialog
+import io.github.sds100.keymapper.common.utils.AccessibilityServiceError
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
@@ -81,13 +83,15 @@ class KeyMapListViewModel(
     private val backupRestore: BackupRestoreMappingsUseCase,
     private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
     private val onboarding: OnboardingUseCase,
+    setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
     fixKeyEventActionDelegate: FixKeyEventActionDelegate,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
 ) : DialogProvider by dialogProvider,
     ResourceProvider by resourceProvider,
     NavigationProvider by navigationProvider,
-    FixKeyEventActionDelegate by fixKeyEventActionDelegate {
+    FixKeyEventActionDelegate by fixKeyEventActionDelegate,
+    SetupAccessibilityServiceDelegate by setupAccessibilityServiceDelegate {
 
     private companion object {
         const val ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM = "accessibility_service_disabled"
@@ -142,7 +146,7 @@ class KeyMapListViewModel(
 
     private val warnings: Flow<List<HomeWarningListItem>> = combine(
         showAlertsUseCase.isBatteryOptimised,
-        showAlertsUseCase.accessibilityServiceState,
+        accessibilityServiceState,
         showAlertsUseCase.hideAlerts,
         showAlertsUseCase.isLoggingEnabled,
         showAlertsUseCase.showNotificationPermissionAlert,
@@ -663,31 +667,11 @@ class KeyMapListViewModel(
         coroutineScope.launch {
             when (id) {
                 ID_ACCESSIBILITY_SERVICE_DISABLED_LIST_ITEM -> {
-                    val explanationResponse =
-                        ViewModelHelper.showAccessibilityServiceExplanationDialog(
-                            resourceProvider = this@KeyMapListViewModel,
-                            dialogProvider = this@KeyMapListViewModel,
-                        )
-
-                    if (explanationResponse != DialogResponse.POSITIVE) {
-                        return@launch
-                    }
-
-                    if (!showAlertsUseCase.startAccessibilityService()) {
-                        ViewModelHelper.handleCantFindAccessibilitySettings(
-                            resourceProvider = this@KeyMapListViewModel,
-                            dialogProvider = this@KeyMapListViewModel,
-                        )
-                    }
+                    showEnableAccessibilityServiceDialog()
                 }
 
                 ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM ->
-                    ViewModelHelper.handleKeyMapperCrashedDialog(
-                        resourceProvider = this@KeyMapListViewModel,
-                        dialogProvider = this@KeyMapListViewModel,
-                        restartService = showAlertsUseCase::restartAccessibilityService,
-                        ignoreCrashed = showAlertsUseCase::acknowledgeCrashed,
-                    )
+                    showFixAccessibilityServiceDialog(AccessibilityServiceError.Crashed)
 
                 ID_BATTERY_OPTIMISATION_LIST_ITEM -> showAlertsUseCase.disableBatteryOptimisation()
                 ID_LOGGING_ENABLED_LIST_ITEM -> showAlertsUseCase.disableLogging()

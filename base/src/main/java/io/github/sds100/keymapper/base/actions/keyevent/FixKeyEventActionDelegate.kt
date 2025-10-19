@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.base.actions.keyevent
 
 import android.os.Build
 import dagger.hilt.android.scopes.ViewModelScoped
+import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
 import io.github.sds100.keymapper.base.system.accessibility.ControlAccessibilityServiceUseCase
 import io.github.sds100.keymapper.base.trigger.ProModeStatus
 import io.github.sds100.keymapper.base.trigger.SetupInputMethodUseCase
@@ -10,7 +11,6 @@ import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.data.Keys
@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -44,6 +43,7 @@ class FixKeyEventActionDelegateImpl @Inject constructor(
     val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     val setupInputMethodUseCase: SetupInputMethodUseCase,
     val preferenceRepository: PreferenceRepository,
+    val setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
     resourceProvider: ResourceProvider,
     dialogProvider: DialogProvider,
     navigationProvider: NavigationProvider,
@@ -128,21 +128,7 @@ class FixKeyEventActionDelegateImpl @Inject constructor(
 
     override fun onEnableAccessibilityServiceClick() {
         viewModelScope.launch {
-            val state = controlAccessibilityServiceUseCase.serviceState.first()
-
-            if (state == AccessibilityServiceState.DISABLED) {
-                ViewModelHelper.handleAccessibilityServiceStoppedDialog(
-                    resourceProvider = this@FixKeyEventActionDelegateImpl,
-                    dialogProvider = this@FixKeyEventActionDelegateImpl,
-                    startService = controlAccessibilityServiceUseCase::startService,
-                )
-            } else if (state == AccessibilityServiceState.CRASHED) {
-                ViewModelHelper.handleAccessibilityServiceCrashedDialog(
-                    resourceProvider = this@FixKeyEventActionDelegateImpl,
-                    dialogProvider = this@FixKeyEventActionDelegateImpl,
-                    restartService = controlAccessibilityServiceUseCase::restartService,
-                )
-            }
+            setupAccessibilityServiceDelegate.showEnableAccessibilityServiceDialog()
         }
     }
 
