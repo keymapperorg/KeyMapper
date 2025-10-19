@@ -67,14 +67,12 @@ fun BaseMainNavHost(
             val viewModel: ConfigShellCommandViewModel = hiltViewModel()
 
             ShellCommandActionScreen(
-                command = viewModel.command,
-                useRoot = viewModel.useRoot,
+                state = viewModel.state,
                 onCommandChanged = viewModel::onCommandChanged,
                 onUseRootChanged = viewModel::onUseRootChanged,
                 onTestClick = viewModel::onTestClick,
                 onDoneClick = viewModel::onDoneClick,
                 onCancelClick = viewModel::onCancelClick,
-                testResult = viewModel.testResult,
             )
         }
 

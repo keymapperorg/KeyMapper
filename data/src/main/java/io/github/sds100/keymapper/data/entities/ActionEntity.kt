@@ -86,6 +86,7 @@ data class ActionEntity(
         const val EXTRA_HTTP_DESCRIPTION = "extra_http_description"
         const val EXTRA_HTTP_AUTHORIZATION_HEADER = "extra_http_authorization_header"
         const val EXTRA_SMS_MESSAGE = "extra_sms_message"
+        const val EXTRA_SHELL_COMMAND_USE_ROOT = "extra_shell_command_use_root"
 
         // Accessibility node extras
         const val EXTRA_ACCESSIBILITY_PACKAGE_NAME = "extra_accessibility_package_name"
@@ -126,6 +127,7 @@ data class ActionEntity(
         const val ACTION_FLAG_SHOW_VOLUME_UI = 1
         const val ACTION_FLAG_REPEAT = 4
         const val ACTION_FLAG_HOLD_DOWN = 8
+        const val ACTION_FLAG_SHELL_COMMAND_USE_ROOT = 16
 
         const val EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR = "extra_custom_stop_repeat_behaviour"
         const val EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR = "extra_custom_hold_down_behaviour"
@@ -177,6 +179,7 @@ data class ActionEntity(
         COMPOSE_SMS,
         SOUND,
         INTERACT_UI_ELEMENT,
+        SHELL_COMMAND,
     }
 
     constructor(

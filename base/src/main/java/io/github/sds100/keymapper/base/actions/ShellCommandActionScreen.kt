@@ -39,17 +39,21 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.launch
 
+data class ShellCommandActionState(
+    val command: String,
+    val useRoot: Boolean,
+    val testResult: State<String>? = null,
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShellCommandActionScreen(
-    command: String,
-    useRoot: Boolean,
+    state: ShellCommandActionState,
     onCommandChanged: (String) -> Unit,
     onUseRootChanged: (Boolean) -> Unit,
     onTestClick: () -> Unit,
     onDoneClick: () -> Unit,
     onCancelClick: () -> Unit,
-    testResult: State<String>? = null,
 ) {
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
@@ -75,7 +79,7 @@ fun ShellCommandActionScreen(
         ) {
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = command,
+                value = state.command,
                 onValueChange = {
                     commandError = null
                     onCommandChanged(it)
@@ -99,7 +103,7 @@ fun ShellCommandActionScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Checkbox(
-                    checked = useRoot,
+                    checked = state.useRoot,
                     onCheckedChange = onUseRootChanged,
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -109,7 +113,7 @@ fun ShellCommandActionScreen(
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    if (command.isBlank()) {
+                    if (state.command.isBlank()) {
                         commandError = commandEmptyErrorString
                     } else {
                         onTestClick()
@@ -119,13 +123,13 @@ fun ShellCommandActionScreen(
                 Text(stringResource(R.string.action_shell_command_test_button))
             }
 
-            if (testResult != null) {
+            if (state.testResult != null) {
                 Text(
                     text = stringResource(R.string.action_shell_command_output_label),
                     style = MaterialTheme.typography.titleMedium,
                 )
 
-                when (testResult) {
+                when (state.testResult) {
                     is State.Loading -> {
                         Text(
                             text = stringResource(R.string.action_shell_command_testing),
@@ -136,7 +140,7 @@ fun ShellCommandActionScreen(
                         SelectionContainer {
                             OutlinedTextField(
                                 modifier = Modifier.fillMaxWidth(),
-                                value = testResult.data,
+                                value = state.testResult.data,
                                 onValueChange = {},
                                 readOnly = true,
                                 minLines = 5,
@@ -168,7 +172,7 @@ fun ShellCommandActionScreen(
                 Button(
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        if (command.isBlank()) {
+                        if (state.command.isBlank()) {
                             commandError = commandEmptyErrorString
                         } else {
                             onDoneClick()
@@ -189,14 +193,16 @@ fun ShellCommandActionScreen(
 private fun PreviewShellCommandActionScreen() {
     KeyMapperTheme {
         ShellCommandActionScreen(
-            command = "echo 'Hello World'",
-            useRoot = false,
+            state = ShellCommandActionState(
+                command = "echo 'Hello World'",
+                useRoot = false,
+                testResult = State.Data("Hello World\n"),
+            ),
             onCommandChanged = {},
             onUseRootChanged = {},
             onTestClick = {},
             onDoneClick = {},
             onCancelClick = {},
-            testResult = State.Data("Hello World\n"),
         )
     }
 }
@@ -206,8 +212,10 @@ private fun PreviewShellCommandActionScreen() {
 private fun PreviewShellCommandActionScreenEmpty() {
     KeyMapperTheme {
         ShellCommandActionScreen(
-            command = "",
-            useRoot = true,
+            state = ShellCommandActionState(
+                command = "",
+                useRoot = true,
+            ),
             onCommandChanged = {},
             onUseRootChanged = {},
             onTestClick = {},

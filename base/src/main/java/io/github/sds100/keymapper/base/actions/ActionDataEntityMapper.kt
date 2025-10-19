@@ -47,6 +47,7 @@ object ActionDataEntityMapper {
             }
 
             ActionEntity.Type.INTERACT_UI_ELEMENT -> ActionId.INTERACT_UI_ELEMENT
+            ActionEntity.Type.SHELL_COMMAND -> ActionId.SHELL_COMMAND
         }
 
         return when (actionId) {
@@ -652,6 +653,15 @@ object ActionDataEntityMapper {
                 ActionData.MoveCursor(moveType = type, direction = direction)
             }
 
+            ActionId.SHELL_COMMAND -> {
+                val useRoot = entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHELL_COMMAND_USE_ROOT)
+
+                ActionData.ShellCommand(
+                    command = entity.data,
+                    useRoot = useRoot,
+                )
+            }
+
             ActionId.FORCE_STOP_APP -> ActionData.ForceStopApp
             ActionId.CLEAR_RECENT_APP -> ActionData.ClearRecentApp
         }
@@ -679,6 +689,7 @@ object ActionDataEntityMapper {
             is ActionData.Url -> ActionEntity.Type.URL
             is ActionData.Sound -> ActionEntity.Type.SOUND
             is ActionData.InteractUiElement -> ActionEntity.Type.INTERACT_UI_ELEMENT
+            is ActionData.ShellCommand -> ActionEntity.Type.SHELL_COMMAND
             else -> ActionEntity.Type.SYSTEM_ACTION
         }
 
@@ -691,6 +702,8 @@ object ActionDataEntityMapper {
     }
 
     private fun getFlags(data: ActionData): Int {
+        var flags = 0
+
         val showVolumeUiFlag = when (data) {
             is ActionData.Volume.Stream -> data.showVolumeUi
             is ActionData.Volume.Up -> data.showVolumeUi
@@ -702,10 +715,14 @@ object ActionDataEntityMapper {
         }
 
         if (showVolumeUiFlag) {
-            return ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI
-        } else {
-            return 0
+            flags = flags or ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI
         }
+
+        if (data is ActionData.ShellCommand && data.useRoot) {
+            flags = flags or ActionEntity.ACTION_FLAG_SHELL_COMMAND_USE_ROOT
+        }
+
+        return flags
     }
 
     private fun getDataString(data: ActionData): String = when (data) {
@@ -727,6 +744,7 @@ object ActionDataEntityMapper {
         }
 
         is ActionData.InteractUiElement -> data.description
+        is ActionData.ShellCommand -> data.command
         is ActionData.ControlMediaForApp.Rewind -> SYSTEM_ACTION_ID_MAP[data.id]!!
         is ActionData.ControlMediaForApp.Stop -> SYSTEM_ACTION_ID_MAP[data.id]!!
         is ActionData.ControlMedia.Rewind -> SYSTEM_ACTION_ID_MAP[data.id]!!
