@@ -558,6 +558,32 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
+    data class SendSms(
+        val number: String,
+        val message: String,
+    ) : ActionData() {
+        override val id = ActionId.SEND_SMS
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is SendSms -> compareValuesBy(this, other, { it.number }, { it.message })
+            else -> super.compareTo(other)
+        }
+    }
+
+    @Serializable
+    data class ComposeSms(
+        val number: String,
+        val message: String,
+    ) : ActionData() {
+        override val id = ActionId.COMPOSE_SMS
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is ComposeSms -> compareValuesBy(this, other, { it.number }, { it.message })
+            else -> super.compareTo(other)
+        }
+    }
+
+    @Serializable
     data class Url(
         val url: String,
     ) : ActionData() {

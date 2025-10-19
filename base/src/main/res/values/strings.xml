@@ -139,6 +139,8 @@
     <string name="hint_create_text_action">Text to input</string>
     <string name="hint_create_url_action">Url to open</string>
     <string name="hint_create_phone_call_action">Phone number to call</string>
+    <string name="hint_create_sms_action_number">Phone number to send SMS</string>
+    <string name="hint_create_sms_action_message">Message to send</string>
 
     <string name="hint_intent_action">Action</string>
     <string name="hint_intent_categories">Categories</string>
@@ -753,7 +755,7 @@
     <string name="error_system_feature_bluetooth_unsupported">Your device doesn\'t support Bluetooth.</string>
     <string name="error_system_feature_device_admin_unsupported">Your device doesn\'t support device policy enforcement.</string>
     <string name="error_system_feature_camera_flash_unsupported">Your device doesn\'t have a camera flash.</string>
-    <string name="error_system_feature_telephony_unsupported">Your device doesn\'t have any telephony features.</string>
+    <string name="error_system_feature_telephony_unsupported">Your device can not use telephony features. Is a SIM card inserted?</string>
     <string name="error_cant_find_ime_settings">Can\'t find the keyboard settings page!</string>
     <string name="error_need_to_enable_device_admin">Key Mapper needs to be a device administrator!</string>
     <string name="error_keymapper_doesnt_have_permission_app_shortcut">Key Mapper doesn\'t have permission to use that shortcut</string>
@@ -764,6 +766,7 @@
     <string name="error_cant_find_dnd_access_settings">Can\'t find the Do Not Disturb access permission settings!</string>
     <string name="error_need_write_secure_settings_permission">Key Mapper needs WRITE_SECURE_SETTINGS permission.</string>
     <string name="error_no_app_to_phone_call">There is no app that can start this phone call</string>
+    <string name="error_no_app_to_send_sms">There is no app that can send this SMS</string>
 
     <string name="error_camera_in_use">Camera is in use!</string>
     <string name="error_camera_disconnected">Camera disconnected!</string>
@@ -802,6 +805,17 @@
     <string name="error_denied_notification_listener_service_permission">Denied notification access permission!</string>
     <string name="error_invalid_intent_extra_value">Invalid!</string>
     <string name="error_denied_call_phone_permission">Denied permission to start phone calls!</string>
+    <string name="error_denied_send_sms_permission">Denied permission to send SMS messages!</string>
+    <string name="error_sms_generic_failure">Failed to send SMS. Is the number correct?</string>
+    <string name="error_sms_radio_off">Can\'t send SMS. Turn off airplane mode.</string>
+    <string name="error_sms_no_service">Can\'t send SMS. No cellular service.</string>
+    <string name="error_sms_limit_exceeded">SMS sending limit exceeded. Try again later.</string>
+    <string name="error_sms_network_reject">Network rejected the SMS.</string>
+    <string name="error_sms_no_memory">Can\'t send SMS. Device is out of memory.</string>
+    <string name="error_sms_invalid_format">Invalid SMS message format.</string>
+    <string name="error_sms_network_error">Can\'t send SMS. Network error.</string>
+    <string name="error_sms_blocked_during_emergency">Can\'t send SMS during emergency call.</string>
+    <string name="error_sms_no_sim">Can\'t send SMS. No SIM card detected.</string>
     <string name="error_backup_version_too_new">You will need to update Key Mapper to the latest version to use this backup.</string>
     <string name="error_voice_assistant_not_found">There is no voice assistant installed!</string>
     <string name="error_insufficient_permissions">Insufficient permissions</string>
@@ -1045,6 +1059,10 @@
     <string name="action_phone_call">Start phone call</string>
     <string name="action_answer_call">Answer phone call</string>
     <string name="action_end_call">End phone call</string>
+    <string name="action_send_sms">Send SMS</string>
+    <string name="action_send_sms_description">Send SMS: "%s"" to %s</string>
+    <string name="action_compose_sms">Compose SMS</string>
+    <string name="action_compose_sms_description">Compose SMS: "%s" to %s</string>
     <string name="action_play_sound">Play sound</string>
     <string name="action_dismiss_most_recent_notification">Dismiss most recent notification</string>
     <string name="action_dismiss_all_notifications">Dismiss all notifications</string>
@@ -1715,5 +1733,8 @@
     <string name="fix_key_event_action_change_in_settings_caption">You can always change this in Settings</string>
     <string name="fix_key_event_action_setup_title">Setup</string>
     <string name="fix_key_event_action_options_title">Options</string>
+
+    <string name="button_test_sms">Test SMS</string>
+    <string name="test_sms_result_ok">Sent successfully!</string>
 
 </resources>

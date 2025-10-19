@@ -133,6 +133,8 @@ enum class ActionId {
 
     ANSWER_PHONE_CALL,
     END_PHONE_CALL,
+    SEND_SMS,
+    COMPOSE_SMS,
     DEVICE_CONTROLS,
 
     FORCE_STOP_APP,

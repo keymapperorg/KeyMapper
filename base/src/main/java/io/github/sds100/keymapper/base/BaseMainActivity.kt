@@ -155,10 +155,6 @@ abstract class BaseMainActivity : AppCompatActivity() {
         )
         super.onCreate(savedInstanceState)
 
-        if (viewModel.previousNightMode != currentNightMode) {
-            resourceProvider.onThemeChange()
-        }
-
         requestPermissionDelegate = RequestPermissionDelegate(
             this,
             showDialogs = true,
