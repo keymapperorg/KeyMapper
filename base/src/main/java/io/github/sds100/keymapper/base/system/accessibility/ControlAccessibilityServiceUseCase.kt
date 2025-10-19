@@ -47,7 +47,9 @@ class ControlAccessibilityServiceUseCaseImpl @Inject constructor(
 
     override fun isRestrictedSetting(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            packageManagerAdapter.getInstallSourcePackageName() == "com.android.vending"
+            // If the app is installed outside of Google Play then Android disables
+            // the accessibility service until restricted settings are enabled.
+            packageManagerAdapter.getInstallSourcePackageName() != "com.android.vending"
         } else {
             false
         }

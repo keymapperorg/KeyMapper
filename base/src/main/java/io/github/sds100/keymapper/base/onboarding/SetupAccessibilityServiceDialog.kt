@@ -22,6 +22,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.openUriSafe
 
 @Composable
@@ -85,15 +86,16 @@ private fun EnableAccessibilityServiceDialog(
         },
         text = {
             Column {
+                if (isRestrictedSetting) {
+                    RestrictedSettingText()
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
                 Text(
                     stringResource(R.string.dialog_message_accessibility_service_explanation),
                     style = MaterialTheme.typography.bodyMedium,
                 )
 
-                if (isRestrictedSetting) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    RestrictedSettingText()
-                }
             }
         },
         confirmButton = {
@@ -204,14 +206,14 @@ private fun RestrictedSettingText(modifier: Modifier = Modifier) {
     Text(
         modifier = modifier,
         text = annotatedString,
-        style = MaterialTheme.typography.bodyMedium,
+        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
     )
 }
 
 @Preview
 @Composable
 private fun EnableAccessibilityServiceDialogPreview() {
-    MaterialTheme {
+    KeyMapperTheme {
         EnableAccessibilityServiceDialog(
             isRestrictedSetting = false,
             onDismissRequest = {},
@@ -223,7 +225,7 @@ private fun EnableAccessibilityServiceDialogPreview() {
 @Preview
 @Composable
 private fun EnableAccessibilityServiceDialogRestrictedPreview() {
-    MaterialTheme {
+    KeyMapperTheme {
         EnableAccessibilityServiceDialog(
             isRestrictedSetting = true,
             onDismissRequest = {},
@@ -235,7 +237,7 @@ private fun EnableAccessibilityServiceDialogRestrictedPreview() {
 @Preview
 @Composable
 private fun RestartAccessibilityServiceDialogPreview() {
-    MaterialTheme {
+    KeyMapperTheme {
         RestartAccessibilityServiceDialog(
             onDismissRequest = {},
             onRestartClick = {},
@@ -248,7 +250,7 @@ private fun RestartAccessibilityServiceDialogPreview() {
 @Preview
 @Composable
 private fun CantFindAccessibilitySettingsDialogPreview() {
-    MaterialTheme {
+    KeyMapperTheme {
         CantFindAccessibilitySettingsDialog(
             onDismissRequest = {},
             onOpenGuide = {},

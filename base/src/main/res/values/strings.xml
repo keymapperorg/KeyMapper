@@ -455,8 +455,8 @@
     <string name="dialog_title_accessibility_service_explanation">Accessibility service must be enabled</string>
     <string name="dialog_message_accessibility_service_explanation">@string/accessibility_service_explanation</string>
 
-    <string name="dialog_restricted_setting_message">Since you installed Key Mapper from the Google Play Store, you will need to follow some extra steps to enable the accessibility service.</string>
-    <string name="dialog_restricted_setting_link_text">Read instructions.</string>
+    <string name="dialog_restricted_setting_message">You may need to allow Restricted Settings.</string>
+    <string name="dialog_restricted_setting_link_text">Tap to read instructions.</string>
 
     <string name="dialog_title_fix_dnd_trigger_error">Grant Do Not Disturb access</string>
     <string name="dialog_message_fix_dnd_trigger_error">You will be taken to your device\'s settings page to manage which apps can modify the Do Not Disturb state. This is <b>not present on some devices</b> so tap don\'t show again if you do not see Key Mapper in the list.</string>
