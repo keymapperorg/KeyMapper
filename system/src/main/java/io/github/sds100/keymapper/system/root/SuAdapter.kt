@@ -45,6 +45,24 @@ class SuAdapterImpl @Inject constructor() : SuAdapter {
         }
     }
 
+    override fun executeWithOutput(command: String): KMResult<String> {
+        if (!isRootGranted.firstBlocking()) {
+            return SystemError.PermissionDenied(Permission.ROOT)
+        }
+
+        try {
+            val result = Shell.cmd(command).exec()
+
+            return if (result.isSuccess) {
+                Success(result.out.joinToString("\n"))
+            } else {
+                KMError.Exception(Exception(result.err.joinToString("\n")))
+            }
+        } catch (e: Exception) {
+            return KMError.Exception(e)
+        }
+    }
+
     fun invalidateIsRooted() {
         try {
             // Close the shell so a new one is started without root permission.
@@ -68,4 +86,5 @@ interface SuAdapter {
 
     fun requestPermission()
     fun execute(command: String, block: Boolean = false): KMResult<Unit>
+    fun executeWithOutput(command: String): KMResult<String>
 }

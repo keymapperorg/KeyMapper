@@ -9,8 +9,10 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.popBackStackWithResult
+import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.common.utils.getFullMessage
+import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -20,6 +22,7 @@ import javax.inject.Inject
 class ConfigShellCommandViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val shellAdapter: ShellAdapter,
+    private val suAdapter: SuAdapter,
     private val navigationProvider: NavigationProvider,
 ) : ViewModel() {
 
@@ -48,15 +51,15 @@ class ConfigShellCommandViewModel @Inject constructor(
             testResult = State.Loading
 
             val result = if (useRoot) {
-                shellAdapter.executeWithOutput(command)
+                suAdapter.executeWithOutput(command)
             } else {
                 shellAdapter.executeWithOutput(command)
             }
 
-            testResult = result.fold(
-                onSuccess = { output -> State.Data(output) },
-                onFailure = { error -> State.Data("Error: ${error.getFullMessage()}") },
-            )
+            testResult = when (result) {
+                is Success -> State.Data(result.data)
+                is KMError -> State.Data("Error: ${formatError(result)}")
+            }
         }
     }
 
@@ -76,11 +79,11 @@ class ConfigShellCommandViewModel @Inject constructor(
             navigationProvider.popBackStack()
         }
     }
-}
 
-private fun <T> io.github.sds100.keymapper.common.utils.KMResult<T>.getFullMessage(): String {
-    return when (this) {
-        is io.github.sds100.keymapper.common.utils.Success -> "Success"
-        is io.github.sds100.keymapper.common.utils.KMError -> this.toString()
+    private fun formatError(error: KMError): String {
+        return when (error) {
+            is KMError.Exception -> error.exception.message ?: "Unknown error"
+            else -> error.toString()
+        }
     }
 }
