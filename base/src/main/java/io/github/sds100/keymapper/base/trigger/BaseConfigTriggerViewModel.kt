@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCa
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegate
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
 import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
@@ -25,8 +26,8 @@ import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
+import io.github.sds100.keymapper.common.utils.AccessibilityServiceError
 import io.github.sds100.keymapper.common.utils.InputDeviceUtils
-import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.mapData
@@ -52,12 +53,14 @@ abstract class BaseConfigTriggerViewModel(
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
+    private val setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
     onboardingTipDelegate: OnboardingTipDelegate,
     triggerSetupDelegate: TriggerSetupDelegate,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
 ) : ViewModel(),
+    SetupAccessibilityServiceDelegate by setupAccessibilityServiceDelegate,
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider,
@@ -478,20 +481,8 @@ abstract class BaseConfigTriggerViewModel(
     }
 
     suspend fun handleServiceEventResult(result: KMResult<*>) {
-        if (result is KMError.AccessibilityServiceDisabled) {
-            ViewModelHelper.handleAccessibilityServiceStoppedDialog(
-                resourceProvider = this@BaseConfigTriggerViewModel,
-                dialogProvider = this@BaseConfigTriggerViewModel,
-                startService = displayKeyMap::startAccessibilityService,
-            )
-        }
-
-        if (result is KMError.AccessibilityServiceCrashed) {
-            ViewModelHelper.handleAccessibilityServiceCrashedDialog(
-                resourceProvider = this@BaseConfigTriggerViewModel,
-                dialogProvider = this@BaseConfigTriggerViewModel,
-                restartService = displayKeyMap::restartAccessibilityService,
-            )
+        if (result is AccessibilityServiceError) {
+            showFixAccessibilityServiceDialog(result)
         }
     }
 

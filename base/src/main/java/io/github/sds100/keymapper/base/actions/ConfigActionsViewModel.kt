@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionDelegate
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
+import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.isFixable
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
@@ -17,6 +18,7 @@ import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.common.utils.AccessibilityServiceError
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
@@ -44,12 +46,14 @@ class ConfigActionsViewModel @Inject constructor(
     private val createAction: CreateActionUseCase,
     private val testAction: TestActionUseCase,
     private val config: ConfigActionsUseCase,
+    setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
     fixKeyEventActionDelegate: FixKeyEventActionDelegate,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
 ) : ViewModel(),
     ActionOptionsBottomSheetCallback,
+    SetupAccessibilityServiceDelegate by setupAccessibilityServiceDelegate,
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider,
@@ -248,21 +252,8 @@ class ConfigActionsViewModel @Inject constructor(
 
     private suspend fun attemptTestAction(actionData: ActionData) {
         testAction.invoke(actionData).onFailure { error ->
-
-            if (error is KMError.AccessibilityServiceDisabled) {
-                ViewModelHelper.handleAccessibilityServiceStoppedDialog(
-                    resourceProvider = this,
-                    dialogProvider = this,
-                    startService = displayAction::startAccessibilityService,
-                )
-            }
-
-            if (error is KMError.AccessibilityServiceCrashed) {
-                ViewModelHelper.handleAccessibilityServiceCrashedDialog(
-                    resourceProvider = this,
-                    dialogProvider = this,
-                    restartService = displayAction::restartAccessibilityService,
-                )
+            if (error is AccessibilityServiceError) {
+                showFixAccessibilityServiceDialog(error)
             }
         }
     }

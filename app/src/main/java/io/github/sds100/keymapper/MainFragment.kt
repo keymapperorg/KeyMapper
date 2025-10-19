@@ -37,6 +37,7 @@ import io.github.sds100.keymapper.base.home.HomeKeyMapListScreen
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapScreen
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapViewModel
 import io.github.sds100.keymapper.base.keymaps.KeyMapOptionsScreen
+import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegateImpl
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProviderImpl
 import io.github.sds100.keymapper.base.utils.navigation.SetupNavigation
@@ -53,6 +54,9 @@ class MainFragment : Fragment() {
 
     @Inject
     lateinit var navigationProvider: NavigationProviderImpl
+
+    @Inject
+    lateinit var setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegateImpl
 
     private lateinit var composeView: ComposeView
 
@@ -104,6 +108,7 @@ class MainFragment : Fragment() {
                                     .add(WindowInsets.displayCutout.only(sides = WindowInsetsSides.Horizontal)),
                             ),
                         navController = navController,
+                        setupAccessibilityServiceDelegate = setupAccessibilityServiceDelegate,
                         composableDestinations = {
                             composableDestinations(navController)
                         },
@@ -130,6 +135,7 @@ class MainFragment : Fragment() {
     private fun NavGraphBuilder.composableDestinations(navController: NavController) {
         composable<NavDestination.Home> {
             val snackbarState = remember { SnackbarHostState() }
+
             val viewModel: HomeViewModel = hiltViewModel()
 
             HomeKeyMapListScreen(

@@ -20,6 +20,7 @@ import android.os.RemoteException
 import android.os.TransactionTooLargeException
 import android.provider.MediaStore
 import android.provider.Settings
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.pm.PackageInfoCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -441,5 +442,10 @@ class AndroidPackageManagerAdapter @Inject constructor(
         } catch (e: Exception) {
             return null
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun getInstallSourcePackageName(): String? {
+        return packageManager.getInstallSourceInfo(ctx.packageName).installingPackageName
     }
 }

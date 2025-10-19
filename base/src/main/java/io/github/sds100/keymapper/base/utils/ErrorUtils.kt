@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingError
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
+import io.github.sds100.keymapper.common.utils.AccessibilityServiceError
 import io.github.sds100.keymapper.common.utils.BuildUtils
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.data.DataError
@@ -108,9 +109,9 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         KMError.NoIncompatibleKeyboardsInstalled -> resourceProvider.getString(R.string.error_no_incompatible_input_methods_installed)
         KMError.NoMediaSessions -> resourceProvider.getString(R.string.error_no_media_sessions)
         KMError.NoVoiceAssistant -> resourceProvider.getString(R.string.error_voice_assistant_not_found)
-        KMError.AccessibilityServiceDisabled -> resourceProvider.getString(R.string.error_accessibility_service_disabled)
+        AccessibilityServiceError.Disabled -> resourceProvider.getString(R.string.error_accessibility_service_disabled)
+        AccessibilityServiceError.Crashed -> resourceProvider.getString(R.string.error_accessibility_service_crashed)
         KMError.LauncherShortcutsNotSupported -> resourceProvider.getString(R.string.error_launcher_shortcuts_not_supported)
-        KMError.AccessibilityServiceCrashed -> resourceProvider.getString(R.string.error_accessibility_service_crashed)
         KMError.CantFindImeSettings -> resourceProvider.getString(R.string.error_cant_find_ime_settings)
         KMError.CantShowImePickerInBackground -> resourceProvider.getString(R.string.error_cant_show_ime_picker_in_background)
         KMError.FailedToFindAccessibilityNode -> resourceProvider.getString(R.string.error_failed_to_find_accessibility_node)
@@ -256,8 +257,7 @@ val KMError.isFixable: Boolean
         KMError.NoCompatibleImeEnabled,
         KMError.NoCompatibleImeChosen,
         is SystemError.ImeDisabled,
-        KMError.AccessibilityServiceDisabled,
-        KMError.AccessibilityServiceCrashed,
+        is AccessibilityServiceError,
         is SystemError.PermissionDenied,
         is KMError.ShizukuNotStarted,
         is KMError.CantDetectKeyEventsInPhoneCall,
