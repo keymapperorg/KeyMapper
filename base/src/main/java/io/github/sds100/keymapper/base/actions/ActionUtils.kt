@@ -40,6 +40,7 @@ import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material.icons.outlined.KeyboardHide
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Message
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Nfc
 import androidx.compose.material.icons.outlined.NotStarted
@@ -235,6 +236,8 @@ object ActionUtils {
         ActionId.PHONE_CALL -> ActionCategory.TELEPHONY
         ActionId.ANSWER_PHONE_CALL -> ActionCategory.TELEPHONY
         ActionId.END_PHONE_CALL -> ActionCategory.TELEPHONY
+        ActionId.SEND_SMS -> ActionCategory.TELEPHONY
+        ActionId.COMPOSE_SMS -> ActionCategory.TELEPHONY
 
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> ActionCategory.NOTIFICATIONS
         ActionId.DISMISS_ALL_NOTIFICATIONS -> ActionCategory.NOTIFICATIONS
@@ -361,6 +364,8 @@ object ActionUtils {
         ActionId.DISMISS_ALL_NOTIFICATIONS -> R.string.action_dismiss_all_notifications
         ActionId.ANSWER_PHONE_CALL -> R.string.action_answer_call
         ActionId.END_PHONE_CALL -> R.string.action_end_call
+        ActionId.SEND_SMS -> R.string.action_send_sms
+        ActionId.COMPOSE_SMS -> R.string.action_compose_sms
         ActionId.DEVICE_CONTROLS -> R.string.action_device_controls
         ActionId.HTTP_REQUEST -> R.string.action_http_request
         ActionId.INTERACT_UI_ELEMENT -> R.string.action_interact_ui_element_title
@@ -482,6 +487,8 @@ object ActionUtils {
         ActionId.DISMISS_ALL_NOTIFICATIONS -> R.drawable.ic_baseline_clear_all_24
         ActionId.ANSWER_PHONE_CALL -> R.drawable.ic_outline_call_24
         ActionId.END_PHONE_CALL -> R.drawable.ic_outline_call_end_24
+        ActionId.SEND_SMS -> R.drawable.ic_outline_message_24
+        ActionId.COMPOSE_SMS -> R.drawable.ic_outline_message_24
         ActionId.DEVICE_CONTROLS -> R.drawable.ic_home_automation
         else -> null
     }
@@ -544,6 +551,8 @@ object ActionUtils {
         ActionId.END_PHONE_CALL,
         ActionId.ANSWER_PHONE_CALL,
         ActionId.PHONE_CALL,
+        ActionId.SEND_SMS,
+        ActionId.COMPOSE_SMS,
         -> listOf(PackageManager.FEATURE_TELEPHONY)
 
         ActionId.SECURE_LOCK_DEVICE,
@@ -728,6 +737,10 @@ object ActionUtils {
 
             ActionId.PHONE_CALL -> return listOf(Permission.CALL_PHONE)
 
+            ActionId.SEND_SMS,
+            ActionId.COMPOSE_SMS,
+            -> return listOf(Permission.SEND_SMS)
+
             ActionId.ENABLE_BLUETOOTH, ActionId.DISABLE_BLUETOOTH, ActionId.TOGGLE_BLUETOOTH ->
                 // On S_V2 and newer, the system bridge is used which means no permissions are required
                 if (Build.VERSION.SDK_INT == Build.VERSION_CODES.S) {
@@ -848,6 +861,8 @@ object ActionUtils {
         ActionId.URL -> Icons.Outlined.Link
         ActionId.INTENT -> Icons.Outlined.DataObject
         ActionId.PHONE_CALL -> Icons.Outlined.Call
+        ActionId.SEND_SMS -> Icons.Outlined.Message
+        ActionId.COMPOSE_SMS -> Icons.Outlined.Message
         ActionId.SOUND -> Icons.AutoMirrored.Outlined.VolumeUp
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> Icons.Outlined.ClearAll
         ActionId.DISMISS_ALL_NOTIFICATIONS -> Icons.Outlined.ClearAll
@@ -900,6 +915,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.Text,
     is ActionData.Url,
     is ActionData.PhoneCall,
+    is ActionData.Sms,
     is ActionData.HttpRequest,
     is ActionData.InteractUiElement,
     is ActionData.MoveCursor,

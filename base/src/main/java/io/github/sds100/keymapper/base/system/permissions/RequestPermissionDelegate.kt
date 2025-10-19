@@ -68,6 +68,7 @@ class RequestPermissionDelegate(
             Permission.WRITE_SECURE_SETTINGS -> requestWriteSecureSettings()
             Permission.NOTIFICATION_LISTENER -> notificationReceiverAdapter.start()
             Permission.CALL_PHONE -> requestPermissionLauncher.launch(Manifest.permission.CALL_PHONE)
+            Permission.SEND_SMS -> requestPermissionLauncher.launch(Manifest.permission.SEND_SMS)
             Permission.ANSWER_PHONE_CALL -> requestPermissionLauncher.launch(Manifest.permission.ANSWER_PHONE_CALLS)
             Permission.FIND_NEARBY_DEVICES -> requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
             Permission.ROOT -> requestRootPermission()

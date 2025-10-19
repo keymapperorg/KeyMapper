@@ -139,6 +139,8 @@
     <string name="hint_create_text_action">Text to input</string>
     <string name="hint_create_url_action">Url to open</string>
     <string name="hint_create_phone_call_action">Phone number to call</string>
+    <string name="hint_create_sms_action_number">Phone number to send SMS</string>
+    <string name="hint_create_sms_action_message">Message to send</string>
 
     <string name="hint_intent_action">Action</string>
     <string name="hint_intent_categories">Categories</string>
@@ -764,6 +766,7 @@
     <string name="error_cant_find_dnd_access_settings">Can\'t find the Do Not Disturb access permission settings!</string>
     <string name="error_need_write_secure_settings_permission">Key Mapper needs WRITE_SECURE_SETTINGS permission.</string>
     <string name="error_no_app_to_phone_call">There is no app that can start this phone call</string>
+    <string name="error_no_app_to_send_sms">There is no app that can send this SMS</string>
 
     <string name="error_camera_in_use">Camera is in use!</string>
     <string name="error_camera_disconnected">Camera disconnected!</string>
@@ -802,6 +805,7 @@
     <string name="error_denied_notification_listener_service_permission">Denied notification access permission!</string>
     <string name="error_invalid_intent_extra_value">Invalid!</string>
     <string name="error_denied_call_phone_permission">Denied permission to start phone calls!</string>
+    <string name="error_denied_send_sms_permission">Denied permission to send SMS messages!</string>
     <string name="error_backup_version_too_new">You will need to update Key Mapper to the latest version to use this backup.</string>
     <string name="error_voice_assistant_not_found">There is no voice assistant installed!</string>
     <string name="error_insufficient_permissions">Insufficient permissions</string>
@@ -1045,6 +1049,8 @@
     <string name="action_phone_call">Start phone call</string>
     <string name="action_answer_call">Answer phone call</string>
     <string name="action_end_call">End phone call</string>
+    <string name="action_send_sms">Send SMS</string>
+    <string name="action_compose_sms">Compose SMS</string>
     <string name="action_play_sound">Play sound</string>
     <string name="action_dismiss_most_recent_notification">Dismiss most recent notification</string>
     <string name="action_dismiss_all_notifications">Dismiss all notifications</string>

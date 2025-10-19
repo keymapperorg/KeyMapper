@@ -210,6 +210,14 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 result = phoneAdapter.startCall(action.number)
             }
 
+            is ActionData.Sms.SendSms -> {
+                result = phoneAdapter.sendSms(action.number, action.message)
+            }
+
+            is ActionData.Sms.ComposeSms -> {
+                result = phoneAdapter.composeSms(action.number, action.message)
+            }
+
             is ActionData.DoNotDisturb.Enable -> {
                 result = audioAdapter.enableDndMode(action.dndMode)
             }

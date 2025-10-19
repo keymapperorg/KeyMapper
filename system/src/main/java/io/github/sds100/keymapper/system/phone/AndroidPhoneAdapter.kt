@@ -83,6 +83,36 @@ class AndroidPhoneAdapter @Inject constructor(
         }
     }
 
+    override fun sendSms(number: String, message: String): KMResult<*> {
+        try {
+            Intent(Intent.ACTION_SENDTO).apply {
+                data = Uri.parse("smsto:$number")
+                putExtra("sms_body", message)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                ctx.startActivity(this)
+            }
+
+            return Success(Unit)
+        } catch (e: ActivityNotFoundException) {
+            return KMError.NoAppToSendSms
+        }
+    }
+
+    override fun composeSms(number: String, message: String): KMResult<*> {
+        try {
+            Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse("smsto:$number")
+                putExtra("sms_body", message)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                ctx.startActivity(this)
+            }
+
+            return Success(Unit)
+        } catch (e: ActivityNotFoundException) {
+            return KMError.NoAppToSendSms
+        }
+    }
+
     private suspend fun updateCallState(sdkCallState: Int) {
         callStateFlow.emit(callStateConverter(sdkCallState))
     }

@@ -24,6 +24,7 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
                 Permission.WRITE_SECURE_SETTINGS -> R.string.error_need_write_secure_settings_permission
                 Permission.NOTIFICATION_LISTENER -> R.string.error_denied_notification_listener_service_permission
                 Permission.CALL_PHONE -> R.string.error_denied_call_phone_permission
+                Permission.SEND_SMS -> R.string.error_denied_send_sms_permission
                 Permission.ROOT -> R.string.error_requires_root
                 Permission.IGNORE_BATTERY_OPTIMISATION -> R.string.error_battery_optimisation_enabled
                 Permission.SHIZUKU -> R.string.error_shizuku_permission_denied
@@ -115,6 +116,7 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         KMError.AppShortcutCantBeOpened -> resourceProvider.getString(R.string.error_opening_app_shortcut)
         KMError.InsufficientPermissionsToOpenAppShortcut -> resourceProvider.getString(R.string.error_keymapper_doesnt_have_permission_app_shortcut)
         KMError.NoAppToPhoneCall -> resourceProvider.getString(R.string.error_no_app_to_phone_call)
+        KMError.NoAppToSendSms -> resourceProvider.getString(R.string.error_no_app_to_send_sms)
 
         KMError.CameraInUse -> resourceProvider.getString(R.string.error_camera_in_use)
         KMError.CameraError -> resourceProvider.getString(R.string.error_camera_error)
