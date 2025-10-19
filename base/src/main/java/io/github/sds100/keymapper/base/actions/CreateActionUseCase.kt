@@ -21,7 +21,7 @@ class CreateActionUseCaseImpl @Inject constructor(
     private val systemFeatureAdapter: SystemFeatureAdapter,
     private val cameraAdapter: CameraAdapter,
     private val permissionAdapter: PermissionAdapter,
-    private val phoneAdapter: PhoneAdapter
+    private val phoneAdapter: PhoneAdapter,
 ) : CreateActionUseCase,
     IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(
         systemFeatureAdapter,

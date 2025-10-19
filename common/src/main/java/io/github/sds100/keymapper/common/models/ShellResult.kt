@@ -15,7 +15,7 @@ import kotlinx.parcelize.Parcelize
 data class ShellResult(
     val stdOut: String,
     val stdErr: String,
-    val exitCode: Int
+    val exitCode: Int,
 ) : Parcelable
 
 fun ShellResult.isSuccess(): Boolean = exitCode == 0

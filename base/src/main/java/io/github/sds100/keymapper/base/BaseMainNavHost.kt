@@ -77,7 +77,7 @@ fun BaseMainNavHost(
 
             ShellCommandActionScreen(
                 modifier = Modifier.fillMaxSize(),
-                viewModel = viewModel
+                viewModel = viewModel,
             )
         }
 

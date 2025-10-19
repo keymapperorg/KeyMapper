@@ -664,7 +664,7 @@ object ActionDataEntityMapper {
                     useRoot -> ShellExecutionMode.ROOT
                     else -> ShellExecutionMode.STANDARD
                 }
-                
+
                 val description =
                     entity.extras.getData(ActionEntity.EXTRA_SHELL_COMMAND_DESCRIPTION)
                         .valueOrNull() ?: return null
@@ -783,7 +783,7 @@ object ActionDataEntityMapper {
         is ActionData.InteractUiElement -> data.description
         is ActionData.ShellCommand -> Base64.encodeToString(
             data.command.toByteArray(),
-            Base64.DEFAULT
+            Base64.DEFAULT,
         ).trim() // Trim to remove trailing newline added by Base64.DEFAULT
         is ActionData.HttpRequest -> SYSTEM_ACTION_ID_MAP[data.id]!!
         is ActionData.ControlMediaForApp.Rewind -> SYSTEM_ACTION_ID_MAP[data.id]!!

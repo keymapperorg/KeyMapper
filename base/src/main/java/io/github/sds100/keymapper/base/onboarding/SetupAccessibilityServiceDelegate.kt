@@ -46,7 +46,6 @@ class SetupAccessibilityServiceDelegateImpl @Inject constructor(
         if (state == AccessibilityServiceState.DISABLED) {
             val isRestricted = useCase.isRestrictedSetting()
             dialogState = AccessibilityServiceDialog.EnableService(isRestricted)
-
         } else if (state == AccessibilityServiceState.CRASHED) {
             dialogState = AccessibilityServiceDialog.RestartService
         }

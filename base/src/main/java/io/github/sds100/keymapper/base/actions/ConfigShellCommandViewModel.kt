@@ -120,7 +120,7 @@ class ConfigShellCommandViewModel @Inject constructor(
             is KMError -> {
                 state = state.copy(
                     isRunning = false,
-                    testResult = flowResult
+                    testResult = flowResult,
                 )
             }
 

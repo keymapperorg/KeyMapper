@@ -56,7 +56,7 @@ sealed class SmsActionBottomSheetState {
     data class SendSms(
         override val number: String,
         override val message: String,
-        val testResult: State<KMResult<Unit>>?
+        val testResult: State<KMResult<Unit>>?,
     ) : SmsActionBottomSheetState()
 
     data class ComposeSms(
@@ -209,7 +209,7 @@ private fun SmsActionBottomSheet(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.End,
                 ) {
                     when (state.testResult) {
                         is State.Data -> {
@@ -229,7 +229,7 @@ private fun SmsActionBottomSheet(
                                 modifier = Modifier.weight(1f),
                                 text = resultText,
                                 color = textColor,
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
                             )
                         }
 
@@ -335,7 +335,7 @@ private fun Preview() {
             state = SmsActionBottomSheetState.SendSms(
                 "+1 123456789",
                 "Message",
-                testResult = State.Loading
+                testResult = State.Loading,
             ),
         )
     }
@@ -358,7 +358,7 @@ private fun PreviewTestError() {
             state = SmsActionBottomSheetState.SendSms(
                 "+1 123456789",
                 "Message",
-                testResult = State.Data(KMError.SendSmsError(SmsManager.RESULT_ERROR_NO_SERVICE))
+                testResult = State.Data(KMError.SendSmsError(SmsManager.RESULT_ERROR_NO_SERVICE)),
             ),
         )
     }
@@ -381,7 +381,7 @@ private fun PreviewTestSuccess() {
             state = SmsActionBottomSheetState.SendSms(
                 "+1 123456789",
                 "Message",
-                testResult = State.Data(Success(Unit))
+                testResult = State.Data(Success(Unit)),
             ),
         )
     }
@@ -404,7 +404,7 @@ private fun PreviewEmpty() {
             state = SmsActionBottomSheetState.SendSms(
                 "",
                 "",
-                testResult = null
+                testResult = null,
             ),
         )
     }

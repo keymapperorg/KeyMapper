@@ -746,7 +746,7 @@ class CreateActionDelegate(
                     SmsActionBottomSheetState.SendSms(
                         number = number,
                         message = message,
-                        testResult = null
+                        testResult = null,
                     )
                 } else {
                     SmsActionBottomSheetState.ComposeSms(

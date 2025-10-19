@@ -14,7 +14,7 @@ import javax.inject.Singleton
 class ControlAccessibilityServiceUseCaseImpl @Inject constructor(
     private val adapter: AccessibilityServiceAdapter,
     private val permissionAdapter: PermissionAdapter,
-    private val packageManagerAdapter: PackageManagerAdapter
+    private val packageManagerAdapter: PackageManagerAdapter,
 ) : ControlAccessibilityServiceUseCase {
     override val serviceState: Flow<AccessibilityServiceState> = adapter.state
 

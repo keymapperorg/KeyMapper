@@ -84,7 +84,7 @@ data class ShellCommandActionState(
 @Composable
 fun ShellCommandActionScreen(
     modifier: Modifier = Modifier,
-    viewModel: ConfigShellCommandViewModel
+    viewModel: ConfigShellCommandViewModel,
 ) {
     ShellCommandActionScreen(
         modifier = modifier,
@@ -217,7 +217,7 @@ private fun ShellCommandActionScreen(
                 modifier = Modifier.fillMaxSize(),
                 state = pagerState,
                 contentPadding = PaddingValues(16.dp),
-                pageSpacing = 16.dp
+                pageSpacing = 16.dp,
             ) { pageIndex ->
                 when (pageIndex) {
                     0 -> ShellCommandConfigurationContent(
@@ -354,7 +354,7 @@ private fun ShellCommandConfigurationContent(
                         stringResource(R.string.action_shell_command_setup_pro_mode_unsupported)
                     } else {
                         stringResource(R.string.action_shell_command_setup_pro_mode)
-                    }
+                    },
                 )
             }
         }
@@ -365,9 +365,13 @@ private fun ShellCommandConfigurationContent(
                 keyboardController?.hide()
                 onTestClick()
             },
-            enabled = !state.isRunning && (state.executionMode != ShellExecutionMode.ADB
-                || (state.executionMode == ShellExecutionMode.ADB
-                && state.proModeStatus == ProModeStatus.ENABLED)),
+            enabled = !state.isRunning && (
+                state.executionMode != ShellExecutionMode.ADB ||
+                    (
+                        state.executionMode == ShellExecutionMode.ADB &&
+                            state.proModeStatus == ProModeStatus.ENABLED
+                        )
+                ),
         ) {
             Icon(Icons.Rounded.PlayArrow, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
@@ -376,7 +380,7 @@ private fun ShellCommandConfigurationContent(
                     stringResource(R.string.action_shell_command_testing)
                 } else {
                     stringResource(R.string.action_shell_command_test_button)
-                }
+                },
             )
         }
     }
@@ -480,7 +484,7 @@ private fun ShellCommandOutputContent(
                 Text(
                     text = stringResource(
                         R.string.action_shell_command_exit_code,
-                        result.value.exitCode
+                        result.value.exitCode,
                     ),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -560,8 +564,8 @@ private fun PreviewShellCommandActionScreenShellError() {
                     ShellResult(
                         stdOut = "",
                         stdErr = "ls: .: Permission denied",
-                        exitCode = 1
-                    )
+                        exitCode = 1,
+                    ),
                 ),
             ),
         )
@@ -649,8 +653,8 @@ private fun PreviewShellCommandOutputShellError() {
                         ShellResult(
                             stdOut = "",
                             stdErr = "ls: .: Permission denied",
-                            exitCode = 1
-                        )
+                            exitCode = 1,
+                        ),
                     ),
                 ),
                 onKillClick = {},
@@ -674,8 +678,8 @@ private fun PreviewShellCommandOutputRunning() {
                         ShellResult(
                             "Line 1\nLine 2\nLine 3\nLine 4\nLine 5",
                             "",
-                            0
-                        )
+                            0,
+                        ),
                     ),
                 ),
                 onKillClick = {},

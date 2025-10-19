@@ -95,7 +95,6 @@ private fun EnableAccessibilityServiceDialog(
                     stringResource(R.string.dialog_message_accessibility_service_explanation),
                     style = MaterialTheme.typography.bodyMedium,
                 )
-
             }
         },
         confirmButton = {

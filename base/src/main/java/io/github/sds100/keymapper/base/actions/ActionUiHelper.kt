@@ -576,17 +576,17 @@ class ActionUiHelper(
         is ActionData.ShellCommand -> when (action.executionMode) {
             ShellExecutionMode.ROOT -> getString(
                 R.string.action_shell_command_description_with_root,
-                action.description
+                action.description,
             )
 
             ShellExecutionMode.ADB -> getString(
                 R.string.action_shell_command_description_with_adb,
-                action.description
+                action.description,
             )
 
             ShellExecutionMode.STANDARD -> getString(
                 R.string.action_shell_command_description_with_standard,
-                action.description
+                action.description,
             )
         }
 
@@ -596,12 +596,12 @@ class ActionUiHelper(
         ActionData.ForceStopApp -> getString(R.string.action_force_stop_app)
         is ActionData.ComposeSms -> getString(
             R.string.action_compose_sms_description,
-            arrayOf(action.message, action.number)
+            arrayOf(action.message, action.number),
         )
 
         is ActionData.SendSms -> getString(
             R.string.action_send_sms_description,
-            arrayOf(action.message, action.number)
+            arrayOf(action.message, action.number),
         )
     }
 

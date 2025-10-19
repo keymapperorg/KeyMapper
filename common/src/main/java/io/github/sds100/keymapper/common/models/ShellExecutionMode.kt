@@ -17,5 +17,5 @@ enum class ShellExecutionMode {
     /**
      * Execute using ADB/system bridge (Pro mode)
      */
-    ADB
+    ADB,
 }

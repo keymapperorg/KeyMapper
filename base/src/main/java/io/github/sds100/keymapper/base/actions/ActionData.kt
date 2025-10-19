@@ -938,7 +938,7 @@ sealed class ActionData : Comparable<ActionData> {
         val description: String,
         val command: String,
         val executionMode: ShellExecutionMode,
-        val timeoutMillis: Int = 10000, // milliseconds (default 10 seconds)
+        val timeoutMillis: Int = 10000,
     ) : ActionData() {
         override val id: ActionId = ActionId.SHELL_COMMAND
 
