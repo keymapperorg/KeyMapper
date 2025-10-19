@@ -905,6 +905,14 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 )
             }
 
+            is ActionData.ShellCommand -> {
+                result = if (action.useRoot) {
+                    suAdapter.execute(action.command)
+                } else {
+                    shell.execute(action.command)
+                }
+            }
+
             is ActionData.InteractUiElement -> {
                 if (service.activeWindowPackage.first() != action.packageName) {
                     result = KMError.UiElementNotFound

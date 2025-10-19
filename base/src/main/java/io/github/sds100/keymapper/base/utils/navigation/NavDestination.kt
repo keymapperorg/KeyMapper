@@ -37,6 +37,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
         const val ID_ABOUT = "about"
         const val ID_CONFIG_KEY_MAP = "config_key_map"
         const val ID_INTERACT_UI_ELEMENT_ACTION = "interact_ui_element_action"
+        const val ID_SHELL_COMMAND_ACTION = "shell_command_action"
         const val ID_PRO_MODE = "pro_mode"
         const val ID_LOG = "log"
         const val ID_ADVANCED_TRIGGERS = "advanced_triggers"
@@ -165,6 +166,12 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     data class InteractUiElement(val actionJson: String?) :
         NavDestination<ActionData.InteractUiElement>(isCompose = true) {
         override val id: String = ID_INTERACT_UI_ELEMENT_ACTION
+    }
+
+    @Serializable
+    data class ConfigShellCommand(val action: ActionData.ShellCommand?) :
+        NavDestination<ActionData.ShellCommand>(isCompose = true) {
+        override val id: String = ID_SHELL_COMMAND_ACTION
     }
 
     @Serializable

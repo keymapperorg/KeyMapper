@@ -11,6 +11,7 @@ enum class ActionId {
     PINCH_SCREEN,
     URL,
     HTTP_REQUEST,
+    SHELL_COMMAND,
     INTENT,
     PHONE_CALL,
     INTERACT_UI_ELEMENT,

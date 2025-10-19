@@ -933,6 +933,19 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
+    data class ShellCommand(
+        val command: String,
+        val useRoot: Boolean,
+    ) : ActionData() {
+        override val id: ActionId = ActionId.SHELL_COMMAND
+
+        override fun toString(): String {
+            // Do not leak sensitive command info to logs.
+            return "ShellCommand(useRoot=$useRoot)"
+        }
+    }
+
+    @Serializable
     data class InteractUiElement(
         val description: String,
         val nodeAction: NodeInteractionType,

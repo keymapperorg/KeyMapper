@@ -867,6 +867,15 @@ class CreateActionDelegate(
                 return null
             }
 
+            ActionId.SHELL_COMMAND -> {
+                val oldAction = oldData as? ActionData.ShellCommand
+
+                return navigate(
+                    "config_shell_command_action",
+                    NavDestination.ConfigShellCommand(oldAction),
+                )
+            }
+
             ActionId.INTERACT_UI_ELEMENT -> {
                 val oldAction = oldData as? ActionData.InteractUiElement
 

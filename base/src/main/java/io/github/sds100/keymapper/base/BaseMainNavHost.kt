@@ -18,6 +18,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import io.github.sds100.keymapper.base.actions.ChooseActionScreen
 import io.github.sds100.keymapper.base.actions.ChooseActionViewModel
+import io.github.sds100.keymapper.base.actions.ConfigShellCommandViewModel
+import io.github.sds100.keymapper.base.actions.ShellCommandActionScreen
 import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementScreen
 import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementViewModel
 import io.github.sds100.keymapper.base.constraints.ChooseConstraintScreen
@@ -58,6 +60,21 @@ fun BaseMainNavHost(
             InteractUiElementScreen(
                 modifier = Modifier.fillMaxSize(),
                 viewModel = viewModel,
+            )
+        }
+
+        composable<NavDestination.ConfigShellCommand> { backStackEntry ->
+            val viewModel: ConfigShellCommandViewModel = hiltViewModel()
+
+            ShellCommandActionScreen(
+                command = viewModel.command,
+                useRoot = viewModel.useRoot,
+                onCommandChanged = viewModel::onCommandChanged,
+                onUseRootChanged = viewModel::onUseRootChanged,
+                onTestClick = viewModel::onTestClick,
+                onDoneClick = viewModel::onDoneClick,
+                onCancelClick = viewModel::onCancelClick,
+                testResult = viewModel.testResult,
             )
         }
 
