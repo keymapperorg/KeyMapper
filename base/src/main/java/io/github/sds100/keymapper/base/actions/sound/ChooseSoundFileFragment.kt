@@ -101,7 +101,10 @@ class ChooseSoundFileFragment : Fragment() {
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.chooseSystemRingtone.collectLatest {
-                val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
+                val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
+                    // Allow notification, alarms, and ringtones.
+                    putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL)
+                }
                 chooseRingtoneLauncher.launch(intent)
             }
         }
