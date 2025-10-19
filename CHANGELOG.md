@@ -40,6 +40,7 @@
 - #1818 the Key Mapper GUI Keyboard is no longer mentioned in the app. It still works but PRO mode
   and the auto switching feature are the preferred way to work around the limitations of the Key
   Mapper keyboard.
+- Allow selecting notification and alarm sound and not just ringtones for Sound action
 
 ## [3.2.1](https://github.com/sds100/KeyMapper/releases/tag/v3.2.1)
 
