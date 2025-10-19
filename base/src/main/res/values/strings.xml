@@ -1088,6 +1088,7 @@
     <string name="action_shell_command_testing">Executing…</string>
     <string name="action_shell_command_test_success">Success</string>
     <string name="action_shell_command_test_failed">Failed</string>
+    <string name="action_shell_command_description_with_root">su -c %s</string>
 
     <string name="action_interact_ui_element_title">Interact with app element</string>
     <string name="action_interact_ui_element_description">Key Mapper can detect and interact with app elements like menus, tabs, buttons and checkboxes. You need to record yourself interacting with the app so that Key Mapper knows what you want to do.</string>

@@ -572,6 +572,12 @@ class ActionUiHelper(
         ActionData.DeviceControls -> getString(R.string.action_device_controls)
         is ActionData.HttpRequest -> action.description
 
+        is ActionData.ShellCommand -> if (action.useRoot) {
+            getString(R.string.action_shell_command_description_with_root, action.command)
+        } else {
+            action.command
+        }
+
         is ActionData.InteractUiElement -> action.description
 
         ActionData.ClearRecentApp -> getString(R.string.action_clear_recent_app)
