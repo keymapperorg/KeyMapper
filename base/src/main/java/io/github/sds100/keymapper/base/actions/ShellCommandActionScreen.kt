@@ -2,15 +2,16 @@ package io.github.sds100.keymapper.base.actions
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
@@ -24,14 +25,16 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -44,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
@@ -172,7 +176,7 @@ private fun ShellCommandActionScreen(
         val startPadding = innerPadding.calculateStartPadding(layoutDirection)
         val endPadding = innerPadding.calculateEndPadding(layoutDirection)
 
-        ShellCommandActionContent(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(
@@ -181,34 +185,82 @@ private fun ShellCommandActionScreen(
                     start = startPadding,
                     end = endPadding,
                 ),
-            state = state,
-            descriptionError = descriptionError,
-            commandError = commandError,
-            onDescriptionChanged = {
-                descriptionError = null
-                onDescriptionChanged(it)
-            },
-            onCommandChanged = {
-                commandError = null
-                onCommandChanged(it)
-            },
-            onExecutionModeChanged = onExecutionModeChanged,
-            onTimeoutChanged = onTimeoutChanged,
-            onTestClick = {
-                if (state.command.isBlank()) {
-                    commandError = commandEmptyErrorString
-                } else {
-                    onTestClick()
+        ) {
+            val pagerState = rememberPagerState(pageCount = { 2 }, initialPage = 0)
+
+            PrimaryTabRow(
+                selectedTabIndex = pagerState.targetPage,
+                modifier = Modifier.fillMaxWidth(),
+                contentColor = MaterialTheme.colorScheme.onSurface,
+            ) {
+                Tab(
+                    selected = pagerState.targetPage == 0,
+                    onClick = {
+                        scope.launch {
+                            pagerState.animateScrollToPage(0)
+                        }
+                    },
+                    text = { Text(stringResource(R.string.action_shell_command_tab_configuration)) },
+                )
+                Tab(
+                    selected = pagerState.targetPage == 1,
+                    onClick = {
+                        scope.launch {
+                            pagerState.animateScrollToPage(1)
+                        }
+                    },
+                    text = { Text(stringResource(R.string.action_shell_command_tab_output)) },
+                )
+            }
+
+            HorizontalPager(
+                modifier = Modifier.fillMaxSize(),
+                state = pagerState,
+                contentPadding = PaddingValues(16.dp),
+                pageSpacing = 16.dp
+            ) { pageIndex ->
+                when (pageIndex) {
+                    0 -> ShellCommandConfigurationContent(
+                        modifier = Modifier.fillMaxSize(),
+                        state = state,
+                        descriptionError = descriptionError,
+                        commandError = commandError,
+                        onDescriptionChanged = {
+                            descriptionError = null
+                            onDescriptionChanged(it)
+                        },
+                        onCommandChanged = {
+                            commandError = null
+                            onCommandChanged(it)
+                        },
+                        onExecutionModeChanged = onExecutionModeChanged,
+                        onTimeoutChanged = onTimeoutChanged,
+                        onTestClick = {
+                            if (state.command.isBlank()) {
+                                commandError = commandEmptyErrorString
+                            } else {
+                                onTestClick()
+                                scope.launch {
+                                    pagerState.animateScrollToPage(1) // Switch to output tab
+                                }
+                            }
+                        },
+                        onSetupProModeClick = onSetupProModeClick,
+                    )
+
+                    1 -> ShellCommandOutputContent(
+                        modifier = Modifier.fillMaxSize(),
+                        state = state,
+                        onKillClick = onKillClick,
+                    )
                 }
-            },
-            onKillClick = onKillClick,
-            onSetupProModeClick = onSetupProModeClick,
-        )
+            }
+        }
     }
 }
 
 @Composable
-private fun ShellCommandActionContent(
+private fun ShellCommandConfigurationContent(
     modifier: Modifier = Modifier,
     state: ShellCommandActionState,
     descriptionError: String?,
@@ -218,15 +270,12 @@ private fun ShellCommandActionContent(
     onExecutionModeChanged: (ShellExecutionMode) -> Unit,
     onTimeoutChanged: (Int) -> Unit,
     onTestClick: () -> Unit,
-    onKillClick: () -> Unit,
     onSetupProModeClick: () -> Unit,
 ) {
-    val context = LocalContext.current
-
+    val keyboardController = LocalSoftwareKeyboardController.current
     Column(
         modifier = modifier
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp),
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         OutlinedTextField(
@@ -310,37 +359,41 @@ private fun ShellCommandActionContent(
             }
         }
 
-        if (state.executionMode == ShellExecutionMode.ADB && state.isRunning) {
+        Button(
+            modifier = Modifier.align(Alignment.End),
+            onClick = {
+                keyboardController?.hide()
+                onTestClick()
+            },
+            enabled = !state.isRunning && (state.executionMode != ShellExecutionMode.ADB
+                || (state.executionMode == ShellExecutionMode.ADB
+                && state.proModeStatus == ProModeStatus.ENABLED)),
+        ) {
+            Icon(Icons.Rounded.PlayArrow, contentDescription = null)
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = stringResource(R.string.action_shell_command_adb_streaming_warning),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                if (state.isRunning) {
+                    stringResource(R.string.action_shell_command_testing)
+                } else {
+                    stringResource(R.string.action_shell_command_test_button)
+                }
             )
         }
+    }
+}
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Spacer(modifier = Modifier.weight(1f))
+@Composable
+private fun ShellCommandOutputContent(
+    modifier: Modifier = Modifier,
+    state: ShellCommandActionState,
+    onKillClick: () -> Unit,
+) {
+    val context = LocalContext.current
 
-            Button(
-                onClick = onTestClick,
-                enabled = !state.isRunning,
-            ) {
-                Icon(Icons.Rounded.PlayArrow, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    if (state.isRunning) {
-                        stringResource(R.string.action_shell_command_testing)
-                    } else {
-                        stringResource(R.string.action_shell_command_test_button)
-                    }
-                )
-            }
-        }
-
+    Column(
+        modifier = modifier.verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
         if (state.isRunning) {
             OutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
@@ -359,17 +412,27 @@ private fun ShellCommandActionContent(
             LinearProgressIndicator(
                 modifier = Modifier.fillMaxWidth(),
             )
-        }
 
-        if (state.testResult != null) {
-            HorizontalDivider(
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.outlineVariant,
-            )
+            if (state.executionMode == ShellExecutionMode.ADB) {
+                Text(
+                    text = stringResource(R.string.action_shell_command_adb_streaming_warning),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
 
         when (val result = state.testResult) {
-            null -> {}
+            null -> {
+                if (!state.isRunning) {
+                    Text(
+                        text = stringResource(R.string.action_shell_command_no_output),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+
             is Success -> {
                 val shellResult = result.value
                 if (shellResult.isSuccess()) {
@@ -438,8 +501,6 @@ private fun ShellCommandActionContent(
                 )
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
@@ -452,7 +513,6 @@ private fun PreviewShellCommandActionScreen() {
                 description = "Hello world script",
                 command = "echo 'Hello World'",
                 executionMode = ShellExecutionMode.STANDARD,
-                testResult = Success(ShellResult("Hello World\nNew line\nNew new line", "", 0)),
             ),
         )
     }
@@ -536,5 +596,107 @@ private fun PreviewShellCommandActionScreenProModeUnsupported() {
                 proModeStatus = ProModeStatus.UNSUPPORTED,
             ),
         )
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewShellCommandOutputSuccess() {
+    KeyMapperTheme {
+        Surface {
+            ShellCommandOutputContent(
+                state = ShellCommandActionState(
+                    description = "Hello world script",
+                    command = "echo 'Hello World'",
+                    executionMode = ShellExecutionMode.STANDARD,
+                    testResult = Success(ShellResult("Hello World\nNew line\nNew new line", "", 0)),
+                ),
+                onKillClick = {},
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewShellCommandOutputError() {
+    KeyMapperTheme {
+        Surface {
+            ShellCommandOutputContent(
+                state = ShellCommandActionState(
+                    description = "Read secret file",
+                    command = "cat /root/secret.txt",
+                    executionMode = ShellExecutionMode.ROOT,
+                    testResult = SystemError.PermissionDenied(Permission.ROOT),
+                ),
+                onKillClick = {},
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewShellCommandOutputShellError() {
+    KeyMapperTheme {
+        Surface {
+            ShellCommandOutputContent(
+                state = ShellCommandActionState(
+                    description = "List files",
+                    command = "ls",
+                    executionMode = ShellExecutionMode.ROOT,
+                    testResult = Success(
+                        ShellResult(
+                            stdOut = "",
+                            stdErr = "ls: .: Permission denied",
+                            exitCode = 1
+                        )
+                    ),
+                ),
+                onKillClick = {},
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewShellCommandOutputRunning() {
+    KeyMapperTheme {
+        Surface {
+            ShellCommandOutputContent(
+                state = ShellCommandActionState(
+                    description = "Count to 10",
+                    command = "for i in $(seq 1 10); do echo \"Line \$i\"; sleep 1; done",
+                    executionMode = ShellExecutionMode.STANDARD,
+                    isRunning = true,
+                    testResult = Success(
+                        ShellResult(
+                            "Line 1\nLine 2\nLine 3\nLine 4\nLine 5",
+                            "",
+                            0
+                        )
+                    ),
+                ),
+                onKillClick = {},
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewShellCommandOutputEmpty() {
+    KeyMapperTheme {
+        Surface {
+            ShellCommandOutputContent(
+                state = ShellCommandActionState(
+                    description = "No output yet",
+                    command = "echo 'Hello World'",
+                    executionMode = ShellExecutionMode.STANDARD,
+                ),
+                onKillClick = {},
+            )
+        }
     }
 }

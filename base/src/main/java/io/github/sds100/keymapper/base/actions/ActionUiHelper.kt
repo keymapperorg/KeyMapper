@@ -576,15 +576,18 @@ class ActionUiHelper(
         is ActionData.ShellCommand -> when (action.executionMode) {
             ShellExecutionMode.ROOT -> getString(
                 R.string.action_shell_command_description_with_root,
-                action.command
+                action.description
             )
 
             ShellExecutionMode.ADB -> getString(
                 R.string.action_shell_command_description_with_adb,
-                action.command
+                action.description
             )
 
-            ShellExecutionMode.STANDARD -> action.command
+            ShellExecutionMode.STANDARD -> getString(
+                R.string.action_shell_command_description_with_standard,
+                action.description
+            )
         }
 
         is ActionData.InteractUiElement -> action.description

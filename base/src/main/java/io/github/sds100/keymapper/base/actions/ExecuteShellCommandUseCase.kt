@@ -5,12 +5,15 @@ import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.models.ShellResult
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
@@ -45,27 +48,28 @@ class ExecuteShellCommandUseCase @Inject constructor(
         }
     }
 
-    fun executeWithStreamingOutput(
+    suspend fun executeWithStreamingOutput(
         command: String,
         executionMode: ShellExecutionMode,
-    ): Flow<KMResult<ShellResult>> {
+    ): KMResult<Flow<ShellResult>> {
         return when (executionMode) {
             ShellExecutionMode.STANDARD -> shellAdapter.executeWithStreamingOutput(command)
             ShellExecutionMode.ROOT -> suAdapter.executeWithStreamingOutput(command)
 
             ShellExecutionMode.ADB -> {
-                // ADB mode doesn't support streaming, so we execute synchronously and return a single result
-                flow {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        val result = systemBridgeConnectionManager.run { systemBridge ->
+                // ADB mode doesn't support streaming
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    val result = withContext(Dispatchers.IO) {
+                        systemBridgeConnectionManager.run { systemBridge ->
                             systemBridge.executeCommand(command)
                         }
-
-                        emit(result)
-                    } else {
-                        emit(KMError.SdkVersionTooLow(Build.VERSION_CODES.Q))
                     }
-
+                    when (result) {
+                        is KMError -> result
+                        is Success -> Success(flowOf(result.value))
+                    }
+                } else {
+                    KMError.SdkVersionTooLow(Build.VERSION_CODES.Q)
                 }
             }
         }

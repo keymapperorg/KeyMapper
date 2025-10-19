@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.actions
 
+import android.os.Build
 import android.util.Base64
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,14 +13,18 @@ import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
@@ -40,14 +45,16 @@ class ConfigShellCommandViewModel @Inject constructor(
 
     init {
         // Update ProModeStatus in state
-        viewModelScope.launch {
-            systemBridgeConnectionManager.connectionState.map { connectionState ->
-                when (connectionState) {
-                    is io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState.Connected -> ProModeStatus.ENABLED
-                    is io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState.Disconnected -> ProModeStatus.DISABLED
+        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
+            viewModelScope.launch {
+                systemBridgeConnectionManager.connectionState.map { connectionState ->
+                    when (connectionState) {
+                        is SystemBridgeConnectionState.Connected -> ProModeStatus.ENABLED
+                        is SystemBridgeConnectionState.Disconnected -> ProModeStatus.DISABLED
+                    }
+                }.collect { proModeStatus ->
+                    state = state.copy(proModeStatus = proModeStatus)
                 }
-            }.collect { proModeStatus ->
-                state = state.copy(proModeStatus = proModeStatus)
             }
         }
 
@@ -92,28 +99,44 @@ class ConfigShellCommandViewModel @Inject constructor(
         testJob = viewModelScope.launch {
             try {
                 withTimeout(state.timeoutSeconds * 1000L) {
-                    val flow = executeShellCommandUseCase.executeWithStreamingOutput(
-                        command = state.command,
-                        executionMode = state.executionMode,
-                    )
-
-                    flow.catch { e ->
-                        state = state.copy(
-                            isRunning = false,
-                            testResult = KMError.Exception(e as? Exception ?: Exception(e.message)),
-                        )
-                    }.collect { result ->
-                        state = state.copy(
-                            isRunning = false,
-                            testResult = result,
-                        )
-                    }
+                    testCommand()
                 }
             } catch (e: TimeoutCancellationException) {
                 state = state.copy(
                     isRunning = false,
                     testResult = KMError.ShellCommandTimeout(state.timeoutSeconds * 1000),
                 )
+            }
+        }
+    }
+
+    private suspend fun testCommand() {
+        val flowResult = executeShellCommandUseCase.executeWithStreamingOutput(
+            command = state.command,
+            executionMode = state.executionMode,
+        )
+
+        when (flowResult) {
+            is KMError -> {
+                state = state.copy(
+                    isRunning = false,
+                    testResult = flowResult
+                )
+            }
+
+            is Success -> {
+                val flow = flowResult.value
+
+                flow.onCompletion {
+                    state = state.copy(isRunning = false)
+                }.catch { e ->
+                    state = state.copy(
+                        isRunning = false,
+                        testResult = KMError.Exception(Exception(e.message)),
+                    )
+                }.collect { shellResult ->
+                    state = state.copy(isRunning = true, testResult = Success(shellResult))
+                }
             }
         }
     }
@@ -144,7 +167,7 @@ class ConfigShellCommandViewModel @Inject constructor(
     fun onCancelClick() {
         // Save script text before navigating away
         saveScriptText(state.command)
-        
+
         viewModelScope.launch {
             navigationProvider.popBackStack()
         }

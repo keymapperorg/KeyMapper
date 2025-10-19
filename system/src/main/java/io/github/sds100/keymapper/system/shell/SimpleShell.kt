@@ -48,37 +48,43 @@ class SimpleShell @Inject constructor() : ShellAdapter {
         }
     }
 
-    override fun executeWithStreamingOutput(command: String): Flow<KMResult<ShellResult>> {
-        return flow {
-            try {
-                val process = Runtime.getRuntime().exec(prepareCommand(command))
+    override suspend fun executeWithStreamingOutput(command: String): KMResult<Flow<ShellResult>> {
+        return try {
+            val process = Runtime.getRuntime().exec(prepareCommand(command))
+
+            val flow = flow {
                 val outputReader = process.inputStream.bufferedReader()
                 val errorReader = process.errorStream.bufferedReader()
-                val outputLines = mutableListOf<String>()
 
                 // Read output line by line
-                var line: String?
+                val stdout = StringBuilder()
+
+                var line: String? = null
+
                 while (outputReader.readLine().also { line = it } != null) {
-                    outputLines.add(line!!)
-                    emit(Success(ShellResult(outputLines.joinToString("\n"), "", 0)))
+                    if (line != null) {
+                        stdout.appendLine(line)
+                    }
+
+                    emit(ShellResult(stdout.toString(), "", 0))
                 }
 
                 process.waitFor()
 
-                // Read stderr after process completes
-                val errorLines = errorReader.readLines()
-                val stderr = errorLines.joinToString("\n")
+                val stderr = errorReader.readText()
                 val exitCode = process.exitValue()
 
                 // Emit final result with both stdout and stderr
-                emit(Success(ShellResult(outputLines.joinToString("\n"), stderr, exitCode)))
+                emit(ShellResult(stdout.toString(), stderr, exitCode))
 
                 outputReader.close()
                 errorReader.close()
-            } catch (e: IOException) {
-                emit(KMError.Exception(e))
-            }
-        }.flowOn(Dispatchers.IO)
+            }.flowOn(Dispatchers.IO)
+
+            Success(flow)
+        } catch (e: IOException) {
+            KMError.Exception(e)
+        }
     }
 
     private fun prepareCommand(command: String): Array<String> {

@@ -10,11 +10,14 @@ import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.shell.ShellAdapter
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import timber.log.Timber
 import javax.inject.Inject
@@ -65,41 +68,61 @@ class SuAdapterImpl @Inject constructor() : SuAdapter {
         }
     }
 
-    override fun executeWithStreamingOutput(command: String): Flow<KMResult<ShellResult>> =
-        callbackFlow {
-            if (!isRootGranted.firstBlocking()) {
-                trySend(SystemError.PermissionDenied(Permission.ROOT))
-                close()
-                return@callbackFlow
-            }
-
-            try {
-                val outputLines = mutableListOf<String>()
-                val errorLines = mutableListOf<String>()
-
-                Shell.cmd(command)
-                    .to(object : CallbackList<String>() {
-                        override fun onAddElement(s: String) {
-                            outputLines.add(s)
-                            trySend(Success(ShellResult(outputLines.joinToString("\n"), "", 0)))
-                        }
-                    })
-                    .to(errorLines)
-                    .submit { result ->
-                        val output = outputLines.joinToString("\n")
-                        val stderr = errorLines.joinToString("\n")
-                        val exitCode = result.code
-
-                        trySend(Success(ShellResult(output, stderr, exitCode)))
-                        close()
-                    }
-
-                awaitClose { }
-            } catch (e: Exception) {
-                trySend(KMError.Exception(e))
-                close()
-            }
+    override suspend fun executeWithStreamingOutput(command: String): KMResult<Flow<ShellResult>> {
+        if (!isRootGranted.firstBlocking()) {
+            return SystemError.PermissionDenied(Permission.ROOT)
         }
+
+        val flow = callbackFlow {
+            val stdout = StringBuilder()
+            val stderr = StringBuilder()
+
+            val outputCallback = object : CallbackList<String>() {
+                override fun onAddElement(s: String) {
+                    stdout.appendLine(s)
+
+                    trySendBlocking(
+                        ShellResult(
+                            stdout.toString(),
+                            stderr.toString(),
+                            0
+                        )
+                    )
+                }
+            }
+
+            val errorCallback = object : CallbackList<String>() {
+                override fun onAddElement(s: String) {
+                    stderr.appendLine(s)
+
+                    trySendBlocking(
+                        ShellResult(
+                            stdout.toString(),
+                            stderr.toString(),
+                            0
+                        )
+                    )
+                }
+            }
+
+            Shell.cmd(command)
+                .to(outputCallback, errorCallback)
+                .submit { result ->
+                    trySendBlocking(
+                        ShellResult(
+                            stdout.toString(),
+                            stderr.toString(),
+                            result.code
+                        )
+                    )
+                    close()
+                }
+
+            awaitClose { }
+        }.flowOn(Dispatchers.IO)
+
+        return Success(flow)
+    }
 
     fun invalidateIsRooted() {
         try {

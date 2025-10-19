@@ -515,22 +515,21 @@ internal class SystemBridge : ISystemBridge.Stub() {
         Log.i(TAG, "Executing command: $command")
 
         try {
-            val process = Runtime.getRuntime().exec(command)
+            // Execute through sh -c to properly handle multi-line commands and shell syntax
+            val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
 
             process.waitFor()
 
-            val outputLines = with(process.inputStream.bufferedReader()) {
-                readLines()
+            val stdout = with(process.inputStream.bufferedReader()) {
+                readText()
             }
-            val errorLines = with(process.errorStream.bufferedReader()) {
-                readLines()
+            val stderr = with(process.errorStream.bufferedReader()) {
+                readText()
             }
 
-            val output = outputLines.joinToString("\n")
-            val stderr = errorLines.joinToString("\n")
             val exitCode = process.exitValue()
 
-            return ShellResult(output, stderr, exitCode)
+            return ShellResult(stdout, stderr, exitCode)
         } catch (e: Exception) {
             Log.e(TAG, "Error executing command: $command", e)
             return ShellResult("", e.message ?: "Unknown error", -1)

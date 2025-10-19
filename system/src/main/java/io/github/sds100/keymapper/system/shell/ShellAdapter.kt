@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.Flow
 interface ShellAdapter {
     fun execute(command: String): KMResult<Unit>
     fun executeWithOutput(command: String): KMResult<ShellResult>
-    fun executeWithStreamingOutput(command: String): Flow<KMResult<ShellResult>>
+    suspend fun executeWithStreamingOutput(command: String): KMResult<Flow<ShellResult>>
 }
