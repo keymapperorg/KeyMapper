@@ -130,6 +130,7 @@ data class ActionEntity(
         const val ACTION_FLAG_REPEAT = 4
         const val ACTION_FLAG_HOLD_DOWN = 8
         const val ACTION_FLAG_SHELL_COMMAND_USE_ROOT = 16
+        const val ACTION_FLAG_SHELL_COMMAND_USE_ADB = 32
 
         const val EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR = "extra_custom_stop_repeat_behaviour"
         const val EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR = "extra_custom_hold_down_behaviour"

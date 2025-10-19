@@ -50,9 +50,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
+import io.github.sds100.keymapper.base.utils.ProModeStatus
 import io.github.sds100.keymapper.base.utils.getFullMessage
-import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
+import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
 import io.github.sds100.keymapper.base.utils.ui.compose.SliderOptionText
+import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.models.ShellResult
 import io.github.sds100.keymapper.common.models.isSuccess
 import io.github.sds100.keymapper.common.utils.KMError
@@ -65,13 +67,14 @@ import kotlinx.coroutines.launch
 data class ShellCommandActionState(
     val description: String = "",
     val command: String = "",
-    val useRoot: Boolean = false,
+    val executionMode: ShellExecutionMode = ShellExecutionMode.STANDARD,
     /**
      * UI works with seconds for user-friendliness
      */
     val timeoutSeconds: Int = 10,
     val isRunning: Boolean = false,
     val testResult: KMResult<ShellResult>? = null,
+    val proModeStatus: ProModeStatus = ProModeStatus.UNSUPPORTED,
 )
 
 @Composable
@@ -84,12 +87,13 @@ fun ShellCommandActionScreen(
         state = viewModel.state,
         onDescriptionChanged = viewModel::onDescriptionChanged,
         onCommandChanged = viewModel::onCommandChanged,
-        onUseRootChanged = viewModel::onUseRootChanged,
+        onExecutionModeChanged = viewModel::onExecutionModeChanged,
         onTimeoutChanged = viewModel::onTimeoutChanged,
         onTestClick = viewModel::onTestClick,
         onKillClick = viewModel::onKillClick,
         onDoneClick = viewModel::onDoneClick,
         onCancelClick = viewModel::onCancelClick,
+        onSetupProModeClick = viewModel::onSetupProModeClick,
     )
 }
 
@@ -100,12 +104,13 @@ private fun ShellCommandActionScreen(
     state: ShellCommandActionState,
     onDescriptionChanged: (String) -> Unit = {},
     onCommandChanged: (String) -> Unit = {},
-    onUseRootChanged: (Boolean) -> Unit = {},
+    onExecutionModeChanged: (ShellExecutionMode) -> Unit = {},
     onTimeoutChanged: (Int) -> Unit = {},
     onTestClick: () -> Unit = {},
     onKillClick: () -> Unit = {},
     onDoneClick: () -> Unit = {},
     onCancelClick: () -> Unit = {},
+    onSetupProModeClick: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
@@ -187,7 +192,7 @@ private fun ShellCommandActionScreen(
                 commandError = null
                 onCommandChanged(it)
             },
-            onUseRootChanged = onUseRootChanged,
+            onExecutionModeChanged = onExecutionModeChanged,
             onTimeoutChanged = onTimeoutChanged,
             onTestClick = {
                 if (state.command.isBlank()) {
@@ -197,6 +202,7 @@ private fun ShellCommandActionScreen(
                 }
             },
             onKillClick = onKillClick,
+            onSetupProModeClick = onSetupProModeClick,
         )
     }
 }
@@ -209,10 +215,11 @@ private fun ShellCommandActionContent(
     commandError: String?,
     onDescriptionChanged: (String) -> Unit,
     onCommandChanged: (String) -> Unit,
-    onUseRootChanged: (Boolean) -> Unit,
+    onExecutionModeChanged: (ShellExecutionMode) -> Unit,
     onTimeoutChanged: (Int) -> Unit,
     onTestClick: () -> Unit,
     onKillClick: () -> Unit,
+    onSetupProModeClick: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -271,17 +278,52 @@ private fun ShellCommandActionContent(
             stepSize = 5,
         )
 
+        Text(
+            text = stringResource(R.string.action_shell_command_execution_mode_label),
+            style = MaterialTheme.typography.titleMedium,
+        )
+
+        KeyMapperSegmentedButtonRow(
+            modifier = Modifier.fillMaxWidth(),
+            buttonStates = listOf(
+                ShellExecutionMode.STANDARD to stringResource(R.string.action_shell_command_execution_mode_standard),
+                ShellExecutionMode.ROOT to stringResource(R.string.action_shell_command_execution_mode_root),
+                ShellExecutionMode.ADB to stringResource(R.string.action_shell_command_execution_mode_adb),
+            ),
+            selectedState = state.executionMode,
+            onStateSelected = onExecutionModeChanged,
+        )
+
+        if (state.executionMode == ShellExecutionMode.ADB && state.proModeStatus != ProModeStatus.ENABLED) {
+            OutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onSetupProModeClick,
+                enabled = state.proModeStatus != ProModeStatus.UNSUPPORTED,
+            ) {
+                Text(
+                    if (state.proModeStatus == ProModeStatus.UNSUPPORTED) {
+                        stringResource(R.string.action_shell_command_setup_pro_mode_unsupported)
+                    } else {
+                        stringResource(R.string.action_shell_command_setup_pro_mode)
+                    }
+                )
+            }
+        }
+
+        if (state.executionMode == ShellExecutionMode.ADB && state.isRunning) {
+            Text(
+                text = stringResource(R.string.action_shell_command_adb_streaming_warning),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            CheckBoxText(
-                modifier = Modifier.weight(1f),
-                text = stringResource(R.string.action_shell_command_use_root_label),
-                isChecked = state.useRoot,
-                onCheckedChange = onUseRootChanged,
-            )
+            Spacer(modifier = Modifier.weight(1f))
 
             Button(
                 onClick = onTestClick,
@@ -396,9 +438,9 @@ private fun ShellCommandActionContent(
                 )
             }
         }
-    }
 
-    Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+    }
 }
 
 @Preview
@@ -409,7 +451,7 @@ private fun PreviewShellCommandActionScreen() {
             state = ShellCommandActionState(
                 description = "Hello world script",
                 command = "echo 'Hello World'",
-                useRoot = false,
+                executionMode = ShellExecutionMode.STANDARD,
                 testResult = Success(ShellResult("Hello World\nNew line\nNew new line", "", 0)),
             ),
         )
@@ -424,7 +466,7 @@ private fun PreviewShellCommandActionScreenEmpty() {
             state = ShellCommandActionState(
                 description = "",
                 command = "",
-                useRoot = true,
+                executionMode = ShellExecutionMode.ROOT,
             ),
         )
     }
@@ -438,7 +480,7 @@ private fun PreviewShellCommandActionScreenError() {
             state = ShellCommandActionState(
                 description = "Read secret file",
                 command = "cat /root/secret.txt",
-                useRoot = true,
+                executionMode = ShellExecutionMode.ROOT,
                 testResult = SystemError.PermissionDenied(Permission.ROOT),
             ),
         )
@@ -453,7 +495,7 @@ private fun PreviewShellCommandActionScreenShellError() {
             state = ShellCommandActionState(
                 description = "",
                 command = "ls",
-                useRoot = true,
+                executionMode = ShellExecutionMode.ROOT,
                 testResult = Success(
                     ShellResult(
                         stdOut = "",
@@ -474,9 +516,24 @@ private fun PreviewShellCommandActionScreenTesting() {
             state = ShellCommandActionState(
                 description = "Count to 10",
                 command = "for i in \$(seq 1 10); do echo \"Line \$i\"; sleep 1; done",
-                useRoot = false,
+                executionMode = ShellExecutionMode.STANDARD,
                 isRunning = true,
                 testResult = Success(ShellResult("Line 1\nLine 2\nLine 3\nLine 4\nLine 5", "", 0)),
+            ),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewShellCommandActionScreenProModeUnsupported() {
+    KeyMapperTheme {
+        ShellCommandActionScreen(
+            state = ShellCommandActionState(
+                description = "ADB command example",
+                command = "echo 'Hello from ADB'",
+                executionMode = ShellExecutionMode.ADB,
+                proModeStatus = ProModeStatus.UNSUPPORTED,
             ),
         )
     }

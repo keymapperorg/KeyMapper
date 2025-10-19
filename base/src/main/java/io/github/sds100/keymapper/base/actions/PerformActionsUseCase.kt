@@ -910,7 +910,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             is ActionData.ShellCommand -> {
                 result = executeShellCommandUseCase.execute(
                     command = action.command,
-                    useRoot = action.useRoot,
+                    executionMode = action.executionMode,
                     timeoutMillis = action.timeoutMillis.toLong(),
                 )
             }

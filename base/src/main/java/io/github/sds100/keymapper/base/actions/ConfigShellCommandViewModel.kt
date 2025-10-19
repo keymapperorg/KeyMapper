@@ -6,11 +6,17 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.sds100.keymapper.base.utils.ProModeStatus
+import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
+import io.github.sds100.keymapper.base.utils.navigation.navigate
+import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
@@ -20,6 +26,7 @@ import javax.inject.Inject
 class ConfigShellCommandViewModel @Inject constructor(
     private val executeShellCommandUseCase: ExecuteShellCommandUseCase,
     private val navigationProvider: NavigationProvider,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
 ) : ViewModel() {
 
     var state: ShellCommandActionState by mutableStateOf(ShellCommandActionState())
@@ -27,11 +34,25 @@ class ConfigShellCommandViewModel @Inject constructor(
 
     private var testJob: Job? = null
 
+    init {
+        // Update ProModeStatus in state
+        viewModelScope.launch {
+            systemBridgeConnectionManager.connectionState.map { connectionState ->
+                when (connectionState) {
+                    is io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState.Connected -> ProModeStatus.ENABLED
+                    is io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState.Disconnected -> ProModeStatus.DISABLED
+                }
+            }.collect { proModeStatus ->
+                state = state.copy(proModeStatus = proModeStatus)
+            }
+        }
+    }
+
     fun loadAction(action: ActionData.ShellCommand) {
         state = state.copy(
             description = action.description,
             command = action.command,
-            useRoot = action.useRoot,
+            executionMode = action.executionMode,
             timeoutSeconds = action.timeoutMillis / 1000,
         )
     }
@@ -44,8 +65,8 @@ class ConfigShellCommandViewModel @Inject constructor(
         state = state.copy(command = newCommand)
     }
 
-    fun onUseRootChanged(newUseRoot: Boolean) {
-        state = state.copy(useRoot = newUseRoot)
+    fun onExecutionModeChanged(newExecutionMode: ShellExecutionMode) {
+        state = state.copy(executionMode = newExecutionMode)
     }
 
     fun onTimeoutChanged(newTimeoutSeconds: Int) {
@@ -65,7 +86,7 @@ class ConfigShellCommandViewModel @Inject constructor(
                 withTimeout(state.timeoutSeconds * 1000L) {
                     val flow = executeShellCommandUseCase.executeWithStreamingOutput(
                         command = state.command,
-                        useRoot = state.useRoot,
+                        executionMode = state.executionMode,
                     )
 
                     flow.catch { e ->
@@ -100,7 +121,7 @@ class ConfigShellCommandViewModel @Inject constructor(
         val action = ActionData.ShellCommand(
             description = state.description,
             command = state.command,
-            useRoot = state.useRoot,
+            executionMode = state.executionMode,
             timeoutMillis = state.timeoutSeconds * 1000,
         )
 
@@ -112,6 +133,12 @@ class ConfigShellCommandViewModel @Inject constructor(
     fun onCancelClick() {
         viewModelScope.launch {
             navigationProvider.popBackStack()
+        }
+    }
+
+    fun onSetupProModeClick() {
+        viewModelScope.launch {
+            navigationProvider.navigate("shell_command_setup_pro_mode", NavDestination.ProModeSetup)
         }
     }
 }

@@ -1089,6 +1089,13 @@
     <string name="action_shell_command_command_label">Script</string>
     <string name="action_shell_command_command_empty_error">Script cannot be empty!</string>
     <string name="action_shell_command_use_root_label">Run as root</string>
+    <string name="action_shell_command_execution_mode_standard">Standard</string>
+    <string name="action_shell_command_execution_mode_root">Root</string>
+    <string name="action_shell_command_execution_mode_adb">ADB</string>
+    <string name="action_shell_command_execution_mode_label">Execution Mode</string>
+    <string name="action_shell_command_adb_streaming_warning">ADB mode does not support streaming output</string>
+    <string name="action_shell_command_setup_pro_mode">Setup PRO Mode</string>
+    <string name="action_shell_command_setup_pro_mode_unsupported">Setup PRO Mode (Unsupported)</string>
     <string name="action_shell_command_test_button">Test</string>
     <string name="action_shell_command_output_label">Output</string>
     <string name="action_shell_command_testing">Executing…</string>
@@ -1096,6 +1103,7 @@
     <string name="action_shell_command_test_failed">Failed</string>
     <string name="action_shell_command_exit_code">Exit code: %1$d</string>
     <string name="action_shell_command_description_with_root">su -c %s</string>
+    <string name="action_shell_command_description_with_adb">adb shell %s</string>
 
     <string name="action_interact_ui_element_title">Interact with app element</string>
     <string name="action_interact_ui_element_description">Key Mapper can detect and interact with app elements like menus, tabs, buttons and checkboxes. You need to record yourself interacting with the app so that Key Mapper knows what you want to do.</string>

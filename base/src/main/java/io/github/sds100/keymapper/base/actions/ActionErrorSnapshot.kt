@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
 import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.firstBlocking
@@ -201,6 +202,28 @@ class LazyActionErrorSnapshot(
                 inputMethodAdapter.getInfoById(action.imeId).onFailure {
                     return it
                 }
+
+            is ActionData.ShellCommand -> {
+                return when (action.executionMode) {
+                    ShellExecutionMode.ROOT -> {
+                        if (!isPermissionGranted(Permission.ROOT)) {
+                            SystemError.PermissionDenied(Permission.ROOT)
+                        } else {
+                            null
+                        }
+                    }
+
+                    ShellExecutionMode.ADB -> {
+                        if (!isSystemBridgeConnected) {
+                            SystemBridgeError.Disconnected
+                        } else {
+                            null
+                        }
+                    }
+
+                    ShellExecutionMode.STANDARD -> null
+                }
+            }
 
             else -> {}
         }

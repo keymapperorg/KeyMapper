@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.base.actions
 
 import android.util.Base64
 import androidx.core.net.toUri
+import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.NodeInteractionType
@@ -656,6 +657,14 @@ object ActionDataEntityMapper {
 
             ActionId.SHELL_COMMAND -> {
                 val useRoot = entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHELL_COMMAND_USE_ROOT)
+                val useAdb = entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHELL_COMMAND_USE_ADB)
+
+                val executionMode = when {
+                    useAdb -> ShellExecutionMode.ADB
+                    useRoot -> ShellExecutionMode.ROOT
+                    else -> ShellExecutionMode.STANDARD
+                }
+                
                 val description =
                     entity.extras.getData(ActionEntity.EXTRA_SHELL_COMMAND_DESCRIPTION)
                         .valueOrNull() ?: return null
@@ -673,7 +682,7 @@ object ActionDataEntityMapper {
                 ActionData.ShellCommand(
                     description = description,
                     command = command,
-                    useRoot = useRoot,
+                    executionMode = executionMode,
                     timeoutMillis = timeoutMs,
                 )
             }
@@ -734,8 +743,20 @@ object ActionDataEntityMapper {
             flags = flags or ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI
         }
 
-        if (data is ActionData.ShellCommand && data.useRoot) {
-            flags = flags or ActionEntity.ACTION_FLAG_SHELL_COMMAND_USE_ROOT
+        if (data is ActionData.ShellCommand) {
+            when (data.executionMode) {
+                ShellExecutionMode.ROOT -> {
+                    flags = flags or ActionEntity.ACTION_FLAG_SHELL_COMMAND_USE_ROOT
+                }
+
+                ShellExecutionMode.ADB -> {
+                    flags = flags or ActionEntity.ACTION_FLAG_SHELL_COMMAND_USE_ADB
+                }
+
+                ShellExecutionMode.STANDARD -> {
+                    // No flag needed for standard mode
+                }
+            }
         }
 
         return flags

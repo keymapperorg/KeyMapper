@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.base.utils.ui.IconInfo
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.TintType
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.PinchScreenType
@@ -572,10 +573,18 @@ class ActionUiHelper(
         ActionData.DeviceControls -> getString(R.string.action_device_controls)
         is ActionData.HttpRequest -> action.description
 
-        is ActionData.ShellCommand -> if (action.useRoot) {
-            getString(R.string.action_shell_command_description_with_root, action.command)
-        } else {
-            action.command
+        is ActionData.ShellCommand -> when (action.executionMode) {
+            ShellExecutionMode.ROOT -> getString(
+                R.string.action_shell_command_description_with_root,
+                action.command
+            )
+
+            ShellExecutionMode.ADB -> getString(
+                R.string.action_shell_command_description_with_adb,
+                action.command
+            )
+
+            ShellExecutionMode.STANDARD -> action.command
         }
 
         is ActionData.InteractUiElement -> action.description
