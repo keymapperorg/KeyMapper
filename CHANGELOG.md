@@ -16,6 +16,7 @@
 - #114 action to force stop app, and an action to clear an app from recents
 - #727 Actions to send SMS messages: "Send SMS" and "Compose SMS"
 - #1819 Explain how to enable the accessibility service restricted setting
+- #661 Action to execute shell commands.
 
 ## Removed
 

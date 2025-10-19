@@ -1,8 +1,6 @@
 📲 You can now remap buttons when the screen is off for FREE using PRO mode! Also your power button.
 
-Action to force stop an app or clear it from recents.
-
-Action to send SMS message.
+New actions: Shell commands, send SMS, Force stop current app or clear it from recents.
 
 Enable/disable all the key maps in a group. Intent API to enable/disable/toggle a key map.
 
