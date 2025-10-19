@@ -937,13 +937,13 @@ sealed class ActionData : Comparable<ActionData> {
         val description: String,
         val command: String,
         val useRoot: Boolean,
-        val timeoutMs: Int = 10000, // milliseconds (default 10 seconds)
+        val timeoutMillis: Int = 10000, // milliseconds (default 10 seconds)
     ) : ActionData() {
         override val id: ActionId = ActionId.SHELL_COMMAND
 
         override fun toString(): String {
             // Do not leak sensitive command info to logs.
-            return "ShellCommand(description=$description, useRoot=$useRoot, timeoutMs=$timeoutMs)"
+            return "ShellCommand(description=$description, useRoot=$useRoot, timeoutMs=$timeoutMillis)"
         }
     }
 

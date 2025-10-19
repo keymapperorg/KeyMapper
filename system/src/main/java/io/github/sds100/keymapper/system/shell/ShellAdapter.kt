@@ -5,6 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface ShellAdapter {
     fun execute(command: String): KMResult<Unit>
-    fun executeWithOutput(command: String): KMResult<String>
-    fun executeWithStreamingOutput(command: String): Flow<KMResult<String>>
+    fun executeWithOutput(command: String): KMResult<ShellResult>
+    fun executeWithStreamingOutput(command: String): Flow<KMResult<ShellResult>>
 }

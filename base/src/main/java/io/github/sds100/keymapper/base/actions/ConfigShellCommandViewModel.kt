@@ -32,7 +32,7 @@ class ConfigShellCommandViewModel @Inject constructor(
             description = action.description,
             command = action.command,
             useRoot = action.useRoot,
-            timeoutSeconds = action.timeoutMs / 1000,
+            timeoutSeconds = action.timeoutMillis / 1000,
         )
     }
 
@@ -53,7 +53,6 @@ class ConfigShellCommandViewModel @Inject constructor(
     }
 
     fun onTestClick() {
-        // Cancel any existing test
         testJob?.cancel()
 
         state = state.copy(
@@ -102,7 +101,7 @@ class ConfigShellCommandViewModel @Inject constructor(
             description = state.description,
             command = state.command,
             useRoot = state.useRoot,
-            timeoutMs = state.timeoutSeconds * 1000,
+            timeoutMillis = state.timeoutSeconds * 1000,
         )
 
         viewModelScope.launch {

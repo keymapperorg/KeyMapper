@@ -674,7 +674,7 @@ object ActionDataEntityMapper {
                     description = description,
                     command = command,
                     useRoot = useRoot,
-                    timeoutMs = timeoutMs,
+                    timeoutMillis = timeoutMs,
                 )
             }
 
@@ -1026,7 +1026,7 @@ object ActionDataEntityMapper {
 
         is ActionData.ShellCommand -> listOf(
             EntityExtra(ActionEntity.EXTRA_SHELL_COMMAND_DESCRIPTION, data.description),
-            EntityExtra(ActionEntity.EXTRA_SHELL_COMMAND_TIMEOUT, data.timeoutMs.toString()),
+            EntityExtra(ActionEntity.EXTRA_SHELL_COMMAND_TIMEOUT, data.timeoutMillis.toString()),
         )
 
         else -> emptyList()

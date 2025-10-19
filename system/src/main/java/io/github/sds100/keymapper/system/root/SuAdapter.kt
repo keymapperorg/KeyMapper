@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.shell.ShellAdapter
+import io.github.sds100.keymapper.system.shell.ShellResult
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,7 +47,7 @@ class SuAdapterImpl @Inject constructor() : SuAdapter {
         }
     }
 
-    override fun executeWithOutput(command: String): KMResult<String> {
+    override fun executeWithOutput(command: String): KMResult<ShellResult> {
         if (!isRootGranted.firstBlocking()) {
             return SystemError.PermissionDenied(Permission.ROOT)
         }
@@ -54,17 +55,21 @@ class SuAdapterImpl @Inject constructor() : SuAdapter {
         try {
             val result = Shell.cmd(command).exec()
 
+            val output = result.out.joinToString("\n")
+            val stderr = result.err.joinToString("\n")
+            val exitCode = result.code
+
             return if (result.isSuccess) {
-                Success(result.out.joinToString("\n"))
+                Success(ShellResult.Success(output, exitCode))
             } else {
-                KMError.Exception(Exception(result.err.joinToString("\n")))
+                Success(ShellResult.Error(stderr, exitCode))
             }
         } catch (e: Exception) {
             return KMError.Exception(e)
         }
     }
 
-    override fun executeWithStreamingOutput(command: String): Flow<KMResult<String>> =
+    override fun executeWithStreamingOutput(command: String): Flow<KMResult<ShellResult>> =
         callbackFlow {
             if (!isRootGranted.firstBlocking()) {
                 trySend(SystemError.PermissionDenied(Permission.ROOT))
@@ -80,13 +85,19 @@ class SuAdapterImpl @Inject constructor() : SuAdapter {
                     .to(object : CallbackList<String>() {
                         override fun onAddElement(s: String) {
                             outputLines.add(s)
-                            trySend(Success(outputLines.joinToString("\n")))
+                            trySend(Success(ShellResult.Success(outputLines.joinToString("\n"))))
                         }
                     })
                     .to(errorLines)
                     .submit { result ->
-                        if (!result.isSuccess && errorLines.isNotEmpty()) {
-                            trySend(KMError.Exception(Exception(errorLines.joinToString("\n"))))
+                        val output = outputLines.joinToString("\n")
+                        val stderr = errorLines.joinToString("\n")
+                        val exitCode = result.code
+
+                        if (result.isSuccess) {
+                            trySend(Success(ShellResult.Success(output, exitCode)))
+                        } else {
+                            trySend(Success(ShellResult.Error(stderr, exitCode)))
                         }
                         close()
                     }

@@ -24,30 +24,34 @@ class SimpleShell @Inject constructor() : ShellAdapter {
         }
     }
 
-    override fun executeWithOutput(command: String): KMResult<String> {
+    override fun executeWithOutput(command: String): KMResult<ShellResult> {
         try {
             val process = Runtime.getRuntime().exec(prepareCommand(command))
 
             process.waitFor()
 
-            if (process.exitValue() != 0) {
-                val errorLines = with(process.errorStream.bufferedReader()) {
-                    readLines()
-                }
-                return KMError.Exception(IOException(errorLines.joinToString("\n")))
+            val outputLines = with(process.inputStream.bufferedReader()) {
+                readLines()
             }
-
-            val lines = with(process.inputStream.bufferedReader()) {
+            val errorLines = with(process.errorStream.bufferedReader()) {
                 readLines()
             }
 
-            return Success(lines.joinToString("\n"))
+            val output = outputLines.joinToString("\n")
+            val stderr = errorLines.joinToString("\n")
+            val exitCode = process.exitValue()
+
+            return if (exitCode == 0) {
+                Success(ShellResult.Success(output, exitCode))
+            } else {
+                Success(ShellResult.Error(stderr, exitCode))
+            }
         } catch (e: IOException) {
             return KMError.Exception(e)
         }
     }
 
-    override fun executeWithStreamingOutput(command: String): Flow<KMResult<String>> {
+    override fun executeWithStreamingOutput(command: String): Flow<KMResult<ShellResult>> {
         return flow {
             try {
                 val process = Runtime.getRuntime().exec(prepareCommand(command))
@@ -59,17 +63,21 @@ class SimpleShell @Inject constructor() : ShellAdapter {
                 var line: String?
                 while (outputReader.readLine().also { line = it } != null) {
                     outputLines.add(line!!)
-                    emit(Success(outputLines.joinToString("\n")))
+                    emit(Success(ShellResult.Success(outputLines.joinToString("\n"))))
                 }
 
                 process.waitFor()
 
-                // Check for errors after process completes
-                if (process.exitValue() != 0) {
-                    val errorLines = errorReader.readLines()
-                    if (errorLines.isNotEmpty()) {
-                        emit(KMError.Exception(IOException(errorLines.joinToString("\n"))))
-                    }
+                // Read stderr after process completes
+                val errorLines = errorReader.readLines()
+                val stderr = errorLines.joinToString("\n")
+                val exitCode = process.exitValue()
+
+                // Emit final result based on exit code
+                if (exitCode == 0) {
+                    emit(Success(ShellResult.Success(outputLines.joinToString("\n"), exitCode)))
+                } else {
+                    emit(Success(ShellResult.Error(stderr, exitCode)))
                 }
 
                 outputReader.close()

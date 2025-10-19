@@ -4,6 +4,7 @@ import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
+import io.github.sds100.keymapper.system.shell.ShellResult
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withTimeout
@@ -16,10 +17,10 @@ class ExecuteShellCommandUseCase @Inject constructor(
     suspend fun execute(
         command: String,
         useRoot: Boolean,
-        timeoutMs: Long,
+        timeoutMillis: Long,
     ): KMResult<Unit> {
         return try {
-            withTimeout(timeoutMs) {
+            withTimeout(timeoutMillis) {
                 if (useRoot) {
                     suAdapter.execute(command)
                 } else {
@@ -27,14 +28,14 @@ class ExecuteShellCommandUseCase @Inject constructor(
                 }
             }
         } catch (e: TimeoutCancellationException) {
-            KMError.ShellCommandTimeout(timeoutMs.toInt())
+            KMError.ShellCommandTimeout(timeoutMillis.toInt())
         }
     }
 
     fun executeWithStreamingOutput(
         command: String,
         useRoot: Boolean,
-    ): Flow<KMResult<String>> {
+    ): Flow<KMResult<ShellResult>> {
         return if (useRoot) {
             suAdapter.executeWithStreamingOutput(command)
         } else {

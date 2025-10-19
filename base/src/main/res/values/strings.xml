@@ -1085,7 +1085,7 @@
     <string name="action_http_request_authorization_supporting_text">You must prepend \'Bearer\' if necessary</string>
 
     <string name="action_shell_command">Shell command</string>
-    <string name="action_shell_command_title">Shell command</string>
+    <string name="action_shell_command_title">Shell command action</string>
     <string name="action_shell_command_command_label">Script</string>
     <string name="action_shell_command_command_empty_error">Script cannot be empty!</string>
     <string name="action_shell_command_use_root_label">Run as root</string>
@@ -1094,6 +1094,7 @@
     <string name="action_shell_command_testing">Executing…</string>
     <string name="action_shell_command_test_success">Success</string>
     <string name="action_shell_command_test_failed">Failed</string>
+    <string name="action_shell_command_exit_code">Exit code: %1$d</string>
     <string name="action_shell_command_description_with_root">su -c %s</string>
 
     <string name="action_interact_ui_element_title">Interact with app element</string>

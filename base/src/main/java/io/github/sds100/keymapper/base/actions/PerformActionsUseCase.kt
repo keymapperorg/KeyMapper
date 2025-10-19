@@ -911,7 +911,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 result = executeShellCommandUseCase.execute(
                     command = action.command,
                     useRoot = action.useRoot,
-                    timeoutMs = action.timeoutMs.toLong(),
+                    timeoutMillis = action.timeoutMillis.toLong(),
                 )
             }
 
