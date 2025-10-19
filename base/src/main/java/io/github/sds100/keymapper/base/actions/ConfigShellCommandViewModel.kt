@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.actions
 
+import android.util.Base64
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,6 +13,8 @@ import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.TimeoutCancellationException
@@ -27,6 +30,7 @@ class ConfigShellCommandViewModel @Inject constructor(
     private val executeShellCommandUseCase: ExecuteShellCommandUseCase,
     private val navigationProvider: NavigationProvider,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
+    private val preferenceRepository: PreferenceRepository,
 ) : ViewModel() {
 
     var state: ShellCommandActionState by mutableStateOf(ShellCommandActionState())
@@ -46,6 +50,9 @@ class ConfigShellCommandViewModel @Inject constructor(
                 state = state.copy(proModeStatus = proModeStatus)
             }
         }
+
+        // Load saved script text
+        loadScriptText()
     }
 
     fun loadAction(action: ActionData.ShellCommand) {
@@ -63,6 +70,7 @@ class ConfigShellCommandViewModel @Inject constructor(
 
     fun onCommandChanged(newCommand: String) {
         state = state.copy(command = newCommand)
+        saveScriptText(newCommand)
     }
 
     fun onExecutionModeChanged(newExecutionMode: ShellExecutionMode) {
@@ -125,12 +133,18 @@ class ConfigShellCommandViewModel @Inject constructor(
             timeoutMillis = state.timeoutSeconds * 1000,
         )
 
+        // Save script text before navigating away
+        saveScriptText(state.command)
+
         viewModelScope.launch {
             navigationProvider.popBackStackWithResult(Json.encodeToString(action))
         }
     }
 
     fun onCancelClick() {
+        // Save script text before navigating away
+        saveScriptText(state.command)
+        
         viewModelScope.launch {
             navigationProvider.popBackStack()
         }
@@ -139,6 +153,28 @@ class ConfigShellCommandViewModel @Inject constructor(
     fun onSetupProModeClick() {
         viewModelScope.launch {
             navigationProvider.navigate("shell_command_setup_pro_mode", NavDestination.ProModeSetup)
+        }
+    }
+
+    private fun saveScriptText(scriptText: String) {
+        viewModelScope.launch {
+            val encodedText = Base64.encodeToString(scriptText.toByteArray(), Base64.DEFAULT).trim()
+            preferenceRepository.set(Keys.shellCommandScriptText, encodedText)
+        }
+    }
+
+    private fun loadScriptText() {
+        viewModelScope.launch {
+            preferenceRepository.get(Keys.shellCommandScriptText).collect { savedScriptText ->
+                if (savedScriptText != null && state.command.isEmpty()) {
+                    try {
+                        val decodedText = String(Base64.decode(savedScriptText, Base64.DEFAULT))
+                        state = state.copy(command = decodedText)
+                    } catch (e: Exception) {
+                        // If decoding fails, ignore the saved text
+                    }
+                }
+            }
         }
     }
 }
