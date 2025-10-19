@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.Message
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.automirrored.outlined.ShortText
 import androidx.compose.material.icons.automirrored.outlined.Undo
@@ -40,7 +41,6 @@ import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material.icons.outlined.KeyboardHide
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.Message
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Nfc
 import androidx.compose.material.icons.outlined.NotStarted
@@ -72,6 +72,7 @@ import androidx.compose.material.icons.rounded.BluetoothDisabled
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.ContentCut
 import androidx.compose.material.icons.rounded.ContentPaste
+import androidx.compose.material.icons.rounded.Terminal
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material.icons.rounded.WifiOff
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -126,6 +127,7 @@ object ActionUtils {
         ActionId.INTENT -> ActionCategory.APPS
         ActionId.URL -> ActionCategory.APPS
         ActionId.HTTP_REQUEST -> ActionCategory.APPS
+        ActionId.SHELL_COMMAND -> ActionCategory.APPS
 
         ActionId.TOGGLE_WIFI -> ActionCategory.CONNECTIVITY
         ActionId.ENABLE_WIFI -> ActionCategory.CONNECTIVITY
@@ -368,6 +370,7 @@ object ActionUtils {
         ActionId.COMPOSE_SMS -> R.string.action_compose_sms
         ActionId.DEVICE_CONTROLS -> R.string.action_device_controls
         ActionId.HTTP_REQUEST -> R.string.action_http_request
+        ActionId.SHELL_COMMAND -> R.string.action_shell_command
         ActionId.INTERACT_UI_ELEMENT -> R.string.action_interact_ui_element_title
         ActionId.FORCE_STOP_APP -> R.string.action_force_stop_app
         ActionId.CLEAR_RECENT_APP -> R.string.action_clear_recent_app
@@ -867,8 +870,8 @@ object ActionUtils {
         ActionId.URL -> Icons.Outlined.Link
         ActionId.INTENT -> Icons.Outlined.DataObject
         ActionId.PHONE_CALL -> Icons.Outlined.Call
-        ActionId.SEND_SMS -> Icons.Outlined.Message
-        ActionId.COMPOSE_SMS -> Icons.Outlined.Message
+        ActionId.SEND_SMS -> Icons.AutoMirrored.Outlined.Message
+        ActionId.COMPOSE_SMS -> Icons.AutoMirrored.Outlined.Message
         ActionId.SOUND -> Icons.AutoMirrored.Outlined.VolumeUp
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> Icons.Outlined.ClearAll
         ActionId.DISMISS_ALL_NOTIFICATIONS -> Icons.Outlined.ClearAll
@@ -876,6 +879,7 @@ object ActionUtils {
         ActionId.END_PHONE_CALL -> Icons.Outlined.CallEnd
         ActionId.DEVICE_CONTROLS -> KeyMapperIcons.HomeIotDevice
         ActionId.HTTP_REQUEST -> Icons.Outlined.Http
+        ActionId.SHELL_COMMAND -> Icons.Rounded.Terminal
         ActionId.INTERACT_UI_ELEMENT -> KeyMapperIcons.JumpToElement
         ActionId.FORCE_STOP_APP -> Icons.Outlined.Dangerous
         ActionId.CLEAR_RECENT_APP -> Icons.Outlined.VerticalSplit
@@ -924,6 +928,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.SendSms,
     is ActionData.ComposeSms,
     is ActionData.HttpRequest,
+    is ActionData.ShellCommand,
     is ActionData.InteractUiElement,
     is ActionData.MoveCursor,
         -> true

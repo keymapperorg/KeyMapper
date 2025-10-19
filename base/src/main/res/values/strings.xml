@@ -471,6 +471,7 @@
     <string name="dialog_message_request_notification_permission">Some actions and options need this permission to work. You can also get notified when there is important news about the app.</string>
 
     <string name="pos_done">Done</string>
+    <string name="pos_kill">Kill</string>
     <string name="pos_grant_write_secure_settings_guide">Guide</string>
     <string name="pos_start_service_with_adb_guide">Guide</string>
     <string name="pos_change_location">Change</string>
@@ -863,6 +864,7 @@
     <string name="error_swipe_screen_must_be_ten_or_less_fingers">Must be %d or less!</string>
 
     <string name="error_ui_element_not_found">UI element not found!</string>
+    <string name="error_shell_command_timeout">Command timed out after %1$d seconds</string>
     <string name="error_system_bridge_disconnected">PRO Mode needs starting</string>
     <!-- Error messages -->
 
@@ -1081,6 +1083,31 @@
     <string name="action_http_request_body_label">Request body (optional)</string>
     <string name="action_http_request_authorization_label">Authorization header (optional)</string>
     <string name="action_http_request_authorization_supporting_text">You must prepend \'Bearer\' if necessary</string>
+
+    <string name="action_shell_command">Shell command</string>
+    <string name="action_shell_command_title">Shell command action</string>
+    <string name="action_shell_command_command_label">Script</string>
+    <string name="action_shell_command_command_empty_error">Script cannot be empty!</string>
+    <string name="action_shell_command_use_root_label">Run as root</string>
+    <string name="action_shell_command_execution_mode_standard">Standard</string>
+    <string name="action_shell_command_execution_mode_root">Root</string>
+    <string name="action_shell_command_execution_mode_adb">ADB</string>
+    <string name="action_shell_command_execution_mode_label">Execution Mode</string>
+    <string name="action_shell_command_adb_streaming_warning">ADB mode does not support streaming output</string>
+    <string name="action_shell_command_setup_pro_mode">Setup PRO Mode</string>
+    <string name="action_shell_command_setup_pro_mode_unsupported">Setup PRO Mode (Unsupported)</string>
+    <string name="action_shell_command_tab_configuration">Configuration</string>
+    <string name="action_shell_command_tab_output">Output</string>
+    <string name="action_shell_command_no_output">No output yet. Click Test to run the command.</string>
+    <string name="action_shell_command_test_button">Test</string>
+    <string name="action_shell_command_output_label">Output</string>
+    <string name="action_shell_command_testing">Executing…</string>
+    <string name="action_shell_command_test_success">Success</string>
+    <string name="action_shell_command_test_failed">Failed</string>
+    <string name="action_shell_command_exit_code">Exit code: %1$d</string>
+    <string name="action_shell_command_description_with_root">Execute with root: %s</string>
+    <string name="action_shell_command_description_with_adb">Execute with ADB: %s</string>
+    <string name="action_shell_command_description_with_standard">Execute: %s</string>
 
     <string name="action_interact_ui_element_title">Interact with app element</string>
     <string name="action_interact_ui_element_description">Key Mapper can detect and interact with app elements like menus, tabs, buttons and checkboxes. You need to record yourself interacting with the app so that Key Mapper knows what you want to do.</string>
@@ -1740,5 +1767,7 @@
 
     <string name="button_test_sms">Test SMS</string>
     <string name="test_sms_result_ok">Sent successfully!</string>
+    <string name="hint_shell_command_description">Description</string>
+    <string name="hint_shell_command_timeout">Timeout</string>
 
 </resources>

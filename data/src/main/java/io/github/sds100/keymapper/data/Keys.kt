@@ -137,4 +137,6 @@ object Keys {
 
     val keyEventActionsUseSystemBridge =
         booleanPreferencesKey("key_key_event_actions_use_system_bridge")
+
+    val shellCommandScriptText = stringPreferencesKey("key_shell_command_script_text")
 }

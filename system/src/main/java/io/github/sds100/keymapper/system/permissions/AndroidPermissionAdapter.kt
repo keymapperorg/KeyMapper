@@ -164,7 +164,7 @@ class AndroidPermissionAdapter @Inject constructor(
                     KMError.Exception(Exception("Failed to grant permission with system bridge"))
                 }
             }
-        } else if (shizukuAdapter.isStarted.value) {
+        } else if (shizukuAdapter.isStarted.value && isGranted(Permission.SHIZUKU)) {
             val userId = Process.myUserHandle()!!.getIdentifier()
 
             PermissionManagerApis.grantPermission(
@@ -181,7 +181,6 @@ class AndroidPermissionAdapter @Inject constructor(
         } else if (isGranted(Permission.ROOT)) {
             suAdapter.execute(
                 "pm grant ${buildConfigProvider.packageName} $permissionName",
-                block = true,
             )
 
             if (ContextCompat.checkSelfPermission(ctx, permissionName) == PERMISSION_GRANTED) {

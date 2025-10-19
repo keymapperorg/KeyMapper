@@ -94,6 +94,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val shell: ShellAdapter,
     private val intentAdapter: IntentAdapter,
     private val getActionErrorUseCase: GetActionErrorUseCase,
+    private val executeShellCommandUseCase: ExecuteShellCommandUseCase,
     private val keyMapperImeMessenger: ImeInputEventInjector,
     private val packageManagerAdapter: PackageManagerAdapter,
     private val appShortcutAdapter: AppShortcutAdapter,
@@ -538,7 +539,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 val globalAction = AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS
 
                 result = service.doGlobalAction(globalAction).otherwise {
-                    shell.execute("cmd statusbar expand-notifications")
+                    getShellAdapter(useRoot = false).execute("cmd statusbar expand-notifications")
                 }
             }
 
@@ -550,7 +551,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                         val globalAction = AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS
 
                         service.doGlobalAction(globalAction).otherwise {
-                            shell.execute("cmd statusbar expand-notifications")
+                            getShellAdapter(useRoot = false).execute("cmd statusbar expand-notifications")
                         }
                     }
             }
@@ -560,7 +561,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
                 result =
                     service.doGlobalAction(globalAction).otherwise {
-                        shell.execute("cmd statusbar expand-settings")
+                        getShellAdapter(useRoot = false).execute("cmd statusbar expand-settings")
                     }
             }
 
@@ -572,7 +573,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                         val globalAction = AccessibilityService.GLOBAL_ACTION_QUICK_SETTINGS
 
                         service.doGlobalAction(globalAction).otherwise {
-                            shell.execute("cmd statusbar expand-settings")
+                            getShellAdapter(useRoot = false).execute("cmd statusbar expand-settings")
                         }
                     }
             }
@@ -786,7 +787,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                     val fileDate = FileUtils.createFileDate()
 
                     result =
-                        suAdapter.execute("mkdir -p $screenshotsFolder; screencap -p $screenshotsFolder/Screenshot_$fileDate.png")
+                        getShellAdapter(useRoot = true).execute("mkdir -p $screenshotsFolder; screencap -p $screenshotsFolder/Screenshot_$fileDate.png")
                             .onSuccess {
                                 // Wait 3 seconds so the message isn't shown in the screenshot.
                                 delay(3000)
@@ -817,7 +818,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
             is ActionData.LockDevice -> {
                 result = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-                    suAdapter.execute("input keyevent ${KeyEvent.KEYCODE_POWER}")
+                    getShellAdapter(useRoot = true).execute("input keyevent ${KeyEvent.KEYCODE_POWER}")
                 } else {
                     service.doGlobalAction(AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN)
                 }
@@ -843,7 +844,8 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                             )
                         }
                 } else {
-                    result = suAdapter.execute("input keyevent ${KeyEvent.KEYCODE_POWER}")
+                    result =
+                        getShellAdapter(useRoot = true).execute("input keyevent ${KeyEvent.KEYCODE_POWER}")
                 }
             }
 
@@ -902,6 +904,14 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                     url = action.url,
                     body = action.body,
                     authorizationHeader = action.authorizationHeader,
+                )
+            }
+
+            is ActionData.ShellCommand -> {
+                result = executeShellCommandUseCase.execute(
+                    command = action.command,
+                    executionMode = action.executionMode,
+                    timeoutMillis = action.timeoutMillis.toLong(),
                 )
             }
 
@@ -1024,8 +1034,12 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             return service
                 .doGlobalAction(AccessibilityService.GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE)
         } else {
-            return shell.execute("cmd statusbar collapse")
+            return getShellAdapter(useRoot = false).execute("cmd statusbar collapse")
         }
+    }
+
+    private fun getShellAdapter(useRoot: Boolean): ShellAdapter {
+        return if (useRoot) suAdapter else shell
     }
 
     private fun KMResult<*>.showErrorMessageOnFail() {

@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.actions
 
+import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.NodeInteractionType
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.PinchScreenType
@@ -929,6 +930,21 @@ sealed class ActionData : Comparable<ActionData> {
         override fun toString(): String {
             // Do not leak sensitive request info to logs.
             return "HttpRequest(description=$description)"
+        }
+    }
+
+    @Serializable
+    data class ShellCommand(
+        val description: String,
+        val command: String,
+        val executionMode: ShellExecutionMode,
+        val timeoutMillis: Int = 10000, // milliseconds (default 10 seconds)
+    ) : ActionData() {
+        override val id: ActionId = ActionId.SHELL_COMMAND
+
+        override fun toString(): String {
+            // Do not leak sensitive command info to logs.
+            return "ShellCommand(description=$description, executionMode=$executionMode, timeoutMs=$timeoutMillis)"
         }
     }
 

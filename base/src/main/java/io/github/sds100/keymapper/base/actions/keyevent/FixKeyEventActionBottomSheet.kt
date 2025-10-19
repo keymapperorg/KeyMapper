@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
-import io.github.sds100.keymapper.base.trigger.ProModeStatus
+import io.github.sds100.keymapper.base.utils.ProModeStatus
 import io.github.sds100.keymapper.base.utils.ui.compose.AccessibilityServiceRequirementRow
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.base.utils.ui.compose.HeaderText

@@ -65,7 +65,7 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
             PackageManager.FEATURE_BLUETOOTH -> resourceProvider.getString(R.string.error_system_feature_bluetooth_unsupported)
             PackageManager.FEATURE_DEVICE_ADMIN -> resourceProvider.getString(R.string.error_system_feature_device_admin_unsupported)
             PackageManager.FEATURE_CAMERA_FLASH -> resourceProvider.getString(R.string.error_system_feature_camera_flash_unsupported)
-            PackageManager.FEATURE_TELEPHONY, PackageManager.FEATURE_TELEPHONY_DATA -> resourceProvider.getString(
+            PackageManager.FEATURE_TELEPHONY, PackageManager.FEATURE_TELEPHONY_DATA, PackageManager.FEATURE_TELEPHONY_MESSAGING -> resourceProvider.getString(
                 R.string.error_system_feature_telephony_unsupported,
             )
 
@@ -209,6 +209,10 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         KMError.InvalidBackup -> resourceProvider.getString(R.string.error_invalid_backup)
         KMError.MalformedUrl -> resourceProvider.getString(R.string.error_malformed_url)
         KMError.UiElementNotFound -> resourceProvider.getString(R.string.error_ui_element_not_found)
+        is KMError.ShellCommandTimeout -> resourceProvider.getString(
+            R.string.error_shell_command_timeout,
+            timeoutMs / 1000,
+        )
         is SystemBridgeError.Disconnected -> resourceProvider.getString(R.string.error_system_bridge_disconnected)
 
         PurchasingError.PurchasingProcessError.Cancelled -> resourceProvider.getString(
