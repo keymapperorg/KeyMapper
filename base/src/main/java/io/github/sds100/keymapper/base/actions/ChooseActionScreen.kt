@@ -60,6 +60,7 @@ fun ChooseActionScreen(
     EnableFlashlightActionBottomSheet(viewModel.createActionDelegate)
     ChangeFlashlightStrengthActionBottomSheet(viewModel.createActionDelegate)
     HttpRequestBottomSheet(viewModel.createActionDelegate)
+    SmsActionBottomSheet(viewModel.createActionDelegate)
 
     ChooseActionScreen(
         modifier = modifier,

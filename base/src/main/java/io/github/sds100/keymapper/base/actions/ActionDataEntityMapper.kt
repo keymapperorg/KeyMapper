@@ -236,11 +236,11 @@ object ActionDataEntityMapper {
                     .valueOrNull() ?: return null
 
                 when (actionId) {
-                    ActionId.SEND_SMS -> ActionData.Sms.SendSms(
+                    ActionId.SEND_SMS -> ActionData.SendSms(
                         number = entity.data,
                         message = message,
                     )
-                    ActionId.COMPOSE_SMS -> ActionData.Sms.ComposeSms(
+                    ActionId.COMPOSE_SMS -> ActionData.ComposeSms(
                         number = entity.data,
                         message = message,
                     )
@@ -670,8 +670,8 @@ object ActionDataEntityMapper {
             is ActionData.App -> ActionEntity.Type.APP
             is ActionData.AppShortcut -> ActionEntity.Type.APP_SHORTCUT
             is ActionData.PhoneCall -> ActionEntity.Type.PHONE_CALL
-            is ActionData.Sms.SendSms -> ActionEntity.Type.SEND_SMS
-            is ActionData.Sms.ComposeSms -> ActionEntity.Type.COMPOSE_SMS
+            is ActionData.SendSms -> ActionEntity.Type.SEND_SMS
+            is ActionData.ComposeSms -> ActionEntity.Type.COMPOSE_SMS
             is ActionData.TapScreen -> ActionEntity.Type.TAP_COORDINATE
             is ActionData.SwipeScreen -> ActionEntity.Type.SWIPE_COORDINATE
             is ActionData.PinchScreen -> ActionEntity.Type.PINCH_COORDINATE
@@ -714,7 +714,8 @@ object ActionDataEntityMapper {
         is ActionData.App -> data.packageName
         is ActionData.AppShortcut -> data.uri
         is ActionData.PhoneCall -> data.number
-        is ActionData.Sms -> data.number
+        is ActionData.SendSms -> data.number
+        is ActionData.ComposeSms -> data.number
         is ActionData.TapScreen -> "${data.x},${data.y}"
         is ActionData.SwipeScreen -> "${data.xStart},${data.yStart},${data.xEnd},${data.yEnd},${data.fingerCount},${data.duration}"
         is ActionData.PinchScreen -> "${data.x},${data.y},${data.distance},${data.pinchType},${data.fingerCount},${data.duration}"
@@ -774,7 +775,11 @@ object ActionDataEntityMapper {
 
         is ActionData.PhoneCall -> emptyList()
 
-        is ActionData.Sms -> listOf(
+        is ActionData.SendSms -> listOf(
+            EntityExtra(ActionEntity.EXTRA_SMS_MESSAGE, data.message),
+        )
+
+        is ActionData.ComposeSms -> listOf(
             EntityExtra(ActionEntity.EXTRA_SMS_MESSAGE, data.message),
         )
 

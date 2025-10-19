@@ -51,6 +51,7 @@ class CreateActionDelegate(
     )
 
     var httpRequestBottomSheetState: ActionData.HttpRequest? by mutableStateOf(null)
+    var smsActionBottomSheetState: SmsActionBottomSheetState? by mutableStateOf(null)
 
     init {
         coroutineScope.launch {
@@ -692,33 +693,25 @@ class CreateActionDelegate(
             }
 
             ActionId.SEND_SMS, ActionId.COMPOSE_SMS -> {
-                val oldSms = oldData as? ActionData.Sms
-
-                val number = showDialog(
-                    "create_sms_action_number",
-                    DialogModel.Text(
-                        hint = getString(R.string.hint_create_sms_action_number),
-                        allowEmpty = false,
-                        inputType = InputType.TYPE_CLASS_PHONE,
-                        text = oldSms?.number ?: "",
-                    ),
-                ) ?: return null
-
-                val message = showDialog(
-                    "create_sms_action_message",
-                    DialogModel.Text(
-                        hint = getString(R.string.hint_create_sms_action_message),
-                        allowEmpty = false,
-                        inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
-                        text = oldSms?.message ?: "",
-                    ),
-                ) ?: return null
-
-                return when (actionId) {
-                    ActionId.SEND_SMS -> ActionData.Sms.SendSms(number, message)
-                    ActionId.COMPOSE_SMS -> ActionData.Sms.ComposeSms(number, message)
-                    else -> throw Exception("don't know how to create action for $actionId")
+                val number = when (oldData) {
+                    is ActionData.SendSms -> oldData.number
+                    is ActionData.ComposeSms -> oldData.number
+                    else -> ""
                 }
+
+                val message = when (oldData) {
+                    is ActionData.SendSms -> oldData.message
+                    is ActionData.ComposeSms -> oldData.message
+                    else -> ""
+                }
+
+                smsActionBottomSheetState = SmsActionBottomSheetState(
+                    actionId = actionId,
+                    number = number,
+                    message = message,
+                )
+
+                return null
             }
 
             ActionId.SOUND -> {

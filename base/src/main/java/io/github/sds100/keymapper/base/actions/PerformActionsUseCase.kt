@@ -210,11 +210,11 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 result = phoneAdapter.startCall(action.number)
             }
 
-            is ActionData.Sms.SendSms -> {
+            is ActionData.SendSms -> {
                 result = phoneAdapter.sendSms(action.number, action.message)
             }
 
-            is ActionData.Sms.ComposeSms -> {
+            is ActionData.ComposeSms -> {
                 result = phoneAdapter.composeSms(action.number, action.message)
             }
 
