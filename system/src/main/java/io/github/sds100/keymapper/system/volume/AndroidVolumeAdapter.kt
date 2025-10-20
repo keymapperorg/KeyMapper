@@ -3,16 +3,13 @@ package io.github.sds100.keymapper.system.volume
 import android.app.NotificationManager
 import android.content.Context
 import android.media.AudioManager
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
-import io.github.sds100.keymapper.common.utils.KMError
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -44,32 +41,20 @@ class AndroidVolumeAdapter @Inject constructor(
         }
 
     override fun muteVolume(stream: VolumeStream?, showVolumeUi: Boolean): KMResult<*> {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return stream.convert().then { streamType ->
-                adjustVolume(AudioManager.ADJUST_MUTE, showVolumeUi, streamType)
-            }
-        } else {
-            return KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
+        return stream.convert().then { streamType ->
+            adjustVolume(AudioManager.ADJUST_MUTE, showVolumeUi, streamType)
         }
     }
 
     override fun unmuteVolume(stream: VolumeStream?, showVolumeUi: Boolean): KMResult<*> {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return stream.convert().then { streamType ->
-                adjustVolume(AudioManager.ADJUST_UNMUTE, showVolumeUi, streamType)
-            }
-        } else {
-            return KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
+        return stream.convert().then { streamType ->
+            adjustVolume(AudioManager.ADJUST_UNMUTE, showVolumeUi, streamType)
         }
     }
 
     override fun toggleMuteVolume(stream: VolumeStream?, showVolumeUi: Boolean): KMResult<*> {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return stream.convert().then { streamType ->
-                adjustVolume(AudioManager.ADJUST_TOGGLE_MUTE, showVolumeUi, streamType)
-            }
-        } else {
-            return KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
+        return stream.convert().then { streamType ->
+            adjustVolume(AudioManager.ADJUST_TOGGLE_MUTE, showVolumeUi, streamType)
         }
     }
 
@@ -93,30 +78,20 @@ class AndroidVolumeAdapter @Inject constructor(
     }
 
     override fun enableDndMode(dndMode: DndMode): KMResult<*> {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            notificationManager.setInterruptionFilter(dndMode.convert())
-            return Success(Unit)
-        }
+        notificationManager.setInterruptionFilter(dndMode.convert())
+        return Success(Unit)
 
-        return KMError.SdkVersionTooLow(Build.VERSION_CODES.M)
     }
 
     override fun disableDndMode(): KMResult<*> {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
-            return Success(Unit)
-        }
+        notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+        return Success(Unit)
 
-        return KMError.SdkVersionTooLow(Build.VERSION_CODES.M)
     }
 
-    override fun isDndEnabled(): Boolean = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    override fun isDndEnabled(): Boolean =
         notificationManager.currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL
-    } else {
-        false
-    }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun DndMode.convert(): Int = when (this) {
         DndMode.ALARMS -> NotificationManager.INTERRUPTION_FILTER_ALARMS
         DndMode.PRIORITY -> NotificationManager.INTERRUPTION_FILTER_PRIORITY
@@ -131,12 +106,7 @@ class AndroidVolumeAdapter @Inject constructor(
         VolumeStream.RING -> Success(AudioManager.STREAM_RING)
         VolumeStream.SYSTEM -> Success(AudioManager.STREAM_SYSTEM)
         VolumeStream.VOICE_CALL -> Success(AudioManager.STREAM_VOICE_CALL)
-        VolumeStream.ACCESSIBILITY ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Success(AudioManager.STREAM_ACCESSIBILITY)
-            } else {
-                KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.O)
-            }
+        VolumeStream.ACCESSIBILITY -> Success(AudioManager.STREAM_ACCESSIBILITY)
 
         null -> Success(null)
     }
