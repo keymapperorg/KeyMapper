@@ -34,7 +34,7 @@ class ShareLogcatUseCaseImpl @Inject constructor(
 
             val command = "logcat -d -f ${file.path}"
 
-            shellAdapter.executeWithOutput(command).then {
+            shellAdapter.execute(command).then {
                 val publicUri = fileAdapter.getPublicUriForPrivateFile(file)
 
                 ShareUtils.shareFile(ctx, publicUri.toUri(), buildConfigProvider.packageName)

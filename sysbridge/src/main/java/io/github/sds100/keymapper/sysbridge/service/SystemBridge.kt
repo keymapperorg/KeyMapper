@@ -509,31 +509,42 @@ internal class SystemBridge : ISystemBridge.Stub() {
         return false
     }
 
-    override fun executeCommand(command: String?): ShellResult {
-        command ?: throw IllegalArgumentException("command is null")
+    override fun executeCommand(command: String?, timeoutMillis: Long): ShellResult {
+        command ?: throw IllegalArgumentException("Command is null")
 
-        Log.i(TAG, "Executing command: $command")
+        val process = ProcessBuilder()
+            .command("sh", "-c", command)
+            // Redirect stderr to stdout
+            .redirectErrorStream(true)
+            .start()
+
+
+        val worker = Thread {
+            try {
+                process.waitFor()
+            } catch (_: InterruptedException) {
+            }
+        }
+
+        worker.start()
 
         try {
-            // Execute through sh -c to properly handle multi-line commands and shell syntax
-            val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
+            worker.join(timeoutMillis)
 
-            process.waitFor()
-
-            val stdout = with(process.inputStream.bufferedReader()) {
-                readText()
+            if (worker.isAlive) {
+                worker.interrupt()
+                process.destroy()
+                throw IllegalStateException("Command timed out")
             }
-            val stderr = with(process.errorStream.bufferedReader()) {
-                readText()
-            }
-
-            val exitCode = process.exitValue()
-
-            return ShellResult(stdout, stderr, exitCode)
-        } catch (e: Exception) {
-            Log.e(TAG, "Error executing command: $command", e)
-            return ShellResult("", e.message ?: "Unknown error", -1)
+        } catch (ex: InterruptedException) {
+            worker.interrupt()
+            Thread.currentThread().interrupt()
         }
+
+        val stdout = process.inputStream.bufferedReader().readText()
+        val exitCode = process.exitValue()
+
+        return ShellResult(stdout, exitCode)
     }
 
     override fun getVersionCode(): Int {

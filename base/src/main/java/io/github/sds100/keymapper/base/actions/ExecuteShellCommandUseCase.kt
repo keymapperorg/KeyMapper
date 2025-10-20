@@ -10,11 +10,9 @@ import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManage
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
 class ExecuteShellCommandUseCase @Inject constructor(
@@ -26,42 +24,41 @@ class ExecuteShellCommandUseCase @Inject constructor(
         command: String,
         executionMode: ShellExecutionMode,
         timeoutMillis: Long,
-    ): KMResult<ShellResult> {
-        return try {
-            withTimeout(timeoutMillis) {
-                when (executionMode) {
-                    ShellExecutionMode.STANDARD -> shellAdapter.executeWithOutput(command)
-                    ShellExecutionMode.ROOT -> suAdapter.executeWithOutput(command)
-                    ShellExecutionMode.ADB -> {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            systemBridgeConnectionManager.run { systemBridge ->
-                                systemBridge.executeCommand(command)
-                            }
-                        } else {
-                            KMError.SdkVersionTooLow(Build.VERSION_CODES.Q)
-                        }
+    ): KMResult<ShellResult> = withContext(Dispatchers.IO) {
+        when (executionMode) {
+            ShellExecutionMode.STANDARD -> shellAdapter.execute(command, timeoutMillis)
+            ShellExecutionMode.ROOT -> suAdapter.execute(command, timeoutMillis)
+            ShellExecutionMode.ADB -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    systemBridgeConnectionManager.run { systemBridge ->
+                        systemBridge.executeCommand(command, timeoutMillis)
                     }
+                } else {
+                    KMError.SdkVersionTooLow(Build.VERSION_CODES.Q)
                 }
             }
-        } catch (e: TimeoutCancellationException) {
-            KMError.ShellCommandTimeout(timeoutMillis.toInt())
         }
     }
 
     suspend fun executeWithStreamingOutput(
         command: String,
         executionMode: ShellExecutionMode,
+        timeoutMillis: Long,
     ): KMResult<Flow<ShellResult>> {
         return when (executionMode) {
-            ShellExecutionMode.STANDARD -> shellAdapter.executeWithStreamingOutput(command)
-            ShellExecutionMode.ROOT -> suAdapter.executeWithStreamingOutput(command)
+            ShellExecutionMode.STANDARD -> shellAdapter.executeWithStreamingOutput(
+                command,
+                timeoutMillis
+            )
+
+            ShellExecutionMode.ROOT -> suAdapter.executeWithStreamingOutput(command, timeoutMillis)
 
             ShellExecutionMode.ADB -> {
                 // ADB mode doesn't support streaming
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     val result = withContext(Dispatchers.IO) {
                         systemBridgeConnectionManager.run { systemBridge ->
-                            systemBridge.executeCommand(command)
+                            systemBridge.executeCommand(command, timeoutMillis)
                         }
                     }
                     when (result) {

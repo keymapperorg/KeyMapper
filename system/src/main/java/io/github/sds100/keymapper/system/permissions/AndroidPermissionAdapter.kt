@@ -48,6 +48,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuBinderWrapper
@@ -179,9 +180,11 @@ class AndroidPermissionAdapter @Inject constructor(
                     KMError.Exception(Exception("Failed to grant permission with Shizuku."))
             }
         } else if (isGranted(Permission.ROOT)) {
-            suAdapter.execute(
-                "pm grant ${buildConfigProvider.packageName} $permissionName",
-            )
+            runBlocking {
+                suAdapter.execute(
+                    "pm grant ${buildConfigProvider.packageName} $permissionName",
+                )
+            }
 
             if (ContextCompat.checkSelfPermission(ctx, permissionName) == PERMISSION_GRANTED) {
                 result = success()

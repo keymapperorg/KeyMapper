@@ -30,6 +30,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import okhttp3.Headers
 import okhttp3.OkHttpClient
@@ -180,7 +181,7 @@ class AndroidNetworkAdapter @Inject constructor(
         if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             return systemBridgeConnManager.run { bridge -> bridge.setDataEnabled(subId, true) }
         } else {
-            return suAdapter.execute("svc data enable")
+            return runBlocking { suAdapter.execute("svc data enable") }
         }
     }
 
@@ -194,7 +195,7 @@ class AndroidNetworkAdapter @Inject constructor(
         if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             return systemBridgeConnManager.run { bridge -> bridge.setDataEnabled(subId, false) }
         } else {
-            return suAdapter.execute("svc data disable")
+            return runBlocking { suAdapter.execute("svc data disable") }
         }
     }
 

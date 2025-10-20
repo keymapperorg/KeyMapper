@@ -80,6 +80,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
 class PerformActionsUseCaseImpl @AssistedInject constructor(
@@ -1044,12 +1045,16 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             return service
                 .doGlobalAction(AccessibilityService.GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE)
         } else {
-            return getShellAdapter(useRoot = false).execute("cmd statusbar collapse")
+            return runBlocking { getShellAdapter(useRoot = false).execute("cmd statusbar collapse") }
         }
     }
 
     private fun getShellAdapter(useRoot: Boolean): ShellAdapter {
-        return if (useRoot) suAdapter else shell
+        return if (useRoot) {
+            suAdapter
+        } else {
+            shell
+        }
     }
 
     private fun KMResult<*>.showErrorMessageOnFail() {

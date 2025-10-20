@@ -468,7 +468,7 @@ private fun ShellCommandOutputContent(
                     SelectionContainer {
                         OutlinedTextField(
                             modifier = Modifier.fillMaxWidth(),
-                            value = shellResult.stdErr,
+                            value = shellResult.stdOut,
                             onValueChange = {},
                             readOnly = true,
                             minLines = 5,
@@ -481,14 +481,18 @@ private fun ShellCommandOutputContent(
                     }
                 }
 
-                Text(
-                    text = stringResource(
-                        R.string.action_shell_command_exit_code,
-                        result.value.exitCode,
-                    ),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                val exitCode = result.value.exitCode
+
+                if (exitCode != null) {
+                    Text(
+                        text = stringResource(
+                            R.string.action_shell_command_exit_code,
+                            exitCode,
+                        ),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
 
             is KMError -> {
@@ -562,8 +566,7 @@ private fun PreviewShellCommandActionScreenShellError() {
                 executionMode = ShellExecutionMode.ROOT,
                 testResult = Success(
                     ShellResult(
-                        stdOut = "",
-                        stdErr = "ls: .: Permission denied",
+                        stdOut = "ls: .: Permission denied",
                         exitCode = 1,
                     ),
                 ),
@@ -582,7 +585,7 @@ private fun PreviewShellCommandActionScreenTesting() {
                 command = "for i in \$(seq 1 10); do echo \"Line \$i\"; sleep 1; done",
                 executionMode = ShellExecutionMode.STANDARD,
                 isRunning = true,
-                testResult = Success(ShellResult("Line 1\nLine 2\nLine 3\nLine 4\nLine 5", "", 0)),
+                testResult = Success(ShellResult("Line 1\nLine 2\nLine 3\nLine 4\nLine 5", 0)),
             ),
         )
     }
@@ -613,7 +616,7 @@ private fun PreviewShellCommandOutputSuccess() {
                     description = "Hello world script",
                     command = "echo 'Hello World'",
                     executionMode = ShellExecutionMode.STANDARD,
-                    testResult = Success(ShellResult("Hello World\nNew line\nNew new line", "", 0)),
+                    testResult = Success(ShellResult("Hello World\nNew line\nNew new line", 0)),
                 ),
                 onKillClick = {},
             )
@@ -651,8 +654,7 @@ private fun PreviewShellCommandOutputShellError() {
                     executionMode = ShellExecutionMode.ROOT,
                     testResult = Success(
                         ShellResult(
-                            stdOut = "",
-                            stdErr = "ls: .: Permission denied",
+                            stdOut = "ls: .: Permission denied",
                             exitCode = 1,
                         ),
                     ),
@@ -677,7 +679,6 @@ private fun PreviewShellCommandOutputRunning() {
                     testResult = Success(
                         ShellResult(
                             "Line 1\nLine 2\nLine 3\nLine 4\nLine 5",
-                            "",
                             0,
                         ),
                     ),

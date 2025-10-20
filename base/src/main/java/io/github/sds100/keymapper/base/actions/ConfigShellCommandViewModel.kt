@@ -21,13 +21,12 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
+import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -97,16 +96,7 @@ class ConfigShellCommandViewModel @Inject constructor(
         )
 
         testJob = viewModelScope.launch {
-            try {
-                withTimeout(state.timeoutSeconds * 1000L) {
-                    testCommand()
-                }
-            } catch (e: TimeoutCancellationException) {
-                state = state.copy(
-                    isRunning = false,
-                    testResult = KMError.ShellCommandTimeout(state.timeoutSeconds * 1000),
-                )
-            }
+            testCommand()
         }
     }
 
@@ -114,6 +104,7 @@ class ConfigShellCommandViewModel @Inject constructor(
         val flowResult = executeShellCommandUseCase.executeWithStreamingOutput(
             command = state.command,
             executionMode = state.executionMode,
+            timeoutMillis = state.timeoutSeconds * 1000L
         )
 
         when (flowResult) {
@@ -132,7 +123,11 @@ class ConfigShellCommandViewModel @Inject constructor(
                 }.catch { e ->
                     state = state.copy(
                         isRunning = false,
-                        testResult = KMError.Exception(Exception(e.message)),
+                        testResult = if (e is TimeoutException) {
+                            KMError.ShellCommandTimeout(state.timeoutSeconds * 1000L)
+                        } else {
+                            KMError.Exception(Exception(e.message))
+                        }
                     )
                 }.collect { shellResult ->
                     state = state.copy(isRunning = true, testResult = Success(shellResult))

@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -104,7 +105,7 @@ class AndroidInputMethodAdapter @Inject constructor(
             (Build.VERSION_CODES.O_MR1..Build.VERSION_CODES.P).contains(Build.VERSION.SDK_INT) -> {
                 val command =
                     "am broadcast -a com.android.server.InputMethodManagerService.SHOW_INPUT_METHOD_PICKER"
-                return suAdapter.execute(command)
+                return runBlocking { suAdapter.execute(command) }
             }
 
             else -> return KMError.CantShowImePickerInBackground

@@ -130,11 +130,11 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
     private suspend fun restartSystemBridge(systemBridge: ISystemBridge) {
         starter.startSystemBridge(executeCommand = { command ->
             try {
-                val result = systemBridge.executeCommand(command)!!
+                val result = systemBridge.executeCommand(command, 10000L)!!
                 if (result.isSuccess()) {
                     Success(result.stdOut)
                 } else {
-                    KMError.Exception(Exception("Command failed with exit code ${result.exitCode}: ${result.stdErr}"))
+                    KMError.Exception(Exception("Command failed with exit code ${result.exitCode}: ${result.stdOut}"))
                 }
             } catch (_: DeadObjectException) {
                 // This exception is expected since it is killing the system bridge

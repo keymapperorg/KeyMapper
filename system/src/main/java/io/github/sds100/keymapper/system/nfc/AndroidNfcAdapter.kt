@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.system.root.SuAdapter
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,7 +29,7 @@ class AndroidNfcAdapter @Inject constructor(
         if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             return systemBridgeConnectionManager.run { bridge -> bridge.setNfcEnabled(true) }
         } else {
-            return suAdapter.execute("svc nfc enable")
+            return runBlocking { suAdapter.execute("svc nfc enable") }
         }
     }
 
@@ -36,7 +37,7 @@ class AndroidNfcAdapter @Inject constructor(
         if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             return systemBridgeConnectionManager.run { bridge -> bridge.setNfcEnabled(false) }
         } else {
-            return suAdapter.execute("svc nfc disable")
+            return runBlocking { suAdapter.execute("svc nfc disable") }
         }
     }
 }

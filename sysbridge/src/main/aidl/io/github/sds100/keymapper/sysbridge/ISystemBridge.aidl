@@ -9,7 +9,7 @@ interface ISystemBridge {
    void destroy() = 16777114;
    int getProcessUid() = 16777113;
    int getVersionCode() = 16777112;
-   ShellResult executeCommand(String command) = 16777111;
+   ShellResult executeCommand(String command, long timeoutMillis) = 16777111;
 
    boolean grabEvdevDevice(String devicePath) = 1;
    boolean grabEvdevDeviceArray(in String[] devicePath) = 2;

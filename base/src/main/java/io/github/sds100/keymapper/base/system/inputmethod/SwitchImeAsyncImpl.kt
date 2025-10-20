@@ -21,6 +21,7 @@ import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -63,7 +64,7 @@ class SwitchImeAsyncImpl @Inject constructor(
                         ),
                     )
                 } else {
-                    suAdapter.execute("ime enable $imeId")
+                    runBlocking { suAdapter.execute("ime enable $imeId").then { Success(Unit) } }
                 }
             }
     }
