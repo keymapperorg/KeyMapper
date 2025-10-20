@@ -201,7 +201,18 @@ private fun SmsActionBottomSheet(
                 },
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                text = stringResource(R.string.warning_sms_charges),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.labelMedium,
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             if (state is SmsActionBottomSheetState.SendSms) {
                 Row(

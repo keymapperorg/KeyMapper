@@ -1768,6 +1768,7 @@
 
     <string name="button_test_sms">Test SMS</string>
     <string name="test_sms_result_ok">Sent successfully!</string>
+    <string name="warning_sms_charges">Sending SMS may incur carrier or roaming charges. Key Mapper developers are not liable for any costs.</string>
     <string name="hint_shell_command_description">Description</string>
     <string name="hint_shell_command_timeout">Timeout</string>
 

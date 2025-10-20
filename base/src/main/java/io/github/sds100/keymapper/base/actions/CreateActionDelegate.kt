@@ -169,6 +169,7 @@ class CreateActionDelegate(
 
                 if (result is SystemError.PermissionDenied) {
                     useCase.requestPermission(result.permission)
+                    smsActionBottomSheetState = state.copy(testResult = null)
                 } else {
                     smsActionBottomSheetState = state.copy(testResult = State.Data(result))
                 }
