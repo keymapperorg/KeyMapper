@@ -554,32 +554,18 @@ object ActionUtils {
         ActionId.END_PHONE_CALL,
         ActionId.ANSWER_PHONE_CALL,
         ActionId.PHONE_CALL,
-            -> listOf(PackageManager.FEATURE_TELEPHONY)
-
         ActionId.SEND_SMS,
         ActionId.COMPOSE_SMS,
-            -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            listOf(PackageManager.FEATURE_TELEPHONY_MESSAGING)
-        } else {
-            listOf(PackageManager.FEATURE_TELEPHONY)
-        }
-
-        ActionId.SECURE_LOCK_DEVICE,
-            -> listOf(PackageManager.FEATURE_DEVICE_ADMIN)
-
-        ActionId.TOGGLE_WIFI,
-        ActionId.ENABLE_WIFI,
-        ActionId.DISABLE_WIFI,
-            -> listOf(PackageManager.FEATURE_WIFI)
-
         ActionId.TOGGLE_MOBILE_DATA,
         ActionId.ENABLE_MOBILE_DATA,
         ActionId.DISABLE_MOBILE_DATA,
-            -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            listOf(PackageManager.FEATURE_TELEPHONY_DATA)
-        } else {
-            listOf(PackageManager.FEATURE_TELEPHONY)
-        }
+            // For some reason on API 34 emulator the system says it does not have
+            // FEATURE_TELEPHONY_SMS even tho SMS works. So to prevent false negatives
+            // check that the generic TELEPHONY feature exists.
+            -> listOf(PackageManager.FEATURE_TELEPHONY)
+
+        ActionId.SECURE_LOCK_DEVICE,
+            -> listOf(PackageManager.FEATURE_DEVICE_ADMIN)
 
         ActionId.TOGGLE_NFC,
         ActionId.ENABLE_NFC,
