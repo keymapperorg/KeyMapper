@@ -49,7 +49,7 @@ fun BaseMainNavHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = NavDestination.ConfigShellCommand(null),
+        startDestination = NavDestination.Home,
         enterTransition = { slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left) },
         exitTransition = { slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right) },
         popEnterTransition = { slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right) },

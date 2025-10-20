@@ -91,7 +91,7 @@ abstract class KMError : KMResult<Nothing>() {
 
     data object UiElementNotFound : KMError()
     data class KeyEventActionError(val baseError: KMError) : KMError()
-    data class ShellCommandTimeout(val timeoutMillis: Long) : KMError()
+    data class ShellCommandTimeout(val timeoutMillis: Long, val stdout: String? = null) : KMError()
 }
 
 inline fun <T> KMResult<T>.onSuccess(f: (T) -> Unit): KMResult<T> {

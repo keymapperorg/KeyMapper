@@ -13,5 +13,5 @@ interface ShellAdapter {
     suspend fun executeWithStreamingOutput(
         command: String,
         timeoutMillis: Long
-    ): KMResult<Flow<ShellResult>>
+    ): Flow<KMResult<ShellResult>>
 }

@@ -13,20 +13,17 @@ import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
+import io.github.sds100.keymapper.common.models.isExecuting
 import io.github.sds100.keymapper.common.utils.Constants
-import io.github.sds100.keymapper.common.utils.KMError
-import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.handle
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -101,38 +98,17 @@ class ConfigShellCommandViewModel @Inject constructor(
     }
 
     private suspend fun testCommand() {
-        val flowResult = executeShellCommandUseCase.executeWithStreamingOutput(
+        executeShellCommandUseCase.executeWithStreamingOutput(
             command = state.command,
             executionMode = state.executionMode,
             timeoutMillis = state.timeoutSeconds * 1000L
-        )
+        ).collect { result ->
+            val isRunning = result.handle(
+                onSuccess = { it.isExecuting() },
+                onError = { false }
+            )
 
-        when (flowResult) {
-            is KMError -> {
-                state = state.copy(
-                    isRunning = false,
-                    testResult = flowResult,
-                )
-            }
-
-            is Success -> {
-                val flow = flowResult.value
-
-                flow.onCompletion {
-                    state = state.copy(isRunning = false)
-                }.catch { e ->
-                    state = state.copy(
-                        isRunning = false,
-                        testResult = if (e is TimeoutException) {
-                            KMError.ShellCommandTimeout(state.timeoutSeconds * 1000L)
-                        } else {
-                            KMError.Exception(Exception(e.message))
-                        }
-                    )
-                }.collect { shellResult ->
-                    state = state.copy(isRunning = true, testResult = Success(shellResult))
-                }
-            }
+            state = state.copy(isRunning = isRunning, testResult = result)
         }
     }
 

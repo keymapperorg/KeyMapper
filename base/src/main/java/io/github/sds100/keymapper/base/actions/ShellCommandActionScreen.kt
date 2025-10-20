@@ -60,6 +60,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButton
 import io.github.sds100.keymapper.base.utils.ui.compose.SliderOptionText
 import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.models.ShellResult
+import io.github.sds100.keymapper.common.models.isError
 import io.github.sds100.keymapper.common.models.isSuccess
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -439,47 +440,21 @@ private fun ShellCommandOutputContent(
 
             is Success -> {
                 val shellResult = result.value
+
                 if (shellResult.isSuccess()) {
                     Text(
                         text = stringResource(R.string.action_shell_command_output_label),
                         style = MaterialTheme.typography.titleMedium,
                     )
-
-                    SelectionContainer {
-                        OutlinedTextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = shellResult.stdOut,
-                            onValueChange = {},
-                            readOnly = true,
-                            minLines = 5,
-                            maxLines = 15,
-                            textStyle = MaterialTheme.typography.bodySmall.copy(
-                                fontFamily = FontFamily.Monospace,
-                            ),
-                        )
-                    }
-                } else {
+                } else if (shellResult.isError()) {
                     Text(
                         text = stringResource(R.string.action_shell_command_test_failed),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.error,
                     )
-
-                    SelectionContainer {
-                        OutlinedTextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = shellResult.stdOut,
-                            onValueChange = {},
-                            readOnly = true,
-                            minLines = 5,
-                            maxLines = 15,
-                            isError = true,
-                            textStyle = MaterialTheme.typography.bodySmall.copy(
-                                fontFamily = FontFamily.Monospace,
-                            ),
-                        )
-                    }
                 }
+
+                OutputTextField(text = shellResult.stdout, isError = shellResult.isError())
 
                 val exitCode = result.value.exitCode
 
@@ -507,8 +482,30 @@ private fun ShellCommandOutputContent(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.error,
                 )
+
+                if (result is KMError.ShellCommandTimeout && result.stdout != null) {
+                    OutputTextField(text = result.stdout!!, isError = true)
+                }
             }
         }
+    }
+}
+
+@Composable
+private fun OutputTextField(modifier: Modifier = Modifier, text: String, isError: Boolean) {
+    SelectionContainer(modifier = modifier) {
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = text,
+            onValueChange = {},
+            readOnly = true,
+            minLines = 5,
+            maxLines = 15,
+            isError = isError,
+            textStyle = MaterialTheme.typography.bodySmall.copy(
+                fontFamily = FontFamily.Monospace,
+            ),
+        )
     }
 }
 
@@ -566,7 +563,7 @@ private fun PreviewShellCommandActionScreenShellError() {
                 executionMode = ShellExecutionMode.ROOT,
                 testResult = Success(
                     ShellResult(
-                        stdOut = "ls: .: Permission denied",
+                        stdout = "ls: .: Permission denied",
                         exitCode = 1,
                     ),
                 ),
@@ -644,6 +641,24 @@ private fun PreviewShellCommandOutputError() {
 
 @Preview
 @Composable
+private fun PreviewShellCommandOutpuTimeout() {
+    KeyMapperTheme {
+        Surface {
+            ShellCommandOutputContent(
+                state = ShellCommandActionState(
+                    description = "Read secret file",
+                    command = "cat /root/secret.txt",
+                    executionMode = ShellExecutionMode.ROOT,
+                    testResult = KMError.ShellCommandTimeout(1000L, "1\n2\n3"),
+                ),
+                onKillClick = {},
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
 private fun PreviewShellCommandOutputShellError() {
     KeyMapperTheme {
         Surface {
@@ -654,7 +669,7 @@ private fun PreviewShellCommandOutputShellError() {
                     executionMode = ShellExecutionMode.ROOT,
                     testResult = Success(
                         ShellResult(
-                            stdOut = "ls: .: Permission denied",
+                            stdout = "ls: .: Permission denied",
                             exitCode = 1,
                         ),
                     ),

@@ -47,6 +47,7 @@ import rikka.hidden.compat.DeviceIdleControllerApis
 import rikka.hidden.compat.PackageManagerApis
 import rikka.hidden.compat.UserManagerApis
 import rikka.hidden.compat.adapter.ProcessObserverAdapter
+import java.io.InterruptedIOException
 import kotlin.system.exitProcess
 
 
@@ -518,11 +519,18 @@ internal class SystemBridge : ISystemBridge.Stub() {
             .redirectErrorStream(true)
             .start()
 
+        var stdout = ""
 
         val worker = Thread {
+            val stdoutReader = process.inputStream.bufferedReader()
+
             try {
+                stdout = stdoutReader.readText()
                 process.waitFor()
             } catch (_: InterruptedException) {
+            } catch (_: InterruptedIOException) {
+            } finally {
+                stdoutReader.close()
             }
         }
 
@@ -534,14 +542,15 @@ internal class SystemBridge : ISystemBridge.Stub() {
             if (worker.isAlive) {
                 worker.interrupt()
                 process.destroy()
-                throw IllegalStateException("Command timed out")
+                // Only some standard exceptions can be thrown across Binder. A TimeoutException
+                // is not one of them.
+                throw IllegalStateException("Timeout")
             }
-        } catch (ex: InterruptedException) {
+        } catch (e: InterruptedException) {
             worker.interrupt()
             Thread.currentThread().interrupt()
         }
 
-        val stdout = process.inputStream.bufferedReader().readText()
         val exitCode = process.exitValue()
 
         return ShellResult(stdout, exitCode)

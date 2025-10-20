@@ -5,13 +5,13 @@ import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.models.ShellResult
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
-import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -28,15 +28,7 @@ class ExecuteShellCommandUseCase @Inject constructor(
         when (executionMode) {
             ShellExecutionMode.STANDARD -> shellAdapter.execute(command, timeoutMillis)
             ShellExecutionMode.ROOT -> suAdapter.execute(command, timeoutMillis)
-            ShellExecutionMode.ADB -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    systemBridgeConnectionManager.run { systemBridge ->
-                        systemBridge.executeCommand(command, timeoutMillis)
-                    }
-                } else {
-                    KMError.SdkVersionTooLow(Build.VERSION_CODES.Q)
-                }
-            }
+            ShellExecutionMode.ADB -> executeCommandSystemBridge(command, timeoutMillis)
         }
     }
 
@@ -44,7 +36,7 @@ class ExecuteShellCommandUseCase @Inject constructor(
         command: String,
         executionMode: ShellExecutionMode,
         timeoutMillis: Long,
-    ): KMResult<Flow<ShellResult>> {
+    ): Flow<KMResult<ShellResult>> {
         return when (executionMode) {
             ShellExecutionMode.STANDARD -> shellAdapter.executeWithStreamingOutput(
                 command,
@@ -53,22 +45,32 @@ class ExecuteShellCommandUseCase @Inject constructor(
 
             ShellExecutionMode.ROOT -> suAdapter.executeWithStreamingOutput(command, timeoutMillis)
 
-            ShellExecutionMode.ADB -> {
-                // ADB mode doesn't support streaming
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    val result = withContext(Dispatchers.IO) {
-                        systemBridgeConnectionManager.run { systemBridge ->
-                            systemBridge.executeCommand(command, timeoutMillis)
-                        }
+            // ADB mode doesn't support streaming
+            ShellExecutionMode.ADB -> flowOf(executeCommandSystemBridge(command, timeoutMillis))
+        }
+    }
+
+    /**
+     * Useful shell command for testing this is:
+     * for i in 1 2 3 4 5 6; do sleep 1; echo $i; done
+     */
+    private suspend fun executeCommandSystemBridge(
+        command: String,
+        timeoutMillis: Long
+    ): KMResult<ShellResult> {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            runInterruptible(Dispatchers.IO) {
+                try {
+                    systemBridgeConnectionManager.run { systemBridge ->
+                        systemBridge.executeCommand(command, timeoutMillis)
                     }
-                    when (result) {
-                        is KMError -> result
-                        is Success -> Success(flowOf(result.value))
-                    }
-                } else {
-                    KMError.SdkVersionTooLow(Build.VERSION_CODES.Q)
+                    // Only some standard exceptions can be thrown across Binder.
+                } catch (e: IllegalStateException) {
+                    KMError.ShellCommandTimeout(timeoutMillis, null)
                 }
             }
+        } else {
+            KMError.SdkVersionTooLow(Build.VERSION_CODES.Q)
         }
     }
 }

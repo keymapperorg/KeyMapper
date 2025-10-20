@@ -132,9 +132,9 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
             try {
                 val result = systemBridge.executeCommand(command, 10000L)!!
                 if (result.isSuccess()) {
-                    Success(result.stdOut)
+                    Success(result.stdout)
                 } else {
-                    KMError.Exception(Exception("Command failed with exit code ${result.exitCode}: ${result.stdOut}"))
+                    KMError.Exception(Exception("Command failed with exit code ${result.exitCode}: ${result.stdout}"))
                 }
             } catch (_: DeadObjectException) {
                 // This exception is expected since it is killing the system bridge
@@ -153,6 +153,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
 
             return Success(block(systemBridge))
         } catch (e: RemoteException) {
+            Timber.e(e, "RemoteException when running block with System Bridge")
             return KMError.Exception(e)
         }
     }
