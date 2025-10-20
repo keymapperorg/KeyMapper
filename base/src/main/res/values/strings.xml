@@ -866,6 +866,7 @@
     <string name="error_ui_element_not_found">UI element not found!</string>
     <string name="error_shell_command_timeout">Command timed out after %1$d seconds</string>
     <string name="error_system_bridge_disconnected">PRO Mode needs starting</string>
+    <string name="error_sms_rate_limit">Rate limit reached. You can only send once per second.</string>
     <!-- Error messages -->
 
     <!-- action labels -->

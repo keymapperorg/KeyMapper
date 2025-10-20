@@ -249,6 +249,7 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         PurchasingError.PurchasingNotImplemented -> resourceProvider.getString(R.string.purchasing_error_not_implemented)
 
         is KMError.KeyEventActionError -> resourceProvider.getString(R.string.error_fix_key_event_action)
+        is KMError.KeyMapperSmsRateLimit -> resourceProvider.getString(R.string.error_sms_rate_limit)
 
         else -> this.toString()
     }
