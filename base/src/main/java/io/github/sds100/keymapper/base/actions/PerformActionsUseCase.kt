@@ -929,9 +929,15 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             ActionData.ForceStopApp -> {
-                val packageName = service.rootNode!!.packageName
+                val packageName = service.activeWindowPackageNames
+                    .firstOrNull {
+                        !it.contains("io.github.sds100.keymapper") &&
+                            it != "com.android.systemui"
+                    }
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                if (packageName == null) {
+                    result = KMError.Exception(Exception("No foreground app found to kill"))
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     result = systemBridgeConnectionManager.run { systemBridge ->
                         systemBridge.forceStopPackage(packageName)
                     }
@@ -941,9 +947,13 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             ActionData.ClearRecentApp -> {
-                val packageName = service.rootNode!!.packageName
+                val packageName = service.activeWindowPackageNames
+                    .firstOrNull { it != "com.android.systemui" }
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                if (packageName == null) {
+                    result =
+                        KMError.Exception(Exception("No foreground app found to clear from recents"))
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     result = systemBridgeConnectionManager.run { systemBridge ->
                         systemBridge.removeTasks(packageName)
                     }

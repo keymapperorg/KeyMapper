@@ -67,6 +67,12 @@ abstract class BaseAccessibilityService :
             return rootInActiveWindow?.toModel()
         }
 
+    override val activeWindowPackageNames: List<String>
+        get() = windows
+            ?.filter { it.isActive }
+            ?.mapNotNull { it.root?.packageName?.toString() }
+            ?.toList() ?: emptyList()
+
     private val _activeWindowPackage: MutableStateFlow<String?> = MutableStateFlow(null)
     override val activeWindowPackage: Flow<String?> = _activeWindowPackage
 

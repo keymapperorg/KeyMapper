@@ -45,6 +45,7 @@ interface IAccessibilityService : SwitchImeInterface {
 
     val rootNode: AccessibilityNodeModel?
     val activeWindowPackage: Flow<String?>
+    val activeWindowPackageNames: List<String>
 
     fun hideKeyboard()
     fun showKeyboard()
