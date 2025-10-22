@@ -40,4 +40,6 @@ interface ISystemBridge {
    void forceStopPackage(String packageName) = 16;
 
    void removeTasks(String packageName) = 17;
+
+   void setRingerMode(int ringerMode) = 18;
 }

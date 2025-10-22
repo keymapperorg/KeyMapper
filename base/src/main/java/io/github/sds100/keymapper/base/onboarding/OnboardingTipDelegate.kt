@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.base.onboarding
 
 import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCase
 import io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey
 import io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey
@@ -28,7 +27,6 @@ class OnboardingTipDelegateImpl @Inject constructor(
     private val viewModelScope: CoroutineScope,
     private val preferenceRepository: PreferenceRepository,
     private val configTriggerUseCase: ConfigTriggerUseCase,
-    private val displayKeyMap: DisplayKeyMapUseCase,
     resourceProvider: ResourceProvider,
 ) : OnboardingTipDelegate,
     PreferenceRepository by preferenceRepository,
