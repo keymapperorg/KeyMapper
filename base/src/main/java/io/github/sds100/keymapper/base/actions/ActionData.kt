@@ -98,6 +98,7 @@ sealed class ActionData : Comparable<ActionData> {
 
     @Serializable
     sealed class Volume : ActionData() {
+        @Deprecated("Use Volume.Up or Volume.Down with volumeStream parameter instead")
         sealed class Stream : Volume() {
             abstract val volumeStream: VolumeStream
             abstract val showVolumeUi: Boolean

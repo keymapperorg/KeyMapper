@@ -17,7 +17,7 @@
 - #727 Actions to send SMS messages: "Send SMS" and "Compose SMS"
 - #1819 Explain how to enable the accessibility service restricted setting
 - #661 Action to execute shell commands.
-- Volume up/down actions now allow selecting a specific audio stream (e.g., music, notifications) to control, consolidating the functionality of increase/decrease stream actions.
+- Consolidated volume and stream actions.
 
 ## Removed
 

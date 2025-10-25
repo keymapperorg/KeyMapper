@@ -47,58 +47,35 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VolumeUpActionBottomSheet(delegate: CreateActionDelegate) {
+fun VolumeActionBottomSheet(delegate: CreateActionDelegate) {
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    if (delegate.volumeUpActionState != null) {
+    if (delegate.volumeActionState != null) {
+        val state = delegate.volumeActionState!!
+        val title = when (state.actionId) {
+            ActionId.VOLUME_UP -> stringResource(R.string.action_volume_up)
+            ActionId.VOLUME_DOWN -> stringResource(R.string.action_volume_down)
+            else -> ""
+        }
+
         VolumeActionBottomSheet(
             sheetState = sheetState,
             onDismissRequest = {
-                delegate.volumeUpActionState = null
+                delegate.volumeActionState = null
             },
-            state = delegate.volumeUpActionState!!,
-            title = stringResource(R.string.action_volume_up),
+            state = state,
+            title = title,
             onSelectStream = {
-                delegate.volumeUpActionState = delegate.volumeUpActionState?.copy(volumeStream = it)
+                delegate.volumeActionState = delegate.volumeActionState?.copy(volumeStream = it)
             },
             onToggleShowVolumeUi = {
-                delegate.volumeUpActionState = delegate.volumeUpActionState?.copy(showVolumeUi = it)
+                delegate.volumeActionState = delegate.volumeActionState?.copy(showVolumeUi = it)
             },
             onDoneClick = {
                 scope.launch {
                     sheetState.hide()
-                    delegate.onDoneConfigVolumeUpClick()
-                }
-            },
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun VolumeDownActionBottomSheet(delegate: CreateActionDelegate) {
-    val scope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-    if (delegate.volumeDownActionState != null) {
-        VolumeActionBottomSheet(
-            sheetState = sheetState,
-            onDismissRequest = {
-                delegate.volumeDownActionState = null
-            },
-            state = delegate.volumeDownActionState!!,
-            title = stringResource(R.string.action_volume_down),
-            onSelectStream = {
-                delegate.volumeDownActionState = delegate.volumeDownActionState?.copy(volumeStream = it)
-            },
-            onToggleShowVolumeUi = {
-                delegate.volumeDownActionState = delegate.volumeDownActionState?.copy(showVolumeUi = it)
-            },
-            onDoneClick = {
-                scope.launch {
-                    sheetState.hide()
-                    delegate.onDoneConfigVolumeDownClick()
+                    delegate.onDoneConfigVolumeClick()
                 }
             },
         )
@@ -220,6 +197,7 @@ private fun VolumeActionBottomSheet(
 }
 
 data class VolumeActionBottomSheetState(
+    val actionId: ActionId,
     val volumeStream: VolumeStream?,
     val showVolumeUi: Boolean,
 )
@@ -238,6 +216,7 @@ private fun PreviewVolumeActionBottomSheet() {
         var state by remember {
             mutableStateOf(
                 VolumeActionBottomSheetState(
+                    actionId = ActionId.VOLUME_UP,
                     volumeStream = VolumeStream.MUSIC,
                     showVolumeUi = true,
                 ),
@@ -269,6 +248,7 @@ private fun PreviewVolumeActionBottomSheetDefaultStream() {
         var state by remember {
             mutableStateOf(
                 VolumeActionBottomSheetState(
+                    actionId = ActionId.VOLUME_DOWN,
                     volumeStream = null,
                     showVolumeUi = false,
                 ),

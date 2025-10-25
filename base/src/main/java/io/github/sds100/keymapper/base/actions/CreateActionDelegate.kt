@@ -54,8 +54,7 @@ class CreateActionDelegate(
 
     var httpRequestBottomSheetState: ActionData.HttpRequest? by mutableStateOf(null)
     var smsActionBottomSheetState: SmsActionBottomSheetState? by mutableStateOf(null)
-    var volumeUpActionState: VolumeActionBottomSheetState? by mutableStateOf(null)
-    var volumeDownActionState: VolumeActionBottomSheetState? by mutableStateOf(null)
+    var volumeActionState: VolumeActionBottomSheetState? by mutableStateOf(null)
 
     init {
         coroutineScope.launch {
@@ -162,26 +161,21 @@ class CreateActionDelegate(
         actionResult.update { action }
     }
 
-    fun onDoneConfigVolumeUpClick() {
-        volumeUpActionState?.also { state ->
-            val action = ActionData.Volume.Up(
-                showVolumeUi = state.showVolumeUi,
-                volumeStream = state.volumeStream,
-            )
+    fun onDoneConfigVolumeClick() {
+        volumeActionState?.also { state ->
+            val action = when (state.actionId) {
+                ActionId.VOLUME_UP -> ActionData.Volume.Up(
+                    showVolumeUi = state.showVolumeUi,
+                    volumeStream = state.volumeStream,
+                )
+                ActionId.VOLUME_DOWN -> ActionData.Volume.Down(
+                    showVolumeUi = state.showVolumeUi,
+                    volumeStream = state.volumeStream,
+                )
+                else -> return
+            }
 
-            volumeUpActionState = null
-            actionResult.update { action }
-        }
-    }
-
-    fun onDoneConfigVolumeDownClick() {
-        volumeDownActionState?.also { state ->
-            val action = ActionData.Volume.Down(
-                showVolumeUi = state.showVolumeUi,
-                volumeStream = state.volumeStream,
-            )
-
-            volumeDownActionState = null
+            volumeActionState = null
             actionResult.update { action }
         }
     }
@@ -291,7 +285,8 @@ class CreateActionDelegate(
 
             ActionId.VOLUME_UP -> {
                 val oldVolumeUpData = oldData as? ActionData.Volume.Up
-                volumeUpActionState = VolumeActionBottomSheetState(
+                volumeActionState = VolumeActionBottomSheetState(
+                    actionId = ActionId.VOLUME_UP,
                     volumeStream = oldVolumeUpData?.volumeStream,
                     showVolumeUi = oldVolumeUpData?.showVolumeUi ?: false,
                 )
@@ -300,7 +295,8 @@ class CreateActionDelegate(
 
             ActionId.VOLUME_DOWN -> {
                 val oldVolumeDownData = oldData as? ActionData.Volume.Down
-                volumeDownActionState = VolumeActionBottomSheetState(
+                volumeActionState = VolumeActionBottomSheetState(
+                    actionId = ActionId.VOLUME_DOWN,
                     volumeStream = oldVolumeDownData?.volumeStream,
                     showVolumeUi = oldVolumeDownData?.showVolumeUi ?: false,
                 )
