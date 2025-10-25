@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,14 +28,23 @@ class AndroidHingeAdapter @Inject constructor(
     /**
      * This should be called with an Activity context when the accessibility service
      * or main activity is available. The WindowInfoTracker needs an Activity.
+     * 
+     * Note: For background services, hinge detection has limitations. The WindowManager
+     * APIs work best with an active Activity context. Apps running in the background
+     * may not receive real-time hinge state updates.
      */
     fun startMonitoring(activity: Activity) {
-        val windowInfoTracker = WindowInfoTracker.getOrCreate(activity)
-        
-        coroutineScope.launch {
-            windowInfoTracker.windowLayoutInfo(activity).collect { layoutInfo ->
-                updateHingeState(layoutInfo)
+        try {
+            val windowInfoTracker = WindowInfoTracker.getOrCreate(activity)
+            
+            coroutineScope.launch {
+                windowInfoTracker.windowLayoutInfo(activity).collect { layoutInfo ->
+                    updateHingeState(layoutInfo)
+                }
             }
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to start hinge monitoring")
+            _hingeState.value = HingeState(isAvailable = false, angle = null)
         }
     }
 
@@ -51,7 +61,7 @@ class AndroidHingeAdapter @Inject constructor(
         // FoldingFeature.State has FLAT and HALF_OPENED states
         // We can estimate the angle based on the state
         val angle = when (foldingFeature.state) {
-            FoldingFeature.State.FLAT -> 180f // Fully open
+            FoldingFeature.State.FLAT -> 180f // Fully open/flat
             FoldingFeature.State.HALF_OPENED -> {
                 // For HALF_OPENED state, we don't have the exact angle from the API
                 // We'll use 90 degrees as a reasonable estimate for half-opened
