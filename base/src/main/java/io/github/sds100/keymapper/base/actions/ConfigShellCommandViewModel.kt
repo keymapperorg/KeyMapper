@@ -101,11 +101,11 @@ class ConfigShellCommandViewModel @Inject constructor(
         executeShellCommandUseCase.executeWithStreamingOutput(
             command = state.command,
             executionMode = state.executionMode,
-            timeoutMillis = state.timeoutSeconds * 1000L
+            timeoutMillis = state.timeoutSeconds * 1000L,
         ).collect { result ->
             val isRunning = result.handle(
                 onSuccess = { it.isExecuting() },
-                onError = { false }
+                onError = { false },
             )
 
             state = state.copy(isRunning = isRunning, testResult = result)

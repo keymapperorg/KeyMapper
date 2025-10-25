@@ -37,7 +37,7 @@ class OnboardingTipDelegateImpl @Inject constructor(
     private val configTriggerUseCase: ConfigTriggerUseCase,
     private val configActionsUseCase: ConfigActionsUseCase,
     resourceProvider: ResourceProvider,
-    navigationProvider: NavigationProvider
+    navigationProvider: NavigationProvider,
 ) : OnboardingTipDelegate,
     NavigationProvider by navigationProvider,
     PreferenceRepository by preferenceRepository,
@@ -266,7 +266,8 @@ class OnboardingTipDelegateImpl @Inject constructor(
             when (action.data) {
                 is ActionData.Volume.SetRingerMode,
                 is ActionData.Volume.CycleRingerMode,
-                is ActionData.Volume.CycleVibrateRing -> true
+                is ActionData.Volume.CycleVibrateRing,
+                    -> true
 
                 else -> false
             }

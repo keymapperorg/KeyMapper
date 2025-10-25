@@ -49,7 +49,7 @@ private fun PreviewAnimatedFloatingActionButton() {
             pulse = false,
             showFabText = true,
             text = "New Key Map",
-            onClick = {}
+            onClick = {},
         )
     }
 }
@@ -62,7 +62,7 @@ private fun PreviewAnimatedFloatingActionButtonPulsing() {
             pulse = true,
             showFabText = true,
             text = "New Key Map",
-            onClick = {}
+            onClick = {},
         )
     }
 }

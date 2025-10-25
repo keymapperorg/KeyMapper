@@ -311,7 +311,6 @@ class KeyMapListViewModel(
                 }
             }
 
-
         coroutineScope.launch {
             combine(
                 listItemStateFlow,
@@ -889,5 +888,4 @@ class KeyMapListViewModel(
             }
         }
     }
-
 }

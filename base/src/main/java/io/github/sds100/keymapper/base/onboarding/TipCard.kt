@@ -86,7 +86,7 @@ fun TipCard(
                             .padding(horizontal = 16.dp)
                             .align(Alignment.End),
                         onClick = onButtonClick,
-                        colors = ButtonDefaults.textButtonColors(contentColor = color)
+                        colors = ButtonDefaults.textButtonColors(contentColor = color),
                     ) {
                         Text(buttonText)
                     }
@@ -120,7 +120,7 @@ private fun TipCardPreview() {
         TipCard(
             title = "Tip Title",
             message = "This is a helpful tip message that explains something important to the user. It can be multiple lines long and provides useful information.",
-            buttonText = "Button"
+            buttonText = "Button",
         )
     }
 }
