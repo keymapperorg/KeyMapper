@@ -5,4 +5,5 @@ data class OnboardingTipModel(
     val title: String,
     val message: String,
     val isDismissable: Boolean,
+    val buttonText: String? = null,
 )

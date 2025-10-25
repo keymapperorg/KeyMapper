@@ -7,6 +7,7 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionDelegate
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
+import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegate
 import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.isFixable
@@ -48,6 +49,7 @@ class ConfigActionsViewModel @Inject constructor(
     private val config: ConfigActionsUseCase,
     setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
     fixKeyEventActionDelegate: FixKeyEventActionDelegate,
+    onboardingTipDelegate: OnboardingTipDelegate,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
@@ -57,7 +59,8 @@ class ConfigActionsViewModel @Inject constructor(
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider,
-    FixKeyEventActionDelegate by fixKeyEventActionDelegate {
+    FixKeyEventActionDelegate by fixKeyEventActionDelegate,
+    OnboardingTipDelegate by onboardingTipDelegate {
 
     val createActionDelegate =
         CreateActionDelegate(viewModelScope, createAction, this, this, this)

@@ -59,6 +59,8 @@ object Keys {
         booleanPreferencesKey("key_shown_caps_lock_tip")
     val shownScreenPinningTip =
         booleanPreferencesKey("key_shown_screen_pinning_tip")
+    val shownRingerModeTip =
+        booleanPreferencesKey("key_shown_ringer_mode_tip")
     val lastInstalledVersionCodeHomeScreen =
         intPreferencesKey("last_installed_version_home_screen")
     val lastInstalledVersionCodeBackground =

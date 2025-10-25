@@ -244,3 +244,7 @@ interface SystemBridgeConnectionManager {
     fun startWithShizuku()
     fun startWithAdb()
 }
+
+fun SystemBridgeConnectionManager.isConnected(): Boolean {
+    return connectionState.value is SystemBridgeConnectionState.Connected
+}

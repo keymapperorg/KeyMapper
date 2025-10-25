@@ -12,12 +12,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,8 +32,10 @@ fun TipCard(
     modifier: Modifier = Modifier,
     title: String,
     message: String,
+    buttonText: String? = null,
     isDismissable: Boolean = true,
     onDismiss: () -> Unit = {},
+    onButtonClick: () -> Unit = {},
 ) {
     OutlinedCard(
         modifier = modifier,
@@ -70,7 +74,21 @@ fun TipCard(
                     style = MaterialTheme.typography.bodyMedium,
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                if (buttonText != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    TextButton(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .align(Alignment.End),
+                        onClick = onButtonClick,
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.tertiary)
+                    ) {
+                        Text(buttonText)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
             if (isDismissable) {
@@ -86,8 +104,8 @@ fun TipCard(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
+                }
             }
-        }
     }
 }
 
@@ -98,6 +116,7 @@ private fun TipCardPreview() {
         TipCard(
             title = "Tip Title",
             message = "This is a helpful tip message that explains something important to the user. It can be multiple lines long and provides useful information.",
+            buttonText = "Button"
         )
     }
 }
