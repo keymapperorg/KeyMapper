@@ -883,6 +883,9 @@
     <string name="action_volume_mute">Mute volume</string>
     <string name="action_toggle_mute">Toggle mute</string>
     <string name="action_volume_unmute">Unmute volume</string>
+    <string name="action_mute_microphone">Mute microphone</string>
+    <string name="action_unmute_microphone">Unmute microphone</string>
+    <string name="action_toggle_mute_microphone">Toggle mute microphone</string>
     <string name="action_volume_show_dialog">Show volume dialog</string>
     <string name="action_increase_stream">Increase stream</string>
     <string name="action_increase_stream_formatted">Increase %s stream</string>

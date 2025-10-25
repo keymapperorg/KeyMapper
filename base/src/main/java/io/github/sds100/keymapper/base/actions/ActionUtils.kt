@@ -170,6 +170,9 @@ object ActionUtils {
         ActionId.VOLUME_UNMUTE -> ActionCategory.VOLUME
         ActionId.VOLUME_MUTE -> ActionCategory.VOLUME
         ActionId.VOLUME_TOGGLE_MUTE -> ActionCategory.VOLUME
+        ActionId.MUTE_MICROPHONE -> ActionCategory.VOLUME
+        ActionId.UNMUTE_MICROPHONE -> ActionCategory.VOLUME
+        ActionId.TOGGLE_MUTE_MICROPHONE -> ActionCategory.VOLUME
 
         ActionId.EXPAND_NOTIFICATION_DRAWER -> ActionCategory.NAVIGATION
         ActionId.TOGGLE_NOTIFICATION_DRAWER -> ActionCategory.NAVIGATION
@@ -289,6 +292,9 @@ object ActionUtils {
         ActionId.VOLUME_UNMUTE -> R.string.action_volume_unmute
         ActionId.VOLUME_MUTE -> R.string.action_volume_mute
         ActionId.VOLUME_TOGGLE_MUTE -> R.string.action_toggle_mute
+        ActionId.MUTE_MICROPHONE -> R.string.action_mute_microphone
+        ActionId.UNMUTE_MICROPHONE -> R.string.action_unmute_microphone
+        ActionId.TOGGLE_MUTE_MICROPHONE -> R.string.action_toggle_mute_microphone
         ActionId.EXPAND_NOTIFICATION_DRAWER -> R.string.action_expand_notification_drawer
         ActionId.TOGGLE_NOTIFICATION_DRAWER -> R.string.action_toggle_notification_drawer
         ActionId.EXPAND_QUICK_SETTINGS -> R.string.action_expand_quick_settings
@@ -507,6 +513,9 @@ object ActionUtils {
         ActionId.VOLUME_MUTE,
         ActionId.VOLUME_UNMUTE,
         ActionId.VOLUME_TOGGLE_MUTE,
+        ActionId.MUTE_MICROPHONE,
+        ActionId.UNMUTE_MICROPHONE,
+        ActionId.TOGGLE_MUTE_MICROPHONE,
         ActionId.TOGGLE_DND_MODE,
         ActionId.ENABLE_DND_MODE,
         ActionId.DISABLE_DND_MODE,
@@ -653,6 +662,9 @@ object ActionUtils {
             ActionId.VOLUME_MUTE,
             ActionId.VOLUME_UNMUTE,
             ActionId.VOLUME_TOGGLE_MUTE,
+            ActionId.MUTE_MICROPHONE,
+            ActionId.UNMUTE_MICROPHONE,
+            ActionId.TOGGLE_MUTE_MICROPHONE,
             ActionId.TOGGLE_DND_MODE,
             ActionId.DISABLE_DND_MODE,
             ActionId.ENABLE_DND_MODE,
@@ -784,6 +796,9 @@ object ActionUtils {
         ActionId.VOLUME_UNMUTE -> Icons.AutoMirrored.Outlined.VolumeUp
         ActionId.VOLUME_MUTE -> Icons.AutoMirrored.Outlined.VolumeMute
         ActionId.VOLUME_TOGGLE_MUTE -> Icons.AutoMirrored.Outlined.VolumeMute
+        ActionId.MUTE_MICROPHONE -> Icons.Outlined.MicOff
+        ActionId.UNMUTE_MICROPHONE -> Icons.Outlined.Mic
+        ActionId.TOGGLE_MUTE_MICROPHONE -> Icons.Outlined.MicOff
         ActionId.EXPAND_NOTIFICATION_DRAWER -> KeyMapperIcons.TopPanelOpen
         ActionId.TOGGLE_NOTIFICATION_DRAWER -> KeyMapperIcons.TopPanelClose
         ActionId.EXPAND_QUICK_SETTINGS -> KeyMapperIcons.TopPanelOpen

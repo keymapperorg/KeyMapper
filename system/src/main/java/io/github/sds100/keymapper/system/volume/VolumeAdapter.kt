@@ -14,6 +14,10 @@ interface VolumeAdapter {
     fun showVolumeUi(): KMResult<*>
     fun setRingerMode(mode: RingerMode): KMResult<*>
 
+    fun muteMicrophone(): KMResult<*>
+    fun unmuteMicrophone(): KMResult<*>
+    fun toggleMuteMicrophone(): KMResult<*>
+
     fun isDndEnabled(): Boolean
     fun enableDndMode(dndMode: DndMode): KMResult<*>
     fun disableDndMode(): KMResult<*>

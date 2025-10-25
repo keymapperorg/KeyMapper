@@ -184,6 +184,24 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
+    sealed class Microphone : ActionData() {
+        @Serializable
+        data object Mute : Microphone() {
+            override val id = ActionId.MUTE_MICROPHONE
+        }
+
+        @Serializable
+        data object UnMute : Microphone() {
+            override val id = ActionId.UNMUTE_MICROPHONE
+        }
+
+        @Serializable
+        data object Toggle : Microphone() {
+            override val id = ActionId.TOGGLE_MUTE_MICROPHONE
+        }
+    }
+
+    @Serializable
     sealed class Flashlight : ActionData() {
         abstract val lens: CameraLens
 

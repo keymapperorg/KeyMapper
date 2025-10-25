@@ -358,6 +358,18 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 result = audioAdapter.unmuteVolume(showVolumeUi = action.showVolumeUi)
             }
 
+            is ActionData.Microphone.Mute -> {
+                result = audioAdapter.muteMicrophone()
+            }
+
+            is ActionData.Microphone.UnMute -> {
+                result = audioAdapter.unmuteMicrophone()
+            }
+
+            is ActionData.Microphone.Toggle -> {
+                result = audioAdapter.toggleMuteMicrophone()
+            }
+
             is ActionData.TapScreen -> {
                 result = service.tapScreen(action.x, action.y, inputEventAction)
             }

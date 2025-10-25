@@ -317,6 +317,10 @@ object ActionDataEntityMapper {
                 }
             }
 
+            ActionId.MUTE_MICROPHONE -> ActionData.Microphone.Mute
+            ActionId.UNMUTE_MICROPHONE -> ActionData.Microphone.UnMute
+            ActionId.TOGGLE_MUTE_MICROPHONE -> ActionData.Microphone.Toggle
+
             ActionId.TOGGLE_FLASHLIGHT,
             ActionId.ENABLE_FLASHLIGHT,
             ActionId.CHANGE_FLASHLIGHT_STRENGTH,
@@ -1139,6 +1143,9 @@ object ActionDataEntityMapper {
         ActionId.VOLUME_UNMUTE to "volume_unmute",
         ActionId.VOLUME_MUTE to "volume_mute",
         ActionId.VOLUME_TOGGLE_MUTE to "volume_toggle_mute",
+        ActionId.MUTE_MICROPHONE to "mute_microphone",
+        ActionId.UNMUTE_MICROPHONE to "unmute_microphone",
+        ActionId.TOGGLE_MUTE_MICROPHONE to "toggle_mute_microphone",
 
         ActionId.EXPAND_NOTIFICATION_DRAWER to "expand_notification_drawer",
         ActionId.TOGGLE_NOTIFICATION_DRAWER to "toggle_notification_drawer",

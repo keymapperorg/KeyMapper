@@ -92,6 +92,21 @@ class AndroidVolumeAdapter @Inject constructor(
     override fun isDndEnabled(): Boolean =
         notificationManager.currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL
 
+    override fun muteMicrophone(): KMResult<*> {
+        audioManager.isMicrophoneMute = true
+        return Success(Unit)
+    }
+
+    override fun unmuteMicrophone(): KMResult<*> {
+        audioManager.isMicrophoneMute = false
+        return Success(Unit)
+    }
+
+    override fun toggleMuteMicrophone(): KMResult<*> {
+        audioManager.isMicrophoneMute = !audioManager.isMicrophoneMute
+        return Success(Unit)
+    }
+
     private fun DndMode.convert(): Int = when (this) {
         DndMode.ALARMS -> NotificationManager.INTERRUPTION_FILTER_ALARMS
         DndMode.PRIORITY -> NotificationManager.INTERRUPTION_FILTER_PRIORITY
