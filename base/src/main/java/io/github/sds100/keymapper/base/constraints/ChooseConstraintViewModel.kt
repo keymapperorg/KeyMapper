@@ -91,7 +91,6 @@ class ChooseConstraintViewModel @Inject constructor(
 
             ConstraintId.HINGE_CLOSED,
             ConstraintId.HINGE_OPEN,
-            ConstraintId.HINGE_ANGLE,
 
             ConstraintId.TIME,
         )
@@ -223,9 +222,6 @@ class ChooseConstraintViewModel @Inject constructor(
 
                 ConstraintId.HINGE_OPEN ->
                     returnResult.emit(ConstraintData.HingeOpen)
-
-                ConstraintId.HINGE_ANGLE ->
-                    returnResult.emit(ConstraintData.HingeAngle(minAngle = 0f, maxAngle = 180f))
 
                 ConstraintId.LOCK_SCREEN_SHOWING ->
                     returnResult.emit(ConstraintData.LockScreenShowing)

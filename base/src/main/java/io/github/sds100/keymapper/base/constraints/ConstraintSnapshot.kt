@@ -8,7 +8,7 @@ import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
-import io.github.sds100.keymapper.system.hinge.HingeAdapter
+import io.github.sds100.keymapper.system.hinge.FoldableAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
@@ -32,7 +32,7 @@ class LazyConstraintSnapshot(
     lockScreenAdapter: LockScreenAdapter,
     phoneAdapter: PhoneAdapter,
     powerAdapter: PowerAdapter,
-    private val hingeAdapter: HingeAdapter,
+    private val foldableAdapter: FoldableAdapter,
 ) : ConstraintSnapshot {
     private val appInForeground: String? by lazy { accessibilityService.rootNode?.packageName }
     private val connectedBluetoothDevices: Set<BluetoothDeviceInfo> by lazy { devicesAdapter.connectedBluetoothDevices.value }
@@ -144,20 +144,13 @@ class LazyConstraintSnapshot(
             is ConstraintData.Discharging -> !isCharging
 
             is ConstraintData.HingeClosed -> {
-                val hingeState = hingeAdapter.getCachedHingeState()
+                val hingeState = foldableAdapter.getCachedHingeState()
                 hingeState.isAvailable && hingeState.angle != null && hingeState.angle < 30f
             }
 
             is ConstraintData.HingeOpen -> {
-                val hingeState = hingeAdapter.getCachedHingeState()
+                val hingeState = foldableAdapter.getCachedHingeState()
                 hingeState.isAvailable && hingeState.angle != null && hingeState.angle >= 150f
-            }
-
-            is ConstraintData.HingeAngle -> {
-                val hingeState = hingeAdapter.getCachedHingeState()
-                hingeState.isAvailable && hingeState.angle != null &&
-                    hingeState.angle >= constraint.data.minAngle &&
-                    hingeState.angle <= constraint.data.maxAngle
             }
 
             // The keyguard manager still reports the lock screen as showing if you are in

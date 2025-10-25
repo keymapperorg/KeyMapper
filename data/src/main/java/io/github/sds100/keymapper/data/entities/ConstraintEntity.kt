@@ -83,7 +83,6 @@ data class ConstraintEntity(
 
         const val HINGE_CLOSED = "hinge_closed"
         const val HINGE_OPEN = "hinge_open"
-        const val HINGE_ANGLE = "hinge_angle"
 
         const val TIME = "time"
 
@@ -94,9 +93,6 @@ data class ConstraintEntity(
         const val EXTRA_SSID = "extra_ssid"
         const val EXTRA_IME_ID = "extra_ime_id"
         const val EXTRA_IME_LABEL = "extra_ime_label"
-
-        const val EXTRA_HINGE_MIN_ANGLE = "extra_hinge_min_angle"
-        const val EXTRA_HINGE_MAX_ANGLE = "extra_hinge_max_angle"
 
         /**
          * The time is stored in the following format: 20:25.

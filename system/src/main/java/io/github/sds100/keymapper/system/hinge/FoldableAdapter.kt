@@ -18,7 +18,7 @@ data class HingeState(
     val angle: Float?,
 )
 
-interface HingeAdapter {
+interface FoldableAdapter {
     /**
      * Flow that emits the current hinge state.
      */

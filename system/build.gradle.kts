@@ -57,6 +57,5 @@ dependencies {
     implementation(libs.rikka.shizuku.provider)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.preference.ktx)
-    implementation(libs.androidx.window)
     implementation(libs.github.topjohnwu.libsu)
 }

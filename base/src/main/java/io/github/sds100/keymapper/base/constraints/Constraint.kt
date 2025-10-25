@@ -201,14 +201,6 @@ sealed class ConstraintData {
     }
 
     @Serializable
-    data class HingeAngle(
-        val minAngle: Float,
-        val maxAngle: Float,
-    ) : ConstraintData() {
-        override val id: ConstraintId = ConstraintId.HINGE_ANGLE
-    }
-
-    @Serializable
     data object HingeClosed : ConstraintData() {
         override val id: ConstraintId = ConstraintId.HINGE_CLOSED
     }
@@ -384,17 +376,6 @@ object ConstraintEntityMapper {
 
             ConstraintEntity.HINGE_CLOSED -> ConstraintData.HingeClosed
             ConstraintEntity.HINGE_OPEN -> ConstraintData.HingeOpen
-            ConstraintEntity.HINGE_ANGLE -> {
-                val minAngle =
-                    entity.extras.getData(ConstraintEntity.EXTRA_HINGE_MIN_ANGLE).valueOrNull()!!.toFloat()
-                val maxAngle =
-                    entity.extras.getData(ConstraintEntity.EXTRA_HINGE_MAX_ANGLE).valueOrNull()!!.toFloat()
-
-                ConstraintData.HingeAngle(
-                    minAngle = minAngle,
-                    maxAngle = maxAngle,
-                )
-            }
 
             ConstraintEntity.TIME -> {
                 val startTime =
@@ -668,19 +649,6 @@ object ConstraintEntityMapper {
         is ConstraintData.HingeOpen -> ConstraintEntity(
             uid = constraint.uid,
             ConstraintEntity.HINGE_OPEN,
-        )
-
-        is ConstraintData.HingeAngle -> ConstraintEntity(
-            uid = constraint.uid,
-            type = ConstraintEntity.HINGE_ANGLE,
-            EntityExtra(
-                ConstraintEntity.EXTRA_HINGE_MIN_ANGLE,
-                constraint.data.minAngle.toString(),
-            ),
-            EntityExtra(
-                ConstraintEntity.EXTRA_HINGE_MAX_ANGLE,
-                constraint.data.maxAngle.toString(),
-            ),
         )
 
         is ConstraintData.Time -> ConstraintEntity(

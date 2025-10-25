@@ -288,8 +288,6 @@
     <string name="constraint_discharging">Discharging</string>
     <string name="constraint_hinge_closed">Hinge closed</string>
     <string name="constraint_hinge_open">Hinge open</string>
-    <string name="constraint_hinge_angle">Hinge angle</string>
-    <string name="constraint_hinge_angle_description">Hinge angle between %1$s° and %2$s°</string>
     <string name="constraint_hinge_closed_description">Hinge is closed</string>
     <string name="constraint_hinge_open_description">Hinge is open</string>
 

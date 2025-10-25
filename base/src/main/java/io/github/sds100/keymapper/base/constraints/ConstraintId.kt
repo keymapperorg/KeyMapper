@@ -49,7 +49,6 @@ enum class ConstraintId {
     CHARGING,
     DISCHARGING,
 
-    HINGE_ANGLE,
     HINGE_CLOSED,
     HINGE_OPEN,
 
