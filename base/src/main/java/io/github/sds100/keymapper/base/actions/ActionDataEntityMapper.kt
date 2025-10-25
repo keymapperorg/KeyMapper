@@ -303,9 +303,18 @@ object ActionDataEntityMapper {
                 val showVolumeUi =
                     entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI)
 
+                // For VOLUME_UP and VOLUME_DOWN, optionally read the stream type
+                val volumeStream = if (actionId == ActionId.VOLUME_UP || actionId == ActionId.VOLUME_DOWN) {
+                    entity.extras.getData(ActionEntity.EXTRA_STREAM_TYPE).then {
+                        VOLUME_STREAM_MAP.getKey(it)!!.success()
+                    }.valueOrNull()
+                } else {
+                    null
+                }
+
                 when (actionId) {
-                    ActionId.VOLUME_UP -> ActionData.Volume.Up(showVolumeUi)
-                    ActionId.VOLUME_DOWN -> ActionData.Volume.Down(showVolumeUi)
+                    ActionId.VOLUME_UP -> ActionData.Volume.Up(showVolumeUi, volumeStream)
+                    ActionId.VOLUME_DOWN -> ActionData.Volume.Down(showVolumeUi, volumeStream)
                     ActionId.VOLUME_TOGGLE_MUTE -> ActionData.Volume.ToggleMute(
                         showVolumeUi,
                     )
@@ -921,6 +930,28 @@ object ActionDataEntityMapper {
                         VOLUME_STREAM_MAP[data.volumeStream]!!,
                     ),
                 )
+
+                is ActionData.Volume.Up -> buildList {
+                    if (data.volumeStream != null) {
+                        add(
+                            EntityExtra(
+                                ActionEntity.EXTRA_STREAM_TYPE,
+                                VOLUME_STREAM_MAP[data.volumeStream]!!,
+                            ),
+                        )
+                    }
+                }
+
+                is ActionData.Volume.Down -> buildList {
+                    if (data.volumeStream != null) {
+                        add(
+                            EntityExtra(
+                                ActionEntity.EXTRA_STREAM_TYPE,
+                                VOLUME_STREAM_MAP[data.volumeStream]!!,
+                            ),
+                        )
+                    }
+                }
 
                 else -> emptyList()
             }
