@@ -286,6 +286,12 @@
 
     <string name="constraint_charging">Charging</string>
     <string name="constraint_discharging">Discharging</string>
+    <string name="constraint_hinge_closed">Hinge closed</string>
+    <string name="constraint_hinge_open">Hinge open</string>
+    <string name="constraint_hinge_angle">Hinge angle</string>
+    <string name="constraint_hinge_angle_description">Hinge angle between %1$s° and %2$s°</string>
+    <string name="constraint_hinge_closed_description">Hinge is closed</string>
+    <string name="constraint_hinge_open_description">Hinge is open</string>
 
     <string name="orientation_0">Portrait (0°)</string>
     <string name="orientation_90">Landscape (90°)</string>

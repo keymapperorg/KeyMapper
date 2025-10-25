@@ -28,6 +28,7 @@ androidx-room = "2.7.1" # room_version for dependencies
 androidx-room-gradle-plugin = "2.6.1" # For plugin
 androidx-test-core = "1.6.1"
 androidx-viewpager2 = "1.1.0"
+androidx-window = "1.4.0"
 
 dagger-hilt-android = "2.56.2"
 
@@ -123,6 +124,7 @@ androidx-test-core = { group = "androidx.test", name = "core", version.ref = "an
 androidx-test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidx-test-core" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-junit" }
 androidx-viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "androidx-viewpager2" }
+androidx-window = { group = "androidx.window", name = "window", version.ref = "androidx-window" }
 
 # Compose
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }

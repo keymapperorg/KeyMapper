@@ -142,6 +142,13 @@ class ConstraintUiHelper(
         is ConstraintData.PhoneRinging -> getString(R.string.constraint_phone_ringing)
         is ConstraintData.Charging -> getString(R.string.constraint_charging)
         is ConstraintData.Discharging -> getString(R.string.constraint_discharging)
+        is ConstraintData.HingeClosed -> getString(R.string.constraint_hinge_closed_description)
+        is ConstraintData.HingeOpen -> getString(R.string.constraint_hinge_open_description)
+        is ConstraintData.HingeAngle -> getString(
+            R.string.constraint_hinge_angle_description,
+            constraint.data.minAngle,
+            constraint.data.maxAngle,
+        )
         is ConstraintData.LockScreenShowing -> getString(R.string.constraint_lock_screen_showing)
         is ConstraintData.LockScreenNotShowing -> getString(R.string.constraint_lock_screen_not_showing)
         is ConstraintData.Time -> getString(

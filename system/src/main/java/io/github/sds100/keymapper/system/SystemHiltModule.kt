@@ -22,6 +22,8 @@ import io.github.sds100.keymapper.system.display.AndroidDisplayAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.files.AndroidFileAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
+import io.github.sds100.keymapper.system.hinge.AndroidHingeAdapter
+import io.github.sds100.keymapper.system.hinge.HingeAdapter
 import io.github.sds100.keymapper.system.inputmethod.AndroidInputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.intents.IntentAdapter
@@ -105,6 +107,10 @@ abstract class SystemHiltModule {
     @Singleton
     @Binds
     abstract fun provideFileAdapter(impl: AndroidFileAdapter): FileAdapter
+
+    @Singleton
+    @Binds
+    abstract fun provideHingeAdapter(impl: AndroidHingeAdapter): HingeAdapter
 
     @Singleton
     @Binds
