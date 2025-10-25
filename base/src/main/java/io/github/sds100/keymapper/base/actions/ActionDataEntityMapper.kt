@@ -306,7 +306,7 @@ object ActionDataEntityMapper {
                 // For VOLUME_UP and VOLUME_DOWN, optionally read the stream type
                 val volumeStream = if (actionId == ActionId.VOLUME_UP || actionId == ActionId.VOLUME_DOWN) {
                     entity.extras.getData(ActionEntity.EXTRA_STREAM_TYPE).then {
-                        VOLUME_STREAM_MAP.getKey(it)!!.success()
+                        VOLUME_STREAM_MAP.getKey(it)?.success() ?: null.success()
                     }.valueOrNull()
                 } else {
                     null
