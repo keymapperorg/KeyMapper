@@ -143,7 +143,15 @@ class ActionUiHelper(
                         hasShowVolumeUiFlag = true
                     }
 
-                    string = getString(R.string.action_volume_down)
+                    string = if (action.volumeStream != null) {
+                        val streamString = getString(VolumeStreamStrings.getLabel(action.volumeStream))
+                        getString(
+                            R.string.action_decrease_stream_formatted,
+                            streamString,
+                        )
+                    } else {
+                        getString(R.string.action_volume_down)
+                    }
                 }
 
                 is ActionData.Volume.Mute -> {
@@ -175,7 +183,15 @@ class ActionUiHelper(
                         hasShowVolumeUiFlag = true
                     }
 
-                    string = getString(R.string.action_volume_up)
+                    string = if (action.volumeStream != null) {
+                        val streamString = getString(VolumeStreamStrings.getLabel(action.volumeStream))
+                        getString(
+                            R.string.action_increase_stream_formatted,
+                            streamString,
+                        )
+                    } else {
+                        getString(R.string.action_volume_up)
+                    }
                 }
 
                 ActionData.Volume.CycleRingerMode -> {

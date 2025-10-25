@@ -131,13 +131,39 @@ sealed class ActionData : Comparable<ActionData> {
         }
 
         @Serializable
-        data class Up(val showVolumeUi: Boolean) : Volume() {
+        data class Up(
+            val showVolumeUi: Boolean,
+            val volumeStream: VolumeStream? = null,
+        ) : Volume() {
             override val id = ActionId.VOLUME_UP
+
+            override fun compareTo(other: ActionData) = when (other) {
+                is Up -> compareValuesBy(
+                    this,
+                    other,
+                    { it.showVolumeUi },
+                    { it.volumeStream },
+                )
+                else -> super.compareTo(other)
+            }
         }
 
         @Serializable
-        data class Down(val showVolumeUi: Boolean) : Volume() {
+        data class Down(
+            val showVolumeUi: Boolean,
+            val volumeStream: VolumeStream? = null,
+        ) : Volume() {
             override val id = ActionId.VOLUME_DOWN
+
+            override fun compareTo(other: ActionData) = when (other) {
+                is Down -> compareValuesBy(
+                    this,
+                    other,
+                    { it.showVolumeUi },
+                    { it.volumeStream },
+                )
+                else -> super.compareTo(other)
+            }
         }
 
         @Serializable
