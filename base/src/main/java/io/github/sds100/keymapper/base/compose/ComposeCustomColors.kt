@@ -22,6 +22,8 @@ import io.github.sds100.keymapper.base.compose.ComposeColors.orangeContainerDark
 import io.github.sds100.keymapper.base.compose.ComposeColors.orangeContainerLight
 import io.github.sds100.keymapper.base.compose.ComposeColors.orangeDark
 import io.github.sds100.keymapper.base.compose.ComposeColors.orangeLight
+import io.github.sds100.keymapper.base.compose.ComposeColors.primaryContainerDarkerDark
+import io.github.sds100.keymapper.base.compose.ComposeColors.primaryContainerDarkerLight
 
 /**
  * Stores the custom colors in a palette that changes
@@ -51,6 +53,7 @@ data class ComposeCustomColors(
     val onAmberContainer: Color = Color.Unspecified,
     val discord: Color = Color.Unspecified,
     val onDiscord: Color = Color.Unspecified,
+    val primaryContainerDarker: Color = Color.Unspecified,
 ) {
     companion object {
         val LightPalette = ComposeCustomColors(
@@ -74,6 +77,7 @@ data class ComposeCustomColors(
             onAmberContainer = onAmberContainerLight,
             discord = ComposeColors.discordLight,
             onDiscord = ComposeColors.onDiscordLight,
+            primaryContainerDarker = primaryContainerDarkerLight,
         )
 
         val DarkPalette = ComposeCustomColors(
@@ -97,6 +101,7 @@ data class ComposeCustomColors(
             onAmberContainer = onAmberContainerDark,
             discord = ComposeColors.discordDark,
             onDiscord = ComposeColors.onDiscordDark,
+            primaryContainerDarker = primaryContainerDarkerDark,
         )
     }
 

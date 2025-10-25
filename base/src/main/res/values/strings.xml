@@ -1214,8 +1214,6 @@
 
     <!--  Tap targets  -->
     <string name="tap_target_skip_tutorial_button">Skip tutorial</string>
-    <string name="tap_target_create_key_map_title">Create your first key map!</string>
-    <string name="tap_target_create_key_map_message">A key map is a rule to tell your device what to do when a button is pressed.</string>
     <string name="tap_target_choose_action_title">Choose an action</string>
     <string name="tap_target_choose_action_message">An action is what should happen when you press the trigger.</string>
     <!--  Tap targets  -->
@@ -1392,7 +1390,7 @@
     <string name="home_fab_new_key_map">New key map</string>
     <string name="home_fab_new_floating_layout">New layout</string>
     <string name="home_key_map_list_footer_text">Tap a key map to configure it.\nLong press for more options.</string>
-    <string name="home_key_map_list_empty">Create a key map!</string>
+    <string name="home_key_map_list_empty">Create a key map!\n\nA key map is a rule to tell your device what to do when a button is pressed.</string>
     <string name="home_floating_layouts_promo_title">Don’t have enough buttons?</string>
     <string name="home_floating_layouts_promo_subtitle">Make your own!</string>
     <string name="home_floating_layouts_promo_text">Floating buttons display over the apps you want. They work just like real buttons, and you can place, style, and map them however you like.</string>

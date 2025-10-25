@@ -110,7 +110,6 @@ class OnboardingUseCaseImpl @Inject constructor(
 
     private fun getTapTargetKey(tapTarget: OnboardingTapTarget): Preferences.Key<Boolean> {
         val key = when (tapTarget) {
-            OnboardingTapTarget.CREATE_KEY_MAP -> Keys.shownTapTargetCreateKeyMap
             OnboardingTapTarget.CHOOSE_ACTION -> Keys.shownTapTargetChooseAction
         }
         return key
@@ -137,7 +136,6 @@ class OnboardingUseCaseImpl @Inject constructor(
         }
 
         return when (tapTarget) {
-            OnboardingTapTarget.CREATE_KEY_MAP -> keyMapList.isEmpty()
             OnboardingTapTarget.CHOOSE_ACTION -> keyMapList.all { it.actionList.isEmpty() }
         }
     }
