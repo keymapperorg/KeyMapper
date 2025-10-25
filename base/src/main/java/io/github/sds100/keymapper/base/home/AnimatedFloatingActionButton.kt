@@ -5,7 +5,11 @@ import androidx.compose.animation.core.tween
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
@@ -24,11 +28,16 @@ fun AnimatedFloatingActionButton(
     val pulseColor = LocalCustomColorsPalette.current.primaryContainerDarker
 
     val animatedPulseColor = remember { Animatable(defaultColor) }
+    var finishedAnimation by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(pulse) {
-        repeat(10) {
-            animatedPulseColor.animateTo(pulseColor, tween(700))
-            animatedPulseColor.animateTo(defaultColor, tween(700))
+        if (pulse && !finishedAnimation) {
+            repeat(10) {
+                animatedPulseColor.animateTo(pulseColor, tween(700))
+                animatedPulseColor.animateTo(defaultColor, tween(700))
+            }
+
+            finishedAnimation = true
         }
     }
 
