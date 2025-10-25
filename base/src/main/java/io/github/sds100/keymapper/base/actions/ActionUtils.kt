@@ -419,6 +419,9 @@ object ActionUtils {
         ActionId.VOLUME_UNMUTE -> R.drawable.ic_outline_volume_up_24
         ActionId.VOLUME_MUTE -> R.drawable.ic_outline_volume_mute_24
         ActionId.VOLUME_TOGGLE_MUTE -> R.drawable.ic_outline_volume_mute_24
+        ActionId.MUTE_MICROPHONE -> null
+        ActionId.UNMUTE_MICROPHONE -> null
+        ActionId.TOGGLE_MUTE_MICROPHONE -> null
         ActionId.EXPAND_NOTIFICATION_DRAWER -> null
         ActionId.TOGGLE_NOTIFICATION_DRAWER -> null
         ActionId.EXPAND_QUICK_SETTINGS -> null
