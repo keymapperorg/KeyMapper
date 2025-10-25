@@ -933,23 +933,27 @@ object ActionDataEntityMapper {
 
                 is ActionData.Volume.Up -> buildList {
                     if (data.volumeStream != null) {
-                        add(
-                            EntityExtra(
-                                ActionEntity.EXTRA_STREAM_TYPE,
-                                VOLUME_STREAM_MAP[data.volumeStream]!!,
-                            ),
-                        )
+                        VOLUME_STREAM_MAP[data.volumeStream]?.let { streamValue ->
+                            add(
+                                EntityExtra(
+                                    ActionEntity.EXTRA_STREAM_TYPE,
+                                    streamValue,
+                                ),
+                            )
+                        }
                     }
                 }
 
                 is ActionData.Volume.Down -> buildList {
                     if (data.volumeStream != null) {
-                        add(
-                            EntityExtra(
-                                ActionEntity.EXTRA_STREAM_TYPE,
-                                VOLUME_STREAM_MAP[data.volumeStream]!!,
-                            ),
-                        )
+                        VOLUME_STREAM_MAP[data.volumeStream]?.let { streamValue ->
+                            add(
+                                EntityExtra(
+                                    ActionEntity.EXTRA_STREAM_TYPE,
+                                    streamValue,
+                                ),
+                            )
+                        }
                     }
                 }
 
