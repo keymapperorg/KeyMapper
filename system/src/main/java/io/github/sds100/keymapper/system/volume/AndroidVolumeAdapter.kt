@@ -3,19 +3,28 @@ package io.github.sds100.keymapper.system.volume
 import android.app.NotificationManager
 import android.content.Context
 import android.media.AudioManager
+import android.os.Build
+import android.provider.Settings
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.otherwise
 import io.github.sds100.keymapper.common.utils.then
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.isConnected
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class AndroidVolumeAdapter @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager
 ) : VolumeAdapter {
     private val ctx = context.applicationContext
 
@@ -23,11 +32,25 @@ class AndroidVolumeAdapter @Inject constructor(
     private val notificationManager: NotificationManager by lazy { ctx.getSystemService()!! }
 
     override val ringerMode: RingerMode
-        get() = when (audioManager.ringerMode) {
-            AudioManager.RINGER_MODE_NORMAL -> RingerMode.NORMAL
-            AudioManager.RINGER_MODE_VIBRATE -> RingerMode.VIBRATE
-            AudioManager.RINGER_MODE_SILENT -> RingerMode.SILENT
-            else -> throw Exception("Don't know how to convert this ringer moder ${audioManager.ringerMode}")
+        get() {
+            // Get the current ringer mode with the setting because the AudioManager
+            // always returns the same value when the value has been changed by the
+            // the system bridge.
+            val ringerModeSdk = if (systemBridgeConnectionManager.isConnected()) {
+                SettingsUtils.getGlobalSetting<Int>(
+                    ctx,
+                    Settings.Global.MODE_RINGER
+                ) ?: 0
+            } else {
+                audioManager.ringerMode
+            }
+
+            return when (ringerModeSdk) {
+                AudioManager.RINGER_MODE_NORMAL -> RingerMode.NORMAL
+                AudioManager.RINGER_MODE_VIBRATE -> RingerMode.VIBRATE
+                AudioManager.RINGER_MODE_SILENT -> RingerMode.SILENT
+                else -> throw Exception("Don't know how to convert this ringer moder ${audioManager.ringerMode}")
+            }
         }
 
     override fun raiseVolume(stream: VolumeStream?, showVolumeUi: Boolean): KMResult<*> =
@@ -69,9 +92,19 @@ class AndroidVolumeAdapter @Inject constructor(
                 RingerMode.SILENT -> AudioManager.RINGER_MODE_SILENT
             }
 
-            audioManager.ringerMode = sdkMode
+            return if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
+                systemBridgeConnectionManager.run { systemBridge ->
+                    systemBridge.setRingerMode(sdkMode)
+                }.otherwise {
+                    Timber.e("Failed to set ringer mode with System Bridge, falling back to AudioManager")
 
-            return Success(Unit)
+                    audioManager.ringerMode = sdkMode
+                    Success(Unit)
+                }
+            } else {
+                audioManager.ringerMode = sdkMode
+                Success(Unit)
+            }
         } catch (e: SecurityException) {
             return SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)
         }
