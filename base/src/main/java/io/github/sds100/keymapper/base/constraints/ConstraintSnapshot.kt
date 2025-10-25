@@ -9,6 +9,7 @@ import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.hinge.FoldableAdapter
+import io.github.sds100.keymapper.system.hinge.HingeState
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
@@ -144,13 +145,17 @@ class LazyConstraintSnapshot(
             is ConstraintData.Discharging -> !isCharging
 
             is ConstraintData.HingeClosed -> {
-                val hingeState = foldableAdapter.getCachedHingeState()
-                hingeState.isAvailable && hingeState.angle != null && hingeState.angle < 30f
+                when (val state = foldableAdapter.hingeState.value) {
+                    is HingeState.Available -> state.angle < 30f
+                    is HingeState.Unavailable -> false
+                }
             }
 
             is ConstraintData.HingeOpen -> {
-                val hingeState = foldableAdapter.getCachedHingeState()
-                hingeState.isAvailable && hingeState.angle != null && hingeState.angle >= 150f
+                when (val state = foldableAdapter.hingeState.value) {
+                    is HingeState.Available -> state.angle >= 150f
+                    is HingeState.Unavailable -> false
+                }
             }
 
             // The keyguard manager still reports the lock screen as showing if you are in

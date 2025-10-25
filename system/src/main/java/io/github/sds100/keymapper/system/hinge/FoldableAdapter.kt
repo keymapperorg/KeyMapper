@@ -1,31 +1,31 @@
 package io.github.sds100.keymapper.system.hinge
 
-import kotlinx.coroutines.flow.Flow
+import androidx.annotation.RequiresApi
+import android.os.Build
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Represents the state of a foldable device hinge.
  */
-data class HingeState(
+sealed class HingeState {
     /**
-     * True if the device has a hinge and it is currently available.
+     * Hinge sensor is not available on this device.
      */
-    val isAvailable: Boolean,
+    data object Unavailable : HingeState()
+
     /**
-     * The angle in degrees of the hinge. Null if hinge is not available.
+     * Hinge sensor is available and reporting angle.
+     * @param angle The angle in degrees of the hinge.
      * 0 degrees means the device is closed/flat.
      * 180 degrees means the device is fully open.
      */
-    val angle: Float?,
-)
+    data class Available(val angle: Float) : HingeState()
+}
 
+@RequiresApi(Build.VERSION_CODES.R)
 interface FoldableAdapter {
     /**
-     * Flow that emits the current hinge state.
+     * StateFlow that emits the current hinge state.
      */
-    val hingeState: Flow<HingeState>
-
-    /**
-     * Get the current cached hinge state.
-     */
-    fun getCachedHingeState(): HingeState
+    val hingeState: StateFlow<HingeState>
 }

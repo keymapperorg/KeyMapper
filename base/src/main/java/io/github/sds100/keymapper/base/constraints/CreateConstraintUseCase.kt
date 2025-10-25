@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.constraints
 
 import android.content.pm.PackageManager
+import android.os.Build
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -28,6 +29,11 @@ class CreateConstraintUseCaseImpl @Inject constructor(
                     cameraAdapter.getFlashInfo(CameraLens.FRONT) == null
                 ) {
                     return KMError.SystemFeatureNotSupported(PackageManager.FEATURE_CAMERA_FLASH)
+                }
+            }
+            ConstraintId.HINGE_CLOSED, ConstraintId.HINGE_OPEN -> {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                    return KMError.SdkVersionTooLow(Build.VERSION_CODES.R)
                 }
             }
             else -> Unit

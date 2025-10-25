@@ -5,6 +5,8 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,12 +16,13 @@ import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
+@RequiresApi(Build.VERSION_CODES.R)
 @Singleton
 class AndroidFoldableAdapter @Inject constructor(
     @ApplicationContext private val context: Context,
 ) : FoldableAdapter {
 
-    private val _hingeState = MutableStateFlow(HingeState(isAvailable = false, angle = null))
+    private val _hingeState = MutableStateFlow<HingeState>(HingeState.Unavailable)
     override val hingeState: StateFlow<HingeState> = _hingeState.asStateFlow()
 
     private val sensorManager: SensorManager? = context.getSystemService()
@@ -30,10 +33,7 @@ class AndroidFoldableAdapter @Inject constructor(
             event?.let {
                 if (it.sensor.type == Sensor.TYPE_HINGE_ANGLE && it.values.isNotEmpty()) {
                     val angle = it.values[0]
-                    _hingeState.value = HingeState(
-                        isAvailable = true,
-                        angle = angle,
-                    )
+                    _hingeState.value = HingeState.Available(angle)
                 }
             }
         }
@@ -58,13 +58,11 @@ class AndroidFoldableAdapter @Inject constructor(
                 Timber.d("Hinge angle sensor monitoring started")
             } catch (e: Exception) {
                 Timber.e(e, "Failed to start hinge angle sensor monitoring")
-                _hingeState.value = HingeState(isAvailable = false, angle = null)
+                _hingeState.value = HingeState.Unavailable
             }
         } else {
             Timber.d("Hinge angle sensor not available on this device")
-            _hingeState.value = HingeState(isAvailable = false, angle = null)
+            _hingeState.value = HingeState.Unavailable
         }
     }
-
-    override fun getCachedHingeState(): HingeState = _hingeState.value
 }
