@@ -118,7 +118,9 @@ fun BaseTriggerScreen(
                         title = tip.title,
                         message = tip.message,
                         isDismissable = tip.isDismissable,
-                        onDismiss = viewModel::onDismissClick,
+                        onDismiss = viewModel::onTriggerTipDismissClick,
+                        buttonText = tip.buttonText,
+                        onButtonClick = { viewModel.onTipButtonClick(tip.id) },
                     )
 
                     Spacer(Modifier.height(8.dp))

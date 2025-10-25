@@ -12,6 +12,7 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.IPackageManager
 import android.content.pm.PackageManager
 import android.hardware.input.IInputManager
+import android.media.IAudioService
 import android.net.IConnectivityManager
 import android.net.wifi.IWifiManager
 import android.nfc.INfcAdapter
@@ -176,6 +177,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
     private val connectivityManager: IConnectivityManager?
     private val activityManager: IActivityManager
     private val activityTaskManager: IActivityTaskManager
+    private val audioService: IAudioService?
 
     private val processPackageName: String = when (Process.myUid()) {
         Process.ROOT_UID -> "root"
@@ -254,6 +256,10 @@ internal class SystemBridge : ISystemBridge.Stub() {
         waitSystemService(Context.CONNECTIVITY_SERVICE)
         connectivityManager =
             IConnectivityManager.Stub.asInterface(ServiceManager.getService(Context.CONNECTIVITY_SERVICE))
+
+        waitSystemService(Context.AUDIO_SERVICE)
+        audioService =
+            IAudioService.Stub.asInterface(ServiceManager.getService(Context.AUDIO_SERVICE))
 
         val applicationInfo = getKeyMapperPackageInfo()
 
@@ -648,5 +654,13 @@ internal class SystemBridge : ISystemBridge.Stub() {
         tasks.filterNotNull()
             .filter { it.baseActivity?.packageName == packageName }
             .forEach { activityManager.removeTask(it.taskId) }
+    }
+
+    override fun setRingerMode(ringerMode: Int) {
+        if (audioService == null) {
+            throw UnsupportedOperationException("AudioService not supported")
+        }
+
+        audioService.setRingerModeInternal(ringerMode, processPackageName)
     }
 }

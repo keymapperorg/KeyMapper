@@ -1362,6 +1362,9 @@
     <string name="tip_screen_pinning_text">Using the back button as a trigger may conflict with app pinning, causing a black screen on unlock. A reboot will fix it.</string>
     <string name="tip_ime_detection_title">Keyboard icon</string>
     <string name="tip_ime_detection_text">The ⌨ symbol means you must use the Key Mapper input method for this trigger to work due to an Android restriction.</string>
+    <string name="tip_ringer_mode_title">Ringer mode actions</string>
+    <string name="tip_ringer_mode_text">Consider using PRO mode for ringer mode actions to avoid conflicts with Do Not Disturb settings.</string>
+    <string name="tip_ringer_mode_button">Use PRO mode</string>
     <string name="trigger_constraints_tip_title">Limit to specific apps?</string>
     <string name="trigger_constraints_tip_text">Add constraints in the Constraints tab.</string>
     <string name="choose_floating_layout_title">Choose a layout</string>
