@@ -896,8 +896,6 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.Volume.Mute,
     is ActionData.Volume.UnMute,
     is ActionData.Volume.ToggleMute,
-    is ActionData.Volume.Stream.Increase,
-    is ActionData.Volume.Stream.Decrease,
     is ActionData.Volume.SetRingerMode,
     is ActionData.DoNotDisturb.Enable,
     is ActionData.DoNotDisturb.Toggle,

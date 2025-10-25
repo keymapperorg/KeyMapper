@@ -283,12 +283,13 @@ object ActionDataEntityMapper {
                 val showVolumeUi =
                     entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI)
 
+                // Convert old stream actions to new volume up/down with stream parameter
                 when (actionId) {
                     ActionId.VOLUME_INCREASE_STREAM ->
-                        ActionData.Volume.Stream.Increase(showVolumeUi, stream)
+                        ActionData.Volume.Up(showVolumeUi, stream)
 
                     ActionId.VOLUME_DECREASE_STREAM ->
-                        ActionData.Volume.Stream.Decrease(showVolumeUi, stream)
+                        ActionData.Volume.Down(showVolumeUi, stream)
 
                     else -> throw Exception("don't know how to create system action for $actionId")
                 }
@@ -739,7 +740,6 @@ object ActionDataEntityMapper {
         var flags = 0
 
         val showVolumeUiFlag = when (data) {
-            is ActionData.Volume.Stream -> data.showVolumeUi
             is ActionData.Volume.Up -> data.showVolumeUi
             is ActionData.Volume.Down -> data.showVolumeUi
             is ActionData.Volume.Mute -> data.showVolumeUi
@@ -924,13 +924,6 @@ object ActionDataEntityMapper {
 
         is ActionData.Volume ->
             when (data) {
-                is ActionData.Volume.Stream -> listOf(
-                    EntityExtra(
-                        ActionEntity.EXTRA_STREAM_TYPE,
-                        VOLUME_STREAM_MAP[data.volumeStream]!!,
-                    ),
-                )
-
                 is ActionData.Volume.Up -> buildList {
                     if (data.volumeStream != null) {
                         VOLUME_STREAM_MAP[data.volumeStream]?.let { streamValue ->

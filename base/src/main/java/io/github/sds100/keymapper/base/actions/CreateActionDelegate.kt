@@ -346,45 +346,33 @@ class CreateActionDelegate(
             ActionId.VOLUME_INCREASE_STREAM,
             ActionId.VOLUME_DECREASE_STREAM,
                 -> {
-                val showVolumeUiId = 0
-                val isVolumeUiChecked = if (oldData is ActionData.Volume.Stream) {
-                    oldData.showVolumeUi
-                } else {
-                    false
+                // These deprecated actions are now converted to Volume.Up/Down with stream parameter
+                // Determine which action ID to use based on the old action
+                val newActionId = when (actionId) {
+                    ActionId.VOLUME_INCREASE_STREAM -> ActionId.VOLUME_UP
+                    ActionId.VOLUME_DECREASE_STREAM -> ActionId.VOLUME_DOWN
+                    else -> return null
                 }
 
-                val dialogItems = listOf(
-                    MultiChoiceItem(
-                        showVolumeUiId,
-                        getString(R.string.flag_show_volume_dialog),
-                        isVolumeUiChecked,
-                    ),
+                // Get the old stream if this is being edited
+                val oldStream = when (oldData) {
+                    is ActionData.Volume.Up -> oldData.volumeStream
+                    is ActionData.Volume.Down -> oldData.volumeStream
+                    else -> null
+                }
+
+                val oldShowVolumeUi = when (oldData) {
+                    is ActionData.Volume.Up -> oldData.showVolumeUi
+                    is ActionData.Volume.Down -> oldData.showVolumeUi
+                    else -> false
+                }
+
+                volumeActionState = VolumeActionBottomSheetState(
+                    actionId = newActionId,
+                    volumeStream = oldStream ?: VolumeStream.MUSIC, // Default to MUSIC for old stream actions
+                    showVolumeUi = oldShowVolumeUi,
                 )
-
-                val showVolumeUiDialog = DialogModel.MultiChoice(items = dialogItems)
-
-                val chosenFlags =
-                    showDialog("show_volume_ui", showVolumeUiDialog) ?: return null
-
-                val showVolumeUi = chosenFlags.contains(showVolumeUiId)
-
-                val items = VolumeStream.entries
-                    .map { it to getString(VolumeStreamStrings.getLabel(it)) }
-
-                val stream = showDialog("pick_volume_stream", DialogModel.SingleChoice(items))
-                    ?: return null
-
-                val action = when (actionId) {
-                    ActionId.VOLUME_INCREASE_STREAM ->
-                        ActionData.Volume.Stream.Increase(showVolumeUi = showVolumeUi, stream)
-
-                    ActionId.VOLUME_DECREASE_STREAM ->
-                        ActionData.Volume.Stream.Decrease(showVolumeUi = showVolumeUi, stream)
-
-                    else -> throw Exception("don't know how to create action for $actionId")
-                }
-
-                return action
+                return null
             }
 
             ActionId.CHANGE_RINGER_MODE -> {

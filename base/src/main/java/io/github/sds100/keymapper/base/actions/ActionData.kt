@@ -98,39 +98,6 @@ sealed class ActionData : Comparable<ActionData> {
 
     @Serializable
     sealed class Volume : ActionData() {
-        @Deprecated("Use Volume.Up or Volume.Down with volumeStream parameter instead")
-        sealed class Stream : Volume() {
-            abstract val volumeStream: VolumeStream
-            abstract val showVolumeUi: Boolean
-
-            override fun compareTo(other: ActionData) = when (other) {
-                is Stream -> compareValuesBy(
-                    this,
-                    other,
-                    { it.id },
-                    { it.volumeStream },
-                )
-
-                else -> super.compareTo(other)
-            }
-
-            @Serializable
-            data class Increase(
-                override val showVolumeUi: Boolean,
-                override val volumeStream: VolumeStream,
-            ) : Stream() {
-                override val id = ActionId.VOLUME_INCREASE_STREAM
-            }
-
-            @Serializable
-            data class Decrease(
-                override val showVolumeUi: Boolean,
-                override val volumeStream: VolumeStream,
-            ) : Stream() {
-                override val id = ActionId.VOLUME_DECREASE_STREAM
-            }
-        }
-
         @Serializable
         data class Up(
             val showVolumeUi: Boolean,
