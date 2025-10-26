@@ -43,7 +43,10 @@ fun AnimatedFloatingActionButton(
 
     CollapsableFloatingActionButton(
         modifier = modifier,
-        onClick = onClick,
+        onClick = {
+            finishedAnimation = true
+            onClick()
+        },
         showText = showFabText,
         text = text,
         containerColor = animatedPulseColor.value,
