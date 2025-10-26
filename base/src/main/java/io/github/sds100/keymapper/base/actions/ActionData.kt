@@ -191,7 +191,7 @@ sealed class ActionData : Comparable<ActionData> {
         }
 
         @Serializable
-        data object UnMute : Microphone() {
+        data object Unmute : Microphone() {
             override val id = ActionId.UNMUTE_MICROPHONE
         }
 

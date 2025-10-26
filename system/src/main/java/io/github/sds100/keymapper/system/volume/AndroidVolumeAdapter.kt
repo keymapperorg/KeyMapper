@@ -53,6 +53,9 @@ class AndroidVolumeAdapter @Inject constructor(
             }
         }
 
+    override val isMicrophoneMuted: Boolean
+        get() = audioManager.isMicrophoneMute
+
     override fun raiseVolume(stream: VolumeStream?, showVolumeUi: Boolean): KMResult<*> =
         stream.convert().then { streamType ->
             adjustVolume(AudioManager.ADJUST_RAISE, showVolumeUi, streamType)
@@ -132,11 +135,6 @@ class AndroidVolumeAdapter @Inject constructor(
 
     override fun unmuteMicrophone(): KMResult<*> {
         audioManager.isMicrophoneMute = false
-        return Success(Unit)
-    }
-
-    override fun toggleMuteMicrophone(): KMResult<*> {
-        audioManager.isMicrophoneMute = !audioManager.isMicrophoneMute
         return Success(Unit)
     }
 

@@ -314,7 +314,7 @@ class CreateActionDelegate(
             }
 
             ActionId.UNMUTE_MICROPHONE -> {
-                return ActionData.Microphone.UnMute
+                return ActionData.Microphone.Unmute
             }
 
             ActionId.TOGGLE_MUTE_MICROPHONE -> {

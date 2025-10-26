@@ -318,7 +318,7 @@ object ActionDataEntityMapper {
             }
 
             ActionId.MUTE_MICROPHONE -> ActionData.Microphone.Mute
-            ActionId.UNMUTE_MICROPHONE -> ActionData.Microphone.UnMute
+            ActionId.UNMUTE_MICROPHONE -> ActionData.Microphone.Unmute
             ActionId.TOGGLE_MUTE_MICROPHONE -> ActionData.Microphone.Toggle
 
             ActionId.TOGGLE_FLASHLIGHT,
