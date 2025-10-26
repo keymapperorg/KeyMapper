@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegate
+import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegateImpl
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
 import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
@@ -472,7 +473,7 @@ abstract class BaseConfigTriggerViewModel(
 
                 is RecordTriggerState.Completed,
                 RecordTriggerState.Idle,
-                -> recordTrigger.startRecording(enableEvdevRecording = false)
+                    -> recordTrigger.startRecording(enableEvdevRecording = false)
             }
 
             // Show dialog if the accessibility service is disabled or crashed
@@ -480,9 +481,15 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    suspend fun handleServiceEventResult(result: KMResult<*>) {
+    fun handleServiceEventResult(result: KMResult<*>) {
         if (result is AccessibilityServiceError) {
             showFixAccessibilityServiceDialog(result)
+        }
+    }
+
+    override fun onTipButtonClick(tipId: String) {
+        if (tipId == OnboardingTipDelegateImpl.CAPS_LOCK_PRO_MODE_COMPATIBILITY_TIP_ID) {
+            showTriggerSetup(TriggerSetupShortcut.KEYBOARD, forceProMode = true)
         }
     }
 

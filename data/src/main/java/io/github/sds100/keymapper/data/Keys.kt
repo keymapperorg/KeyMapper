@@ -55,8 +55,8 @@ object Keys {
         booleanPreferencesKey("key_shown_sequence_trigger_explanation_dialog")
     val shownTriggerConstraintsTip =
         booleanPreferencesKey("key_shown_trigger_constraints_tip")
-    val shownCapsLockTip =
-        booleanPreferencesKey("key_shown_caps_lock_tip")
+    val shownCapsLockProModeTip =
+        booleanPreferencesKey("key_shown_caps_lock_pro_mode_compatibility_tip")
     val shownScreenPinningTip =
         booleanPreferencesKey("key_shown_screen_pinning_tip")
     val shownRingerModeTip =

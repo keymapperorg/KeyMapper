@@ -48,7 +48,7 @@ class OnboardingTipDelegateImpl @Inject constructor(
         private const val PARALLEL_TRIGGER_TIP_ID = "parallel_trigger_tip"
         private const val SEQUENCE_TRIGGER_TIP_ID = "sequence_trigger_tip"
         private const val TRIGGER_CONSTRAINTS_TIP_ID = "trigger_constraints_tip"
-        const val CAPS_LOCK_TIP_ID = "caps_lock_tip"
+        const val CAPS_LOCK_PRO_MODE_COMPATIBILITY_TIP_ID = "caps_lock_pro_mode_compatibility_tip"
         const val SCREEN_PINNING_TIP_ID = "screen_pinning_tip"
         const val IME_DETECTION_TIP_ID = "ime_detection_tip"
         const val RINGER_MODE_TIP_ID = "ringer_mode_tip"
@@ -72,8 +72,8 @@ class OnboardingTipDelegateImpl @Inject constructor(
         false,
     )
 
-    private var shownCapsLockTip: Boolean by PrefDelegate(
-        Keys.shownCapsLockTip,
+    private var shownCapsLockProModeTip: Boolean by PrefDelegate(
+        Keys.shownCapsLockProModeTip,
         false,
     )
 
@@ -126,8 +126,8 @@ class OnboardingTipDelegateImpl @Inject constructor(
                 shownTriggerConstraintsTip = true
             }
 
-            CAPS_LOCK_TIP_ID -> {
-                shownCapsLockTip = true
+            CAPS_LOCK_PRO_MODE_COMPATIBILITY_TIP_ID -> {
+                shownCapsLockProModeTip = true
             }
 
             SCREEN_PINNING_TIP_ID -> {
@@ -225,12 +225,13 @@ class OnboardingTipDelegateImpl @Inject constructor(
                 triggerTip.value = tipModel
             }
 
-            hasCapsLockKey && !shownCapsLockTip -> {
+            hasCapsLockKey && !shownCapsLockProModeTip -> {
                 val tip = OnboardingTipModel(
-                    id = CAPS_LOCK_TIP_ID,
-                    title = getString(R.string.tip_caps_lock_title),
-                    message = getString(R.string.tip_caps_lock_text),
+                    id = CAPS_LOCK_PRO_MODE_COMPATIBILITY_TIP_ID,
+                    title = getString(R.string.tip_caps_lock_pro_mode_title),
+                    message = getString(R.string.tip_caps_lock_pro_mode_text),
                     isDismissable = true,
+                    buttonText = getString(R.string.tip_caps_lock_pro_mode_button),
                 )
                 triggerTip.value = tip
             }

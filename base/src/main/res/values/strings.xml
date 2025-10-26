@@ -1348,8 +1348,9 @@
     <string name="floating_buttons_product_description">Floating buttons display over the apps you want. They work just like real buttons, and you can place, style, and map them however you like.</string>
     <string name="floating_button_text_key_map_list_item">Floating button %s (%s)</string>
     <string name="deleted_floating_button_text_key_map_list_item">Deleted floating button</string>
-    <string name="tip_caps_lock_title">Caps lock remapping</string>
-    <string name="tip_caps_lock_text">To remap Caps Lock, change your physical keyboard layout in settings to \'Caps Lock to camera\', then re-record this trigger.</string>
+    <string name="tip_caps_lock_pro_mode_title">Better Caps Lock compatibility</string>
+    <string name="tip_caps_lock_pro_mode_text">PRO mode provides better compatibility for Caps Lock remapping. Please record the trigger again with PRO mode.</string>
+    <string name="tip_caps_lock_pro_mode_button">Record again</string>
     <string name="tip_screen_pinning_title">App pinning warning</string>
     <string name="tip_screen_pinning_text">Using the back button as a trigger may conflict with app pinning, causing a black screen on unlock. A reboot will fix it.</string>
     <string name="tip_ime_detection_title">Keyboard icon</string>
@@ -1719,6 +1720,7 @@
     <string name="trigger_setup_status_remap_device_possible">You can remap this device</string>
     <string name="trigger_setup_status_feature_possible">You can use this feature</string>
     <string name="trigger_setup_screen_off_option">Remap when the screen is off</string>
+    <string name="trigger_setup_screen_off_option_keyboard">Remap when the screen is off</string>
     <string name="trigger_setup_options_title">Options</string>
     <string name="trigger_setup_requirements_title">Requirements</string>
     <string name="trigger_setup_not_detected_information">If your buttons still cannot be detected, please join our Discord server and let us know. We will do our best to help you remap your buttons.</string>
