@@ -100,24 +100,28 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
     private val initLock: Any = Any()
     private var initialized = false
 
-    private val broadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            context ?: return
-            intent ?: return
+    private val broadcastReceiver =
+        object : BroadcastReceiver() {
+            override fun onReceive(
+                context: Context?,
+                intent: Intent?,
+            ) {
+                context ?: return
+                intent ?: return
 
-            when (intent.action) {
-                Intent.ACTION_SHUTDOWN -> {
-                    Timber.i("Clean shutdown")
-                    settingsRepository.set(Keys.isCleanShutdown, true)
+                when (intent.action) {
+                    Intent.ACTION_SHUTDOWN -> {
+                        Timber.i("Clean shutdown")
+                        settingsRepository.set(Keys.isCleanShutdown, true)
 
-                    // Block until the value is persisted.
-                    runBlocking {
-                        settingsRepository.get(Keys.isCleanShutdown).first { it == true }
+                        // Block until the value is persisted.
+                        runBlocking {
+                            settingsRepository.get(Keys.isCleanShutdown).first { it == true }
+                        }
                     }
                 }
             }
         }
-    }
 
     override fun onCreate() {
         val priorExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
@@ -126,12 +130,13 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
 
         Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
             // log in a blocking manner and always log regardless of whether the setting is turned on
-            val entry = LogEntryEntity(
-                id = 0,
-                time = Calendar.getInstance().timeInMillis,
-                severity = LogEntryEntity.SEVERITY_ERROR,
-                message = exception.stackTraceToString(),
-            )
+            val entry =
+                LogEntryEntity(
+                    id = 0,
+                    time = Calendar.getInstance().timeInMillis,
+                    severity = LogEntryEntity.SEVERITY_ERROR,
+                    message = exception.stackTraceToString(),
+                )
 
             runBlocking {
                 logRepository.insertSuspend(entry)
@@ -169,13 +174,15 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
     private fun init() {
         Log.i(tag, "KeyMapperApp: Init")
 
-        val intentFilter = IntentFilter().apply {
-            addAction(Intent.ACTION_SHUTDOWN)
-        }
+        val intentFilter =
+            IntentFilter().apply {
+                addAction(Intent.ACTION_SHUTDOWN)
+            }
 
         registerReceiver(broadcastReceiver, intentFilter)
 
-        settingsRepository.get(Keys.darkTheme)
+        settingsRepository
+            .get(Keys.darkTheme)
             .map { it?.toIntOrNull() }
             .map {
                 when (it) {
@@ -183,8 +190,7 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
                     Theme.LIGHT.value -> AppCompatDelegate.MODE_NIGHT_NO
                     else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
                 }
-            }
-            .onEach { mode -> AppCompatDelegate.setDefaultNightMode(mode) }
+            }.onEach { mode -> AppCompatDelegate.setDefaultNightMode(mode) }
             .launchIn(appCoroutineScope)
 
         if (BuildConfig.BUILD_TYPE == "debug" || BuildConfig.BUILD_TYPE == "debug_release") {
@@ -195,18 +201,20 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
 
         notificationController.init()
 
-        processLifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
-            @Suppress("DEPRECATION")
-            @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-            fun onResume() {
-                // when the user returns to the app let everything know that the permissions could have changed
-                notificationController.onOpenApp()
+        processLifecycleOwner.lifecycle.addObserver(
+            object : LifecycleObserver {
+                @Suppress("DEPRECATION")
+                @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+                fun onResume() {
+                    // when the user returns to the app let everything know that the permissions could have changed
+                    notificationController.onOpenApp()
 
-                if (BuildConfig.DEBUG && permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
-                    accessibilityServiceAdapter.start()
+                    if (BuildConfig.DEBUG && permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
+                        accessibilityServiceAdapter.start()
+                    }
                 }
-            }
-        })
+            },
+        )
 
         appCoroutineScope.launch {
             notificationController.openApp.collectLatest { intentAction ->
@@ -219,9 +227,10 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
             }
         }
 
-        notificationController.showToast.onEach { toast ->
-            Toast.makeText(this, toast, Toast.LENGTH_SHORT).show()
-        }.launchIn(appCoroutineScope)
+        notificationController.showToast
+            .onEach { toast ->
+                Toast.makeText(this, toast, Toast.LENGTH_SHORT).show()
+            }.launchIn(appCoroutineScope)
 
         autoGrantPermissionController.start()
         keyEventRelayServiceWrapper.bind()

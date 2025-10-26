@@ -39,15 +39,21 @@ object MathUtils {
         }
     }
 
-    fun movePointByDistanceAndAngle(p: Point, distance: Int, degrees: Double): Point {
+    fun movePointByDistanceAndAngle(
+        p: Point,
+        distance: Int,
+        degrees: Double,
+    ): Point {
         val newX = (p.x + cos(deg2rad(degrees)) * distance).toInt()
         val newY = (p.y + sin(deg2rad(degrees)) * distance).toInt()
 
         return Point(newX, newY)
     }
 
-    fun angleBetweenPoints(p1: Point, p2: Point): Double =
-        rad2deg(atan2((p2.y - p1.y).toDouble(), (p2.x - p1.x).toDouble()))
+    fun angleBetweenPoints(
+        p1: Point,
+        p2: Point,
+    ): Double = rad2deg(atan2((p2.y - p1.y).toDouble(), (p2.x - p1.x).toDouble()))
 
     fun distributePointsOnCircle(
         circleCenter: Point,

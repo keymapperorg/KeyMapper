@@ -54,10 +54,11 @@ fun CustomDialogContent(
         Column {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                modifier = Modifier
-                    .align(Alignment.Start)
-                    .fillMaxWidth()
-                    .padding(start = 24.dp, end = 24.dp),
+                modifier =
+                    Modifier
+                        .align(Alignment.Start)
+                        .fillMaxWidth()
+                        .padding(start = 24.dp, end = 24.dp),
                 text = title,
                 style = MaterialTheme.typography.headlineSmall,
                 color = AlertDialogDefaults.titleContentColor,
@@ -66,10 +67,11 @@ fun CustomDialogContent(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    modifier = Modifier
-                        .align(Alignment.Start)
-                        .fillMaxWidth()
-                        .padding(start = 24.dp, end = 24.dp),
+                    modifier =
+                        Modifier
+                            .align(Alignment.Start)
+                            .fillMaxWidth()
+                            .padding(start = 24.dp, end = 24.dp),
                     text = text,
                     style = MaterialTheme.typography.bodyMedium,
                     color = AlertDialogDefaults.textContentColor,
@@ -81,10 +83,11 @@ fun CustomDialogContent(
 //                HorizontalDivider()
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.End)
-                    .padding(16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.End)
+                        .padding(16.dp),
                 horizontalArrangement = Arrangement.End,
             ) {
                 dismissButton()

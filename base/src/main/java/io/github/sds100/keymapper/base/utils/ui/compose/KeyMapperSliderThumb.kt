@@ -7,7 +7,10 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun KeyMapperSliderThumb(interactionSource: MutableInteractionSource, enabled: Boolean = true) {
+fun KeyMapperSliderThumb(
+    interactionSource: MutableInteractionSource,
+    enabled: Boolean = true,
+) {
     SliderDefaults.Thumb(
         interactionSource = interactionSource,
         thumbSize = DpSize(4.dp, 28.dp),

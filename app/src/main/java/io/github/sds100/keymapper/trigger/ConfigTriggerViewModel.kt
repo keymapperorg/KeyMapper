@@ -20,44 +20,50 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ConfigTriggerViewModel @Inject constructor(
-    private val onboarding: OnboardingUseCase,
-    private val config: ConfigTriggerUseCase,
-    private val recordTrigger: RecordTriggerController,
-    private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
-    private val displayKeyMap: DisplayKeyMapUseCase,
-    private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
-    setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
-    onboardingTipDelegate: OnboardingTipDelegate,
-    triggerSetupDelegate: TriggerSetupDelegate,
-    resourceProvider: ResourceProvider,
-    navigationProvider: NavigationProvider,
-    dialogProvider: DialogProvider,
-) : BaseConfigTriggerViewModel(
-    onboarding = onboarding,
-    config = config,
-    recordTrigger = recordTrigger,
-    createKeyMapShortcut = createKeyMapShortcut,
-    displayKeyMap = displayKeyMap,
-    fingerprintGesturesSupported = fingerprintGesturesSupported,
-    setupAccessibilityServiceDelegate = setupAccessibilityServiceDelegate,
-    onboardingTipDelegate = onboardingTipDelegate,
-    triggerSetupDelegate = triggerSetupDelegate,
-    resourceProvider = resourceProvider,
-    navigationProvider = navigationProvider,
-    dialogProvider = dialogProvider,
-) {
-    override fun onEditFloatingButtonClick() {}
+class ConfigTriggerViewModel
+    @Inject
+    constructor(
+        private val onboarding: OnboardingUseCase,
+        private val config: ConfigTriggerUseCase,
+        private val recordTrigger: RecordTriggerController,
+        private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
+        private val displayKeyMap: DisplayKeyMapUseCase,
+        private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
+        setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
+        onboardingTipDelegate: OnboardingTipDelegate,
+        triggerSetupDelegate: TriggerSetupDelegate,
+        resourceProvider: ResourceProvider,
+        navigationProvider: NavigationProvider,
+        dialogProvider: DialogProvider,
+    ) : BaseConfigTriggerViewModel(
+            onboarding = onboarding,
+            config = config,
+            recordTrigger = recordTrigger,
+            createKeyMapShortcut = createKeyMapShortcut,
+            displayKeyMap = displayKeyMap,
+            fingerprintGesturesSupported = fingerprintGesturesSupported,
+            setupAccessibilityServiceDelegate = setupAccessibilityServiceDelegate,
+            onboardingTipDelegate = onboardingTipDelegate,
+            triggerSetupDelegate = triggerSetupDelegate,
+            resourceProvider = resourceProvider,
+            navigationProvider = navigationProvider,
+            dialogProvider = dialogProvider,
+        ) {
+        override fun onEditFloatingButtonClick() {}
 
-    override fun onEditFloatingLayoutClick() {}
+        override fun onEditFloatingLayoutClick() {}
 
-    override fun showTriggerSetup(shortcut: TriggerSetupShortcut, forceProMode: Boolean) {
-        when (shortcut) {
-            TriggerSetupShortcut.ASSISTANT -> viewModelScope.launch {
-                navigateToAdvancedTriggers("purchase_assistant_trigger")
+        override fun showTriggerSetup(
+            shortcut: TriggerSetupShortcut,
+            forceProMode: Boolean,
+        ) {
+            when (shortcut) {
+                TriggerSetupShortcut.ASSISTANT ->
+                    viewModelScope.launch {
+                        navigateToAdvancedTriggers("purchase_assistant_trigger")
+                    }
+
+                else -> super.showTriggerSetup(shortcut, forceProMode)
             }
-
-            else -> super.showTriggerSetup(shortcut, forceProMode)
         }
     }
-}

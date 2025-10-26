@@ -46,7 +46,6 @@ abstract class BaseAccessibilityService :
     LifecycleOwner,
     IAccessibilityService,
     SavedStateRegistryOwner {
-
     @Inject
     lateinit var accessibilityServiceAdapter: AccessibilityServiceAdapterImpl
 
@@ -68,10 +67,11 @@ abstract class BaseAccessibilityService :
         }
 
     override val activeWindowPackageNames: List<String>
-        get() = windows
-            ?.filter { it.isActive }
-            ?.mapNotNull { it.root?.packageName?.toString() }
-            ?.toList() ?: emptyList()
+        get() =
+            windows
+                ?.filter { it.isActive }
+                ?.mapNotNull { it.root?.packageName?.toString() }
+                ?.toList() ?: emptyList()
 
     private val _activeWindowPackage: MutableStateFlow<String?> = MutableStateFlow(null)
     override val activeWindowPackage: Flow<String?> = _activeWindowPackage
@@ -83,7 +83,10 @@ abstract class BaseAccessibilityService :
     private val accessibilityInputMethod: InputMethod? =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             object : InputMethod(this) {
-                override fun onStartInput(attribute: EditorInfo, restarting: Boolean) {
+                override fun onStartInput(
+                    attribute: EditorInfo,
+                    restarting: Boolean,
+                ) {
                     super.onStartInput(attribute, restarting)
 
                     getController()?.onStartInput(attribute, restarting = restarting)
@@ -110,9 +113,10 @@ abstract class BaseAccessibilityService :
         get() = serviceInfo?.flags
         set(value) {
             if (serviceInfo != null && value != null) {
-                serviceInfo = serviceInfo.apply {
-                    flags = value
-                }
+                serviceInfo =
+                    serviceInfo.apply {
+                        flags = value
+                    }
             }
         }
 
@@ -120,9 +124,10 @@ abstract class BaseAccessibilityService :
         get() = serviceInfo?.feedbackType
         set(value) {
             if (serviceInfo != null && value != null) {
-                serviceInfo = serviceInfo.apply {
-                    feedbackType = value
-                }
+                serviceInfo =
+                    serviceInfo.apply {
+                        feedbackType = value
+                    }
             }
         }
 
@@ -130,9 +135,10 @@ abstract class BaseAccessibilityService :
         get() = serviceInfo?.eventTypes
         set(value) {
             if (serviceInfo != null && value != null) {
-                serviceInfo = serviceInfo.apply {
-                    eventTypes = value
-                }
+                serviceInfo =
+                    serviceInfo.apply {
+                        eventTypes = value
+                    }
             }
         }
 
@@ -140,9 +146,10 @@ abstract class BaseAccessibilityService :
         get() = serviceInfo?.notificationTimeout
         set(value) {
             if (serviceInfo != null && value != null) {
-                serviceInfo = serviceInfo.apply {
-                    notificationTimeout = value
-                }
+                serviceInfo =
+                    serviceInfo.apply {
+                        notificationTimeout = value
+                    }
             }
         }
 
@@ -183,21 +190,22 @@ abstract class BaseAccessibilityService :
                 override fun onGestureDetected(gesture: Int) {
                     super.onGestureDetected(gesture)
 
-                    val id: FingerprintGestureType = when (gesture) {
-                        FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_DOWN ->
-                            FingerprintGestureType.SWIPE_DOWN
+                    val id: FingerprintGestureType =
+                        when (gesture) {
+                            FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_DOWN ->
+                                FingerprintGestureType.SWIPE_DOWN
 
-                        FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_UP ->
-                            FingerprintGestureType.SWIPE_UP
+                            FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_UP ->
+                                FingerprintGestureType.SWIPE_UP
 
-                        FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_LEFT ->
-                            FingerprintGestureType.SWIPE_LEFT
+                            FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_LEFT ->
+                                FingerprintGestureType.SWIPE_LEFT
 
-                        FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_RIGHT ->
-                            FingerprintGestureType.SWIPE_RIGHT
+                            FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_RIGHT ->
+                                FingerprintGestureType.SWIPE_RIGHT
 
-                        else -> return
-                    }
+                            else -> return
+                        }
                     getController()?.onFingerprintGesture(id)
                 }
             }
@@ -235,7 +243,9 @@ abstract class BaseAccessibilityService :
         val memoryInfo = ActivityManager.MemoryInfo()
         getSystemService<ActivityManager>()?.getMemoryInfo(memoryInfo)
 
-        Timber.i("Accessibility service: onLowMemory, total: ${memoryInfo.totalMem}, available: ${memoryInfo.availMem}, is low memory: ${memoryInfo.lowMemory}, threshold: ${memoryInfo.threshold}")
+        Timber.i(
+            "Accessibility service: onLowMemory, total: ${memoryInfo.totalMem}, available: ${memoryInfo.availMem}, is low memory: ${memoryInfo.lowMemory}, threshold: ${memoryInfo.threshold}",
+        )
 
         super.onTrimMemory(level)
     }
@@ -261,13 +271,9 @@ abstract class BaseAccessibilityService :
         ) ?: false
     }
 
-    override fun findFocussedNode(focus: Int): AccessibilityNodeModel? {
-        return findFocus(focus)?.toModel()
-    }
+    override fun findFocussedNode(focus: Int): AccessibilityNodeModel? = findFocus(focus)?.toModel()
 
-    override fun onCreateInputMethod(): InputMethod {
-        return accessibilityInputMethod ?: super.onCreateInputMethod()
-    }
+    override fun onCreateInputMethod(): InputMethod = accessibilityInputMethod ?: super.onCreateInputMethod()
 
     override fun hideKeyboard() {
         softKeyboardController.showMode = SHOW_MODE_HIDDEN
@@ -307,35 +313,46 @@ abstract class BaseAccessibilityService :
         }
     }
 
-    override fun tapScreen(x: Int, y: Int, inputEventAction: InputEventAction): KMResult<*> {
+    override fun tapScreen(
+        x: Int,
+        y: Int,
+        inputEventAction: InputEventAction,
+    ): KMResult<*> {
         val duration = 1L // ms
 
-        val path = Path().apply {
-            moveTo(x.toFloat(), y.toFloat())
-        }
+        val path =
+            Path().apply {
+                moveTo(x.toFloat(), y.toFloat())
+            }
 
-        val strokeDescription = when (inputEventAction) {
-            InputEventAction.DOWN -> StrokeDescription(
-                path,
-                0,
-                duration,
-                true,
-            )
+        val strokeDescription =
+            when (inputEventAction) {
+                InputEventAction.DOWN ->
+                    StrokeDescription(
+                        path,
+                        0,
+                        duration,
+                        true,
+                    )
 
-            InputEventAction.UP -> StrokeDescription(
-                path,
-                59999,
-                duration,
-                false,
-            )
+                InputEventAction.UP ->
+                    StrokeDescription(
+                        path,
+                        59999,
+                        duration,
+                        false,
+                    )
 
-            else -> StrokeDescription(path, 0, duration)
-        }
+                else -> StrokeDescription(path, 0, duration)
+            }
 
         strokeDescription.let {
-            val gestureDescription = GestureDescription.Builder().apply {
-                addStroke(it)
-            }.build()
+            val gestureDescription =
+                GestureDescription
+                    .Builder()
+                    .apply {
+                        addStroke(it)
+                    }.build()
 
             val success = dispatchGesture(gestureDescription, null, null)
 
@@ -385,18 +402,20 @@ abstract class BaseAccessibilityService :
             // the length of each segment between fingers
             val segmentLength = perpendicularLineLength / segmentCount
             // perpendicular line of the start swipe point
-            val perpendicularLineStart = MathUtils.getPerpendicularOfLine(
-                pStart,
-                pEnd,
-                perpendicularLineLength,
-            )
+            val perpendicularLineStart =
+                MathUtils.getPerpendicularOfLine(
+                    pStart,
+                    pEnd,
+                    perpendicularLineLength,
+                )
             // perpendicular line of the end swipe point
-            val perpendicularLineEnd = MathUtils.getPerpendicularOfLine(
-                pEnd,
-                pStart,
-                perpendicularLineLength,
-                true,
-            )
+            val perpendicularLineEnd =
+                MathUtils.getPerpendicularOfLine(
+                    pEnd,
+                    pStart,
+                    perpendicularLineLength,
+                    true,
+                )
 
             // this is the angle between start and end point to rotate all virtual fingers on the perpendicular lines in the same direction
             val angle =
@@ -501,9 +520,10 @@ abstract class BaseAccessibilityService :
         findNode: (node: AccessibilityNodeModel) -> Boolean,
         performAction: (node: AccessibilityNodeModel) -> AccessibilityNodeAction?,
     ): KMResult<*> {
-        val node = rootInActiveWindow.findNodeRecursively {
-            findNode(it.toModel())
-        }
+        val node =
+            rootInActiveWindow.findNodeRecursively {
+                findNode(it.toModel())
+            }
 
         if (node == null) {
             return KMError.FailedToFindAccessibilityNode

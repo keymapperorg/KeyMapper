@@ -17,39 +17,38 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RoomAccessibilityNodeRepository @Inject constructor(
-    private val coroutineScope: CoroutineScope,
-    private val dao: AccessibilityNodeDao,
-) : AccessibilityNodeRepository {
+class RoomAccessibilityNodeRepository
+    @Inject
+    constructor(
+        private val coroutineScope: CoroutineScope,
+        private val dao: AccessibilityNodeDao,
+    ) : AccessibilityNodeRepository {
+        override val nodes: StateFlow<State<List<AccessibilityNodeEntity>>> =
+            dao
+                .getAll()
+                .map { list ->
+                    // Distinct by all fields except the ID.
+                    State.Data(list.distinctBy { it.copy(id = 0) })
+                }.flowOn(Dispatchers.IO)
+                .stateIn(coroutineScope, SharingStarted.WhileSubscribed(10000), State.Loading)
 
-    override val nodes: StateFlow<State<List<AccessibilityNodeEntity>>> =
-        dao.getAll()
-            .map { list ->
-                // Distinct by all fields except the ID.
-                State.Data(list.distinctBy { it.copy(id = 0) })
-            }
-            .flowOn(Dispatchers.IO)
-            .stateIn(coroutineScope, SharingStarted.WhileSubscribed(10000), State.Loading)
-
-    override fun insert(vararg node: AccessibilityNodeEntity) {
-        coroutineScope.launch(Dispatchers.IO) {
-            for (n in node) {
-                try {
-                    dao.insert(n)
-                } catch (e: SQLiteConstraintException) {
-                    // Do nothing if the node already exists.
+        override fun insert(vararg node: AccessibilityNodeEntity) {
+            coroutineScope.launch(Dispatchers.IO) {
+                for (n in node) {
+                    try {
+                        dao.insert(n)
+                    } catch (e: SQLiteConstraintException) {
+                        // Do nothing if the node already exists.
+                    }
                 }
             }
         }
-    }
 
-    override suspend fun get(id: Long): AccessibilityNodeEntity? {
-        return dao.getById(id)
-    }
+        override suspend fun get(id: Long): AccessibilityNodeEntity? = dao.getById(id)
 
-    override suspend fun deleteAll() {
-        withContext(Dispatchers.IO) {
-            dao.deleteAll()
+        override suspend fun deleteAll() {
+            withContext(Dispatchers.IO) {
+                dao.deleteAll()
+            }
         }
     }
-}

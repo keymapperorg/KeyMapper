@@ -12,16 +12,18 @@ object RecyclerViewUtils {
         val itemPadding = recyclerView.resources.getDimensionPixelSize(R.dimen.grid_padding)
 
         recyclerView.setPadding(itemPadding, itemPadding, itemPadding, itemPadding)
-        recyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
-            override fun getItemOffsets(
-                outRect: Rect,
-                view: View,
-                parent: RecyclerView,
-                state: RecyclerView.State,
-            ) {
-                outRect.set(itemPadding, itemPadding, itemPadding, itemPadding)
-            }
-        })
+        recyclerView.addItemDecoration(
+            object : RecyclerView.ItemDecoration() {
+                override fun getItemOffsets(
+                    outRect: Rect,
+                    view: View,
+                    parent: RecyclerView,
+                    state: RecyclerView.State,
+                ) {
+                    outRect.set(itemPadding, itemPadding, itemPadding, itemPadding)
+                }
+            },
+        )
     }
 
     /**
@@ -35,11 +37,12 @@ object RecyclerViewUtils {
 
         val calculatedSpanCount = floor(recyclerViewWidth / gridItemMinWidth).toInt()
 
-        val spanCount = if (calculatedSpanCount < 1) {
-            1
-        } else {
-            calculatedSpanCount
-        }
+        val spanCount =
+            if (calculatedSpanCount < 1) {
+                1
+            } else {
+                calculatedSpanCount
+            }
 
         (recyclerView.layoutManager as GridLayoutManager).apply {
             this.spanCount = spanCount

@@ -120,10 +120,11 @@ private fun SmsActionBottomSheet(
     var numberError: String? by rememberSaveable { mutableStateOf(null) }
     var messageError: String? by rememberSaveable { mutableStateOf(null) }
 
-    val title = when (state) {
-        is SmsActionBottomSheetState.SendSms -> stringResource(R.string.action_send_sms)
-        is SmsActionBottomSheetState.ComposeSms -> stringResource(R.string.action_compose_sms)
-    }
+    val title =
+        when (state) {
+            is SmsActionBottomSheetState.SendSms -> stringResource(R.string.action_send_sms)
+            is SmsActionBottomSheetState.ComposeSms -> stringResource(R.string.action_compose_sms)
+        }
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -136,9 +137,10 @@ private fun SmsActionBottomSheet(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp),
                 textAlign = TextAlign.Center,
                 text = title,
                 style = MaterialTheme.typography.headlineMedium,
@@ -147,9 +149,10 @@ private fun SmsActionBottomSheet(
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 value = state.number,
                 label = { Text(stringResource(R.string.hint_create_sms_action_number)) },
                 onValueChange = {
@@ -158,9 +161,10 @@ private fun SmsActionBottomSheet(
                 },
                 maxLines = 1,
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Phone,
-                ),
+                keyboardOptions =
+                    KeyboardOptions(
+                        keyboardType = KeyboardType.Phone,
+                    ),
                 isError = numberError != null,
                 supportingText = {
                     if (numberError != null) {
@@ -175,9 +179,10 @@ private fun SmsActionBottomSheet(
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 value = state.message,
                 label = { Text(stringResource(R.string.hint_create_sms_action_message)) },
                 onValueChange = {
@@ -186,10 +191,11 @@ private fun SmsActionBottomSheet(
                 },
                 minLines = 3,
                 maxLines = 5,
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences,
-                    keyboardType = KeyboardType.Text,
-                ),
+                keyboardOptions =
+                    KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        keyboardType = KeyboardType.Text,
+                    ),
                 isError = messageError != null,
                 supportingText = {
                     if (messageError != null) {
@@ -204,9 +210,10 @@ private fun SmsActionBottomSheet(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 text = stringResource(R.string.warning_sms_charges),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.labelMedium,
@@ -216,9 +223,10 @@ private fun SmsActionBottomSheet(
 
             if (state is SmsActionBottomSheetState.SendSms) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.End,
                 ) {
@@ -226,15 +234,17 @@ private fun SmsActionBottomSheet(
                         is State.Data -> {
                             val result = state.testResult.data
 
-                            val resultText: String = when (result) {
-                                is Success -> stringResource(R.string.test_sms_result_ok)
-                                is KMError -> result.getFullMessage(LocalContext.current)
-                            }
+                            val resultText: String =
+                                when (result) {
+                                    is Success -> stringResource(R.string.test_sms_result_ok)
+                                    is KMError -> result.getFullMessage(LocalContext.current)
+                                }
 
-                            val textColor = when (result) {
-                                is Success -> LocalCustomColorsPalette.current.green
-                                is KMError -> MaterialTheme.colorScheme.error
-                            }
+                            val textColor =
+                                when (result) {
+                                    is Success -> LocalCustomColorsPalette.current.green
+                                    is KMError -> MaterialTheme.colorScheme.error
+                                }
 
                             Text(
                                 modifier = Modifier.weight(1f),
@@ -280,9 +290,10 @@ private fun SmsActionBottomSheet(
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -334,20 +345,22 @@ private fun SmsActionBottomSheet(
 @Composable
 private fun Preview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         SmsActionBottomSheet(
             sheetState = sheetState,
             onDismissRequest = {},
-            state = SmsActionBottomSheetState.SendSms(
-                "+1 123456789",
-                "Message",
-                testResult = State.Loading,
-            ),
+            state =
+                SmsActionBottomSheetState.SendSms(
+                    "+1 123456789",
+                    "Message",
+                    testResult = State.Loading,
+                ),
         )
     }
 }
@@ -357,20 +370,22 @@ private fun Preview() {
 @Composable
 private fun PreviewTestError() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         SmsActionBottomSheet(
             sheetState = sheetState,
             onDismissRequest = {},
-            state = SmsActionBottomSheetState.SendSms(
-                "+1 123456789",
-                "Message",
-                testResult = State.Data(KMError.SendSmsError(SmsManager.RESULT_ERROR_NO_SERVICE)),
-            ),
+            state =
+                SmsActionBottomSheetState.SendSms(
+                    "+1 123456789",
+                    "Message",
+                    testResult = State.Data(KMError.SendSmsError(SmsManager.RESULT_ERROR_NO_SERVICE)),
+                ),
         )
     }
 }
@@ -380,20 +395,22 @@ private fun PreviewTestError() {
 @Composable
 private fun PreviewTestSuccess() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         SmsActionBottomSheet(
             sheetState = sheetState,
             onDismissRequest = {},
-            state = SmsActionBottomSheetState.SendSms(
-                "+1 123456789",
-                "Message",
-                testResult = State.Data(Success(Unit)),
-            ),
+            state =
+                SmsActionBottomSheetState.SendSms(
+                    "+1 123456789",
+                    "Message",
+                    testResult = State.Data(Success(Unit)),
+                ),
         )
     }
 }
@@ -403,20 +420,22 @@ private fun PreviewTestSuccess() {
 @Composable
 private fun PreviewEmpty() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         SmsActionBottomSheet(
             sheetState = sheetState,
             onDismissRequest = {},
-            state = SmsActionBottomSheetState.SendSms(
-                "",
-                "",
-                testResult = null,
-            ),
+            state =
+                SmsActionBottomSheetState.SendSms(
+                    "",
+                    "",
+                    testResult = null,
+                ),
         )
     }
 }

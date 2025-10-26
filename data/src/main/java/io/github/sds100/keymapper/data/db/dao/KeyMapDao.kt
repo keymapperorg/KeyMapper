@@ -59,7 +59,10 @@ interface KeyMapDao {
     suspend fun toggleKeyMapByUid(vararg uid: String)
 
     @Query("UPDATE $TABLE_NAME SET $KEY_GROUP_UID=(:groupUid) WHERE $KEY_UID in (:uid)")
-    suspend fun setKeyMapGroup(groupUid: String?, vararg uid: String)
+    suspend fun setKeyMapGroup(
+        groupUid: String?,
+        vararg uid: String,
+    )
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(vararg keyMap: KeyMapEntity)

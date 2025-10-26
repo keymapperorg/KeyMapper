@@ -110,14 +110,15 @@ private fun LogScreen(
         val endPadding = innerPadding.calculateEndPadding(layoutDirection)
 
         Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    bottom = innerPadding.calculateBottomPadding(),
-                    start = startPadding,
-                    end = endPadding,
-                ),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom = innerPadding.calculateBottomPadding(),
+                        start = startPadding,
+                        end = endPadding,
+                    ),
         ) {
             content()
         }
@@ -146,12 +147,13 @@ private fun Content(
             contentPadding = PaddingValues(8.dp),
         ) {
             items(logListItems, key = { it.id }) { item ->
-                val color = when (item.severity) {
-                    LogSeverity.ERROR -> MaterialTheme.colorScheme.error
-                    LogSeverity.WARNING -> LocalCustomColorsPalette.current.orange
-                    LogSeverity.INFO -> LocalCustomColorsPalette.current.green
-                    else -> LocalContentColor.current
-                }
+                val color =
+                    when (item.severity) {
+                        LogSeverity.ERROR -> MaterialTheme.colorScheme.error
+                        LogSeverity.WARNING -> LocalCustomColorsPalette.current.orange
+                        LogSeverity.INFO -> LocalCustomColorsPalette.current.green
+                        else -> LocalContentColor.current
+                    }
 
                 Row {
                     Text(
@@ -180,31 +182,32 @@ private fun Preview() {
         LogScreen(
             content = {
                 Content(
-                    logListItems = listOf(
-                        LogListItem(1, "12:34:56.789", LogSeverity.INFO, "This is an info message"),
-                        LogListItem(
-                            2,
-                            "12:34:57.123",
-                            LogSeverity.WARNING,
-                            "This is a warning message",
+                    logListItems =
+                        listOf(
+                            LogListItem(1, "12:34:56.789", LogSeverity.INFO, "This is an info message"),
+                            LogListItem(
+                                2,
+                                "12:34:57.123",
+                                LogSeverity.WARNING,
+                                "This is a warning message",
+                            ),
+                            LogListItem(
+                                3,
+                                "12:34:58.456",
+                                LogSeverity.ERROR,
+                                "This is an error message. It is a bit long to see how it overflows inside the available space.",
+                            ),
+                            LogListItem(4, "12:34:59.000", LogSeverity.INFO, "Another info message"),
+                            LogListItem(
+                                5,
+                                "12:35:00.000",
+                                LogSeverity.ERROR,
+                                "Error recording trigger",
+                            ),
+                            LogListItem(6, "12:35:01.000", LogSeverity.WARNING, "I am a warning"),
+                            LogListItem(7, "12:35:02.000", LogSeverity.INFO, "I am some info..."),
+                            LogListItem(8, "12:35:03.000", LogSeverity.INFO, "This more info"),
                         ),
-                        LogListItem(
-                            3,
-                            "12:34:58.456",
-                            LogSeverity.ERROR,
-                            "This is an error message. It is a bit long to see how it overflows inside the available space.",
-                        ),
-                        LogListItem(4, "12:34:59.000", LogSeverity.INFO, "Another info message"),
-                        LogListItem(
-                            5,
-                            "12:35:00.000",
-                            LogSeverity.ERROR,
-                            "Error recording trigger",
-                        ),
-                        LogListItem(6, "12:35:01.000", LogSeverity.WARNING, "I am a warning"),
-                        LogListItem(7, "12:35:02.000", LogSeverity.INFO, "I am some info..."),
-                        LogListItem(8, "12:35:03.000", LogSeverity.INFO, "This more info"),
-                    ),
                 )
             },
         )

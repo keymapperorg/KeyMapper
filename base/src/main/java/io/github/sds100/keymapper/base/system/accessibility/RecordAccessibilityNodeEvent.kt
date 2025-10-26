@@ -11,5 +11,7 @@ sealed class RecordAccessibilityNodeEvent : AccessibilityServiceEvent() {
     data object StopRecordingNodes : RecordAccessibilityNodeEvent()
 
     @Serializable
-    data class OnRecordNodeStateChanged(val state: RecordAccessibilityNodeState) : RecordAccessibilityNodeEvent()
+    data class OnRecordNodeStateChanged(
+        val state: RecordAccessibilityNodeState,
+    ) : RecordAccessibilityNodeEvent()
 }

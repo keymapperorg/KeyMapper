@@ -80,7 +80,10 @@ private val isProModeSupported = Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDG
 private val isAutoSwitchImeSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
 @Composable
-fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) {
+fun SettingsScreen(
+    modifier: Modifier = Modifier,
+    viewModel: SettingsViewModel,
+) {
     val state by viewModel.mainScreenState.collectAsStateWithLifecycle()
     val snackbarHostState = SnackbarHostState()
     var showAutomaticBackupDialog by remember { mutableStateOf(false) }
@@ -92,8 +95,9 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
             uri ?: return@rememberLauncherForActivityResult
             viewModel.setAutomaticBackupLocation(uri.toString())
 
-            val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            val takeFlags: Int =
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 
             context.contentResolver.takePersistableUriPermission(uri, takeFlags)
         }
@@ -221,14 +225,15 @@ private fun SettingsScreen(
         val endPadding = innerPadding.calculateEndPadding(layoutDirection)
 
         Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    bottom = innerPadding.calculateBottomPadding(),
-                    start = startPadding,
-                    end = endPadding,
-                ),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom = innerPadding.calculateBottomPadding(),
+                        start = startPadding,
+                        end = endPadding,
+                    ),
         ) {
             content()
         }
@@ -272,11 +277,12 @@ private fun Content(
             style = MaterialTheme.typography.bodyLarge,
         )
 
-        val buttonStates: List<Pair<Theme, String>> = listOf(
-            Theme.AUTO to stringResource(R.string.theme_system),
-            Theme.LIGHT to stringResource(R.string.theme_light),
-            Theme.DARK to stringResource(R.string.theme_dark),
-        )
+        val buttonStates: List<Pair<Theme, String>> =
+            listOf(
+                Theme.AUTO to stringResource(R.string.theme_system),
+                Theme.LIGHT to stringResource(R.string.theme_light),
+                Theme.DARK to stringResource(R.string.theme_dark),
+            )
 
         KeyMapperSegmentedButtonRow(
             modifier = Modifier.fillMaxWidth(),
@@ -336,13 +342,15 @@ private fun Content(
         )
 
         OptionPageButton(
-            title = if (state.autoBackupLocation == null) {
-                stringResource(R.string.title_pref_automatic_backup_location_disabled)
-            } else {
-                stringResource(R.string.title_pref_automatic_backup_location_enabled)
-            },
-            text = state.autoBackupLocation
-                ?: stringResource(R.string.summary_pref_automatic_backup_location_disabled),
+            title =
+                if (state.autoBackupLocation == null) {
+                    stringResource(R.string.title_pref_automatic_backup_location_disabled)
+                } else {
+                    stringResource(R.string.title_pref_automatic_backup_location_enabled)
+                },
+            text =
+                state.autoBackupLocation
+                    ?: stringResource(R.string.summary_pref_automatic_backup_location_disabled),
             icon = Icons.Rounded.Tune,
             onClick = onAutomaticBackupClick,
         )
@@ -354,23 +362,25 @@ private fun Content(
         )
 
         KeyEventActionMethodRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             isProModeSelected = state.keyEventActionsUseSystemBridege,
             onSelected = onKeyEventActionMethodSelected,
         )
 
         OptionPageButton(
             title = stringResource(R.string.title_pref_pro_mode),
-            text = if (isProModeSupported) {
-                stringResource(R.string.summary_pref_pro_mode)
-            } else {
-                stringResource(
-                    R.string.error_sdk_version_too_low,
-                    BuildUtils.getSdkVersionName(Constants.SYSTEM_BRIDGE_MIN_API),
-                )
-            },
+            text =
+                if (isProModeSupported) {
+                    stringResource(R.string.summary_pref_pro_mode)
+                } else {
+                    stringResource(
+                        R.string.error_sdk_version_too_low,
+                        BuildUtils.getSdkVersionName(Constants.SYSTEM_BRIDGE_MIN_API),
+                    )
+                },
             icon = KeyMapperIcons.ProModeIcon,
             onClick = onProModeClick,
             enabled = isProModeSupported,
@@ -378,14 +388,15 @@ private fun Content(
 
         OptionPageButton(
             title = stringResource(R.string.title_pref_automatically_change_ime),
-            text = if (isAutoSwitchImeSupported) {
-                stringResource(R.string.summary_pref_automatically_change_ime)
-            } else {
-                stringResource(
-                    R.string.error_sdk_version_too_low,
-                    BuildUtils.getSdkVersionName(Build.VERSION_CODES.R),
-                )
-            },
+            text =
+                if (isAutoSwitchImeSupported) {
+                    stringResource(R.string.summary_pref_automatically_change_ime)
+                } else {
+                    stringResource(
+                        R.string.error_sdk_version_too_low,
+                        BuildUtils.getSdkVersionName(Build.VERSION_CODES.R),
+                    )
+                },
             icon = Icons.Rounded.Keyboard,
             onClick = onAutomaticChangeImeClick,
             enabled = isAutoSwitchImeSupported,
@@ -430,10 +441,11 @@ private fun KeyEventActionMethodRow(
     onSelected: (isProModeSelected: Boolean) -> Unit,
 ) {
     Column(modifier) {
-        val buttonStates = listOf(
-            false to stringResource(R.string.fix_key_event_action_input_method_title),
-            true to stringResource(R.string.pro_mode_app_bar_title),
-        )
+        val buttonStates =
+            listOf(
+                false to stringResource(R.string.fix_key_event_action_input_method_title),
+                true to stringResource(R.string.pro_mode_app_bar_title),
+            )
 
         Text(
             text = stringResource(R.string.title_pref_key_event_actions_use_system_bridge),

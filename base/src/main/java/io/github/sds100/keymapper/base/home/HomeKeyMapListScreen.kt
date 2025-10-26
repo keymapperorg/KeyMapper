@@ -162,9 +162,10 @@ fun HomeKeyMapListScreen(
                 exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it }),
             ) {
                 AnimatedFloatingActionButton(
-                    modifier = Modifier
-                        .padding(bottom = fabBottomPadding)
-                        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.End)),
+                    modifier =
+                        Modifier
+                            .padding(bottom = fabBottomPadding)
+                            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.End)),
                     pulse = state.showCreateKeyMapTapTarget,
                     showFabText = viewModel.showFabText,
                     text = stringResource(R.string.home_fab_new_key_map),
@@ -224,21 +225,23 @@ fun HomeKeyMapListScreen(
                 enter = slideInVertically { it },
                 exit = slideOutVertically { it },
             ) {
-                val selectionState = (state.appBarState as? KeyMapAppBarState.Selecting)
-                    ?: KeyMapAppBarState.Selecting(
-                        selectionCount = 0,
-                        selectedKeyMapsEnabled = SelectedKeyMapsEnabled.NONE,
-                        isAllSelected = false,
-                        groups = emptyList(),
-                        breadcrumbs = emptyList(),
-                        showThisGroup = false,
-                    )
+                val selectionState =
+                    (state.appBarState as? KeyMapAppBarState.Selecting)
+                        ?: KeyMapAppBarState.Selecting(
+                            selectionCount = 0,
+                            selectedKeyMapsEnabled = SelectedKeyMapsEnabled.NONE,
+                            isAllSelected = false,
+                            groups = emptyList(),
+                            breadcrumbs = emptyList(),
+                            showThisGroup = false,
+                        )
 
                 SelectionBottomSheet(
-                    modifier = Modifier.onSizeChanged { size ->
-                        keyMapListBottomPadding =
-                            ((size.height.dp / 2) - 100.dp).coerceAtLeast(0.dp)
-                    },
+                    modifier =
+                        Modifier.onSizeChanged { size ->
+                            keyMapListBottomPadding =
+                                ((size.height.dp / 2) - 100.dp).coerceAtLeast(0.dp)
+                        },
                     enabled = selectionState.selectionCount > 0,
                     groups = selectionState.groups,
                     breadcrumbs = selectionState.breadcrumbs,
@@ -360,41 +363,43 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 uid = "0",
                 triggerKeys = listOf("Volume down", "Volume up", "Volume down"),
                 triggerSeparatorIcon = Icons.AutoMirrored.Outlined.ArrowForward,
-                actions = listOf(
-                    ComposeChipModel.Normal(
-                        id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
-                        "Open Key Mapper",
+                actions =
+                    listOf(
+                        ComposeChipModel.Normal(
+                            id = "0",
+                            ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                            "Open Key Mapper",
+                        ),
+                        ComposeChipModel.Error(
+                            id = "1",
+                            text = "Input KEYCODE_0 • Repeat until released",
+                            error = KMError.NoCompatibleImeChosen,
+                        ),
+                        ComposeChipModel.Normal(
+                            id = "2",
+                            text = "Input KEYCODE_Q",
+                            icon = null,
+                        ),
+                        ComposeChipModel.Normal(
+                            id = "3",
+                            text = "Toggle flashlight",
+                            icon = ComposeIconInfo.Vector(Icons.Outlined.FlashlightOn),
+                        ),
                     ),
-                    ComposeChipModel.Error(
-                        id = "1",
-                        text = "Input KEYCODE_0 • Repeat until released",
-                        error = KMError.NoCompatibleImeChosen,
-                    ),
-                    ComposeChipModel.Normal(
-                        id = "2",
-                        text = "Input KEYCODE_Q",
-                        icon = null,
-                    ),
-                    ComposeChipModel.Normal(
-                        id = "3",
-                        text = "Toggle flashlight",
-                        icon = ComposeIconInfo.Vector(Icons.Outlined.FlashlightOn),
-                    ),
-                ),
                 constraintMode = ConstraintMode.AND,
-                constraints = listOf(
-                    ComposeChipModel.Normal(
-                        id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
-                        "Key Mapper is not open",
+                constraints =
+                    listOf(
+                        ComposeChipModel.Normal(
+                            id = "0",
+                            ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                            "Key Mapper is not open",
+                        ),
+                        ComposeChipModel.Error(
+                            id = "1",
+                            "Key Mapper is playing media",
+                            error = KMError.AppNotFound(""),
+                        ),
                     ),
-                    ComposeChipModel.Error(
-                        id = "1",
-                        "Key Mapper is playing media",
-                        error = KMError.AppNotFound(""),
-                    ),
-                ),
                 options = listOf("Vibrate"),
                 triggerErrors = listOf(TriggerError.DND_ACCESS_DENIED),
                 extraInfo = "Disabled • No trigger",
@@ -406,25 +411,28 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 uid = "1",
                 triggerKeys = listOf("Volume down", "Volume up"),
                 triggerSeparatorIcon = Icons.Outlined.Add,
-                actions = listOf(
-                    ComposeChipModel.Normal(
-                        id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
-                        "Open Key Mapper",
+                actions =
+                    listOf(
+                        ComposeChipModel.Normal(
+                            id = "0",
+                            ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                            "Open Key Mapper",
+                        ),
                     ),
-                ),
                 constraintMode = ConstraintMode.AND,
-                constraints = listOf(
-                    ComposeChipModel.Normal(
-                        id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
-                        "Key Mapper is not open",
+                constraints =
+                    listOf(
+                        ComposeChipModel.Normal(
+                            id = "0",
+                            ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                            "Key Mapper is not open",
+                        ),
                     ),
-                ),
-                options = listOf(
-                    "Vibrate",
-                    "Vibrate when keys are initially pressed and again when long pressed",
-                ),
+                options =
+                    listOf(
+                        "Vibrate",
+                        "Vibrate when keys are initially pressed and again when long pressed",
+                    ),
                 triggerErrors = emptyList(),
                 extraInfo = null,
             ),
@@ -435,21 +443,23 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 uid = "2",
                 triggerKeys = listOf("Volume down", "Volume up"),
                 triggerSeparatorIcon = Icons.Outlined.Add,
-                actions = listOf(
-                    ComposeChipModel.Normal(
-                        id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
-                        "Open Key Mapper",
+                actions =
+                    listOf(
+                        ComposeChipModel.Normal(
+                            id = "0",
+                            ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                            "Open Key Mapper",
+                        ),
                     ),
-                ),
                 constraintMode = ConstraintMode.AND,
-                constraints = listOf(
-                    ComposeChipModel.Normal(
-                        id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
-                        "Key Mapper is not open",
+                constraints =
+                    listOf(
+                        ComposeChipModel.Normal(
+                            id = "0",
+                            ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                            "Key Mapper is not open",
+                        ),
                     ),
-                ),
                 options = emptyList(),
                 triggerErrors = emptyList(),
                 extraInfo = null,
@@ -461,13 +471,14 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 uid = "3",
                 triggerKeys = listOf("Volume down", "Volume up"),
                 triggerSeparatorIcon = Icons.Outlined.Add,
-                actions = listOf(
-                    ComposeChipModel.Normal(
-                        id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
-                        "Open Key Mapper",
+                actions =
+                    listOf(
+                        ComposeChipModel.Normal(
+                            id = "0",
+                            ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                            "Open Key Mapper",
+                        ),
                     ),
-                ),
                 constraintMode = ConstraintMode.AND,
                 constraints = emptyList(),
                 options = emptyList(),
@@ -477,17 +488,18 @@ private fun sampleList(): List<KeyMapListItemModel> {
         ),
         KeyMapListItemModel(
             isSelected = false,
-            content = KeyMapListItemModel.Content(
-                uid = "4",
-                triggerKeys = emptyList(),
-                triggerSeparatorIcon = Icons.Outlined.Add,
-                actions = emptyList(),
-                constraintMode = ConstraintMode.OR,
-                constraints = emptyList(),
-                options = emptyList(),
-                triggerErrors = emptyList(),
-                extraInfo = "Disabled • No trigger",
-            ),
+            content =
+                KeyMapListItemModel.Content(
+                    uid = "4",
+                    triggerKeys = emptyList(),
+                    triggerSeparatorIcon = Icons.Outlined.Add,
+                    actions = emptyList(),
+                    constraintMode = ConstraintMode.OR,
+                    constraints = emptyList(),
+                    options = emptyList(),
+                    triggerErrors = emptyList(),
+                    extraInfo = "Disabled • No trigger",
+                ),
         ),
     )
 }
@@ -496,14 +508,15 @@ private fun sampleList(): List<KeyMapListItemModel> {
 @Preview
 @Composable
 private fun PreviewSelectingKeyMaps() {
-    val appBarState = KeyMapAppBarState.Selecting(
-        selectionCount = 2,
-        selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED,
-        isAllSelected = false,
-        groups = emptyList(),
-        breadcrumbs = emptyList(),
-        showThisGroup = false,
-    )
+    val appBarState =
+        KeyMapAppBarState.Selecting(
+            selectionCount = 2,
+            selectedKeyMapsEnabled = SelectedKeyMapsEnabled.MIXED,
+            isAllSelected = false,
+            groups = emptyList(),
+            breadcrumbs = emptyList(),
+            showThisGroup = false,
+        )
 
     val listState = State.Data(sampleList())
 
@@ -537,11 +550,12 @@ private fun PreviewSelectingKeyMaps() {
 @Preview
 @Composable
 private fun PreviewKeyMapsRunning() {
-    val appBarState = KeyMapAppBarState.RootGroup(
-        subGroups = emptyList(),
-        warnings = emptyList(),
-        isPaused = false,
-    )
+    val appBarState =
+        KeyMapAppBarState.RootGroup(
+            subGroups = emptyList(),
+            warnings = emptyList(),
+            isPaused = false,
+        )
 
     val listState = State.Data(sampleList())
 
@@ -573,11 +587,12 @@ private fun PreviewKeyMapsRunning() {
 @Preview
 @Composable
 private fun PreviewKeyMapsPaused() {
-    val appBarState = KeyMapAppBarState.RootGroup(
-        subGroups = emptyList(),
-        warnings = emptyList(),
-        isPaused = true,
-    )
+    val appBarState =
+        KeyMapAppBarState.RootGroup(
+            subGroups = emptyList(),
+            warnings = emptyList(),
+            isPaused = true,
+        )
 
     val listState = State.Data(sampleList())
 
@@ -611,28 +626,31 @@ private fun PreviewKeyMapsPaused() {
 private fun PreviewKeyMapsWarnings() {
     val ctx = LocalContext.current
 
-    val warnings = listOf(
-        HomeWarningListItem(
-            id = "0",
-            text = stringResource(R.string.home_error_accessibility_service_is_disabled),
-        ),
-        HomeWarningListItem(
-            id = "1",
-            text = stringResource(R.string.home_error_is_battery_optimised),
-        ),
-    )
-
-    val appBarState = KeyMapAppBarState.RootGroup(
-        subGroups = listOf(
-            GroupListItemModel(
-                uid = "0",
-                name = "Key Mapper",
-                icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
+    val warnings =
+        listOf(
+            HomeWarningListItem(
+                id = "0",
+                text = stringResource(R.string.home_error_accessibility_service_is_disabled),
             ),
-        ),
-        warnings = warnings,
-        isPaused = true,
-    )
+            HomeWarningListItem(
+                id = "1",
+                text = stringResource(R.string.home_error_is_battery_optimised),
+            ),
+        )
+
+    val appBarState =
+        KeyMapAppBarState.RootGroup(
+            subGroups =
+                listOf(
+                    GroupListItemModel(
+                        uid = "0",
+                        name = "Key Mapper",
+                        icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
+                    ),
+                ),
+            warnings = warnings,
+            isPaused = true,
+        )
 
     val listState = State.Data(sampleList())
 
@@ -664,22 +682,24 @@ private fun PreviewKeyMapsWarnings() {
 @Preview(device = Devices.PIXEL)
 @Composable
 private fun PreviewKeyMapsWarningsEmpty() {
-    val warnings = listOf(
-        HomeWarningListItem(
-            id = "0",
-            text = stringResource(R.string.home_error_accessibility_service_is_disabled),
-        ),
-        HomeWarningListItem(
-            id = "1",
-            text = stringResource(R.string.home_error_is_battery_optimised),
-        ),
-    )
+    val warnings =
+        listOf(
+            HomeWarningListItem(
+                id = "0",
+                text = stringResource(R.string.home_error_accessibility_service_is_disabled),
+            ),
+            HomeWarningListItem(
+                id = "1",
+                text = stringResource(R.string.home_error_is_battery_optimised),
+            ),
+        )
 
-    val appBarState = KeyMapAppBarState.RootGroup(
-        subGroups = emptyList(),
-        warnings = warnings,
-        isPaused = true,
-    )
+    val appBarState =
+        KeyMapAppBarState.RootGroup(
+            subGroups = emptyList(),
+            warnings = warnings,
+            isPaused = true,
+        )
 
     val listState = State.Data(emptyList<KeyMapListItemModel>())
 

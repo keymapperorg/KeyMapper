@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class ChooseBluetoothDeviceFragment : SimpleRecyclerViewFragment<ListItem>() {
-
     companion object {
         const val EXTRA_NAME = "extra_name"
         const val EXTRA_ADDRESS = "extra_address"

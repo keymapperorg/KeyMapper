@@ -24,9 +24,10 @@ fun SwitchText(
 ) {
     Surface(modifier = modifier, shape = MaterialTheme.shapes.medium, color = Color.Transparent) {
         Row(
-            modifier = Modifier
-                .clickable(enabled = isEnabled) { onCheckedChange(!isChecked) }
-                .padding(8.dp),
+            modifier =
+                Modifier
+                    .clickable(enabled = isEnabled) { onCheckedChange(!isChecked) }
+                    .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Switch(
@@ -38,17 +39,18 @@ fun SwitchText(
 
             Text(
                 modifier = Modifier.padding(horizontal = 12.dp),
-
                 text = text,
-                style = if (isEnabled) {
-                    MaterialTheme.typography.bodyLarge
-                } else {
-                    MaterialTheme.typography.bodyLarge.copy(
-                        color = MaterialTheme.colorScheme.onSurface.copy(
-                            alpha = 0.5f,
-                        ),
-                    )
-                },
+                style =
+                    if (isEnabled) {
+                        MaterialTheme.typography.bodyLarge
+                    } else {
+                        MaterialTheme.typography.bodyLarge.copy(
+                            color =
+                                MaterialTheme.colorScheme.onSurface.copy(
+                                    alpha = 0.5f,
+                                ),
+                        )
+                    },
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )

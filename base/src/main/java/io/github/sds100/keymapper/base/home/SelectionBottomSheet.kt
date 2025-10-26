@@ -64,9 +64,10 @@ fun SelectionBottomSheet(
     onThisGroupClick: () -> Unit = {},
 ) {
     Surface(
-        modifier = modifier
-            .widthIn(max = BottomSheetDefaults.SheetMaxWidth)
-            .fillMaxWidth(),
+        modifier =
+            modifier
+                .widthIn(max = BottomSheetDefaults.SheetMaxWidth)
+                .fillMaxWidth(),
         shadowElevation = 5.dp,
         shape = BottomSheetDefaults.ExpandedShape,
         tonalElevation = BottomSheetDefaults.Elevation,
@@ -74,13 +75,15 @@ fun SelectionBottomSheet(
     ) {
         Column {
             Row(
-                modifier = Modifier
-                    .height(intrinsicSize = IntrinsicSize.Min),
+                modifier =
+                    Modifier
+                        .height(intrinsicSize = IntrinsicSize.Min),
             ) {
                 Row(
-                    modifier = Modifier
-                        .weight(1f)
-                        .horizontalScroll(state = rememberScrollState()),
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .horizontalScroll(state = rememberScrollState()),
                 ) {
                     Spacer(Modifier.width(16.dp))
 
@@ -113,9 +116,10 @@ fun SelectionBottomSheet(
                 )
 
                 KeyMapsEnabledSwitch(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .width(IntrinsicSize.Max),
+                    modifier =
+                        Modifier
+                            .padding(horizontal = 16.dp)
+                            .width(IntrinsicSize.Max),
                     state = selectedKeyMapsEnabled,
                     enabled = enabled,
                     onCheckedChange = onEnabledKeyMapsChange,
@@ -144,9 +148,10 @@ fun SelectionBottomSheet(
             )
 
             GroupRow(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
                 groups = groups,
                 onNewGroupClick = onNewGroupClick,
                 onGroupClick = onGroupClick,
@@ -186,11 +191,12 @@ private fun SelectionButton(
         Text(
             text = text,
             style = MaterialTheme.typography.labelLarge,
-            color = if (enabled) {
-                MaterialTheme.colorScheme.onSurface
-            } else {
-                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-            },
+            color =
+                if (enabled) {
+                    MaterialTheme.colorScheme.onSurface
+                } else {
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                },
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
@@ -213,21 +219,23 @@ private fun KeyMapsEnabledSwitch(
             onCheckedChange = onCheckedChange,
             enabled = enabled,
         )
-        val text = when (state) {
-            SelectedKeyMapsEnabled.ALL -> stringResource(R.string.home_enabled_key_maps_enabled)
-            SelectedKeyMapsEnabled.NONE -> stringResource(R.string.home_enabled_key_maps_disabled)
-            SelectedKeyMapsEnabled.MIXED -> stringResource(R.string.home_enabled_key_maps_mixed)
-        }
+        val text =
+            when (state) {
+                SelectedKeyMapsEnabled.ALL -> stringResource(R.string.home_enabled_key_maps_enabled)
+                SelectedKeyMapsEnabled.NONE -> stringResource(R.string.home_enabled_key_maps_disabled)
+                SelectedKeyMapsEnabled.MIXED -> stringResource(R.string.home_enabled_key_maps_mixed)
+            }
 
         Text(
             text = text,
             style = MaterialTheme.typography.labelLarge,
             maxLines = 1,
-            color = if (enabled) {
-                MaterialTheme.colorScheme.onSurface
-            } else {
-                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-            },
+            color =
+                if (enabled) {
+                    MaterialTheme.colorScheme.onSurface
+                } else {
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                },
         )
     }
 }
@@ -257,55 +265,57 @@ private fun PreviewGroups() {
     KeyMapperTheme {
         SelectionBottomSheet(
             enabled = true,
-            groups = listOf(
-                GroupListItemModel(
-                    uid = "1",
-                    name = "Lockscreen",
-                    icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+            groups =
+                listOf(
+                    GroupListItemModel(
+                        uid = "1",
+                        name = "Lockscreen",
+                        icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+                    ),
+                    GroupListItemModel(
+                        uid = "2",
+                        name = "Key Mapper",
+                        icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
+                    ),
+                    GroupListItemModel(
+                        uid = "3",
+                        name = "Key Mapper",
+                        icon = null,
+                    ),
+                    GroupListItemModel(
+                        uid = "3",
+                        name = "Key Mapper",
+                        icon = null,
+                    ),
+                    GroupListItemModel(
+                        uid = "3",
+                        name = "Key Mapper",
+                        icon = null,
+                    ),
+                    GroupListItemModel(
+                        uid = "3",
+                        name = "Key Mapper",
+                        icon = null,
+                    ),
+                    GroupListItemModel(
+                        uid = "3",
+                        name = "Key Mapper",
+                        icon = null,
+                    ),
+                    GroupListItemModel(
+                        uid = "3",
+                        name = "Key Mapper",
+                        icon = null,
+                    ),
                 ),
-                GroupListItemModel(
-                    uid = "2",
-                    name = "Key Mapper",
-                    icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
+            breadcrumbs =
+                listOf(
+                    GroupListItemModel(
+                        uid = "2",
+                        name = "Key Mapper",
+                        icon = null,
+                    ),
                 ),
-                GroupListItemModel(
-                    uid = "3",
-                    name = "Key Mapper",
-                    icon = null,
-                ),
-                GroupListItemModel(
-                    uid = "3",
-                    name = "Key Mapper",
-                    icon = null,
-                ),
-                GroupListItemModel(
-                    uid = "3",
-                    name = "Key Mapper",
-                    icon = null,
-                ),
-                GroupListItemModel(
-                    uid = "3",
-                    name = "Key Mapper",
-                    icon = null,
-                ),
-                GroupListItemModel(
-                    uid = "3",
-                    name = "Key Mapper",
-                    icon = null,
-                ),
-                GroupListItemModel(
-                    uid = "3",
-                    name = "Key Mapper",
-                    icon = null,
-                ),
-            ),
-            breadcrumbs = listOf(
-                GroupListItemModel(
-                    uid = "2",
-                    name = "Key Mapper",
-                    icon = null,
-                ),
-            ),
             selectedKeyMapsEnabled = SelectedKeyMapsEnabled.ALL,
             onDuplicateClick = {},
             onDeleteClick = {},

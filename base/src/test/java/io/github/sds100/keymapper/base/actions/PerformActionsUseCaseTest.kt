@@ -33,7 +33,6 @@ import org.mockito.kotlin.whenever
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class PerformActionsUseCaseTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testCoroutineScope = TestScope(testDispatcher)
 
@@ -48,45 +47,47 @@ class PerformActionsUseCaseTest {
         fakeDevicesAdapter = FakeDevicesAdapter()
         mockAccessibilityService = mock()
         mockToastAdapter = mock()
-        mockInputEventHub = mock {
-            on { runBlocking { injectKeyEvent(any(), any()) } }.then { Success(Unit) }
-        }
+        mockInputEventHub =
+            mock {
+                on { runBlocking { injectKeyEvent(any(), any()) } }.then { Success(Unit) }
+            }
 
-        useCase = PerformActionsUseCaseImpl(
-            service = mockAccessibilityService,
-            inputMethodAdapter = mock(),
-            switchImeInterface = mock(),
-            fileAdapter = mock(),
-            suAdapter = mock {},
-            shell = mock(),
-            intentAdapter = mock(),
-            getActionErrorUseCase = mock(),
-            keyMapperImeMessenger = mock(),
-            packageManagerAdapter = mock(),
-            appShortcutAdapter = mock(),
-            toastAdapter = mockToastAdapter,
-            devicesAdapter = fakeDevicesAdapter,
-            phoneAdapter = mock(),
-            audioAdapter = mock(),
-            cameraAdapter = mock(),
-            displayAdapter = mock(),
-            lockScreenAdapter = mock(),
-            mediaAdapter = mock(),
-            airplaneModeAdapter = mock(),
-            networkAdapter = mock(),
-            bluetoothAdapter = mock(),
-            nfcAdapter = mock(),
-            openUrlAdapter = mock(),
-            resourceProvider = mock(),
-            settingsRepository = mock(),
-            soundsManager = mock(),
-            notificationReceiverAdapter = mock(),
-            ringtoneAdapter = mock(),
-            inputEventHub = mockInputEventHub,
-            systemBridgeConnectionManager = mock(),
-            executeShellCommandUseCase = mock(),
-            coroutineScope = testCoroutineScope,
-        )
+        useCase =
+            PerformActionsUseCaseImpl(
+                service = mockAccessibilityService,
+                inputMethodAdapter = mock(),
+                switchImeInterface = mock(),
+                fileAdapter = mock(),
+                suAdapter = mock {},
+                shell = mock(),
+                intentAdapter = mock(),
+                getActionErrorUseCase = mock(),
+                keyMapperImeMessenger = mock(),
+                packageManagerAdapter = mock(),
+                appShortcutAdapter = mock(),
+                toastAdapter = mockToastAdapter,
+                devicesAdapter = fakeDevicesAdapter,
+                phoneAdapter = mock(),
+                audioAdapter = mock(),
+                cameraAdapter = mock(),
+                displayAdapter = mock(),
+                lockScreenAdapter = mock(),
+                mediaAdapter = mock(),
+                airplaneModeAdapter = mock(),
+                networkAdapter = mock(),
+                bluetoothAdapter = mock(),
+                nfcAdapter = mock(),
+                openUrlAdapter = mock(),
+                resourceProvider = mock(),
+                settingsRepository = mock(),
+                soundsManager = mock(),
+                notificationReceiverAdapter = mock(),
+                ringtoneAdapter = mock(),
+                inputEventHub = mockInputEventHub,
+                systemBridgeConnectionManager = mock(),
+                executeShellCommandUseCase = mock(),
+                coroutineScope = testCoroutineScope,
+            )
     }
 
     /**
@@ -119,35 +120,38 @@ class PerformActionsUseCaseTest {
     fun `set the device id of key event actions to a connected game controller if is a game pad key code`() =
         runTest(testDispatcher) {
             // GIVEN
-            val fakeGamePad = InputDeviceInfo(
-                descriptor = "game_pad",
-                name = "Game pad",
-                id = 1,
-                isExternal = true,
-                isGameController = true,
-                sources = InputDevice.SOURCE_GAMEPAD,
-            )
+            val fakeGamePad =
+                InputDeviceInfo(
+                    descriptor = "game_pad",
+                    name = "Game pad",
+                    id = 1,
+                    isExternal = true,
+                    isGameController = true,
+                    sources = InputDevice.SOURCE_GAMEPAD,
+                )
 
             fakeDevicesAdapter.connectedInputDevices.value = State.Data(listOf(fakeGamePad))
 
-            val action = ActionData.InputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_BUTTON_A,
-                device = null,
-            )
+            val action =
+                ActionData.InputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_BUTTON_A,
+                    device = null,
+                )
 
             // WHEN
             useCase.perform(action)
 
             // THEN
-            val expectedDownEvent = InjectKeyEventModel(
-                keyCode = KeyEvent.KEYCODE_BUTTON_A,
-                action = KeyEvent.ACTION_DOWN,
-                metaState = 0,
-                deviceId = fakeGamePad.id,
-                scanCode = 0,
-                repeatCount = 0,
-                source = InputDevice.SOURCE_GAMEPAD,
-            )
+            val expectedDownEvent =
+                InjectKeyEventModel(
+                    keyCode = KeyEvent.KEYCODE_BUTTON_A,
+                    action = KeyEvent.ACTION_DOWN,
+                    metaState = 0,
+                    deviceId = fakeGamePad.id,
+                    scanCode = 0,
+                    repeatCount = 0,
+                    source = InputDevice.SOURCE_GAMEPAD,
+                )
 
             val expectedUpEvent = expectedDownEvent.copy(action = KeyEvent.ACTION_UP)
 
@@ -164,25 +168,26 @@ class PerformActionsUseCaseTest {
             // GIVEN
             fakeDevicesAdapter.connectedInputDevices.value = State.Data(emptyList())
 
-            val action = ActionData.InputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_BUTTON_A,
-                device = null,
-            )
+            val action =
+                ActionData.InputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_BUTTON_A,
+                    device = null,
+                )
 
             // WHEN
             useCase.perform(action)
 
             // THEN
-            val expectedDownEvent = InjectKeyEventModel(
-
-                keyCode = KeyEvent.KEYCODE_BUTTON_A,
-                action = KeyEvent.ACTION_DOWN,
-                metaState = 0,
-                deviceId = 0,
-                scanCode = 0,
-                repeatCount = 0,
-                source = InputDevice.SOURCE_GAMEPAD,
-            )
+            val expectedDownEvent =
+                InjectKeyEventModel(
+                    keyCode = KeyEvent.KEYCODE_BUTTON_A,
+                    action = KeyEvent.ACTION_DOWN,
+                    metaState = 0,
+                    deviceId = 0,
+                    scanCode = 0,
+                    repeatCount = 0,
+                    source = InputDevice.SOURCE_GAMEPAD,
+                )
 
             val expectedUpEvent = expectedDownEvent.copy(action = KeyEvent.ACTION_UP)
 
@@ -197,49 +202,53 @@ class PerformActionsUseCaseTest {
     fun `don't set the device id of key event actions to a connected game controller if the action has a custom device set`() =
         runTest(testDispatcher) {
             // GIVEN
-            val fakeGamePad = InputDeviceInfo(
-                descriptor = "game_pad",
-                name = "Game pad",
-                id = 1,
-                isExternal = true,
-                isGameController = true,
-                sources = InputDevice.SOURCE_GAMEPAD,
-            )
+            val fakeGamePad =
+                InputDeviceInfo(
+                    descriptor = "game_pad",
+                    name = "Game pad",
+                    id = 1,
+                    isExternal = true,
+                    isGameController = true,
+                    sources = InputDevice.SOURCE_GAMEPAD,
+                )
 
-            val fakeKeyboard = InputDeviceInfo(
-                descriptor = "keyboard",
-                name = "Keyboard",
-                id = 2,
-                isExternal = true,
-                isGameController = false,
-                sources = InputDevice.SOURCE_GAMEPAD,
-            )
+            val fakeKeyboard =
+                InputDeviceInfo(
+                    descriptor = "keyboard",
+                    name = "Keyboard",
+                    id = 2,
+                    isExternal = true,
+                    isGameController = false,
+                    sources = InputDevice.SOURCE_GAMEPAD,
+                )
 
             fakeDevicesAdapter.connectedInputDevices.value =
                 State.Data(listOf(fakeGamePad, fakeKeyboard))
 
-            val action = ActionData.InputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_BUTTON_A,
-                device = ActionData.InputKeyEvent.Device(
-                    descriptor = "keyboard",
-                    name = "Keyboard",
-                ),
-            )
+            val action =
+                ActionData.InputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_BUTTON_A,
+                    device =
+                        ActionData.InputKeyEvent.Device(
+                            descriptor = "keyboard",
+                            name = "Keyboard",
+                        ),
+                )
 
             // WHEN
             useCase.perform(action)
 
             // THEN
-            val expectedDownEvent = InjectKeyEventModel(
-
-                keyCode = KeyEvent.KEYCODE_BUTTON_A,
-                action = KeyEvent.ACTION_DOWN,
-                metaState = 0,
-                deviceId = fakeKeyboard.id,
-                scanCode = 0,
-                repeatCount = 0,
-                source = InputDevice.SOURCE_GAMEPAD,
-            )
+            val expectedDownEvent =
+                InjectKeyEventModel(
+                    keyCode = KeyEvent.KEYCODE_BUTTON_A,
+                    action = KeyEvent.ACTION_DOWN,
+                    metaState = 0,
+                    deviceId = fakeKeyboard.id,
+                    scanCode = 0,
+                    repeatCount = 0,
+                    source = InputDevice.SOURCE_GAMEPAD,
+                )
 
             val expectedUpEvent = expectedDownEvent.copy(action = KeyEvent.ACTION_UP)
 
@@ -256,36 +265,38 @@ class PerformActionsUseCaseTest {
             // GIVEN
             val descriptor = "fake_device_descriptor"
 
-            val action = ActionData.InputKeyEvent(
-                keyCode = 1,
-                metaState = 0,
-                device = ActionData.InputKeyEvent.Device(
-                    descriptor = descriptor,
-                    name = "fake_name_2",
-                ),
-            )
+            val action =
+                ActionData.InputKeyEvent(
+                    keyCode = 1,
+                    metaState = 0,
+                    device =
+                        ActionData.InputKeyEvent.Device(
+                            descriptor = descriptor,
+                            name = "fake_name_2",
+                        ),
+                )
 
-            fakeDevicesAdapter.connectedInputDevices.value = State.Data(
-                listOf(
-                    InputDeviceInfo(
-                        descriptor = descriptor,
-                        name = "fake_name_1",
-                        id = 10,
-                        isExternal = true,
-                        isGameController = false,
-                        sources = InputDevice.SOURCE_GAMEPAD,
+            fakeDevicesAdapter.connectedInputDevices.value =
+                State.Data(
+                    listOf(
+                        InputDeviceInfo(
+                            descriptor = descriptor,
+                            name = "fake_name_1",
+                            id = 10,
+                            isExternal = true,
+                            isGameController = false,
+                            sources = InputDevice.SOURCE_GAMEPAD,
+                        ),
+                        InputDeviceInfo(
+                            descriptor = descriptor,
+                            name = "fake_name_2",
+                            id = 11,
+                            isExternal = true,
+                            isGameController = false,
+                            sources = InputDevice.SOURCE_GAMEPAD,
+                        ),
                     ),
-
-                    InputDeviceInfo(
-                        descriptor = descriptor,
-                        name = "fake_name_2",
-                        id = 11,
-                        isExternal = true,
-                        isGameController = false,
-                        sources = InputDevice.SOURCE_GAMEPAD,
-                    ),
-                ),
-            )
+                )
 
             // none of the devices support the key code
             fakeDevicesAdapter.deviceHasKey = { id, keyCode -> false }
@@ -294,16 +305,16 @@ class PerformActionsUseCaseTest {
             useCase.perform(action, inputEventAction = InputEventAction.DOWN_UP, keyMetaState = 0)
 
             // THEN
-            val expectedDownEvent = InjectKeyEventModel(
-
-                keyCode = 1,
-                action = KeyEvent.ACTION_DOWN,
-                metaState = 0,
-                deviceId = 11,
-                scanCode = 0,
-                repeatCount = 0,
-                source = InputDevice.SOURCE_KEYBOARD,
-            )
+            val expectedDownEvent =
+                InjectKeyEventModel(
+                    keyCode = 1,
+                    action = KeyEvent.ACTION_DOWN,
+                    metaState = 0,
+                    deviceId = 11,
+                    scanCode = 0,
+                    repeatCount = 0,
+                    source = InputDevice.SOURCE_KEYBOARD,
+                )
 
             val expectedUpEvent = expectedDownEvent.copy(action = KeyEvent.ACTION_UP)
 
@@ -317,39 +328,41 @@ class PerformActionsUseCaseTest {
             // GIVEN
             val descriptor = "fake_device_descriptor"
 
-            val action = ActionData.InputKeyEvent(
-                keyCode = 1,
-                metaState = 0,
-                device = ActionData.InputKeyEvent.Device(descriptor = descriptor, name = ""),
-            )
+            val action =
+                ActionData.InputKeyEvent(
+                    keyCode = 1,
+                    metaState = 0,
+                    device = ActionData.InputKeyEvent.Device(descriptor = descriptor, name = ""),
+                )
 
-            fakeDevicesAdapter.connectedInputDevices.value = State.Data(
-                listOf(
-                    InputDeviceInfo(
-                        descriptor = descriptor,
-                        name = "fake_name",
-                        id = 10,
-                        isExternal = true,
-                        isGameController = false,
-                        sources = InputDevice.SOURCE_GAMEPAD,
+            fakeDevicesAdapter.connectedInputDevices.value =
+                State.Data(
+                    listOf(
+                        InputDeviceInfo(
+                            descriptor = descriptor,
+                            name = "fake_name",
+                            id = 10,
+                            isExternal = true,
+                            isGameController = false,
+                            sources = InputDevice.SOURCE_GAMEPAD,
+                        ),
                     ),
-                ),
-            )
+                )
 
             // WHEN
             useCase.perform(action, inputEventAction = InputEventAction.DOWN_UP, keyMetaState = 0)
 
             // THEN
-            val expectedDownEvent = InjectKeyEventModel(
-
-                keyCode = 1,
-                action = KeyEvent.ACTION_DOWN,
-                metaState = 0,
-                deviceId = 10,
-                scanCode = 0,
-                repeatCount = 0,
-                source = InputDevice.SOURCE_KEYBOARD,
-            )
+            val expectedDownEvent =
+                InjectKeyEventModel(
+                    keyCode = 1,
+                    action = KeyEvent.ACTION_DOWN,
+                    metaState = 0,
+                    deviceId = 10,
+                    scanCode = 0,
+                    repeatCount = 0,
+                    source = InputDevice.SOURCE_KEYBOARD,
+                )
 
             val expectedUpEvent = expectedDownEvent.copy(action = KeyEvent.ACTION_UP)
 

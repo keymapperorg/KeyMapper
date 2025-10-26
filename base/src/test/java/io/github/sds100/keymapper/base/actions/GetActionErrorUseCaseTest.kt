@@ -32,23 +32,24 @@ import org.mockito.kotlin.whenever
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class GetActionErrorUseCaseTest {
-
     companion object {
-        private val GUI_KEYBOARD_IME_INFO = ImeInfo(
-            id = "ime_id",
-            packageName = "io.github.sds100.keymapper.inputmethod.latin",
-            label = "Key Mapper GUI Keyboard",
-            isEnabled = true,
-            isChosen = true,
-        )
+        private val GUI_KEYBOARD_IME_INFO =
+            ImeInfo(
+                id = "ime_id",
+                packageName = "io.github.sds100.keymapper.inputmethod.latin",
+                label = "Key Mapper GUI Keyboard",
+                isEnabled = true,
+                isChosen = true,
+            )
 
-        private val GBOARD_IME_INFO = ImeInfo(
-            id = "gboard_id",
-            packageName = "com.google.android.inputmethod.latin",
-            label = "Gboard",
-            isEnabled = true,
-            isChosen = false,
-        )
+        private val GBOARD_IME_INFO =
+            ImeInfo(
+                id = "gboard_id",
+                packageName = "com.google.android.inputmethod.latin",
+                label = "Gboard",
+                isEnabled = true,
+                isChosen = false,
+            )
     }
 
     private val testDispatcher = StandardTestDispatcher()
@@ -68,19 +69,20 @@ class GetActionErrorUseCaseTest {
         fakePreferenceRepository = FakePreferenceRepository()
         mockSystemBridgeConnectionManager = mock()
 
-        useCase = GetActionErrorUseCaseImpl(
-            packageManagerAdapter = mock(),
-            inputMethodAdapter = fakeInputMethodAdapter,
-            switchImeInterface = mock(),
-            permissionAdapter = mockPermissionAdapter,
-            systemFeatureAdapter = mock(),
-            cameraAdapter = mock(),
-            soundsManager = mock(),
-            ringtoneAdapter = mock(),
-            buildConfigProvider = TestBuildConfigProvider(sdkInt = Constants.SYSTEM_BRIDGE_MIN_API),
-            systemBridgeConnectionManager = mockSystemBridgeConnectionManager,
-            preferenceRepository = fakePreferenceRepository,
-        )
+        useCase =
+            GetActionErrorUseCaseImpl(
+                packageManagerAdapter = mock(),
+                inputMethodAdapter = fakeInputMethodAdapter,
+                switchImeInterface = mock(),
+                permissionAdapter = mockPermissionAdapter,
+                systemFeatureAdapter = mock(),
+                cameraAdapter = mock(),
+                soundsManager = mock(),
+                ringtoneAdapter = mock(),
+                buildConfigProvider = TestBuildConfigProvider(sdkInt = Constants.SYSTEM_BRIDGE_MIN_API),
+                systemBridgeConnectionManager = mockSystemBridgeConnectionManager,
+                preferenceRepository = fakePreferenceRepository,
+            )
     }
 
     private fun setupKeyEventActionTest(
@@ -93,11 +95,12 @@ class GetActionErrorUseCaseTest {
         fakeInputMethodAdapter.inputMethods.value = listOf(GBOARD_IME_INFO, GUI_KEYBOARD_IME_INFO)
         fakePreferenceRepository.set(Keys.keyEventActionsUseSystemBridge, isSystemBridgeUsed)
 
-        val connectionState = if (isSystemBridgeConnected) {
-            SystemBridgeConnectionState.Connected(time = 0L)
-        } else {
-            SystemBridgeConnectionState.Disconnected(time = 0L, isExpected = true)
-        }
+        val connectionState =
+            if (isSystemBridgeConnected) {
+                SystemBridgeConnectionState.Connected(time = 0L)
+            } else {
+                SystemBridgeConnectionState.Disconnected(time = 0L, isExpected = true)
+            }
 
         whenever(mockSystemBridgeConnectionManager.connectionState).then {
             MutableStateFlow(
@@ -114,15 +117,21 @@ class GetActionErrorUseCaseTest {
         testScope.runTest {
             setupKeyEventActionTest(chosenIme = GBOARD_IME_INFO)
 
-            val actions = listOf(
-                ActionData.SwitchKeyboard(
-                    imeId = GUI_KEYBOARD_IME_INFO.id,
-                    GUI_KEYBOARD_IME_INFO.label,
-                ),
-                ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),
-            )
+            val actions =
+                listOf(
+                    ActionData.SwitchKeyboard(
+                        imeId = GUI_KEYBOARD_IME_INFO.id,
+                        GUI_KEYBOARD_IME_INFO.label,
+                    ),
+                    ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),
+                )
 
-            val errors = useCase.actionErrorSnapshot.first().getErrors(actions).values.toList()
+            val errors =
+                useCase.actionErrorSnapshot
+                    .first()
+                    .getErrors(actions)
+                    .values
+                    .toList()
 
             assertThat(errors[0], nullValue())
             assertThat(errors[1], nullValue())
@@ -133,15 +142,21 @@ class GetActionErrorUseCaseTest {
         testScope.runTest {
             setupKeyEventActionTest(chosenIme = GBOARD_IME_INFO)
 
-            val actions = listOf(
-                ActionData.SwitchKeyboard(
-                    imeId = GUI_KEYBOARD_IME_INFO.id,
-                    GUI_KEYBOARD_IME_INFO.label,
-                ),
-                ActionData.Text("hello"),
-            )
+            val actions =
+                listOf(
+                    ActionData.SwitchKeyboard(
+                        imeId = GUI_KEYBOARD_IME_INFO.id,
+                        GUI_KEYBOARD_IME_INFO.label,
+                    ),
+                    ActionData.Text("hello"),
+                )
 
-            val errors = useCase.actionErrorSnapshot.first().getErrors(actions).values.toList()
+            val errors =
+                useCase.actionErrorSnapshot
+                    .first()
+                    .getErrors(actions)
+                    .values
+                    .toList()
 
             assertThat(errors[0], nullValue())
             assertThat(errors[1], nullValue())
@@ -152,17 +167,23 @@ class GetActionErrorUseCaseTest {
         testScope.runTest {
             setupKeyEventActionTest(chosenIme = GBOARD_IME_INFO)
 
-            val actions = listOf(
-                ActionData.SwitchKeyboard(
-                    imeId = GUI_KEYBOARD_IME_INFO.id,
-                    GUI_KEYBOARD_IME_INFO.label,
-                ),
-                ActionData.OpenCamera,
-                ActionData.OpenSettings,
-                ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),
-            )
+            val actions =
+                listOf(
+                    ActionData.SwitchKeyboard(
+                        imeId = GUI_KEYBOARD_IME_INFO.id,
+                        GUI_KEYBOARD_IME_INFO.label,
+                    ),
+                    ActionData.OpenCamera,
+                    ActionData.OpenSettings,
+                    ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),
+                )
 
-            val errors = useCase.actionErrorSnapshot.first().getErrors(actions).values.toList()
+            val errors =
+                useCase.actionErrorSnapshot
+                    .first()
+                    .getErrors(actions)
+                    .values
+                    .toList()
 
             assertThat(errors[0], nullValue())
             assertThat(errors[1], nullValue())
@@ -200,12 +221,18 @@ class GetActionErrorUseCaseTest {
         testScope.runTest {
             setupKeyEventActionTest(chosenIme = GBOARD_IME_INFO)
 
-            val actions = listOf(
-                ActionData.OpenCamera,
-                ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),
-            )
+            val actions =
+                listOf(
+                    ActionData.OpenCamera,
+                    ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),
+                )
 
-            val errors = useCase.actionErrorSnapshot.first().getErrors(actions).values.toList()
+            val errors =
+                useCase.actionErrorSnapshot
+                    .first()
+                    .getErrors(actions)
+                    .values
+                    .toList()
 
             assertThat(errors[0], nullValue())
             assertThat(errors[1], `is`(KMError.KeyEventActionError(KMError.NoCompatibleImeChosen)))
@@ -216,12 +243,18 @@ class GetActionErrorUseCaseTest {
         testScope.runTest {
             setupKeyEventActionTest(chosenIme = GBOARD_IME_INFO)
 
-            val actions = listOf(
-                ActionData.SwitchKeyboard(imeId = GBOARD_IME_INFO.id, GBOARD_IME_INFO.label),
-                ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),
-            )
+            val actions =
+                listOf(
+                    ActionData.SwitchKeyboard(imeId = GBOARD_IME_INFO.id, GBOARD_IME_INFO.label),
+                    ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),
+                )
 
-            val errors = useCase.actionErrorSnapshot.first().getErrors(actions).values.toList()
+            val errors =
+                useCase.actionErrorSnapshot
+                    .first()
+                    .getErrors(actions)
+                    .values
+                    .toList()
 
             assertThat(errors[0], nullValue())
             assertThat(errors[1], `is`(KMError.KeyEventActionError(KMError.NoCompatibleImeChosen)))
@@ -232,16 +265,22 @@ class GetActionErrorUseCaseTest {
         testScope.runTest {
             setupKeyEventActionTest(chosenIme = GBOARD_IME_INFO)
 
-            val actions = listOf(
-                ActionData.SwitchKeyboard(
-                    imeId = GUI_KEYBOARD_IME_INFO.id,
-                    GUI_KEYBOARD_IME_INFO.label,
-                ),
-                ActionData.SwitchKeyboard(imeId = GBOARD_IME_INFO.id, GBOARD_IME_INFO.label),
-                ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),
-            )
+            val actions =
+                listOf(
+                    ActionData.SwitchKeyboard(
+                        imeId = GUI_KEYBOARD_IME_INFO.id,
+                        GUI_KEYBOARD_IME_INFO.label,
+                    ),
+                    ActionData.SwitchKeyboard(imeId = GBOARD_IME_INFO.id, GBOARD_IME_INFO.label),
+                    ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),
+                )
 
-            val errors = useCase.actionErrorSnapshot.first().getErrors(actions).values.toList()
+            val errors =
+                useCase.actionErrorSnapshot
+                    .first()
+                    .getErrors(actions)
+                    .values
+                    .toList()
 
             assertThat(errors[0], nullValue())
             assertThat(errors[1], nullValue())
@@ -257,11 +296,17 @@ class GetActionErrorUseCaseTest {
                 isSystemBridgeConnected = true,
             )
 
-            val actions = listOf(
-                ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),
-            )
+            val actions =
+                listOf(
+                    ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),
+                )
 
-            val errors = useCase.actionErrorSnapshot.first().getErrors(actions).values.toList()
+            val errors =
+                useCase.actionErrorSnapshot
+                    .first()
+                    .getErrors(actions)
+                    .values
+                    .toList()
 
             assertThat(errors[0], nullValue())
         }
@@ -275,11 +320,17 @@ class GetActionErrorUseCaseTest {
                 isSystemBridgeConnected = false,
             )
 
-            val actions = listOf(
-                ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),
-            )
+            val actions =
+                listOf(
+                    ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),
+                )
 
-            val errors = useCase.actionErrorSnapshot.first().getErrors(actions).values.toList()
+            val errors =
+                useCase.actionErrorSnapshot
+                    .first()
+                    .getErrors(actions)
+                    .values
+                    .toList()
 
             assertThat(errors[0], `is`(KMError.KeyEventActionError(SystemBridgeError.Disconnected)))
         }
@@ -293,11 +344,17 @@ class GetActionErrorUseCaseTest {
                 isSystemBridgeConnected = false,
             )
 
-            val actions = listOf(
-                ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),
-            )
+            val actions =
+                listOf(
+                    ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),
+                )
 
-            val errors = useCase.actionErrorSnapshot.first().getErrors(actions).values.toList()
+            val errors =
+                useCase.actionErrorSnapshot
+                    .first()
+                    .getErrors(actions)
+                    .values
+                    .toList()
 
             assertThat(errors[0], `is`(KMError.KeyEventActionError(SystemBridgeError.Disconnected)))
         }

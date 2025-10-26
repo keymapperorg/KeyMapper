@@ -29,7 +29,6 @@ import javax.inject.Inject
 class ToggleKeyMapperKeyboardTile :
     TileService(),
     LifecycleOwner {
-
     @Inject
     lateinit var useCase: ToggleCompatibleImeUseCase
 
@@ -47,10 +46,11 @@ class ToggleKeyMapperKeyboardTile :
 
         launchRepeatOnLifecycle(Lifecycle.State.STARTED) {
             qsTile?.let { tile ->
-                tile.icon = Icon.createWithResource(
-                    this@ToggleKeyMapperKeyboardTile,
-                    R.drawable.ic_tile_keyboard,
-                )
+                tile.icon =
+                    Icon.createWithResource(
+                        this@ToggleKeyMapperKeyboardTile,
+                        R.drawable.ic_tile_keyboard,
+                    )
                 tile.label = str(R.string.tile_toggle_keymapper_keyboard)
                 tile.contentDescription = str(R.string.tile_toggle_keymapper_keyboard)
                 tile.state = Tile.STATE_INACTIVE
@@ -77,27 +77,32 @@ class ToggleKeyMapperKeyboardTile :
 
         lifecycleScope.launchWhenStarted {
             if (!useCase.sufficientPermissions.first()) {
-                Toast.makeText(
-                    this@ToggleKeyMapperKeyboardTile,
-                    R.string.error_insufficient_permissions,
-                    Toast.LENGTH_SHORT,
-                ).show()
+                Toast
+                    .makeText(
+                        this@ToggleKeyMapperKeyboardTile,
+                        R.string.error_insufficient_permissions,
+                        Toast.LENGTH_SHORT,
+                    ).show()
                 return@launchWhenStarted
             }
 
-            useCase.toggle().onSuccess {
-                Toast.makeText(
-                    this@ToggleKeyMapperKeyboardTile,
-                    str(R.string.toast_chose_keyboard, it.label),
-                    Toast.LENGTH_SHORT,
-                ).show()
-            }.onFailure {
-                Toast.makeText(
-                    this@ToggleKeyMapperKeyboardTile,
-                    it.getFullMessage(resourceProvider),
-                    Toast.LENGTH_SHORT,
-                ).show()
-            }
+            useCase
+                .toggle()
+                .onSuccess {
+                    Toast
+                        .makeText(
+                            this@ToggleKeyMapperKeyboardTile,
+                            str(R.string.toast_chose_keyboard, it.label),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                }.onFailure {
+                    Toast
+                        .makeText(
+                            this@ToggleKeyMapperKeyboardTile,
+                            it.getFullMessage(resourceProvider),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                }
         }
     }
 

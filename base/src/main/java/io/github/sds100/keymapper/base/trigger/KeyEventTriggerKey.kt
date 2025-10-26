@@ -24,7 +24,6 @@ data class KeyEventTriggerKey(
     override val detectWithScanCodeUserSetting: Boolean = false,
 ) : TriggerKey(),
     KeyCodeTriggerKey {
-
     override val allowedLongPress: Boolean = true
     override val allowedDoublePress: Boolean = true
 
@@ -36,36 +35,41 @@ data class KeyEventTriggerKey(
     }
 
     // key code -> click type -> device -> consume key event
-    override fun compareTo(other: TriggerKey) = when (other) {
-        is KeyEventTriggerKey -> compareValuesBy(
-            this,
-            other,
-            { it.keyCode },
-            { it.clickType },
-            { it.device },
-            { it.consumeEvent },
-        )
+    override fun compareTo(other: TriggerKey) =
+        when (other) {
+            is KeyEventTriggerKey ->
+                compareValuesBy(
+                    this,
+                    other,
+                    { it.keyCode },
+                    { it.clickType },
+                    { it.device },
+                    { it.consumeEvent },
+                )
 
-        else -> super.compareTo(other)
-    }
+            else -> super.compareTo(other)
+        }
 
     companion object {
         fun fromEntity(entity: KeyEventTriggerKeyEntity): TriggerKey {
-            val device = when (entity.deviceId) {
-                KeyEventTriggerKeyEntity.DEVICE_ID_THIS_DEVICE -> KeyEventTriggerDevice.Internal
-                KeyEventTriggerKeyEntity.DEVICE_ID_ANY_DEVICE -> KeyEventTriggerDevice.Any
-                else -> KeyEventTriggerDevice.External(
-                    entity.deviceId,
-                    entity.deviceName ?: "",
-                )
-            }
+            val device =
+                when (entity.deviceId) {
+                    KeyEventTriggerKeyEntity.DEVICE_ID_THIS_DEVICE -> KeyEventTriggerDevice.Internal
+                    KeyEventTriggerKeyEntity.DEVICE_ID_ANY_DEVICE -> KeyEventTriggerDevice.Any
+                    else ->
+                        KeyEventTriggerDevice.External(
+                            entity.deviceId,
+                            entity.deviceName ?: "",
+                        )
+                }
 
-            val clickType = when (entity.clickType) {
-                TriggerKeyEntity.SHORT_PRESS -> ClickType.SHORT_PRESS
-                TriggerKeyEntity.LONG_PRESS -> ClickType.LONG_PRESS
-                TriggerKeyEntity.DOUBLE_PRESS -> ClickType.DOUBLE_PRESS
-                else -> ClickType.SHORT_PRESS
-            }
+            val clickType =
+                when (entity.clickType) {
+                    TriggerKeyEntity.SHORT_PRESS -> ClickType.SHORT_PRESS
+                    TriggerKeyEntity.LONG_PRESS -> ClickType.LONG_PRESS
+                    TriggerKeyEntity.DOUBLE_PRESS -> ClickType.DOUBLE_PRESS
+                    else -> ClickType.SHORT_PRESS
+                }
 
             val consumeEvent =
                 !entity.flags.hasFlag(KeyEventTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT)
@@ -89,11 +93,12 @@ data class KeyEventTriggerKey(
         }
 
         fun toEntity(key: KeyEventTriggerKey): KeyEventTriggerKeyEntity {
-            val deviceId = when (key.device) {
-                KeyEventTriggerDevice.Any -> KeyEventTriggerKeyEntity.DEVICE_ID_ANY_DEVICE
-                is KeyEventTriggerDevice.External -> key.device.descriptor
-                KeyEventTriggerDevice.Internal -> KeyEventTriggerKeyEntity.DEVICE_ID_THIS_DEVICE
-            }
+            val deviceId =
+                when (key.device) {
+                    KeyEventTriggerDevice.Any -> KeyEventTriggerKeyEntity.DEVICE_ID_ANY_DEVICE
+                    is KeyEventTriggerDevice.External -> key.device.descriptor
+                    KeyEventTriggerDevice.Internal -> KeyEventTriggerKeyEntity.DEVICE_ID_THIS_DEVICE
+                }
 
             val deviceName =
                 if (key.device is KeyEventTriggerDevice.External) {
@@ -102,11 +107,12 @@ data class KeyEventTriggerKey(
                     null
                 }
 
-            val clickType = when (key.clickType) {
-                ClickType.SHORT_PRESS -> TriggerKeyEntity.SHORT_PRESS
-                ClickType.LONG_PRESS -> TriggerKeyEntity.LONG_PRESS
-                ClickType.DOUBLE_PRESS -> TriggerKeyEntity.DOUBLE_PRESS
-            }
+            val clickType =
+                when (key.clickType) {
+                    ClickType.SHORT_PRESS -> TriggerKeyEntity.SHORT_PRESS
+                    ClickType.LONG_PRESS -> TriggerKeyEntity.LONG_PRESS
+                    ClickType.DOUBLE_PRESS -> TriggerKeyEntity.DOUBLE_PRESS
+                }
 
             var flags = 0
 

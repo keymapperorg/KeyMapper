@@ -13,13 +13,13 @@ class SortViewModel(
     private val coroutineScope: CoroutineScope,
     private val useCase: SortKeyMapsUseCase,
 ) {
-
-    val showHelp: StateFlow<Boolean> = useCase.showHelp
-        .stateIn(
-            scope = coroutineScope,
-            started = SharingStarted.WhileSubscribed(),
-            initialValue = true,
-        )
+    val showHelp: StateFlow<Boolean> =
+        useCase.showHelp
+            .stateIn(
+                scope = coroutineScope,
+                started = SharingStarted.WhileSubscribed(),
+                initialValue = true,
+            )
 
     val sortFieldOrder: MutableStateFlow<List<SortFieldOrder>> = MutableStateFlow(emptyList())
 
@@ -31,7 +31,10 @@ class SortViewModel(
         }
     }
 
-    fun swapSortPriority(fromIndex: Int, toIndex: Int) {
+    fun swapSortPriority(
+        fromIndex: Int,
+        toIndex: Int,
+    ) {
         sortFieldOrder.update {
             val newList = it.toMutableList()
             newList.add(toIndex, newList.removeAt(fromIndex))
@@ -67,11 +70,12 @@ class SortViewModel(
     }
 
     fun showExample() {
-        sortFieldOrder.value = listOf(
-            SortFieldOrder(SortField.ACTIONS, SortOrder.ASCENDING),
-            SortFieldOrder(SortField.TRIGGER, SortOrder.DESCENDING),
-            SortFieldOrder(SortField.CONSTRAINTS),
-            SortFieldOrder(SortField.OPTIONS),
-        )
+        sortFieldOrder.value =
+            listOf(
+                SortFieldOrder(SortField.ACTIONS, SortOrder.ASCENDING),
+                SortFieldOrder(SortField.TRIGGER, SortOrder.DESCENDING),
+                SortFieldOrder(SortField.CONSTRAINTS),
+                SortFieldOrder(SortField.OPTIONS),
+            )
     }
 }

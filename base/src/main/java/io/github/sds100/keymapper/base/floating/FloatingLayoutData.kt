@@ -11,20 +11,19 @@ data class FloatingLayoutData(
 )
 
 object FloatingLayoutEntityMapper {
-    fun fromEntity(entity: FloatingLayoutEntityWithButtons): FloatingLayoutData {
-        return FloatingLayoutData(
+    fun fromEntity(entity: FloatingLayoutEntityWithButtons): FloatingLayoutData =
+        FloatingLayoutData(
             uid = entity.layout.uid,
             name = entity.layout.name,
-            buttons = entity.buttons.map { buttonEntity ->
-                FloatingButtonEntityMapper.fromEntity(buttonEntity, entity.layout.name)
-            },
+            buttons =
+                entity.buttons.map { buttonEntity ->
+                    FloatingButtonEntityMapper.fromEntity(buttonEntity, entity.layout.name)
+                },
         )
-    }
 
-    fun toEntity(layout: FloatingLayoutData): FloatingLayoutEntity {
-        return FloatingLayoutEntity(
+    fun toEntity(layout: FloatingLayoutData): FloatingLayoutEntity =
+        FloatingLayoutEntity(
             uid = layout.uid,
             name = layout.name,
         )
-    }
 }

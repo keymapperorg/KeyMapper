@@ -15,10 +15,8 @@ data class AccessibilityNodeModel(
     val isEditable: Boolean,
     val className: String?,
     val viewResourceId: String?,
-
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     val uniqueId: String?,
-
     /**
      * A list of the allowed accessibility node actions.
      */

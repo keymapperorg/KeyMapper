@@ -44,7 +44,6 @@ class CreateActionDelegate(
 ) : ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider {
-
     val actionResult: MutableStateFlow<ActionData?> = MutableStateFlow(null)
     var enableFlashlightActionState: EnableFlashlightActionState? by mutableStateOf(null)
     var changeFlashlightStrengthActionState: ChangeFlashlightStrengthActionState? by mutableStateOf(
@@ -75,19 +74,22 @@ class CreateActionDelegate(
                     ?.let { it.toFloat() / flashInfo.maxStrength }
                     ?.coerceIn(0f, 1f)
 
-            val action = when (state.actionToCreate) {
-                ActionId.TOGGLE_FLASHLIGHT -> ActionData.Flashlight.Toggle(
-                    state.selectedLens,
-                    strengthPercent,
-                )
+            val action =
+                when (state.actionToCreate) {
+                    ActionId.TOGGLE_FLASHLIGHT ->
+                        ActionData.Flashlight.Toggle(
+                            state.selectedLens,
+                            strengthPercent,
+                        )
 
-                ActionId.ENABLE_FLASHLIGHT -> ActionData.Flashlight.Enable(
-                    state.selectedLens,
-                    strengthPercent,
-                )
+                    ActionId.ENABLE_FLASHLIGHT ->
+                        ActionData.Flashlight.Enable(
+                            state.selectedLens,
+                            strengthPercent,
+                        )
 
-                else -> return
-            }
+                    else -> return
+                }
 
             enableFlashlightActionState = null
 
@@ -104,10 +106,11 @@ class CreateActionDelegate(
             val strengthPercent =
                 (state.flashStrength.toFloat() / flashInfo.maxStrength).coerceIn(-1f, 1f)
 
-            val action = ActionData.Flashlight.ChangeStrength(
-                state.selectedLens,
-                strengthPercent,
-            )
+            val action =
+                ActionData.Flashlight.ChangeStrength(
+                    state.selectedLens,
+                    strengthPercent,
+                )
 
             changeFlashlightStrengthActionState = null
 
@@ -144,17 +147,20 @@ class CreateActionDelegate(
     fun onDoneSmsClick() {
         val state = smsActionBottomSheetState ?: return
 
-        val action = when (state) {
-            is SmsActionBottomSheetState.ComposeSms -> ActionData.ComposeSms(
-                state.number,
-                state.message,
-            )
+        val action =
+            when (state) {
+                is SmsActionBottomSheetState.ComposeSms ->
+                    ActionData.ComposeSms(
+                        state.number,
+                        state.message,
+                    )
 
-            is SmsActionBottomSheetState.SendSms -> ActionData.SendSms(
-                state.number,
-                state.message,
-            )
-        }
+                is SmsActionBottomSheetState.SendSms ->
+                    ActionData.SendSms(
+                        state.number,
+                        state.message,
+                    )
+            }
 
         smsActionBottomSheetState = null
         actionResult.update { action }
@@ -162,17 +168,20 @@ class CreateActionDelegate(
 
     fun onDoneConfigVolumeClick() {
         volumeActionState?.also { state ->
-            val action = when (state.actionId) {
-                ActionId.VOLUME_UP -> ActionData.Volume.Up(
-                    showVolumeUi = state.showVolumeUi,
-                    volumeStream = state.volumeStream,
-                )
-                ActionId.VOLUME_DOWN -> ActionData.Volume.Down(
-                    showVolumeUi = state.showVolumeUi,
-                    volumeStream = state.volumeStream,
-                )
-                else -> return
-            }
+            val action =
+                when (state.actionId) {
+                    ActionId.VOLUME_UP ->
+                        ActionData.Volume.Up(
+                            showVolumeUi = state.showVolumeUi,
+                            volumeStream = state.volumeStream,
+                        )
+                    ActionId.VOLUME_DOWN ->
+                        ActionData.Volume.Down(
+                            showVolumeUi = state.showVolumeUi,
+                            volumeStream = state.volumeStream,
+                        )
+                    else -> return
+                }
 
             volumeActionState = null
             actionResult.update { action }
@@ -212,13 +221,17 @@ class CreateActionDelegate(
         }
     }
 
-    private suspend fun configAction(actionId: ActionId, oldData: ActionData? = null): ActionData? {
+    private suspend fun configAction(
+        actionId: ActionId,
+        oldData: ActionData? = null,
+    ): ActionData? {
         when (actionId) {
             ActionId.SWITCH_KEYBOARD -> {
                 val inputMethods = useCase.getInputMethods()
-                val items = inputMethods.map {
-                    it.id to it.label
-                }
+                val items =
+                    inputMethods.map {
+                        it.id to it.label
+                    }
 
                 val imeId =
                     showDialog("choose_ime", DialogModel.SingleChoice(items)) ?: return null
@@ -237,7 +250,7 @@ class CreateActionDelegate(
             ActionId.STOP_MEDIA_PACKAGE,
             ActionId.STEP_FORWARD_PACKAGE,
             ActionId.STEP_BACKWARD_PACKAGE,
-                -> {
+            -> {
                 val packageName =
                     navigate(
                         "choose_app_for_media_action",
@@ -245,67 +258,70 @@ class CreateActionDelegate(
                     )
                         ?: return null
 
-                val action = when (actionId) {
-                    ActionId.PAUSE_MEDIA_PACKAGE ->
-                        ActionData.ControlMediaForApp.Pause(packageName)
+                val action =
+                    when (actionId) {
+                        ActionId.PAUSE_MEDIA_PACKAGE ->
+                            ActionData.ControlMediaForApp.Pause(packageName)
 
-                    ActionId.PLAY_MEDIA_PACKAGE ->
-                        ActionData.ControlMediaForApp.Play(packageName)
+                        ActionId.PLAY_MEDIA_PACKAGE ->
+                            ActionData.ControlMediaForApp.Play(packageName)
 
-                    ActionId.PLAY_PAUSE_MEDIA_PACKAGE ->
-                        ActionData.ControlMediaForApp.PlayPause(packageName)
+                        ActionId.PLAY_PAUSE_MEDIA_PACKAGE ->
+                            ActionData.ControlMediaForApp.PlayPause(packageName)
 
-                    ActionId.NEXT_TRACK_PACKAGE ->
-                        ActionData.ControlMediaForApp.NextTrack(packageName)
+                        ActionId.NEXT_TRACK_PACKAGE ->
+                            ActionData.ControlMediaForApp.NextTrack(packageName)
 
-                    ActionId.PREVIOUS_TRACK_PACKAGE ->
-                        ActionData.ControlMediaForApp.PreviousTrack(packageName)
+                        ActionId.PREVIOUS_TRACK_PACKAGE ->
+                            ActionData.ControlMediaForApp.PreviousTrack(packageName)
 
-                    ActionId.FAST_FORWARD_PACKAGE ->
-                        ActionData.ControlMediaForApp.FastForward(packageName)
+                        ActionId.FAST_FORWARD_PACKAGE ->
+                            ActionData.ControlMediaForApp.FastForward(packageName)
 
-                    ActionId.REWIND_PACKAGE ->
-                        ActionData.ControlMediaForApp.Rewind(packageName)
+                        ActionId.REWIND_PACKAGE ->
+                            ActionData.ControlMediaForApp.Rewind(packageName)
 
-                    ActionId.STOP_MEDIA_PACKAGE ->
-                        ActionData.ControlMediaForApp.Stop(packageName)
+                        ActionId.STOP_MEDIA_PACKAGE ->
+                            ActionData.ControlMediaForApp.Stop(packageName)
 
-                    ActionId.STEP_FORWARD_PACKAGE ->
-                        ActionData.ControlMediaForApp.StepForward(packageName)
+                        ActionId.STEP_FORWARD_PACKAGE ->
+                            ActionData.ControlMediaForApp.StepForward(packageName)
 
-                    ActionId.STEP_BACKWARD_PACKAGE ->
-                        ActionData.ControlMediaForApp.StepBackward(packageName)
+                        ActionId.STEP_BACKWARD_PACKAGE ->
+                            ActionData.ControlMediaForApp.StepBackward(packageName)
 
-                    else -> throw Exception("don't know how to create action for $actionId")
-                }
+                        else -> throw Exception("don't know how to create action for $actionId")
+                    }
 
                 return action
             }
 
             ActionId.VOLUME_UP -> {
                 val oldVolumeUpData = oldData as? ActionData.Volume.Up
-                volumeActionState = VolumeActionBottomSheetState(
-                    actionId = ActionId.VOLUME_UP,
-                    volumeStream = oldVolumeUpData?.volumeStream,
-                    showVolumeUi = oldVolumeUpData?.showVolumeUi ?: false,
-                )
+                volumeActionState =
+                    VolumeActionBottomSheetState(
+                        actionId = ActionId.VOLUME_UP,
+                        volumeStream = oldVolumeUpData?.volumeStream,
+                        showVolumeUi = oldVolumeUpData?.showVolumeUi ?: false,
+                    )
                 return null
             }
 
             ActionId.VOLUME_DOWN -> {
                 val oldVolumeDownData = oldData as? ActionData.Volume.Down
-                volumeActionState = VolumeActionBottomSheetState(
-                    actionId = ActionId.VOLUME_DOWN,
-                    volumeStream = oldVolumeDownData?.volumeStream,
-                    showVolumeUi = oldVolumeDownData?.showVolumeUi ?: false,
-                )
+                volumeActionState =
+                    VolumeActionBottomSheetState(
+                        actionId = ActionId.VOLUME_DOWN,
+                        volumeStream = oldVolumeDownData?.volumeStream,
+                        showVolumeUi = oldVolumeDownData?.showVolumeUi ?: false,
+                    )
                 return null
             }
 
             ActionId.VOLUME_MUTE,
             ActionId.VOLUME_UNMUTE,
             ActionId.VOLUME_TOGGLE_MUTE,
-                -> {
+            -> {
                 val showVolumeUiId = 0
                 val isVolumeUiChecked =
                     when (oldData) {
@@ -315,13 +331,14 @@ class CreateActionDelegate(
                         else -> false
                     }
 
-                val dialogItems = listOf(
-                    MultiChoiceItem(
-                        showVolumeUiId,
-                        getString(R.string.flag_show_volume_dialog),
-                        isVolumeUiChecked,
-                    ),
-                )
+                val dialogItems =
+                    listOf(
+                        MultiChoiceItem(
+                            showVolumeUiId,
+                            getString(R.string.flag_show_volume_dialog),
+                            isVolumeUiChecked,
+                        ),
+                    )
 
                 val showVolumeUiDialog = DialogModel.MultiChoice(items = dialogItems)
 
@@ -329,15 +346,17 @@ class CreateActionDelegate(
 
                 val showVolumeUi = chosenFlags.contains(showVolumeUiId)
 
-                val action = when (actionId) {
-                    ActionId.VOLUME_MUTE -> ActionData.Volume.Mute(showVolumeUi)
-                    ActionId.VOLUME_UNMUTE -> ActionData.Volume.UnMute(showVolumeUi)
-                    ActionId.VOLUME_TOGGLE_MUTE -> ActionData.Volume.ToggleMute(
-                        showVolumeUi,
-                    )
+                val action =
+                    when (actionId) {
+                        ActionId.VOLUME_MUTE -> ActionData.Volume.Mute(showVolumeUi)
+                        ActionId.VOLUME_UNMUTE -> ActionData.Volume.UnMute(showVolumeUi)
+                        ActionId.VOLUME_TOGGLE_MUTE ->
+                            ActionData.Volume.ToggleMute(
+                                showVolumeUi,
+                            )
 
-                    else -> throw Exception("don't know how to create action for $actionId")
-                }
+                        else -> throw Exception("don't know how to create action for $actionId")
+                    }
 
                 return action
             }
@@ -356,39 +375,44 @@ class CreateActionDelegate(
 
             ActionId.VOLUME_INCREASE_STREAM,
             ActionId.VOLUME_DECREASE_STREAM,
-                -> {
+            -> {
                 // These deprecated actions are now converted to Volume.Up/Down with stream parameter
                 // Determine which action ID to use based on the old action
-                val newActionId = when (actionId) {
-                    ActionId.VOLUME_INCREASE_STREAM -> ActionId.VOLUME_UP
-                    ActionId.VOLUME_DECREASE_STREAM -> ActionId.VOLUME_DOWN
-                    else -> return null
-                }
+                val newActionId =
+                    when (actionId) {
+                        ActionId.VOLUME_INCREASE_STREAM -> ActionId.VOLUME_UP
+                        ActionId.VOLUME_DECREASE_STREAM -> ActionId.VOLUME_DOWN
+                        else -> return null
+                    }
 
                 // Get the old stream if this is being edited
-                val oldStream = when (oldData) {
-                    is ActionData.Volume.Up -> oldData.volumeStream
-                    is ActionData.Volume.Down -> oldData.volumeStream
-                    else -> null
-                }
+                val oldStream =
+                    when (oldData) {
+                        is ActionData.Volume.Up -> oldData.volumeStream
+                        is ActionData.Volume.Down -> oldData.volumeStream
+                        else -> null
+                    }
 
-                val oldShowVolumeUi = when (oldData) {
-                    is ActionData.Volume.Up -> oldData.showVolumeUi
-                    is ActionData.Volume.Down -> oldData.showVolumeUi
-                    else -> false
-                }
+                val oldShowVolumeUi =
+                    when (oldData) {
+                        is ActionData.Volume.Up -> oldData.showVolumeUi
+                        is ActionData.Volume.Down -> oldData.showVolumeUi
+                        else -> false
+                    }
 
-                volumeActionState = VolumeActionBottomSheetState(
-                    actionId = newActionId,
-                    volumeStream = oldStream ?: VolumeStream.MUSIC, // Default to MUSIC for old stream actions
-                    showVolumeUi = oldShowVolumeUi,
-                )
+                volumeActionState =
+                    VolumeActionBottomSheetState(
+                        actionId = newActionId,
+                        volumeStream = oldStream ?: VolumeStream.MUSIC, // Default to MUSIC for old stream actions
+                        showVolumeUi = oldShowVolumeUi,
+                    )
                 return null
             }
 
             ActionId.CHANGE_RINGER_MODE -> {
-                val items = RingerMode.entries
-                    .map { it to getString(RingerModeStrings.getLabel(it)) }
+                val items =
+                    RingerMode.entries
+                        .map { it to getString(RingerModeStrings.getLabel(it)) }
 
                 val ringerMode =
                     showDialog("pick_ringer_mode", DialogModel.SingleChoice(items))
@@ -400,46 +424,51 @@ class CreateActionDelegate(
             // don't need to show options for disabling do not disturb
             ActionId.TOGGLE_DND_MODE,
             ActionId.ENABLE_DND_MODE,
-                -> {
-                val items = DndMode.entries
-                    .map { it to getString(DndModeStrings.getLabel(it)) }
+            -> {
+                val items =
+                    DndMode.entries
+                        .map { it to getString(DndModeStrings.getLabel(it)) }
 
                 val dndMode =
                     showDialog("pick_dnd_mode", DialogModel.SingleChoice(items))
                         ?: return null
 
-                val action = when (actionId) {
-                    ActionId.TOGGLE_DND_MODE -> ActionData.DoNotDisturb.Toggle(dndMode)
+                val action =
+                    when (actionId) {
+                        ActionId.TOGGLE_DND_MODE -> ActionData.DoNotDisturb.Toggle(dndMode)
 
-                    ActionId.ENABLE_DND_MODE -> ActionData.DoNotDisturb.Enable(dndMode)
+                        ActionId.ENABLE_DND_MODE -> ActionData.DoNotDisturb.Enable(dndMode)
 
-                    else -> throw Exception("don't know how to create action for $actionId")
-                }
+                        else -> throw Exception("don't know how to create action for $actionId")
+                    }
 
                 return action
             }
 
             ActionId.CYCLE_ROTATIONS -> {
-                val items = Orientation.values().map { orientation ->
-                    val isChecked = if (oldData is ActionData.Rotation.CycleRotations) {
-                        oldData.orientations.contains(orientation)
-                    } else {
-                        false
-                    }
+                val items =
+                    Orientation.values().map { orientation ->
+                        val isChecked =
+                            if (oldData is ActionData.Rotation.CycleRotations) {
+                                oldData.orientations.contains(orientation)
+                            } else {
+                                false
+                            }
 
-                    val label = when (orientation) {
-                        Orientation.ORIENTATION_0 -> R.string.orientation_0
-                        Orientation.ORIENTATION_90 -> R.string.orientation_90
-                        Orientation.ORIENTATION_180 -> R.string.orientation_180
-                        Orientation.ORIENTATION_270 -> R.string.orientation_270
-                    }
+                        val label =
+                            when (orientation) {
+                                Orientation.ORIENTATION_0 -> R.string.orientation_0
+                                Orientation.ORIENTATION_90 -> R.string.orientation_90
+                                Orientation.ORIENTATION_180 -> R.string.orientation_180
+                                Orientation.ORIENTATION_270 -> R.string.orientation_270
+                            }
 
-                    MultiChoiceItem(
-                        orientation,
-                        getString(label),
-                        isChecked,
-                    )
-                }
+                        MultiChoiceItem(
+                            orientation,
+                            getString(label),
+                            isChecked,
+                        )
+                    }
 
                 val orientations =
                     showDialog("pick_orientations", DialogModel.MultiChoice(items)) ?: return null
@@ -449,88 +478,98 @@ class CreateActionDelegate(
 
             ActionId.TOGGLE_FLASHLIGHT, ActionId.ENABLE_FLASHLIGHT -> {
                 val lenses = useCase.getFlashlightLenses()
-                val selectedLens = if (oldData is ActionData.Flashlight) {
-                    oldData.lens
-                } else if (lenses.contains(CameraLens.BACK)) {
-                    CameraLens.BACK
-                } else {
-                    lenses.first()
-                }
+                val selectedLens =
+                    if (oldData is ActionData.Flashlight) {
+                        oldData.lens
+                    } else if (lenses.contains(CameraLens.BACK)) {
+                        CameraLens.BACK
+                    } else {
+                        lenses.first()
+                    }
 
                 val lensData = lenses.associateWith { useCase.getFlashInfo(it)!! }
                 val lensInfo = lensData[selectedLens] ?: lensData.values.first()
 
-                val strength: Int = when (oldData) {
-                    is ActionData.Flashlight.Toggle -> if (oldData.strengthPercent == null) {
-                        lensInfo.defaultStrength
-                    } else {
-                        (oldData.strengthPercent * lensInfo.maxStrength).toInt()
+                val strength: Int =
+                    when (oldData) {
+                        is ActionData.Flashlight.Toggle ->
+                            if (oldData.strengthPercent == null) {
+                                lensInfo.defaultStrength
+                            } else {
+                                (oldData.strengthPercent * lensInfo.maxStrength).toInt()
+                            }
+
+                        is ActionData.Flashlight.Enable ->
+                            if (oldData.strengthPercent == null) {
+                                lensInfo.defaultStrength
+                            } else {
+                                (oldData.strengthPercent * lensInfo.maxStrength).toInt()
+                            }
+
+                        else -> lensInfo.defaultStrength
                     }
 
-                    is ActionData.Flashlight.Enable -> if (oldData.strengthPercent == null) {
-                        lensInfo.defaultStrength
-                    } else {
-                        (oldData.strengthPercent * lensInfo.maxStrength).toInt()
-                    }
-
-                    else -> lensInfo.defaultStrength
-                }
-
-                enableFlashlightActionState = EnableFlashlightActionState(
-                    actionToCreate = actionId,
-                    selectedLens = selectedLens,
-                    lensData = lensData,
-                    flashStrength = strength,
-                    isFlashEnabled = useCase.isFlashlightEnabled().first(),
-                )
+                enableFlashlightActionState =
+                    EnableFlashlightActionState(
+                        actionToCreate = actionId,
+                        selectedLens = selectedLens,
+                        lensData = lensData,
+                        flashStrength = strength,
+                        isFlashEnabled = useCase.isFlashlightEnabled().first(),
+                    )
 
                 return null
             }
 
             ActionId.CHANGE_FLASHLIGHT_STRENGTH -> {
                 val lenses = useCase.getFlashlightLenses()
-                val selectedLens = if (oldData is ActionData.Flashlight.ChangeStrength) {
-                    oldData.lens
-                } else if (lenses.contains(CameraLens.BACK)) {
-                    CameraLens.BACK
-                } else {
-                    lenses.first()
-                }
+                val selectedLens =
+                    if (oldData is ActionData.Flashlight.ChangeStrength) {
+                        oldData.lens
+                    } else if (lenses.contains(CameraLens.BACK)) {
+                        CameraLens.BACK
+                    } else {
+                        lenses.first()
+                    }
 
                 val lensData = lenses.associateWith { useCase.getFlashInfo(it)!! }
                 val lensInfo = lensData[selectedLens] ?: lensData.values.first()
 
-                val strength: Int = when (oldData) {
-                    is ActionData.Flashlight.ChangeStrength -> {
-                        (oldData.percent * lensInfo.maxStrength).toInt()
+                val strength: Int =
+                    when (oldData) {
+                        is ActionData.Flashlight.ChangeStrength -> {
+                            (oldData.percent * lensInfo.maxStrength).toInt()
+                        }
+
+                        else -> (0.1f * lensInfo.maxStrength).toInt()
                     }
 
-                    else -> (0.1f * lensInfo.maxStrength).toInt()
-                }
-
-                changeFlashlightStrengthActionState = ChangeFlashlightStrengthActionState(
-                    selectedLens = selectedLens,
-                    lensData = lensData,
-                    flashStrength = strength,
-                )
+                changeFlashlightStrengthActionState =
+                    ChangeFlashlightStrengthActionState(
+                        selectedLens = selectedLens,
+                        lensData = lensData,
+                        flashStrength = strength,
+                    )
 
                 return null
             }
 
             ActionId.DISABLE_FLASHLIGHT,
-                -> {
-                val items = useCase.getFlashlightLenses().map { lens ->
-                    when (lens) {
-                        CameraLens.FRONT -> lens to getString(R.string.lens_front)
-                        CameraLens.BACK -> lens to getString(R.string.lens_back)
+            -> {
+                val items =
+                    useCase.getFlashlightLenses().map { lens ->
+                        when (lens) {
+                            CameraLens.FRONT -> lens to getString(R.string.lens_front)
+                            CameraLens.BACK -> lens to getString(R.string.lens_back)
+                        }
                     }
-                }
 
                 if (items.size == 1) {
                     return ActionData.Flashlight.Disable(items.first().first)
                 } else {
-                    val lens = showDialog("pick_lens", DialogModel.SingleChoice(items))
-                        ?: return null
+                    val lens =
+                        showDialog("pick_lens", DialogModel.SingleChoice(items))
+                            ?: return null
 
                     return ActionData.Flashlight.Disable(lens)
                 }
@@ -567,36 +606,40 @@ class CreateActionDelegate(
             }
 
             ActionId.KEY_EVENT -> {
-                val keyEventAction = if (oldData is ActionData.InputKeyEvent) {
-                    navigate("config_key_event", NavDestination.ConfigKeyEventAction(oldData))
-                } else {
-                    navigate("config_key_event", NavDestination.ConfigKeyEventAction())
-                }
+                val keyEventAction =
+                    if (oldData is ActionData.InputKeyEvent) {
+                        navigate("config_key_event", NavDestination.ConfigKeyEventAction(oldData))
+                    } else {
+                        navigate("config_key_event", NavDestination.ConfigKeyEventAction())
+                    }
 
                 return keyEventAction
             }
 
             ActionId.TAP_SCREEN -> {
-                val oldResult = if (oldData is ActionData.TapScreen) {
-                    PickCoordinateResult(
-                        oldData.x,
-                        oldData.y,
-                        oldData.description ?: "",
-                    )
-                } else {
-                    null
-                }
+                val oldResult =
+                    if (oldData is ActionData.TapScreen) {
+                        PickCoordinateResult(
+                            oldData.x,
+                            oldData.y,
+                            oldData.description ?: "",
+                        )
+                    } else {
+                        null
+                    }
 
-                val result = navigate(
-                    "pick_display_coordinate_for_action",
-                    NavDestination.PickCoordinate(oldResult),
-                ) ?: return null
+                val result =
+                    navigate(
+                        "pick_display_coordinate_for_action",
+                        NavDestination.PickCoordinate(oldResult),
+                    ) ?: return null
 
-                val description = if (result.description.isEmpty()) {
-                    null
-                } else {
-                    result.description
-                }
+                val description =
+                    if (result.description.isEmpty()) {
+                        null
+                    } else {
+                        result.description
+                    }
 
                 return ActionData.TapScreen(
                     result.x,
@@ -606,30 +649,33 @@ class CreateActionDelegate(
             }
 
             ActionId.SWIPE_SCREEN -> {
-                val oldResult = if (oldData is ActionData.SwipeScreen) {
-                    SwipePickCoordinateResult(
-                        oldData.xStart,
-                        oldData.yStart,
-                        oldData.xEnd,
-                        oldData.yEnd,
-                        oldData.fingerCount,
-                        oldData.duration,
-                        oldData.description ?: "",
-                    )
-                } else {
-                    null
-                }
+                val oldResult =
+                    if (oldData is ActionData.SwipeScreen) {
+                        SwipePickCoordinateResult(
+                            oldData.xStart,
+                            oldData.yStart,
+                            oldData.xEnd,
+                            oldData.yEnd,
+                            oldData.fingerCount,
+                            oldData.duration,
+                            oldData.description ?: "",
+                        )
+                    } else {
+                        null
+                    }
 
-                val result = navigate(
-                    "pick_swipe_coordinate_for_action",
-                    NavDestination.PickSwipeCoordinate(oldResult),
-                ) ?: return null
+                val result =
+                    navigate(
+                        "pick_swipe_coordinate_for_action",
+                        NavDestination.PickSwipeCoordinate(oldResult),
+                    ) ?: return null
 
-                val description = if (result.description.isEmpty()) {
-                    null
-                } else {
-                    result.description
-                }
+                val description =
+                    if (result.description.isEmpty()) {
+                        null
+                    } else {
+                        result.description
+                    }
 
                 return ActionData.SwipeScreen(
                     result.xStart,
@@ -643,30 +689,33 @@ class CreateActionDelegate(
             }
 
             ActionId.PINCH_SCREEN -> {
-                val oldResult = if (oldData is ActionData.PinchScreen) {
-                    PinchPickCoordinateResult(
-                        oldData.x,
-                        oldData.y,
-                        oldData.distance,
-                        oldData.pinchType,
-                        oldData.fingerCount,
-                        oldData.duration,
-                        oldData.description ?: "",
-                    )
-                } else {
-                    null
-                }
+                val oldResult =
+                    if (oldData is ActionData.PinchScreen) {
+                        PinchPickCoordinateResult(
+                            oldData.x,
+                            oldData.y,
+                            oldData.distance,
+                            oldData.pinchType,
+                            oldData.fingerCount,
+                            oldData.duration,
+                            oldData.description ?: "",
+                        )
+                    } else {
+                        null
+                    }
 
-                val result = navigate(
-                    "pick_pinch_coordinate_for_action",
-                    NavDestination.PickPinchCoordinate(oldResult),
-                ) ?: return null
+                val result =
+                    navigate(
+                        "pick_pinch_coordinate_for_action",
+                        NavDestination.PickPinchCoordinate(oldResult),
+                    ) ?: return null
 
-                val description = if (result.description.isEmpty()) {
-                    null
-                } else {
-                    result.description
-                }
+                val description =
+                    if (result.description.isEmpty()) {
+                        null
+                    } else {
+                        result.description
+                    }
 
                 return ActionData.PinchScreen(
                     result.x,
@@ -680,60 +729,66 @@ class CreateActionDelegate(
             }
 
             ActionId.TEXT -> {
-                val oldText = if (oldData is ActionData.Text) {
-                    oldData.text
-                } else {
-                    ""
-                }
+                val oldText =
+                    if (oldData is ActionData.Text) {
+                        oldData.text
+                    } else {
+                        ""
+                    }
 
-                val text = showDialog(
-                    "create_text_action",
-                    DialogModel.Text(
-                        hint = getString(R.string.hint_create_text_action),
-                        allowEmpty = false,
-                        text = oldText,
-                    ),
-                ) ?: return null
+                val text =
+                    showDialog(
+                        "create_text_action",
+                        DialogModel.Text(
+                            hint = getString(R.string.hint_create_text_action),
+                            allowEmpty = false,
+                            text = oldText,
+                        ),
+                    ) ?: return null
 
                 return ActionData.Text(text)
             }
 
             ActionId.URL -> {
-                val oldUrl = if (oldData is ActionData.Url) {
-                    oldData.url
-                } else {
-                    ""
-                }
+                val oldUrl =
+                    if (oldData is ActionData.Url) {
+                        oldData.url
+                    } else {
+                        ""
+                    }
 
-                val text = showDialog(
-                    "create_url_action",
-                    DialogModel.Text(
-                        hint = getString(R.string.hint_create_url_action),
-                        allowEmpty = false,
-                        inputType = InputType.TYPE_TEXT_VARIATION_URI,
-                        text = oldUrl,
-                    ),
-                ) ?: return null
+                val text =
+                    showDialog(
+                        "create_url_action",
+                        DialogModel.Text(
+                            hint = getString(R.string.hint_create_url_action),
+                            allowEmpty = false,
+                            inputType = InputType.TYPE_TEXT_VARIATION_URI,
+                            text = oldUrl,
+                        ),
+                    ) ?: return null
 
                 return ActionData.Url(text)
             }
 
             ActionId.INTENT -> {
-                val oldIntent = if (oldData is ActionData.Intent) {
-                    ConfigIntentResult(
-                        oldData.uri,
-                        oldData.target,
-                        oldData.description,
-                        oldData.extras,
-                    )
-                } else {
-                    null
-                }
+                val oldIntent =
+                    if (oldData is ActionData.Intent) {
+                        ConfigIntentResult(
+                            oldData.uri,
+                            oldData.target,
+                            oldData.description,
+                            oldData.extras,
+                        )
+                    } else {
+                        null
+                    }
 
-                val result = navigate(
-                    "config_intent",
-                    NavDestination.ConfigIntent(oldIntent),
-                ) ?: return null
+                val result =
+                    navigate(
+                        "config_intent",
+                        NavDestination.ConfigIntent(oldIntent),
+                    ) ?: return null
 
                 return ActionData.Intent(
                     description = result.description,
@@ -744,50 +799,55 @@ class CreateActionDelegate(
             }
 
             ActionId.PHONE_CALL -> {
-                val oldText = if (oldData is ActionData.PhoneCall) {
-                    oldData.number
-                } else {
-                    ""
-                }
+                val oldText =
+                    if (oldData is ActionData.PhoneCall) {
+                        oldData.number
+                    } else {
+                        ""
+                    }
 
-                val text = showDialog(
-                    "create_phone_call_action",
-                    DialogModel.Text(
-                        hint = getString(R.string.hint_create_phone_call_action),
-                        allowEmpty = false,
-                        inputType = InputType.TYPE_CLASS_PHONE,
-                        text = oldText,
-                    ),
-                ) ?: return null
+                val text =
+                    showDialog(
+                        "create_phone_call_action",
+                        DialogModel.Text(
+                            hint = getString(R.string.hint_create_phone_call_action),
+                            allowEmpty = false,
+                            inputType = InputType.TYPE_CLASS_PHONE,
+                            text = oldText,
+                        ),
+                    ) ?: return null
 
                 return ActionData.PhoneCall(text)
             }
 
             ActionId.SEND_SMS, ActionId.COMPOSE_SMS -> {
-                val number = when (oldData) {
-                    is ActionData.SendSms -> oldData.number
-                    is ActionData.ComposeSms -> oldData.number
-                    else -> ""
-                }
+                val number =
+                    when (oldData) {
+                        is ActionData.SendSms -> oldData.number
+                        is ActionData.ComposeSms -> oldData.number
+                        else -> ""
+                    }
 
-                val message = when (oldData) {
-                    is ActionData.SendSms -> oldData.message
-                    is ActionData.ComposeSms -> oldData.message
-                    else -> ""
-                }
+                val message =
+                    when (oldData) {
+                        is ActionData.SendSms -> oldData.message
+                        is ActionData.ComposeSms -> oldData.message
+                        else -> ""
+                    }
 
-                smsActionBottomSheetState = if (actionId == ActionId.SEND_SMS) {
-                    SmsActionBottomSheetState.SendSms(
-                        number = number,
-                        message = message,
-                        testResult = null,
-                    )
-                } else {
-                    SmsActionBottomSheetState.ComposeSms(
-                        number = number,
-                        message = message,
-                    )
-                }
+                smsActionBottomSheetState =
+                    if (actionId == ActionId.SEND_SMS) {
+                        SmsActionBottomSheetState.SendSms(
+                            number = number,
+                            message = message,
+                            testResult = null,
+                        )
+                    } else {
+                        SmsActionBottomSheetState.ComposeSms(
+                            number = number,
+                            message = message,
+                        )
+                    }
 
                 return null
             }
@@ -888,13 +948,14 @@ class CreateActionDelegate(
             ActionId.DEVICE_CONTROLS -> return ActionData.DeviceControls
             ActionId.HTTP_REQUEST -> {
                 if (oldData == null) {
-                    httpRequestBottomSheetState = ActionData.HttpRequest(
-                        description = "",
-                        method = HttpMethod.GET,
-                        url = "http://",
-                        body = "",
-                        authorizationHeader = "",
-                    )
+                    httpRequestBottomSheetState =
+                        ActionData.HttpRequest(
+                            description = "",
+                            method = HttpMethod.GET,
+                            url = "http://",
+                            body = "",
+                            authorizationHeader = "",
+                        )
                 } else {
                     httpRequestBottomSheetState = oldData as? ActionData.HttpRequest
                 }
@@ -926,57 +987,49 @@ class CreateActionDelegate(
     }
 
     private suspend fun createMoverCursorAction(): ActionData.MoveCursor? {
-        val choices = listOf(
-            ActionData.MoveCursor(
-                ActionData.MoveCursor.Type.CHAR,
-                ActionData.MoveCursor.Direction.START,
-            ) to getString(R.string.action_move_cursor_prev_character),
-
-            ActionData.MoveCursor(
-                ActionData.MoveCursor.Type.CHAR,
-                ActionData.MoveCursor.Direction.END,
-            ) to getString(R.string.action_move_cursor_next_character),
-
-            ActionData.MoveCursor(
-                ActionData.MoveCursor.Type.WORD,
-                ActionData.MoveCursor.Direction.START,
-            ) to getString(R.string.action_move_cursor_start_word),
-
-            ActionData.MoveCursor(
-                ActionData.MoveCursor.Type.WORD,
-                ActionData.MoveCursor.Direction.END,
-            ) to getString(R.string.action_move_cursor_end_word),
-
-            ActionData.MoveCursor(
-                ActionData.MoveCursor.Type.LINE,
-                ActionData.MoveCursor.Direction.START,
-            ) to getString(R.string.action_move_cursor_start_line),
-
-            ActionData.MoveCursor(
-                ActionData.MoveCursor.Type.LINE,
-                ActionData.MoveCursor.Direction.END,
-            ) to getString(R.string.action_move_cursor_end_line),
-
-            ActionData.MoveCursor(
-                ActionData.MoveCursor.Type.PARAGRAPH,
-                ActionData.MoveCursor.Direction.START,
-            ) to getString(R.string.action_move_cursor_start_paragraph),
-
-            ActionData.MoveCursor(
-                ActionData.MoveCursor.Type.PARAGRAPH,
-                ActionData.MoveCursor.Direction.END,
-            ) to getString(R.string.action_move_cursor_end_paragraph),
-
-            ActionData.MoveCursor(
-                ActionData.MoveCursor.Type.PAGE,
-                ActionData.MoveCursor.Direction.START,
-            ) to getString(R.string.action_move_cursor_start_page),
-
-            ActionData.MoveCursor(
-                ActionData.MoveCursor.Type.PAGE,
-                ActionData.MoveCursor.Direction.END,
-            ) to getString(R.string.action_move_cursor_end_page),
-        )
+        val choices =
+            listOf(
+                ActionData.MoveCursor(
+                    ActionData.MoveCursor.Type.CHAR,
+                    ActionData.MoveCursor.Direction.START,
+                ) to getString(R.string.action_move_cursor_prev_character),
+                ActionData.MoveCursor(
+                    ActionData.MoveCursor.Type.CHAR,
+                    ActionData.MoveCursor.Direction.END,
+                ) to getString(R.string.action_move_cursor_next_character),
+                ActionData.MoveCursor(
+                    ActionData.MoveCursor.Type.WORD,
+                    ActionData.MoveCursor.Direction.START,
+                ) to getString(R.string.action_move_cursor_start_word),
+                ActionData.MoveCursor(
+                    ActionData.MoveCursor.Type.WORD,
+                    ActionData.MoveCursor.Direction.END,
+                ) to getString(R.string.action_move_cursor_end_word),
+                ActionData.MoveCursor(
+                    ActionData.MoveCursor.Type.LINE,
+                    ActionData.MoveCursor.Direction.START,
+                ) to getString(R.string.action_move_cursor_start_line),
+                ActionData.MoveCursor(
+                    ActionData.MoveCursor.Type.LINE,
+                    ActionData.MoveCursor.Direction.END,
+                ) to getString(R.string.action_move_cursor_end_line),
+                ActionData.MoveCursor(
+                    ActionData.MoveCursor.Type.PARAGRAPH,
+                    ActionData.MoveCursor.Direction.START,
+                ) to getString(R.string.action_move_cursor_start_paragraph),
+                ActionData.MoveCursor(
+                    ActionData.MoveCursor.Type.PARAGRAPH,
+                    ActionData.MoveCursor.Direction.END,
+                ) to getString(R.string.action_move_cursor_end_paragraph),
+                ActionData.MoveCursor(
+                    ActionData.MoveCursor.Type.PAGE,
+                    ActionData.MoveCursor.Direction.START,
+                ) to getString(R.string.action_move_cursor_start_page),
+                ActionData.MoveCursor(
+                    ActionData.MoveCursor.Type.PAGE,
+                    ActionData.MoveCursor.Direction.END,
+                ) to getString(R.string.action_move_cursor_end_page),
+            )
 
         val dialog = DialogModel.SingleChoice(choices)
         return showDialog("create_move_cursor_action", dialog)

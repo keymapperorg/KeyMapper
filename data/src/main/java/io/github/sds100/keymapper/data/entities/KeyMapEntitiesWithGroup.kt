@@ -11,7 +11,6 @@ import kotlinx.parcelize.Parcelize
 data class KeyMapEntitiesWithGroup(
     @Embedded
     val group: GroupEntity,
-
     @Relation(
         parentColumn = GroupDao.KEY_UID,
         entityColumn = KeyMapDao.KEY_GROUP_UID,

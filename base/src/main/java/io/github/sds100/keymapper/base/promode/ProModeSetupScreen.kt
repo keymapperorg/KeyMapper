@@ -61,9 +61,7 @@ import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupStep
 
 @Composable
-fun ProModeSetupScreen(
-    viewModel: ProModeSetupViewModel,
-) {
+fun ProModeSetupScreen(viewModel: ProModeSetupViewModel) {
     val state by viewModel.setupState.collectAsStateWithLifecycle()
 
     ProModeSetupScreen(
@@ -122,10 +120,11 @@ fun ProModeSetupScreen(
                 LaunchedEffect(targetProgress) {
                     progressAnimatable.animateTo(
                         targetValue = targetProgress,
-                        animationSpec = tween(
-                            durationMillis = 800,
-                            easing = EaseInOut,
-                        ),
+                        animationSpec =
+                            tween(
+                                durationMillis = 800,
+                                easing = EaseInOut,
+                            ),
                     )
                 }
 
@@ -133,18 +132,20 @@ fun ProModeSetupScreen(
                 LaunchedEffect(Unit) {
                     progressAnimatable.animateTo(
                         targetValue = targetProgress,
-                        animationSpec = tween(
-                            durationMillis = 1000,
-                            easing = EaseInOut,
-                        ),
+                        animationSpec =
+                            tween(
+                                durationMillis = 1000,
+                                easing = EaseInOut,
+                            ),
                     )
                 }
 
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                        .padding(vertical = 16.dp, horizontal = 16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues)
+                            .padding(vertical = 16.dp, horizontal = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     LinearProgressIndicator(
@@ -160,11 +161,12 @@ fun ProModeSetupScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = stringResource(
-                                R.string.pro_mode_setup_wizard_step_n,
-                                state.data.stepNumber,
-                                state.data.stepCount,
-                            ),
+                            text =
+                                stringResource(
+                                    R.string.pro_mode_setup_wizard_step_n,
+                                    state.data.stepNumber,
+                                    state.data.stepCount,
+                                ),
                             style = MaterialTheme.typography.titleLarge,
                         )
                         Text(
@@ -181,17 +183,19 @@ fun ProModeSetupScreen(
                         onAssistantClick = onAssistantClick,
                     )
 
-                    val iconTint = if (state.data.step == SystemBridgeSetupStep.STARTED) {
-                        LocalCustomColorsPalette.current.green
-                    } else {
-                        MaterialTheme.colorScheme.onSurface
-                    }
+                    val iconTint =
+                        if (state.data.step == SystemBridgeSetupStep.STARTED) {
+                            LocalCustomColorsPalette.current.green
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        }
 
                     StepContent(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .padding(horizontal = 16.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                                .padding(horizontal = 16.dp),
                         stepContent,
                         onWatchTutorialClick,
                         onStepButtonClick,
@@ -215,10 +219,11 @@ private fun StepContent(
         modifier,
     ) {
         Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .fillMaxWidth()
-                .weight(1f),
+            modifier =
+                Modifier
+                    .verticalScroll(rememberScrollState())
+                    .fillMaxWidth()
+                    .weight(1f),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -276,11 +281,12 @@ private fun AssistantCheckBoxRow(
         enabled = isEnabled,
         onClick = onAssistantClick,
     ) {
-        val contentColor = if (isEnabled) {
-            LocalContentColor.current
-        } else {
-            LocalContentColor.current.copy(alpha = 0.5f)
-        }
+        val contentColor =
+            if (isEnabled) {
+                LocalContentColor.current
+            } else {
+                LocalContentColor.current.copy(alpha = 0.5f)
+            }
 
         CompositionLocalProvider(LocalContentColor provides contentColor) {
             Row(
@@ -298,11 +304,12 @@ private fun AssistantCheckBoxRow(
                         style = MaterialTheme.typography.titleMedium,
                     )
 
-                    val text = if (isEnabled) {
-                        stringResource(R.string.pro_mode_setup_wizard_use_assistant_description)
-                    } else {
-                        stringResource(R.string.pro_mode_setup_wizard_use_assistant_enable_accessibility_service)
-                    }
+                    val text =
+                        if (isEnabled) {
+                            stringResource(R.string.pro_mode_setup_wizard_use_assistant_description)
+                        } else {
+                            stringResource(R.string.pro_mode_setup_wizard_use_assistant_enable_accessibility_service)
+                        }
 
                     Text(
                         text = text,
@@ -315,65 +322,72 @@ private fun AssistantCheckBoxRow(
 }
 
 @Composable
-private fun getStepContent(step: SystemBridgeSetupStep): StepContent {
-    return when (step) {
-        SystemBridgeSetupStep.ACCESSIBILITY_SERVICE -> StepContent(
-            title = stringResource(R.string.pro_mode_setup_wizard_enable_accessibility_service_title),
-            message = stringResource(R.string.pro_mode_setup_wizard_enable_accessibility_service_description),
-            icon = Icons.Rounded.Accessibility,
-            buttonText = stringResource(R.string.pro_mode_setup_wizard_enable_accessibility_service_button),
-        )
+private fun getStepContent(step: SystemBridgeSetupStep): StepContent =
+    when (step) {
+        SystemBridgeSetupStep.ACCESSIBILITY_SERVICE ->
+            StepContent(
+                title = stringResource(R.string.pro_mode_setup_wizard_enable_accessibility_service_title),
+                message = stringResource(R.string.pro_mode_setup_wizard_enable_accessibility_service_description),
+                icon = Icons.Rounded.Accessibility,
+                buttonText = stringResource(R.string.pro_mode_setup_wizard_enable_accessibility_service_button),
+            )
 
-        SystemBridgeSetupStep.NOTIFICATION_PERMISSION -> StepContent(
-            title = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_title),
-            message = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_description),
-            icon = Icons.Rounded.Notifications,
-            buttonText = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_button),
-        )
+        SystemBridgeSetupStep.NOTIFICATION_PERMISSION ->
+            StepContent(
+                title = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_title),
+                message = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_description),
+                icon = Icons.Rounded.Notifications,
+                buttonText = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_button),
+            )
 
-        SystemBridgeSetupStep.DEVELOPER_OPTIONS -> StepContent(
-            title = stringResource(R.string.pro_mode_setup_wizard_enable_developer_options_title),
-            message = stringResource(R.string.pro_mode_setup_wizard_enable_developer_options_description),
-            icon = Icons.Rounded.Build,
-            buttonText = stringResource(R.string.pro_mode_setup_wizard_go_to_settings_button),
-        )
+        SystemBridgeSetupStep.DEVELOPER_OPTIONS ->
+            StepContent(
+                title = stringResource(R.string.pro_mode_setup_wizard_enable_developer_options_title),
+                message = stringResource(R.string.pro_mode_setup_wizard_enable_developer_options_description),
+                icon = Icons.Rounded.Build,
+                buttonText = stringResource(R.string.pro_mode_setup_wizard_go_to_settings_button),
+            )
 
-        SystemBridgeSetupStep.WIFI_NETWORK -> StepContent(
-            title = stringResource(R.string.pro_mode_setup_wizard_connect_wifi_title),
-            message = stringResource(R.string.pro_mode_setup_wizard_connect_wifi_description),
-            icon = KeyMapperIcons.SignalWifiNotConnected,
-            buttonText = stringResource(R.string.pro_mode_setup_wizard_go_to_settings_button),
-        )
+        SystemBridgeSetupStep.WIFI_NETWORK ->
+            StepContent(
+                title = stringResource(R.string.pro_mode_setup_wizard_connect_wifi_title),
+                message = stringResource(R.string.pro_mode_setup_wizard_connect_wifi_description),
+                icon = KeyMapperIcons.SignalWifiNotConnected,
+                buttonText = stringResource(R.string.pro_mode_setup_wizard_go_to_settings_button),
+            )
 
-        SystemBridgeSetupStep.WIRELESS_DEBUGGING -> StepContent(
-            title = stringResource(R.string.pro_mode_setup_wizard_enable_wireless_debugging_title),
-            message = stringResource(R.string.pro_mode_setup_wizard_enable_wireless_debugging_description),
-            icon = Icons.Rounded.BugReport,
-            buttonText = stringResource(R.string.pro_mode_setup_wizard_go_to_settings_button),
-        )
+        SystemBridgeSetupStep.WIRELESS_DEBUGGING ->
+            StepContent(
+                title = stringResource(R.string.pro_mode_setup_wizard_enable_wireless_debugging_title),
+                message = stringResource(R.string.pro_mode_setup_wizard_enable_wireless_debugging_description),
+                icon = Icons.Rounded.BugReport,
+                buttonText = stringResource(R.string.pro_mode_setup_wizard_go_to_settings_button),
+            )
 
-        SystemBridgeSetupStep.ADB_PAIRING -> StepContent(
-            title = stringResource(R.string.pro_mode_setup_wizard_pair_wireless_debugging_title),
-            message = stringResource(R.string.pro_mode_setup_wizard_pair_wireless_debugging_description),
-            icon = Icons.Rounded.Link,
-            buttonText = stringResource(R.string.pro_mode_setup_wizard_go_to_settings_button),
-        )
+        SystemBridgeSetupStep.ADB_PAIRING ->
+            StepContent(
+                title = stringResource(R.string.pro_mode_setup_wizard_pair_wireless_debugging_title),
+                message = stringResource(R.string.pro_mode_setup_wizard_pair_wireless_debugging_description),
+                icon = Icons.Rounded.Link,
+                buttonText = stringResource(R.string.pro_mode_setup_wizard_go_to_settings_button),
+            )
 
-        SystemBridgeSetupStep.START_SERVICE -> StepContent(
-            title = stringResource(R.string.pro_mode_setup_wizard_start_service_title),
-            message = stringResource(R.string.pro_mode_setup_wizard_start_service_description),
-            icon = Icons.Rounded.PlayArrow,
-            buttonText = stringResource(R.string.pro_mode_root_detected_button_start_service),
-        )
+        SystemBridgeSetupStep.START_SERVICE ->
+            StepContent(
+                title = stringResource(R.string.pro_mode_setup_wizard_start_service_title),
+                message = stringResource(R.string.pro_mode_setup_wizard_start_service_description),
+                icon = Icons.Rounded.PlayArrow,
+                buttonText = stringResource(R.string.pro_mode_root_detected_button_start_service),
+            )
 
-        SystemBridgeSetupStep.STARTED -> StepContent(
-            title = stringResource(R.string.pro_mode_setup_wizard_complete_title),
-            message = stringResource(R.string.pro_mode_setup_wizard_complete_text),
-            icon = Icons.Rounded.CheckCircleOutline,
-            buttonText = stringResource(R.string.pro_mode_setup_wizard_complete_button),
-        )
+        SystemBridgeSetupStep.STARTED ->
+            StepContent(
+                title = stringResource(R.string.pro_mode_setup_wizard_complete_title),
+                message = stringResource(R.string.pro_mode_setup_wizard_complete_text),
+                icon = Icons.Rounded.CheckCircleOutline,
+                buttonText = stringResource(R.string.pro_mode_setup_wizard_complete_button),
+            )
     }
-}
 
 private data class StepContent(
     val title: String,
@@ -387,15 +401,16 @@ private data class StepContent(
 private fun ProModeSetupScreenAccessibilityServicePreview() {
     KeyMapperTheme {
         ProModeSetupScreen(
-            state = State.Data(
-                ProModeSetupState(
-                    stepNumber = 1,
-                    stepCount = 6,
-                    step = SystemBridgeSetupStep.ACCESSIBILITY_SERVICE,
-                    isSetupAssistantChecked = false,
-                    isSetupAssistantButtonEnabled = false,
+            state =
+                State.Data(
+                    ProModeSetupState(
+                        stepNumber = 1,
+                        stepCount = 6,
+                        step = SystemBridgeSetupStep.ACCESSIBILITY_SERVICE,
+                        isSetupAssistantChecked = false,
+                        isSetupAssistantButtonEnabled = false,
+                    ),
                 ),
-            ),
         )
     }
 }
@@ -405,15 +420,16 @@ private fun ProModeSetupScreenAccessibilityServicePreview() {
 private fun ProModeSetupScreenNotificationPermissionPreview() {
     KeyMapperTheme {
         ProModeSetupScreen(
-            state = State.Data(
-                ProModeSetupState(
-                    stepNumber = 2,
-                    stepCount = 6,
-                    step = SystemBridgeSetupStep.NOTIFICATION_PERMISSION,
-                    isSetupAssistantChecked = false,
-                    isSetupAssistantButtonEnabled = true,
+            state =
+                State.Data(
+                    ProModeSetupState(
+                        stepNumber = 2,
+                        stepCount = 6,
+                        step = SystemBridgeSetupStep.NOTIFICATION_PERMISSION,
+                        isSetupAssistantChecked = false,
+                        isSetupAssistantButtonEnabled = true,
+                    ),
                 ),
-            ),
         )
     }
 }
@@ -423,15 +439,16 @@ private fun ProModeSetupScreenNotificationPermissionPreview() {
 private fun ProModeSetupScreenDeveloperOptionsPreview() {
     KeyMapperTheme {
         ProModeSetupScreen(
-            state = State.Data(
-                ProModeSetupState(
-                    stepNumber = 2,
-                    stepCount = 6,
-                    step = SystemBridgeSetupStep.DEVELOPER_OPTIONS,
-                    isSetupAssistantChecked = false,
-                    isSetupAssistantButtonEnabled = true,
+            state =
+                State.Data(
+                    ProModeSetupState(
+                        stepNumber = 2,
+                        stepCount = 6,
+                        step = SystemBridgeSetupStep.DEVELOPER_OPTIONS,
+                        isSetupAssistantChecked = false,
+                        isSetupAssistantButtonEnabled = true,
+                    ),
                 ),
-            ),
         )
     }
 }
@@ -441,15 +458,16 @@ private fun ProModeSetupScreenDeveloperOptionsPreview() {
 private fun ProModeSetupScreenWifiNetworkPreview() {
     KeyMapperTheme {
         ProModeSetupScreen(
-            state = State.Data(
-                ProModeSetupState(
-                    stepNumber = 3,
-                    stepCount = 6,
-                    step = SystemBridgeSetupStep.WIFI_NETWORK,
-                    isSetupAssistantChecked = false,
-                    isSetupAssistantButtonEnabled = true,
+            state =
+                State.Data(
+                    ProModeSetupState(
+                        stepNumber = 3,
+                        stepCount = 6,
+                        step = SystemBridgeSetupStep.WIFI_NETWORK,
+                        isSetupAssistantChecked = false,
+                        isSetupAssistantButtonEnabled = true,
+                    ),
                 ),
-            ),
         )
     }
 }
@@ -459,15 +477,16 @@ private fun ProModeSetupScreenWifiNetworkPreview() {
 private fun ProModeSetupScreenWirelessDebuggingPreview() {
     KeyMapperTheme {
         ProModeSetupScreen(
-            state = State.Data(
-                ProModeSetupState(
-                    stepNumber = 4,
-                    stepCount = 6,
-                    step = SystemBridgeSetupStep.WIRELESS_DEBUGGING,
-                    isSetupAssistantChecked = false,
-                    isSetupAssistantButtonEnabled = true,
+            state =
+                State.Data(
+                    ProModeSetupState(
+                        stepNumber = 4,
+                        stepCount = 6,
+                        step = SystemBridgeSetupStep.WIRELESS_DEBUGGING,
+                        isSetupAssistantChecked = false,
+                        isSetupAssistantButtonEnabled = true,
+                    ),
                 ),
-            ),
         )
     }
 }
@@ -477,15 +496,16 @@ private fun ProModeSetupScreenWirelessDebuggingPreview() {
 private fun ProModeSetupScreenAdbPairingPreview() {
     KeyMapperTheme {
         ProModeSetupScreen(
-            state = State.Data(
-                ProModeSetupState(
-                    stepNumber = 5,
-                    stepCount = 6,
-                    step = SystemBridgeSetupStep.ADB_PAIRING,
-                    isSetupAssistantChecked = true,
-                    isSetupAssistantButtonEnabled = true,
+            state =
+                State.Data(
+                    ProModeSetupState(
+                        stepNumber = 5,
+                        stepCount = 6,
+                        step = SystemBridgeSetupStep.ADB_PAIRING,
+                        isSetupAssistantChecked = true,
+                        isSetupAssistantButtonEnabled = true,
+                    ),
                 ),
-            ),
         )
     }
 }
@@ -495,15 +515,16 @@ private fun ProModeSetupScreenAdbPairingPreview() {
 private fun ProModeSetupScreenStartServicePreview() {
     KeyMapperTheme {
         ProModeSetupScreen(
-            state = State.Data(
-                ProModeSetupState(
-                    stepNumber = 6,
-                    stepCount = 6,
-                    step = SystemBridgeSetupStep.START_SERVICE,
-                    isSetupAssistantChecked = true,
-                    isSetupAssistantButtonEnabled = true,
+            state =
+                State.Data(
+                    ProModeSetupState(
+                        stepNumber = 6,
+                        stepCount = 6,
+                        step = SystemBridgeSetupStep.START_SERVICE,
+                        isSetupAssistantChecked = true,
+                        isSetupAssistantButtonEnabled = true,
+                    ),
                 ),
-            ),
         )
     }
 }
@@ -513,15 +534,16 @@ private fun ProModeSetupScreenStartServicePreview() {
 private fun ProModeSetupScreenStartedPreview() {
     KeyMapperTheme {
         ProModeSetupScreen(
-            state = State.Data(
-                ProModeSetupState(
-                    stepNumber = 8,
-                    stepCount = 8,
-                    step = SystemBridgeSetupStep.STARTED,
-                    isSetupAssistantChecked = true,
-                    isSetupAssistantButtonEnabled = true,
+            state =
+                State.Data(
+                    ProModeSetupState(
+                        stepNumber = 8,
+                        stepCount = 8,
+                        step = SystemBridgeSetupStep.STARTED,
+                        isSetupAssistantChecked = true,
+                        isSetupAssistantButtonEnabled = true,
+                    ),
                 ),
-            ),
         )
     }
 }

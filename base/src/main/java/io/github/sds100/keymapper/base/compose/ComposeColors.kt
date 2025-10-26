@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.base.compose
 import androidx.compose.ui.graphics.Color
 
 object ComposeColors {
-
     val primaryLight = Color(0xFF415F91)
     val onPrimaryLight = Color(0xFFFFFFFF)
     val primaryContainerLight = Color(0xFFD6E3FF)

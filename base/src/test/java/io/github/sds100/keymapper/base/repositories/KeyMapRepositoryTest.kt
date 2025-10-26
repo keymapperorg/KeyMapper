@@ -24,7 +24,6 @@ import org.mockito.kotlin.times
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class KeyMapRepositoryTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testScope = TestScope(testDispatcher)
 
@@ -39,54 +38,59 @@ class KeyMapRepositoryTest {
         keyMaps = MutableSharedFlow(replay = 1)
         devicesAdapter = FakeDevicesAdapter()
 
-        mockDao = mock {
-            on { getAll() }.then { keyMaps }
-        }
+        mockDao =
+            mock {
+                on { getAll() }.then { keyMaps }
+            }
 
-        repository = RoomKeyMapRepository(
-            keyMapDao = mockDao,
-            fingerprintMapDao = mock {
-                on { getAll() }.then { MutableStateFlow(emptyList<FingerprintMapEntity>()) }
-            },
-            testScope,
-            dispatchers = TestDispatcherProvider(testDispatcher),
-        )
+        repository =
+            RoomKeyMapRepository(
+                keyMapDao = mockDao,
+                fingerprintMapDao =
+                    mock {
+                        on { getAll() }.then { MutableStateFlow(emptyList<FingerprintMapEntity>()) }
+                    },
+                testScope,
+                dispatchers = TestDispatcherProvider(testDispatcher),
+            )
     }
 
     /**
      * issue #641
      */
     @Test
-    fun `if modifying a huge number of key maps then split job into batches`() = runTest(testDispatcher) {
-        // GIVEN
-        val keyMapList = sequence {
-            repeat(991) {
-                yield(KeyMapEntity(id = it.toLong()))
+    fun `if modifying a huge number of key maps then split job into batches`() =
+        runTest(testDispatcher) {
+            // GIVEN
+            val keyMapList =
+                sequence {
+                    repeat(991) {
+                        yield(KeyMapEntity(id = it.toLong()))
+                    }
+                }.toList()
+
+            keyMaps.emit(keyMapList)
+
+            inOrder(mockDao) {
+                // WHEN, THEN
+                // split job up into batches of 200 key maps
+                repository.enableById(*keyMapList.map { it.uid }.toTypedArray())
+                verify(mockDao, times(5)).enableKeyMapByUid(anyVararg())
+
+                repository.disableById(*keyMapList.map { it.uid }.toTypedArray())
+                verify(mockDao, times(5)).disableKeyMapByUid(anyVararg())
+
+                repository.delete(*keyMapList.map { it.uid }.toTypedArray())
+                verify(mockDao, times(5)).deleteById(anyVararg())
+
+                repository.duplicate(*keyMapList.map { it.uid }.toTypedArray())
+                verify(mockDao, times(5)).insert(anyVararg())
+
+                repository.insert(*keyMapList.toTypedArray())
+                verify(mockDao, times(5)).insert(anyVararg())
+
+                repository.update(*keyMapList.toTypedArray())
+                verify(mockDao, times(5)).update(anyVararg())
             }
-        }.toList()
-
-        keyMaps.emit(keyMapList)
-
-        inOrder(mockDao) {
-            // WHEN, THEN
-            // split job up into batches of 200 key maps
-            repository.enableById(*keyMapList.map { it.uid }.toTypedArray())
-            verify(mockDao, times(5)).enableKeyMapByUid(anyVararg())
-
-            repository.disableById(*keyMapList.map { it.uid }.toTypedArray())
-            verify(mockDao, times(5)).disableKeyMapByUid(anyVararg())
-
-            repository.delete(*keyMapList.map { it.uid }.toTypedArray())
-            verify(mockDao, times(5)).deleteById(anyVararg())
-
-            repository.duplicate(*keyMapList.map { it.uid }.toTypedArray())
-            verify(mockDao, times(5)).insert(anyVararg())
-
-            repository.insert(*keyMapList.toTypedArray())
-            verify(mockDao, times(5)).insert(anyVararg())
-
-            repository.update(*keyMapList.toTypedArray())
-            verify(mockDao, times(5)).update(anyVararg())
         }
-    }
 }

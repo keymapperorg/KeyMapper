@@ -21,7 +21,6 @@ import io.github.sds100.keymapper.common.utils.withFlag
  * Move the action option "show performing toast when performing" to a trigger option.
  */
 object Migration9To10 {
-
     private const val FLAG_ACTION_SHOW_PERFORMING_TOAST = 2
     private const val FLAG_TRIGGER_SHOW_TOAST = 16
     private const val TRIGGER_NAME_FLAGS = "flags"
@@ -30,36 +29,38 @@ object Migration9To10 {
     private const val NAME_TRIGGER = "trigger"
     private const val NAME_ACTION_LIST = "actionList"
 
-    fun migrateDatabase(database: SupportSQLiteDatabase) = database.apply {
-        val parser = JsonParser()
-        val gson = Gson()
+    fun migrateDatabase(database: SupportSQLiteDatabase) =
+        database.apply {
+            val parser = JsonParser()
+            val gson = Gson()
 
-        val query = SupportSQLiteQueryBuilder
-            .builder("keymaps")
-            .columns(arrayOf("id", "trigger", "action_list"))
-            .create()
+            val query =
+                SupportSQLiteQueryBuilder
+                    .builder("keymaps")
+                    .columns(arrayOf("id", "trigger", "action_list"))
+                    .create()
 
-        query(query).apply {
-            while (moveToNext()) {
-                val idColumnIndex = getColumnIndex("id")
-                val id = getInt(idColumnIndex)
+            query(query).apply {
+                while (moveToNext()) {
+                    val idColumnIndex = getColumnIndex("id")
+                    val id = getInt(idColumnIndex)
 
-                val actionListJson = getString(getColumnIndex("action_list"))
-                val actionListJsonArray = parser.parse(actionListJson).asJsonArray
+                    val actionListJson = getString(getColumnIndex("action_list"))
+                    val actionListJsonArray = parser.parse(actionListJson).asJsonArray
 
-                val triggerJson = getString(getColumnIndex("trigger"))
-                val triggerJsonElement = parser.parse(triggerJson)
+                    val triggerJson = getString(getColumnIndex("trigger"))
+                    val triggerJsonElement = parser.parse(triggerJson)
 
-                val (newTrigger, newActionList) = migrate(triggerJsonElement, actionListJsonArray)
-                val newTriggerJson = gson.toJson(newTrigger)
-                val newActionListJson = gson.toJson(newActionList)
+                    val (newTrigger, newActionList) = migrate(triggerJsonElement, actionListJsonArray)
+                    val newTriggerJson = gson.toJson(newTrigger)
+                    val newActionListJson = gson.toJson(newActionList)
 
-                execSQL("UPDATE keymaps SET trigger='$newTriggerJson', action_list='$newActionListJson' WHERE id=$id")
+                    execSQL("UPDATE keymaps SET trigger='$newTriggerJson', action_list='$newActionListJson' WHERE id=$id")
+                }
+
+                close()
             }
-
-            close()
         }
-    }
 
     fun migrateJson(keyMap: JsonObject): JsonObject {
         val oldTrigger by keyMap.byObject(NAME_TRIGGER)
@@ -96,5 +97,8 @@ object Migration9To10 {
         return MigrateModel(trigger, actionList)
     }
 
-    private data class MigrateModel(val trigger: JsonElement, val actionList: JsonArray)
+    private data class MigrateModel(
+        val trigger: JsonElement,
+        val actionList: JsonArray,
+    )
 }

@@ -9,22 +9,24 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class ConfigKeyEventUseCaseImpl @Inject constructor(
-    private val preferenceRepository: PreferenceRepository,
-    private val devicesAdapter: DevicesAdapter,
-) : ConfigKeyEventUseCase {
-    override val inputDevices: Flow<List<InputDeviceInfo>> =
-        devicesAdapter.connectedInputDevices.map { state ->
-            if (state !is State.Data) {
-                emptyList()
-            } else {
-                state.data
+class ConfigKeyEventUseCaseImpl
+    @Inject
+    constructor(
+        private val preferenceRepository: PreferenceRepository,
+        private val devicesAdapter: DevicesAdapter,
+    ) : ConfigKeyEventUseCase {
+        override val inputDevices: Flow<List<InputDeviceInfo>> =
+            devicesAdapter.connectedInputDevices.map { state ->
+                if (state !is State.Data) {
+                    emptyList()
+                } else {
+                    state.data
+                }
             }
-        }
 
-    override val showDeviceDescriptors: Flow<Boolean> =
-        preferenceRepository.get(Keys.showDeviceDescriptors).map { it ?: false }
-}
+        override val showDeviceDescriptors: Flow<Boolean> =
+            preferenceRepository.get(Keys.showDeviceDescriptors).map { it ?: false }
+    }
 
 interface ConfigKeyEventUseCase {
     val inputDevices: Flow<List<InputDeviceInfo>>

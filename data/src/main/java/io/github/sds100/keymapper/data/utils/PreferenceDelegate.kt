@@ -11,20 +11,26 @@ class FlowPrefDelegate<T>(
     private val key: Preferences.Key<T>,
     private val defaultValue: T,
 ) {
-
-    operator fun getValue(thisRef: PreferenceRepository, prop: KProperty<*>?): Flow<T> =
-        thisRef.get(key).map { it ?: defaultValue }
+    operator fun getValue(
+        thisRef: PreferenceRepository,
+        prop: KProperty<*>?,
+    ): Flow<T> = thisRef.get(key).map { it ?: defaultValue }
 }
 
 class PrefDelegate<T>(
     private val key: Preferences.Key<T>,
     private val defaultValue: T,
 ) {
+    operator fun getValue(
+        thisRef: PreferenceRepository,
+        prop: KProperty<*>?,
+    ): T = thisRef.get(key).map { it ?: defaultValue }.firstBlocking()
 
-    operator fun getValue(thisRef: PreferenceRepository, prop: KProperty<*>?): T =
-        thisRef.get(key).map { it ?: defaultValue }.firstBlocking()
-
-    operator fun setValue(thisRef: PreferenceRepository, prop: KProperty<*>?, value: T?) {
+    operator fun setValue(
+        thisRef: PreferenceRepository,
+        prop: KProperty<*>?,
+        value: T?,
+    ) {
         thisRef.set(key, value)
     }
 }

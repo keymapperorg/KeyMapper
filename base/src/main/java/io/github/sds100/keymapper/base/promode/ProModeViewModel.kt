@@ -27,151 +27,156 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProModeViewModel @Inject constructor(
-    private val useCase: SystemBridgeSetupUseCase,
-    resourceProvider: ResourceProvider,
-    dialogProvider: DialogProvider,
-    navigationProvider: NavigationProvider,
-) : ViewModel(),
-    ResourceProvider by resourceProvider,
-    DialogProvider by dialogProvider,
-    NavigationProvider by navigationProvider {
+class ProModeViewModel
+    @Inject
+    constructor(
+        private val useCase: SystemBridgeSetupUseCase,
+        resourceProvider: ResourceProvider,
+        dialogProvider: DialogProvider,
+        navigationProvider: NavigationProvider,
+    ) : ViewModel(),
+        ResourceProvider by resourceProvider,
+        DialogProvider by dialogProvider,
+        NavigationProvider by navigationProvider {
+        companion object {
+            private const val WARNING_COUNT_DOWN_SECONDS = 5
+        }
 
-    companion object {
-        private const val WARNING_COUNT_DOWN_SECONDS = 5
-    }
+        @OptIn(ExperimentalCoroutinesApi::class)
+        val warningState: StateFlow<ProModeWarningState> =
+            useCase.isWarningUnderstood
+                .flatMapLatest { isUnderstood -> createWarningStateFlow(isUnderstood) }
+                .stateIn(
+                    viewModelScope,
+                    SharingStarted.Eagerly,
+                    ProModeWarningState.CountingDown(
+                        WARNING_COUNT_DOWN_SECONDS,
+                    ),
+                )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val warningState: StateFlow<ProModeWarningState> =
-        useCase.isWarningUnderstood
-            .flatMapLatest { isUnderstood -> createWarningStateFlow(isUnderstood) }
-            .stateIn(
-                viewModelScope,
-                SharingStarted.Eagerly,
-                ProModeWarningState.CountingDown(
-                    WARNING_COUNT_DOWN_SECONDS,
-                ),
-            )
+        val setupState: StateFlow<State<ProModeState>> =
+            combine(
+                useCase.isSystemBridgeConnected,
+                useCase.isRootGranted,
+                useCase.shizukuSetupState,
+                useCase.isNotificationPermissionGranted,
+                ::buildSetupState,
+            ).stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
 
-    val setupState: StateFlow<State<ProModeState>> =
-        combine(
-            useCase.isSystemBridgeConnected,
-            useCase.isRootGranted,
-            useCase.shizukuSetupState,
-            useCase.isNotificationPermissionGranted,
-            ::buildSetupState,
-        ).stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
+        val autoStartBootEnabled: StateFlow<Boolean> =
+            useCase.isAutoStartBootEnabled
+                .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    val autoStartBootEnabled: StateFlow<Boolean> =
-        useCase.isAutoStartBootEnabled
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+        var showInfoCard by mutableStateOf(!useCase.isInfoDismissed())
+            private set
 
-    var showInfoCard by mutableStateOf(!useCase.isInfoDismissed())
-        private set
+        fun hideInfoCard() {
+            showInfoCard = false
+            // Save that they've dismissed the card so it is not shown by default the next
+            // time they visit the PRO mode page.
+            useCase.dismissInfo()
+        }
 
-    fun hideInfoCard() {
-        showInfoCard = false
-        // Save that they've dismissed the card so it is not shown by default the next
-        // time they visit the PRO mode page.
-        useCase.dismissInfo()
-    }
+        fun showInfoCard() {
+            showInfoCard = true
+        }
 
-    fun showInfoCard() {
-        showInfoCard = true
-    }
+        private fun createWarningStateFlow(isUnderstood: Boolean): Flow<ProModeWarningState> =
+            if (isUnderstood) {
+                flowOf(ProModeWarningState.Understood)
+            } else {
+                flow {
+                    repeat(WARNING_COUNT_DOWN_SECONDS) {
+                        emit(ProModeWarningState.CountingDown(WARNING_COUNT_DOWN_SECONDS - it))
+                        delay(1000L)
+                    }
 
-    private fun createWarningStateFlow(isUnderstood: Boolean): Flow<ProModeWarningState> =
-        if (isUnderstood) {
-            flowOf(ProModeWarningState.Understood)
-        } else {
-            flow {
-                repeat(WARNING_COUNT_DOWN_SECONDS) {
-                    emit(ProModeWarningState.CountingDown(WARNING_COUNT_DOWN_SECONDS - it))
-                    delay(1000L)
+                    emit(ProModeWarningState.Idle)
                 }
+            }
 
-                emit(ProModeWarningState.Idle)
+        fun onWarningButtonClick() {
+            useCase.onUnderstoodWarning()
+        }
+
+        fun onStopServiceClick() {
+            useCase.stopSystemBridge()
+        }
+
+        fun onRootButtonClick() {
+            useCase.startSystemBridgeWithRoot()
+        }
+
+        fun onShizukuButtonClick() {
+            viewModelScope.launch {
+                val shizukuState = useCase.shizukuSetupState.first()
+                when (shizukuState) {
+                    ShizukuSetupState.NOT_FOUND -> {
+                        // Do nothing
+                    }
+
+                    ShizukuSetupState.INSTALLED -> {
+                        useCase.openShizukuApp()
+                    }
+
+                    ShizukuSetupState.STARTED -> {
+                        useCase.requestShizukuPermission()
+                    }
+
+                    ShizukuSetupState.PERMISSION_GRANTED -> {
+                        useCase.startSystemBridgeWithShizuku()
+                    }
+                }
             }
         }
 
-    fun onWarningButtonClick() {
-        useCase.onUnderstoodWarning()
-    }
+        fun onBackClick() {
+            viewModelScope.launch {
+                popBackStack()
+            }
+        }
 
-    fun onStopServiceClick() {
-        useCase.stopSystemBridge()
-    }
+        fun onSetupWithKeyMapperClick() {
+            viewModelScope.launch {
+                navigate("setup_pro_mode_with_key_mapper", NavDestination.ProModeSetup)
+            }
+        }
 
-    fun onRootButtonClick() {
-        useCase.startSystemBridgeWithRoot()
-    }
+        fun onRequestNotificationPermissionClick() {
+            useCase.requestNotificationPermission()
+        }
 
-    fun onShizukuButtonClick() {
-        viewModelScope.launch {
-            val shizukuState = useCase.shizukuSetupState.first()
-            when (shizukuState) {
-                ShizukuSetupState.NOT_FOUND -> {
-                    // Do nothing
-                }
+        fun onAutoStartBootToggled() {
+            useCase.toggleAutoStartBoot()
+        }
 
-                ShizukuSetupState.INSTALLED -> {
-                    useCase.openShizukuApp()
-                }
-
-                ShizukuSetupState.STARTED -> {
-                    useCase.requestShizukuPermission()
-                }
-
-                ShizukuSetupState.PERMISSION_GRANTED -> {
-                    useCase.startSystemBridgeWithShizuku()
-                }
+        private fun buildSetupState(
+            isSystemBridgeConnected: Boolean,
+            isRootGranted: Boolean,
+            shizukuSetupState: ShizukuSetupState,
+            isNotificationPermissionGranted: Boolean,
+        ): State<ProModeState> {
+            if (isSystemBridgeConnected) {
+                return State.Data(ProModeState.Started)
+            } else {
+                return State.Data(
+                    ProModeState.Stopped(
+                        isRootGranted = isRootGranted,
+                        shizukuSetupState = shizukuSetupState,
+                        isNotificationPermissionGranted = isNotificationPermissionGranted,
+                    ),
+                )
             }
         }
     }
-
-    fun onBackClick() {
-        viewModelScope.launch {
-            popBackStack()
-        }
-    }
-
-    fun onSetupWithKeyMapperClick() {
-        viewModelScope.launch {
-            navigate("setup_pro_mode_with_key_mapper", NavDestination.ProModeSetup)
-        }
-    }
-
-    fun onRequestNotificationPermissionClick() {
-        useCase.requestNotificationPermission()
-    }
-
-    fun onAutoStartBootToggled() {
-        useCase.toggleAutoStartBoot()
-    }
-
-    private fun buildSetupState(
-        isSystemBridgeConnected: Boolean,
-        isRootGranted: Boolean,
-        shizukuSetupState: ShizukuSetupState,
-        isNotificationPermissionGranted: Boolean,
-    ): State<ProModeState> {
-        if (isSystemBridgeConnected) {
-            return State.Data(ProModeState.Started)
-        } else {
-            return State.Data(
-                ProModeState.Stopped(
-                    isRootGranted = isRootGranted,
-                    shizukuSetupState = shizukuSetupState,
-                    isNotificationPermissionGranted = isNotificationPermissionGranted,
-                ),
-            )
-        }
-    }
-}
 
 sealed class ProModeWarningState {
-    data class CountingDown(val seconds: Int) : ProModeWarningState()
+    data class CountingDown(
+        val seconds: Int,
+    ) : ProModeWarningState()
+
     data object Idle : ProModeWarningState()
+
     data object Understood : ProModeWarningState()
 }
 

@@ -14,20 +14,32 @@ import org.junit.Assert
 object JsonTestUtils {
     private const val NAME_SEPARATOR = '/'
 
-    fun compareBothWays(element: JsonElement, elementName: String, other: JsonElement, otherName: String) {
+    fun compareBothWays(
+        element: JsonElement,
+        elementName: String,
+        other: JsonElement,
+        otherName: String,
+    ) {
         compare("", element, elementName, other, otherName)
         compare("", other, elementName, element, elementName)
     }
 
-    private fun compare(parentNamePath: String = "", element: JsonElement, elementName: String, rootToCompare: JsonElement, rootName: String) {
+    private fun compare(
+        parentNamePath: String = "",
+        element: JsonElement,
+        elementName: String,
+        rootToCompare: JsonElement,
+        rootName: String,
+    ) {
         when (element) {
             is JsonObject -> {
                 element.forEach { name, jsonElement ->
-                    val newPath = if (parentNamePath.isBlank()) {
-                        name
-                    } else {
-                        "$parentNamePath$NAME_SEPARATOR$name"
-                    }
+                    val newPath =
+                        if (parentNamePath.isBlank()) {
+                            name
+                        } else {
+                            "$parentNamePath$NAME_SEPARATOR$name"
+                        }
 
                     compare(newPath, jsonElement, elementName, rootToCompare, rootName)
                 }
@@ -56,7 +68,13 @@ object JsonTestUtils {
 
                     assertThat("$rootName/${pathToArrayToCompare.last()} doesn't contain $arrayElement at $index index", validIndex)
 
-                    compare("", arrayElement, "$elementName/${pathToArrayToCompare.last()}", arrayToCompare[index]!!, "$rootName/${pathToArrayToCompare.last()}")
+                    compare(
+                        "",
+                        arrayElement,
+                        "$elementName/${pathToArrayToCompare.last()}",
+                        arrayToCompare[index]!!,
+                        "$rootName/${pathToArrayToCompare.last()}",
+                    )
                 }
             }
 
@@ -75,7 +93,11 @@ object JsonTestUtils {
                         parentElement = parentElement[name]
 
                         if (index == names.lastIndex) {
-                            assertThat("$elementName/$parentNamePath:$element doesn't match $rootName/$parentNamePath:$parentElement", (parentElement as JsonPrimitive), `is`(element))
+                            assertThat(
+                                "$elementName/$parentNamePath:$element doesn't match $rootName/$parentNamePath:$parentElement",
+                                (parentElement as JsonPrimitive),
+                                `is`(element),
+                            )
                         }
                     }
                 }

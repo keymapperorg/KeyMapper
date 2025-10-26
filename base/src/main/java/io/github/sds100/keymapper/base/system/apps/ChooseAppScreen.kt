@@ -74,23 +74,25 @@ fun ChooseAppScreen(
         val endPadding = innerPadding.calculateEndPadding(layoutDirection)
 
         Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    bottom = innerPadding.calculateBottomPadding(),
-                    start = startPadding,
-                    end = endPadding,
-                ),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom = innerPadding.calculateBottomPadding(),
+                        start = startPadding,
+                        end = endPadding,
+                    ),
         ) {
             Column {
                 Text(
-                    modifier = Modifier.padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 16.dp,
-                        bottom = 8.dp,
-                    ),
+                    modifier =
+                        Modifier.padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            top = 16.dp,
+                            bottom = 8.dp,
+                        ),
                     text = title,
                     style = MaterialTheme.typography.titleLarge,
                 )
@@ -132,16 +134,17 @@ private fun EmptyScreen(modifier: Modifier = Modifier) {
         val text = stringResource(R.string.app_list_empty)
         Text(
             modifier = Modifier.align(Alignment.Center),
-            text = buildAnnotatedString {
-                withStyle(MaterialTheme.typography.headlineLarge.toSpanStyle()) {
-                    append(shrug)
-                }
-                appendLine()
-                appendLine()
-                withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
-                    append(text)
-                }
-            },
+            text =
+                buildAnnotatedString {
+                    withStyle(MaterialTheme.typography.headlineLarge.toSpanStyle()) {
+                        append(shrug)
+                    }
+                    appendLine()
+                    appendLine()
+                    withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
+                        append(text)
+                    }
+                },
             textAlign = TextAlign.Center,
         )
     }
@@ -192,25 +195,26 @@ private fun Loaded() {
     KeyMapperTheme {
         ChooseAppScreen(
             title = "Choose app",
-            state = State.Data(
-                listOf(
-                    SimpleListItemModel(
-                        id = "1",
-                        title = "Key Mapper",
-                        icon = ComposeIconInfo.Drawable(icon),
-                    ),
-                    SimpleListItemModel(
-                        id = "2",
-                        title = "Key Mapper",
-                        icon = ComposeIconInfo.Drawable(icon),
-                    ),
-                    SimpleListItemModel(
-                        id = "3",
-                        title = "Key Mapper",
-                        icon = ComposeIconInfo.Drawable(icon),
+            state =
+                State.Data(
+                    listOf(
+                        SimpleListItemModel(
+                            id = "1",
+                            title = "Key Mapper",
+                            icon = ComposeIconInfo.Drawable(icon),
+                        ),
+                        SimpleListItemModel(
+                            id = "2",
+                            title = "Key Mapper",
+                            icon = ComposeIconInfo.Drawable(icon),
+                        ),
+                        SimpleListItemModel(
+                            id = "3",
+                            title = "Key Mapper",
+                            icon = ComposeIconInfo.Drawable(icon),
+                        ),
                     ),
                 ),
-            ),
         )
     }
 }

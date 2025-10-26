@@ -19,44 +19,43 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RoomFloatingLayoutRepository @Inject constructor(
-    private val dao: FloatingLayoutDao,
-    private val coroutineScope: CoroutineScope,
-    private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
-) : FloatingLayoutRepository {
-    override val layouts = dao.getAllWithButtons()
-        .map { State.Data(it) }
-        .flowOn(dispatchers.io())
-        .stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
+class RoomFloatingLayoutRepository
+    @Inject
+    constructor(
+        private val dao: FloatingLayoutDao,
+        private val coroutineScope: CoroutineScope,
+        private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
+    ) : FloatingLayoutRepository {
+        override val layouts =
+            dao
+                .getAllWithButtons()
+                .map { State.Data(it) }
+                .flowOn(dispatchers.io())
+                .stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
 
-    override suspend fun insert(vararg layout: FloatingLayoutEntity) {
-        withContext(dispatchers.io()) {
-            dao.insert(*layout)
-        }
-    }
-
-    override suspend fun update(vararg layout: FloatingLayoutEntity): Boolean {
-        return withContext(dispatchers.io()) {
-            try {
-                dao.update(*layout)
-                true
-            } catch (e: SQLiteConstraintException) {
-                false
+        override suspend fun insert(vararg layout: FloatingLayoutEntity) {
+            withContext(dispatchers.io()) {
+                dao.insert(*layout)
             }
         }
-    }
 
-    override fun get(uid: String): Flow<FloatingLayoutEntityWithButtons?> {
-        return dao.getByUidWithButtonsFlow(uid)
-    }
+        override suspend fun update(vararg layout: FloatingLayoutEntity): Boolean =
+            withContext(dispatchers.io()) {
+                try {
+                    dao.update(*layout)
+                    true
+                } catch (e: SQLiteConstraintException) {
+                    false
+                }
+            }
 
-    override fun delete(vararg uid: String) {
-        coroutineScope.launch(dispatchers.io()) {
-            dao.deleteByUid(*uid)
+        override fun get(uid: String): Flow<FloatingLayoutEntityWithButtons?> = dao.getByUidWithButtonsFlow(uid)
+
+        override fun delete(vararg uid: String) {
+            coroutineScope.launch(dispatchers.io()) {
+                dao.deleteByUid(*uid)
+            }
         }
-    }
 
-    override suspend fun count(): Int {
-        return dao.count()
+        override suspend fun count(): Int = dao.count()
     }
-}

@@ -2,7 +2,10 @@ package io.github.sds100.keymapper.common.utils
 
 import java.util.Collections
 
-fun MutableList<*>.moveElement(fromIndex: Int, toIndex: Int) {
+fun MutableList<*>.moveElement(
+    fromIndex: Int,
+    toIndex: Int,
+) {
     if (toIndex >= size || fromIndex >= size) {
         return
     }
@@ -24,11 +27,12 @@ inline fun <reified T> Array<out T>.splitIntoBatches(batchSize: Int): Array<Arra
     var batches: Array<Array<out T>> = arrayOf()
 
     while (arrayToSplit.isNotEmpty()) {
-        val batch = if (arrayToSplit.size < batchSize) {
-            arrayToSplit
-        } else {
-            arrayToSplit.sliceArray(0 until batchSize)
-        }
+        val batch =
+            if (arrayToSplit.size < batchSize) {
+                arrayToSplit
+            } else {
+                arrayToSplit.sliceArray(0 until batchSize)
+            }
 
         batches = batches.plus(batch)
 

@@ -99,11 +99,12 @@ class KeyMapDetectionController(
     }
 
     private fun grabEvdevDevicesForTriggers(triggers: Array<Trigger>) {
-        val evdevDevices = triggers
-            .flatMap { trigger -> trigger.keys.filterIsInstance<EvdevTriggerKey>() }
-            .map { it.device }
-            .distinct()
-            .toList()
+        val evdevDevices =
+            triggers
+                .flatMap { trigger -> trigger.keys.filterIsInstance<EvdevTriggerKey>() }
+                .map { it.device }
+                .distinct()
+                .toList()
 
         Timber.i("Grab evdev devices for key map detection: ${evdevDevices.joinToString()}")
         inputEventHub.setGrabbedEvdevDevices(

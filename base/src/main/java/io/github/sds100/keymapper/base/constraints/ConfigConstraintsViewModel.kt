@@ -37,158 +37,166 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ConfigConstraintsViewModel @Inject constructor(
-    private val config: ConfigConstraintsUseCase,
-    private val displayConstraint: DisplayConstraintUseCase,
-    resourceProvider: ResourceProvider,
-    navigationProvider: NavigationProvider,
-    dialogProvider: DialogProvider,
-) : ViewModel(),
-    ResourceProvider by resourceProvider,
-    DialogProvider by dialogProvider,
-    NavigationProvider by navigationProvider {
+class ConfigConstraintsViewModel
+    @Inject
+    constructor(
+        private val config: ConfigConstraintsUseCase,
+        private val displayConstraint: DisplayConstraintUseCase,
+        resourceProvider: ResourceProvider,
+        navigationProvider: NavigationProvider,
+        dialogProvider: DialogProvider,
+    ) : ViewModel(),
+        ResourceProvider by resourceProvider,
+        DialogProvider by dialogProvider,
+        NavigationProvider by navigationProvider {
+        private val uiHelper = ConstraintUiHelper(displayConstraint, resourceProvider)
 
-    private val uiHelper = ConstraintUiHelper(displayConstraint, resourceProvider)
+        private val _state: MutableStateFlow<State<ConfigConstraintsState>> =
+            MutableStateFlow(State.Loading)
+        val state = _state.asStateFlow()
 
-    private val _state: MutableStateFlow<State<ConfigConstraintsState>> =
-        MutableStateFlow(State.Loading)
-    val state = _state.asStateFlow()
+        private val shortcuts: StateFlow<Set<ShortcutModel<ConstraintData>>> =
+            config.recentlyUsedConstraints
+                .map { constraintDataList ->
+                    constraintDataList
+                        .map { constraintData ->
+                            buildShortcutFromData(constraintData)
+                        }.toSet()
+                }.stateIn(viewModelScope, SharingStarted.Lazily, emptySet())
 
-    private val shortcuts: StateFlow<Set<ShortcutModel<ConstraintData>>> =
-        config.recentlyUsedConstraints.map { constraintDataList ->
-            constraintDataList.map { constraintData ->
-                buildShortcutFromData(constraintData)
-            }.toSet()
-        }.stateIn(viewModelScope, SharingStarted.Lazily, emptySet())
+        private val constraintErrorSnapshot: StateFlow<ConstraintErrorSnapshot?> =
+            displayConstraint.constraintErrorSnapshot.stateIn(
+                viewModelScope,
+                SharingStarted.Lazily,
+                null,
+            )
 
-    private val constraintErrorSnapshot: StateFlow<ConstraintErrorSnapshot?> =
-        displayConstraint.constraintErrorSnapshot.stateIn(
-            viewModelScope,
-            SharingStarted.Lazily,
-            null,
-        )
+        var showDuplicateConstraintsSnackbar: Boolean by mutableStateOf(false)
 
-    var showDuplicateConstraintsSnackbar: Boolean by mutableStateOf(false)
+        init {
+            combine(
+                config.keyMap,
+                shortcuts,
+                constraintErrorSnapshot.filterNotNull(),
+            ) { keyMapState, shortcuts, errorSnapshot ->
+                _state.value =
+                    keyMapState.mapData { keyMap ->
+                        buildState(keyMap.constraintState, shortcuts, errorSnapshot)
+                    }
+            }.launchIn(viewModelScope)
+        }
 
-    init {
-        combine(
-            config.keyMap,
-            shortcuts,
-            constraintErrorSnapshot.filterNotNull(),
-        ) { keyMapState, shortcuts, errorSnapshot ->
-            _state.value = keyMapState.mapData { keyMap ->
-                buildState(keyMap.constraintState, shortcuts, errorSnapshot)
+        fun onClickShortcut(constraintData: ConstraintData) {
+            viewModelScope.launch {
+                config.addConstraint(constraintData)
             }
-        }.launchIn(viewModelScope)
-    }
-
-    fun onClickShortcut(constraintData: ConstraintData) {
-        viewModelScope.launch {
-            config.addConstraint(constraintData)
         }
-    }
 
-    fun onRemoveClick(id: String) = config.removeConstraint(id)
+        fun onRemoveClick(id: String) = config.removeConstraint(id)
 
-    fun onSelectMode(mode: ConstraintMode) {
-        when (mode) {
-            ConstraintMode.AND -> config.setAndMode()
-            ConstraintMode.OR -> config.setOrMode()
+        fun onSelectMode(mode: ConstraintMode) {
+            when (mode) {
+                ConstraintMode.AND -> config.setAndMode()
+                ConstraintMode.OR -> config.setOrMode()
+            }
         }
-    }
 
-    fun onFixError(constraintUid: String) {
-        viewModelScope.launch {
-            val constraint = config.keyMap
-                .firstOrNull()
-                ?.dataOrNull()
-                ?.constraintState
-                ?.constraints
-                ?.find { it.uid == constraintUid }
-                ?: return@launch
+        fun onFixError(constraintUid: String) {
+            viewModelScope.launch {
+                val constraint =
+                    config.keyMap
+                        .firstOrNull()
+                        ?.dataOrNull()
+                        ?.constraintState
+                        ?.constraints
+                        ?.find { it.uid == constraintUid }
+                        ?: return@launch
 
-            val error = constraintErrorSnapshot.filterNotNull().first().getError(constraint)
-                ?: return@launch
+                val error =
+                    constraintErrorSnapshot.filterNotNull().first().getError(constraint)
+                        ?: return@launch
 
-            if (error == SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
-                viewModelScope.launch {
-                    ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+                if (error == SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
+                    viewModelScope.launch {
+                        ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+                            resourceProvider = this@ConfigConstraintsViewModel,
+                            dialogProvider = this@ConfigConstraintsViewModel,
+                            neverShowDndTriggerErrorAgain = { displayConstraint.neverShowDndTriggerError() },
+                            fixError = { displayConstraint.fixError(error) },
+                        )
+                    }
+                } else {
+                    ViewModelHelper.showFixErrorDialog(
                         resourceProvider = this@ConfigConstraintsViewModel,
                         dialogProvider = this@ConfigConstraintsViewModel,
-                        neverShowDndTriggerErrorAgain = { displayConstraint.neverShowDndTriggerError() },
-                        fixError = { displayConstraint.fixError(error) },
-                    )
-                }
-            } else {
-                ViewModelHelper.showFixErrorDialog(
-                    resourceProvider = this@ConfigConstraintsViewModel,
-                    dialogProvider = this@ConfigConstraintsViewModel,
-                    error,
-                ) {
-                    displayConstraint.fixError(error)
+                        error,
+                    ) {
+                        displayConstraint.fixError(error)
+                    }
                 }
             }
         }
-    }
 
-    fun addConstraint() {
-        viewModelScope.launch {
-            val constraint: ConstraintData =
-                navigate("add_constraint", NavDestination.ChooseConstraint)
-                    ?: return@launch
+        fun addConstraint() {
+            viewModelScope.launch {
+                val constraint: ConstraintData =
+                    navigate("add_constraint", NavDestination.ChooseConstraint)
+                        ?: return@launch
 
-            val isDuplicate = !config.addConstraint(constraint)
+                val isDuplicate = !config.addConstraint(constraint)
 
-            if (isDuplicate) {
-                showDuplicateConstraintsSnackbar = true
+                if (isDuplicate) {
+                    showDuplicateConstraintsSnackbar = true
+                }
             }
         }
-    }
 
-    private fun buildShortcutFromData(constraintData: ConstraintData): ShortcutModel<ConstraintData> {
-        val constraint = Constraint(data = constraintData)
-        return ShortcutModel(
-            icon = uiHelper.getIcon(constraint),
-            text = uiHelper.getTitle(constraint),
-            data = constraintData,
-        )
-    }
-
-    private fun buildState(
-        state: ConstraintState,
-        shortcuts: Set<ShortcutModel<ConstraintData>>,
-        errorSnapshot: ConstraintErrorSnapshot,
-    ): ConfigConstraintsState {
-        if (state.constraints.isEmpty()) {
-            return ConfigConstraintsState.Empty(shortcuts)
-        }
-
-        val constraintList = state.constraints.mapIndexed { index, constraint ->
-            val title: String = uiHelper.getTitle(constraint)
-            val icon: ComposeIconInfo = uiHelper.getIcon(constraint)
-            val error: KMError? = errorSnapshot.getError(constraint)
-
-            ConstraintListItemModel(
-                id = constraint.uid,
-                icon = icon,
-                constraintModeLink = if (state.constraints.size > 1 && index < state.constraints.size - 1) {
-                    state.mode
-                } else {
-                    null
-                },
-                text = title,
-                error = error?.getFullMessage(this),
-                isErrorFixable = error?.isFixable ?: true,
+        private fun buildShortcutFromData(constraintData: ConstraintData): ShortcutModel<ConstraintData> {
+            val constraint = Constraint(data = constraintData)
+            return ShortcutModel(
+                icon = uiHelper.getIcon(constraint),
+                text = uiHelper.getTitle(constraint),
+                data = constraintData,
             )
         }
 
-        return ConfigConstraintsState.Loaded(
-            constraintList = constraintList,
-            selectedMode = state.mode,
-            shortcuts = shortcuts,
-        )
+        private fun buildState(
+            state: ConstraintState,
+            shortcuts: Set<ShortcutModel<ConstraintData>>,
+            errorSnapshot: ConstraintErrorSnapshot,
+        ): ConfigConstraintsState {
+            if (state.constraints.isEmpty()) {
+                return ConfigConstraintsState.Empty(shortcuts)
+            }
+
+            val constraintList =
+                state.constraints.mapIndexed { index, constraint ->
+                    val title: String = uiHelper.getTitle(constraint)
+                    val icon: ComposeIconInfo = uiHelper.getIcon(constraint)
+                    val error: KMError? = errorSnapshot.getError(constraint)
+
+                    ConstraintListItemModel(
+                        id = constraint.uid,
+                        icon = icon,
+                        constraintModeLink =
+                            if (state.constraints.size > 1 && index < state.constraints.size - 1) {
+                                state.mode
+                            } else {
+                                null
+                            },
+                        text = title,
+                        error = error?.getFullMessage(this),
+                        isErrorFixable = error?.isFixable ?: true,
+                    )
+                }
+
+            return ConfigConstraintsState.Loaded(
+                constraintList = constraintList,
+                selectedMode = state.mode,
+                shortcuts = shortcuts,
+            )
+        }
     }
-}
 
 sealed class ConfigConstraintsState {
     data class Empty(

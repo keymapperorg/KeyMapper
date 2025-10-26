@@ -14,39 +14,44 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RestoreKeyMapsViewModel @Inject constructor(
-    private val useCase: BackupRestoreMappingsUseCase,
-    resourceProvider: ResourceProvider,
-) : ViewModel(),
-    ResourceProvider by resourceProvider {
+class RestoreKeyMapsViewModel
+    @Inject
+    constructor(
+        private val useCase: BackupRestoreMappingsUseCase,
+        resourceProvider: ResourceProvider,
+    ) : ViewModel(),
+        ResourceProvider by resourceProvider {
+        private val _importExportState = MutableStateFlow<ImportExportState>(ImportExportState.Idle)
+        val importExportState: StateFlow<ImportExportState> = _importExportState.asStateFlow()
 
-    private val _importExportState = MutableStateFlow<ImportExportState>(ImportExportState.Idle)
-    val importExportState: StateFlow<ImportExportState> = _importExportState.asStateFlow()
+        fun onChooseImportFile(uri: String) {
+            viewModelScope.launch {
+                useCase
+                    .getKeyMapCountInBackup(uri)
+                    .onSuccess {
+                        _importExportState.value = ImportExportState.ConfirmImport(uri, it)
+                    }.onFailure {
+                        _importExportState.value =
+                            ImportExportState.Error(it.getFullMessage(this@RestoreKeyMapsViewModel))
+                    }
+            }
+        }
 
-    fun onChooseImportFile(uri: String) {
-        viewModelScope.launch {
-            useCase.getKeyMapCountInBackup(uri).onSuccess {
-                _importExportState.value = ImportExportState.ConfirmImport(uri, it)
-            }.onFailure {
-                _importExportState.value =
-                    ImportExportState.Error(it.getFullMessage(this@RestoreKeyMapsViewModel))
+        fun onConfirmImport(restoreType: RestoreType) {
+            val state = _importExportState.value as? ImportExportState.ConfirmImport
+            state ?: return
+
+            _importExportState.value = ImportExportState.Importing
+
+            viewModelScope.launch {
+                useCase
+                    .restoreKeyMaps(state.fileUri, restoreType)
+                    .onSuccess {
+                        _importExportState.value = ImportExportState.FinishedImport
+                    }.onFailure {
+                        _importExportState.value =
+                            ImportExportState.Error(it.getFullMessage(this@RestoreKeyMapsViewModel))
+                    }
             }
         }
     }
-
-    fun onConfirmImport(restoreType: RestoreType) {
-        val state = _importExportState.value as? ImportExportState.ConfirmImport
-        state ?: return
-
-        _importExportState.value = ImportExportState.Importing
-
-        viewModelScope.launch {
-            useCase.restoreKeyMaps(state.fileUri, restoreType).onSuccess {
-                _importExportState.value = ImportExportState.FinishedImport
-            }.onFailure {
-                _importExportState.value =
-                    ImportExportState.Error(it.getFullMessage(this@RestoreKeyMapsViewModel))
-            }
-        }
-    }
-}

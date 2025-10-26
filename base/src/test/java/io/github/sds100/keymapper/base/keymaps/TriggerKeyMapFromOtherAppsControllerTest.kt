@@ -30,7 +30,6 @@ import org.mockito.kotlin.verify
 @ExperimentalCoroutinesApi
 @RunWith(JUnitParamsRunner::class)
 class TriggerKeyMapFromOtherAppsControllerTest {
-
     companion object {
         private const val LONG_PRESS_DELAY = 500L
         private const val DOUBLE_PRESS_DELAY = 300L
@@ -55,74 +54,80 @@ class TriggerKeyMapFromOtherAppsControllerTest {
     fun init() {
         keyMapListFlow = MutableStateFlow(emptyList())
 
-        detectKeyMapsUseCase = mock {
-            on { keyMapsToTriggerFromOtherApps } doReturn keyMapListFlow
+        detectKeyMapsUseCase =
+            mock {
+                on { keyMapsToTriggerFromOtherApps } doReturn keyMapListFlow
 
-            MutableStateFlow(VIBRATION_DURATION).apply {
-                on { defaultVibrateDuration } doReturn this
-            }
+                MutableStateFlow(VIBRATION_DURATION).apply {
+                    on { defaultVibrateDuration } doReturn this
+                }
 
-            MutableStateFlow(FORCE_VIBRATE).apply {
-                on { forceVibrate } doReturn this
-            }
-        }
-
-        performActionsUseCase = mock {
-            MutableStateFlow(REPEAT_RATE).apply {
-                on { defaultRepeatRate } doReturn this
-            }
-
-            MutableStateFlow(HOLD_DOWN_DURATION).apply {
-                on { defaultHoldDownDuration } doReturn this
-            }
-
-            on { getErrorSnapshot() } doReturn object : ActionErrorSnapshot {
-                override fun getError(action: ActionData): KMError? = null
-                override fun getErrors(actions: List<ActionData>): Map<ActionData, KMError?> {
-                    return emptyMap()
+                MutableStateFlow(FORCE_VIBRATE).apply {
+                    on { forceVibrate } doReturn this
                 }
             }
-        }
 
-        detectConstraintsUseCase = mock {
-            on { getSnapshot() } doReturn TestConstraintSnapshot()
-        }
+        performActionsUseCase =
+            mock {
+                MutableStateFlow(REPEAT_RATE).apply {
+                    on { defaultRepeatRate } doReturn this
+                }
 
-        controller = TriggerKeyMapFromOtherAppsController(
-            testScope,
-            detectKeyMapsUseCase,
-            performActionsUseCase,
-            detectConstraintsUseCase,
-        )
+                MutableStateFlow(HOLD_DOWN_DURATION).apply {
+                    on { defaultHoldDownDuration } doReturn this
+                }
+
+                on { getErrorSnapshot() } doReturn
+                    object : ActionErrorSnapshot {
+                        override fun getError(action: ActionData): KMError? = null
+
+                        override fun getErrors(actions: List<ActionData>): Map<ActionData, KMError?> = emptyMap()
+                    }
+            }
+
+        detectConstraintsUseCase =
+            mock {
+                on { getSnapshot() } doReturn TestConstraintSnapshot()
+            }
+
+        controller =
+            TriggerKeyMapFromOtherAppsController(
+                testScope,
+                detectKeyMapsUseCase,
+                performActionsUseCase,
+                detectConstraintsUseCase,
+            )
     }
 
     /**
      * #707
      */
     @Test
-    fun `Key map with repeat option, don't repeat when triggered if repeat until released`() = runTest(testDispatcher) {
-        // GIVEN
-        val action =
-            Action(
-                data = ActionData.InputKeyEvent(keyCode = 1),
-                repeat = true,
-                repeatMode = RepeatMode.TRIGGER_RELEASED,
-            )
-        val keyMap = KeyMap(
-            actionList = listOf(action),
-            trigger = Trigger(triggerFromOtherApps = true),
-        )
-        keyMapListFlow.value = listOf(keyMap)
+    fun `Key map with repeat option, don't repeat when triggered if repeat until released`() =
+        runTest(testDispatcher) {
+            // GIVEN
+            val action =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = 1),
+                    repeat = true,
+                    repeatMode = RepeatMode.TRIGGER_RELEASED,
+                )
+            val keyMap =
+                KeyMap(
+                    actionList = listOf(action),
+                    trigger = Trigger(triggerFromOtherApps = true),
+                )
+            keyMapListFlow.value = listOf(keyMap)
 
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        // WHEN
-        controller.onDetected(keyMap.uid)
-        delay(500)
-        controller.reset() // stop any repeating that might be happening
-        advanceUntilIdle()
+            // WHEN
+            controller.onDetected(keyMap.uid)
+            delay(500)
+            controller.reset() // stop any repeating that might be happening
+            advanceUntilIdle()
 
-        // THEN
-        verify(performActionsUseCase, times(1)).perform(action.data)
-    }
+            // THEN
+            verify(performActionsUseCase, times(1)).perform(action.data)
+        }
 }

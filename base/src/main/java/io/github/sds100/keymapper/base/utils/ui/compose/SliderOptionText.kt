@@ -56,11 +56,12 @@ fun SliderOptionText(
 
     if (showDialog) {
         ValueDialog(
-            initialValue = if (value == defaultValue) {
-                null
-            } else {
-                value.roundToInt()
-            },
+            initialValue =
+                if (value == defaultValue) {
+                    null
+                } else {
+                    value.roundToInt()
+                },
             placeholderValue = valueText(defaultValue),
             title = title,
             onDismissRequest = { showDialog = false },
@@ -102,11 +103,12 @@ fun SliderOptionText(
             Spacer(modifier = Modifier.width(8.dp))
 
             ElevatedButton(onClick = { showDialog = true }) {
-                val text = if (value == defaultValue) {
-                    stringResource(R.string.slider_default_button, valueText(value))
-                } else {
-                    valueText(value)
-                }
+                val text =
+                    if (value == defaultValue) {
+                        stringResource(R.string.slider_default_button, valueText(value))
+                    } else {
+                        valueText(value)
+                    }
 
                 Text(text)
             }
@@ -153,17 +155,19 @@ private fun ValueDialog(
         onDismissRequest = onDismissRequest,
     ) {
         TextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             value = newValue,
-            placeholder = if (placeholderValue == null) {
-                null
-            } else {
-                {
-                    Text(placeholderValue)
-                }
-            },
+            placeholder =
+                if (placeholderValue == null) {
+                    null
+                } else {
+                    {
+                        Text(placeholderValue)
+                    }
+                },
             onValueChange = {
                 isChanged = true
                 newValue = it

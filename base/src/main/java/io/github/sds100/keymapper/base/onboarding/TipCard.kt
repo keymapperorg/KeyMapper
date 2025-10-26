@@ -82,9 +82,10 @@ fun TipCard(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     TextButton(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .align(Alignment.End),
+                        modifier =
+                            Modifier
+                                .padding(horizontal = 16.dp)
+                                .align(Alignment.End),
                         onClick = onButtonClick,
                         colors = ButtonDefaults.textButtonColors(contentColor = color),
                     ) {
@@ -97,9 +98,10 @@ fun TipCard(
 
             if (isDismissable) {
                 IconButton(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(4.dp),
+                    modifier =
+                        Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(4.dp),
                     onClick = onDismiss,
                 ) {
                     Icon(
@@ -119,7 +121,11 @@ private fun TipCardPreview() {
     KeyMapperTheme {
         TipCard(
             title = "Tip Title",
-            message = "This is a helpful tip message that explains something important to the user. It can be multiple lines long and provides useful information.",
+            message =
+                """
+                This is a helpful tip message that explains something important to the user. It can be multiple lines long and
+                 provides useful information.
+                """.trimIndent(),
             buttonText = "Button",
         )
     }

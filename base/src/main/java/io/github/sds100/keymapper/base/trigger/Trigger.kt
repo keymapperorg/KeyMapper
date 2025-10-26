@@ -37,29 +37,32 @@ data class Trigger(
 
     fun isChangingDoublePressDelayAllowed(): Boolean = keys.any { key -> key.clickType == ClickType.DOUBLE_PRESS }
 
-    fun isLongPressDoubleVibrationAllowed(): Boolean = (keys.size == 1 || (mode is TriggerMode.Parallel)) &&
-        keys.getOrNull(0)?.clickType == ClickType.LONG_PRESS
+    fun isLongPressDoubleVibrationAllowed(): Boolean =
+        (keys.size == 1 || (mode is TriggerMode.Parallel)) &&
+            keys.getOrNull(0)?.clickType == ClickType.LONG_PRESS
 
     fun isChangingSequenceTriggerTimeoutAllowed(): Boolean = keys.isNotEmpty() && keys.size > 1 && mode is TriggerMode.Sequence
 
     fun updateFloatingButtonData(buttons: List<FloatingButtonEntityWithLayout>): Trigger {
-        val newTriggerKeys = keys.map { key ->
-            if (key is FloatingButtonKey) {
-                val buttonLayout = buttons.find { it.button.uid == key.buttonUid }
+        val newTriggerKeys =
+            keys.map { key ->
+                if (key is FloatingButtonKey) {
+                    val buttonLayout = buttons.find { it.button.uid == key.buttonUid }
 
-                if (buttonLayout == null) {
-                    key.copy(button = null)
+                    if (buttonLayout == null) {
+                        key.copy(button = null)
+                    } else {
+                        val buttonData =
+                            FloatingButtonEntityMapper.fromEntity(
+                                buttonLayout.button,
+                                buttonLayout.layout.name,
+                            )
+                        key.copy(button = buttonData)
+                    }
                 } else {
-                    val buttonData = FloatingButtonEntityMapper.fromEntity(
-                        buttonLayout.button,
-                        buttonLayout.layout.name,
-                    )
-                    key.copy(button = buttonData)
+                    key
                 }
-            } else {
-                key
             }
-        }
 
         return copy(keys = newTriggerKeys)
     }
@@ -70,49 +73,57 @@ object TriggerEntityMapper {
         entity: TriggerEntity,
         floatingButtons: List<FloatingButtonEntityWithLayout>,
     ): Trigger {
-        val keys = entity.keys.map { key ->
-            when (key) {
-                is AssistantTriggerKeyEntity -> AssistantTriggerKey.fromEntity(key)
-                is KeyEventTriggerKeyEntity -> KeyEventTriggerKey.fromEntity(
-                    key,
-                )
-                is FloatingButtonKeyEntity -> {
-                    val floatingButton = floatingButtons.find { it.button.uid == key.buttonUid }
-                    FloatingButtonKey.fromEntity(key, floatingButton)
+        val keys =
+            entity.keys.map { key ->
+                when (key) {
+                    is AssistantTriggerKeyEntity -> AssistantTriggerKey.fromEntity(key)
+                    is KeyEventTriggerKeyEntity ->
+                        KeyEventTriggerKey.fromEntity(
+                            key,
+                        )
+                    is FloatingButtonKeyEntity -> {
+                        val floatingButton = floatingButtons.find { it.button.uid == key.buttonUid }
+                        FloatingButtonKey.fromEntity(key, floatingButton)
+                    }
+
+                    is FingerprintTriggerKeyEntity -> FingerprintTriggerKey.fromEntity(key)
+                    is EvdevTriggerKeyEntity -> EvdevTriggerKey.fromEntity(key)
                 }
-
-                is FingerprintTriggerKeyEntity -> FingerprintTriggerKey.fromEntity(key)
-                is EvdevTriggerKeyEntity -> EvdevTriggerKey.fromEntity(key)
             }
-        }
 
-        val mode = when {
-            entity.mode == TriggerEntity.SEQUENCE && keys.size > 1 -> TriggerMode.Sequence
-            entity.mode == TriggerEntity.PARALLEL && keys.size > 1 -> TriggerMode.Parallel(keys[0].clickType)
-            else -> TriggerMode.Undefined
-        }
+        val mode =
+            when {
+                entity.mode == TriggerEntity.SEQUENCE && keys.size > 1 -> TriggerMode.Sequence
+                entity.mode == TriggerEntity.PARALLEL && keys.size > 1 -> TriggerMode.Parallel(keys[0].clickType)
+                else -> TriggerMode.Undefined
+            }
 
         return Trigger(
             keys = keys,
             mode = mode,
-
             vibrate = entity.flags.hasFlag(TriggerEntity.TRIGGER_FLAG_VIBRATE),
-
             longPressDoubleVibration =
-            entity.flags.hasFlag(TriggerEntity.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION),
-
-            longPressDelay = entity.extras.getData(TriggerEntity.EXTRA_LONG_PRESS_DELAY)
-                .valueOrNull()?.toIntOrNull(),
-
-            doublePressDelay = entity.extras.getData(TriggerEntity.EXTRA_DOUBLE_PRESS_DELAY)
-                .valueOrNull()?.toIntOrNull(),
-
-            vibrateDuration = entity.extras.getData(TriggerEntity.EXTRA_VIBRATION_DURATION)
-                .valueOrNull()?.toIntOrNull(),
-
-            sequenceTriggerTimeout = entity.extras.getData(TriggerEntity.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
-                .valueOrNull()?.toIntOrNull(),
-
+                entity.flags.hasFlag(TriggerEntity.TRIGGER_FLAG_LONG_PRESS_DOUBLE_VIBRATION),
+            longPressDelay =
+                entity.extras
+                    .getData(TriggerEntity.EXTRA_LONG_PRESS_DELAY)
+                    .valueOrNull()
+                    ?.toIntOrNull(),
+            doublePressDelay =
+                entity.extras
+                    .getData(TriggerEntity.EXTRA_DOUBLE_PRESS_DELAY)
+                    .valueOrNull()
+                    ?.toIntOrNull(),
+            vibrateDuration =
+                entity.extras
+                    .getData(TriggerEntity.EXTRA_VIBRATION_DURATION)
+                    .valueOrNull()
+                    ?.toIntOrNull(),
+            sequenceTriggerTimeout =
+                entity.extras
+                    .getData(TriggerEntity.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
+                    .valueOrNull()
+                    ?.toIntOrNull(),
             triggerFromOtherApps = entity.flags.hasFlag(TriggerEntity.TRIGGER_FLAG_FROM_OTHER_APPS),
             showToast = entity.flags.hasFlag(TriggerEntity.TRIGGER_FLAG_SHOW_TOAST),
         )
@@ -157,11 +168,12 @@ object TriggerEntityMapper {
             )
         }
 
-        val mode = when (trigger.mode) {
-            is TriggerMode.Parallel -> TriggerEntity.PARALLEL
-            TriggerMode.Sequence -> TriggerEntity.SEQUENCE
-            TriggerMode.Undefined -> TriggerEntity.UNDEFINED
-        }
+        val mode =
+            when (trigger.mode) {
+                is TriggerMode.Parallel -> TriggerEntity.PARALLEL
+                TriggerMode.Sequence -> TriggerEntity.SEQUENCE
+                TriggerMode.Undefined -> TriggerEntity.UNDEFINED
+            }
 
         var flags = 0
 
@@ -181,17 +193,19 @@ object TriggerEntityMapper {
             flags = flags.withFlag(TriggerEntity.TRIGGER_FLAG_SHOW_TOAST)
         }
 
-        val keys = trigger.keys.map { key ->
-            when (key) {
-                is AssistantTriggerKey -> AssistantTriggerKey.toEntity(key)
-                is KeyEventTriggerKey -> KeyEventTriggerKey.toEntity(
-                    key,
-                )
-                is FloatingButtonKey -> FloatingButtonKey.toEntity(key)
-                is FingerprintTriggerKey -> FingerprintTriggerKey.toEntity(key)
-                is EvdevTriggerKey -> EvdevTriggerKey.toEntity(key)
+        val keys =
+            trigger.keys.map { key ->
+                when (key) {
+                    is AssistantTriggerKey -> AssistantTriggerKey.toEntity(key)
+                    is KeyEventTriggerKey ->
+                        KeyEventTriggerKey.toEntity(
+                            key,
+                        )
+                    is FloatingButtonKey -> FloatingButtonKey.toEntity(key)
+                    is FingerprintTriggerKey -> FingerprintTriggerKey.toEntity(key)
+                    is EvdevTriggerKey -> EvdevTriggerKey.toEntity(key)
+                }
             }
-        }
 
         return TriggerEntity(
             keys = keys,

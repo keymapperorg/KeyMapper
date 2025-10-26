@@ -49,9 +49,10 @@ fun OptionPageButton(
         ) {
             if (icon != null) {
                 Icon(
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .size(24.dp),
+                    modifier =
+                        Modifier
+                            .align(Alignment.CenterVertically)
+                            .size(24.dp),
                     imageVector = icon,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurface,

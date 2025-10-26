@@ -61,10 +61,11 @@ fun HomeWarningList(
 
                     FilledTonalButton(
                         onClick = { onFixClick(warning.id) },
-                        colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = MaterialTheme.colorScheme.error,
-                            contentColor = MaterialTheme.colorScheme.onError,
-                        ),
+                        colors =
+                            ButtonDefaults.filledTonalButtonColors(
+                                containerColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.onError,
+                            ),
                     ) {
                         Text(stringResource(R.string.button_fix))
                     }

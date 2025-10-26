@@ -14,40 +14,41 @@ import com.google.gson.JsonParser
  * Also added migration for the db to support this on older keymaps.
  */
 object Migration3To4 {
+    fun migrate(database: SupportSQLiteDatabase) =
+        database.apply {
+            val query =
+                SupportSQLiteQueryBuilder
+                    .builder("keymaps")
+                    .columns(arrayOf("id", "trigger"))
+                    .create()
 
-    fun migrate(database: SupportSQLiteDatabase) = database.apply {
-        val query = SupportSQLiteQueryBuilder
-            .builder("keymaps")
-            .columns(arrayOf("id", "trigger"))
-            .create()
+            // maps the new trigger mode to each keymap id
+            val newTriggerMap = mutableMapOf<Long, String>()
 
-        // maps the new trigger mode to each keymap id
-        val newTriggerMap = mutableMapOf<Long, String>()
+            query(query).apply {
+                val gson = Gson()
+                val parser = JsonParser()
 
-        query(query).apply {
-            val gson = Gson()
-            val parser = JsonParser()
+                while (moveToNext()) {
+                    val id = getLong(0)
 
-            while (moveToNext()) {
-                val id = getLong(0)
+                    val trigger = parser.parse(getString(1)).asJsonObject
 
-                val trigger = parser.parse(getString(1)).asJsonObject
+                    if (trigger["keys"].asJsonArray.size() <= 1) {
+                        trigger["mode"] = 2 // undefined mode
+                    }
 
-                if (trigger["keys"].asJsonArray.size() <= 1) {
-                    trigger["mode"] = 2 // undefined mode
+                    newTriggerMap[id] = gson.toJson(trigger)
                 }
 
-                newTriggerMap[id] = gson.toJson(trigger)
+                close()
             }
 
-            close()
-        }
+            newTriggerMap.entries.forEach {
+                val id = it.key
+                val trigger = it.value
 
-        newTriggerMap.entries.forEach {
-            val id = it.key
-            val trigger = it.value
-
-            execSQL("UPDATE keymaps SET trigger='$trigger' WHERE id=$id")
+                execSQL("UPDATE keymaps SET trigger='$trigger' WHERE id=$id")
+            }
         }
-    }
 }

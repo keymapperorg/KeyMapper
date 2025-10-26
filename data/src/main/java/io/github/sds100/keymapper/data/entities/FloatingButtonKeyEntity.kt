@@ -9,15 +9,12 @@ import java.util.UUID
 data class FloatingButtonKeyEntity(
     @SerializedName(NAME_BUTTON_UID)
     val buttonUid: String,
-
     @SerializedName(NAME_CLICK_TYPE)
     override val clickType: Int = SHORT_PRESS,
-
     @SerializedName(NAME_UID)
     override val uid: String = UUID.randomUUID().toString(),
 ) : TriggerKeyEntity(),
     Parcelable {
-
     companion object {
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_BUTTON_UID = "button_uid"

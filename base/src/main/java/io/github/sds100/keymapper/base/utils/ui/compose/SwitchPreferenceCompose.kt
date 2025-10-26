@@ -33,9 +33,10 @@ fun SwitchPreferenceCompose(
         },
     ) {
         Row(
-            modifier = Modifier.Companion
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier =
+                Modifier.Companion
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Icon(

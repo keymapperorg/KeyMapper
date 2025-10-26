@@ -17,15 +17,15 @@ class PickCoordinateImageView(
     attrs: AttributeSet?,
     defStyleAttr: Int,
 ) : AppCompatImageView(context, attrs, defStyleAttr) {
-
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context) : this(context, null, 0)
 
     val pointCoordinates = MutableStateFlow<Point?>(null)
 
-    private val coordinateLinePaint = Paint().apply {
-        color = context.color(R.color.coordinate_line)
-    }
+    private val coordinateLinePaint =
+        Paint().apply {
+            color = context.color(R.color.coordinate_line)
+        }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)

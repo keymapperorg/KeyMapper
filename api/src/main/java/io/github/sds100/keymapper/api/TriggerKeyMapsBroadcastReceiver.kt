@@ -13,14 +13,16 @@ import javax.inject.Inject
 // DON'T MOVE THIS CLASS TO A DIFFERENT PACKAGE BECAUSE IT BREAKS THE API
 @AndroidEntryPoint
 class TriggerKeyMapsBroadcastReceiver : BroadcastReceiver() {
-
     @Inject
     lateinit var serviceAdapter: AccessibilityServiceAdapter
 
     @Inject
     lateinit var coroutineScope: CoroutineScope
 
-    override fun onReceive(context: Context?, intent: Intent?) {
+    override fun onReceive(
+        context: Context?,
+        intent: Intent?,
+    ) {
         context ?: return
         intent ?: return
 

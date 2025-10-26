@@ -47,14 +47,16 @@ fun ConstraintListItem(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 48.dp)
-                .height(IntrinsicSize.Min)
-                .padding(start = 16.dp, end = 16.dp),
-            colors = CardDefaults.elevatedCardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer,
-            ),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 48.dp)
+                    .height(IntrinsicSize.Min)
+                    .padding(start = 16.dp, end = 16.dp),
+            colors =
+                CardDefaults.elevatedCardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                ),
         ) {
             Row(
                 modifier = Modifier.fillMaxSize(),
@@ -64,12 +66,13 @@ fun ConstraintListItem(
 
                 if (model.error == null) {
                     when (model.icon) {
-                        is ComposeIconInfo.Vector -> Icon(
-                            modifier = Modifier.size(24.dp),
-                            imageVector = model.icon.imageVector,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
+                        is ComposeIconInfo.Vector ->
+                            Icon(
+                                modifier = Modifier.size(24.dp),
+                                imageVector = model.icon.imageVector,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface,
+                            )
 
                         is ComposeIconInfo.Drawable -> {
                             val painter = rememberDrawablePainter(model.icon.drawable)
@@ -88,9 +91,10 @@ fun ConstraintListItem(
                 Spacer(Modifier.width(8.dp))
 
                 TextColumn(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(vertical = 8.dp),
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .padding(vertical = 8.dp),
                     primaryText = primaryText,
                     errorText = model.error,
                 )
@@ -102,10 +106,11 @@ fun ConstraintListItem(
                         FilledTonalButton(
                             modifier = Modifier.padding(start = 8.dp, end = 8.dp),
                             onClick = onFixClick,
-                            colors = ButtonDefaults.filledTonalButtonColors(
-                                containerColor = MaterialTheme.colorScheme.error,
-                                contentColor = MaterialTheme.colorScheme.onError,
-                            ),
+                            colors =
+                                ButtonDefaults.filledTonalButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.error,
+                                    contentColor = MaterialTheme.colorScheme.onError,
+                                ),
                         ) {
                             Text(
                                 text = stringResource(R.string.button_fix),
@@ -133,10 +138,11 @@ fun ConstraintListItem(
         } else {
             Spacer(Modifier.height(4.dp))
 
-            val text = when (model.constraintModeLink) {
-                ConstraintMode.AND -> stringResource(R.string.constraint_mode_and)
-                ConstraintMode.OR -> stringResource(R.string.constraint_mode_or)
-            }
+            val text =
+                when (model.constraintModeLink) {
+                    ConstraintMode.AND -> stringResource(R.string.constraint_mode_and)
+                    ConstraintMode.OR -> stringResource(R.string.constraint_mode_or)
+                }
 
             Text(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -178,14 +184,15 @@ private fun TextColumn(
 @Composable
 private fun VectorPreview() {
     ConstraintListItem(
-        model = ConstraintListItemModel(
-            id = "id",
-            icon = ComposeIconInfo.Vector(Icons.Outlined.ClearAll),
-            constraintModeLink = ConstraintMode.AND,
-            text = "Clear all",
-            error = null,
-            isErrorFixable = true,
-        ),
+        model =
+            ConstraintListItemModel(
+                id = "id",
+                icon = ComposeIconInfo.Vector(Icons.Outlined.ClearAll),
+                constraintModeLink = ConstraintMode.AND,
+                text = "Clear all",
+                error = null,
+                isErrorFixable = true,
+            ),
     )
 }
 
@@ -195,13 +202,14 @@ private fun DrawablePreview() {
     val drawable = LocalContext.current.drawable(R.mipmap.ic_launcher_round)
 
     ConstraintListItem(
-        model = ConstraintListItemModel(
-            id = "id",
-            text = "Dismiss most recent notification",
-            error = null,
-            isErrorFixable = true,
-            icon = ComposeIconInfo.Drawable(drawable),
-            constraintModeLink = ConstraintMode.OR,
-        ),
+        model =
+            ConstraintListItemModel(
+                id = "id",
+                text = "Dismiss most recent notification",
+                error = null,
+                isErrorFixable = true,
+                icon = ComposeIconInfo.Drawable(drawable),
+                constraintModeLink = ConstraintMode.OR,
+            ),
     )
 }

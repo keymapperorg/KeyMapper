@@ -81,10 +81,11 @@ fun TriggerKeyOptionsBottomSheet(
             Spacer(modifier = Modifier.height(12.dp))
             Box(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .fillMaxWidth()
-                        .padding(horizontal = 48.dp),
+                    modifier =
+                        Modifier
+                            .align(Alignment.Center)
+                            .fillMaxWidth()
+                            .padding(horizontal = 48.dp),
                     textAlign = TextAlign.Center,
                     text = stringResource(R.string.trigger_key_options_title),
                     style = MaterialTheme.typography.headlineMedium,
@@ -92,9 +93,10 @@ fun TriggerKeyOptionsBottomSheet(
                 )
 
                 HelpIconButton(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(horizontal = 8.dp),
+                    modifier =
+                        Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(horizontal = 8.dp),
                 )
             }
 
@@ -140,9 +142,10 @@ fun TriggerKeyOptionsBottomSheet(
 
             if (state.showClickTypes) {
                 ClickTypeSection(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                     state,
                     onSelectClickType,
                     isCompact = isCompact,
@@ -235,9 +238,10 @@ fun TriggerKeyOptionsBottomSheet(
 
             if (state is TriggerKeyOptionsState.FloatingButton && state.isPurchased) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                 ) {
                     FilledTonalButton(
                         modifier = Modifier.weight(1f),
@@ -258,9 +262,10 @@ fun TriggerKeyOptionsBottomSheet(
             }
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
             ) {
                 Spacer(Modifier.weight(1f))
 
@@ -268,10 +273,11 @@ fun TriggerKeyOptionsBottomSheet(
 
                 FilledTonalButton(
                     modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                    ),
+                    colors =
+                        ButtonDefaults.filledTonalButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                        ),
                     onClick = {
                         scope.launch {
                             sheetState.hide()
@@ -291,9 +297,7 @@ fun TriggerKeyOptionsBottomSheet(
 }
 
 @Composable
-private fun HelpIconButton(
-    modifier: Modifier,
-) {
+private fun HelpIconButton(modifier: Modifier) {
     val uriHandler = LocalUriHandler.current
     val helpUrl = stringResource(R.string.url_trigger_key_options_guide)
     val ctx = LocalContext.current
@@ -324,13 +328,14 @@ private fun ClickTypeSection(
 
         Spacer(Modifier.height(8.dp))
 
-        val clickTypeButtonContent: List<Pair<ClickType, String>> = buildList {
-            add(ClickType.SHORT_PRESS to stringResource(R.string.radio_button_short_press))
-            if (state.showLongPressClickType) {
-                add(ClickType.LONG_PRESS to stringResource(R.string.radio_button_long_press))
+        val clickTypeButtonContent: List<Pair<ClickType, String>> =
+            buildList {
+                add(ClickType.SHORT_PRESS to stringResource(R.string.radio_button_short_press))
+                if (state.showLongPressClickType) {
+                    add(ClickType.LONG_PRESS to stringResource(R.string.radio_button_long_press))
+                }
+                add(ClickType.DOUBLE_PRESS to stringResource(R.string.radio_button_double_press))
             }
-            add(ClickType.DOUBLE_PRESS to stringResource(R.string.radio_button_double_press))
-        }
 
         KeyMapperSegmentedButtonRow(
             modifier = Modifier.fillMaxWidth(),
@@ -360,23 +365,27 @@ private fun ScanCodeDetectionButtonRow(
         )
         Spacer(Modifier.height(8.dp))
 
-        val buttonStates = listOf(
-            false to if (keyCode == KeyEvent.KEYCODE_UNKNOWN) {
-                stringResource(R.string.trigger_use_key_code_button_disabled)
-            } else {
-                stringResource(R.string.trigger_use_key_code_button_enabled, keyCode)
-            },
-            true to if (scanCode == null) {
-                stringResource(R.string.trigger_use_scan_code_button_disabled)
-            } else {
-                stringResource(R.string.trigger_use_scan_code_button_enabled, scanCode)
-            },
-        )
+        val buttonStates =
+            listOf(
+                false to
+                    if (keyCode == KeyEvent.KEYCODE_UNKNOWN) {
+                        stringResource(R.string.trigger_use_key_code_button_disabled)
+                    } else {
+                        stringResource(R.string.trigger_use_key_code_button_enabled, keyCode)
+                    },
+                true to
+                    if (scanCode == null) {
+                        stringResource(R.string.trigger_use_scan_code_button_disabled)
+                    } else {
+                        stringResource(R.string.trigger_use_scan_code_button_enabled, scanCode)
+                    },
+            )
 
         KeyMapperSegmentedButtonRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             buttonStates = buttonStates,
             selectedState = isScanCodeSelected,
             onStateSelected = onSelectedChange,
@@ -390,7 +399,8 @@ private fun ScanCodeDetectionButtonRow(
 private fun isVerticalCompactLayout(): Boolean {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-    return windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT && windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
+    return windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT &&
+        windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -398,35 +408,38 @@ private fun isVerticalCompactLayout(): Boolean {
 @Composable
 private fun PreviewKeyEvent() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = Expanded,
+            )
 
         TriggerKeyOptionsBottomSheet(
             sheetState = sheetState,
-            state = TriggerKeyOptionsState.KeyEvent(
-                doNotRemapChecked = true,
-                clickType = ClickType.DOUBLE_PRESS,
-                showClickTypes = true,
-                devices = listOf(
-                    CheckBoxListItem(
-                        id = "id1",
-                        label = "Device 1",
-                        isChecked = true,
-                    ),
-                    CheckBoxListItem(
-                        id = "id2",
-                        label = "Device 2",
-                        isChecked = false,
-                    ),
+            state =
+                TriggerKeyOptionsState.KeyEvent(
+                    doNotRemapChecked = true,
+                    clickType = ClickType.DOUBLE_PRESS,
+                    showClickTypes = true,
+                    devices =
+                        listOf(
+                            CheckBoxListItem(
+                                id = "id1",
+                                label = "Device 1",
+                                isChecked = true,
+                            ),
+                            CheckBoxListItem(
+                                id = "id2",
+                                label = "Device 2",
+                                isChecked = false,
+                            ),
+                        ),
+                    keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                    scanCode = Scancode.KEY_VOLUMEDOWN,
+                    isScanCodeDetectionSelected = true,
+                    isScanCodeSettingEnabled = true,
                 ),
-                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
-                scanCode = Scancode.KEY_VOLUMEDOWN,
-                isScanCodeDetectionSelected = true,
-                isScanCodeSettingEnabled = true,
-            ),
         )
     }
 }
@@ -436,35 +449,38 @@ private fun PreviewKeyEvent() {
 @Composable
 private fun PreviewKeyEventTiny() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = Expanded,
+            )
 
         TriggerKeyOptionsBottomSheet(
             sheetState = sheetState,
-            state = TriggerKeyOptionsState.KeyEvent(
-                doNotRemapChecked = true,
-                clickType = ClickType.DOUBLE_PRESS,
-                showClickTypes = true,
-                devices = listOf(
-                    CheckBoxListItem(
-                        id = "id1",
-                        label = "Device 1",
-                        isChecked = true,
-                    ),
-                    CheckBoxListItem(
-                        id = "id2",
-                        label = "Device 2",
-                        isChecked = false,
-                    ),
+            state =
+                TriggerKeyOptionsState.KeyEvent(
+                    doNotRemapChecked = true,
+                    clickType = ClickType.DOUBLE_PRESS,
+                    showClickTypes = true,
+                    devices =
+                        listOf(
+                            CheckBoxListItem(
+                                id = "id1",
+                                label = "Device 1",
+                                isChecked = true,
+                            ),
+                            CheckBoxListItem(
+                                id = "id2",
+                                label = "Device 2",
+                                isChecked = false,
+                            ),
+                        ),
+                    keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                    scanCode = Scancode.KEY_VOLUMEDOWN,
+                    isScanCodeDetectionSelected = true,
+                    isScanCodeSettingEnabled = true,
                 ),
-                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
-                scanCode = Scancode.KEY_VOLUMEDOWN,
-                isScanCodeDetectionSelected = true,
-                isScanCodeSettingEnabled = true,
-            ),
         )
     }
 }
@@ -474,23 +490,25 @@ private fun PreviewKeyEventTiny() {
 @Composable
 private fun PreviewEvdev() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = Expanded,
+            )
 
         TriggerKeyOptionsBottomSheet(
             sheetState = sheetState,
-            state = TriggerKeyOptionsState.EvdevEvent(
-                doNotRemapChecked = true,
-                clickType = ClickType.DOUBLE_PRESS,
-                showClickTypes = true,
-                keyCode = KeyEvent.KEYCODE_UNKNOWN,
-                scanCode = Scancode.KEY_VOLUMEDOWN,
-                isScanCodeDetectionSelected = true,
-                isScanCodeSettingEnabled = false,
-            ),
+            state =
+                TriggerKeyOptionsState.EvdevEvent(
+                    doNotRemapChecked = true,
+                    clickType = ClickType.DOUBLE_PRESS,
+                    showClickTypes = true,
+                    keyCode = KeyEvent.KEYCODE_UNKNOWN,
+                    scanCode = Scancode.KEY_VOLUMEDOWN,
+                    isScanCodeDetectionSelected = true,
+                    isScanCodeSettingEnabled = false,
+                ),
         )
     }
 }
@@ -500,18 +518,20 @@ private fun PreviewEvdev() {
 @Composable
 private fun AssistantPreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = Expanded,
+            )
 
         TriggerKeyOptionsBottomSheet(
             sheetState = sheetState,
-            state = TriggerKeyOptionsState.Assistant(
-                assistantType = AssistantTriggerType.VOICE,
-                clickType = ClickType.DOUBLE_PRESS,
-            ),
+            state =
+                TriggerKeyOptionsState.Assistant(
+                    assistantType = AssistantTriggerType.VOICE,
+                    clickType = ClickType.DOUBLE_PRESS,
+                ),
         )
     }
 }
@@ -521,19 +541,21 @@ private fun AssistantPreview() {
 @Composable
 private fun FloatingButtonPreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = Expanded,
+            )
 
         TriggerKeyOptionsBottomSheet(
             sheetState = sheetState,
-            state = TriggerKeyOptionsState.FloatingButton(
-                clickType = ClickType.SHORT_PRESS,
-                showClickTypes = true,
-                isPurchased = true,
-            ),
+            state =
+                TriggerKeyOptionsState.FloatingButton(
+                    clickType = ClickType.SHORT_PRESS,
+                    showClickTypes = true,
+                    isPurchased = true,
+                ),
         )
     }
 }

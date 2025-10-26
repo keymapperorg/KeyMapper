@@ -57,5 +57,8 @@ interface GroupDao {
     suspend fun deleteByUid(vararg uid: String)
 
     @Query("UPDATE $TABLE_NAME SET $KEY_LAST_OPENED_DATE = (:timestamp) WHERE $KEY_UID IS (:groupUid)")
-    suspend fun setLastOpenedDate(groupUid: String, timestamp: Long)
+    suspend fun setLastOpenedDate(
+        groupUid: String,
+        timestamp: Long,
+    )
 }

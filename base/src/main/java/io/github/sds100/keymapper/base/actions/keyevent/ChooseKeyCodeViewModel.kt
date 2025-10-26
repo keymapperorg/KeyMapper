@@ -22,47 +22,49 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class ChooseKeyCodeViewModel @Inject constructor() : ViewModel() {
+class ChooseKeyCodeViewModel
+    @Inject
+    constructor() : ViewModel() {
+        val searchQuery = MutableStateFlow<String?>(null)
 
-    val searchQuery = MutableStateFlow<String?>(null)
+        private val _state = MutableStateFlow<State<List<SimpleListItemOld>>>(State.Loading)
+        val state = _state.asStateFlow()
 
-    private val _state = MutableStateFlow<State<List<SimpleListItemOld>>>(State.Loading)
-    val state = _state.asStateFlow()
-
-    private val allListItems = flow {
-        withContext(Dispatchers.Default) {
-            KeyEventUtils.getKeyCodes().sorted().map { keyCode ->
-                DefaultSimpleListItem(
-                    id = keyCode.toString(),
-                    title = "$keyCode \t\t ${KeyEvent.keyCodeToString(keyCode)}",
-                )
+        private val allListItems =
+            flow {
+                withContext(Dispatchers.Default) {
+                    KeyEventUtils.getKeyCodes().sorted().map { keyCode ->
+                        DefaultSimpleListItem(
+                            id = keyCode.toString(),
+                            title = "$keyCode \t\t ${KeyEvent.keyCodeToString(keyCode)}",
+                        )
+                    }
+                }.let { emit(it) }
             }
-        }.let { emit(it) }
-    }
 
-    private val _returnResult = MutableSharedFlow<Int>()
-    val returnResult = _returnResult.asSharedFlow()
+        private val _returnResult = MutableSharedFlow<Int>()
+        val returnResult = _returnResult.asSharedFlow()
 
-    init {
-        viewModelScope.launch {
-            combine(
-                searchQuery,
-                allListItems,
-            ) { query, allListItems ->
-                Pair(allListItems, query)
-            }.collectLatest { pair ->
-                val (allListItems, query) = pair
+        init {
+            viewModelScope.launch {
+                combine(
+                    searchQuery,
+                    allListItems,
+                ) { query, allListItems ->
+                    Pair(allListItems, query)
+                }.collectLatest { pair ->
+                    val (allListItems, query) = pair
 
-                allListItems.filterByQuery(query).collect {
-                    _state.value = it
+                    allListItems.filterByQuery(query).collect {
+                        _state.value = it
+                    }
                 }
             }
         }
-    }
 
-    fun onListItemClick(id: String) {
-        viewModelScope.launch {
-            _returnResult.emit(id.toInt())
+        fun onListItemClick(id: String) {
+            viewModelScope.launch {
+                _returnResult.emit(id.toInt())
+            }
         }
     }
-}

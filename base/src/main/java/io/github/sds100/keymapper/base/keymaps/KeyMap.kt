@@ -27,7 +27,6 @@ data class KeyMap(
     val isEnabled: Boolean = true,
     val groupUid: String? = null,
 ) {
-
     val showToast: Boolean
         get() = trigger.showToast
 
@@ -43,8 +42,7 @@ data class KeyMap(
 
     fun isChangingActionRepeatDelayAllowed(action: Action): Boolean = action.repeat && isRepeatingActionsAllowed()
 
-    fun isHoldingDownActionAllowed(action: Action): Boolean =
-        KeyMapAlgorithm.performActionOnDown(trigger) && action.data.canBeHeldDown()
+    fun isHoldingDownActionAllowed(action: Action): Boolean = KeyMapAlgorithm.performActionOnDown(trigger) && action.data.canBeHeldDown()
 
     fun isHoldingDownActionBeforeRepeatingAllowed(action: Action): Boolean = action.repeat && action.holdDown
 
@@ -67,12 +65,13 @@ fun KeyMap.requiresImeKeyEventForwarding(): Boolean {
     val hasPhoneCallAction =
         actionList.any { it.data is ActionData.AnswerCall || it.data is ActionData.EndCall }
 
-    val hasVolumeKeys = trigger.keys
-        .mapNotNull { it as? io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey }
-        .any {
-            it.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ||
-                it.keyCode == KeyEvent.KEYCODE_VOLUME_UP
-        }
+    val hasVolumeKeys =
+        trigger.keys
+            .mapNotNull { it as? io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey }
+            .any {
+                it.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ||
+                    it.keyCode == KeyEvent.KEYCODE_VOLUME_UP
+            }
 
     return hasVolumeKeys && hasPhoneCallAction
 }
@@ -91,12 +90,13 @@ fun KeyMap.requiresImeKeyEventForwardingInPhoneCall(triggerKey: TriggerKey): Boo
     val hasPhoneCallAction =
         actionList.any { it.data is ActionData.AnswerCall || it.data is ActionData.EndCall }
 
-    val hasVolumeKeys = trigger.keys
-        .mapNotNull { it as? io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey }
-        .any {
-            it.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ||
-                it.keyCode == KeyEvent.KEYCODE_VOLUME_UP
-        }
+    val hasVolumeKeys =
+        trigger.keys
+            .mapNotNull { it as? io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey }
+            .any {
+                it.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ||
+                    it.keyCode == KeyEvent.KEYCODE_VOLUME_UP
+            }
 
     return hasVolumeKeys && hasPhoneCallAction
 }
@@ -124,18 +124,22 @@ object KeyMapEntityMapper {
         )
     }
 
-    fun toEntity(keyMap: KeyMap, dbId: Long): KeyMapEntity {
+    fun toEntity(
+        keyMap: KeyMap,
+        dbId: Long,
+    ): KeyMapEntity {
         val actionEntityList = ActionEntityMapper.toEntity(keyMap)
 
         return KeyMapEntity(
             id = dbId,
             trigger = TriggerEntityMapper.toEntity(keyMap.trigger),
             actionList = actionEntityList,
-            constraintList = keyMap.constraintState.constraints.map {
-                ConstraintEntityMapper.toEntity(
-                    it,
-                )
-            },
+            constraintList =
+                keyMap.constraintState.constraints.map {
+                    ConstraintEntityMapper.toEntity(
+                        it,
+                    )
+                },
             constraintMode = ConstraintModeEntityMapper.toEntity(keyMap.constraintState.mode),
             isEnabled = keyMap.isEnabled,
             uid = keyMap.uid,

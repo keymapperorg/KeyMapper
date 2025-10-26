@@ -26,20 +26,22 @@ fun AccessibilityNodeInfo?.findNodeRecursively(
     return null
 }
 
-fun AccessibilityNodeInfo.toModel(): AccessibilityNodeModel = AccessibilityNodeModel(
-    packageName = packageName?.toString(),
-    contentDescription = contentDescription?.toString(),
-    isFocused = isFocused,
-    textSelectionStart = textSelectionStart,
-    textSelectionEnd = textSelectionEnd,
-    text = text?.toString(),
-    isEditable = isEditable,
-    className = className?.toString(),
-    uniqueId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        uniqueId
-    } else {
-        null
-    },
-    viewResourceId = viewIdResourceName,
-    actions = actionList.map { it.id },
-)
+fun AccessibilityNodeInfo.toModel(): AccessibilityNodeModel =
+    AccessibilityNodeModel(
+        packageName = packageName?.toString(),
+        contentDescription = contentDescription?.toString(),
+        isFocused = isFocused,
+        textSelectionStart = textSelectionStart,
+        textSelectionEnd = textSelectionEnd,
+        text = text?.toString(),
+        isEditable = isEditable,
+        className = className?.toString(),
+        uniqueId =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                uniqueId
+            } else {
+                null
+            },
+        viewResourceId = viewIdResourceName,
+        actions = actionList.map { it.id },
+    )

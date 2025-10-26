@@ -7,7 +7,5 @@ import io.github.sds100.keymapper.base.BaseKeyMapperApp
 @SuppressLint("LogNotTimber")
 @HiltAndroidApp
 class KeyMapperApp : BaseKeyMapperApp() {
-    override fun getMainActivityClass(): Class<*> {
-        return MainActivity::class.java
-    }
+    override fun getMainActivityClass(): Class<*> = MainActivity::class.java
 }

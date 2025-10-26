@@ -95,11 +95,12 @@ fun InputMethodRequirementRow(
         modifier = modifier,
         text = stringResource(R.string.trigger_setup_input_method_title),
     ) {
-        val enabledText = when {
-            !isEnabled && enablingRequiresUserInput -> stringResource(R.string.trigger_setup_input_method_enable_button)
-            !isChosen -> stringResource(R.string.trigger_setup_input_method_choose_button)
-            else -> ""
-        }
+        val enabledText =
+            when {
+                !isEnabled && enablingRequiresUserInput -> stringResource(R.string.trigger_setup_input_method_enable_button)
+                !isChosen -> stringResource(R.string.trigger_setup_input_method_choose_button)
+                else -> ""
+            }
 
         val disabledText = stringResource(R.string.trigger_setup_input_method_running_button)
 

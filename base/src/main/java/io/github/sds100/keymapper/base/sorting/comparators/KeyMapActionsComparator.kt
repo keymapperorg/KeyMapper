@@ -32,19 +32,20 @@ class KeyMapActionsComparator(
             val action1 = keyMap.actionList[i]
             val action2 = otherKeyMap.actionList[i]
 
-            val result = compareValuesBy(
-                action1,
-                action2,
-                { it.data.id },
-                { getSecondarySortField(it.data).valueOrNull() ?: it.data.id },
-                { it.repeat },
-                { it.multiplier },
-                { it.repeatLimit },
-                { it.repeatRate },
-                { it.repeatDelay },
-                { it.repeatMode },
-                { it.delayBeforeNextAction },
-            )
+            val result =
+                compareValuesBy(
+                    action1,
+                    action2,
+                    { it.data.id },
+                    { getSecondarySortField(it.data).valueOrNull() ?: it.data.id },
+                    { it.repeat },
+                    { it.multiplier },
+                    { it.repeatLimit },
+                    { it.repeatRate },
+                    { it.repeatDelay },
+                    { it.repeatMode },
+                    { it.delayBeforeNextAction },
+                )
 
             if (result != 0) {
                 return invertIfReverse(result)
@@ -57,14 +58,15 @@ class KeyMapActionsComparator(
         return invertIfReverse(comparison)
     }
 
-    private fun invertIfReverse(result: Int) = if (reverse) {
-        result * -1
-    } else {
-        result
-    }
+    private fun invertIfReverse(result: Int) =
+        if (reverse) {
+            result * -1
+        } else {
+            result
+        }
 
-    private fun getSecondarySortField(action: ActionData): KMResult<String> {
-        return when (action) {
+    private fun getSecondarySortField(action: ActionData): KMResult<String> =
+        when (action) {
             is ActionData.App -> displayActions.getAppName(action.packageName)
             is ActionData.AppShortcut -> Success(action.shortcutTitle)
             is ActionData.InputKeyEvent -> Success(action.keyCode.toString())
@@ -88,5 +90,4 @@ class KeyMapActionsComparator(
             is ActionData.Rotation.CycleRotations -> Success(action.orientations.joinToString())
             else -> Success("")
         }
-    }
 }

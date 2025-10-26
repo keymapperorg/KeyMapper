@@ -9,27 +9,20 @@ import java.util.UUID
 data class KeyEventTriggerKeyEntity(
     @SerializedName(NAME_KEYCODE)
     val keyCode: Int,
-
     @SerializedName(NAME_DEVICE_ID)
     val deviceId: String = DEVICE_ID_THIS_DEVICE,
-
     @SerializedName(NAME_DEVICE_NAME)
     val deviceName: String? = null,
-
     @SerializedName(NAME_CLICK_TYPE)
     override val clickType: Int = SHORT_PRESS,
-
     @SerializedName(NAME_FLAGS)
     val flags: Int = 0,
-
     @SerializedName(NAME_UID)
     override val uid: String = UUID.randomUUID().toString(),
-
     @SerializedName(NAME_SCANCODE)
     val scanCode: Int? = null,
 ) : TriggerKeyEntity(),
     Parcelable {
-
     companion object {
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_KEYCODE = "keyCode"

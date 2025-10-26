@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 
 abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
-
     companion object {
         private const val KEY_SAVED_STATE = "key_saved_state"
 
@@ -46,12 +45,13 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
     val binding: BINDING
         get() = _binding!!
 
-    private val savedStateProvider = SavedStateRegistry.SavedStateProvider {
-        Bundle().apply {
-            putBoolean(KEY_IS_APPBAR_VISIBLE, isAppBarVisible)
-            putString(KEY_SEARCH_STATE_KEY, searchStateKey)
+    private val savedStateProvider =
+        SavedStateRegistry.SavedStateProvider {
+            Bundle().apply {
+                putBoolean(KEY_IS_APPBAR_VISIBLE, isAppBarVisible)
+                putString(KEY_SEARCH_STATE_KEY, searchStateKey)
+            }
         }
-    }
 
     private val isSearchEnabled: Boolean
         get() = searchStateKey != null
@@ -76,12 +76,17 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
         ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
             val insets =
-                insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime())
+                insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime(),
+                )
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
             WindowInsetsCompat.CONSUMED
         }
@@ -195,18 +200,21 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
 
         searchStateKey ?: return
 
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextChange(newText: String?): Boolean {
-                onSearchQuery(newText)
+        searchView.setOnQueryTextListener(
+            object : SearchView.OnQueryTextListener {
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    onSearchQuery(newText)
 
-                return true
-            }
+                    return true
+                }
 
-            override fun onQueryTextSubmit(query: String?) = onQueryTextChange(query)
-        })
+                override fun onQueryTextSubmit(query: String?) = onQueryTextChange(query)
+            },
+        )
     }
 
     open fun onSearchQuery(query: String?) {}
+
     open fun getBottomAppBar(binding: BINDING): BottomAppBar? = null
 
     open fun onBackPressed() {
@@ -216,9 +224,20 @@ abstract class RecyclerViewFragment<T, BINDING : ViewDataBinding> : Fragment() {
     open fun getRequestKey(): String = throw IllegalStateException("No request key is set")
 
     abstract fun getRecyclerView(binding: BINDING): EpoxyRecyclerView
+
     abstract fun getProgressBar(binding: BINDING): View
+
     abstract fun getEmptyListPlaceHolderTextView(binding: BINDING): View
+
     abstract fun subscribeUi(binding: BINDING)
-    abstract fun populateList(recyclerView: EpoxyRecyclerView, listItems: List<T>)
-    abstract fun bind(inflater: LayoutInflater, container: ViewGroup?): BINDING
+
+    abstract fun populateList(
+        recyclerView: EpoxyRecyclerView,
+        listItems: List<T>,
+    )
+
+    abstract fun bind(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+    ): BINDING
 }

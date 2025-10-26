@@ -14,36 +14,41 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RoomLogRepository @Inject constructor(
-    private val coroutineScope: CoroutineScope,
-    private val dao: LogEntryDao,
-) : LogRepository {
-    override val log: Flow<List<LogEntryEntity>> = dao.getAll()
-        .flowOn(Dispatchers.IO)
+class RoomLogRepository
+    @Inject
+    constructor(
+        private val coroutineScope: CoroutineScope,
+        private val dao: LogEntryDao,
+    ) : LogRepository {
+        override val log: Flow<List<LogEntryEntity>> =
+            dao
+                .getAll()
+                .flowOn(Dispatchers.IO)
 
-    init {
-        dao.getIds()
-            .filter { it.size > 1000 }
-            .onEach { log ->
-                val middleId = log.getOrNull(500) ?: return@onEach
-                dao.deleteRowsWithIdLessThan(middleId)
-            }.flowOn(Dispatchers.IO)
-            .launchIn(coroutineScope)
-    }
-
-    override fun deleteAll() {
-        coroutineScope.launch(Dispatchers.IO) {
-            dao.deleteAll()
+        init {
+            dao
+                .getIds()
+                .filter { it.size > 1000 }
+                .onEach { log ->
+                    val middleId = log.getOrNull(500) ?: return@onEach
+                    dao.deleteRowsWithIdLessThan(middleId)
+                }.flowOn(Dispatchers.IO)
+                .launchIn(coroutineScope)
         }
-    }
 
-    override fun insert(entry: LogEntryEntity) {
-        coroutineScope.launch(Dispatchers.IO) {
+        override fun deleteAll() {
+            coroutineScope.launch(Dispatchers.IO) {
+                dao.deleteAll()
+            }
+        }
+
+        override fun insert(entry: LogEntryEntity) {
+            coroutineScope.launch(Dispatchers.IO) {
+                dao.insert(entry)
+            }
+        }
+
+        override suspend fun insertSuspend(entry: LogEntryEntity) {
             dao.insert(entry)
         }
     }
-
-    override suspend fun insertSuspend(entry: LogEntryEntity) {
-        dao.insert(entry)
-    }
-}

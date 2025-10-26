@@ -77,12 +77,17 @@ class ConfigKeyEventActionFragment : Fragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
         ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
             val insets =
-                insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime())
+                insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime(),
+                )
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
             WindowInsetsCompat.CONSUMED
         }
@@ -117,26 +122,27 @@ class ConfigKeyEventActionFragment : Fragment() {
                 viewModel.chooseDevice(position - 1)
             }
 
-            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long,
-                ) {
-                    if (position == 0) {
-                        viewModel.chooseNoDevice()
-                        return
+            onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long,
+                    ) {
+                        if (position == 0) {
+                            viewModel.chooseNoDevice()
+                            return
+                        }
+
+                        // subtract the list item that selects no device
+                        viewModel.chooseDevice(position - 1)
                     }
 
-                    // subtract the list item that selects no device
-                    viewModel.chooseDevice(position - 1)
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                        viewModel.chooseNoDevice()
+                    }
                 }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    viewModel.chooseNoDevice()
-                }
-            }
         }
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {

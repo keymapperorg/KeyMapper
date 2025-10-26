@@ -11,63 +11,72 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class ShowHomeScreenAlertsUseCaseImpl @Inject constructor(
-    private val preferences: PreferenceRepository,
-    private val permissions: PermissionAdapter,
-    private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
-    private val pauseKeyMapsUseCase: PauseKeyMapsUseCase,
-) : ShowHomeScreenAlertsUseCase {
-    override val hideAlerts: Flow<Boolean> =
-        preferences.get(Keys.hideHomeScreenAlerts).map { it == true }
+class ShowHomeScreenAlertsUseCaseImpl
+    @Inject
+    constructor(
+        private val preferences: PreferenceRepository,
+        private val permissions: PermissionAdapter,
+        private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
+        private val pauseKeyMapsUseCase: PauseKeyMapsUseCase,
+    ) : ShowHomeScreenAlertsUseCase {
+        override val hideAlerts: Flow<Boolean> =
+            preferences.get(Keys.hideHomeScreenAlerts).map { it == true }
 
-    override val isBatteryOptimised: Flow<Boolean> =
-        permissions.isGrantedFlow(Permission.IGNORE_BATTERY_OPTIMISATION)
-            .map { !it } // if granted then battery is NOT optimised
+        override val isBatteryOptimised: Flow<Boolean> =
+            permissions
+                .isGrantedFlow(Permission.IGNORE_BATTERY_OPTIMISATION)
+                .map { !it } // if granted then battery is NOT optimised
 
-    override val areKeyMapsPaused: Flow<Boolean> = pauseKeyMapsUseCase.isPaused
+        override val areKeyMapsPaused: Flow<Boolean> = pauseKeyMapsUseCase.isPaused
 
-    override val isLoggingEnabled: Flow<Boolean> = preferences.get(Keys.log).map { it == true }
+        override val isLoggingEnabled: Flow<Boolean> = preferences.get(Keys.log).map { it == true }
 
-    override fun disableBatteryOptimisation() {
-        permissions.request(Permission.IGNORE_BATTERY_OPTIMISATION)
-    }
-
-    override fun resumeMappings() {
-        pauseKeyMapsUseCase.resume()
-    }
-
-    override fun disableLogging() {
-        preferences.set(Keys.log, false)
-    }
-
-    override val showNotificationPermissionAlert: Flow<Boolean> =
-        combine(
-            permissions.isGrantedFlow(Permission.POST_NOTIFICATIONS),
-            preferences.get(Keys.neverShowNotificationPermissionAlert).map { it ?: false },
-        ) { isGranted, neverShow ->
-            !isGranted && !neverShow
+        override fun disableBatteryOptimisation() {
+            permissions.request(Permission.IGNORE_BATTERY_OPTIMISATION)
         }
 
-    override fun requestNotificationPermission() {
-        permissions.request(Permission.POST_NOTIFICATIONS)
-    }
+        override fun resumeMappings() {
+            pauseKeyMapsUseCase.resume()
+        }
 
-    override fun neverShowNotificationPermissionAlert() {
-        preferences.set(Keys.neverShowNotificationPermissionAlert, true)
+        override fun disableLogging() {
+            preferences.set(Keys.log, false)
+        }
+
+        override val showNotificationPermissionAlert: Flow<Boolean> =
+            combine(
+                permissions.isGrantedFlow(Permission.POST_NOTIFICATIONS),
+                preferences.get(Keys.neverShowNotificationPermissionAlert).map { it ?: false },
+            ) { isGranted, neverShow ->
+                !isGranted && !neverShow
+            }
+
+        override fun requestNotificationPermission() {
+            permissions.request(Permission.POST_NOTIFICATIONS)
+        }
+
+        override fun neverShowNotificationPermissionAlert() {
+            preferences.set(Keys.neverShowNotificationPermissionAlert, true)
+        }
     }
-}
 
 interface ShowHomeScreenAlertsUseCase {
     val hideAlerts: Flow<Boolean>
+
     fun disableBatteryOptimisation()
+
     val isBatteryOptimised: Flow<Boolean>
     val areKeyMapsPaused: Flow<Boolean>
+
     fun resumeMappings()
 
     val isLoggingEnabled: Flow<Boolean>
+
     fun disableLogging()
 
     val showNotificationPermissionAlert: Flow<Boolean>
+
     fun requestNotificationPermission()
+
     fun neverShowNotificationPermissionAlert()
 }

@@ -47,7 +47,10 @@ import io.github.sds100.keymapper.data.migration.Migration8To9
 import io.github.sds100.keymapper.data.migration.Migration9To10
 
 @Database(
-    entities = [KeyMapEntity::class, FingerprintMapEntity::class, LogEntryEntity::class, FloatingLayoutEntity::class, FloatingButtonEntity::class, GroupEntity::class, AccessibilityNodeEntity::class],
+    entities = [
+        KeyMapEntity::class, FingerprintMapEntity::class, LogEntryEntity::class, FloatingLayoutEntity::class,
+        FloatingButtonEntity::class, GroupEntity::class, AccessibilityNodeEntity::class,
+    ],
     version = DATABASE_VERSION,
     exportSchema = true,
     autoMigrations = [
@@ -77,85 +80,99 @@ abstract class AppDatabase : RoomDatabase() {
         const val DATABASE_NAME = "key_map_database"
         const val DATABASE_VERSION = 21
 
-        val MIGRATION_1_2 = object : Migration(1, 2) {
+        val MIGRATION_1_2 =
+            object : Migration(1, 2) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    Migration1To2.migrate(database)
+                }
+            }
 
-            override fun migrate(database: SupportSQLiteDatabase) {
-                Migration1To2.migrate(database)
+        val MIGRATION_2_3 =
+            object : Migration(2, 3) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    Migration2To3.migrate(database)
+                }
             }
-        }
 
-        val MIGRATION_2_3 = object : Migration(2, 3) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                Migration2To3.migrate(database)
+        val MIGRATION_3_4 =
+            object : Migration(3, 4) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    Migration3To4.migrate(database)
+                }
             }
-        }
+        val MIGRATION_4_5 =
+            object : Migration(4, 5) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    Migration4To5.migrate(database)
+                }
+            }
 
-        val MIGRATION_3_4 = object : Migration(3, 4) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                Migration3To4.migrate(database)
+        val MIGRATION_5_6 =
+            object : Migration(5, 6) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    Migration5To6.migrate(database)
+                }
             }
-        }
-        val MIGRATION_4_5 = object : Migration(4, 5) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                Migration4To5.migrate(database)
-            }
-        }
 
-        val MIGRATION_5_6 = object : Migration(5, 6) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                Migration5To6.migrate(database)
+        val MIGRATION_6_7 =
+            object : Migration(6, 7) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    Migration6To7.migrate(database)
+                }
             }
-        }
 
-        val MIGRATION_6_7 = object : Migration(6, 7) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                Migration6To7.migrate(database)
+        val MIGRATION_7_8 =
+            object : Migration(7, 8) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    // DO NOTHING
+                    // I added a change and then removed it in a later commit. this will only affect testers so not a big
+                    // deal
+                }
             }
-        }
 
-        val MIGRATION_7_8 = object : Migration(7, 8) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                // DO NOTHING
-                // I added a change and then removed it in a later commit. this will only affect testers so not a big
-                // deal
+        val MIGRATION_8_9 =
+            object : Migration(8, 9) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    Migration8To9.migrate(database)
+                }
             }
-        }
 
-        val MIGRATION_8_9 = object : Migration(8, 9) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                Migration8To9.migrate(database)
+        val MIGRATION_9_10 =
+            object : Migration(9, 10) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    Migration9To10.migrateDatabase(database)
+                }
             }
-        }
 
-        val MIGRATION_9_10 = object : Migration(9, 10) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                Migration9To10.migrateDatabase(database)
+        val MIGRATION_10_11 =
+            object : Migration(10, 11) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    Migration10To11.migrateDatabase(database)
+                }
             }
-        }
 
-        val MIGRATION_10_11 = object : Migration(10, 11) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                Migration10To11.migrateDatabase(database)
+        val MIGRATION_12_13 =
+            object : Migration(12, 13) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    database.execSQL(
+                        "CREATE TABLE `log` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `time` INTEGER NOT NULL, `severity` INTEGER NOT NULL, `message` TEXT NOT NULL)",
+                    )
+                }
             }
-        }
 
-        val MIGRATION_12_13 = object : Migration(12, 13) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("CREATE TABLE `log` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `time` INTEGER NOT NULL, `severity` INTEGER NOT NULL, `message` TEXT NOT NULL)")
+        val MIGRATION_13_14 =
+            object : Migration(13, 14) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    Migration13To14.migrateDatabase(database)
+                }
             }
-        }
 
-        val MIGRATION_13_14 = object : Migration(13, 14) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                Migration13To14.migrateDatabase(database)
+        val MIGRATION_17_18 =
+            object : Migration(17, 18) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    database.execSQL("DROP INDEX IF EXISTS `index_groups_name`")
+                }
             }
-        }
-
-        val MIGRATION_17_18 = object : Migration(17, 18) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("DROP INDEX IF EXISTS `index_groups_name`")
-            }
-        }
     }
 
     class RoomMigration11To12(
@@ -167,10 +184,16 @@ abstract class AppDatabase : RoomDatabase() {
     }
 
     abstract fun keyMapDao(): KeyMapDao
+
     abstract fun fingerprintMapDao(): FingerprintMapDao
+
     abstract fun logEntryDao(): LogEntryDao
+
     abstract fun floatingLayoutDao(): FloatingLayoutDao
+
     abstract fun floatingButtonDao(): FloatingButtonDao
+
     abstract fun groupDao(): GroupDao
+
     abstract fun accessibilityNodeDao(): AccessibilityNodeDao
 }

@@ -70,91 +70,97 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HandleTriggerSetupBottomSheet(
-    delegate: TriggerSetupDelegate,
-) {
+fun HandleTriggerSetupBottomSheet(delegate: TriggerSetupDelegate) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val triggerSetupState: TriggerSetupState? by delegate.triggerSetupState.collectAsStateWithLifecycle()
 
     when (triggerSetupState) {
-        is TriggerSetupState.Volume -> VolumeTriggerSetupBottomSheet(
-            sheetState = sheetState,
-            state = triggerSetupState as TriggerSetupState.Volume,
-            onDismissRequest = delegate::onDismissTriggerSetup,
-            onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
-            onEnableProModeClick = delegate::onEnableProModeClick,
-            onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
-            onUseProModeCheckedChange = delegate::onUseProModeCheckedChange,
-        )
+        is TriggerSetupState.Volume ->
+            VolumeTriggerSetupBottomSheet(
+                sheetState = sheetState,
+                state = triggerSetupState as TriggerSetupState.Volume,
+                onDismissRequest = delegate::onDismissTriggerSetup,
+                onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
+                onEnableProModeClick = delegate::onEnableProModeClick,
+                onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
+                onUseProModeCheckedChange = delegate::onUseProModeCheckedChange,
+            )
 
-        is TriggerSetupState.Power -> PowerTriggerSetupBottomSheet(
-            sheetState = sheetState,
-            state = triggerSetupState as TriggerSetupState.Power,
-            onDismissRequest = delegate::onDismissTriggerSetup,
-            onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
-            onEnableProModeClick = delegate::onEnableProModeClick,
-            onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
-        )
+        is TriggerSetupState.Power ->
+            PowerTriggerSetupBottomSheet(
+                sheetState = sheetState,
+                state = triggerSetupState as TriggerSetupState.Power,
+                onDismissRequest = delegate::onDismissTriggerSetup,
+                onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
+                onEnableProModeClick = delegate::onEnableProModeClick,
+                onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
+            )
 
-        is TriggerSetupState.FingerprintGesture -> FingerprintGestureSetupBottomSheet(
-            sheetState = sheetState,
-            state = triggerSetupState as TriggerSetupState.FingerprintGesture,
-            onDismissRequest = delegate::onDismissTriggerSetup,
-            onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
-            onGestureTypeSelected = delegate::onFingerprintGestureTypeSelected,
-            onAddTriggerClick = delegate::onAddFingerprintGestureClick,
-        )
+        is TriggerSetupState.FingerprintGesture ->
+            FingerprintGestureSetupBottomSheet(
+                sheetState = sheetState,
+                state = triggerSetupState as TriggerSetupState.FingerprintGesture,
+                onDismissRequest = delegate::onDismissTriggerSetup,
+                onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
+                onGestureTypeSelected = delegate::onFingerprintGestureTypeSelected,
+                onAddTriggerClick = delegate::onAddFingerprintGestureClick,
+            )
 
-        is TriggerSetupState.Keyboard -> KeyboardTriggerSetupBottomSheet(
-            sheetState = sheetState,
-            state = triggerSetupState as TriggerSetupState.Keyboard,
-            onDismissRequest = delegate::onDismissTriggerSetup,
-            onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
-            onEnableProModeClick = delegate::onEnableProModeClick,
-            onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
-            onUseProModeCheckedChange = delegate::onUseProModeCheckedChange,
-        )
+        is TriggerSetupState.Keyboard ->
+            KeyboardTriggerSetupBottomSheet(
+                sheetState = sheetState,
+                state = triggerSetupState as TriggerSetupState.Keyboard,
+                onDismissRequest = delegate::onDismissTriggerSetup,
+                onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
+                onEnableProModeClick = delegate::onEnableProModeClick,
+                onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
+                onUseProModeCheckedChange = delegate::onUseProModeCheckedChange,
+            )
 
-        is TriggerSetupState.Mouse -> MouseTriggerSetupBottomSheet(
-            sheetState = sheetState,
-            state = triggerSetupState as TriggerSetupState.Mouse,
-            onDismissRequest = delegate::onDismissTriggerSetup,
-            onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
-            onEnableProModeClick = delegate::onEnableProModeClick,
-            onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
-        )
+        is TriggerSetupState.Mouse ->
+            MouseTriggerSetupBottomSheet(
+                sheetState = sheetState,
+                state = triggerSetupState as TriggerSetupState.Mouse,
+                onDismissRequest = delegate::onDismissTriggerSetup,
+                onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
+                onEnableProModeClick = delegate::onEnableProModeClick,
+                onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
+            )
 
-        is TriggerSetupState.Other -> OtherTriggerSetupBottomSheet(
-            sheetState = sheetState,
-            state = triggerSetupState as TriggerSetupState.Other,
-            onDismissRequest = delegate::onDismissTriggerSetup,
-            onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
-            onEnableProModeClick = delegate::onEnableProModeClick,
-            onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
-            onUseProModeCheckedChange = delegate::onUseProModeCheckedChange,
-        )
+        is TriggerSetupState.Other ->
+            OtherTriggerSetupBottomSheet(
+                sheetState = sheetState,
+                state = triggerSetupState as TriggerSetupState.Other,
+                onDismissRequest = delegate::onDismissTriggerSetup,
+                onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
+                onEnableProModeClick = delegate::onEnableProModeClick,
+                onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
+                onUseProModeCheckedChange = delegate::onUseProModeCheckedChange,
+            )
 
-        is TriggerSetupState.NotDetected -> NotDetectedSetupBottomSheet(
-            sheetState = sheetState,
-            state = triggerSetupState as TriggerSetupState.NotDetected,
-            onDismissRequest = delegate::onDismissTriggerSetup,
-            onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
-            onEnableProModeClick = delegate::onEnableProModeClick,
-            onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
-        )
+        is TriggerSetupState.NotDetected ->
+            NotDetectedSetupBottomSheet(
+                sheetState = sheetState,
+                state = triggerSetupState as TriggerSetupState.NotDetected,
+                onDismissRequest = delegate::onDismissTriggerSetup,
+                onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
+                onEnableProModeClick = delegate::onEnableProModeClick,
+                onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
+            )
 
-        is TriggerSetupState.Gamepad -> GamepadTriggerSetupBottomSheet(
-            sheetState = sheetState,
-            state = triggerSetupState as TriggerSetupState.Gamepad,
-            onDismissRequest = delegate::onDismissTriggerSetup,
-            onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
-            onSelectButtonType = delegate::onGamepadButtonTypeSelected,
-            onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
-            onEnableInputMethodClick = delegate::onEnableImeClick,
-            onChooseInputMethodClick = delegate::onChooseImeClick,
-            onUseProModeCheckedChange = delegate::onUseProModeCheckedChange,
-            onEnableProModeClick = delegate::onEnableProModeClick,
-        )
+        is TriggerSetupState.Gamepad ->
+            GamepadTriggerSetupBottomSheet(
+                sheetState = sheetState,
+                state = triggerSetupState as TriggerSetupState.Gamepad,
+                onDismissRequest = delegate::onDismissTriggerSetup,
+                onEnableAccessibilityServiceClick = delegate::onEnableAccessibilityServiceClick,
+                onSelectButtonType = delegate::onGamepadButtonTypeSelected,
+                onRecordTriggerClick = delegate::onTriggerSetupRecordClick,
+                onEnableInputMethodClick = delegate::onEnableImeClick,
+                onChooseInputMethodClick = delegate::onChooseImeClick,
+                onUseProModeCheckedChange = delegate::onUseProModeCheckedChange,
+                onEnableProModeClick = delegate::onEnableProModeClick,
+            )
 
         null -> {}
     }
@@ -202,15 +208,17 @@ private fun GamepadTriggerSetupBottomSheet(
 
         HeaderText(text = stringResource(R.string.trigger_setup_options_title))
 
-        val buttonStates = listOf(
-            TriggerSetupState.Gamepad.Type.DPAD to stringResource(R.string.trigger_setup_gamepad_type_dpad),
-            TriggerSetupState.Gamepad.Type.SIMPLE_BUTTONS to stringResource(R.string.trigger_setup_gamepad_type_simple_buttons),
-        )
+        val buttonStates =
+            listOf(
+                TriggerSetupState.Gamepad.Type.DPAD to stringResource(R.string.trigger_setup_gamepad_type_dpad),
+                TriggerSetupState.Gamepad.Type.SIMPLE_BUTTONS to stringResource(R.string.trigger_setup_gamepad_type_simple_buttons),
+            )
 
-        val selectedState = when (state) {
-            is TriggerSetupState.Gamepad.Dpad -> TriggerSetupState.Gamepad.Type.DPAD
-            is TriggerSetupState.Gamepad.SimpleButtons -> TriggerSetupState.Gamepad.Type.SIMPLE_BUTTONS
-        }
+        val selectedState =
+            when (state) {
+                is TriggerSetupState.Gamepad.Dpad -> TriggerSetupState.Gamepad.Type.DPAD
+                is TriggerSetupState.Gamepad.SimpleButtons -> TriggerSetupState.Gamepad.Type.SIMPLE_BUTTONS
+            }
 
         KeyMapperSegmentedButtonRow(
             modifier = Modifier.fillMaxWidth(),
@@ -219,15 +227,17 @@ private fun GamepadTriggerSetupBottomSheet(
             onStateSelected = onSelectButtonType,
         )
 
-        val isUseProModeChecked = when (state) {
-            is TriggerSetupState.Gamepad.Dpad -> false
-            is TriggerSetupState.Gamepad.SimpleButtons -> state.isUseProModeChecked
-        }
+        val isUseProModeChecked =
+            when (state) {
+                is TriggerSetupState.Gamepad.Dpad -> false
+                is TriggerSetupState.Gamepad.SimpleButtons -> state.isUseProModeChecked
+            }
 
-        val isUseProModeEnabled = when (state) {
-            is TriggerSetupState.Gamepad.Dpad -> false
-            is TriggerSetupState.Gamepad.SimpleButtons -> true
-        }
+        val isUseProModeEnabled =
+            when (state) {
+                is TriggerSetupState.Gamepad.Dpad -> false
+                is TriggerSetupState.Gamepad.SimpleButtons -> true
+            }
 
         CheckBoxText(
             modifier = Modifier.fillMaxWidth(),
@@ -394,25 +404,31 @@ private fun PowerTriggerSetupBottomSheet(
 }
 
 @Composable
-private fun RemapStatusButton(modifier: Modifier = Modifier, remapStatus: RemapStatus) {
+private fun RemapStatusButton(
+    modifier: Modifier = Modifier,
+    remapStatus: RemapStatus,
+) {
     when (remapStatus) {
-        RemapStatus.UNSUPPORTED -> RemapStatusRow(
-            modifier = modifier,
-            color = MaterialTheme.colorScheme.error,
-            text = stringResource(R.string.trigger_setup_status_can_not_remap),
-        )
+        RemapStatus.UNSUPPORTED ->
+            RemapStatusRow(
+                modifier = modifier,
+                color = MaterialTheme.colorScheme.error,
+                text = stringResource(R.string.trigger_setup_status_can_not_remap),
+            )
 
-        RemapStatus.UNCERTAIN -> RemapStatusRow(
-            modifier = modifier,
-            color = LocalCustomColorsPalette.current.amber,
-            text = stringResource(R.string.trigger_setup_status_might_remap_button),
-        )
+        RemapStatus.UNCERTAIN ->
+            RemapStatusRow(
+                modifier = modifier,
+                color = LocalCustomColorsPalette.current.amber,
+                text = stringResource(R.string.trigger_setup_status_might_remap_button),
+            )
 
-        RemapStatus.SUPPORTED -> RemapStatusRow(
-            modifier = modifier,
-            color = LocalCustomColorsPalette.current.green,
-            text = stringResource(R.string.trigger_setup_status_remap_button_possible),
-        )
+        RemapStatus.SUPPORTED ->
+            RemapStatusRow(
+                modifier = modifier,
+                color = LocalCustomColorsPalette.current.green,
+                text = stringResource(R.string.trigger_setup_status_remap_button_possible),
+            )
     }
 }
 
@@ -433,7 +449,6 @@ private fun VolumeTriggerSetupBottomSheet(
         onDismissRequest = onDismissRequest,
         title = stringResource(R.string.trigger_setup_volume_title),
         icon = Icons.AutoMirrored.Outlined.VolumeUp,
-
         positiveButtonContent = {
             if (state.areRequirementsMet) {
                 RecordTriggerButton(
@@ -493,7 +508,6 @@ private fun NotDetectedSetupBottomSheet(
         onDismissRequest = onDismissRequest,
         title = stringResource(R.string.trigger_setup_no_trigger_detected_title),
         icon = KeyMapperIcons.IndeterminateQuestionBox,
-
         positiveButtonContent = {
             if (state.areRequirementsMet) {
                 RecordTriggerButton(
@@ -552,10 +566,11 @@ private fun NotDetectedSetupBottomSheet(
             onClick = {
                 uriHandler.openUri(helpUrl)
             },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = LocalCustomColorsPalette.current.discord,
-                contentColor = LocalCustomColorsPalette.current.onDiscord,
-            ),
+            colors =
+                ButtonDefaults.buttonColors(
+                    containerColor = LocalCustomColorsPalette.current.discord,
+                    contentColor = LocalCustomColorsPalette.current.onDiscord,
+                ),
         ) {
             Text(stringResource(R.string.trigger_setup_get_help_button))
         }
@@ -579,7 +594,6 @@ private fun OtherTriggerSetupBottomSheet(
         onDismissRequest = onDismissRequest,
         title = stringResource(R.string.trigger_setup_other_title),
         icon = KeyMapperIcons.IndeterminateQuestionBox,
-
         positiveButtonContent = {
             if (state.areRequirementsMet) {
                 RecordTriggerButton(
@@ -636,10 +650,11 @@ private fun OtherTriggerSetupBottomSheet(
             onClick = {
                 uriHandler.openUri(helpUrl)
             },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = LocalCustomColorsPalette.current.discord,
-                contentColor = LocalCustomColorsPalette.current.onDiscord,
-            ),
+            colors =
+                ButtonDefaults.buttonColors(
+                    containerColor = LocalCustomColorsPalette.current.discord,
+                    contentColor = LocalCustomColorsPalette.current.onDiscord,
+                ),
         ) {
             Text(stringResource(R.string.trigger_setup_get_help_button))
         }
@@ -663,7 +678,6 @@ private fun KeyboardTriggerSetupBottomSheet(
         onDismissRequest = onDismissRequest,
         title = stringResource(R.string.trigger_setup_keyboard_title),
         icon = Icons.Rounded.Keyboard,
-
         positiveButtonContent = {
             if (state.areRequirementsMet) {
                 RecordTriggerButton(
@@ -723,7 +737,6 @@ private fun FingerprintGestureSetupBottomSheet(
         onDismissRequest = onDismissRequest,
         title = stringResource(R.string.trigger_setup_fingerprint_reader_title),
         icon = Icons.Rounded.Fingerprint,
-
         positiveButtonContent = {
             if (state.areRequirementsMet) {
                 AddTriggerButton(modifier = Modifier.weight(1f), onClick = onAddTriggerClick)
@@ -789,12 +802,13 @@ fun RemapStatusRow(
         horizontalArrangement = Arrangement.Center,
     ) {
         Box(
-            modifier = Modifier
-                .size(16.dp)
-                .background(
-                    color = color,
-                    shape = CircleShape,
-                ),
+            modifier =
+                Modifier
+                    .size(16.dp)
+                    .background(
+                        color = color,
+                        shape = CircleShape,
+                    ),
         )
 
         Spacer(Modifier.width(16.dp))
@@ -811,7 +825,10 @@ fun TriggerRequirementsNotMetButton(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun AddTriggerButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun AddTriggerButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
     Button(modifier = modifier, onClick = onClick) {
         Text(stringResource(R.string.trigger_setup_add_trigger_button))
     }
@@ -871,9 +888,10 @@ fun TriggerSetupBottomSheet(
             }
 
             Column(
-                modifier = Modifier
-                    .animateContentSize()
-                    .verticalScroll(rememberScrollState()),
+                modifier =
+                    Modifier
+                        .animateContentSize()
+                        .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 content()
@@ -904,21 +922,23 @@ fun TriggerSetupBottomSheet(
 @Composable
 private fun PowerButtonPreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         PowerTriggerSetupBottomSheet(
             sheetState = sheetState,
-            state = TriggerSetupState.Power(
-                isAccessibilityServiceEnabled = true,
-                proModeStatus = ProModeStatus.ENABLED,
-                areRequirementsMet = true,
-                recordTriggerState = RecordTriggerState.Idle,
-                remapStatus = RemapStatus.SUPPORTED,
-            ),
+            state =
+                TriggerSetupState.Power(
+                    isAccessibilityServiceEnabled = true,
+                    proModeStatus = ProModeStatus.ENABLED,
+                    areRequirementsMet = true,
+                    recordTriggerState = RecordTriggerState.Idle,
+                    remapStatus = RemapStatus.SUPPORTED,
+                ),
         )
     }
 }
@@ -928,21 +948,23 @@ private fun PowerButtonPreview() {
 @Composable
 private fun PowerButtonDisabledPreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         PowerTriggerSetupBottomSheet(
             sheetState = sheetState,
-            state = TriggerSetupState.Power(
-                isAccessibilityServiceEnabled = false,
-                proModeStatus = ProModeStatus.UNSUPPORTED,
-                areRequirementsMet = false,
-                recordTriggerState = RecordTriggerState.Idle,
-                remapStatus = RemapStatus.UNSUPPORTED,
-            ),
+            state =
+                TriggerSetupState.Power(
+                    isAccessibilityServiceEnabled = false,
+                    proModeStatus = ProModeStatus.UNSUPPORTED,
+                    areRequirementsMet = false,
+                    recordTriggerState = RecordTriggerState.Idle,
+                    remapStatus = RemapStatus.UNSUPPORTED,
+                ),
         )
     }
 }
@@ -952,22 +974,24 @@ private fun PowerButtonDisabledPreview() {
 @Composable
 private fun VolumeButtonPreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         VolumeTriggerSetupBottomSheet(
             sheetState = sheetState,
-            state = TriggerSetupState.Volume(
-                isAccessibilityServiceEnabled = true,
-                isUseProModeChecked = true,
-                proModeStatus = ProModeStatus.ENABLED,
-                areRequirementsMet = true,
-                recordTriggerState = RecordTriggerState.Idle,
-                forceProMode = false,
-            ),
+            state =
+                TriggerSetupState.Volume(
+                    isAccessibilityServiceEnabled = true,
+                    isUseProModeChecked = true,
+                    proModeStatus = ProModeStatus.ENABLED,
+                    areRequirementsMet = true,
+                    recordTriggerState = RecordTriggerState.Idle,
+                    forceProMode = false,
+                ),
         )
     }
 }
@@ -977,22 +1001,24 @@ private fun VolumeButtonPreview() {
 @Composable
 private fun VolumeButtonDisabledPreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         VolumeTriggerSetupBottomSheet(
             sheetState = sheetState,
-            state = TriggerSetupState.Volume(
-                isAccessibilityServiceEnabled = false,
-                isUseProModeChecked = true,
-                proModeStatus = ProModeStatus.DISABLED,
-                areRequirementsMet = false,
-                recordTriggerState = RecordTriggerState.Idle,
-                forceProMode = false,
-            ),
+            state =
+                TriggerSetupState.Volume(
+                    isAccessibilityServiceEnabled = false,
+                    isUseProModeChecked = true,
+                    proModeStatus = ProModeStatus.DISABLED,
+                    areRequirementsMet = false,
+                    recordTriggerState = RecordTriggerState.Idle,
+                    forceProMode = false,
+                ),
         )
     }
 }
@@ -1002,19 +1028,21 @@ private fun VolumeButtonDisabledPreview() {
 @Composable
 private fun FingerprintGestureRequirementsMetPreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         FingerprintGestureSetupBottomSheet(
             sheetState = sheetState,
-            state = TriggerSetupState.FingerprintGesture(
-                isAccessibilityServiceEnabled = true,
-                areRequirementsMet = true,
-                selectedType = FingerprintGestureType.SWIPE_DOWN,
-            ),
+            state =
+                TriggerSetupState.FingerprintGesture(
+                    isAccessibilityServiceEnabled = true,
+                    areRequirementsMet = true,
+                    selectedType = FingerprintGestureType.SWIPE_DOWN,
+                ),
         )
     }
 }
@@ -1024,19 +1052,21 @@ private fun FingerprintGestureRequirementsMetPreview() {
 @Composable
 private fun FingerprintGestureRequirementsNotMetPreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         FingerprintGestureSetupBottomSheet(
             sheetState = sheetState,
-            state = TriggerSetupState.FingerprintGesture(
-                isAccessibilityServiceEnabled = false,
-                areRequirementsMet = false,
-                selectedType = FingerprintGestureType.SWIPE_UP,
-            ),
+            state =
+                TriggerSetupState.FingerprintGesture(
+                    isAccessibilityServiceEnabled = false,
+                    areRequirementsMet = false,
+                    selectedType = FingerprintGestureType.SWIPE_UP,
+                ),
         )
     }
 }
@@ -1046,22 +1076,24 @@ private fun FingerprintGestureRequirementsNotMetPreview() {
 @Composable
 private fun KeyboardButtonEnabledPreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         KeyboardTriggerSetupBottomSheet(
             sheetState = sheetState,
-            state = TriggerSetupState.Keyboard(
-                isAccessibilityServiceEnabled = true,
-                isUseProModeChecked = false,
-                proModeStatus = ProModeStatus.DISABLED,
-                areRequirementsMet = true,
-                recordTriggerState = RecordTriggerState.Idle,
-                forceProMode = false,
-            ),
+            state =
+                TriggerSetupState.Keyboard(
+                    isAccessibilityServiceEnabled = true,
+                    isUseProModeChecked = false,
+                    proModeStatus = ProModeStatus.DISABLED,
+                    areRequirementsMet = true,
+                    recordTriggerState = RecordTriggerState.Idle,
+                    forceProMode = false,
+                ),
         )
     }
 }
@@ -1071,22 +1103,24 @@ private fun KeyboardButtonEnabledPreview() {
 @Composable
 private fun KeyboardButtonDisabledPreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         KeyboardTriggerSetupBottomSheet(
             sheetState = sheetState,
-            state = TriggerSetupState.Keyboard(
-                isAccessibilityServiceEnabled = false,
-                isUseProModeChecked = true,
-                proModeStatus = ProModeStatus.DISABLED,
-                areRequirementsMet = false,
-                recordTriggerState = RecordTriggerState.Idle,
-                forceProMode = false,
-            ),
+            state =
+                TriggerSetupState.Keyboard(
+                    isAccessibilityServiceEnabled = false,
+                    isUseProModeChecked = true,
+                    proModeStatus = ProModeStatus.DISABLED,
+                    areRequirementsMet = false,
+                    recordTriggerState = RecordTriggerState.Idle,
+                    forceProMode = false,
+                ),
         )
     }
 }
@@ -1096,21 +1130,23 @@ private fun KeyboardButtonDisabledPreview() {
 @Composable
 private fun MouseButtonPreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         MouseTriggerSetupBottomSheet(
             sheetState = sheetState,
-            state = TriggerSetupState.Mouse(
-                isAccessibilityServiceEnabled = true,
-                proModeStatus = ProModeStatus.ENABLED,
-                areRequirementsMet = true,
-                recordTriggerState = RecordTriggerState.Idle,
-                remapStatus = RemapStatus.SUPPORTED,
-            ),
+            state =
+                TriggerSetupState.Mouse(
+                    isAccessibilityServiceEnabled = true,
+                    proModeStatus = ProModeStatus.ENABLED,
+                    areRequirementsMet = true,
+                    recordTriggerState = RecordTriggerState.Idle,
+                    remapStatus = RemapStatus.SUPPORTED,
+                ),
         )
     }
 }
@@ -1120,21 +1156,23 @@ private fun MouseButtonPreview() {
 @Composable
 private fun MouseButtonDisabledPreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         MouseTriggerSetupBottomSheet(
             sheetState = sheetState,
-            state = TriggerSetupState.Mouse(
-                isAccessibilityServiceEnabled = false,
-                proModeStatus = ProModeStatus.UNSUPPORTED,
-                areRequirementsMet = false,
-                recordTriggerState = RecordTriggerState.Idle,
-                remapStatus = RemapStatus.UNSUPPORTED,
-            ),
+            state =
+                TriggerSetupState.Mouse(
+                    isAccessibilityServiceEnabled = false,
+                    proModeStatus = ProModeStatus.UNSUPPORTED,
+                    areRequirementsMet = false,
+                    recordTriggerState = RecordTriggerState.Idle,
+                    remapStatus = RemapStatus.UNSUPPORTED,
+                ),
         )
     }
 }
@@ -1144,22 +1182,24 @@ private fun MouseButtonDisabledPreview() {
 @Composable
 private fun OtherButtonPreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         OtherTriggerSetupBottomSheet(
             sheetState = sheetState,
-            state = TriggerSetupState.Other(
-                isAccessibilityServiceEnabled = true,
-                isUseProModeChecked = true,
-                proModeStatus = ProModeStatus.ENABLED,
-                areRequirementsMet = true,
-                recordTriggerState = RecordTriggerState.Idle,
-                forceProMode = false,
-            ),
+            state =
+                TriggerSetupState.Other(
+                    isAccessibilityServiceEnabled = true,
+                    isUseProModeChecked = true,
+                    proModeStatus = ProModeStatus.ENABLED,
+                    areRequirementsMet = true,
+                    recordTriggerState = RecordTriggerState.Idle,
+                    forceProMode = false,
+                ),
         )
     }
 }
@@ -1169,22 +1209,24 @@ private fun OtherButtonPreview() {
 @Composable
 private fun OtherButtonDisabledPreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         OtherTriggerSetupBottomSheet(
             sheetState = sheetState,
-            state = TriggerSetupState.Other(
-                isAccessibilityServiceEnabled = false,
-                isUseProModeChecked = true,
-                proModeStatus = ProModeStatus.DISABLED,
-                areRequirementsMet = false,
-                recordTriggerState = RecordTriggerState.Idle,
-                forceProMode = false,
-            ),
+            state =
+                TriggerSetupState.Other(
+                    isAccessibilityServiceEnabled = false,
+                    isUseProModeChecked = true,
+                    proModeStatus = ProModeStatus.DISABLED,
+                    areRequirementsMet = false,
+                    recordTriggerState = RecordTriggerState.Idle,
+                    forceProMode = false,
+                ),
         )
     }
 }
@@ -1194,22 +1236,24 @@ private fun OtherButtonDisabledPreview() {
 @Composable
 private fun GamepadDpadPreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         GamepadTriggerSetupBottomSheet(
             sheetState = sheetState,
-            state = TriggerSetupState.Gamepad.Dpad(
-                isAccessibilityServiceEnabled = true,
-                isImeEnabled = true,
-                isImeChosen = true,
-                areRequirementsMet = true,
-                recordTriggerState = RecordTriggerState.Idle,
-                enablingRequiresUserInput = true,
-            ),
+            state =
+                TriggerSetupState.Gamepad.Dpad(
+                    isAccessibilityServiceEnabled = true,
+                    isImeEnabled = true,
+                    isImeChosen = true,
+                    areRequirementsMet = true,
+                    recordTriggerState = RecordTriggerState.Idle,
+                    enablingRequiresUserInput = true,
+                ),
         )
     }
 }
@@ -1219,22 +1263,24 @@ private fun GamepadDpadPreview() {
 @Composable
 private fun GamepadDpadDisabledPreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         GamepadTriggerSetupBottomSheet(
             sheetState = sheetState,
-            state = TriggerSetupState.Gamepad.Dpad(
-                isAccessibilityServiceEnabled = false,
-                isImeEnabled = false,
-                isImeChosen = false,
-                areRequirementsMet = false,
-                recordTriggerState = RecordTriggerState.Idle,
-                enablingRequiresUserInput = true,
-            ),
+            state =
+                TriggerSetupState.Gamepad.Dpad(
+                    isAccessibilityServiceEnabled = false,
+                    isImeEnabled = false,
+                    isImeChosen = false,
+                    areRequirementsMet = false,
+                    recordTriggerState = RecordTriggerState.Idle,
+                    enablingRequiresUserInput = true,
+                ),
         )
     }
 }
@@ -1244,22 +1290,24 @@ private fun GamepadDpadDisabledPreview() {
 @Composable
 private fun GamepadSimpleButtonsPreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         GamepadTriggerSetupBottomSheet(
             sheetState = sheetState,
-            state = TriggerSetupState.Gamepad.SimpleButtons(
-                isAccessibilityServiceEnabled = true,
-                isUseProModeChecked = true,
-                proModeStatus = ProModeStatus.ENABLED,
-                areRequirementsMet = true,
-                recordTriggerState = RecordTriggerState.Idle,
-                forceProMode = false,
-            ),
+            state =
+                TriggerSetupState.Gamepad.SimpleButtons(
+                    isAccessibilityServiceEnabled = true,
+                    isUseProModeChecked = true,
+                    proModeStatus = ProModeStatus.ENABLED,
+                    areRequirementsMet = true,
+                    recordTriggerState = RecordTriggerState.Idle,
+                    forceProMode = false,
+                ),
         )
     }
 }
@@ -1269,22 +1317,24 @@ private fun GamepadSimpleButtonsPreview() {
 @Composable
 private fun GamepadSimpleButtonsDisabledPreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         GamepadTriggerSetupBottomSheet(
             sheetState = sheetState,
-            state = TriggerSetupState.Gamepad.SimpleButtons(
-                isAccessibilityServiceEnabled = false,
-                isUseProModeChecked = false,
-                proModeStatus = ProModeStatus.DISABLED,
-                areRequirementsMet = false,
-                recordTriggerState = RecordTriggerState.Idle,
-                forceProMode = false,
-            ),
+            state =
+                TriggerSetupState.Gamepad.SimpleButtons(
+                    isAccessibilityServiceEnabled = false,
+                    isUseProModeChecked = false,
+                    proModeStatus = ProModeStatus.DISABLED,
+                    areRequirementsMet = false,
+                    recordTriggerState = RecordTriggerState.Idle,
+                    forceProMode = false,
+                ),
         )
     }
 }

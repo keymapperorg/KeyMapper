@@ -20,18 +20,19 @@ object FingerprintMapMigration1To2 {
         actionList.forEach {
             val data by it.byString("data")
 
-            val newData = when (data) {
-                "toggle_wifi_root" -> "toggle_wifi"
-                "enable_wifi_root" -> "enable_wifi"
-                "disable_wifi_root" -> "disable_wifi"
+            val newData =
+                when (data) {
+                    "toggle_wifi_root" -> "toggle_wifi"
+                    "enable_wifi_root" -> "enable_wifi"
+                    "disable_wifi_root" -> "disable_wifi"
 
-                "screenshot_root" -> "screenshot"
-                "lock_device_no_root" -> "lock_device"
+                    "screenshot_root" -> "screenshot"
+                    "lock_device_no_root" -> "lock_device"
 
-                "show_keyboard_picker_root" -> "show_keyboard_picker"
+                    "show_keyboard_picker_root" -> "show_keyboard_picker"
 
-                else -> data
-            }
+                    else -> data
+                }
 
             it["data"] = newData
         }

@@ -178,14 +178,15 @@ private fun ShellCommandActionScreen(
         val endPadding = innerPadding.calculateEndPadding(layoutDirection)
 
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    bottom = innerPadding.calculateBottomPadding(),
-                    start = startPadding,
-                    end = endPadding,
-                ),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom = innerPadding.calculateBottomPadding(),
+                        start = startPadding,
+                        end = endPadding,
+                    ),
         ) {
             val pagerState = rememberPagerState(pageCount = { 2 }, initialPage = 0)
 
@@ -221,39 +222,41 @@ private fun ShellCommandActionScreen(
                 pageSpacing = 16.dp,
             ) { pageIndex ->
                 when (pageIndex) {
-                    0 -> ShellCommandConfigurationContent(
-                        modifier = Modifier.fillMaxSize(),
-                        state = state,
-                        descriptionError = descriptionError,
-                        commandError = commandError,
-                        onDescriptionChanged = {
-                            descriptionError = null
-                            onDescriptionChanged(it)
-                        },
-                        onCommandChanged = {
-                            commandError = null
-                            onCommandChanged(it)
-                        },
-                        onExecutionModeChanged = onExecutionModeChanged,
-                        onTimeoutChanged = onTimeoutChanged,
-                        onTestClick = {
-                            if (state.command.isBlank()) {
-                                commandError = commandEmptyErrorString
-                            } else {
-                                onTestClick()
-                                scope.launch {
-                                    pagerState.animateScrollToPage(1) // Switch to output tab
+                    0 ->
+                        ShellCommandConfigurationContent(
+                            modifier = Modifier.fillMaxSize(),
+                            state = state,
+                            descriptionError = descriptionError,
+                            commandError = commandError,
+                            onDescriptionChanged = {
+                                descriptionError = null
+                                onDescriptionChanged(it)
+                            },
+                            onCommandChanged = {
+                                commandError = null
+                                onCommandChanged(it)
+                            },
+                            onExecutionModeChanged = onExecutionModeChanged,
+                            onTimeoutChanged = onTimeoutChanged,
+                            onTestClick = {
+                                if (state.command.isBlank()) {
+                                    commandError = commandEmptyErrorString
+                                } else {
+                                    onTestClick()
+                                    scope.launch {
+                                        pagerState.animateScrollToPage(1) // Switch to output tab
+                                    }
                                 }
-                            }
-                        },
-                        onSetupProModeClick = onSetupProModeClick,
-                    )
+                            },
+                            onSetupProModeClick = onSetupProModeClick,
+                        )
 
-                    1 -> ShellCommandOutputContent(
-                        modifier = Modifier.fillMaxSize(),
-                        state = state,
-                        onKillClick = onKillClick,
-                    )
+                    1 ->
+                        ShellCommandOutputContent(
+                            modifier = Modifier.fillMaxSize(),
+                            state = state,
+                            onKillClick = onKillClick,
+                        )
                 }
             }
         }
@@ -275,8 +278,9 @@ private fun ShellCommandConfigurationContent(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState()),
+        modifier =
+            modifier
+                .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         OutlinedTextField(
@@ -312,9 +316,10 @@ private fun ShellCommandConfigurationContent(
                     )
                 }
             },
-            textStyle = MaterialTheme.typography.bodySmall.copy(
-                fontFamily = FontFamily.Monospace,
-            ),
+            textStyle =
+                MaterialTheme.typography.bodySmall.copy(
+                    fontFamily = FontFamily.Monospace,
+                ),
         )
 
         SliderOptionText(
@@ -335,11 +340,12 @@ private fun ShellCommandConfigurationContent(
 
         KeyMapperSegmentedButtonRow(
             modifier = Modifier.fillMaxWidth(),
-            buttonStates = listOf(
-                ShellExecutionMode.STANDARD to stringResource(R.string.action_shell_command_execution_mode_standard),
-                ShellExecutionMode.ROOT to stringResource(R.string.action_shell_command_execution_mode_root),
-                ShellExecutionMode.ADB to stringResource(R.string.action_shell_command_execution_mode_adb),
-            ),
+            buttonStates =
+                listOf(
+                    ShellExecutionMode.STANDARD to stringResource(R.string.action_shell_command_execution_mode_standard),
+                    ShellExecutionMode.ROOT to stringResource(R.string.action_shell_command_execution_mode_root),
+                    ShellExecutionMode.ADB to stringResource(R.string.action_shell_command_execution_mode_adb),
+                ),
             selectedState = state.executionMode,
             onStateSelected = onExecutionModeChanged,
         )
@@ -366,12 +372,13 @@ private fun ShellCommandConfigurationContent(
                 keyboardController?.hide()
                 onTestClick()
             },
-            enabled = !state.isRunning &&
-                (
-                    state.executionMode != ShellExecutionMode.ADB ||
-                        (
-                            state.executionMode == ShellExecutionMode.ADB &&
-                                state.proModeStatus == ProModeStatus.ENABLED
+            enabled =
+                !state.isRunning &&
+                    (
+                        state.executionMode != ShellExecutionMode.ADB ||
+                            (
+                                state.executionMode == ShellExecutionMode.ADB &&
+                                    state.proModeStatus == ProModeStatus.ENABLED
                             )
                     ),
         ) {
@@ -404,9 +411,10 @@ private fun ShellCommandOutputContent(
             OutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = onKillClick,
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = MaterialTheme.colorScheme.error,
-                ),
+                colors =
+                    ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error,
+                    ),
             ) {
                 Icon(Icons.Rounded.Close, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
@@ -461,10 +469,11 @@ private fun ShellCommandOutputContent(
 
                 if (exitCode != null) {
                     Text(
-                        text = stringResource(
-                            R.string.action_shell_command_exit_code,
-                            exitCode,
-                        ),
+                        text =
+                            stringResource(
+                                R.string.action_shell_command_exit_code,
+                                exitCode,
+                            ),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -493,7 +502,11 @@ private fun ShellCommandOutputContent(
 }
 
 @Composable
-private fun OutputTextField(modifier: Modifier = Modifier, text: String, isError: Boolean) {
+private fun OutputTextField(
+    modifier: Modifier = Modifier,
+    text: String,
+    isError: Boolean,
+) {
     SelectionContainer(modifier = modifier) {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -503,9 +516,10 @@ private fun OutputTextField(modifier: Modifier = Modifier, text: String, isError
             minLines = 5,
             maxLines = 15,
             isError = isError,
-            textStyle = MaterialTheme.typography.bodySmall.copy(
-                fontFamily = FontFamily.Monospace,
-            ),
+            textStyle =
+                MaterialTheme.typography.bodySmall.copy(
+                    fontFamily = FontFamily.Monospace,
+                ),
         )
     }
 }
@@ -515,11 +529,12 @@ private fun OutputTextField(modifier: Modifier = Modifier, text: String, isError
 private fun PreviewShellCommandActionScreen() {
     KeyMapperTheme {
         ShellCommandActionScreen(
-            state = ShellCommandActionState(
-                description = "Hello world script",
-                command = "echo 'Hello World'",
-                executionMode = ShellExecutionMode.STANDARD,
-            ),
+            state =
+                ShellCommandActionState(
+                    description = "Hello world script",
+                    command = "echo 'Hello World'",
+                    executionMode = ShellExecutionMode.STANDARD,
+                ),
         )
     }
 }
@@ -529,11 +544,12 @@ private fun PreviewShellCommandActionScreen() {
 private fun PreviewShellCommandActionScreenEmpty() {
     KeyMapperTheme {
         ShellCommandActionScreen(
-            state = ShellCommandActionState(
-                description = "",
-                command = "",
-                executionMode = ShellExecutionMode.ROOT,
-            ),
+            state =
+                ShellCommandActionState(
+                    description = "",
+                    command = "",
+                    executionMode = ShellExecutionMode.ROOT,
+                ),
         )
     }
 }
@@ -543,12 +559,13 @@ private fun PreviewShellCommandActionScreenEmpty() {
 private fun PreviewShellCommandActionScreenError() {
     KeyMapperTheme {
         ShellCommandActionScreen(
-            state = ShellCommandActionState(
-                description = "Read secret file",
-                command = "cat /root/secret.txt",
-                executionMode = ShellExecutionMode.ROOT,
-                testResult = SystemError.PermissionDenied(Permission.ROOT),
-            ),
+            state =
+                ShellCommandActionState(
+                    description = "Read secret file",
+                    command = "cat /root/secret.txt",
+                    executionMode = ShellExecutionMode.ROOT,
+                    testResult = SystemError.PermissionDenied(Permission.ROOT),
+                ),
         )
     }
 }
@@ -558,17 +575,19 @@ private fun PreviewShellCommandActionScreenError() {
 private fun PreviewShellCommandActionScreenShellError() {
     KeyMapperTheme {
         ShellCommandActionScreen(
-            state = ShellCommandActionState(
-                description = "",
-                command = "ls",
-                executionMode = ShellExecutionMode.ROOT,
-                testResult = Success(
-                    ShellResult(
-                        stdout = "ls: .: Permission denied",
-                        exitCode = 1,
-                    ),
+            state =
+                ShellCommandActionState(
+                    description = "",
+                    command = "ls",
+                    executionMode = ShellExecutionMode.ROOT,
+                    testResult =
+                        Success(
+                            ShellResult(
+                                stdout = "ls: .: Permission denied",
+                                exitCode = 1,
+                            ),
+                        ),
                 ),
-            ),
         )
     }
 }
@@ -578,13 +597,14 @@ private fun PreviewShellCommandActionScreenShellError() {
 private fun PreviewShellCommandActionScreenTesting() {
     KeyMapperTheme {
         ShellCommandActionScreen(
-            state = ShellCommandActionState(
-                description = "Count to 10",
-                command = "for i in \$(seq 1 10); do echo \"Line \$i\"; sleep 1; done",
-                executionMode = ShellExecutionMode.STANDARD,
-                isRunning = true,
-                testResult = Success(ShellResult("Line 1\nLine 2\nLine 3\nLine 4\nLine 5", 0)),
-            ),
+            state =
+                ShellCommandActionState(
+                    description = "Count to 10",
+                    command = "for i in \$(seq 1 10); do echo \"Line \$i\"; sleep 1; done",
+                    executionMode = ShellExecutionMode.STANDARD,
+                    isRunning = true,
+                    testResult = Success(ShellResult("Line 1\nLine 2\nLine 3\nLine 4\nLine 5", 0)),
+                ),
         )
     }
 }
@@ -594,12 +614,13 @@ private fun PreviewShellCommandActionScreenTesting() {
 private fun PreviewShellCommandActionScreenProModeUnsupported() {
     KeyMapperTheme {
         ShellCommandActionScreen(
-            state = ShellCommandActionState(
-                description = "ADB command example",
-                command = "echo 'Hello from ADB'",
-                executionMode = ShellExecutionMode.ADB,
-                proModeStatus = ProModeStatus.UNSUPPORTED,
-            ),
+            state =
+                ShellCommandActionState(
+                    description = "ADB command example",
+                    command = "echo 'Hello from ADB'",
+                    executionMode = ShellExecutionMode.ADB,
+                    proModeStatus = ProModeStatus.UNSUPPORTED,
+                ),
         )
     }
 }
@@ -610,12 +631,13 @@ private fun PreviewShellCommandOutputSuccess() {
     KeyMapperTheme {
         Surface {
             ShellCommandOutputContent(
-                state = ShellCommandActionState(
-                    description = "Hello world script",
-                    command = "echo 'Hello World'",
-                    executionMode = ShellExecutionMode.STANDARD,
-                    testResult = Success(ShellResult("Hello World\nNew line\nNew new line", 0)),
-                ),
+                state =
+                    ShellCommandActionState(
+                        description = "Hello world script",
+                        command = "echo 'Hello World'",
+                        executionMode = ShellExecutionMode.STANDARD,
+                        testResult = Success(ShellResult("Hello World\nNew line\nNew new line", 0)),
+                    ),
                 onKillClick = {},
             )
         }
@@ -628,12 +650,13 @@ private fun PreviewShellCommandOutputError() {
     KeyMapperTheme {
         Surface {
             ShellCommandOutputContent(
-                state = ShellCommandActionState(
-                    description = "Read secret file",
-                    command = "cat /root/secret.txt",
-                    executionMode = ShellExecutionMode.ROOT,
-                    testResult = SystemError.PermissionDenied(Permission.ROOT),
-                ),
+                state =
+                    ShellCommandActionState(
+                        description = "Read secret file",
+                        command = "cat /root/secret.txt",
+                        executionMode = ShellExecutionMode.ROOT,
+                        testResult = SystemError.PermissionDenied(Permission.ROOT),
+                    ),
                 onKillClick = {},
             )
         }
@@ -646,12 +669,13 @@ private fun PreviewShellCommandOutpuTimeout() {
     KeyMapperTheme {
         Surface {
             ShellCommandOutputContent(
-                state = ShellCommandActionState(
-                    description = "Read secret file",
-                    command = "cat /root/secret.txt",
-                    executionMode = ShellExecutionMode.ROOT,
-                    testResult = KMError.ShellCommandTimeout(1000L, "1\n2\n3"),
-                ),
+                state =
+                    ShellCommandActionState(
+                        description = "Read secret file",
+                        command = "cat /root/secret.txt",
+                        executionMode = ShellExecutionMode.ROOT,
+                        testResult = KMError.ShellCommandTimeout(1000L, "1\n2\n3"),
+                    ),
                 onKillClick = {},
             )
         }
@@ -664,17 +688,19 @@ private fun PreviewShellCommandOutputShellError() {
     KeyMapperTheme {
         Surface {
             ShellCommandOutputContent(
-                state = ShellCommandActionState(
-                    description = "List files",
-                    command = "ls",
-                    executionMode = ShellExecutionMode.ROOT,
-                    testResult = Success(
-                        ShellResult(
-                            stdout = "ls: .: Permission denied",
-                            exitCode = 1,
-                        ),
+                state =
+                    ShellCommandActionState(
+                        description = "List files",
+                        command = "ls",
+                        executionMode = ShellExecutionMode.ROOT,
+                        testResult =
+                            Success(
+                                ShellResult(
+                                    stdout = "ls: .: Permission denied",
+                                    exitCode = 1,
+                                ),
+                            ),
                     ),
-                ),
                 onKillClick = {},
             )
         }
@@ -687,18 +713,20 @@ private fun PreviewShellCommandOutputRunning() {
     KeyMapperTheme {
         Surface {
             ShellCommandOutputContent(
-                state = ShellCommandActionState(
-                    description = "Count to 10",
-                    command = "for i in $(seq 1 10); do echo \"Line \$i\"; sleep 1; done",
-                    executionMode = ShellExecutionMode.STANDARD,
-                    isRunning = true,
-                    testResult = Success(
-                        ShellResult(
-                            "Line 1\nLine 2\nLine 3\nLine 4\nLine 5",
-                            0,
-                        ),
+                state =
+                    ShellCommandActionState(
+                        description = "Count to 10",
+                        command = "for i in $(seq 1 10); do echo \"Line \$i\"; sleep 1; done",
+                        executionMode = ShellExecutionMode.STANDARD,
+                        isRunning = true,
+                        testResult =
+                            Success(
+                                ShellResult(
+                                    "Line 1\nLine 2\nLine 3\nLine 4\nLine 5",
+                                    0,
+                                ),
+                            ),
                     ),
-                ),
                 onKillClick = {},
             )
         }
@@ -711,11 +739,12 @@ private fun PreviewShellCommandOutputEmpty() {
     KeyMapperTheme {
         Surface {
             ShellCommandOutputContent(
-                state = ShellCommandActionState(
-                    description = "No output yet",
-                    command = "echo 'Hello World'",
-                    executionMode = ShellExecutionMode.STANDARD,
-                ),
+                state =
+                    ShellCommandActionState(
+                        description = "No output yet",
+                        command = "echo 'Hello World'",
+                        executionMode = ShellExecutionMode.STANDARD,
+                    ),
                 onKillClick = {},
             )
         }

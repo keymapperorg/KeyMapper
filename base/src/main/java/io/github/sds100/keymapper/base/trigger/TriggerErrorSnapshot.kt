@@ -31,26 +31,33 @@ data class TriggerErrorSnapshot(
     val evdevDevices: List<EvdevDeviceInfo>?,
 ) {
     companion object {
-        private val keysThatRequireDndAccess = arrayOf(
-            KeyEvent.KEYCODE_VOLUME_DOWN,
-            KeyEvent.KEYCODE_VOLUME_UP,
-        )
+        private val keysThatRequireDndAccess =
+            arrayOf(
+                KeyEvent.KEYCODE_VOLUME_DOWN,
+                KeyEvent.KEYCODE_VOLUME_UP,
+            )
     }
 
-    fun getTriggerError(keyMap: KeyMap, key: TriggerKey): TriggerError? {
-        purchases.onSuccess { purchases ->
-            if (key is AssistantTriggerKey && !purchases.contains(ProductId.ASSISTANT_TRIGGER)) {
-                return TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED
-            }
+    fun getTriggerError(
+        keyMap: KeyMap,
+        key: TriggerKey,
+    ): TriggerError? {
+        purchases
+            .onSuccess { purchases ->
+                if (key is AssistantTriggerKey && !purchases.contains(ProductId.ASSISTANT_TRIGGER)) {
+                    return TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED
+                }
 
-            if (key is FloatingButtonKey && !purchases.contains(ProductId.FLOATING_BUTTONS)) {
-                return TriggerError.FLOATING_BUTTONS_NOT_PURCHASED
+                if (key is FloatingButtonKey && !purchases.contains(ProductId.FLOATING_BUTTONS)) {
+                    return TriggerError.FLOATING_BUTTONS_NOT_PURCHASED
+                }
+            }.onFailure { error ->
+                if ((key is AssistantTriggerKey || key is FloatingButtonKey) &&
+                    error == PurchasingError.PurchasingProcessError.NetworkError
+                ) {
+                    return TriggerError.PURCHASE_VERIFICATION_FAILED
+                }
             }
-        }.onFailure { error ->
-            if ((key is AssistantTriggerKey || key is FloatingButtonKey) && error == PurchasingError.PurchasingProcessError.NetworkError) {
-                return TriggerError.PURCHASE_VERIFICATION_FAILED
-            }
-        }
 
         if (key is FloatingButtonKey && key.button == null) {
             return TriggerError.FLOATING_BUTTON_DELETED

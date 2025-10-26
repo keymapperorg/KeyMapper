@@ -22,7 +22,6 @@ import io.github.sds100.keymapper.common.utils.firstBlocking
  * into key maps and fingerprint maps.
  */
 object Migration11To12 {
-
     fun migrateDatabase(
         database: SupportSQLiteDatabase,
         fingerprintMapDataStore: DataStore<Preferences>,
@@ -30,37 +29,42 @@ object Migration11To12 {
         val parser = JsonParser()
         val gson = Gson()
 
-        database.execSQL("CREATE TABLE IF NOT EXISTS `fingerprintmaps` (`id` INTEGER NOT NULL, `action_list` TEXT NOT NULL, `constraint_list` TEXT NOT NULL, `constraint_mode` INTEGER NOT NULL, `extras` TEXT NOT NULL, `flags` INTEGER NOT NULL, `is_enabled` INTEGER NOT NULL, PRIMARY KEY(`id`))")
-
-        val legacyFingerprintIdMap = mapOf(
-            "swipe_down" to 0,
-            "swipe_up" to 1,
-            "swipe_left" to 2,
-            "swipe_right" to 3,
+        database.execSQL(
+            "CREATE TABLE IF NOT EXISTS `fingerprintmaps` (`id` INTEGER NOT NULL, `action_list` TEXT NOT NULL, `constraint_list` TEXT NOT NULL, `constraint_mode` INTEGER NOT NULL, `extras` TEXT NOT NULL, `flags` INTEGER NOT NULL, `is_enabled` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         )
 
-        val deviceInfoList: JsonArray = sequence {
-            val deviceInfoQuery = SupportSQLiteQueryBuilder
-                .builder("deviceinfo")
-                .columns(arrayOf("descriptor", "name"))
-                .create()
+        val legacyFingerprintIdMap =
+            mapOf(
+                "swipe_down" to 0,
+                "swipe_up" to 1,
+                "swipe_left" to 2,
+                "swipe_right" to 3,
+            )
 
-            val cursor = database.query(deviceInfoQuery)
+        val deviceInfoList: JsonArray =
+            sequence {
+                val deviceInfoQuery =
+                    SupportSQLiteQueryBuilder
+                        .builder("deviceinfo")
+                        .columns(arrayOf("descriptor", "name"))
+                        .create()
 
-            val descriptorColumnIndex = cursor.getColumnIndex("descriptor")
-            val nameColumnIndex = cursor.getColumnIndex("name")
+                val cursor = database.query(deviceInfoQuery)
 
-            while (cursor.moveToNext()) {
-                val descriptor = cursor.getString(descriptorColumnIndex)
-                val name = cursor.getString(nameColumnIndex)
+                val descriptorColumnIndex = cursor.getColumnIndex("descriptor")
+                val nameColumnIndex = cursor.getColumnIndex("name")
 
-                val jsonObject = JsonObject()
-                jsonObject["descriptor"] = descriptor
-                jsonObject["name"] = name
+                while (cursor.moveToNext()) {
+                    val descriptor = cursor.getString(descriptorColumnIndex)
+                    val name = cursor.getString(nameColumnIndex)
 
-                yield(jsonObject)
-            }
-        }.toList().toJsonArray()
+                    val jsonObject = JsonObject()
+                    jsonObject["descriptor"] = descriptor
+                    jsonObject["name"] = name
+
+                    yield(jsonObject)
+                }
+            }.toList().toJsonArray()
 
         legacyFingerprintIdMap.forEach { (legacyId, newId) ->
 
@@ -77,7 +81,8 @@ object Migration11To12 {
                 val constraintList =
                     rootElement.convertValueToJson(gson, "constraints").convertJsonValueToSqlValue()
                 val constraintMode =
-                    rootElement.convertValueToJson(gson, "constraint_mode")
+                    rootElement
+                        .convertValueToJson(gson, "constraint_mode")
                         .convertJsonValueToSqlValue()
                 val extras =
                     rootElement.convertValueToJson(gson, "extras").convertJsonValueToSqlValue()
@@ -86,14 +91,17 @@ object Migration11To12 {
                 val isEnabled =
                     rootElement.convertValueToJson(gson, "enabled").convertJsonValueToSqlValue()
 
-                database.execSQL("INSERT INTO fingerprintmaps (id, action_list, constraint_list, constraint_mode, extras, flags, is_enabled) VALUES('$newId', '$sqlActionList', '$constraintList', '$constraintMode', '$extras', '$flags', '$isEnabled')")
+                database.execSQL(
+                    "INSERT INTO fingerprintmaps (id, action_list, constraint_list, constraint_mode, extras, flags, is_enabled) VALUES('$newId', '$sqlActionList', '$constraintList', '$constraintMode', '$extras', '$flags', '$isEnabled')",
+                )
             }
         }
 
-        val keyMapListQuery = SupportSQLiteQueryBuilder
-            .builder("keymaps")
-            .columns(arrayOf("id", "trigger", "action_list"))
-            .create()
+        val keyMapListQuery =
+            SupportSQLiteQueryBuilder
+                .builder("keymaps")
+                .columns(arrayOf("id", "trigger", "action_list"))
+                .create()
 
         val cursor = database.query(keyMapListQuery)
 
@@ -126,12 +134,13 @@ object Migration11To12 {
         fingerprintMap: JsonObject,
         deviceInfoList: JsonArray,
     ): JsonObject {
-        val legacyFingerprintIdMap = mapOf(
-            "swipe_down" to 0,
-            "swipe_up" to 1,
-            "swipe_left" to 2,
-            "swipe_right" to 3,
-        )
+        val legacyFingerprintIdMap =
+            mapOf(
+                "swipe_down" to 0,
+                "swipe_up" to 1,
+                "swipe_left" to 2,
+                "swipe_right" to 3,
+            )
 
         val oldActionList = fingerprintMap["action_list"].asJsonArray
         fingerprintMap["action_list"] = migrateActionList(oldActionList, deviceInfoList)
@@ -141,7 +150,10 @@ object Migration11To12 {
         return fingerprintMap
     }
 
-    fun migrateKeyMap(keyMap: JsonObject, deviceInfoList: JsonArray): JsonObject {
+    fun migrateKeyMap(
+        keyMap: JsonObject,
+        deviceInfoList: JsonArray,
+    ): JsonObject {
         val oldActionList = keyMap["actionList"].asJsonArray
         keyMap["actionList"] = migrateActionList(oldActionList, deviceInfoList)
 
@@ -157,25 +169,26 @@ object Migration11To12 {
     ): JsonElement {
         val oldTriggerKeys = trigger["keys"].asJsonArray
 
-        val newTriggerKeys = oldTriggerKeys.map { triggerKey ->
-            val deviceId = triggerKey["deviceId"].asString
+        val newTriggerKeys =
+            oldTriggerKeys.map { triggerKey ->
+                val deviceId = triggerKey["deviceId"].asString
 
-            if (deviceId != "io.github.sds100.keymapper.THIS_DEVICE" ||
-                deviceId != "io.github.sds100.keymapper.ANY_DEVICE"
-            ) {
-                val deviceDescriptor = deviceId
+                if (deviceId != "io.github.sds100.keymapper.THIS_DEVICE" ||
+                    deviceId != "io.github.sds100.keymapper.ANY_DEVICE"
+                ) {
+                    val deviceDescriptor = deviceId
 
-                triggerKey["deviceName"] = deviceInfoList
-                    .find { it["descriptor"].asString == deviceDescriptor }
-                    ?.get("name")
-                    ?.asString
-                    ?: ""
-            } else {
-                triggerKey["deviceName"] = null
+                    triggerKey["deviceName"] = deviceInfoList
+                        .find { it["descriptor"].asString == deviceDescriptor }
+                        ?.get("name")
+                        ?.asString
+                        ?: ""
+                } else {
+                    triggerKey["deviceName"] = null
+                }
+
+                return@map triggerKey
             }
-
-            return@map triggerKey
-        }
 
         trigger["keys"] = newTriggerKeys.toJsonArray()
 
@@ -186,41 +199,49 @@ object Migration11To12 {
         actionList: JsonArray,
         deviceInfoList: JsonArray,
     ): JsonArray {
-        return actionList.map { action ->
-            if (action["type"].asString == "KEY_EVENT") {
-                val extras = action["extras"].asJsonArray
+        return actionList
+            .map { action ->
+                if (action["type"].asString == "KEY_EVENT") {
+                    val extras = action["extras"].asJsonArray
 
-                val deviceDescriptor = extras
-                    .find { it["id"].asString == "extra_device_descriptor" }
-                    ?.get("data")?.asString
+                    val deviceDescriptor =
+                        extras
+                            .find { it["id"].asString == "extra_device_descriptor" }
+                            ?.get("data")
+                            ?.asString
 
-                val deviceNameExtra = JsonObject().apply {
-                    this["id"] = "extra_device_name"
-                    this["data"] = deviceInfoList
-                        .find { it["descriptor"].asString == deviceDescriptor }
-                        ?.get("name")
-                        ?.asString
-                        ?: ""
+                    val deviceNameExtra =
+                        JsonObject().apply {
+                            this["id"] = "extra_device_name"
+                            this["data"] = deviceInfoList
+                                .find { it["descriptor"].asString == deviceDescriptor }
+                                ?.get("name")
+                                ?.asString
+                                ?: ""
+                        }
+
+                    extras.add(deviceNameExtra)
+
+                    action["extras"] = extras
                 }
 
-                extras.add(deviceNameExtra)
-
-                action["extras"] = extras
-            }
-
-            return@map action
-        }.toJsonArray()
+                return@map action
+            }.toJsonArray()
     }
 
-    private fun String?.convertJsonValueToSqlValue() = when {
-        this == null -> "NULL"
-        this == "true" -> 1
-        this == "false" -> 0
-        this.toIntOrNull() != null -> this.toInt()
-        else -> this
-    }
+    private fun String?.convertJsonValueToSqlValue() =
+        when {
+            this == null -> "NULL"
+            this == "true" -> 1
+            this == "false" -> 0
+            this.toIntOrNull() != null -> this.toInt()
+            else -> this
+        }
 
-    private fun JsonElement.convertValueToJson(gson: Gson, key: String) = try {
+    private fun JsonElement.convertValueToJson(
+        gson: Gson,
+        key: String,
+    ) = try {
         gson.toJson(this[key])
     } catch (e: NoSuchElementException) {
         null

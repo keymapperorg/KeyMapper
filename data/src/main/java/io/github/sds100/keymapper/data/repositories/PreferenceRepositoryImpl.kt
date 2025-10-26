@@ -15,56 +15,63 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PreferenceRepositoryImpl @Inject constructor(
-    @ApplicationContext context: Context,
-    private val coroutineScope: CoroutineScope,
-) : PreferenceRepository {
+class PreferenceRepositoryImpl
+    @Inject
+    constructor(
+        @ApplicationContext context: Context,
+        private val coroutineScope: CoroutineScope,
+    ) : PreferenceRepository {
+        private val ctx = context.applicationContext
 
-    private val ctx = context.applicationContext
+        private val Context.dataStore by preferencesDataStore(name = "preferences")
 
-    private val Context.dataStore by preferencesDataStore(name = "preferences")
+        private val dataStore = ctx.dataStore
 
-    private val dataStore = ctx.dataStore
+        override fun <T> get(key: Preferences.Key<T>): Flow<T?> = dataStore.data.map { it[key] }.distinctUntilChanged()
 
-    override fun <T> get(key: Preferences.Key<T>): Flow<T?> = dataStore.data.map { it[key] }.distinctUntilChanged()
+        override fun <T> set(
+            key: Preferences.Key<T>,
+            value: T?,
+        ) {
+            coroutineScope.launch(Dispatchers.IO) {
+                dataStore.updateData {
+                    val prefs = it.toMutablePreferences()
 
-    override fun <T> set(key: Preferences.Key<T>, value: T?) {
-        coroutineScope.launch(Dispatchers.IO) {
-            dataStore.updateData {
-                val prefs = it.toMutablePreferences()
+                    if (value == null) {
+                        prefs.remove(key)
+                    } else {
+                        prefs[key] = value
+                    }
 
-                if (value == null) {
-                    prefs.remove(key)
-                } else {
-                    prefs[key] = value
+                    prefs
                 }
+            }
+        }
 
-                prefs
+        override fun deleteAll() {
+            coroutineScope.launch {
+                dataStore.edit { it.clear() }
+            }
+        }
+
+        override fun <T> update(
+            key: Preferences.Key<T>,
+            update: suspend (T?) -> T?,
+        ) {
+            coroutineScope.launch(Dispatchers.IO) {
+                dataStore.updateData {
+                    val prefs = it.toMutablePreferences()
+
+                    val newValue = update(prefs[key])
+
+                    if (newValue == null) {
+                        prefs.remove(key)
+                    } else {
+                        prefs[key] = newValue
+                    }
+
+                    prefs
+                }
             }
         }
     }
-
-    override fun deleteAll() {
-        coroutineScope.launch {
-            dataStore.edit { it.clear() }
-        }
-    }
-
-    override fun <T> update(key: Preferences.Key<T>, update: suspend (T?) -> T?) {
-        coroutineScope.launch(Dispatchers.IO) {
-            dataStore.updateData {
-                val prefs = it.toMutablePreferences()
-
-                val newValue = update(prefs[key])
-
-                if (newValue == null) {
-                    prefs.remove(key)
-                } else {
-                    prefs[key] = newValue
-                }
-
-                prefs
-            }
-        }
-    }
-}

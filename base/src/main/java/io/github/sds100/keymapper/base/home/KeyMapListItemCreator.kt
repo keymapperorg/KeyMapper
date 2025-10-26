@@ -52,24 +52,27 @@ class KeyMapListItemCreator(
         actionErrorSnapshot: ActionErrorSnapshot,
         constraintErrorSnapshot: ConstraintErrorSnapshot,
     ): KeyMapListItemModel.Content {
-        val triggerSeparator = when (keyMap.trigger.mode) {
-            is TriggerMode.Parallel -> Icons.Outlined.Add
-            else -> Icons.AutoMirrored.Outlined.ArrowForward
-        }
-
-        val triggerKeys = keyMap.trigger.keys.map { key ->
-            when (key) {
-                is AssistantTriggerKey -> assistantTriggerKeyName(key)
-                is KeyEventTriggerKey -> keyEventTriggerKeyName(
-                    key,
-                    showDeviceDescriptors,
-                )
-
-                is FloatingButtonKey -> floatingButtonKeyName(key)
-                is FingerprintTriggerKey -> fingerprintKeyName(key)
-                is EvdevTriggerKey -> evdevTriggerKeyName(key)
+        val triggerSeparator =
+            when (keyMap.trigger.mode) {
+                is TriggerMode.Parallel -> Icons.Outlined.Add
+                else -> Icons.AutoMirrored.Outlined.ArrowForward
             }
-        }
+
+        val triggerKeys =
+            keyMap.trigger.keys.map { key ->
+                when (key) {
+                    is AssistantTriggerKey -> assistantTriggerKeyName(key)
+                    is KeyEventTriggerKey ->
+                        keyEventTriggerKeyName(
+                            key,
+                            showDeviceDescriptors,
+                        )
+
+                    is FloatingButtonKey -> floatingButtonKeyName(key)
+                    is FingerprintTriggerKey -> fingerprintKeyName(key)
+                    is EvdevTriggerKey -> evdevTriggerKeyName(key)
+                }
+            }
 
         val options = getTriggerOptionLabels(keyMap.trigger)
 
@@ -77,24 +80,27 @@ class KeyMapListItemCreator(
         val constraintChipList =
             buildConstraintChipList(keyMap.constraintState, constraintErrorSnapshot)
 
-        val extraInfo = buildString {
-            append(createExtraInfoString(keyMap, actionChipList, constraintChipList))
+        val extraInfo =
+            buildString {
+                append(createExtraInfoString(keyMap, actionChipList, constraintChipList))
 
-            if (keyMap.trigger.keys.isEmpty()) {
-                if (this.isNotEmpty()) {
-                    append(" $midDot ")
+                if (keyMap.trigger.keys.isEmpty()) {
+                    if (this.isNotEmpty()) {
+                        append(" $midDot ")
+                    }
+
+                    append(getString(R.string.no_trigger))
                 }
-
-                append(getString(R.string.no_trigger))
             }
-        }
 
-        val triggerErrors = keyMap.trigger.keys.mapNotNull { key ->
-            triggerErrorSnapshot.getTriggerError(
-                keyMap,
-                key,
-            )
-        }.distinct()
+        val triggerErrors =
+            keyMap.trigger.keys
+                .mapNotNull { key ->
+                    triggerErrorSnapshot.getTriggerError(
+                        keyMap,
+                        key,
+                    )
+                }.distinct()
 
         return KeyMapListItemModel.Content(
             uid = keyMap.uid,
@@ -115,81 +121,87 @@ class KeyMapListItemCreator(
         keyMap: KeyMap,
         showDeviceDescriptors: Boolean,
         errorSnapshot: ActionErrorSnapshot,
-    ): List<ComposeChipModel> = sequence {
-        val midDot = getString(R.string.middot)
+    ): List<ComposeChipModel> =
+        sequence {
+            val midDot = getString(R.string.middot)
 
-        val actionErrors = errorSnapshot.getErrors(keyMap.actionList.map { it.data })
+            val actionErrors = errorSnapshot.getErrors(keyMap.actionList.map { it.data })
 
-        for (action in keyMap.actionList) {
-            val actionTitle: String = if (action.multiplier != null) {
-                "${action.multiplier}x ${
-                    actionUiHelper.getTitle(
-                        action.data,
-                        showDeviceDescriptors,
-                    )
-                }"
-            } else {
-                actionUiHelper.getTitle(action.data, showDeviceDescriptors)
-            }
-
-            val chipText = buildString {
-                append(actionTitle)
-
-                actionUiHelper.getOptionLabels(keyMap, action).forEach { label ->
-                    append(" $midDot ")
-
-                    append(label)
-                }
-
-                if (keyMap.isDelayBeforeNextActionAllowed() && action.delayBeforeNextAction != null) {
-                    if (this@buildString.isNotBlank()) {
-                        append(" $midDot ")
+            for (action in keyMap.actionList) {
+                val actionTitle: String =
+                    if (action.multiplier != null) {
+                        "${action.multiplier}x ${
+                            actionUiHelper.getTitle(
+                                action.data,
+                                showDeviceDescriptors,
+                            )
+                        }"
+                    } else {
+                        actionUiHelper.getTitle(action.data, showDeviceDescriptors)
                     }
 
-                    append(
-                        getString(
-                            R.string.action_title_wait,
-                            action.delayBeforeNextAction,
-                        ),
-                    )
-                }
+                val chipText =
+                    buildString {
+                        append(actionTitle)
+
+                        actionUiHelper.getOptionLabels(keyMap, action).forEach { label ->
+                            append(" $midDot ")
+
+                            append(label)
+                        }
+
+                        if (keyMap.isDelayBeforeNextActionAllowed() && action.delayBeforeNextAction != null) {
+                            if (this@buildString.isNotBlank()) {
+                                append(" $midDot ")
+                            }
+
+                            append(
+                                getString(
+                                    R.string.action_title_wait,
+                                    action.delayBeforeNextAction,
+                                ),
+                            )
+                        }
+                    }
+
+                val icon: ComposeIconInfo = actionUiHelper.getIcon(action.data)
+                val error: KMError? = actionErrors[action.data]
+
+                val chip =
+                    if (error == null) {
+                        ComposeChipModel.Normal(id = action.uid, text = chipText, icon = icon)
+                    } else {
+                        ComposeChipModel.Error(action.uid, chipText, error, isFixable = error.isFixable)
+                    }
+
+                yield(chip)
             }
-
-            val icon: ComposeIconInfo = actionUiHelper.getIcon(action.data)
-            val error: KMError? = actionErrors[action.data]
-
-            val chip = if (error == null) {
-                ComposeChipModel.Normal(id = action.uid, text = chipText, icon = icon)
-            } else {
-                ComposeChipModel.Error(action.uid, chipText, error, isFixable = error.isFixable)
-            }
-
-            yield(chip)
-        }
-    }.toList()
+        }.toList()
 
     fun buildConstraintChipList(
         constraintState: ConstraintState,
         errorSnapshot: ConstraintErrorSnapshot,
-    ): List<ComposeChipModel> = sequence {
-        for (constraint in constraintState.constraints) {
-            val text: String = constraintUiHelper.getTitle(constraint)
-            val icon: ComposeIconInfo = constraintUiHelper.getIcon(constraint)
-            val error: KMError? = errorSnapshot.getError(constraint)
+    ): List<ComposeChipModel> =
+        sequence {
+            for (constraint in constraintState.constraints) {
+                val text: String = constraintUiHelper.getTitle(constraint)
+                val icon: ComposeIconInfo = constraintUiHelper.getIcon(constraint)
+                val error: KMError? = errorSnapshot.getError(constraint)
 
-            val chip: ComposeChipModel = if (error == null) {
-                ComposeChipModel.Normal(
-                    id = constraint.uid,
-                    text = text,
-                    icon = icon,
-                )
-            } else {
-                ComposeChipModel.Error(constraint.uid, text, error, error.isFixable)
+                val chip: ComposeChipModel =
+                    if (error == null) {
+                        ComposeChipModel.Normal(
+                            id = constraint.uid,
+                            text = text,
+                            icon = icon,
+                        )
+                    } else {
+                        ComposeChipModel.Error(constraint.uid, text, error, error.isFixable)
+                    }
+
+                yield(chip)
             }
-
-            yield(chip)
-        }
-    }.toList()
+        }.toList()
 
     private fun createExtraInfoString(
         keyMap: KeyMap,
@@ -227,129 +239,136 @@ class KeyMapListItemCreator(
         }
     }
 
-    private fun floatingButtonKeyName(key: FloatingButtonKey): String = buildString {
-        when (key.clickType) {
-            ClickType.LONG_PRESS -> append(longPressString).append(" ")
-            ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
-            else -> Unit
-        }
+    private fun floatingButtonKeyName(key: FloatingButtonKey): String =
+        buildString {
+            when (key.clickType) {
+                ClickType.LONG_PRESS -> append(longPressString).append(" ")
+                ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
+                else -> Unit
+            }
 
-        if (key.button == null) {
-            append(getString(R.string.deleted_floating_button_text_key_map_list_item))
-        } else {
-            append(
-                getString(
-                    R.string.floating_button_text_key_map_list_item,
-                    arrayOf(
-                        key.button.appearance.text,
-                        key.button.layoutName,
+            if (key.button == null) {
+                append(getString(R.string.deleted_floating_button_text_key_map_list_item))
+            } else {
+                append(
+                    getString(
+                        R.string.floating_button_text_key_map_list_item,
+                        arrayOf(
+                            key.button.appearance.text,
+                            key.button.layoutName,
+                        ),
                     ),
-                ),
-            )
+                )
+            }
         }
-    }
 
     private fun keyEventTriggerKeyName(
         key: KeyEventTriggerKey,
         showDeviceDescriptors: Boolean,
-    ): String = buildString {
-        when (key.clickType) {
-            ClickType.LONG_PRESS -> append(longPressString).append(" ")
-            ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
-            else -> Unit
-        }
+    ): String =
+        buildString {
+            when (key.clickType) {
+                ClickType.LONG_PRESS -> append(longPressString).append(" ")
+                ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
+                else -> Unit
+            }
 
-        append(key.getCodeLabel(this@KeyMapListItemCreator))
+            append(key.getCodeLabel(this@KeyMapListItemCreator))
 
-        val deviceName = when (key.device) {
-            is KeyEventTriggerDevice.Internal -> null
-            is KeyEventTriggerDevice.Any -> getString(R.string.any_device)
-            is KeyEventTriggerDevice.External -> {
-                if (showDeviceDescriptors) {
-                    InputDeviceUtils.appendDeviceDescriptorToName(
-                        key.device.descriptor,
-                        key.device.name,
-                    )
-                } else {
-                    key.device.name
+            val deviceName =
+                when (key.device) {
+                    is KeyEventTriggerDevice.Internal -> null
+                    is KeyEventTriggerDevice.Any -> getString(R.string.any_device)
+                    is KeyEventTriggerDevice.External -> {
+                        if (showDeviceDescriptors) {
+                            InputDeviceUtils.appendDeviceDescriptorToName(
+                                key.device.descriptor,
+                                key.device.name,
+                            )
+                        } else {
+                            key.device.name
+                        }
+                    }
+                }
+
+            val parts = mutableListOf<String>()
+
+            if (deviceName != null || key.requiresIme || !key.consumeEvent) {
+                if (key.requiresIme) {
+                    parts.add(getString(R.string.flag_detect_from_input_method))
+                }
+
+                if (deviceName != null) {
+                    parts.add(deviceName)
+                }
+
+                if (!key.consumeEvent) {
+                    parts.add(getString(R.string.flag_dont_override_default_action))
                 }
             }
-        }
 
-        val parts = mutableListOf<String>()
-
-        if (deviceName != null || key.requiresIme || !key.consumeEvent) {
-            if (key.requiresIme) {
-                parts.add(getString(R.string.flag_detect_from_input_method))
-            }
-
-            if (deviceName != null) {
-                parts.add(deviceName)
-            }
-
-            if (!key.consumeEvent) {
-                parts.add(getString(R.string.flag_dont_override_default_action))
+            if (parts.isNotEmpty()) {
+                append(" (")
+                append(parts.joinToString(separator = " $midDot "))
+                append(")")
             }
         }
 
-        if (parts.isNotEmpty()) {
-            append(" (")
-            append(parts.joinToString(separator = " $midDot "))
-            append(")")
-        }
-    }
+    private fun evdevTriggerKeyName(key: EvdevTriggerKey): String =
+        buildString {
+            when (key.clickType) {
+                ClickType.LONG_PRESS -> append(longPressString).append(" ")
+                ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
+                else -> Unit
+            }
 
-    private fun evdevTriggerKeyName(key: EvdevTriggerKey): String = buildString {
-        when (key.clickType) {
-            ClickType.LONG_PRESS -> append(longPressString).append(" ")
-            ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
-            else -> Unit
-        }
+            append(key.getCodeLabel(this@KeyMapListItemCreator))
 
-        append(key.getCodeLabel(this@KeyMapListItemCreator))
+            val parts =
+                buildList {
+                    add("PRO")
+                    add(key.device.name)
 
-        val parts = buildList {
-            add("PRO")
-            add(key.device.name)
+                    if (!key.consumeEvent) {
+                        add(getString(R.string.flag_dont_override_default_action))
+                    }
+                }
 
-            if (!key.consumeEvent) {
-                add(getString(R.string.flag_dont_override_default_action))
+            if (parts.isNotEmpty()) {
+                append(" (")
+                append(parts.joinToString(separator = " $midDot "))
+                append(")")
             }
         }
 
-        if (parts.isNotEmpty()) {
-            append(" (")
-            append(parts.joinToString(separator = " $midDot "))
-            append(")")
-        }
-    }
+    private fun assistantTriggerKeyName(key: AssistantTriggerKey): String =
+        buildString {
+            when (key.clickType) {
+                ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
+                else -> Unit
+            }
 
-    private fun assistantTriggerKeyName(key: AssistantTriggerKey): String = buildString {
-        when (key.clickType) {
-            ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
-            else -> Unit
-        }
-
-        when (key.type) {
-            AssistantTriggerType.ANY -> append(anyAssistantString)
-            AssistantTriggerType.VOICE -> append(voiceAssistantString)
-            AssistantTriggerType.DEVICE -> append(deviceAssistantString)
-        }
-    }
-
-    private fun fingerprintKeyName(key: FingerprintTriggerKey): String = buildString {
-        when (key.clickType) {
-            ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
-            else -> Unit
+            when (key.type) {
+                AssistantTriggerType.ANY -> append(anyAssistantString)
+                AssistantTriggerType.VOICE -> append(voiceAssistantString)
+                AssistantTriggerType.DEVICE -> append(deviceAssistantString)
+            }
         }
 
-        when (key.type) {
-            FingerprintGestureType.SWIPE_DOWN -> append(getString(R.string.trigger_key_fingerprint_gesture_down))
-            FingerprintGestureType.SWIPE_UP -> append(getString(R.string.trigger_key_fingerprint_gesture_up))
-            FingerprintGestureType.SWIPE_LEFT -> append(getString(R.string.trigger_key_fingerprint_gesture_left))
-            FingerprintGestureType.SWIPE_RIGHT -> append(getString(R.string.trigger_key_fingerprint_gesture_right))
+    private fun fingerprintKeyName(key: FingerprintTriggerKey): String =
+        buildString {
+            when (key.clickType) {
+                ClickType.DOUBLE_PRESS -> append(doublePressString).append(" ")
+                else -> Unit
+            }
+
+            when (key.type) {
+                FingerprintGestureType.SWIPE_DOWN -> append(getString(R.string.trigger_key_fingerprint_gesture_down))
+                FingerprintGestureType.SWIPE_UP -> append(getString(R.string.trigger_key_fingerprint_gesture_up))
+                FingerprintGestureType.SWIPE_LEFT -> append(getString(R.string.trigger_key_fingerprint_gesture_left))
+                FingerprintGestureType.SWIPE_RIGHT -> append(getString(R.string.trigger_key_fingerprint_gesture_right))
+            }
         }
-    }
 
     private fun getTriggerOptionLabels(trigger: Trigger): List<String> {
         val labels = mutableListOf<String>()

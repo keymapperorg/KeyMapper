@@ -58,11 +58,12 @@ fun VolumeActionBottomSheet(delegate: CreateActionDelegate) {
 
     if (delegate.volumeActionState != null) {
         val state = delegate.volumeActionState!!
-        val title = when (state.actionId) {
-            ActionId.VOLUME_UP -> stringResource(R.string.action_volume_up)
-            ActionId.VOLUME_DOWN -> stringResource(R.string.action_volume_down)
-            else -> ""
-        }
+        val title =
+            when (state.actionId) {
+                ActionId.VOLUME_UP -> stringResource(R.string.action_volume_up)
+                ActionId.VOLUME_DOWN -> stringResource(R.string.action_volume_down)
+                else -> ""
+            }
 
         VolumeActionBottomSheet(
             sheetState = sheetState,
@@ -112,9 +113,10 @@ private fun VolumeActionBottomSheet(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp),
                 textAlign = TextAlign.Center,
                 text = title,
                 style = MaterialTheme.typography.headlineMedium,
@@ -169,9 +171,10 @@ private fun VolumeActionBottomSheet(
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -206,11 +209,12 @@ private fun VolumeActionBottomSheet(
 @Composable
 private fun PreviewVolumeActionBottomSheet() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         var state by remember {
             mutableStateOf(
@@ -238,11 +242,12 @@ private fun PreviewVolumeActionBottomSheet() {
 @Composable
 private fun PreviewVolumeActionBottomSheetDefaultStream() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         var state by remember {
             mutableStateOf(

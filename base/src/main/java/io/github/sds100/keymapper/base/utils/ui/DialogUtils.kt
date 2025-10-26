@@ -102,9 +102,10 @@ suspend fun Context.multiChoiceDialog(
     items: List<MultiChoiceItem<*>>,
 ) = suspendCancellableCoroutine<List<*>?> { continuation ->
     materialAlertDialog {
-        val checkedItems = items
-            .map { it.isChecked }
-            .toBooleanArray()
+        val checkedItems =
+            items
+                .map { it.isChecked }
+                .toBooleanArray()
 
         setMultiChoiceItems(
             items.map { it.label }.toTypedArray(),
@@ -116,13 +117,14 @@ suspend fun Context.multiChoiceDialog(
         negativeButton(R.string.neg_cancel) { it.cancel() }
 
         okButton {
-            val checkedItemIds = sequence {
-                checkedItems.forEachIndexed { index, checked ->
-                    if (checked) {
-                        yield(items[index].id)
+            val checkedItemIds =
+                sequence {
+                    checkedItems.forEachIndexed { index, checked ->
+                        if (checked) {
+                            yield(items[index].id)
+                        }
                     }
-                }
-            }.toList()
+                }.toList()
 
             continuation.resumeIfNotCompleted(checkedItemIds)
         }
@@ -165,47 +167,49 @@ suspend fun Context.editTextStringAlertDialog(
 
     val text = MutableStateFlow(initialText)
 
-    val alertDialog = materialAlertDialog {
-        val inflater = LayoutInflater.from(this@editTextStringAlertDialog)
+    val alertDialog =
+        materialAlertDialog {
+            val inflater = LayoutInflater.from(this@editTextStringAlertDialog)
 
-        DialogEdittextStringBinding.inflate(inflater).apply {
-            setHint(hint)
-            setText(text)
-            setAllowEmpty(allowEmpty)
+            DialogEdittextStringBinding.inflate(inflater).apply {
+                setHint(hint)
+                setText(text)
+                setAllowEmpty(allowEmpty)
 
-            if (autoCompleteEntries.isEmpty()) {
-                textInputLayout.endIconMode = TextInputLayout.END_ICON_NONE
-            } else {
-                textInputLayout.endIconMode = TextInputLayout.END_ICON_DROPDOWN_MENU
+                if (autoCompleteEntries.isEmpty()) {
+                    textInputLayout.endIconMode = TextInputLayout.END_ICON_NONE
+                } else {
+                    textInputLayout.endIconMode = TextInputLayout.END_ICON_DROPDOWN_MENU
+                }
+
+                if (inputType != null) {
+                    autoCompleteTextView.inputType = inputType
+                }
+
+                val autoCompleteAdapter =
+                    ArrayAdapter(
+                        this@editTextStringAlertDialog,
+                        R.layout.dropdown_menu_popup_item,
+                        autoCompleteEntries,
+                    )
+
+                autoCompleteTextView.setAdapter(autoCompleteAdapter)
+
+                setView(this.root)
             }
 
-            if (inputType != null) {
-                autoCompleteTextView.inputType = inputType
+            if (message != null) {
+                this.message = message
             }
 
-            val autoCompleteAdapter = ArrayAdapter(
-                this@editTextStringAlertDialog,
-                R.layout.dropdown_menu_popup_item,
-                autoCompleteEntries,
-            )
+            okButton {
+                continuation.resumeIfNotCompleted(text.value)
+            }
 
-            autoCompleteTextView.setAdapter(autoCompleteAdapter)
-
-            setView(this.root)
+            negativeButton(R.string.neg_cancel) {
+                it.cancel()
+            }
         }
-
-        if (message != null) {
-            this.message = message
-        }
-
-        okButton {
-            continuation.resumeIfNotCompleted(text.value)
-        }
-
-        negativeButton(R.string.neg_cancel) {
-            it.cancel()
-        }
-    }
 
     // this prevents window leak
     alertDialog.resumeNullOnDismiss(continuation)
@@ -231,14 +235,15 @@ suspend fun Context.okDialog(
     title: String? = null,
 ) = suspendCancellableCoroutine<Unit?> { continuation ->
 
-    val alertDialog = materialAlertDialog {
-        setTitle(title)
-        setMessage(message)
+    val alertDialog =
+        materialAlertDialog {
+            setTitle(title)
+            setMessage(message)
 
-        okButton {
-            continuation.resumeIfNotCompleted(Unit)
+            okButton {
+                continuation.resumeIfNotCompleted(Unit)
+            }
         }
-    }
 
     alertDialog.show()
 
@@ -256,11 +261,13 @@ fun <T> Dialog.resumeNullOnDismiss(continuation: CancellableContinuation<T?>) {
 }
 
 fun Dialog.dismissOnDestroy(lifecycleOwner: LifecycleOwner) {
-    lifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
-        @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-        fun onDestroy() {
-            this@dismissOnDestroy.dismiss()
-            lifecycleOwner.lifecycle.removeObserver(this)
-        }
-    })
+    lifecycleOwner.lifecycle.addObserver(
+        object : LifecycleObserver {
+            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+            fun onDestroy() {
+                this@dismissOnDestroy.dismiss()
+                lifecycleOwner.lifecycle.removeObserver(this)
+            }
+        },
+    )
 }

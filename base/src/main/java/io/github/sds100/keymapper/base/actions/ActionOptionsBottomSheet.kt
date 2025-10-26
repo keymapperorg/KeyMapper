@@ -80,9 +80,10 @@ fun ActionOptionsBottomSheet(
                 )
 
                 IconButton(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(horizontal = 8.dp),
+                    modifier =
+                        Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(horizontal = 8.dp),
                     onClick = { uriHandler.openUriSafe(ctx, helpUrl) },
                 ) {
                     Icon(
@@ -95,9 +96,10 @@ fun ActionOptionsBottomSheet(
             Spacer(modifier = Modifier.height(8.dp))
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
             ) {
                 if (state.showEditButton) {
                     OutlinedButton(
@@ -118,9 +120,10 @@ fun ActionOptionsBottomSheet(
                 Spacer(Modifier.height(8.dp))
 
                 CheckBoxText(
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .fillMaxWidth(),
+                    modifier =
+                        Modifier
+                            .padding(horizontal = 8.dp)
+                            .fillMaxWidth(),
                     text = stringResource(R.string.flag_repeat_actions),
                     isChecked = state.isRepeatChecked,
                     onCheckedChange = callback::onRepeatCheckedChange,
@@ -131,9 +134,10 @@ fun ActionOptionsBottomSheet(
                 Spacer(Modifier.height(8.dp))
 
                 SliderOptionText(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                     title = stringResource(R.string.extra_label_repeat_rate),
                     defaultValue = state.defaultRepeatRate.toFloat(),
                     value = state.repeatRate.toFloat(),
@@ -150,9 +154,10 @@ fun ActionOptionsBottomSheet(
                 val noLimitString = stringResource(R.string.button_slider_repeat_no_limit)
 
                 SliderOptionText(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                     title = stringResource(R.string.extra_label_repeat_limit),
                     defaultValue = state.defaultRepeatLimit.toFloat(),
                     value = state.repeatLimit.toFloat(),
@@ -173,9 +178,10 @@ fun ActionOptionsBottomSheet(
                 Spacer(Modifier.height(8.dp))
 
                 SliderOptionText(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                     title = stringResource(R.string.extra_label_repeat_delay),
                     defaultValue = state.defaultRepeatDelay.toFloat(),
                     value = state.repeatDelay.toFloat(),
@@ -196,9 +202,10 @@ fun ActionOptionsBottomSheet(
                 )
 
                 FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     if (state.allowedRepeatModes.contains(RepeatMode.TRIGGER_RELEASED)) {
@@ -238,9 +245,10 @@ fun ActionOptionsBottomSheet(
                 Spacer(Modifier.height(8.dp))
 
                 CheckBoxText(
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .fillMaxWidth(),
+                    modifier =
+                        Modifier
+                            .padding(horizontal = 8.dp)
+                            .fillMaxWidth(),
                     text = stringResource(R.string.flag_hold_down),
                     isChecked = state.isHoldDownChecked,
                     onCheckedChange = callback::onHoldDownCheckedChange,
@@ -251,9 +259,10 @@ fun ActionOptionsBottomSheet(
                 Spacer(Modifier.height(8.dp))
 
                 SliderOptionText(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                     title = stringResource(R.string.extra_label_hold_down_duration),
                     defaultValue = state.defaultHoldDownDuration.toFloat(),
                     value = state.holdDownDuration.toFloat(),
@@ -274,9 +283,10 @@ fun ActionOptionsBottomSheet(
                 )
 
                 FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     RadioButtonText(
@@ -304,9 +314,10 @@ fun ActionOptionsBottomSheet(
                 Spacer(Modifier.height(8.dp))
 
                 SliderOptionText(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                     title = stringResource(R.string.extra_label_delay_before_next_action),
                     defaultValue = state.defaultDelayBeforeNextAction.toFloat(),
                     value = state.delayBeforeNextAction.toFloat(),
@@ -320,14 +331,16 @@ fun ActionOptionsBottomSheet(
             Spacer(Modifier.height(8.dp))
 
             SliderOptionText(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                title = if (state.showRepeat && state.isRepeatChecked) {
-                    stringResource(R.string.extra_label_action_multiplier_with_repeat)
-                } else {
-                    stringResource(R.string.extra_label_action_multiplier)
-                },
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                title =
+                    if (state.showRepeat && state.isRepeatChecked) {
+                        stringResource(R.string.extra_label_action_multiplier_with_repeat)
+                    } else {
+                        stringResource(R.string.extra_label_action_multiplier)
+                    },
                 defaultValue = state.defaultMultiplier.toFloat(),
                 value = state.multiplier.toFloat(),
                 valueText = { "${it.toInt()}x" },
@@ -343,19 +356,21 @@ fun ActionOptionsBottomSheet(
             Spacer(Modifier.height(8.dp))
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
             ) {
                 Spacer(Modifier.weight(0.5f))
                 Spacer(Modifier.width(16.dp))
 
                 FilledTonalButton(
                     modifier = Modifier.weight(0.5f),
-                    colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                    ),
+                    colors =
+                        ButtonDefaults.filledTonalButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                        ),
                     onClick = {
                         scope.launch {
                             sheetState.hide()
@@ -376,16 +391,27 @@ fun ActionOptionsBottomSheet(
 
 interface ActionOptionsBottomSheetCallback {
     fun onEditClick() = run { }
+
     fun onReplaceClick() = run { }
+
     fun onRepeatCheckedChange(checked: Boolean) = run { }
+
     fun onSelectRepeatMode(repeatMode: RepeatMode) = run { }
+
     fun onRepeatRateChanged(rate: Int) = run { }
+
     fun onRepeatLimitChanged(limit: Int) = run { }
+
     fun onRepeatDelayChanged(delay: Int) = run { }
+
     fun onHoldDownCheckedChange(checked: Boolean) = run { }
+
     fun onHoldDownDurationChanged(duration: Int) = run { }
+
     fun onSelectHoldDownMode(holdDownMode: HoldDownMode) = run { }
+
     fun onDelayBeforeNextActionChanged(delay: Int) = run { }
+
     fun onMultiplierChanged(multiplier: Int) = run { }
 }
 
@@ -394,55 +420,49 @@ interface ActionOptionsBottomSheetCallback {
 @Composable
 private fun Preview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = Expanded,
+            )
 
         ActionOptionsBottomSheet(
             sheetState = sheetState,
-            state = ActionOptionsState(
-                showEditButton = true,
-                showRepeat = true,
-                isRepeatChecked = true,
-
-                showRepeatRate = true,
-                repeatRate = 400,
-                defaultRepeatRate = 500,
-
-                showRepeatDelay = true,
-                repeatDelay = 400,
-                defaultRepeatDelay = 400,
-
-                showRepeatLimit = true,
-                repeatLimit = Int.MAX_VALUE,
-                defaultRepeatLimit = Int.MAX_VALUE,
-
-                allowedRepeatModes = setOf(
-                    RepeatMode.TRIGGER_RELEASED,
-                    RepeatMode.LIMIT_REACHED,
-                    RepeatMode.TRIGGER_PRESSED_AGAIN,
+            state =
+                ActionOptionsState(
+                    showEditButton = true,
+                    showRepeat = true,
+                    isRepeatChecked = true,
+                    showRepeatRate = true,
+                    repeatRate = 400,
+                    defaultRepeatRate = 500,
+                    showRepeatDelay = true,
+                    repeatDelay = 400,
+                    defaultRepeatDelay = 400,
+                    showRepeatLimit = true,
+                    repeatLimit = Int.MAX_VALUE,
+                    defaultRepeatLimit = Int.MAX_VALUE,
+                    allowedRepeatModes =
+                        setOf(
+                            RepeatMode.TRIGGER_RELEASED,
+                            RepeatMode.LIMIT_REACHED,
+                            RepeatMode.TRIGGER_PRESSED_AGAIN,
+                        ),
+                    repeatMode = RepeatMode.TRIGGER_RELEASED,
+                    showHoldDown = true,
+                    isHoldDownChecked = false,
+                    showHoldDownDuration = true,
+                    holdDownDuration = 400,
+                    defaultHoldDownDuration = 400,
+                    showHoldDownMode = true,
+                    holdDownMode = HoldDownMode.TRIGGER_PRESSED_AGAIN,
+                    showDelayBeforeNextAction = true,
+                    delayBeforeNextAction = 10000,
+                    defaultDelayBeforeNextAction = 5000,
+                    multiplier = 4,
+                    defaultMultiplier = 1,
                 ),
-                repeatMode = RepeatMode.TRIGGER_RELEASED,
-
-                showHoldDown = true,
-                isHoldDownChecked = false,
-
-                showHoldDownDuration = true,
-                holdDownDuration = 400,
-                defaultHoldDownDuration = 400,
-
-                showHoldDownMode = true,
-                holdDownMode = HoldDownMode.TRIGGER_PRESSED_AGAIN,
-
-                showDelayBeforeNextAction = true,
-                delayBeforeNextAction = 10000,
-                defaultDelayBeforeNextAction = 5000,
-
-                multiplier = 4,
-                defaultMultiplier = 1,
-            ),
             callback = object : ActionOptionsBottomSheetCallback {},
         )
     }
@@ -453,55 +473,49 @@ private fun Preview() {
 @Composable
 private fun PreviewNoEditButton() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = Expanded,
+            )
 
         ActionOptionsBottomSheet(
             sheetState = sheetState,
-            state = ActionOptionsState(
-                showEditButton = false,
-                showRepeat = true,
-                isRepeatChecked = true,
-
-                showRepeatRate = true,
-                repeatRate = 400,
-                defaultRepeatRate = 500,
-
-                showRepeatDelay = true,
-                repeatDelay = 400,
-                defaultRepeatDelay = 400,
-
-                showRepeatLimit = true,
-                repeatLimit = 10,
-                defaultRepeatLimit = Int.MAX_VALUE,
-
-                allowedRepeatModes = setOf(
-                    RepeatMode.TRIGGER_RELEASED,
-                    RepeatMode.LIMIT_REACHED,
-                    RepeatMode.TRIGGER_PRESSED_AGAIN,
+            state =
+                ActionOptionsState(
+                    showEditButton = false,
+                    showRepeat = true,
+                    isRepeatChecked = true,
+                    showRepeatRate = true,
+                    repeatRate = 400,
+                    defaultRepeatRate = 500,
+                    showRepeatDelay = true,
+                    repeatDelay = 400,
+                    defaultRepeatDelay = 400,
+                    showRepeatLimit = true,
+                    repeatLimit = 10,
+                    defaultRepeatLimit = Int.MAX_VALUE,
+                    allowedRepeatModes =
+                        setOf(
+                            RepeatMode.TRIGGER_RELEASED,
+                            RepeatMode.LIMIT_REACHED,
+                            RepeatMode.TRIGGER_PRESSED_AGAIN,
+                        ),
+                    repeatMode = RepeatMode.TRIGGER_RELEASED,
+                    showHoldDown = true,
+                    isHoldDownChecked = false,
+                    showHoldDownDuration = true,
+                    holdDownDuration = 400,
+                    defaultHoldDownDuration = 400,
+                    showHoldDownMode = true,
+                    holdDownMode = HoldDownMode.TRIGGER_PRESSED_AGAIN,
+                    showDelayBeforeNextAction = true,
+                    delayBeforeNextAction = 10000,
+                    defaultDelayBeforeNextAction = 5000,
+                    multiplier = 4,
+                    defaultMultiplier = 1,
                 ),
-                repeatMode = RepeatMode.TRIGGER_RELEASED,
-
-                showHoldDown = true,
-                isHoldDownChecked = false,
-
-                showHoldDownDuration = true,
-                holdDownDuration = 400,
-                defaultHoldDownDuration = 400,
-
-                showHoldDownMode = true,
-                holdDownMode = HoldDownMode.TRIGGER_PRESSED_AGAIN,
-
-                showDelayBeforeNextAction = true,
-                delayBeforeNextAction = 10000,
-                defaultDelayBeforeNextAction = 5000,
-
-                multiplier = 4,
-                defaultMultiplier = 1,
-            ),
             callback = object : ActionOptionsBottomSheetCallback {},
         )
     }

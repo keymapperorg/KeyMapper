@@ -14,13 +14,14 @@ object ViewModelHelper {
         restartService: () -> Boolean,
         ignoreCrashed: () -> Unit,
     ) {
-        val dialog = DialogModel.Alert(
-            title = resourceProvider.getString(R.string.dialog_title_key_mapper_crashed),
-            message = resourceProvider.getText(R.string.dialog_message_key_mapper_crashed),
-            positiveButtonText = resourceProvider.getString(R.string.dialog_button_read_dont_kill_my_app_yes),
-            negativeButtonText = resourceProvider.getString(R.string.dialog_button_read_dont_kill_my_app_no),
-            neutralButtonText = resourceProvider.getString(R.string.pos_restart),
-        )
+        val dialog =
+            DialogModel.Alert(
+                title = resourceProvider.getString(R.string.dialog_title_key_mapper_crashed),
+                message = resourceProvider.getText(R.string.dialog_message_key_mapper_crashed),
+                positiveButtonText = resourceProvider.getString(R.string.dialog_button_read_dont_kill_my_app_yes),
+                negativeButtonText = resourceProvider.getString(R.string.dialog_button_read_dont_kill_my_app_no),
+                neutralButtonText = resourceProvider.getString(R.string.pos_restart),
+            )
 
         val response = dialogProvider.showDialog("app_crashed_prompt", dialog) ?: return
 
@@ -41,12 +42,13 @@ object ViewModelHelper {
         resourceProvider: ResourceProvider,
         dialogProvider: DialogProvider,
     ): DialogResponse {
-        val dialog = DialogModel.Alert(
-            title = resourceProvider.getString(R.string.dialog_title_accessibility_service_explanation),
-            message = resourceProvider.getString(R.string.dialog_message_accessibility_service_explanation),
-            positiveButtonText = resourceProvider.getString(R.string.enable),
-            negativeButtonText = resourceProvider.getString(R.string.neg_cancel),
-        )
+        val dialog =
+            DialogModel.Alert(
+                title = resourceProvider.getString(R.string.dialog_title_accessibility_service_explanation),
+                message = resourceProvider.getString(R.string.dialog_message_accessibility_service_explanation),
+                positiveButtonText = resourceProvider.getString(R.string.enable),
+                negativeButtonText = resourceProvider.getString(R.string.neg_cancel),
+            )
 
         val response =
             dialogProvider.showDialog("accessibility_service_explanation", dialog)
@@ -59,12 +61,13 @@ object ViewModelHelper {
         resourceProvider: ResourceProvider,
         dialogProvider: DialogProvider,
     ) {
-        val dialog = DialogModel.Alert(
-            title = resourceProvider.getString(R.string.dialog_title_cant_find_accessibility_settings_page),
-            message = resourceProvider.getText(R.string.dialog_message_cant_find_accessibility_settings_page),
-            positiveButtonText = resourceProvider.getString(R.string.pos_start_service_with_adb_guide),
-            negativeButtonText = resourceProvider.getString(R.string.neg_cancel),
-        )
+        val dialog =
+            DialogModel.Alert(
+                title = resourceProvider.getString(R.string.dialog_title_cant_find_accessibility_settings_page),
+                message = resourceProvider.getText(R.string.dialog_message_cant_find_accessibility_settings_page),
+                positiveButtonText = resourceProvider.getString(R.string.pos_start_service_with_adb_guide),
+                negativeButtonText = resourceProvider.getString(R.string.neg_cancel),
+            )
 
         val response =
             dialogProvider.showDialog("cant_find_accessibility_settings", dialog) ?: return
@@ -100,12 +103,13 @@ object ViewModelHelper {
         dialogProvider: DialogProvider,
         restartService: () -> Boolean,
     ) {
-        val dialog = DialogModel.Alert(
-            title = resourceProvider.getString(R.string.dialog_title_accessibility_service_explanation),
-            message = resourceProvider.getString(R.string.dialog_message_restart_accessibility_service),
-            positiveButtonText = resourceProvider.getString(R.string.pos_restart),
-            negativeButtonText = resourceProvider.getString(R.string.neg_cancel),
-        )
+        val dialog =
+            DialogModel.Alert(
+                title = resourceProvider.getString(R.string.dialog_title_accessibility_service_explanation),
+                message = resourceProvider.getString(R.string.dialog_message_restart_accessibility_service),
+                positiveButtonText = resourceProvider.getString(R.string.pos_restart),
+                negativeButtonText = resourceProvider.getString(R.string.neg_cancel),
+            )
 
         val response = dialogProvider.showDialog("accessibility_service_explanation", dialog)
 
@@ -125,12 +129,13 @@ object ViewModelHelper {
         fixError: suspend () -> Unit,
     ) {
         if (error.isFixable) {
-            val dialog = DialogModel.Alert(
-                title = resourceProvider.getString(R.string.dialog_title_home_fix_error),
-                message = error.getFullMessage(resourceProvider),
-                positiveButtonText = resourceProvider.getString(R.string.dialog_button_fix),
-                negativeButtonText = resourceProvider.getText(R.string.neg_cancel),
-            )
+            val dialog =
+                DialogModel.Alert(
+                    title = resourceProvider.getString(R.string.dialog_title_home_fix_error),
+                    message = error.getFullMessage(resourceProvider),
+                    positiveButtonText = resourceProvider.getString(R.string.dialog_button_fix),
+                    negativeButtonText = resourceProvider.getText(R.string.neg_cancel),
+                )
 
             val response = dialogProvider.showDialog("fix_error", dialog)
 
@@ -138,10 +143,11 @@ object ViewModelHelper {
                 fixError.invoke()
             }
         } else {
-            val dialog = DialogModel.Alert(
-                message = error.getFullMessage(resourceProvider),
-                positiveButtonText = resourceProvider.getString(R.string.pos_ok),
-            )
+            val dialog =
+                DialogModel.Alert(
+                    message = error.getFullMessage(resourceProvider),
+                    positiveButtonText = resourceProvider.getString(R.string.pos_ok),
+                )
 
             dialogProvider.showDialog("fix_error", dialog)
         }
@@ -153,13 +159,14 @@ object ViewModelHelper {
         neverShowDndTriggerErrorAgain: () -> Unit,
         fixError: suspend () -> Unit,
     ) {
-        val dialog = DialogModel.Alert(
-            title = resourceProvider.getString(R.string.dialog_title_fix_dnd_trigger_error),
-            message = resourceProvider.getText(R.string.dialog_message_fix_dnd_trigger_error),
-            positiveButtonText = resourceProvider.getString(R.string.pos_ok),
-            negativeButtonText = resourceProvider.getString(R.string.neg_cancel),
-            neutralButtonText = resourceProvider.getString(R.string.neg_dont_show_again),
-        )
+        val dialog =
+            DialogModel.Alert(
+                title = resourceProvider.getString(R.string.dialog_title_fix_dnd_trigger_error),
+                message = resourceProvider.getText(R.string.dialog_message_fix_dnd_trigger_error),
+                positiveButtonText = resourceProvider.getString(R.string.pos_ok),
+                negativeButtonText = resourceProvider.getString(R.string.neg_cancel),
+                neutralButtonText = resourceProvider.getString(R.string.neg_dont_show_again),
+            )
 
         val dialogResponse = dialogProvider.showDialog("fix_dnd_trigger_error", dialog)
 

@@ -174,9 +174,10 @@ private fun SortBottomSheetContent(
         modifier = modifier.verticalScroll(scrollableState),
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
         ) {
             // Use fully qualified name due to quirky overload resolution. The compiler will
             // otherwise tell you to use it in a column or row scope.
@@ -235,20 +236,23 @@ private fun SortBottomSheetContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             OutlinedButton(
                 onClick = onCancel,
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = MaterialTheme.colorScheme.error,
-                ),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.error,
-                ),
+                colors =
+                    ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error,
+                    ),
+                border =
+                    BorderStroke(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.error,
+                    ),
             ) {
                 Text(stringResource(R.string.neg_cancel))
             }
@@ -265,7 +269,10 @@ private fun SortBottomSheetContent(
 }
 
 @Composable
-private fun HelpButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
+private fun HelpButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
     IconButton(
         modifier = modifier,
         onClick = onClick,
@@ -285,10 +292,11 @@ private fun SortDraggableList(
     onSortFieldClick: (SortField) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
-    val dragDropState = rememberDragDropState(
-        lazyListState = lazyListState,
-        onMove = onMove,
-    )
+    val dragDropState =
+        rememberDragDropState(
+            lazyListState = lazyListState,
+            onMove = onMove,
+        )
 
     LazyColumn(
         modifier = modifier,
@@ -312,8 +320,9 @@ private fun SortDraggableList(
                     onDrag = { dragDropState.onDrag(it) },
                     onDragStarted = { offset ->
                         // Calculate the offset of the item in the list
-                        val lazyItem = lazyListState.layoutInfo.visibleItemsInfo
-                            .firstOrNull { it.index == index } ?: return@SortFieldListItem
+                        val lazyItem =
+                            lazyListState.layoutInfo.visibleItemsInfo
+                                .firstOrNull { it.index == index } ?: return@SortFieldListItem
 
                         val initialOffset = lazyItem.offset
 
@@ -344,16 +353,16 @@ private fun SortFieldListItem(
     val draggableColor = MaterialTheme.colorScheme.surfaceVariant
 
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = 48.dp)
-            .clickable { onToggle() }
-            .drawBehind {
-                if (isDragging) {
-                    drawRect(draggableColor)
-                }
-            }
-            .padding(horizontal = 8.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp)
+                .clickable { onToggle() }
+                .drawBehind {
+                    if (isDragging) {
+                        drawRect(draggableColor)
+                    }
+                }.padding(horizontal = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -367,11 +376,12 @@ private fun SortFieldListItem(
             )
             Text(
                 text = sortFieldText(sortField),
-                style = if (sortOrder == SortOrder.NONE) {
-                    MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal)
-                } else {
-                    MaterialTheme.typography.titleMedium
-                },
+                style =
+                    if (sortOrder == SortOrder.NONE) {
+                        MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal)
+                    } else {
+                        MaterialTheme.typography.titleMedium
+                    },
             )
             AnimatedContent(
                 targetState = sortOrder,
@@ -394,11 +404,12 @@ private fun SortFieldListItem(
                     return@AnimatedContent
                 }
 
-                val imageVector = when (sortOrder) {
-                    SortOrder.NONE -> return@AnimatedContent
-                    SortOrder.ASCENDING -> Icons.Rounded.ArrowUpward
-                    SortOrder.DESCENDING -> Icons.Rounded.ArrowDownward
-                }
+                val imageVector =
+                    when (sortOrder) {
+                        SortOrder.NONE -> return@AnimatedContent
+                        SortOrder.ASCENDING -> Icons.Rounded.ArrowUpward
+                        SortOrder.DESCENDING -> Icons.Rounded.ArrowDownward
+                    }
 
                 Icon(
                     imageVector = imageVector,
@@ -408,23 +419,25 @@ private fun SortFieldListItem(
         }
 
         Box(
-            modifier = Modifier
-                .size(40.dp)
-                .draggable(
-                    state = draggableState,
-                    orientation = Orientation.Vertical,
-                    startDragImmediately = true,
-                    onDragStarted = onDragStarted,
-                    onDragStopped = onDragStopped,
-                ),
+            modifier =
+                Modifier
+                    .size(40.dp)
+                    .draggable(
+                        state = draggableState,
+                        orientation = Orientation.Vertical,
+                        startDragImmediately = true,
+                        onDragStarted = onDragStarted,
+                        onDragStopped = onDragStopped,
+                    ),
         ) {
             Icon(
                 modifier = Modifier.align(Alignment.Center),
                 imageVector = Icons.Rounded.DragHandle,
-                contentDescription = stringResource(
-                    R.string.drag_handle_for,
-                    sortFieldText(sortField),
-                ),
+                contentDescription =
+                    stringResource(
+                        R.string.drag_handle_for,
+                        sortFieldText(sortField),
+                    ),
             )
         }
     }
@@ -498,12 +511,13 @@ private fun SortHelpCard(
 @Preview
 @Composable
 private fun SortBottomSheetContentPreview() {
-    val list = listOf(
-        SortFieldOrder(SortField.TRIGGER, SortOrder.NONE),
-        SortFieldOrder(SortField.ACTIONS, SortOrder.ASCENDING),
-        SortFieldOrder(SortField.CONSTRAINTS, SortOrder.DESCENDING),
-        SortFieldOrder(SortField.OPTIONS, SortOrder.NONE),
-    )
+    val list =
+        listOf(
+            SortFieldOrder(SortField.TRIGGER, SortOrder.NONE),
+            SortFieldOrder(SortField.ACTIONS, SortOrder.ASCENDING),
+            SortFieldOrder(SortField.CONSTRAINTS, SortOrder.DESCENDING),
+            SortFieldOrder(SortField.OPTIONS, SortOrder.NONE),
+        )
 
     KeyMapperTheme {
         Surface {
@@ -526,12 +540,13 @@ private fun SortBottomSheetContentPreview() {
 @Preview
 @Composable
 private fun SortBottomSheetPreview() {
-    val list = listOf(
-        SortFieldOrder(SortField.TRIGGER, SortOrder.NONE),
-        SortFieldOrder(SortField.ACTIONS, SortOrder.ASCENDING),
-        SortFieldOrder(SortField.CONSTRAINTS, SortOrder.DESCENDING),
-        SortFieldOrder(SortField.OPTIONS, SortOrder.NONE),
-    )
+    val list =
+        listOf(
+            SortFieldOrder(SortField.TRIGGER, SortOrder.NONE),
+            SortFieldOrder(SortField.ACTIONS, SortOrder.ASCENDING),
+            SortFieldOrder(SortField.CONSTRAINTS, SortOrder.DESCENDING),
+            SortFieldOrder(SortField.OPTIONS, SortOrder.NONE),
+        )
 
     var size by remember { mutableIntStateOf(0) }
 
@@ -540,9 +555,10 @@ private fun SortBottomSheetPreview() {
             @OptIn(ExperimentalMaterial3Api::class)
             SortBottomSheet(
                 // Preview hack, breaks if you run it
-                modifier = Modifier
-                    .offset { IntOffset(0, -size) }
-                    .onSizeChanged { size = it.height },
+                modifier =
+                    Modifier
+                        .offset { IntOffset(0, -size) }
+                        .onSizeChanged { size = it.height },
                 onDismissRequest = {},
                 onApply = {},
                 sortFieldOrderList = list,
@@ -559,11 +575,10 @@ private fun SortBottomSheetPreview() {
 }
 
 @Composable
-private fun sortFieldText(sortField: SortField): String {
-    return when (sortField) {
+private fun sortFieldText(sortField: SortField): String =
+    when (sortField) {
         SortField.TRIGGER -> stringResource(R.string.sort_bottom_sheet_trigger)
         SortField.ACTIONS -> stringResource(R.string.sort_bottom_sheet_actions)
         SortField.CONSTRAINTS -> stringResource(R.string.sort_bottom_sheet_constraints)
         SortField.OPTIONS -> stringResource(R.string.sort_bottom_sheet_options)
     }
-}

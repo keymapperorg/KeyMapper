@@ -117,16 +117,16 @@ private fun ChooseActionScreen(
         val endPadding = innerPadding.calculateEndPadding(layoutDirection)
 
         Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    bottom = innerPadding.calculateBottomPadding(),
-                    start = startPadding,
-                    end = endPadding,
-                ),
-
-            ) {
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom = innerPadding.calculateBottomPadding(),
+                        start = startPadding,
+                        end = endPadding,
+                    ),
+        ) {
             when (state) {
                 State.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
 
@@ -162,16 +162,17 @@ private fun EmptyScreen(modifier: Modifier = Modifier) {
         val text = stringResource(R.string.action_list_empty)
         Text(
             modifier = Modifier.align(Alignment.Center),
-            text = buildAnnotatedString {
-                withStyle(MaterialTheme.typography.headlineLarge.toSpanStyle()) {
-                    append(shrug)
-                }
-                appendLine()
-                appendLine()
-                withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
-                    append(text)
-                }
-            },
+            text =
+                buildAnnotatedString {
+                    withStyle(MaterialTheme.typography.headlineLarge.toSpanStyle()) {
+                        append(shrug)
+                    }
+                    appendLine()
+                    appendLine()
+                    withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
+                        append(text)
+                    }
+                },
             textAlign = TextAlign.Center,
         )
     }
@@ -215,47 +216,48 @@ private fun PreviewList() {
     KeyMapperTheme {
         ChooseActionScreen(
             query = "Search query",
-            state = State.Data(
-                listOf(
-                    SimpleListItemGroup(
-                        header = "Apps",
-                        items = listOf(
-                            SimpleListItemModel(
-                                "app",
-                                title = "Launch app",
-                                icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
-                            ),
-                            SimpleListItemModel(
-                                "app",
-                                title = "Launch app shortcut",
-                                icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
-                            ),
-
-                            ),
-                    ),
-                    SimpleListItemGroup(
-                        header = "Connectivity",
-                        items = listOf(
-                            SimpleListItemModel(
-                                "app",
-                                title = "Enable WiFi",
-                                icon = ComposeIconInfo.Vector(Icons.Rounded.Wifi),
-                                subtitle = "Requires root",
-                                isSubtitleError = true,
-                            ),
-                            SimpleListItemModel(
-                                "bluetooth",
-                                title = "Toggle Bluetooth",
-                                icon = ComposeIconInfo.Vector(Icons.Rounded.Bluetooth),
-                                subtitle = "Requires root",
-                                isSubtitleError = true,
-                                isEnabled = false,
-                            ),
-
-                            ),
+            state =
+                State.Data(
+                    listOf(
+                        SimpleListItemGroup(
+                            header = "Apps",
+                            items =
+                                listOf(
+                                    SimpleListItemModel(
+                                        "app",
+                                        title = "Launch app",
+                                        icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
+                                    ),
+                                    SimpleListItemModel(
+                                        "app",
+                                        title = "Launch app shortcut",
+                                        icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
+                                    ),
+                                ),
+                        ),
+                        SimpleListItemGroup(
+                            header = "Connectivity",
+                            items =
+                                listOf(
+                                    SimpleListItemModel(
+                                        "app",
+                                        title = "Enable WiFi",
+                                        icon = ComposeIconInfo.Vector(Icons.Rounded.Wifi),
+                                        subtitle = "Requires root",
+                                        isSubtitleError = true,
+                                    ),
+                                    SimpleListItemModel(
+                                        "bluetooth",
+                                        title = "Toggle Bluetooth",
+                                        icon = ComposeIconInfo.Vector(Icons.Rounded.Bluetooth),
+                                        subtitle = "Requires root",
+                                        isSubtitleError = true,
+                                        isEnabled = false,
+                                    ),
+                                ),
+                        ),
                     ),
                 ),
-            ),
         )
     }
 }
@@ -265,57 +267,56 @@ private fun PreviewList() {
 private fun PreviewGrid() {
     KeyMapperTheme {
         ChooseActionScreen(
-            state = State.Data(
-                listOf(
-                    SimpleListItemGroup(
-                        header = "Apps",
-                        items = listOf(
-                            SimpleListItemModel(
-                                "app",
-                                title = "Launch app",
-                                icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
-                            ),
-                            SimpleListItemModel(
-                                "app",
-                                title = "Launch app shortcut",
-                                icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
-                            ),
-
-                            ),
+            state =
+                State.Data(
+                    listOf(
+                        SimpleListItemGroup(
+                            header = "Apps",
+                            items =
+                                listOf(
+                                    SimpleListItemModel(
+                                        "app",
+                                        title = "Launch app",
+                                        icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
+                                    ),
+                                    SimpleListItemModel(
+                                        "app",
+                                        title = "Launch app shortcut",
+                                        icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
+                                    ),
+                                ),
+                        ),
+                        SimpleListItemGroup(
+                            header = "Connectivity",
+                            items =
+                                listOf(
+                                    SimpleListItemModel(
+                                        "app",
+                                        title = "Enable WiFi",
+                                        icon = ComposeIconInfo.Vector(Icons.Rounded.Wifi),
+                                        subtitle = "Requires root",
+                                        isSubtitleError = true,
+                                    ),
+                                    SimpleListItemModel(
+                                        "bluetooth",
+                                        title = "Toggle Bluetooth",
+                                        icon = ComposeIconInfo.Vector(Icons.Rounded.Bluetooth),
+                                        subtitle = "Requires root",
+                                        isSubtitleError = true,
+                                        isEnabled = false,
+                                    ),
+                                    SimpleListItemModel(
+                                        "long",
+                                        title = "Very very very very very very very long title",
+                                        icon = ComposeIconInfo.Vector(Icons.Rounded.Bluetooth),
+                                        subtitle = null,
+                                        isSubtitleError = true,
+                                        isEnabled = false,
+                                    ),
+                                ),
+                        ),
                     ),
-                    SimpleListItemGroup(
-                        header = "Connectivity",
-                        items = listOf(
-                            SimpleListItemModel(
-                                "app",
-                                title = "Enable WiFi",
-                                icon = ComposeIconInfo.Vector(Icons.Rounded.Wifi),
-                                subtitle = "Requires root",
-                                isSubtitleError = true,
-                            ),
-                            SimpleListItemModel(
-                                "bluetooth",
-                                title = "Toggle Bluetooth",
-                                icon = ComposeIconInfo.Vector(Icons.Rounded.Bluetooth),
-                                subtitle = "Requires root",
-                                isSubtitleError = true,
-                                isEnabled = false,
-                            ),
-
-                            SimpleListItemModel(
-                                "long",
-                                title = "Very very very very very very very long title",
-                                icon = ComposeIconInfo.Vector(Icons.Rounded.Bluetooth),
-                                subtitle = null,
-                                isSubtitleError = true,
-                                isEnabled = false,
-                            ),
-
-                            ),
-                    ),
-
-                    ),
-            ),
+                ),
         )
     }
 }

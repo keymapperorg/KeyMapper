@@ -9,7 +9,10 @@ interface FloatingButtonRepository {
     val buttonsList: Flow<State<List<FloatingButtonEntityWithLayout>>>
 
     fun insert(vararg button: FloatingButtonEntity)
+
     fun update(button: FloatingButtonEntity)
+
     suspend fun get(uid: String): FloatingButtonEntityWithLayout?
+
     fun delete(vararg uid: String)
 }

@@ -8,10 +8,16 @@ plugins {
 
 android {
     namespace = "io.github.sds100.keymapper.api"
-    compileSdk = libs.versions.compile.sdk.get().toInt()
+    compileSdk =
+        libs.versions.compile.sdk
+            .get()
+            .toInt()
 
     defaultConfig {
-        minSdk = libs.versions.min.sdk.get().toInt()
+        minSdk =
+            libs.versions.min.sdk
+                .get()
+                .toInt()
 
         consumerProguardFiles("consumer-rules.pro")
     }

@@ -15,35 +15,40 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class GetConstraintErrorUseCaseImpl @Inject constructor(
-    private val packageManagerAdapter: PackageManagerAdapter,
-    private val permissionAdapter: PermissionAdapter,
-    private val systemFeatureAdapter: SystemFeatureAdapter,
-    private val inputMethodAdapter: InputMethodAdapter,
-    private val cameraAdapter: CameraAdapter,
-) : GetConstraintErrorUseCase {
-    private val invalidateConstraintErrors = merge(
-        permissionAdapter.onPermissionsUpdate,
-        inputMethodAdapter.inputMethods.drop(1).map { },
-        packageManagerAdapter.onPackagesChanged,
-    )
+class GetConstraintErrorUseCaseImpl
+    @Inject
+    constructor(
+        private val packageManagerAdapter: PackageManagerAdapter,
+        private val permissionAdapter: PermissionAdapter,
+        private val systemFeatureAdapter: SystemFeatureAdapter,
+        private val inputMethodAdapter: InputMethodAdapter,
+        private val cameraAdapter: CameraAdapter,
+    ) : GetConstraintErrorUseCase {
+        private val invalidateConstraintErrors =
+            merge(
+                permissionAdapter.onPermissionsUpdate,
+                inputMethodAdapter.inputMethods.drop(1).map { },
+                packageManagerAdapter.onPackagesChanged,
+            )
 
-    override val constraintErrorSnapshot: Flow<ConstraintErrorSnapshot> = channelFlow {
-        send(createSnapshot())
+        override val constraintErrorSnapshot: Flow<ConstraintErrorSnapshot> =
+            channelFlow {
+                send(createSnapshot())
 
-        invalidateConstraintErrors.collectLatest {
-            send(createSnapshot())
-        }
+                invalidateConstraintErrors.collectLatest {
+                    send(createSnapshot())
+                }
+            }
+
+        private fun createSnapshot(): ConstraintErrorSnapshot =
+            LazyConstraintErrorSnapshot(
+                packageManagerAdapter,
+                permissionAdapter,
+                systemFeatureAdapter,
+                inputMethodAdapter,
+                cameraAdapter,
+            )
     }
-
-    private fun createSnapshot(): ConstraintErrorSnapshot = LazyConstraintErrorSnapshot(
-        packageManagerAdapter,
-        permissionAdapter,
-        systemFeatureAdapter,
-        inputMethodAdapter,
-        cameraAdapter,
-    )
-}
 
 interface GetConstraintErrorUseCase {
     val constraintErrorSnapshot: Flow<ConstraintErrorSnapshot>

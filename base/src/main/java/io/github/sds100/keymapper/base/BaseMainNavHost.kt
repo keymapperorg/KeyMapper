@@ -128,12 +128,14 @@ fun BaseMainNavHost(
 
         composable<NavDestination.ProMode> {
             ProModeScreen(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .windowInsetsPadding(
-                        WindowInsets.systemBars.only(sides = WindowInsetsSides.Horizontal)
-                            .add(WindowInsets.displayCutout.only(sides = WindowInsetsSides.Horizontal)),
-                    ),
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .windowInsetsPadding(
+                            WindowInsets.systemBars
+                                .only(sides = WindowInsetsSides.Horizontal)
+                                .add(WindowInsets.displayCutout.only(sides = WindowInsetsSides.Horizontal)),
+                        ),
                 viewModel = hiltViewModel(),
             )
         }

@@ -9,8 +9,9 @@ import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 
-class JavaFile(val file: File) : IFile {
-
+class JavaFile(
+    val file: File,
+) : IFile {
     override val uri: String
         get() = file.path
 
@@ -32,17 +33,11 @@ class JavaFile(val file: File) : IFile {
     override val isDirectory: Boolean
         get() = file.isDirectory
 
-    override fun inputStream(): InputStream {
-        return file.inputStream()
-    }
+    override fun inputStream(): InputStream = file.inputStream()
 
-    override fun outputStream(): OutputStream {
-        return file.outputStream()
-    }
+    override fun outputStream(): OutputStream = file.outputStream()
 
-    override fun listFiles(): List<IFile>? {
-        return file.listFiles()?.toList()?.map { JavaFile(it) }
-    }
+    override fun listFiles(): List<IFile>? = file.listFiles()?.toList()?.map { JavaFile(it) }
 
     override fun clear() {
         if (this.isFile) {
@@ -54,9 +49,7 @@ class JavaFile(val file: File) : IFile {
         file.delete()
     }
 
-    override fun exists(): Boolean {
-        return file.exists()
-    }
+    override fun exists(): Boolean = file.exists()
 
     override fun createFile() {
         val directories = this.path.substringBeforeLast('/')
@@ -72,7 +65,10 @@ class JavaFile(val file: File) : IFile {
         file.mkdirs()
     }
 
-    override suspend fun copyTo(directory: IFile, fileName: String?): KMResult<*> {
+    override suspend fun copyTo(
+        directory: IFile,
+        fileName: String?,
+    ): KMResult<*> {
         val targetFile = File((directory as JavaFile).file, fileName ?: this.name)
 
         if (this.isDirectory) {

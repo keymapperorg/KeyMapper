@@ -26,7 +26,6 @@ import java.util.UUID
 data class ActionEntity(
     @SerializedName(NAME_ACTION_TYPE)
     val type: Type,
-
     /**
      * How each action type saves data:
      *
@@ -40,19 +39,14 @@ data class ActionEntity(
      */
     @SerializedName(NAME_DATA)
     val data: String,
-
     @SerializedName(NAME_EXTRAS)
     val extras: List<EntityExtra> = listOf(),
-
     @SerializedName(NAME_FLAGS)
     val flags: Int = 0,
-
     @SerializedName(NAME_UID)
     val uid: String = UUID.randomUUID().toString(),
-
 ) : Parcelable {
     companion object {
-
         // DON'T CHANGE THESE IDs!!!!
 
         /**
@@ -141,28 +135,29 @@ data class ActionEntity(
         const val EXTRA_HOLD_DOWN_DURATION = "extra_hold_down_duration"
         const val EXTRA_REPEAT_LIMIT = "extra_repeat_limit"
 
-        val DESERIALIZER = jsonDeserializer {
-            val typeString by it.json.byString(NAME_ACTION_TYPE)
-            val type = Type.valueOf(typeString)
+        val DESERIALIZER =
+            jsonDeserializer {
+                val typeString by it.json.byString(NAME_ACTION_TYPE)
+                val type = Type.valueOf(typeString)
 
-            val data by it.json.byString(NAME_DATA)
+                val data by it.json.byString(NAME_DATA)
 
-            val extrasJsonArray by it.json.byArray(NAME_EXTRAS)
-            val extraList = it.context.deserialize<List<EntityExtra>>(extrasJsonArray) ?: listOf()
+                val extrasJsonArray by it.json.byArray(NAME_EXTRAS)
+                val extraList = it.context.deserialize<List<EntityExtra>>(extrasJsonArray) ?: listOf()
 
-            val flags by it.json.byInt(NAME_FLAGS)
+                val flags by it.json.byInt(NAME_FLAGS)
 
-            val uid by it.json.byNullableString(NAME_UID)
+                val uid by it.json.byNullableString(NAME_UID)
 
-            ActionEntity(
-                type,
-                data,
-                extraList.toMutableList(),
-                flags,
-                uid
-                    ?: UUID.randomUUID().toString(),
-            )
-        }
+                ActionEntity(
+                    type,
+                    data,
+                    extraList.toMutableList(),
+                    flags,
+                    uid
+                        ?: UUID.randomUUID().toString(),
+                )
+            }
     }
 
     enum class Type {

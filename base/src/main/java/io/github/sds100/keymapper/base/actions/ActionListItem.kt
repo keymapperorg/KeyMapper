@@ -63,34 +63,38 @@ fun ActionListItem(
     onFixClick: () -> Unit = {},
     onTestClick: () -> Unit = {},
 ) {
-    val draggableState = rememberDraggableState {
-        dragDropState?.onDrag(Offset(0f, it))
-    }
+    val draggableState =
+        rememberDraggableState {
+            dragDropState?.onDrag(Offset(0f, it))
+        }
 
     Column(modifier = modifier.fillMaxWidth()) {
         ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 48.dp)
-                .height(IntrinsicSize.Min)
-                .padding(start = 16.dp, end = 16.dp)
-                .draggable(
-                    state = draggableState,
-                    enabled = isDraggingEnabled,
-                    orientation = Orientation.Vertical,
-                    startDragImmediately = false,
-                    onDragStarted = { offset ->
-                        dragDropState?.onDragStart(index, offset)
-                    },
-                    onDragStopped = { dragDropState?.onDragInterrupted() },
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 48.dp)
+                    .height(IntrinsicSize.Min)
+                    .padding(start = 16.dp, end = 16.dp)
+                    .draggable(
+                        state = draggableState,
+                        enabled = isDraggingEnabled,
+                        orientation = Orientation.Vertical,
+                        startDragImmediately = false,
+                        onDragStarted = { offset ->
+                            dragDropState?.onDragStart(index, offset)
+                        },
+                        onDragStopped = { dragDropState?.onDragInterrupted() },
+                    ),
+            colors =
+                CardDefaults.elevatedCardColors(
+                    containerColor =
+                        if (isDragging) {
+                            MaterialTheme.colorScheme.surfaceContainerHighest
+                        } else {
+                            MaterialTheme.colorScheme.surfaceContainer
+                        },
                 ),
-            colors = CardDefaults.elevatedCardColors(
-                containerColor = if (isDragging) {
-                    MaterialTheme.colorScheme.surfaceContainerHighest
-                } else {
-                    MaterialTheme.colorScheme.surfaceContainer
-                },
-            ),
         ) {
             Row(
                 modifier = Modifier.fillMaxSize(),
@@ -111,12 +115,13 @@ fun ActionListItem(
 
                 if (model.error == null) {
                     when (model.icon) {
-                        is ComposeIconInfo.Vector -> Icon(
-                            modifier = Modifier.size(24.dp),
-                            imageVector = model.icon.imageVector,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
+                        is ComposeIconInfo.Vector ->
+                            Icon(
+                                modifier = Modifier.size(24.dp),
+                                imageVector = model.icon.imageVector,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface,
+                            )
 
                         is ComposeIconInfo.Drawable -> {
                             val painter = rememberDrawablePainter(model.icon.drawable)
@@ -135,9 +140,10 @@ fun ActionListItem(
                 Spacer(Modifier.width(8.dp))
 
                 TextColumn(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(vertical = 8.dp),
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .padding(vertical = 8.dp),
                     primaryText = primaryText,
                     secondaryText = model.secondaryText,
                     errorText = model.error,
@@ -150,10 +156,11 @@ fun ActionListItem(
                         FilledTonalButton(
                             modifier = Modifier.padding(start = 8.dp, end = 8.dp),
                             onClick = onFixClick,
-                            colors = ButtonDefaults.filledTonalButtonColors(
-                                containerColor = MaterialTheme.colorScheme.error,
-                                contentColor = MaterialTheme.colorScheme.onError,
-                            ),
+                            colors =
+                                ButtonDefaults.filledTonalButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.error,
+                                    contentColor = MaterialTheme.colorScheme.onError,
+                                ),
                         ) {
                             Text(
                                 text = stringResource(R.string.button_fix),
@@ -202,16 +209,18 @@ fun ActionListItem(
             Spacer(Modifier.height(4.dp))
 
             Icon(
-                imageVector = when (model.linkType) {
-                    LinkType.ARROW -> Icons.Rounded.ArrowDownward
-                    LinkType.PLUS -> Icons.Rounded.Add
-                    LinkType.HIDDEN -> Icons.Rounded.Add
-                },
+                imageVector =
+                    when (model.linkType) {
+                        LinkType.ARROW -> Icons.Rounded.ArrowDownward
+                        LinkType.PLUS -> Icons.Rounded.Add
+                        LinkType.HIDDEN -> Icons.Rounded.Add
+                    },
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier
-                    .size(24.dp)
-                    .align(Alignment.CenterHorizontally),
+                modifier =
+                    Modifier
+                        .size(24.dp)
+                        .align(Alignment.CenterHorizontally),
             )
             Spacer(Modifier.height(4.dp))
         }
@@ -258,14 +267,15 @@ private fun TextColumn(
 @Composable
 private fun NoDragPreview() {
     ActionListItem(
-        model = ActionListItemModel(
-            id = "id",
-            text = "Dismiss most recent notification",
-            secondaryText = "Repeat until released",
-            error = "Denied notification access permission",
-            isErrorFixable = true,
-            icon = ComposeIconInfo.Vector(Icons.Outlined.ClearAll),
-        ),
+        model =
+            ActionListItemModel(
+                id = "id",
+                text = "Dismiss most recent notification",
+                secondaryText = "Repeat until released",
+                error = "Denied notification access permission",
+                isErrorFixable = true,
+                icon = ComposeIconInfo.Vector(Icons.Outlined.ClearAll),
+            ),
         isDragging = false,
         isReorderingEnabled = false,
         index = 0,
@@ -276,14 +286,15 @@ private fun NoDragPreview() {
 @Composable
 private fun NoDragOneLinePreview() {
     ActionListItem(
-        model = ActionListItemModel(
-            id = "id",
-            text = "Clear all",
-            secondaryText = null,
-            error = null,
-            isErrorFixable = true,
-            icon = ComposeIconInfo.Vector(Icons.Outlined.ClearAll),
-        ),
+        model =
+            ActionListItemModel(
+                id = "id",
+                text = "Clear all",
+                secondaryText = null,
+                error = null,
+                isErrorFixable = true,
+                icon = ComposeIconInfo.Vector(Icons.Outlined.ClearAll),
+            ),
         isDragging = false,
         isReorderingEnabled = false,
         index = 0,
@@ -296,14 +307,15 @@ private fun DragDrawablePreview() {
     val drawable = LocalContext.current.drawable(R.mipmap.ic_launcher_round)
 
     ActionListItem(
-        model = ActionListItemModel(
-            id = "id",
-            text = "Dismiss most recent notification",
-            secondaryText = "Repeat until released",
-            error = null,
-            isErrorFixable = true,
-            icon = ComposeIconInfo.Drawable(drawable),
-        ),
+        model =
+            ActionListItemModel(
+                id = "id",
+                text = "Dismiss most recent notification",
+                secondaryText = "Repeat until released",
+                error = null,
+                isErrorFixable = true,
+                icon = ComposeIconInfo.Drawable(drawable),
+            ),
         isDragging = false,
         isReorderingEnabled = true,
         index = 0,

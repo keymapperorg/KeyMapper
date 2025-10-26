@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface FloatingLayoutRepository {
     val layouts: Flow<State<List<FloatingLayoutEntityWithButtons>>>
+
     suspend fun insert(vararg layout: FloatingLayoutEntity)
 
     /**
@@ -14,7 +15,10 @@ interface FloatingLayoutRepository {
      * failed.
      */
     suspend fun update(vararg layout: FloatingLayoutEntity): Boolean
+
     fun get(uid: String): Flow<FloatingLayoutEntityWithButtons?>
+
     fun delete(vararg uid: String)
+
     suspend fun count(): Int
 }

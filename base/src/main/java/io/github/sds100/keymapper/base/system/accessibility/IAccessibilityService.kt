@@ -9,7 +9,11 @@ import kotlinx.coroutines.flow.Flow
 interface IAccessibilityService : SwitchImeInterface {
     fun doGlobalAction(action: Int): KMResult<*>
 
-    fun tapScreen(x: Int, y: Int, inputEventAction: InputEventAction): KMResult<*>
+    fun tapScreen(
+        x: Int,
+        y: Int,
+        inputEventAction: InputEventAction,
+    ): KMResult<*>
 
     fun swipeScreen(
         xStart: Int,
@@ -48,7 +52,9 @@ interface IAccessibilityService : SwitchImeInterface {
     val activeWindowPackageNames: List<String>
 
     fun hideKeyboard()
+
     fun showKeyboard()
+
     val isKeyboardHidden: Flow<Boolean>
 
     fun disableSelf()

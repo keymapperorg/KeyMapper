@@ -1,6 +1,9 @@
 package io.github.sds100.keymapper.base.utils.ui.compose
 
-data class SimpleListItemGroup(val header: String, val items: List<SimpleListItemModel>)
+data class SimpleListItemGroup(
+    val header: String,
+    val items: List<SimpleListItemModel>,
+)
 
 data class SimpleListItemModel(
     val id: String,

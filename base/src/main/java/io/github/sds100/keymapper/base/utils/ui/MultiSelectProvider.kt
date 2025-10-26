@@ -31,10 +31,11 @@ class MultiSelectProvider {
         }
     }
 
-    fun isSelected(id: String): Boolean = state.value is SelectionState.Selecting &&
-        (state.value as SelectionState.Selecting).selectedIds.contains(
-            id,
-        )
+    fun isSelected(id: String): Boolean =
+        state.value is SelectionState.Selecting &&
+            (state.value as SelectionState.Selecting).selectedIds.contains(
+                id,
+            )
 
     fun isSelecting(): Boolean = state.value is SelectionState.Selecting
 

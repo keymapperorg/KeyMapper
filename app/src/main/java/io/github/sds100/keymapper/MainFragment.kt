@@ -51,7 +51,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainFragment : Fragment() {
-
     @Inject
     lateinit var navigationProvider: NavigationProviderImpl
 
@@ -72,26 +71,29 @@ class MainFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        return ComposeView(requireContext()).also {
+    ): View =
+        ComposeView(requireContext()).also {
             composeView = it
         }
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
-        navController = NavHostController(requireContext()).apply {
-            navigatorProvider.addNavigator(ComposeNavigator())
-            navigatorProvider.addNavigator(DialogNavigator())
+        navController =
+            NavHostController(requireContext()).apply {
+                navigatorProvider.addNavigator(ComposeNavigator())
+                navigatorProvider.addNavigator(DialogNavigator())
 
-            if (savedInstanceState == null) {
-                restoreState(navigationProvider.savedState)
-                navigationProvider.savedState = null
-            } else {
-                restoreState(savedInstanceState)
+                if (savedInstanceState == null) {
+                    restoreState(navigationProvider.savedState)
+                    navigationProvider.savedState = null
+                } else {
+                    restoreState(savedInstanceState)
+                }
             }
-        }
 
         composeView.apply {
             // Dispose of the Composition when the view's LifecycleOwner
@@ -102,11 +104,13 @@ class MainFragment : Fragment() {
 
                 KeyMapperTheme {
                     BaseMainNavHost(
-                        modifier = Modifier
-                            .windowInsetsPadding(
-                                WindowInsets.systemBars.only(sides = WindowInsetsSides.Horizontal)
-                                    .add(WindowInsets.displayCutout.only(sides = WindowInsetsSides.Horizontal)),
-                            ),
+                        modifier =
+                            Modifier
+                                .windowInsetsPadding(
+                                    WindowInsets.systemBars
+                                        .only(sides = WindowInsetsSides.Horizontal)
+                                        .add(WindowInsets.displayCutout.only(sides = WindowInsetsSides.Horizontal)),
+                                ),
                         navController = navController,
                         setupAccessibilityServiceDelegate = setupAccessibilityServiceDelegate,
                         composableDestinations = {

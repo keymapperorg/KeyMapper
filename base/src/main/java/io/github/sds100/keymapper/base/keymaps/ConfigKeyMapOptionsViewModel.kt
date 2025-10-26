@@ -35,12 +35,13 @@ class ConfigKeyMapOptionsViewModel(
 ) : ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
     KeyMapOptionsCallback {
-
     private val actionUiHelper = ActionUiHelper(displayUseCase, resourceProvider)
 
-    val state: StateFlow<State<KeyMapOptionsState>> = config.keyMap.map { keyMapState ->
-        keyMapState.mapData { keyMap -> buildState(keyMap) }
-    }.stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
+    val state: StateFlow<State<KeyMapOptionsState>> =
+        config.keyMap
+            .map { keyMapState ->
+                keyMapState.mapData { keyMap -> buildState(keyMap) }
+            }.stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
 
     override fun onLongPressDelayChanged(delay: Int) {
         config.setLongPressDelay(delay)
@@ -85,10 +86,11 @@ class ConfigKeyMapOptionsViewModel(
 
             if (mapping.actionList.size == 1) {
                 val action = mapping.actionList.first().data
-                defaultShortcutName = actionUiHelper.getTitle(
-                    action,
-                    showDeviceDescriptors = false,
-                )
+                defaultShortcutName =
+                    actionUiHelper.getTitle(
+                        action,
+                        showDeviceDescriptors = false,
+                    )
 
                 val iconInfo = actionUiHelper.getDrawableIcon(action)
 
@@ -111,21 +113,23 @@ class ConfigKeyMapOptionsViewModel(
                 icon = null
             }
 
-            val shortcutName = showDialog(
-                key,
-                DialogModel.Text(
-                    getString(R.string.hint_shortcut_name),
-                    allowEmpty = false,
-                    text = defaultShortcutName,
-                ),
-            ) ?: return@launch
+            val shortcutName =
+                showDialog(
+                    key,
+                    DialogModel.Text(
+                        getString(R.string.hint_shortcut_name),
+                        allowEmpty = false,
+                        text = defaultShortcutName,
+                    ),
+                ) ?: return@launch
 
             val result = createKeyMapShortcut.pinShortcut(keyMapUid, shortcutName, icon)
 
             result.onFailure { error ->
-                val snackBar = DialogModel.SnackBar(
-                    message = error.getFullMessage(this@ConfigKeyMapOptionsViewModel),
-                )
+                val snackBar =
+                    DialogModel.SnackBar(
+                        message = error.getFullMessage(this@ConfigKeyMapOptionsViewModel),
+                    )
 
                 showDialog("create_shortcut_result", snackBar)
             }
@@ -142,30 +146,24 @@ class ConfigKeyMapOptionsViewModel(
             showLongPressDelay = keyMap.trigger.isChangingLongPressDelayAllowed(),
             longPressDelay = keyMap.trigger.longPressDelay ?: defaultLongPressDelay,
             defaultLongPressDelay = defaultLongPressDelay,
-
             showDoublePressDelay = keyMap.trigger.isChangingDoublePressDelayAllowed(),
             doublePressDelay = keyMap.trigger.doublePressDelay ?: defaultDoublePressDelay,
             defaultDoublePressDelay = defaultDoublePressDelay,
-
             showSequenceTriggerTimeout = keyMap.trigger.isChangingSequenceTriggerTimeoutAllowed(),
-            sequenceTriggerTimeout = keyMap.trigger.sequenceTriggerTimeout
-                ?: defaultSequenceTriggerTimeout,
+            sequenceTriggerTimeout =
+                keyMap.trigger.sequenceTriggerTimeout
+                    ?: defaultSequenceTriggerTimeout,
             defaultSequenceTriggerTimeout = defaultSequenceTriggerTimeout,
-
             showVibrateDuration = keyMap.trigger.isChangingVibrationDurationAllowed(),
             vibrateDuration = keyMap.trigger.vibrateDuration ?: defaultVibrateDuration,
             defaultVibrateDuration = defaultVibrateDuration,
-
             showVibrate = keyMap.trigger.isVibrateAllowed(),
             vibrate = keyMap.trigger.vibrate,
-
             showLongPressDoubleVibration = keyMap.trigger.isLongPressDoubleVibrationAllowed(),
             longPressDoubleVibration = keyMap.trigger.longPressDoubleVibration,
-
             triggerFromOtherApps = keyMap.trigger.triggerFromOtherApps,
             keyMapUid = keyMap.uid,
             isLauncherShortcutButtonEnabled = createKeyMapShortcut.isSupported,
-
             showToast = keyMap.trigger.showToast,
         )
     }
@@ -175,28 +173,21 @@ data class KeyMapOptionsState(
     val showLongPressDelay: Boolean,
     val longPressDelay: Int,
     val defaultLongPressDelay: Int,
-
     val showDoublePressDelay: Boolean,
     val doublePressDelay: Int,
     val defaultDoublePressDelay: Int,
-
     val showSequenceTriggerTimeout: Boolean,
     val sequenceTriggerTimeout: Int,
     val defaultSequenceTriggerTimeout: Int,
-
     val showVibrateDuration: Boolean,
     val vibrateDuration: Int,
     val defaultVibrateDuration: Int,
-
     val showVibrate: Boolean,
     val vibrate: Boolean,
-
     val showLongPressDoubleVibration: Boolean,
     val longPressDoubleVibration: Boolean,
-
     val triggerFromOtherApps: Boolean,
     val keyMapUid: String,
     val isLauncherShortcutButtonEnabled: Boolean,
-
     val showToast: Boolean,
 )

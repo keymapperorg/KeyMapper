@@ -78,19 +78,21 @@ fun SimpleListItem(
             enabled = model.isEnabled,
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier =
+                    Modifier
+                        .fillMaxSize(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Spacer(modifier = Modifier.width(16.dp))
 
                 when (model.icon) {
-                    is ComposeIconInfo.Vector -> Icon(
-                        modifier = Modifier.size(26.dp),
-                        imageVector = model.icon.imageVector,
-                        contentDescription = null,
-                        tint = LocalContentColor.current,
-                    )
+                    is ComposeIconInfo.Vector ->
+                        Icon(
+                            modifier = Modifier.size(26.dp),
+                            imageVector = model.icon.imageVector,
+                            contentDescription = null,
+                            tint = LocalContentColor.current,
+                        )
 
                     is ComposeIconInfo.Drawable -> {
                         val painter = rememberDrawablePainter(model.icon.drawable)
@@ -106,19 +108,21 @@ fun SimpleListItem(
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Column(
-                    modifier = Modifier
-                        .padding(end = 16.dp)
-                        .heightIn(min = 36.dp),
+                    modifier =
+                        Modifier
+                            .padding(end = 16.dp)
+                            .heightIn(min = 36.dp),
                     verticalArrangement = Arrangement.Center,
                 ) {
                     Text(
                         text = model.title,
                         style = MaterialTheme.typography.bodyMedium,
-                        maxLines = if (model.subtitle == null) {
-                            2
-                        } else {
-                            1
-                        },
+                        maxLines =
+                            if (model.subtitle == null) {
+                                2
+                            } else {
+                                1
+                            },
                         overflow = TextOverflow.Ellipsis,
                     )
 
@@ -157,13 +161,14 @@ private fun Preview() {
         Surface {
             SimpleListItem(
                 modifier = Modifier.fillMaxWidth(),
-                model = SimpleListItemModel(
-                    "app",
-                    title = "Enable WiFi",
-                    icon = ComposeIconInfo.Vector(Icons.Rounded.Wifi),
-                    subtitle = "Requires root",
-                    isSubtitleError = true,
-                ),
+                model =
+                    SimpleListItemModel(
+                        "app",
+                        title = "Enable WiFi",
+                        icon = ComposeIconInfo.Vector(Icons.Rounded.Wifi),
+                        subtitle = "Requires root",
+                        isSubtitleError = true,
+                    ),
             )
         }
     }
@@ -176,14 +181,15 @@ private fun PreviewDisabled() {
         Surface {
             SimpleListItem(
                 modifier = Modifier.fillMaxWidth(),
-                model = SimpleListItemModel(
-                    "app",
-                    title = "Enable WiFi",
-                    icon = ComposeIconInfo.Vector(Icons.Rounded.Wifi),
-                    subtitle = "Requires root",
-                    isSubtitleError = true,
-                    isEnabled = false,
-                ),
+                model =
+                    SimpleListItemModel(
+                        "app",
+                        title = "Enable WiFi",
+                        icon = ComposeIconInfo.Vector(Icons.Rounded.Wifi),
+                        subtitle = "Requires root",
+                        isSubtitleError = true,
+                        isEnabled = false,
+                    ),
             )
         }
     }
@@ -195,13 +201,14 @@ private fun PreviewDrawable() {
     KeyMapperTheme {
         Surface {
             SimpleListItem(
-                model = SimpleListItemModel(
-                    "app",
-                    title = "Key Mapper",
-                    icon = ComposeIconInfo.Drawable(LocalContext.current.drawable(R.mipmap.ic_launcher_round)),
-                    subtitle = null,
-                    isSubtitleError = true,
-                ),
+                model =
+                    SimpleListItemModel(
+                        "app",
+                        title = "Key Mapper",
+                        icon = ComposeIconInfo.Drawable(LocalContext.current.drawable(R.mipmap.ic_launcher_round)),
+                        subtitle = null,
+                        isSubtitleError = true,
+                    ),
             )
         }
     }

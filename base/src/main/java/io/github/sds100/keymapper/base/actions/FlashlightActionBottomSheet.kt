@@ -113,13 +113,14 @@ private fun EnableFlashlightActionBottomSheet(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        val errorText = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            stringResource(R.string.action_config_flashlight_brightness_unsupported_android_version)
-        } else if (!state.lensData[state.selectedLens]!!.supportsVariableStrength) {
-            stringResource(R.string.action_config_flashlight_brightness_unsupported)
-        } else {
-            null
-        }
+        val errorText =
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                stringResource(R.string.action_config_flashlight_brightness_unsupported_android_version)
+            } else if (!state.lensData[state.selectedLens]!!.supportsVariableStrength) {
+                stringResource(R.string.action_config_flashlight_brightness_unsupported)
+            } else {
+                null
+            }
 
         if (errorText != null) {
             Text(
@@ -281,7 +282,10 @@ private fun ChangeFlashlightStrengthActionBottomSheet(
         onDismissRequest = onDismissRequest,
         title = stringResource(R.string.action_flashlight_change_strength),
         selectedLens = state.selectedLens,
-        availableLenses = state.lensData.entries.map { it.key }.toSet(),
+        availableLenses =
+            state.lensData.entries
+                .map { it.key }
+                .toSet(),
         onSelectLens = onSelectLens,
         onDoneClick = onDoneClick,
     ) {
@@ -317,11 +321,12 @@ private fun ChangeFlashlightStrengthActionBottomSheet(
             Spacer(Modifier.width(8.dp))
 
             val percentInt = ((state.flashStrength / maxStrength.toFloat()) * 100).toInt()
-            val textPercent = if (state.flashStrength > 0) {
-                "+$percentInt%"
-            } else {
-                "$percentInt%"
-            }
+            val textPercent =
+                if (state.flashStrength > 0) {
+                    "+$percentInt%"
+                } else {
+                    "$percentInt%"
+                }
 
             Text(
                 modifier = Modifier.padding(horizontal = 4.dp),
@@ -359,9 +364,10 @@ private fun FlashlightActionBottomSheet(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp),
                 textAlign = TextAlign.Center,
                 text = title,
                 style = MaterialTheme.typography.headlineMedium,
@@ -403,9 +409,10 @@ private fun FlashlightActionBottomSheet(
         Spacer(modifier = Modifier.height(8.dp))
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -457,33 +464,38 @@ data class ChangeFlashlightStrengthActionState(
 @Composable
 private fun PreviewBothLenses() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         EnableFlashlightActionBottomSheet(
             sheetState = sheetState,
             onDismissRequest = {},
-            state = EnableFlashlightActionState(
-                actionToCreate = ActionId.ENABLE_FLASHLIGHT,
-                selectedLens = CameraLens.BACK,
-                flashStrength = 3,
-                lensData = mapOf(
-                    CameraLens.FRONT to CameraFlashInfo(
-                        supportsVariableStrength = true,
-                        defaultStrength = 5,
-                        maxStrength = 10,
-                    ),
-                    CameraLens.BACK to CameraFlashInfo(
-                        supportsVariableStrength = true,
-                        defaultStrength = 5,
-                        maxStrength = 10,
-                    ),
+            state =
+                EnableFlashlightActionState(
+                    actionToCreate = ActionId.ENABLE_FLASHLIGHT,
+                    selectedLens = CameraLens.BACK,
+                    flashStrength = 3,
+                    lensData =
+                        mapOf(
+                            CameraLens.FRONT to
+                                CameraFlashInfo(
+                                    supportsVariableStrength = true,
+                                    defaultStrength = 5,
+                                    maxStrength = 10,
+                                ),
+                            CameraLens.BACK to
+                                CameraFlashInfo(
+                                    supportsVariableStrength = true,
+                                    defaultStrength = 5,
+                                    maxStrength = 10,
+                                ),
+                        ),
+                    isFlashEnabled = true,
                 ),
-                isFlashEnabled = true,
-            ),
         )
     }
 }
@@ -493,28 +505,32 @@ private fun PreviewBothLenses() {
 @Composable
 private fun PreviewOnlyBackLens() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         EnableFlashlightActionBottomSheet(
             sheetState = sheetState,
             onDismissRequest = {},
-            state = EnableFlashlightActionState(
-                actionToCreate = ActionId.TOGGLE_FLASHLIGHT,
-                selectedLens = CameraLens.BACK,
-                flashStrength = 3,
-                lensData = mapOf(
-                    CameraLens.BACK to CameraFlashInfo(
-                        supportsVariableStrength = true,
-                        defaultStrength = 5,
-                        maxStrength = 10,
-                    ),
+            state =
+                EnableFlashlightActionState(
+                    actionToCreate = ActionId.TOGGLE_FLASHLIGHT,
+                    selectedLens = CameraLens.BACK,
+                    flashStrength = 3,
+                    lensData =
+                        mapOf(
+                            CameraLens.BACK to
+                                CameraFlashInfo(
+                                    supportsVariableStrength = true,
+                                    defaultStrength = 5,
+                                    maxStrength = 10,
+                                ),
+                        ),
+                    isFlashEnabled = false,
                 ),
-                isFlashEnabled = false,
-            ),
         )
     }
 }
@@ -524,26 +540,30 @@ private fun PreviewOnlyBackLens() {
 @Composable
 private fun PreviewOnlyBackLensChangeStrength() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         ChangeFlashlightStrengthActionBottomSheet(
             sheetState = sheetState,
             onDismissRequest = {},
-            state = ChangeFlashlightStrengthActionState(
-                selectedLens = CameraLens.BACK,
-                flashStrength = -5,
-                lensData = mapOf(
-                    CameraLens.BACK to CameraFlashInfo(
-                        supportsVariableStrength = true,
-                        defaultStrength = 5,
-                        maxStrength = 10,
-                    ),
+            state =
+                ChangeFlashlightStrengthActionState(
+                    selectedLens = CameraLens.BACK,
+                    flashStrength = -5,
+                    lensData =
+                        mapOf(
+                            CameraLens.BACK to
+                                CameraFlashInfo(
+                                    supportsVariableStrength = true,
+                                    defaultStrength = 5,
+                                    maxStrength = 10,
+                                ),
+                        ),
                 ),
-            ),
         )
     }
 }
@@ -553,28 +573,32 @@ private fun PreviewOnlyBackLensChangeStrength() {
 @Composable
 private fun PreviewUnsupportedAndroidVersion() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         EnableFlashlightActionBottomSheet(
             sheetState = sheetState,
             onDismissRequest = {},
-            state = EnableFlashlightActionState(
-                actionToCreate = ActionId.TOGGLE_FLASHLIGHT,
-                selectedLens = CameraLens.BACK,
-                flashStrength = 2,
-                lensData = mapOf(
-                    CameraLens.BACK to CameraFlashInfo(
-                        supportsVariableStrength = true,
-                        defaultStrength = 5,
-                        maxStrength = 10,
-                    ),
+            state =
+                EnableFlashlightActionState(
+                    actionToCreate = ActionId.TOGGLE_FLASHLIGHT,
+                    selectedLens = CameraLens.BACK,
+                    flashStrength = 2,
+                    lensData =
+                        mapOf(
+                            CameraLens.BACK to
+                                CameraFlashInfo(
+                                    supportsVariableStrength = true,
+                                    defaultStrength = 5,
+                                    maxStrength = 10,
+                                ),
+                        ),
+                    isFlashEnabled = true,
                 ),
-                isFlashEnabled = true,
-            ),
         )
     }
 }

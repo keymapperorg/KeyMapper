@@ -8,22 +8,25 @@ import io.github.sds100.keymapper.system.apps.AppShortcutInfo
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class DisplayAppShortcutsUseCaseImpl @Inject constructor(
-    private val appShortcutAdapter: AppShortcutAdapter,
-) : DisplayAppShortcutsUseCase {
-    override val shortcuts: Flow<State<List<AppShortcutInfo>>> =
-        appShortcutAdapter.installedAppShortcuts
+class DisplayAppShortcutsUseCaseImpl
+    @Inject
+    constructor(
+        private val appShortcutAdapter: AppShortcutAdapter,
+    ) : DisplayAppShortcutsUseCase {
+        override val shortcuts: Flow<State<List<AppShortcutInfo>>> =
+            appShortcutAdapter.installedAppShortcuts
 
-    override fun getShortcutName(appShortcutInfo: AppShortcutInfo): KMResult<String> =
-        appShortcutAdapter.getShortcutName(appShortcutInfo)
+        override fun getShortcutName(appShortcutInfo: AppShortcutInfo): KMResult<String> =
+            appShortcutAdapter.getShortcutName(appShortcutInfo)
 
-    override fun getShortcutIcon(appShortcutInfo: AppShortcutInfo): KMResult<Drawable> =
-        appShortcutAdapter.getShortcutIcon(appShortcutInfo)
-}
+        override fun getShortcutIcon(appShortcutInfo: AppShortcutInfo): KMResult<Drawable> =
+            appShortcutAdapter.getShortcutIcon(appShortcutInfo)
+    }
 
 interface DisplayAppShortcutsUseCase {
     val shortcuts: Flow<State<List<AppShortcutInfo>>>
 
     fun getShortcutName(appShortcutInfo: AppShortcutInfo): KMResult<String>
+
     fun getShortcutIcon(appShortcutInfo: AppShortcutInfo): KMResult<Drawable>
 }

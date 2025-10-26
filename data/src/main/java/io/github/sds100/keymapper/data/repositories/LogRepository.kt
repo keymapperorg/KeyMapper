@@ -5,7 +5,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface LogRepository {
     val log: Flow<List<LogEntryEntity>>
+
     fun insert(entry: LogEntryEntity)
+
     suspend fun insertSuspend(entry: LogEntryEntity)
+
     fun deleteAll()
 }

@@ -47,49 +47,54 @@ class ParallelTriggerActionPerformer(
             PreferenceDefaults.REPEAT_RATE.toLong(),
         )
 
-    fun onTriggered(calledOnTriggerRelease: Boolean, metaState: Int) {
+    fun onTriggered(
+        calledOnTriggerRelease: Boolean,
+        metaState: Int,
+    ) {
         performActionsJob?.cancel()
         /*
         this job shouldn't be cancelled when the trigger is released. all actions should be performed
         once before repeating (if configured).
          */
-        performActionsJob = coroutineScope.launch {
-            for ((actionIndex, action) in actionList.withIndex()) {
-                var performUpAction = false
+        performActionsJob =
+            coroutineScope.launch {
+                for ((actionIndex, action) in actionList.withIndex()) {
+                    var performUpAction = false
 
-                if (action.holdDown && action.repeat && action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN) {
-                    if (actionIsHeldDown[actionIndex]) {
-                        actionIsHeldDown[actionIndex] = false
-                        performUpAction = true
+                    if (action.holdDown && action.repeat && action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN) {
+                        if (actionIsHeldDown[actionIndex]) {
+                            actionIsHeldDown[actionIndex] = false
+                            performUpAction = true
+                        }
                     }
-                }
 
-                if (action.stopHoldDownWhenTriggerPressedAgain) {
-                    if (actionIsHeldDown[actionIndex]) {
-                        actionIsHeldDown[actionIndex] = false
-                        performUpAction = true
+                    if (action.stopHoldDownWhenTriggerPressedAgain) {
+                        if (actionIsHeldDown[actionIndex]) {
+                            actionIsHeldDown[actionIndex] = false
+                            performUpAction = true
+                        }
                     }
+
+                    if (action.holdDown && !performUpAction) {
+                        actionIsHeldDown[actionIndex] = true
+                    }
+
+                    val actionInputEventAction =
+                        when {
+                            performUpAction -> InputEventAction.UP
+                            action.holdDown -> InputEventAction.DOWN
+                            else -> InputEventAction.DOWN_UP
+                        }
+
+                    performAction(action, actionInputEventAction, metaState)
+
+                    if (action.repeat && action.holdDown) {
+                        delay(action.holdDownDuration?.toLong() ?: defaultHoldDownDuration.value)
+                    }
+
+                    delay(action.delayBeforeNextAction?.toLong() ?: 0L)
                 }
-
-                if (action.holdDown && !performUpAction) {
-                    actionIsHeldDown[actionIndex] = true
-                }
-
-                val actionInputEventAction = when {
-                    performUpAction -> InputEventAction.UP
-                    action.holdDown -> InputEventAction.DOWN
-                    else -> InputEventAction.DOWN_UP
-                }
-
-                performAction(action, actionInputEventAction, metaState)
-
-                if (action.repeat && action.holdDown) {
-                    delay(action.holdDownDuration?.toLong() ?: defaultHoldDownDuration.value)
-                }
-
-                delay(action.delayBeforeNextAction?.toLong() ?: 0L)
             }
-        }
 
         for (job in repeatJobs) {
             job?.cancel()
@@ -116,32 +121,33 @@ class ParallelTriggerActionPerformer(
                 continue
             }
 
-            repeatJobs[actionIndex] = coroutineScope.launch {
-                var continueRepeating = true
-                var repeatCount = 0
+            repeatJobs[actionIndex] =
+                coroutineScope.launch {
+                    var continueRepeating = true
+                    var repeatCount = 0
 
-                delay(action.repeatDelay?.toLong() ?: defaultRepeatDelay.value)
+                    delay(action.repeatDelay?.toLong() ?: defaultRepeatDelay.value)
 
-                while (isActive && continueRepeating) {
-                    if (action.holdDown) {
-                        performAction(action, InputEventAction.DOWN, metaState)
-                        delay(
-                            action.holdDownDuration?.toLong() ?: defaultHoldDownDuration.value,
-                        )
-                        performAction(action, InputEventAction.UP, metaState)
-                    } else {
-                        performAction(action, InputEventAction.DOWN_UP, metaState)
+                    while (isActive && continueRepeating) {
+                        if (action.holdDown) {
+                            performAction(action, InputEventAction.DOWN, metaState)
+                            delay(
+                                action.holdDownDuration?.toLong() ?: defaultHoldDownDuration.value,
+                            )
+                            performAction(action, InputEventAction.UP, metaState)
+                        } else {
+                            performAction(action, InputEventAction.DOWN_UP, metaState)
+                        }
+
+                        repeatCount++
+
+                        if (action.repeatLimit != null) {
+                            continueRepeating = repeatCount < action.repeatLimit
+                        }
+
+                        delay(action.repeatRate?.toLong() ?: defaultRepeatRate.value)
                     }
-
-                    repeatCount++
-
-                    if (action.repeatLimit != null) {
-                        continueRepeating = repeatCount < action.repeatLimit
-                    }
-
-                    delay(action.repeatRate?.toLong() ?: defaultRepeatRate.value)
                 }
-            }
         }
     }
 

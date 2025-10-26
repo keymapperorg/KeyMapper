@@ -133,9 +133,10 @@ private fun CreateKeyMapShortcutScreen(
                             )
 
                             GroupRow(
-                                modifier = Modifier
-                                    .padding(horizontal = 8.dp)
-                                    .fillMaxWidth(),
+                                modifier =
+                                    Modifier
+                                        .padding(horizontal = 8.dp)
+                                        .fillMaxWidth(),
                                 groups = state.subGroups,
                                 showNewGroup = false,
                                 onGroupClick = onGroupClick,
@@ -161,25 +162,28 @@ private fun CreateKeyMapShortcutScreen(
                                         )
                                     }
                                 },
-                                colors = TopAppBarDefaults.topAppBarColors(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                ),
+                                colors =
+                                    TopAppBarDefaults.topAppBarColors(
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    ),
                             )
 
                             GroupBreadcrumbRow(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp),
                                 groups = state.breadcrumbs,
                                 onGroupClick = onGroupClick,
                             )
 
                             GroupRow(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 8.dp),
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 8.dp),
                                 groups = state.subGroups,
                                 showNewGroup = false,
                                 onGroupClick = onGroupClick,
@@ -232,9 +236,10 @@ private fun ShortcutNameDialog(
         onDismissRequest = onDismissRequest,
     ) {
         TextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             value = newName,
             onValueChange = {
                 newName = it
@@ -262,41 +267,43 @@ private fun keyMapSampleList(): List<KeyMapListItemModel> {
                 uid = "0",
                 triggerKeys = listOf("Volume down", "Volume up"),
                 triggerSeparatorIcon = Icons.Outlined.Add,
-                actions = listOf(
-                    ComposeChipModel.Normal(
-                        id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
-                        "Open Key Mapper",
+                actions =
+                    listOf(
+                        ComposeChipModel.Normal(
+                            id = "0",
+                            ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                            "Open Key Mapper",
+                        ),
+                        ComposeChipModel.Error(
+                            id = "1",
+                            text = "Input KEYCODE_0 • Repeat until released",
+                            error = KMError.NoCompatibleImeChosen,
+                        ),
+                        ComposeChipModel.Normal(
+                            id = "2",
+                            text = "Input KEYCODE_Q",
+                            icon = null,
+                        ),
+                        ComposeChipModel.Normal(
+                            id = "3",
+                            text = "Toggle flashlight",
+                            icon = ComposeIconInfo.Vector(Icons.Outlined.FlashlightOn),
+                        ),
                     ),
-                    ComposeChipModel.Error(
-                        id = "1",
-                        text = "Input KEYCODE_0 • Repeat until released",
-                        error = KMError.NoCompatibleImeChosen,
-                    ),
-                    ComposeChipModel.Normal(
-                        id = "2",
-                        text = "Input KEYCODE_Q",
-                        icon = null,
-                    ),
-                    ComposeChipModel.Normal(
-                        id = "3",
-                        text = "Toggle flashlight",
-                        icon = ComposeIconInfo.Vector(Icons.Outlined.FlashlightOn),
-                    ),
-                ),
                 constraintMode = ConstraintMode.AND,
-                constraints = listOf(
-                    ComposeChipModel.Normal(
-                        id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
-                        "Key Mapper is not open",
+                constraints =
+                    listOf(
+                        ComposeChipModel.Normal(
+                            id = "0",
+                            ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                            "Key Mapper is not open",
+                        ),
+                        ComposeChipModel.Error(
+                            id = "1",
+                            "Key Mapper is playing media",
+                            error = KMError.AppNotFound("io.github.sds100.keymapper"),
+                        ),
                     ),
-                    ComposeChipModel.Error(
-                        id = "1",
-                        "Key Mapper is playing media",
-                        error = KMError.AppNotFound("io.github.sds100.keymapper"),
-                    ),
-                ),
                 options = listOf("Vibrate"),
                 triggerErrors = listOf(TriggerError.DND_ACCESS_DENIED),
                 extraInfo = null,
@@ -304,17 +311,18 @@ private fun keyMapSampleList(): List<KeyMapListItemModel> {
         ),
         KeyMapListItemModel(
             isSelected = false,
-            content = KeyMapListItemModel.Content(
-                uid = "1",
-                triggerKeys = emptyList(),
-                triggerSeparatorIcon = Icons.Outlined.Add,
-                actions = emptyList(),
-                constraintMode = ConstraintMode.OR,
-                constraints = emptyList(),
-                options = emptyList(),
-                triggerErrors = emptyList(),
-                extraInfo = "Disabled • No trigger",
-            ),
+            content =
+                KeyMapListItemModel.Content(
+                    uid = "1",
+                    triggerKeys = emptyList(),
+                    triggerSeparatorIcon = Icons.Outlined.Add,
+                    actions = emptyList(),
+                    constraintMode = ConstraintMode.OR,
+                    constraints = emptyList(),
+                    options = emptyList(),
+                    triggerErrors = emptyList(),
+                    extraInfo = "Disabled • No trigger",
+                ),
         ),
     )
 }
@@ -370,15 +378,17 @@ private fun groupSampleList(): List<GroupListItemModel> {
 private fun PreviewRootGroup() {
     KeyMapperTheme {
         CreateKeyMapShortcutScreen(
-            state = KeyMapListState(
-                appBarState = KeyMapAppBarState.RootGroup(
-                    subGroups = groupSampleList(),
-                    warnings = emptyList(),
-                    isPaused = true,
+            state =
+                KeyMapListState(
+                    appBarState =
+                        KeyMapAppBarState.RootGroup(
+                            subGroups = groupSampleList(),
+                            warnings = emptyList(),
+                            isPaused = true,
+                        ),
+                    listItems = State.Data(keyMapSampleList()),
+                    showCreateKeyMapTapTarget = false,
                 ),
-                listItems = State.Data(keyMapSampleList()),
-                showCreateKeyMapTapTarget = false,
-            ),
             showShortcutNameDialog = null,
         )
     }
@@ -389,21 +399,23 @@ private fun PreviewRootGroup() {
 private fun PreviewChildGroup() {
     KeyMapperTheme {
         CreateKeyMapShortcutScreen(
-            state = KeyMapListState(
-                appBarState = KeyMapAppBarState.ChildGroup(
-                    groupName = "Very very very very very long name",
-                    subGroups = groupSampleList(),
-                    constraints = constraintsSampleList(),
-                    parentConstraintCount = 1,
-                    constraintMode = ConstraintMode.AND,
-                    breadcrumbs = groupSampleList(),
-                    isEditingGroupName = false,
-                    isNewGroup = false,
-                    keyMapsEnabled = null,
+            state =
+                KeyMapListState(
+                    appBarState =
+                        KeyMapAppBarState.ChildGroup(
+                            groupName = "Very very very very very long name",
+                            subGroups = groupSampleList(),
+                            constraints = constraintsSampleList(),
+                            parentConstraintCount = 1,
+                            constraintMode = ConstraintMode.AND,
+                            breadcrumbs = groupSampleList(),
+                            isEditingGroupName = false,
+                            isNewGroup = false,
+                            keyMapsEnabled = null,
+                        ),
+                    listItems = State.Data(keyMapSampleList()),
+                    showCreateKeyMapTapTarget = false,
                 ),
-                listItems = State.Data(keyMapSampleList()),
-                showCreateKeyMapTapTarget = false,
-            ),
             showShortcutNameDialog = null,
         )
     }
@@ -414,15 +426,17 @@ private fun PreviewChildGroup() {
 private fun PreviewEmpty() {
     KeyMapperTheme {
         CreateKeyMapShortcutScreen(
-            state = KeyMapListState(
-                appBarState = KeyMapAppBarState.RootGroup(
-                    subGroups = emptyList(),
-                    warnings = emptyList(),
-                    isPaused = true,
+            state =
+                KeyMapListState(
+                    appBarState =
+                        KeyMapAppBarState.RootGroup(
+                            subGroups = emptyList(),
+                            warnings = emptyList(),
+                            isPaused = true,
+                        ),
+                    listItems = State.Data(emptyList()),
+                    showCreateKeyMapTapTarget = false,
                 ),
-                listItems = State.Data(emptyList()),
-                showCreateKeyMapTapTarget = false,
-            ),
             showShortcutNameDialog = null,
         )
     }

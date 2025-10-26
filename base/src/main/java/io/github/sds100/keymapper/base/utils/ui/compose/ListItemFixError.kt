@@ -43,10 +43,11 @@ fun ListItemFixError(
         Spacer(modifier = Modifier.width(8.dp))
         FilledTonalButton(
             onClick = onFixClick,
-            colors = ButtonDefaults.filledTonalButtonColors(
-                containerColor = MaterialTheme.colorScheme.error,
-                contentColor = MaterialTheme.colorScheme.onError,
-            ),
+            colors =
+                ButtonDefaults.filledTonalButtonColors(
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError,
+                ),
         ) {
             Text(text = model.customButtonText ?: stringResource(R.string.button_fix))
         }
@@ -59,10 +60,11 @@ private fun PreviewListItemFixError() {
     KeyMapperTheme {
         Surface {
             ListItemFixError(
-                model = TextListItem.Error(
-                    id = "error",
-                    text = stringResource(R.string.trigger_error_dnd_access_denied),
-                ),
+                model =
+                    TextListItem.Error(
+                        id = "error",
+                        text = stringResource(R.string.trigger_error_dnd_access_denied),
+                    ),
             )
         }
     }

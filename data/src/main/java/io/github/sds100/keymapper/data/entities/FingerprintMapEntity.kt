@@ -16,27 +16,21 @@ data class FingerprintMapEntity(
     @SerializedName(NAME_ID)
     @PrimaryKey
     val id: Int = ID_UNKNOWN,
-
     @SerializedName(NAME_ACTION_LIST)
     @ColumnInfo(name = FingerprintMapDao.KEY_ACTION_LIST)
     val actionList: List<ActionEntity> = listOf(),
-
     @SerializedName(NAME_CONSTRAINTS)
     @ColumnInfo(name = FingerprintMapDao.KEY_CONSTRAINT_LIST)
     val constraintList: List<ConstraintEntity> = listOf(),
-
     @SerializedName(NAME_CONSTRAINT_MODE)
     @ColumnInfo(name = FingerprintMapDao.KEY_CONSTRAINT_MODE)
     val constraintMode: Int = ConstraintEntity.DEFAULT_MODE,
-
     @SerializedName(NAME_EXTRAS)
     @ColumnInfo(name = FingerprintMapDao.KEY_EXTRAS)
     val extras: List<EntityExtra> = listOf(),
-
     @SerializedName(NAME_FLAGS)
     @ColumnInfo(name = FingerprintMapDao.KEY_FLAGS)
     val flags: Int = 0,
-
     @SerializedName(NAME_ENABLED)
     @ColumnInfo(name = FingerprintMapDao.KEY_ENABLED)
     val isEnabled: Boolean = true,
@@ -58,35 +52,36 @@ data class FingerprintMapEntity(
         private const val NAME_CONSTRAINTS = "constraints"
         private const val NAME_CONSTRAINT_MODE = "constraint_mode"
 
-        val DESERIALIZER = jsonDeserializer {
+        val DESERIALIZER =
+            jsonDeserializer {
 
-            val id by it.json.byNullableInt(NAME_ID)
+                val id by it.json.byNullableInt(NAME_ID)
 
-            val actionListJson by it.json.byArray(NAME_ACTION_LIST)
-            val actionList = it.context.deserialize<List<ActionEntity>>(actionListJson)
+                val actionListJson by it.json.byArray(NAME_ACTION_LIST)
+                val actionList = it.context.deserialize<List<ActionEntity>>(actionListJson)
 
-            val extrasJson by it.json.byArray(NAME_EXTRAS)
-            val extras = it.context.deserialize<List<EntityExtra>>(extrasJson)
+                val extrasJson by it.json.byArray(NAME_EXTRAS)
+                val extras = it.context.deserialize<List<EntityExtra>>(extrasJson)
 
-            val constraintsJson by it.json.byArray(NAME_CONSTRAINTS)
-            val constraints = it.context.deserialize<List<ConstraintEntity>>(constraintsJson)
+                val constraintsJson by it.json.byArray(NAME_CONSTRAINTS)
+                val constraints = it.context.deserialize<List<ConstraintEntity>>(constraintsJson)
 
-            val constraintMode by it.json.byInt(NAME_CONSTRAINT_MODE)
+                val constraintMode by it.json.byInt(NAME_CONSTRAINT_MODE)
 
-            val flags by it.json.byInt(NAME_FLAGS)
+                val flags by it.json.byInt(NAME_FLAGS)
 
-            val isEnabled by it.json.byBool(NAME_ENABLED)
+                val isEnabled by it.json.byBool(NAME_ENABLED)
 
-            FingerprintMapEntity(
-                id = id ?: ID_UNKNOWN,
-                actionList,
-                constraints,
-                constraintMode,
-                extras,
-                flags,
-                isEnabled,
-            )
-        }
+                FingerprintMapEntity(
+                    id = id ?: ID_UNKNOWN,
+                    actionList,
+                    constraints,
+                    constraintMode,
+                    extras,
+                    flags,
+                    isEnabled,
+                )
+            }
 
         const val FLAG_VIBRATE = 1
         const val FLAG_SHOW_TOAST = 2

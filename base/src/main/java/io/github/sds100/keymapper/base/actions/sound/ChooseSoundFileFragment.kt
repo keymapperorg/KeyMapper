@@ -52,11 +52,12 @@ class ChooseSoundFileFragment : Fragment() {
     private val chooseRingtoneLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.data != null && result.resultCode == Activity.RESULT_OK) {
-                val uri = IntentCompat.getParcelableExtra(
-                    result.data!!,
-                    RingtoneManager.EXTRA_RINGTONE_PICKED_URI,
-                    Uri::class.java,
-                ) ?: return@registerForActivityResult
+                val uri =
+                    IntentCompat.getParcelableExtra(
+                        result.data!!,
+                        RingtoneManager.EXTRA_RINGTONE_PICKED_URI,
+                        Uri::class.java,
+                    ) ?: return@registerForActivityResult
 
                 viewModel.onChooseRingtone(uri.toString())
             }
@@ -81,12 +82,17 @@ class ChooseSoundFileFragment : Fragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
         ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
             val insets =
-                insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime())
+                insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime(),
+                )
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
             WindowInsetsCompat.CONSUMED
         }
@@ -101,10 +107,11 @@ class ChooseSoundFileFragment : Fragment() {
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.chooseSystemRingtone.collectLatest {
-                val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
-                    // Allow notification, alarms, and ringtones.
-                    putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL)
-                }
+                val intent =
+                    Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
+                        // Allow notification, alarms, and ringtones.
+                        putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL)
+                    }
                 chooseRingtoneLauncher.launch(intent)
             }
         }

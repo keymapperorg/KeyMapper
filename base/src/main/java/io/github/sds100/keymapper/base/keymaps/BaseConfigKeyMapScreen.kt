@@ -97,18 +97,20 @@ fun BaseConfigKeyMapScreen(
                 onKeyMapEnabledChange = onKeyMapEnabledChange,
                 onBackClick = onBackClick,
                 onDoneClick = onDoneClick,
-                showHelpButton = currentTab == ConfigKeyMapTab.TRIGGER ||
-                    currentTab == ConfigKeyMapTab.ACTIONS ||
-                    currentTab == ConfigKeyMapTab.CONSTRAINTS ||
-                    currentTab == ConfigKeyMapTab.OPTIONS,
+                showHelpButton =
+                    currentTab == ConfigKeyMapTab.TRIGGER ||
+                        currentTab == ConfigKeyMapTab.ACTIONS ||
+                        currentTab == ConfigKeyMapTab.CONSTRAINTS ||
+                        currentTab == ConfigKeyMapTab.OPTIONS,
                 onHelpClick = {
-                    val url = when (currentTab) {
-                        ConfigKeyMapTab.TRIGGER -> triggerHelpUrl
-                        ConfigKeyMapTab.ACTIONS -> actionsHelpUrl
-                        ConfigKeyMapTab.CONSTRAINTS -> constraintsHelpUrl
-                        ConfigKeyMapTab.OPTIONS -> optionsHelpUrl
-                        else -> return@ConfigKeyMapAppBar
-                    }
+                    val url =
+                        when (currentTab) {
+                            ConfigKeyMapTab.TRIGGER -> triggerHelpUrl
+                            ConfigKeyMapTab.ACTIONS -> actionsHelpUrl
+                            ConfigKeyMapTab.CONSTRAINTS -> constraintsHelpUrl
+                            ConfigKeyMapTab.OPTIONS -> optionsHelpUrl
+                            else -> return@ConfigKeyMapAppBar
+                        }
 
                     if (url.isNotEmpty()) {
                         uriHandler.openUriSafe(ctx, url)
@@ -128,53 +130,54 @@ fun BaseConfigKeyMapScreen(
                     @Composable
                     fun Tabs() {
                         for ((index, tab) in tabs.withIndex()) {
-                            val tabModifier = if (tab == ConfigKeyMapTab.ACTIONS) {
-                                val defaultBackgroundColor = MaterialTheme.colorScheme.surface
-                                val pulseBackgroundColor =
-                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
-                                val animatedBackgroundColor =
-                                    remember { Animatable(defaultBackgroundColor) }
+                            val tabModifier =
+                                if (tab == ConfigKeyMapTab.ACTIONS) {
+                                    val defaultBackgroundColor = MaterialTheme.colorScheme.surface
+                                    val pulseBackgroundColor =
+                                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                                    val animatedBackgroundColor =
+                                        remember { Animatable(defaultBackgroundColor) }
 
-                                var finishedAnimation by rememberSaveable { mutableStateOf(false) }
+                                    var finishedAnimation by rememberSaveable { mutableStateOf(false) }
 
-                                LaunchedEffect(showActionPulse) {
-                                    var startedAnimation = false
+                                    LaunchedEffect(showActionPulse) {
+                                        var startedAnimation = false
 
-                                    repeat(10) {
-                                        // Check at the start of each repeat so that it is
-                                        // a smooth animation to the old position when it stops.
-                                        val isActionsTabSelected =
-                                            pagerState.targetPage == index && tab == ConfigKeyMapTab.ACTIONS
+                                        repeat(10) {
+                                            // Check at the start of each repeat so that it is
+                                            // a smooth animation to the old position when it stops.
+                                            val isActionsTabSelected =
+                                                pagerState.targetPage == index && tab == ConfigKeyMapTab.ACTIONS
 
-                                        if (!showActionPulse || finishedAnimation || isActionsTabSelected) {
-                                            return@repeat
+                                            if (!showActionPulse || finishedAnimation || isActionsTabSelected) {
+                                                return@repeat
+                                            }
+
+                                            startedAnimation = true
+
+                                            animatedBackgroundColor.animateTo(
+                                                pulseBackgroundColor,
+                                                tween(700),
+                                            )
+
+                                            animatedBackgroundColor.animateTo(
+                                                defaultBackgroundColor,
+                                                tween(700),
+                                            )
                                         }
 
-                                        startedAnimation = true
-
-                                        animatedBackgroundColor.animateTo(
-                                            pulseBackgroundColor,
-                                            tween(700),
-                                        )
-
-                                        animatedBackgroundColor.animateTo(
-                                            defaultBackgroundColor,
-                                            tween(700),
-                                        )
+                                        if (startedAnimation) {
+                                            finishedAnimation = true
+                                        }
                                     }
 
-                                    if (startedAnimation) {
-                                        finishedAnimation = true
-                                    }
+                                    Modifier.background(
+                                        color = animatedBackgroundColor.value,
+                                        shape = RoundedCornerShape(8.dp),
+                                    )
+                                } else {
+                                    Modifier
                                 }
-
-                                Modifier.background(
-                                    color = animatedBackgroundColor.value,
-                                    shape = RoundedCornerShape(8.dp),
-                                )
-                            } else {
-                                Modifier
-                            }
 
                             Tab(
                                 modifier = tabModifier,
@@ -269,20 +272,21 @@ fun BaseConfigKeyMapScreen(
                             }
                         }
 
-                        ConfigKeyMapTab.ALL -> FourScreens(
-                            topLeftTitle = stringResource(R.string.tab_trigger),
-                            topLeftHelpUrl = triggerHelpUrl,
-                            topLeftScreen = triggerScreen,
-                            topRightTitle = stringResource(R.string.tab_actions),
-                            topRightHelpUrl = actionsHelpUrl,
-                            topRightScreen = actionsScreen,
-                            bottomLeftTitle = stringResource(R.string.tab_constraints),
-                            bottomLeftHelpUrl = constraintsHelpUrl,
-                            bottomLeftScreen = constraintsScreen,
-                            bottomRightTitle = stringResource(R.string.tab_options),
-                            bottomRightHelpUrl = optionsHelpUrl,
-                            bottomRightScreen = optionsScreen,
-                        )
+                        ConfigKeyMapTab.ALL ->
+                            FourScreens(
+                                topLeftTitle = stringResource(R.string.tab_trigger),
+                                topLeftHelpUrl = triggerHelpUrl,
+                                topLeftScreen = triggerScreen,
+                                topRightTitle = stringResource(R.string.tab_actions),
+                                topRightHelpUrl = actionsHelpUrl,
+                                topRightScreen = actionsScreen,
+                                bottomLeftTitle = stringResource(R.string.tab_constraints),
+                                bottomLeftHelpUrl = constraintsHelpUrl,
+                                bottomLeftScreen = constraintsScreen,
+                                bottomRightTitle = stringResource(R.string.tab_options),
+                                bottomRightHelpUrl = optionsHelpUrl,
+                                bottomRightScreen = optionsScreen,
+                            )
                     }
                 }
             }
@@ -319,11 +323,12 @@ private fun ConfigKeyMapAppBar(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            val text = if (isKeyMapEnabled) {
-                stringResource(R.string.switch_enabled)
-            } else {
-                stringResource(R.string.switch_disabled)
-            }
+            val text =
+                if (isKeyMapEnabled) {
+                    stringResource(R.string.switch_enabled)
+                } else {
+                    stringResource(R.string.switch_disabled)
+                }
 
             Text(
                 text = text,
@@ -527,28 +532,32 @@ private fun ScreenCard(
     }
 }
 
-private fun determineTabs(maxWidth: Dp, maxHeight: Dp): List<ConfigKeyMapTab> {
-    return when {
+private fun determineTabs(
+    maxWidth: Dp,
+    maxHeight: Dp,
+): List<ConfigKeyMapTab> =
+    when {
         maxWidth >= 800.dp && maxHeight >= 800.dp -> listOf(ConfigKeyMapTab.ALL)
 
         (maxWidth >= 1000.dp && maxHeight >= 450.dp) ||
-            (maxWidth >= 450.dp && maxHeight >= 1000.dp) -> listOf(
-            ConfigKeyMapTab.TRIGGER_AND_ACTIONS,
-            ConfigKeyMapTab.CONSTRAINTS_AND_OPTIONS,
-        )
+            (maxWidth >= 450.dp && maxHeight >= 1000.dp) ->
+            listOf(
+                ConfigKeyMapTab.TRIGGER_AND_ACTIONS,
+                ConfigKeyMapTab.CONSTRAINTS_AND_OPTIONS,
+            )
 
-        else -> listOf(
-            ConfigKeyMapTab.TRIGGER,
-            ConfigKeyMapTab.ACTIONS,
-            ConfigKeyMapTab.CONSTRAINTS,
-            ConfigKeyMapTab.OPTIONS,
-        )
+        else ->
+            listOf(
+                ConfigKeyMapTab.TRIGGER,
+                ConfigKeyMapTab.ACTIONS,
+                ConfigKeyMapTab.CONSTRAINTS,
+                ConfigKeyMapTab.OPTIONS,
+            )
     }
-}
 
 @Composable
-private fun getTabTitle(tab: ConfigKeyMapTab): String {
-    return when (tab) {
+private fun getTabTitle(tab: ConfigKeyMapTab): String =
+    when (tab) {
         ConfigKeyMapTab.TRIGGER -> stringResource(R.string.tab_trigger)
         ConfigKeyMapTab.ACTIONS -> stringResource(R.string.tab_actions)
         ConfigKeyMapTab.CONSTRAINTS -> stringResource(R.string.tab_constraints)
@@ -557,7 +566,6 @@ private fun getTabTitle(tab: ConfigKeyMapTab): String {
         ConfigKeyMapTab.CONSTRAINTS_AND_OPTIONS -> stringResource(R.string.tab_constraints_and_more)
         ConfigKeyMapTab.ALL -> ""
     }
-}
 
 private enum class ConfigKeyMapTab {
     TRIGGER,

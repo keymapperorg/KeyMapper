@@ -32,15 +32,16 @@ sealed class TriggerKeyEntity : Parcelable {
          * This is required because they are subclasses and Gson doesn't know about their
          * fields otherwise.
          */
-        val SERIALIZER: JsonSerializer<TriggerKeyEntity> = jsonSerializer { (key) ->
-            when (key) {
-                is AssistantTriggerKeyEntity -> Gson().toJsonTree(key)
-                is KeyEventTriggerKeyEntity -> Gson().toJsonTree(key)
-                is EvdevTriggerKeyEntity -> Gson().toJsonTree(key)
-                is FloatingButtonKeyEntity -> Gson().toJsonTree(key)
-                is FingerprintTriggerKeyEntity -> Gson().toJsonTree(key)
+        val SERIALIZER: JsonSerializer<TriggerKeyEntity> =
+            jsonSerializer { (key) ->
+                when (key) {
+                    is AssistantTriggerKeyEntity -> Gson().toJsonTree(key)
+                    is KeyEventTriggerKeyEntity -> Gson().toJsonTree(key)
+                    is EvdevTriggerKeyEntity -> Gson().toJsonTree(key)
+                    is FloatingButtonKeyEntity -> Gson().toJsonTree(key)
+                    is FingerprintTriggerKeyEntity -> Gson().toJsonTree(key)
+                }
             }
-        }
 
         val DESERIALIZER: JsonDeserializer<TriggerKeyEntity> =
             jsonDeserializer { (json, _, _) ->

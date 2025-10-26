@@ -56,59 +56,61 @@ data class ComposeCustomColors(
     val primaryContainerDarker: Color = Color.Unspecified,
 ) {
     companion object {
-        val LightPalette = ComposeCustomColors(
-            red = ComposeColors.redLight,
-            onRed = ComposeColors.onRedLight,
-            green = ComposeColors.greenLight,
-            onGreen = ComposeColors.onGreenLight,
-            greenContainer = ComposeColors.greenContainerLight,
-            onGreenContainer = ComposeColors.onGreenContainerLight,
-            magiskTeal = ComposeColors.magiskTealLight,
-            onMagiskTeal = ComposeColors.onMagiskTealLight,
-            shizukuBlue = ComposeColors.shizukuBlueLight,
-            onShizukuBlue = ComposeColors.onShizukuBlueLight,
-            orange = orangeLight,
-            onOrange = onOrangeLight,
-            orangeContainer = orangeContainerLight,
-            onOrangeContainer = onOrangeContainerLight,
-            amber = amberLight,
-            onAmber = onAmberLight,
-            amberContainer = amberContainerLight,
-            onAmberContainer = onAmberContainerLight,
-            discord = ComposeColors.discordLight,
-            onDiscord = ComposeColors.onDiscordLight,
-            primaryContainerDarker = primaryContainerDarkerLight,
-        )
+        val LightPalette =
+            ComposeCustomColors(
+                red = ComposeColors.redLight,
+                onRed = ComposeColors.onRedLight,
+                green = ComposeColors.greenLight,
+                onGreen = ComposeColors.onGreenLight,
+                greenContainer = ComposeColors.greenContainerLight,
+                onGreenContainer = ComposeColors.onGreenContainerLight,
+                magiskTeal = ComposeColors.magiskTealLight,
+                onMagiskTeal = ComposeColors.onMagiskTealLight,
+                shizukuBlue = ComposeColors.shizukuBlueLight,
+                onShizukuBlue = ComposeColors.onShizukuBlueLight,
+                orange = orangeLight,
+                onOrange = onOrangeLight,
+                orangeContainer = orangeContainerLight,
+                onOrangeContainer = onOrangeContainerLight,
+                amber = amberLight,
+                onAmber = onAmberLight,
+                amberContainer = amberContainerLight,
+                onAmberContainer = onAmberContainerLight,
+                discord = ComposeColors.discordLight,
+                onDiscord = ComposeColors.onDiscordLight,
+                primaryContainerDarker = primaryContainerDarkerLight,
+            )
 
-        val DarkPalette = ComposeCustomColors(
-            red = ComposeColors.redDark,
-            onRed = ComposeColors.onRedDark,
-            green = ComposeColors.greenDark,
-            onGreen = ComposeColors.onGreenDark,
-            greenContainer = ComposeColors.greenContainerDark,
-            onGreenContainer = ComposeColors.onGreenContainerDark,
-            magiskTeal = ComposeColors.magiskTealDark,
-            onMagiskTeal = ComposeColors.onMagiskTealDark,
-            shizukuBlue = ComposeColors.shizukuBlueDark,
-            onShizukuBlue = ComposeColors.onShizukuBlueDark,
-            orange = orangeDark,
-            onOrange = onOrangeDark,
-            orangeContainer = orangeContainerDark,
-            onOrangeContainer = onOrangeContainerDark,
-            amber = amberDark,
-            onAmber = onAmberDark,
-            amberContainer = amberContainerDark,
-            onAmberContainer = onAmberContainerDark,
-            discord = ComposeColors.discordDark,
-            onDiscord = ComposeColors.onDiscordDark,
-            primaryContainerDarker = primaryContainerDarkerDark,
-        )
+        val DarkPalette =
+            ComposeCustomColors(
+                red = ComposeColors.redDark,
+                onRed = ComposeColors.onRedDark,
+                green = ComposeColors.greenDark,
+                onGreen = ComposeColors.onGreenDark,
+                greenContainer = ComposeColors.greenContainerDark,
+                onGreenContainer = ComposeColors.onGreenContainerDark,
+                magiskTeal = ComposeColors.magiskTealDark,
+                onMagiskTeal = ComposeColors.onMagiskTealDark,
+                shizukuBlue = ComposeColors.shizukuBlueDark,
+                onShizukuBlue = ComposeColors.onShizukuBlueDark,
+                orange = orangeDark,
+                onOrange = onOrangeDark,
+                orangeContainer = orangeContainerDark,
+                onOrangeContainer = onOrangeContainerDark,
+                amber = amberDark,
+                onAmber = onAmberDark,
+                amberContainer = amberContainerDark,
+                onAmberContainer = onAmberContainerDark,
+                discord = ComposeColors.discordDark,
+                onDiscord = ComposeColors.onDiscordDark,
+                primaryContainerDarker = primaryContainerDarkerDark,
+            )
     }
 
     @Composable
     @Stable
-    fun contentColorFor(color: Color): Color {
-        return when (color) {
+    fun contentColorFor(color: Color): Color =
+        when (color) {
             red -> onRed
             green -> onGreen
             greenContainer -> onGreenContainer
@@ -119,5 +121,4 @@ data class ComposeCustomColors(
             discord -> onDiscord
             else -> MaterialTheme.colorScheme.contentColorFor(color)
         }
-    }
 }

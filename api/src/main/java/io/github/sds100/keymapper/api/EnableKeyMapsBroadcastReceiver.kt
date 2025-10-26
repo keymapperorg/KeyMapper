@@ -10,11 +10,13 @@ import javax.inject.Inject
 // DON'T MOVE THIS CLASS TO A DIFFERENT PACKAGE OR RENAME BECAUSE IT BREAKS THE API
 @AndroidEntryPoint
 class EnableKeyMapsBroadcastReceiver : BroadcastReceiver() {
-
     @Inject
     lateinit var useCase: EnableKeyMapsUseCase
 
-    override fun onReceive(context: Context?, intent: Intent?) {
+    override fun onReceive(
+        context: Context?,
+        intent: Intent?,
+    ) {
         context ?: return
         intent?.action ?: return
 

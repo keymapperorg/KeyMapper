@@ -15,7 +15,10 @@ fun <T> NavBackStackEntry.observeLiveData(
     })
 }
 
-fun <T> NavBackStackEntry.setLiveData(key: String, value: T) {
+fun <T> NavBackStackEntry.setLiveData(
+    key: String,
+    value: T,
+) {
     savedStateHandle.set(key, value)
 }
 
@@ -29,7 +32,10 @@ fun <T> NavController.observeCurrentDestinationLiveData(
     }
 }
 
-fun <T> NavController.setCurrentDestinationLiveData(key: String, value: T) {
+fun <T> NavController.setCurrentDestinationLiveData(
+    key: String,
+    value: T,
+) {
     currentDestination?.id?.let {
         getBackStackEntry(it).setLiveData(key, value)
     }

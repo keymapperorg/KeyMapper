@@ -16,71 +16,92 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge
 import javax.inject.Inject
 
-class CreateActionUseCaseImpl @Inject constructor(
-    private val inputMethodAdapter: InputMethodAdapter,
-    private val systemFeatureAdapter: SystemFeatureAdapter,
-    private val cameraAdapter: CameraAdapter,
-    private val permissionAdapter: PermissionAdapter,
-    private val phoneAdapter: PhoneAdapter,
-) : CreateActionUseCase,
-    IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(
-        systemFeatureAdapter,
-        cameraAdapter,
-        permissionAdapter,
-    ) {
-    override suspend fun getInputMethods(): List<ImeInfo> = inputMethodAdapter.inputMethods.first()
+class CreateActionUseCaseImpl
+    @Inject
+    constructor(
+        private val inputMethodAdapter: InputMethodAdapter,
+        private val systemFeatureAdapter: SystemFeatureAdapter,
+        private val cameraAdapter: CameraAdapter,
+        private val permissionAdapter: PermissionAdapter,
+        private val phoneAdapter: PhoneAdapter,
+    ) : CreateActionUseCase,
+        IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(
+            systemFeatureAdapter,
+            cameraAdapter,
+            permissionAdapter,
+        ) {
+        override suspend fun getInputMethods(): List<ImeInfo> = inputMethodAdapter.inputMethods.first()
 
-    override fun getFlashlightLenses(): Set<CameraLens> {
-        return CameraLens.entries.filter { cameraAdapter.getFlashInfo(it) != null }.toSet()
-    }
+        override fun getFlashlightLenses(): Set<CameraLens> = CameraLens.entries.filter { cameraAdapter.getFlashInfo(it) != null }.toSet()
 
-    override fun getFlashInfo(lens: CameraLens): CameraFlashInfo? {
-        return cameraAdapter.getFlashInfo(lens)
-    }
+        override fun getFlashInfo(lens: CameraLens): CameraFlashInfo? = cameraAdapter.getFlashInfo(lens)
 
-    override fun toggleFlashlight(lens: CameraLens, strength: Float) {
-        cameraAdapter.toggleFlashlight(lens, strength)
-    }
-
-    override fun disableFlashlight() {
-        cameraAdapter.disableFlashlight(CameraLens.FRONT)
-        cameraAdapter.disableFlashlight(CameraLens.BACK)
-    }
-
-    override fun setFlashlightBrightness(lens: CameraLens, strength: Float) {
-        cameraAdapter.enableFlashlight(lens, strength)
-    }
-
-    override fun isFlashlightEnabled(): Flow<Boolean> {
-        return merge(
-            cameraAdapter.isFlashlightOnFlow(CameraLens.FRONT),
-            cameraAdapter.isFlashlightOnFlow(CameraLens.BACK),
-        )
-    }
-
-    override fun requestPermission(permission: Permission) {
-        permissionAdapter.request(permission)
-    }
-
-    override suspend fun testSms(number: String, message: String): KMResult<Unit> {
-        if (!permissionAdapter.isGranted(Permission.SEND_SMS)) {
-            return SystemError.PermissionDenied(Permission.SEND_SMS)
+        override fun toggleFlashlight(
+            lens: CameraLens,
+            strength: Float,
+        ) {
+            cameraAdapter.toggleFlashlight(lens, strength)
         }
 
-        return phoneAdapter.sendSms(number, message)
+        override fun disableFlashlight() {
+            cameraAdapter.disableFlashlight(CameraLens.FRONT)
+            cameraAdapter.disableFlashlight(CameraLens.BACK)
+        }
+
+        override fun setFlashlightBrightness(
+            lens: CameraLens,
+            strength: Float,
+        ) {
+            cameraAdapter.enableFlashlight(lens, strength)
+        }
+
+        override fun isFlashlightEnabled(): Flow<Boolean> =
+            merge(
+                cameraAdapter.isFlashlightOnFlow(CameraLens.FRONT),
+                cameraAdapter.isFlashlightOnFlow(CameraLens.BACK),
+            )
+
+        override fun requestPermission(permission: Permission) {
+            permissionAdapter.request(permission)
+        }
+
+        override suspend fun testSms(
+            number: String,
+            message: String,
+        ): KMResult<Unit> {
+            if (!permissionAdapter.isGranted(Permission.SEND_SMS)) {
+                return SystemError.PermissionDenied(Permission.SEND_SMS)
+            }
+
+            return phoneAdapter.sendSms(number, message)
+        }
     }
-}
 
 interface CreateActionUseCase : IsActionSupportedUseCase {
     suspend fun getInputMethods(): List<ImeInfo>
 
     fun isFlashlightEnabled(): Flow<Boolean>
-    fun setFlashlightBrightness(lens: CameraLens, strength: Float)
-    fun toggleFlashlight(lens: CameraLens, strength: Float)
+
+    fun setFlashlightBrightness(
+        lens: CameraLens,
+        strength: Float,
+    )
+
+    fun toggleFlashlight(
+        lens: CameraLens,
+        strength: Float,
+    )
+
     fun disableFlashlight()
+
     fun getFlashlightLenses(): Set<CameraLens>
+
     fun getFlashInfo(lens: CameraLens): CameraFlashInfo?
 
     fun requestPermission(permission: Permission)
-    suspend fun testSms(number: String, message: String): KMResult<Unit>
+
+    suspend fun testSms(
+        number: String,
+        message: String,
+    ): KMResult<Unit>
 }

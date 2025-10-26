@@ -9,15 +9,12 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MyAccessibilityService : BaseAccessibilityService() {
-
     @Inject
     lateinit var controllerFactory: AccessibilityServiceController.Factory
 
     private var controller: AccessibilityServiceController? = null
 
-    override fun getController(): BaseAccessibilityServiceController? {
-        return controller
-    }
+    override fun getController(): BaseAccessibilityServiceController? = controller
 
     override fun onServiceConnected() {
         super.onServiceConnected()

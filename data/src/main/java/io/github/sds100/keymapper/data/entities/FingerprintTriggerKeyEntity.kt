@@ -9,15 +9,12 @@ import java.util.UUID
 data class FingerprintTriggerKeyEntity(
     @SerializedName(NAME_FINGERPRINT_GESTURE_TYPE)
     val type: Int = ID_SWIPE_DOWN,
-
     @SerializedName(NAME_CLICK_TYPE)
     override val clickType: Int = SHORT_PRESS,
-
     @SerializedName(NAME_UID)
     override val uid: String = UUID.randomUUID().toString(),
 ) : TriggerKeyEntity(),
     Parcelable {
-
     companion object {
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_FINGERPRINT_GESTURE_TYPE = "fingerprintGestureType"

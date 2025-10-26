@@ -68,33 +68,35 @@ abstract class BaseConfigTriggerViewModel(
     NavigationProvider by navigationProvider,
     TriggerSetupDelegate by triggerSetupDelegate,
     OnboardingTipDelegate by onboardingTipDelegate {
-
     companion object {
         private const val DEVICE_ID_ANY = "any"
         private const val DEVICE_ID_INTERNAL = "internal"
     }
 
-    val optionsViewModel = ConfigKeyMapOptionsViewModel(
-        viewModelScope,
-        config,
-        displayKeyMap,
-        createKeyMapShortcut,
-        dialogProvider,
-        resourceProvider,
-    )
+    val optionsViewModel =
+        ConfigKeyMapOptionsViewModel(
+            viewModelScope,
+            config,
+            displayKeyMap,
+            createKeyMapShortcut,
+            dialogProvider,
+            resourceProvider,
+        )
 
     private val _state: MutableStateFlow<State<ConfigTriggerState>> =
         MutableStateFlow(State.Loading)
     val state: StateFlow<State<ConfigTriggerState>> = _state.asStateFlow()
 
-    val recordTriggerState: StateFlow<RecordTriggerState> = recordTrigger.state.stateIn(
-        viewModelScope,
-        SharingStarted.Lazily,
-        RecordTriggerState.Idle,
-    )
+    val recordTriggerState: StateFlow<RecordTriggerState> =
+        recordTrigger.state.stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            RecordTriggerState.Idle,
+        )
 
     val showFingerprintGesturesShortcut: StateFlow<Boolean> =
-        fingerprintGesturesSupported.isSupported.map { it ?: false }
+        fingerprintGesturesSupported.isSupported
+            .map { it ?: false }
             .stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     var showDiscoverTriggersBottomSheet: Boolean by mutableStateOf(false)
@@ -141,17 +143,19 @@ abstract class BaseConfigTriggerViewModel(
         // Drop the first state in case it is in the Completed state so the
         // "button not detected" bottom sheet isn't shown when
         // the screen is opened.
-        recordTrigger.state.drop(1).onEach { state ->
-            if (state is RecordTriggerState.Completed &&
-                state.recordedKeys.isEmpty() &&
-                !isRecordingCompletionUserInitiated
-            ) {
-                showTriggerSetup(TriggerSetupShortcut.NOT_DETECTED)
-            }
+        recordTrigger.state
+            .drop(1)
+            .onEach { state ->
+                if (state is RecordTriggerState.Completed &&
+                    state.recordedKeys.isEmpty() &&
+                    !isRecordingCompletionUserInitiated
+                ) {
+                    showTriggerSetup(TriggerSetupShortcut.NOT_DETECTED)
+                }
 
-            // reset this field when recording has completed
-            isRecordingCompletionUserInitiated = false
-        }.launchIn(viewModelScope)
+                // reset this field when recording has completed
+                isRecordingCompletionUserInitiated = false
+            }.launchIn(viewModelScope)
     }
 
     override fun onCleared() {
@@ -221,11 +225,12 @@ abstract class BaseConfigTriggerViewModel(
                 clickTypeButtons.add(ClickType.LONG_PRESS)
             }
 
-            val checkedClickType: ClickType? = when {
-                trigger.mode is TriggerMode.Parallel -> trigger.mode.clickType
-                trigger.keys.size == 1 -> trigger.keys[0].clickType
-                else -> null
-            }
+            val checkedClickType: ClickType? =
+                when {
+                    trigger.mode is TriggerMode.Parallel -> trigger.mode.clickType
+                    trigger.keys.size == 1 -> trigger.keys[0].clickType
+                    else -> null
+                }
 
             ConfigTriggerState.Loaded(
                 triggerKeys = triggerKeys,
@@ -251,8 +256,9 @@ abstract class BaseConfigTriggerViewModel(
             State.Loading -> return null
             is State.Data -> {
                 val trigger = keyMapState.data.trigger
-                val key = trigger.keys.find { it.uid == triggerKeyUid }
-                    ?: return null
+                val key =
+                    trigger.keys.find { it.uid == triggerKeyUid }
+                        ?: return null
 
                 val showClickTypes = trigger.mode is TriggerMode.Sequence
 
@@ -260,7 +266,8 @@ abstract class BaseConfigTriggerViewModel(
                     is KeyEventTriggerKey -> {
                         val showDeviceDescriptors = displayKeyMap.showDeviceDescriptors.first()
                         val deviceListItems: List<CheckBoxListItem> =
-                            config.getAvailableTriggerKeyDevices()
+                            config
+                                .getAvailableTriggerKeyDevices()
                                 .map { device: KeyEventTriggerDevice ->
                                     buildDeviceListItem(
                                         device = device,
@@ -323,29 +330,32 @@ abstract class BaseConfigTriggerViewModel(
         device: KeyEventTriggerDevice,
         isChecked: Boolean,
         showDeviceDescriptors: Boolean,
-    ): CheckBoxListItem {
-        return when (device) {
-            KeyEventTriggerDevice.Any -> CheckBoxListItem(
-                id = DEVICE_ID_ANY,
-                isChecked = isChecked,
-                label = getString(R.string.any_device),
-            )
+    ): CheckBoxListItem =
+        when (device) {
+            KeyEventTriggerDevice.Any ->
+                CheckBoxListItem(
+                    id = DEVICE_ID_ANY,
+                    isChecked = isChecked,
+                    label = getString(R.string.any_device),
+                )
 
-            KeyEventTriggerDevice.Internal -> CheckBoxListItem(
-                id = DEVICE_ID_INTERNAL,
-                isChecked = isChecked,
-                label = getString(R.string.this_device),
-            )
+            KeyEventTriggerDevice.Internal ->
+                CheckBoxListItem(
+                    id = DEVICE_ID_INTERNAL,
+                    isChecked = isChecked,
+                    label = getString(R.string.this_device),
+                )
 
             is KeyEventTriggerDevice.External -> {
-                val name = if (showDeviceDescriptors) {
-                    InputDeviceUtils.appendDeviceDescriptorToName(
-                        device.descriptor,
-                        device.name,
-                    )
-                } else {
-                    device.name
-                }
+                val name =
+                    if (showDeviceDescriptors) {
+                        InputDeviceUtils.appendDeviceDescriptorToName(
+                            device.descriptor,
+                            device.name,
+                        )
+                    } else {
+                        device.name
+                    }
 
                 CheckBoxListItem(
                     id = device.descriptor,
@@ -354,14 +364,14 @@ abstract class BaseConfigTriggerViewModel(
                 )
             }
         }
-    }
 
     private suspend fun onRecordKeyEvent(key: RecordedKey.KeyEvent) {
-        val triggerDevice = if (key.isExternalDevice) {
-            KeyEventTriggerDevice.External(key.deviceDescriptor, key.deviceName)
-        } else {
-            KeyEventTriggerDevice.Internal
-        }
+        val triggerDevice =
+            if (key.isExternalDevice) {
+                KeyEventTriggerDevice.External(key.deviceDescriptor, key.deviceName)
+            } else {
+                KeyEventTriggerDevice.Internal
+            }
 
         config.addKeyEventTriggerKey(
             key.keyCode,
@@ -405,7 +415,11 @@ abstract class BaseConfigTriggerViewModel(
     }
 
     fun onRemoveKeyClick(uid: String) = config.removeTriggerKey(uid)
-    fun onMoveTriggerKey(fromIndex: Int, toIndex: Int) = config.moveTriggerKey(fromIndex, toIndex)
+
+    fun onMoveTriggerKey(
+        fromIndex: Int,
+        toIndex: Int,
+    ) = config.moveTriggerKey(fromIndex, toIndex)
 
     fun onTriggerKeyOptionsClick(id: String) {
         triggerKeyOptionsUid.update { id }
@@ -425,21 +439,24 @@ abstract class BaseConfigTriggerViewModel(
 
     fun onSelectTriggerKeyDevice(descriptor: String) {
         triggerKeyOptionsUid.value?.let { triggerKeyUid ->
-            val device = when (descriptor) {
-                DEVICE_ID_ANY -> KeyEventTriggerDevice.Any
-                DEVICE_ID_INTERNAL -> KeyEventTriggerDevice.Internal
-                else -> {
-                    val device = config.getAvailableTriggerKeyDevices()
-                        .filterIsInstance<KeyEventTriggerDevice.External>()
-                        .firstOrNull { it.descriptor == descriptor }
-                        ?: return
+            val device =
+                when (descriptor) {
+                    DEVICE_ID_ANY -> KeyEventTriggerDevice.Any
+                    DEVICE_ID_INTERNAL -> KeyEventTriggerDevice.Internal
+                    else -> {
+                        val device =
+                            config
+                                .getAvailableTriggerKeyDevices()
+                                .filterIsInstance<KeyEventTriggerDevice.External>()
+                                .firstOrNull { it.descriptor == descriptor }
+                                ?: return
 
-                    KeyEventTriggerDevice.External(
-                        device.descriptor,
-                        device.name,
-                    )
+                        KeyEventTriggerDevice.External(
+                            device.descriptor,
+                            device.name,
+                        )
+                    }
                 }
-            }
 
             config.setTriggerKeyDevice(
                 triggerKeyUid,
@@ -470,16 +487,17 @@ abstract class BaseConfigTriggerViewModel(
         viewModelScope.launch {
             val recordTriggerState = recordTrigger.state.firstOrNull() ?: return@launch
 
-            val result: KMResult<*> = when (recordTriggerState) {
-                is RecordTriggerState.CountingDown -> {
-                    isRecordingCompletionUserInitiated = true
-                    recordTrigger.stopRecording()
-                }
+            val result: KMResult<*> =
+                when (recordTriggerState) {
+                    is RecordTriggerState.CountingDown -> {
+                        isRecordingCompletionUserInitiated = true
+                        recordTrigger.stopRecording()
+                    }
 
-                is RecordTriggerState.Completed,
-                RecordTriggerState.Idle,
+                    is RecordTriggerState.Completed,
+                    RecordTriggerState.Idle,
                     -> recordTrigger.startRecording(enableEvdevRecording = false)
-            }
+                }
 
             // Show dialog if the accessibility service is disabled or crashed
             handleServiceEventResult(result)
@@ -534,45 +552,51 @@ abstract class BaseConfigTriggerViewModel(
         return trigger.keys.mapIndexed { index, key ->
             val error = triggerErrorSnapshot.getTriggerError(keyMap, key)
 
-            val clickType = if (trigger.mode is TriggerMode.Parallel) {
-                trigger.mode.clickType
-            } else {
-                key.clickType
-            }
+            val clickType =
+                if (trigger.mode is TriggerMode.Parallel) {
+                    trigger.mode.clickType
+                } else {
+                    key.clickType
+                }
 
-            val linkType = when (trigger.mode) {
-                is TriggerMode.Sequence -> LinkType.ARROW
-                else -> LinkType.PLUS
-            }
+            val linkType =
+                when (trigger.mode) {
+                    is TriggerMode.Sequence -> LinkType.ARROW
+                    else -> LinkType.PLUS
+                }
 
             when (key) {
-                is AssistantTriggerKey -> TriggerKeyListItemModel.Assistant(
-                    id = key.uid,
-                    assistantType = key.type,
-                    clickType = clickType,
-                    linkType = linkType,
-                    error = error,
-                )
+                is AssistantTriggerKey ->
+                    TriggerKeyListItemModel.Assistant(
+                        id = key.uid,
+                        assistantType = key.type,
+                        clickType = clickType,
+                        linkType = linkType,
+                        error = error,
+                    )
 
-                is FingerprintTriggerKey -> TriggerKeyListItemModel.FingerprintGesture(
-                    id = key.uid,
-                    gestureType = key.type,
-                    clickType = clickType,
-                    linkType = linkType,
-                    error = error,
-                )
+                is FingerprintTriggerKey ->
+                    TriggerKeyListItemModel.FingerprintGesture(
+                        id = key.uid,
+                        gestureType = key.type,
+                        clickType = clickType,
+                        linkType = linkType,
+                        error = error,
+                    )
 
-                is KeyEventTriggerKey -> TriggerKeyListItemModel.KeyEvent(
-                    id = key.uid,
-                    keyName = getTriggerKeyName(key),
-                    clickType = clickType,
-                    extraInfo = getKeyEventTriggerKeyExtraInfo(
-                        key,
-                        showDeviceDescriptors,
-                    ).takeIf { it.isNotBlank() },
-                    linkType = linkType,
-                    error = error,
-                )
+                is KeyEventTriggerKey ->
+                    TriggerKeyListItemModel.KeyEvent(
+                        id = key.uid,
+                        keyName = getTriggerKeyName(key),
+                        clickType = clickType,
+                        extraInfo =
+                            getKeyEventTriggerKeyExtraInfo(
+                                key,
+                                showDeviceDescriptors,
+                            ).takeIf { it.isNotBlank() },
+                        linkType = linkType,
+                        error = error,
+                    )
 
                 is FloatingButtonKey -> {
                     if (key.button == null) {
@@ -593,70 +617,70 @@ abstract class BaseConfigTriggerViewModel(
                     }
                 }
 
-                is EvdevTriggerKey -> TriggerKeyListItemModel.EvdevEvent(
-                    id = key.uid,
-                    keyName = key.getCodeLabel(this),
-                    clickType = clickType,
-                    extraInfo = getEvdevTriggerKeyExtraInfo(key),
-                    linkType = linkType,
-                    error = error,
-                )
+                is EvdevTriggerKey ->
+                    TriggerKeyListItemModel.EvdevEvent(
+                        id = key.uid,
+                        keyName = key.getCodeLabel(this),
+                        clickType = clickType,
+                        extraInfo = getEvdevTriggerKeyExtraInfo(key),
+                        linkType = linkType,
+                        error = error,
+                    )
             }
         }
     }
 
-    private fun getEvdevTriggerKeyExtraInfo(key: EvdevTriggerKey): String {
-        return buildString {
+    private fun getEvdevTriggerKeyExtraInfo(key: EvdevTriggerKey): String =
+        buildString {
             append(key.device.name)
 
             if (!key.consumeEvent) {
                 append(" $midDot ${getString(R.string.flag_dont_override_default_action)}")
             }
         }
-    }
 
     private fun getKeyEventTriggerKeyExtraInfo(
         key: KeyEventTriggerKey,
         showDeviceDescriptors: Boolean,
-    ): String {
-        return buildString {
+    ): String =
+        buildString {
             append(getTriggerKeyDeviceName(key.device, showDeviceDescriptors))
 
             if (!key.consumeEvent) {
                 append(" $midDot ${getString(R.string.flag_dont_override_default_action)}")
             }
         }
-    }
 
-    private fun getTriggerKeyName(key: KeyEventTriggerKey): String {
-        return buildString {
+    private fun getTriggerKeyName(key: KeyEventTriggerKey): String =
+        buildString {
             append(key.getCodeLabel(this@BaseConfigTriggerViewModel))
 
             if (key.requiresIme) {
                 append(" $midDot ${getString(R.string.flag_detect_from_input_method)}")
             }
         }
-    }
 
     private fun getTriggerKeyDeviceName(
         device: KeyEventTriggerDevice,
         showDeviceDescriptors: Boolean,
-    ): String = when (device) {
-        is KeyEventTriggerDevice.Internal -> getString(R.string.this_device)
-        is KeyEventTriggerDevice.Any -> getString(R.string.any_device)
-        is KeyEventTriggerDevice.External -> {
-            if (showDeviceDescriptors) {
-                InputDeviceUtils.appendDeviceDescriptorToName(
-                    device.descriptor,
-                    device.name,
-                )
-            } else {
-                device.name
+    ): String =
+        when (device) {
+            is KeyEventTriggerDevice.Internal -> getString(R.string.this_device)
+            is KeyEventTriggerDevice.Any -> getString(R.string.any_device)
+            is KeyEventTriggerDevice.External -> {
+                if (showDeviceDescriptors) {
+                    InputDeviceUtils.appendDeviceDescriptorToName(
+                        device.descriptor,
+                        device.name,
+                    )
+                } else {
+                    device.name
+                }
             }
         }
-    }
 
     abstract fun onEditFloatingButtonClick()
+
     abstract fun onEditFloatingLayoutClick()
 }
 

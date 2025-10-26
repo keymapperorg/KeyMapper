@@ -112,9 +112,10 @@ fun BaseTriggerScreen(
             val tipContent: @Composable () -> Unit = {
                 tipModel?.let { tip ->
                     TipCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
                         title = tip.title,
                         message = tip.message,
                         isDismissable = tip.isDismissable,
@@ -183,7 +184,8 @@ private fun isHorizontalLayout(): Boolean {
 private fun isVerticalCompactLayout(): Boolean {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-    return windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT && windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
+    return windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT &&
+        windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
 }
 
 @Composable
@@ -219,9 +221,10 @@ private fun TriggerScreenVertical(
                 is ConfigTriggerState.Empty -> {
                     Column {
                         Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(16.dp),
+                            modifier =
+                                Modifier
+                                    .weight(1f)
+                                    .padding(16.dp),
                         ) {
                             discoverScreenContent()
                         }
@@ -253,9 +256,10 @@ private fun TriggerScreenVertical(
 
                     if (configState.clickTypeButtons.isNotEmpty()) {
                         ClickTypeSegmentedButtons(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 8.dp),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp),
                             clickTypes = configState.clickTypeButtons,
                             checkedClickType = configState.checkedClickType,
                             onSelectClickType = onSelectClickType,
@@ -269,9 +273,10 @@ private fun TriggerScreenVertical(
 
                     if (configState.triggerModeButtonsVisible) {
                         TriggerModeSegmentedButtons(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 8.dp),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp),
                             mode = configState.checkedTriggerMode,
                             isEnabled = configState.triggerModeButtonsEnabled,
                             onSelectParallelMode = onSelectParallelMode,
@@ -287,9 +292,10 @@ private fun TriggerScreenVertical(
             }
 
             RecordTriggerButtonRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
                 onRecordTriggerClick = onRecordTriggerClick,
                 recordTriggerState = recordTriggerState,
                 onAdvancedTriggersClick = onAdvancedTriggersClick,
@@ -318,93 +324,101 @@ private fun TriggerScreenHorizontal(
 ) {
     Surface(modifier = modifier) {
         when (configState) {
-            is ConfigTriggerState.Empty -> Row {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(16.dp),
-                ) {
-                    discoverScreenContent()
-                }
-
-                RecordTriggerButtonRow(
-                    modifier = Modifier
-                        .align(Alignment.Bottom)
-                        .weight(1f)
-                        .padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
-                    onRecordTriggerClick = onRecordTriggerClick,
-                    recordTriggerState = recordTriggerState,
-                    onAdvancedTriggersClick = onAdvancedTriggersClick,
-                )
-            }
-
-            is ConfigTriggerState.Loaded -> Row {
-                TriggerList(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .widthIn(max = 400.dp),
-                    triggerList = configState.triggerKeys,
-                    isReorderingEnabled = configState.isReorderingEnabled,
-                    onEditClick = onEditClick,
-                    onRemoveClick = onRemoveClick,
-                    onMove = onMoveTriggerKey,
-                    onFixErrorClick = onFixErrorClick,
-                    onAddMoreClick = onAddMoreTriggerKeysClick,
-                )
-
-                Spacer(Modifier.height(8.dp))
-
-                Column(
-                    modifier = Modifier.fillMaxHeight(),
-                    verticalArrangement = Arrangement.Bottom,
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .verticalScroll(rememberScrollState()),
+            is ConfigTriggerState.Empty ->
+                Row {
+                    Box(
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .padding(16.dp),
                     ) {
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        tipContent()
-
-                        if (configState.clickTypeButtons.isNotEmpty()) {
-                            ClickTypeSegmentedButtons(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 8.dp),
-                                clickTypes = configState.clickTypeButtons,
-                                checkedClickType = configState.checkedClickType,
-                                onSelectClickType = onSelectClickType,
-                                isCompact = false,
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        if (configState.triggerModeButtonsVisible) {
-                            TriggerModeSegmentedButtons(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 8.dp),
-                                mode = configState.checkedTriggerMode,
-                                isEnabled = configState.triggerModeButtonsEnabled,
-                                onSelectParallelMode = onSelectParallelMode,
-                                onSelectSequenceMode = onSelectSequenceMode,
-                                isCompact = false,
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
+                        discoverScreenContent()
                     }
 
                     RecordTriggerButtonRow(
-                        modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+                        modifier =
+                            Modifier
+                                .align(Alignment.Bottom)
+                                .weight(1f)
+                                .padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
                         onRecordTriggerClick = onRecordTriggerClick,
                         recordTriggerState = recordTriggerState,
                         onAdvancedTriggersClick = onAdvancedTriggersClick,
                     )
                 }
-            }
+
+            is ConfigTriggerState.Loaded ->
+                Row {
+                    TriggerList(
+                        modifier =
+                            Modifier
+                                .fillMaxHeight()
+                                .widthIn(max = 400.dp),
+                        triggerList = configState.triggerKeys,
+                        isReorderingEnabled = configState.isReorderingEnabled,
+                        onEditClick = onEditClick,
+                        onRemoveClick = onRemoveClick,
+                        onMove = onMoveTriggerKey,
+                        onFixErrorClick = onFixErrorClick,
+                        onAddMoreClick = onAddMoreTriggerKeysClick,
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+
+                    Column(
+                        modifier = Modifier.fillMaxHeight(),
+                        verticalArrangement = Arrangement.Bottom,
+                    ) {
+                        Column(
+                            modifier =
+                                Modifier
+                                    .weight(1f)
+                                    .verticalScroll(rememberScrollState()),
+                        ) {
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            tipContent()
+
+                            if (configState.clickTypeButtons.isNotEmpty()) {
+                                ClickTypeSegmentedButtons(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 8.dp),
+                                    clickTypes = configState.clickTypeButtons,
+                                    checkedClickType = configState.checkedClickType,
+                                    onSelectClickType = onSelectClickType,
+                                    isCompact = false,
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            if (configState.triggerModeButtonsVisible) {
+                                TriggerModeSegmentedButtons(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 8.dp),
+                                    mode = configState.checkedTriggerMode,
+                                    isEnabled = configState.triggerModeButtonsEnabled,
+                                    onSelectParallelMode = onSelectParallelMode,
+                                    onSelectSequenceMode = onSelectSequenceMode,
+                                    isCompact = false,
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+
+                        RecordTriggerButtonRow(
+                            modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+                            onRecordTriggerClick = onRecordTriggerClick,
+                            recordTriggerState = recordTriggerState,
+                            onAdvancedTriggersClick = onAdvancedTriggersClick,
+                        )
+                    }
+                }
         }
     }
 }
@@ -421,16 +435,18 @@ private fun TriggerList(
     onAddMoreClick: () -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
-    val dragDropState = rememberDragDropState(
-        lazyListState = lazyListState,
-        onMove = onMove,
-        // Do not drag and drop the "add more" button
-        ignoreLastItems = if (triggerList.isEmpty()) {
-            0
-        } else {
-            1
-        },
-    )
+    val dragDropState =
+        rememberDragDropState(
+            lazyListState = lazyListState,
+            onMove = onMove,
+            // Do not drag and drop the "add more" button
+            ignoreLastItems =
+                if (triggerList.isEmpty()) {
+                    0
+                } else {
+                    1
+                },
+        )
 
     // Use dragContainer rather than .draggable() modifier because that causes
     // dragging the first item to be always be dropped in the next position.
@@ -487,34 +503,38 @@ private fun ClickTypeSegmentedButtons(
     isCompact: Boolean,
 ) {
     // Always put the buttons in the same order
-    val clickTypeButtonContent: List<Pair<ClickType, String>> = buildList {
-        if (clickTypes.contains(ClickType.SHORT_PRESS)) {
-            val text = if (isCompact) {
-                stringResource(R.string.radio_button_short)
-            } else {
-                stringResource(R.string.radio_button_short_press)
+    val clickTypeButtonContent: List<Pair<ClickType, String>> =
+        buildList {
+            if (clickTypes.contains(ClickType.SHORT_PRESS)) {
+                val text =
+                    if (isCompact) {
+                        stringResource(R.string.radio_button_short)
+                    } else {
+                        stringResource(R.string.radio_button_short_press)
+                    }
+                add(ClickType.SHORT_PRESS to text)
             }
-            add(ClickType.SHORT_PRESS to text)
-        }
 
-        if (clickTypes.contains(ClickType.LONG_PRESS)) {
-            val text = if (isCompact) {
-                stringResource(R.string.radio_button_long)
-            } else {
-                stringResource(R.string.radio_button_long_press)
+            if (clickTypes.contains(ClickType.LONG_PRESS)) {
+                val text =
+                    if (isCompact) {
+                        stringResource(R.string.radio_button_long)
+                    } else {
+                        stringResource(R.string.radio_button_long_press)
+                    }
+                add(ClickType.LONG_PRESS to text)
             }
-            add(ClickType.LONG_PRESS to text)
-        }
 
-        if (clickTypes.contains(ClickType.DOUBLE_PRESS)) {
-            val text = if (isCompact) {
-                stringResource(R.string.radio_button_double)
-            } else {
-                stringResource(R.string.radio_button_double_press)
+            if (clickTypes.contains(ClickType.DOUBLE_PRESS)) {
+                val text =
+                    if (isCompact) {
+                        stringResource(R.string.radio_button_double)
+                    } else {
+                        stringResource(R.string.radio_button_double_press)
+                    }
+                add(ClickType.DOUBLE_PRESS to text)
             }
-            add(ClickType.DOUBLE_PRESS to text)
         }
-    }
 
     KeyMapperSegmentedButtonRow(
         modifier = modifier,
@@ -534,19 +554,21 @@ private fun TriggerModeSegmentedButtons(
     onSelectSequenceMode: () -> Unit,
     isCompact: Boolean,
 ) {
-    val triggerModeButtonContent = listOf(
-        "parallel" to stringResource(R.string.radio_button_parallel),
-        "sequence" to stringResource(R.string.radio_button_sequence),
-    )
+    val triggerModeButtonContent =
+        listOf(
+            "parallel" to stringResource(R.string.radio_button_parallel),
+            "sequence" to stringResource(R.string.radio_button_sequence),
+        )
 
     KeyMapperSegmentedButtonRow(
         modifier = modifier,
         buttonStates = triggerModeButtonContent,
-        selectedState = when (mode) {
-            is TriggerMode.Parallel -> "parallel"
-            TriggerMode.Sequence -> "sequence"
-            TriggerMode.Undefined -> null
-        },
+        selectedState =
+            when (mode) {
+                is TriggerMode.Parallel -> "parallel"
+                TriggerMode.Sequence -> "sequence"
+                TriggerMode.Undefined -> null
+            },
         onStateSelected = { selectedMode ->
             when (selectedMode) {
                 "parallel" -> onSelectParallelMode()
@@ -558,41 +580,43 @@ private fun TriggerModeSegmentedButtons(
     )
 }
 
-private val sampleList = listOf(
-    TriggerKeyListItemModel.KeyEvent(
-        id = "id1",
-        keyName = "Volume Up",
-        clickType = ClickType.SHORT_PRESS,
-        extraInfo = "External Keyboard",
-        linkType = LinkType.ARROW,
-        error = null,
-    ),
-    TriggerKeyListItemModel.FloatingButton(
-        id = "id2",
-        buttonName = "😎",
-        layoutName = "Gaming",
-        clickType = ClickType.DOUBLE_PRESS,
-        linkType = LinkType.ARROW,
-        error = null,
-    ),
-    TriggerKeyListItemModel.Assistant(
-        id = "id3",
-        assistantType = AssistantTriggerType.DEVICE,
-        clickType = ClickType.DOUBLE_PRESS,
-        linkType = LinkType.PLUS,
-        error = null,
-    ),
-)
+private val sampleList =
+    listOf(
+        TriggerKeyListItemModel.KeyEvent(
+            id = "id1",
+            keyName = "Volume Up",
+            clickType = ClickType.SHORT_PRESS,
+            extraInfo = "External Keyboard",
+            linkType = LinkType.ARROW,
+            error = null,
+        ),
+        TriggerKeyListItemModel.FloatingButton(
+            id = "id2",
+            buttonName = "😎",
+            layoutName = "Gaming",
+            clickType = ClickType.DOUBLE_PRESS,
+            linkType = LinkType.ARROW,
+            error = null,
+        ),
+        TriggerKeyListItemModel.Assistant(
+            id = "id3",
+            assistantType = AssistantTriggerType.DEVICE,
+            clickType = ClickType.DOUBLE_PRESS,
+            linkType = LinkType.PLUS,
+            error = null,
+        ),
+    )
 
 private val previewState =
     ConfigTriggerState.Loaded(
         triggerKeys = sampleList,
         isReorderingEnabled = true,
-        clickTypeButtons = setOf(
-            ClickType.SHORT_PRESS,
-            ClickType.LONG_PRESS,
-            ClickType.DOUBLE_PRESS,
-        ),
+        clickTypeButtons =
+            setOf(
+                ClickType.SHORT_PRESS,
+                ClickType.LONG_PRESS,
+                ClickType.DOUBLE_PRESS,
+            ),
         checkedClickType = ClickType.LONG_PRESS,
         checkedTriggerMode = TriggerMode.Sequence,
         triggerModeButtonsEnabled = true,
@@ -667,11 +691,16 @@ private fun HorizontalPreview() {
             },
             tipContent = {
                 TipCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                     title = "Tip Title",
-                    message = "This is a tip message to help the user understand something about the current screen. It can be quite long so it should wrap properly.",
+                    message =
+                        """
+                        This is a tip message to help the user understand something about the current screen. 
+                        It can be quite long so it should wrap properly.
+                        """.trimIndent(),
                     onDismiss = {},
                 )
 

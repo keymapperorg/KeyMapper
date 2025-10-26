@@ -72,12 +72,17 @@ class ConfigIntentFragment : Fragment() {
         viewModel.setupFragmentNavigation(this)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
         ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
             val insets =
-                insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime())
+                insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime(),
+                )
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
             WindowInsetsCompat.CONSUMED
         }
@@ -120,90 +125,95 @@ class ConfigIntentFragment : Fragment() {
     }
 
     private fun EpoxyController.bindExtra(model: IntentExtraListItem) {
-        val intentNameTextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(
-                s: CharSequence?,
-                start: Int,
-                count: Int,
-                after: Int,
-            ) {
-            }
+        val intentNameTextWatcher =
+            object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int,
+                ) {
+                }
 
-            override fun onTextChanged(
-                s: CharSequence?,
-                start: Int,
-                before: Int,
-                count: Int,
-            ) {
-            }
+                override fun onTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int,
+                ) {
+                }
 
-            override fun afterTextChanged(s: Editable?) {
-                viewModel.setExtraName(model.uid, s.toString())
+                override fun afterTextChanged(s: Editable?) {
+                    viewModel.setExtraName(model.uid, s.toString())
+                }
             }
-        }
 
         when (model) {
-            is GenericIntentExtraListItem -> intentExtraGeneric {
-                id(model.uid)
+            is GenericIntentExtraListItem ->
+                intentExtraGeneric {
+                    id(model.uid)
 
-                model(model)
+                    model(model)
 
-                onRemoveClick { _ ->
-                    viewModel.removeExtra(model.uid)
-                }
-
-                onShowExampleClick { _ ->
-                    viewModel.onShowExtraExampleClick(model)
-                }
-
-                valueTextWatcher(object : TextWatcher {
-                    override fun beforeTextChanged(
-                        s: CharSequence?,
-                        start: Int,
-                        count: Int,
-                        after: Int,
-                    ) {
+                    onRemoveClick { _ ->
+                        viewModel.removeExtra(model.uid)
                     }
 
-                    override fun onTextChanged(
-                        s: CharSequence?,
-                        start: Int,
-                        before: Int,
-                        count: Int,
-                    ) {
+                    onShowExampleClick { _ ->
+                        viewModel.onShowExtraExampleClick(model)
                     }
 
-                    override fun afterTextChanged(s: Editable?) {
-                        viewModel.setExtraValue(model.uid, s.toString())
-                    }
-                })
+                    valueTextWatcher(
+                        object : TextWatcher {
+                            override fun beforeTextChanged(
+                                s: CharSequence?,
+                                start: Int,
+                                count: Int,
+                                after: Int,
+                            ) {
+                            }
 
-                nameTextWatcher(intentNameTextWatcher)
-            }
+                            override fun onTextChanged(
+                                s: CharSequence?,
+                                start: Int,
+                                before: Int,
+                                count: Int,
+                            ) {
+                            }
 
-            is BoolIntentExtraListItem -> intentExtraBool {
-                id(model.uid)
+                            override fun afterTextChanged(s: Editable?) {
+                                viewModel.setExtraValue(model.uid, s.toString())
+                            }
+                        },
+                    )
 
-                model(model)
-
-                nameTextWatcher(intentNameTextWatcher)
-
-                onRemoveClick { _ ->
-                    viewModel.removeExtra(model.uid)
+                    nameTextWatcher(intentNameTextWatcher)
                 }
 
-                onBind { model, view, _ ->
-                    (view.dataBinding as ListItemIntentExtraBoolBinding).apply {
-                        radioButtonTrue.setOnCheckedChangeListener { _, isChecked ->
-                            if (isChecked) viewModel.setExtraValue(model.model().uid, "true")
+            is BoolIntentExtraListItem ->
+                intentExtraBool {
+                    id(model.uid)
+
+                    model(model)
+
+                    nameTextWatcher(intentNameTextWatcher)
+
+                    onRemoveClick { _ ->
+                        viewModel.removeExtra(model.uid)
+                    }
+
+                    onBind { model, view, _ ->
+                        (view.dataBinding as ListItemIntentExtraBoolBinding).apply {
+                            radioButtonTrue.setOnCheckedChangeListener { _, isChecked ->
+                                if (isChecked) viewModel.setExtraValue(model.model().uid, "true")
+                            }
+
+                            radioButtonFalse.setOnCheckedChangeListener { _, isChecked ->
+                                if (isChecked) viewModel.setExtraValue(model.model().uid, "false")
+                            }
                         }
-
-                        radioButtonFalse.setOnCheckedChangeListener { _, isChecked ->
-                            if (isChecked) viewModel.setExtraValue(model.model().uid, "false")
-                        }
                     }
                 }
-            }
         }
     }
 }

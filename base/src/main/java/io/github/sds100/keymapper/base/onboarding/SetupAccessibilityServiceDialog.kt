@@ -26,9 +26,7 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.openUriSafe
 
 @Composable
-fun HandleAccessibilityServiceDialogs(
-    delegate: SetupAccessibilityServiceDelegateImpl,
-) {
+fun HandleAccessibilityServiceDialogs(delegate: SetupAccessibilityServiceDelegateImpl) {
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
 
@@ -186,21 +184,23 @@ private fun RestrictedSettingText(modifier: Modifier = Modifier) {
     val linkText = stringResource(R.string.dialog_restricted_setting_link_text)
     val restrictedSettingUrl = stringResource(R.string.url_restricted_setting)
 
-    val annotatedString = buildAnnotatedString {
-        append(messageText)
-        append(" ")
+    val annotatedString =
+        buildAnnotatedString {
+            append(messageText)
+            append(" ")
 
-        pushLink(LinkAnnotation.Url(restrictedSettingUrl))
-        withStyle(
-            style = SpanStyle(
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold,
-            ),
-        ) {
-            append(linkText)
+            pushLink(LinkAnnotation.Url(restrictedSettingUrl))
+            withStyle(
+                style =
+                    SpanStyle(
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold,
+                    ),
+            ) {
+                append(linkText)
+            }
+            pop()
         }
-        pop()
-    }
 
     Text(
         modifier = modifier,

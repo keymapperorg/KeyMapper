@@ -55,8 +55,9 @@ fun TriggerDiscoverScreen(
     val customColors = LocalCustomColorsPalette.current
 
     Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState()),
+        modifier =
+            modifier
+                .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Column {
@@ -76,91 +77,94 @@ fun TriggerDiscoverScreen(
 
         TriggerSection(
             title = stringResource(R.string.trigger_discover_section_on_device_buttons),
-            shortcuts = buildList {
-                add(
-                    ShortcutData(
-                        TriggerSetupShortcut.VOLUME,
-                        stringResource(R.string.trigger_discover_shortcut_volume),
-                        Icons.AutoMirrored.Outlined.VolumeUp,
-                    ),
-                )
-
-                add(
-                    ShortcutData(
-                        TriggerSetupShortcut.ASSISTANT,
-                        stringResource(R.string.trigger_discover_shortcut_assistant),
-                        KeyMapperIcons.VoiceSelection,
-                    ),
-                )
-
-                add(
-                    ShortcutData(
-                        TriggerSetupShortcut.POWER,
-                        stringResource(R.string.trigger_discover_shortcut_power),
-                        KeyMapperIcons.ModeOffOn,
-                    ),
-                )
-
-                if (showFingerprintGestures) {
+            shortcuts =
+                buildList {
                     add(
                         ShortcutData(
-                            TriggerSetupShortcut.FINGERPRINT_GESTURE,
-                            stringResource(R.string.trigger_discover_shortcut_fingerprint_gesture),
-                            Icons.Rounded.Fingerprint,
+                            TriggerSetupShortcut.VOLUME,
+                            stringResource(R.string.trigger_discover_shortcut_volume),
+                            Icons.AutoMirrored.Outlined.VolumeUp,
                         ),
                     )
-                }
-            },
+
+                    add(
+                        ShortcutData(
+                            TriggerSetupShortcut.ASSISTANT,
+                            stringResource(R.string.trigger_discover_shortcut_assistant),
+                            KeyMapperIcons.VoiceSelection,
+                        ),
+                    )
+
+                    add(
+                        ShortcutData(
+                            TriggerSetupShortcut.POWER,
+                            stringResource(R.string.trigger_discover_shortcut_power),
+                            KeyMapperIcons.ModeOffOn,
+                        ),
+                    )
+
+                    if (showFingerprintGestures) {
+                        add(
+                            ShortcutData(
+                                TriggerSetupShortcut.FINGERPRINT_GESTURE,
+                                stringResource(R.string.trigger_discover_shortcut_fingerprint_gesture),
+                                Icons.Rounded.Fingerprint,
+                            ),
+                        )
+                    }
+                },
             onShortcutClick = onShortcutClick,
         )
 
         TriggerSection(
             title = stringResource(R.string.trigger_discover_section_peripherals_gaming),
-            shortcuts = listOf(
-                ShortcutData(
-                    TriggerSetupShortcut.KEYBOARD,
-                    stringResource(R.string.trigger_discover_shortcut_keyboard),
-                    Icons.Outlined.Keyboard,
+            shortcuts =
+                listOf(
+                    ShortcutData(
+                        TriggerSetupShortcut.KEYBOARD,
+                        stringResource(R.string.trigger_discover_shortcut_keyboard),
+                        Icons.Outlined.Keyboard,
+                    ),
+                    ShortcutData(
+                        TriggerSetupShortcut.MOUSE,
+                        stringResource(R.string.trigger_discover_shortcut_mouse),
+                        Icons.Outlined.Mouse,
+                    ),
+                    ShortcutData(
+                        TriggerSetupShortcut.GAMEPAD,
+                        stringResource(R.string.trigger_discover_shortcut_gamepad),
+                        KeyMapperIcons.SportsEsports,
+                    ),
+                    ShortcutData(
+                        TriggerSetupShortcut.OTHER,
+                        stringResource(R.string.trigger_discover_shortcut_other),
+                        KeyMapperIcons.IndeterminateQuestionBox,
+                    ),
                 ),
-                ShortcutData(
-                    TriggerSetupShortcut.MOUSE,
-                    stringResource(R.string.trigger_discover_shortcut_mouse),
-                    Icons.Outlined.Mouse,
-                ),
-                ShortcutData(
-                    TriggerSetupShortcut.GAMEPAD,
-                    stringResource(R.string.trigger_discover_shortcut_gamepad),
-                    KeyMapperIcons.SportsEsports,
-                ),
-                ShortcutData(
-                    TriggerSetupShortcut.OTHER,
-                    stringResource(R.string.trigger_discover_shortcut_other),
-                    KeyMapperIcons.IndeterminateQuestionBox,
-                ),
-            ),
             onShortcutClick = onShortcutClick,
         )
 
         AnimatedVisibility(visible = showFloatingButtons) {
             TriggerSection(
                 title = stringResource(R.string.trigger_discover_section_floating_buttons),
-                shortcuts = listOf(
-                    ShortcutData(
-                        TriggerSetupShortcut.FLOATING_BUTTON_CUSTOM,
-                        stringResource(R.string.trigger_discover_shortcut_custom),
-                        Icons.Outlined.BubbleChart,
-                    ),
+                shortcuts =
+                    listOf(
+                        ShortcutData(
+                            TriggerSetupShortcut.FLOATING_BUTTON_CUSTOM,
+                            stringResource(R.string.trigger_discover_shortcut_custom),
+                            Icons.Outlined.BubbleChart,
+                        ),
 //                ShortcutData(
 //                    TriggerSetupShortcut.NOTCH,
 //                    stringResource(R.string.trigger_discover_shortcut_notch),
 //                    Icons.Default.TouchApp
 //                ),
-                    ShortcutData(
-                        TriggerSetupShortcut.FLOATING_BUTTON_LOCK_SCREEN,
-                        stringResource(R.string.trigger_discover_shortcut_lock_screen),
-                        Icons.Default.PhoneAndroid,
+                        ShortcutData(
+                            TriggerSetupShortcut.FLOATING_BUTTON_LOCK_SCREEN,
+                            stringResource(R.string.trigger_discover_shortcut_lock_screen),
+                            Icons.Default.PhoneAndroid,
+                        ),
                     ),
-                ),
                 onShortcutClick = onShortcutClick,
                 backgroundColor = customColors.amberContainer,
             )
@@ -223,9 +227,10 @@ private fun ShortcutButton(
                     modifier = Modifier.size(24.dp),
                     imageVector = shortcut.icon,
                     contentDescription = shortcut.label,
-                    tint = MaterialTheme.colorScheme.contentColorFor(backgroundColor).takeOrElse {
-                        LocalCustomColorsPalette.current.contentColorFor(backgroundColor)
-                    },
+                    tint =
+                        MaterialTheme.colorScheme.contentColorFor(backgroundColor).takeOrElse {
+                            LocalCustomColorsPalette.current.contentColorFor(backgroundColor)
+                        },
                 )
             }
         }

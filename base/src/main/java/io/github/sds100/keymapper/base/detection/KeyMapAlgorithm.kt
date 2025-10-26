@@ -49,7 +49,6 @@ class KeyMapAlgorithm(
     private val detectConstraints: DetectConstraintsUseCase,
 ) {
     companion object {
-
         // the states for keys awaiting a double press
         private const val NOT_PRESSED = -1
         private const val SINGLE_PRESSED = 0
@@ -59,13 +58,14 @@ class KeyMapAlgorithm(
          * @return whether the actions assigned to this trigger will be performed on the down event of the final key
          * rather than the up event.
          */
-        fun performActionOnDown(trigger: Trigger): Boolean = (
-            trigger.keys.size <= 1 &&
-                trigger.keys.getOrNull(0)?.clickType != ClickType.DOUBLE_PRESS &&
-                trigger.mode == TriggerMode.Undefined
+        fun performActionOnDown(trigger: Trigger): Boolean =
+            (
+                trigger.keys.size <= 1 &&
+                    trigger.keys.getOrNull(0)?.clickType != ClickType.DOUBLE_PRESS &&
+                    trigger.mode == TriggerMode.Undefined
             ) ||
 
-            trigger.mode is TriggerMode.Parallel
+                trigger.mode is TriggerMode.Parallel
     }
 
     private var detectKeyMaps: Boolean = false
@@ -293,9 +293,10 @@ class KeyMapAlgorithm(
             val triggerKeysThatSendRepeatedKeyEvents = mutableSetOf<KeyEventTriggerKey>()
 
             // Only process key maps that can be triggered
-            val validKeyMaps = value.filter {
-                it.keyMap.actionList.isNotEmpty() && it.keyMap.isEnabled
-            }
+            val validKeyMaps =
+                value.filter {
+                    it.keyMap.actionList.isNotEmpty() && it.keyMap.isEnabled
+                }
 
             for ((triggerIndex, model) in validKeyMaps.withIndex()) {
                 val keyMap = model.keyMap
@@ -321,20 +322,21 @@ class KeyMapAlgorithm(
                     }
 
                     when (key) {
-                        is KeyEventTriggerKey -> when (key.device) {
-                            KeyEventTriggerDevice.Internal -> {
-                                detectInternalEvents = true
-                            }
+                        is KeyEventTriggerKey ->
+                            when (key.device) {
+                                KeyEventTriggerDevice.Internal -> {
+                                    detectInternalEvents = true
+                                }
 
-                            KeyEventTriggerDevice.Any -> {
-                                detectInternalEvents = true
-                                detectExternalEvents = true
-                            }
+                                KeyEventTriggerDevice.Any -> {
+                                    detectInternalEvents = true
+                                    detectExternalEvents = true
+                                }
 
-                            is KeyEventTriggerDevice.External -> {
-                                detectExternalEvents = true
+                                is KeyEventTriggerDevice.External -> {
+                                    detectExternalEvents = true
+                                }
                             }
-                        }
 
                         is EvdevTriggerKey -> {
                             detectInternalEvents = true
@@ -533,11 +535,13 @@ class KeyMapAlgorithm(
 
             this.sequenceTriggers = sequenceTriggers.toIntArray()
             this.sequenceTriggersOverlappingSequenceTriggers =
-                sequenceTriggersOverlappingSequenceTriggers.map { it.toIntArray() }
+                sequenceTriggersOverlappingSequenceTriggers
+                    .map { it.toIntArray() }
                     .toTypedArray()
 
             this.sequenceTriggersOverlappingParallelTriggers =
-                sequenceTriggersOverlappingParallelTriggers.map { it.toIntArray() }
+                sequenceTriggersOverlappingParallelTriggers
+                    .map { it.toIntArray() }
                     .toTypedArray()
 
             this.parallelTriggers = parallelTriggers.toIntArray()
@@ -631,18 +635,20 @@ class KeyMapAlgorithm(
 
         when (inputEvent) {
             is KMEvdevEvent -> {
-                val event = EvdevEventAlgo(
-                    keyCode = inputEvent.androidCode,
-                    clickType = null,
-                    devicePath = inputEvent.device.path,
-                    device = EvdevDeviceInfo(
-                        name = inputEvent.device.name,
-                        bus = inputEvent.device.bus,
-                        vendor = inputEvent.device.vendor,
-                        product = inputEvent.device.product,
-                    ),
-                    scanCode = inputEvent.code,
-                )
+                val event =
+                    EvdevEventAlgo(
+                        keyCode = inputEvent.androidCode,
+                        clickType = null,
+                        devicePath = inputEvent.device.path,
+                        device =
+                            EvdevDeviceInfo(
+                                name = inputEvent.device.name,
+                                bus = inputEvent.device.bus,
+                                vendor = inputEvent.device.vendor,
+                                product = inputEvent.device.product,
+                            ),
+                        scanCode = inputEvent.code,
+                    )
 
                 if (inputEvent.isDownEvent) {
                     return onKeyDown(event)
@@ -654,16 +660,17 @@ class KeyMapAlgorithm(
             is KMKeyEvent -> {
                 val device = inputEvent.device
 
-                val event = KeyEventAlgo(
-                    keyCode = inputEvent.keyCode,
-                    clickType = null,
-                    descriptor = device.descriptor,
-                    deviceId = device.id,
-                    scanCode = inputEvent.scanCode,
-                    repeatCount = inputEvent.repeatCount,
-                    source = inputEvent.source,
-                    isExternal = device.isExternal,
-                )
+                val event =
+                    KeyEventAlgo(
+                        keyCode = inputEvent.keyCode,
+                        clickType = null,
+                        descriptor = device.descriptor,
+                        deviceId = device.id,
+                        scanCode = inputEvent.scanCode,
+                        repeatCount = inputEvent.repeatCount,
+                        source = inputEvent.source,
+                        isExternal = device.isExternal,
+                    )
 
                 when (inputEvent.action) {
                     KeyEvent.ACTION_DOWN -> return onKeyDown(event)
@@ -684,11 +691,12 @@ class KeyMapAlgorithm(
         // Must come before saving the event down time because
         // there is no corresponding up key event for key events with a repeat count > 0
         if (event is KeyEventAlgo && event.repeatCount > 0) {
-            val matchingTriggerKey = triggerKeysThatSendRepeatedKeyEvents.any {
-                it.matchesEvent(event.withShortPress) ||
-                    it.matchesEvent(event.withLongPress) ||
-                    it.matchesEvent(event.withDoublePress)
-            }
+            val matchingTriggerKey =
+                triggerKeysThatSendRepeatedKeyEvents.any {
+                    it.matchesEvent(event.withShortPress) ||
+                        it.matchesEvent(event.withLongPress) ||
+                        it.matchesEvent(event.withDoublePress)
+                }
 
             if (matchingTriggerKey) {
                 return true
@@ -805,9 +813,10 @@ class KeyMapAlgorithm(
 
             val errorSnapshot = performActionsUseCase.getErrorSnapshot()
 
-            val actionList = triggerActions[triggerIndex]
-                .map { actionKey -> actionMap[actionKey]?.data }
-                .filterNotNull()
+            val actionList =
+                triggerActions[triggerIndex]
+                    .map { actionKey -> actionMap[actionKey]?.data }
+                    .filterNotNull()
 
             val actionErrors = errorSnapshot.getErrors(actionList)
 
@@ -870,10 +879,11 @@ class KeyMapAlgorithm(
                             // or will be pressed next.
                             .filter {
                                 for (i in 0..(lastMatchedEventIndices[it] + 1)) {
-                                    val matchingEvent = triggers[it].matchingEventAtIndex(
-                                        event.withShortPress,
-                                        i,
-                                    )
+                                    val matchingEvent =
+                                        triggers[it].matchingEventAtIndex(
+                                            event.withShortPress,
+                                            i,
+                                        )
 
                                     if (matchingEvent) {
                                         return@filter true
@@ -881,8 +891,7 @@ class KeyMapAlgorithm(
                                 }
 
                                 return@filter false
-                            }
-                            .maxByOrNull { sequenceTriggerTimeout(triggers[it]) }
+                            }.maxByOrNull { sequenceTriggerTimeout(triggers[it]) }
 
                     if (overlappingSequenceTrigger == null) {
                         val actionKeys = triggerActions[triggerIndex]
@@ -967,17 +976,18 @@ class KeyMapAlgorithm(
         }
 
         if (detectedShortPressTriggers.isNotEmpty()) {
-            val matchingDoublePressEvent = doublePressTriggerKeys.any { keyLocation ->
-                // See issue #1271. Only consider the double press triggers that overlap
-                // if the constraints allow it.
+            val matchingDoublePressEvent =
+                doublePressTriggerKeys.any { keyLocation ->
+                    // See issue #1271. Only consider the double press triggers that overlap
+                    // if the constraints allow it.
 
-                if (!triggersSatisfiedByConstraints.contains(keyLocation.triggerIndex)) {
-                    return@any false
+                    if (!triggersSatisfiedByConstraints.contains(keyLocation.triggerIndex)) {
+                        return@any false
+                    }
+
+                    val key = triggers[keyLocation.triggerIndex].keys[keyLocation.keyIndex]
+                    key.matchesEvent(event.withDoublePress)
                 }
-
-                val key = triggers[keyLocation.triggerIndex].keys[keyLocation.keyIndex]
-                key.matchesEvent(event.withDoublePress)
-            }
 
             /* to prevent the actions of keys mapped to a short press and, a long press or a double press
              * from crossing over.
@@ -1004,11 +1014,12 @@ class KeyMapAlgorithm(
                             showToast = true
                         }
 
-                        val vibrateDuration = when {
-                            trigger.vibrate -> vibrateDuration(trigger)
-                            forceVibrate.value -> defaultVibrateDuration.value
-                            else -> -1L
-                        }
+                        val vibrateDuration =
+                            when {
+                                trigger.vibrate -> vibrateDuration(trigger)
+                                forceVibrate.value -> defaultVibrateDuration.value
+                                else -> -1L
+                            }
 
                         vibrateDurations.add(vibrateDuration)
                     }
@@ -1044,13 +1055,14 @@ class KeyMapAlgorithm(
             val trigger = triggers[triggerIndex]
 
             for (key in trigger.keys) {
-                val matchingEvent = when {
-                    key.matchesEvent(event.withShortPress) -> true
-                    key.matchesEvent(event.withLongPress) -> true
-                    key.matchesEvent(event.withDoublePress) -> true
+                val matchingEvent =
+                    when {
+                        key.matchesEvent(event.withShortPress) -> true
+                        key.matchesEvent(event.withLongPress) -> true
+                        key.matchesEvent(event.withDoublePress) -> true
 
-                    else -> false
-                }
+                        else -> false
+                    }
 
                 if (matchingEvent && key.consumeEvent) {
                     return true
@@ -1145,7 +1157,7 @@ class KeyMapAlgorithm(
                             }
                         }
 
-                        /* When the key is double pressed */
+                        // When the key is double pressed
                         DOUBLE_PRESSED -> {
                             successfulDoublePress = true
                             doublePressEventStates[index] = NOT_PRESSED
@@ -1179,11 +1191,12 @@ class KeyMapAlgorithm(
                 imitateDownUpKeyEvent = true
             }
 
-            val encodedEventWithClickType = when {
-                successfulLongPressTrigger -> event.withLongPress
-                successfulDoublePress -> event.withDoublePress
-                else -> event.withShortPress
-            }
+            val encodedEventWithClickType =
+                when {
+                    successfulLongPressTrigger -> event.withLongPress
+                    successfulDoublePress -> event.withDoublePress
+                    else -> event.withShortPress
+                }
 
             for (overlappingTriggerIndex in sequenceTriggersOverlappingSequenceTriggers[triggerIndex]) {
                 if (lastMatchedEventIndices[overlappingTriggerIndex] != -1) {
@@ -1389,9 +1402,10 @@ class KeyMapAlgorithm(
 
         detectedSequenceTriggerIndexes.forEach { triggerIndex ->
             sequenceTriggerActionPerformers[triggerIndex]?.onTriggered(
-                metaState = metaStateFromActions.withFlag(
-                    metaStateFromKeyEvent,
-                ),
+                metaState =
+                    metaStateFromActions.withFlag(
+                        metaStateFromKeyEvent,
+                    ),
             )
         }
 
@@ -1562,9 +1576,10 @@ class KeyMapAlgorithm(
 
         sequenceTriggersTimeoutTimes = mutableMapOf()
 
-        parallelTriggerEventsAwaitingRelease = Array(triggers.size) {
-            BooleanArray(triggers[it].keys.size) { false }
-        }
+        parallelTriggerEventsAwaitingRelease =
+            Array(triggers.size) {
+                BooleanArray(triggers[it].keys.size) { false }
+            }
 
         parallelTriggersAwaitingReleaseAfterBeingTriggered = BooleanArray(triggers.size)
 
@@ -1635,8 +1650,7 @@ class KeyMapAlgorithm(
         return detectedTriggerIndexes.isNotEmpty()
     }
 
-    private fun encodeActionList(actions: List<Action>): IntArray =
-        actions.map { getActionKey(it) }.toIntArray()
+    private fun encodeActionList(actions: List<Action>): IntArray = actions.map { getActionKey(it) }.toIntArray()
 
     /**
      * @return the key for the action in [actionMap]. Returns -1 if the [action] can't be found.
@@ -1676,25 +1690,26 @@ class KeyMapAlgorithm(
     /**
      * For parallel triggers only.
      */
-    private fun performActionsAfterLongPressDelay(triggerIndex: Int) = coroutineScope.launch {
-        delay(longPressDelay(triggers[triggerIndex]))
+    private fun performActionsAfterLongPressDelay(triggerIndex: Int) =
+        coroutineScope.launch {
+            delay(longPressDelay(triggers[triggerIndex]))
 
-        parallelTriggerActionPerformers[triggerIndex]?.onTriggered(
-            calledOnTriggerRelease = false,
-            metaState = metaStateFromActions.withFlag(metaStateFromKeyEvent),
-        )
+            parallelTriggerActionPerformers[triggerIndex]?.onTriggered(
+                calledOnTriggerRelease = false,
+                metaState = metaStateFromActions.withFlag(metaStateFromKeyEvent),
+            )
 
-        if (triggers[triggerIndex].vibrate ||
-            forceVibrate.value ||
-            triggers[triggerIndex].longPressDoubleVibration
-        ) {
-            useCase.vibrate(vibrateDuration(triggers[triggerIndex]))
+            if (triggers[triggerIndex].vibrate ||
+                forceVibrate.value ||
+                triggers[triggerIndex].longPressDoubleVibration
+            ) {
+                useCase.vibrate(vibrateDuration(triggers[triggerIndex]))
+            }
+
+            if (triggers[triggerIndex].showToast) {
+                useCase.showTriggeredToast()
+            }
         }
-
-        if (triggers[triggerIndex].showToast) {
-            useCase.showTriggeredToast()
-        }
-    }
 
     /**
      * For parallel triggers only.
@@ -1730,7 +1745,10 @@ class KeyMapAlgorithm(
         }
     }
 
-    private fun Trigger.matchingEventAtIndex(event: AlgoEvent, index: Int): Boolean {
+    private fun Trigger.matchingEventAtIndex(
+        event: AlgoEvent,
+        index: Int,
+    ): Boolean {
         if (index >= this.keys.size) return false
 
         return this.keys[index].matchesEvent(event)
@@ -1738,11 +1756,12 @@ class KeyMapAlgorithm(
 
     private fun TriggerKey.matchesEvent(event: AlgoEvent): Boolean {
         if (this is KeyEventTriggerKey && event is KeyEventAlgo) {
-            val codeMatches = if (this.detectWithScancode()) {
-                this.scanCode == event.scanCode
-            } else {
-                this.keyCode == event.keyCode
-            }
+            val codeMatches =
+                if (this.detectWithScancode()) {
+                    this.scanCode == event.scanCode
+                } else {
+                    this.keyCode == event.keyCode
+                }
 
             return when (this.device) {
                 KeyEventTriggerDevice.Any -> codeMatches && this.clickType == event.clickType
@@ -1755,11 +1774,12 @@ class KeyMapAlgorithm(
                         this.clickType == event.clickType
             }
         } else if (this is EvdevTriggerKey && event is EvdevEventAlgo) {
-            val codeMatches = if (this.detectWithScancode()) {
-                this.scanCode == event.scanCode
-            } else {
-                this.keyCode == event.keyCode
-            }
+            val codeMatches =
+                if (this.detectWithScancode()) {
+                    this.scanCode == event.scanCode
+                } else {
+                    this.keyCode == event.keyCode
+                }
 
             return codeMatches && this.clickType == event.clickType && this.device == event.device
         } else if (this is AssistantTriggerKey && event is AssistantEvent) {
@@ -1779,11 +1799,12 @@ class KeyMapAlgorithm(
 
     private fun TriggerKey.matchesWithOtherKey(otherKey: TriggerKey): Boolean {
         if (this is KeyEventTriggerKey && otherKey is KeyEventTriggerKey) {
-            val codeMatches = if (this.detectWithScancode()) {
-                otherKey.detectWithScancode() && this.scanCode == otherKey.scanCode
-            } else {
-                this.keyCode == otherKey.keyCode
-            }
+            val codeMatches =
+                if (this.detectWithScancode()) {
+                    otherKey.detectWithScancode() && this.scanCode == otherKey.scanCode
+                } else {
+                    this.keyCode == otherKey.keyCode
+                }
 
             return when (this.device) {
                 KeyEventTriggerDevice.Any ->
@@ -1801,11 +1822,12 @@ class KeyMapAlgorithm(
                         this.clickType == otherKey.clickType
             }
         } else if (this is EvdevTriggerKey && otherKey is EvdevTriggerKey) {
-            val codeMatches = if (this.detectWithScancode()) {
-                otherKey.detectWithScancode() && this.scanCode == otherKey.scanCode
-            } else {
-                this.keyCode == otherKey.keyCode
-            }
+            val codeMatches =
+                if (this.detectWithScancode()) {
+                    otherKey.detectWithScancode() && this.scanCode == otherKey.scanCode
+                } else {
+                    this.keyCode == otherKey.keyCode
+                }
 
             return codeMatches && this.clickType == otherKey.clickType && this.device == otherKey.device
         } else if (this is AssistantTriggerKey && otherKey is AssistantTriggerKey) {
@@ -1819,14 +1841,11 @@ class KeyMapAlgorithm(
         }
     }
 
-    private fun longPressDelay(trigger: Trigger): Long =
-        trigger.longPressDelay?.toLong() ?: defaultLongPressDelay.value
+    private fun longPressDelay(trigger: Trigger): Long = trigger.longPressDelay?.toLong() ?: defaultLongPressDelay.value
 
-    private fun doublePressTimeout(trigger: Trigger): Long =
-        trigger.doublePressDelay?.toLong() ?: defaultDoublePressDelay.value
+    private fun doublePressTimeout(trigger: Trigger): Long = trigger.doublePressDelay?.toLong() ?: defaultDoublePressDelay.value
 
-    private fun vibrateDuration(trigger: Trigger): Long =
-        trigger.vibrateDuration?.toLong() ?: defaultVibrateDuration.value
+    private fun vibrateDuration(trigger: Trigger): Long = trigger.vibrateDuration?.toLong() ?: defaultVibrateDuration.value
 
     private fun sequenceTriggerTimeout(trigger: Trigger): Long =
         trigger.sequenceTriggerTimeout?.toLong() ?: defaultSequenceTriggerTimeout.value
@@ -1845,22 +1864,23 @@ class KeyMapAlgorithm(
         actionMap = map
     }
 
-    private fun isModifierKey(keyCode: Int): Boolean = when (keyCode) {
-        KeyEvent.KEYCODE_SHIFT_LEFT,
-        KeyEvent.KEYCODE_SHIFT_RIGHT,
-        KeyEvent.KEYCODE_ALT_LEFT,
-        KeyEvent.KEYCODE_ALT_RIGHT,
-        KeyEvent.KEYCODE_CTRL_LEFT,
-        KeyEvent.KEYCODE_CTRL_RIGHT,
-        KeyEvent.KEYCODE_META_LEFT,
-        KeyEvent.KEYCODE_META_RIGHT,
-        KeyEvent.KEYCODE_SYM,
-        KeyEvent.KEYCODE_NUM,
-        KeyEvent.KEYCODE_FUNCTION,
+    private fun isModifierKey(keyCode: Int): Boolean =
+        when (keyCode) {
+            KeyEvent.KEYCODE_SHIFT_LEFT,
+            KeyEvent.KEYCODE_SHIFT_RIGHT,
+            KeyEvent.KEYCODE_ALT_LEFT,
+            KeyEvent.KEYCODE_ALT_RIGHT,
+            KeyEvent.KEYCODE_CTRL_LEFT,
+            KeyEvent.KEYCODE_CTRL_RIGHT,
+            KeyEvent.KEYCODE_META_LEFT,
+            KeyEvent.KEYCODE_META_RIGHT,
+            KeyEvent.KEYCODE_SYM,
+            KeyEvent.KEYCODE_NUM,
+            KeyEvent.KEYCODE_FUNCTION,
             -> true
 
-        else -> false
-    }
+            else -> false
+        }
 
     private val AlgoEvent.withShortPress: AlgoEvent
         get() = setClickType(clickType = ClickType.SHORT_PRESS)
@@ -1888,13 +1908,14 @@ class KeyMapAlgorithm(
     private sealed class AlgoEvent {
         abstract val clickType: ClickType?
 
-        fun setClickType(clickType: ClickType?): AlgoEvent = when (this) {
-            is EvdevEventAlgo -> this.copy(clickType = clickType)
-            is KeyEventAlgo -> this.copy(clickType = clickType)
-            is AssistantEvent -> this.copy(clickType = clickType)
-            is FloatingButtonEvent -> this.copy(clickType = clickType)
-            is FingerprintGestureEvent -> this.copy(clickType = clickType)
-        }
+        fun setClickType(clickType: ClickType?): AlgoEvent =
+            when (this) {
+                is EvdevEventAlgo -> this.copy(clickType = clickType)
+                is KeyEventAlgo -> this.copy(clickType = clickType)
+                is AssistantEvent -> this.copy(clickType = clickType)
+                is FloatingButtonEvent -> this.copy(clickType = clickType)
+                is FingerprintGestureEvent -> this.copy(clickType = clickType)
+            }
     }
 
     private data class EvdevEventAlgo(
@@ -1931,5 +1952,8 @@ class KeyMapAlgorithm(
         override val clickType: ClickType?,
     ) : AlgoEvent()
 
-    private data class TriggerKeyLocation(val triggerIndex: Int, val keyIndex: Int)
+    private data class TriggerKeyLocation(
+        val triggerIndex: Int,
+        val keyIndex: Int,
+    )
 }

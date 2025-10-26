@@ -44,55 +44,42 @@ data class FloatingButtonEntity(
     @ColumnInfo(name = KEY_UID)
     @SerializedName(NAME_UID)
     val uid: String,
-
     @ColumnInfo(name = KEY_LAYOUT_UID, index = true)
     @SerializedName(NAME_LAYOUT_UID)
     val layoutUid: String,
-
     @ColumnInfo(name = KEY_TEXT)
     @SerializedName(NAME_TEXT)
     val text: String,
-
     @ColumnInfo(name = KEY_BUTTON_SIZE)
     @SerializedName(NAME_BUTTON_SIZE)
     val buttonSize: Int,
-
     @ColumnInfo(name = KEY_X)
     @SerializedName(NAME_X)
     val x: Int,
-
     @ColumnInfo(name = KEY_Y)
     @SerializedName(NAME_Y)
     val y: Int,
-
     @ColumnInfo(name = KEY_ORIENTATION)
     @SerializedName(NAME_ORIENTATION)
     val orientation: String,
-
     @ColumnInfo(name = KEY_DISPLAY_WIDTH)
     @SerializedName(NAME_DISPLAY_WIDTH)
     val displayWidth: Int,
-
     @ColumnInfo(name = KEY_DISPLAY_HEIGHT)
     @SerializedName(NAME_DISPLAY_HEIGHT)
     val displayHeight: Int,
-
     @ColumnInfo(name = KEY_BORDER_OPACITY)
     @SerializedName(NAME_BORDER_OPACITY)
     val borderOpacity: Float?,
-
     @ColumnInfo(name = KEY_BACKGROUND_OPACITY)
     @SerializedName(NAME_BACKGROUND_OPACITY)
     val backgroundOpacity: Float?,
-
     @ColumnInfo(name = KEY_SHOW_OVER_STATUS_BAR)
     @SerializedName(NAME_SHOW_OVER_STATUS_BAR)
     val showOverStatusBar: Boolean?,
-
     @ColumnInfo(name = KEY_SHOW_OVER_INPUT_METHOD)
     @SerializedName(NAME_SHOW_OVER_INPUT_METHOD)
     val showOverInputMethod: Boolean?,
-
 ) : Parcelable {
     companion object {
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
@@ -110,36 +97,37 @@ data class FloatingButtonEntity(
         const val NAME_SHOW_OVER_STATUS_BAR = "show_over_status_bar"
         const val NAME_SHOW_OVER_INPUT_METHOD = "show_over_input_method"
 
-        val DESERIALIZER = jsonDeserializer {
-            val uid by it.json.byString(NAME_UID)
-            val layoutUid by it.json.byString(NAME_LAYOUT_UID)
-            val text by it.json.byString(NAME_TEXT)
-            val buttonSize by it.json.byInt(NAME_BUTTON_SIZE)
-            val x by it.json.byInt(NAME_X)
-            val y by it.json.byInt(NAME_Y)
-            val orientation by it.json.byString(NAME_ORIENTATION)
-            val displayWidth by it.json.byInt(NAME_DISPLAY_WIDTH)
-            val displayHeight by it.json.byInt(NAME_DISPLAY_HEIGHT)
-            val borderOpacity by it.json.byNullableFloat(NAME_BORDER_OPACITY)
-            val backgroundOpacity by it.json.byNullableFloat(NAME_BACKGROUND_OPACITY)
-            val showOverStatusBar by it.json.byNullableBool(NAME_SHOW_OVER_STATUS_BAR)
-            val showOverInputMethod by it.json.byNullableBool(NAME_SHOW_OVER_INPUT_METHOD)
+        val DESERIALIZER =
+            jsonDeserializer {
+                val uid by it.json.byString(NAME_UID)
+                val layoutUid by it.json.byString(NAME_LAYOUT_UID)
+                val text by it.json.byString(NAME_TEXT)
+                val buttonSize by it.json.byInt(NAME_BUTTON_SIZE)
+                val x by it.json.byInt(NAME_X)
+                val y by it.json.byInt(NAME_Y)
+                val orientation by it.json.byString(NAME_ORIENTATION)
+                val displayWidth by it.json.byInt(NAME_DISPLAY_WIDTH)
+                val displayHeight by it.json.byInt(NAME_DISPLAY_HEIGHT)
+                val borderOpacity by it.json.byNullableFloat(NAME_BORDER_OPACITY)
+                val backgroundOpacity by it.json.byNullableFloat(NAME_BACKGROUND_OPACITY)
+                val showOverStatusBar by it.json.byNullableBool(NAME_SHOW_OVER_STATUS_BAR)
+                val showOverInputMethod by it.json.byNullableBool(NAME_SHOW_OVER_INPUT_METHOD)
 
-            FloatingButtonEntity(
-                uid = uid,
-                layoutUid = layoutUid,
-                text = text,
-                buttonSize = buttonSize,
-                x = x,
-                y = y,
-                orientation = orientation,
-                displayWidth = displayWidth,
-                displayHeight = displayHeight,
-                borderOpacity = borderOpacity,
-                backgroundOpacity = backgroundOpacity,
-                showOverStatusBar = showOverStatusBar,
-                showOverInputMethod = showOverInputMethod,
-            )
-        }
+                FloatingButtonEntity(
+                    uid = uid,
+                    layoutUid = layoutUid,
+                    text = text,
+                    buttonSize = buttonSize,
+                    x = x,
+                    y = y,
+                    orientation = orientation,
+                    displayWidth = displayWidth,
+                    displayHeight = displayHeight,
+                    borderOpacity = borderOpacity,
+                    backgroundOpacity = backgroundOpacity,
+                    showOverStatusBar = showOverStatusBar,
+                    showOverInputMethod = showOverInputMethod,
+                )
+            }
     }
 }

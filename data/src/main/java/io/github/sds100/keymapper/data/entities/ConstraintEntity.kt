@@ -13,14 +13,11 @@ import java.util.UUID
 data class ConstraintEntity(
     @SerializedName(NAME_TYPE)
     val type: String,
-
     @SerializedName(NAME_EXTRAS)
     val extras: List<EntityExtra>,
-
     @SerializedName(NAME_UID)
     val uid: String,
 ) : Parcelable {
-
     constructor(uid: String, type: String, vararg extra: EntityExtra) : this(
         uid = uid,
         type = type,
@@ -100,20 +97,21 @@ data class ConstraintEntity(
         const val EXTRA_START_TIME = "extra_start_time"
         const val EXTRA_END_TIME = "extra_end_time"
 
-        val DESERIALIZER = jsonDeserializer {
-            val type by it.json.byString(NAME_TYPE)
+        val DESERIALIZER =
+            jsonDeserializer {
+                val type by it.json.byString(NAME_TYPE)
 
-            val extrasJsonArray by it.json.byArray(NAME_EXTRAS)
-            val extraList = it.context.deserialize<List<EntityExtra>>(extrasJsonArray) ?: listOf()
+                val extrasJsonArray by it.json.byArray(NAME_EXTRAS)
+                val extraList = it.context.deserialize<List<EntityExtra>>(extrasJsonArray) ?: listOf()
 
-            // Constraints did not always have UID so this could be null.
-            val uid by it.json.byNullableString(NAME_UID)
+                // Constraints did not always have UID so this could be null.
+                val uid by it.json.byNullableString(NAME_UID)
 
-            ConstraintEntity(
-                uid = uid ?: UUID.randomUUID().toString(),
-                type = type,
-                extras = extraList,
-            )
-        }
+                ConstraintEntity(
+                    uid = uid ?: UUID.randomUUID().toString(),
+                    type = type,
+                    extras = extraList,
+                )
+            }
     }
 }

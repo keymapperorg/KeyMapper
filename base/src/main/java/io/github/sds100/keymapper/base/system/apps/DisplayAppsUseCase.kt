@@ -8,25 +8,42 @@ import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class DisplayAppsUseCaseImpl @Inject constructor(
-    private val adapter: PackageManagerAdapter,
-) : DisplayAppsUseCase {
-    override val installedPackages: Flow<State<List<PackageInfo>>> = adapter.installedPackages
+class DisplayAppsUseCaseImpl
+    @Inject
+    constructor(
+        private val adapter: PackageManagerAdapter,
+    ) : DisplayAppsUseCase {
+        override val installedPackages: Flow<State<List<PackageInfo>>> = adapter.installedPackages
 
-    override fun getAppName(packageName: String): KMResult<String> = adapter.getAppName(packageName)
+        override fun getAppName(packageName: String): KMResult<String> = adapter.getAppName(packageName)
 
-    override fun getAppIcon(packageName: String): KMResult<Drawable> = adapter.getAppIcon(packageName)
+        override fun getAppIcon(packageName: String): KMResult<Drawable> = adapter.getAppIcon(packageName)
 
-    override fun getActivityLabel(packageName: String, activityClass: String): KMResult<String> = adapter.getActivityLabel(packageName, activityClass)
+        override fun getActivityLabel(
+            packageName: String,
+            activityClass: String,
+        ): KMResult<String> = adapter.getActivityLabel(packageName, activityClass)
 
-    override fun getActivityIcon(packageName: String, activityClass: String): KMResult<Drawable?> = adapter.getActivityIcon(packageName, activityClass)
-}
+        override fun getActivityIcon(
+            packageName: String,
+            activityClass: String,
+        ): KMResult<Drawable?> = adapter.getActivityIcon(packageName, activityClass)
+    }
 
 interface DisplayAppsUseCase {
     val installedPackages: Flow<State<List<PackageInfo>>>
 
-    fun getActivityLabel(packageName: String, activityClass: String): KMResult<String>
-    fun getActivityIcon(packageName: String, activityClass: String): KMResult<Drawable?>
+    fun getActivityLabel(
+        packageName: String,
+        activityClass: String,
+    ): KMResult<String>
+
+    fun getActivityIcon(
+        packageName: String,
+        activityClass: String,
+    ): KMResult<Drawable?>
+
     fun getAppName(packageName: String): KMResult<String>
+
     fun getAppIcon(packageName: String): KMResult<Drawable>
 }

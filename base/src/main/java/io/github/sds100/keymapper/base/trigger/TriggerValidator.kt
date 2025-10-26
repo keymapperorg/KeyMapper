@@ -71,29 +71,31 @@ private fun validateParallelTrigger(trigger: Trigger): Trigger {
     // If the trigger is still a parallel trigger then check that all the keys can be
     // pressed at the same time.
     if (newMode is TriggerMode.Parallel) {
-        newKeys = trigger.keys.distinctBy { key ->
-            when (key) {
-                // You can't mix assistant trigger types in a parallel trigger because there is no notion of a "down" key event, which means they can't be pressed at the same time
-                is AssistantTriggerKey, is FingerprintTriggerKey -> 0
-                is FloatingButtonKey -> key.buttonUid
+        newKeys =
+            trigger.keys
+                .distinctBy { key ->
+                    when (key) {
+                        // You can't mix assistant trigger types in a parallel trigger because there is no notion of a "down" key event, which means they can't be pressed at the same time
+                        is AssistantTriggerKey, is FingerprintTriggerKey -> 0
+                        is FloatingButtonKey -> key.buttonUid
 
-                is KeyEventTriggerKey -> {
-                    if (key.detectWithScancode()) {
-                        Pair(key.scanCode, key.device)
-                    } else {
-                        Pair(key.keyCode, key.device)
-                    }
-                }
+                        is KeyEventTriggerKey -> {
+                            if (key.detectWithScancode()) {
+                                Pair(key.scanCode, key.device)
+                            } else {
+                                Pair(key.keyCode, key.device)
+                            }
+                        }
 
-                is EvdevTriggerKey -> {
-                    if (key.detectWithScancode()) {
-                        Pair(key.scanCode, key.device)
-                    } else {
-                        Pair(key.keyCode, key.device)
+                        is EvdevTriggerKey -> {
+                            if (key.detectWithScancode()) {
+                                Pair(key.scanCode, key.device)
+                            } else {
+                                Pair(key.keyCode, key.device)
+                            }
+                        }
                     }
-                }
-            }
-        }.toMutableList()
+                }.toMutableList()
     }
 
     return trigger.copy(mode = newMode, keys = newKeys)

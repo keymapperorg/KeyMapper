@@ -78,81 +78,89 @@ import javax.inject.Singleton
  * the [navigate] function has been observing. The origin view model now has the result.
  */
 @Singleton
-class NavigationProviderImpl @Inject constructor() : NavigationProvider {
-    private val _onNavigate = MutableStateFlow<NavigateEvent?>(null)
-    override val onNavigate = _onNavigate.asStateFlow()
+class NavigationProviderImpl
+    @Inject
+    constructor() : NavigationProvider {
+        private val _onNavigate = MutableStateFlow<NavigateEvent?>(null)
+        override val onNavigate = _onNavigate.asStateFlow()
 
-    private val _onNavResult = MutableStateFlow<NavResult?>(null)
-    override val onNavResult = _onNavResult.asStateFlow()
+        private val _onNavResult = MutableStateFlow<NavResult?>(null)
+        override val onNavResult = _onNavResult.asStateFlow()
 
-    private val _onReturnResult = MutableStateFlow<String?>(null)
-    override val onReturnResult: StateFlow<String?> = _onReturnResult.asStateFlow()
+        private val _onReturnResult = MutableStateFlow<String?>(null)
+        override val onReturnResult: StateFlow<String?> = _onReturnResult.asStateFlow()
 
-    private val _popBackStack = MutableStateFlow<Unit?>(null)
-    val popBackStack: StateFlow<Unit?> = _popBackStack.asStateFlow()
+        private val _popBackStack = MutableStateFlow<Unit?>(null)
+        val popBackStack: StateFlow<Unit?> = _popBackStack.asStateFlow()
 
-    var savedState: SavedState? = null
+        var savedState: SavedState? = null
 
-    fun handledPop() {
-        _popBackStack.update { null }
-    }
+        fun handledPop() {
+            _popBackStack.update { null }
+        }
 
-    override fun handledReturnResult() {
-        _onReturnResult.update { null }
-    }
+        override fun handledReturnResult() {
+            _onReturnResult.update { null }
+        }
 
-    override fun handledNavigateRequest() {
-        _onNavigate.update { null }
-    }
+        override fun handledNavigateRequest() {
+            _onNavigate.update { null }
+        }
 
-    override fun handledNavResult() {
-        _onNavResult.update { null }
-    }
+        override fun handledNavResult() {
+            _onNavResult.update { null }
+        }
 
-    override suspend fun navigate(event: NavigateEvent) {
-        // wait for the view to collect so navigating can happen
-        _onNavigate.subscriptionCount.first { it > 0 }
+        override suspend fun navigate(event: NavigateEvent) {
+            // wait for the view to collect so navigating can happen
+            _onNavigate.subscriptionCount.first { it > 0 }
 
-        Timber.d("Navigation: Navigating to ${event.destination} with key ${event.key}")
+            Timber.d("Navigation: Navigating to ${event.destination} with key ${event.key}")
 
-        withContext(Dispatchers.Main.immediate) {
-            _onNavigate.emit(event)
+            withContext(Dispatchers.Main.immediate) {
+                _onNavigate.emit(event)
+            }
+        }
+
+        override fun onNavResult(result: NavResult) {
+            runBlocking { _onNavResult.emit(result) }
+        }
+
+        override suspend fun popBackStack() {
+            Timber.d("Navigation: Popping back stack")
+            _popBackStack.value = Unit
+        }
+
+        /**
+         * @param jsonData The data in String or JSON format to return.
+         */
+        override suspend fun popBackStackWithResult(jsonData: String) {
+            _onReturnResult.subscriptionCount.first { it > 0 }
+
+            Timber.d("Navigation: Popping back stack with result")
+            _onReturnResult.emit(jsonData)
         }
     }
 
-    override fun onNavResult(result: NavResult) {
-        runBlocking { _onNavResult.emit(result) }
-    }
-
-    override suspend fun popBackStack() {
-        Timber.d("Navigation: Popping back stack")
-        _popBackStack.value = Unit
-    }
-
-    /**
-     * @param jsonData The data in String or JSON format to return.
-     */
-    override suspend fun popBackStackWithResult(jsonData: String) {
-        _onReturnResult.subscriptionCount.first { it > 0 }
-
-        Timber.d("Navigation: Popping back stack with result")
-        _onReturnResult.emit(jsonData)
-    }
-}
-
 interface NavigationProvider {
     val onNavigate: StateFlow<NavigateEvent?>
+
     suspend fun navigate(event: NavigateEvent)
+
     fun handledNavigateRequest()
 
     val onNavResult: StateFlow<NavResult?>
+
     fun onNavResult(result: NavResult)
+
     fun handledNavResult()
 
     val onReturnResult: StateFlow<String?>
+
     fun handledReturnResult()
 
     suspend fun popBackStackWithResult(jsonData: String)
+
     suspend fun popBackStack()
 }
 
@@ -169,8 +177,13 @@ suspend inline fun <reified R> NavigationProvider.navigate(
     Must drop the first value because it came from our call to navigate.
      */
     return merge(
-        onNavigate.drop(1).filterNotNull().dropWhile { it.key != key }.map { null },
-        onNavResult.filterNotNull()
+        onNavigate
+            .drop(1)
+            .filterNotNull()
+            .dropWhile { it.key != key }
+            .map { null },
+        onNavResult
+            .filterNotNull()
             .dropWhile { it.key != key }
             .map { result -> result.data?.let { Json.decodeFromString<R>(it) } },
     ).first()
@@ -267,7 +280,8 @@ fun NavigationProvider.setupFragmentNavigation(fragment: Fragment) {
         )
     }
 
-    fragment.savedStateRegistry.consumeRestoredStateForKey(navigationSavedStateKey)
+    fragment.savedStateRegistry
+        .consumeRestoredStateForKey(navigationSavedStateKey)
         ?.let { bundle ->
             val oldPendingResultsKeys: Array<String> =
                 bundle.getStringArray(pendingResultsKeysExtra)!!
@@ -309,51 +323,60 @@ fun NavigationProvider.setupFragmentNavigation(fragment: Fragment) {
         }.launchIn(fragment.lifecycleScope)
 }
 
-private fun getDirection(destination: NavDestination<*>, requestKey: String): NavDirections {
-    return when (destination) {
-        is NavDestination.ChooseApp -> NavBaseAppDirections.chooseApp(
-            destination.allowHiddenApps,
-            requestKey,
-        )
+private fun getDirection(
+    destination: NavDestination<*>,
+    requestKey: String,
+): NavDirections =
+    when (destination) {
+        is NavDestination.ChooseApp ->
+            NavBaseAppDirections.chooseApp(
+                destination.allowHiddenApps,
+                requestKey,
+            )
 
         NavDestination.ChooseAppShortcut -> NavBaseAppDirections.chooseAppShortcut(requestKey)
         NavDestination.ChooseKeyCode -> NavBaseAppDirections.chooseKeyCode(requestKey)
         is NavDestination.ConfigKeyEventAction -> {
-            val json = destination.action?.let {
-                Json.encodeToString(it)
-            }
+            val json =
+                destination.action?.let {
+                    Json.encodeToString(it)
+                }
 
             NavBaseAppDirections.configKeyEvent(requestKey, json)
         }
 
         is NavDestination.PickCoordinate -> {
-            val json = destination.result?.let {
-                Json.encodeToString(it)
-            }
+            val json =
+                destination.result?.let {
+                    Json.encodeToString(it)
+                }
 
             NavBaseAppDirections.pickDisplayCoordinate(requestKey, json)
         }
 
         is NavDestination.PickSwipeCoordinate -> {
-            val json = destination.result?.let {
-                Json.encodeToString(it)
-            }
+            val json =
+                destination.result?.let {
+                    Json.encodeToString(it)
+                }
 
             NavBaseAppDirections.swipePickDisplayCoordinate(requestKey, json)
         }
 
         is NavDestination.PickPinchCoordinate -> {
-            val json = destination.result?.let {
-                Json.encodeToString(it)
-            }
+            val json =
+                destination.result?.let {
+                    Json.encodeToString(it)
+                }
 
             NavBaseAppDirections.pinchPickDisplayCoordinate(requestKey, json)
         }
 
         is NavDestination.ConfigIntent -> {
-            val json = destination.result?.let {
-                Json.encodeToString(it)
-            }
+            val json =
+                destination.result?.let {
+                    Json.encodeToString(it)
+                }
 
             NavBaseAppDirections.configIntent(requestKey, json)
         }
@@ -361,15 +384,15 @@ private fun getDirection(destination: NavDestination<*>, requestKey: String): Na
         is NavDestination.ChooseActivity -> NavBaseAppDirections.chooseActivity(requestKey)
         is NavDestination.ChooseSound -> NavBaseAppDirections.chooseSoundFile(requestKey)
 
-        is NavDestination.ChooseBluetoothDevice -> NavBaseAppDirections.chooseBluetoothDevice(
-            requestKey,
-        )
+        is NavDestination.ChooseBluetoothDevice ->
+            NavBaseAppDirections.chooseBluetoothDevice(
+                requestKey,
+            )
 
         NavDestination.About -> NavBaseAppDirections.actionGlobalAboutFragment()
 
         else -> throw IllegalArgumentException("Can not find a direction for this destination: $destination")
     }
-}
 
 fun NavigationProvider.sendNavResultFromBundle(
     requestKey: String,

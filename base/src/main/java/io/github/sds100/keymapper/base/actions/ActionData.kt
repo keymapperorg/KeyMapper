@@ -25,10 +25,11 @@ sealed class ActionData : Comparable<ActionData> {
     ) : ActionData() {
         override val id: ActionId = ActionId.APP
 
-        override fun compareTo(other: ActionData) = when (other) {
-            is App -> packageName.compareTo(other.packageName)
-            else -> super.compareTo(other)
-        }
+        override fun compareTo(other: ActionData) =
+            when (other) {
+                is App -> packageName.compareTo(other.packageName)
+                else -> super.compareTo(other)
+            }
     }
 
     @Serializable
@@ -39,10 +40,11 @@ sealed class ActionData : Comparable<ActionData> {
     ) : ActionData() {
         override val id: ActionId = ActionId.APP_SHORTCUT
 
-        override fun compareTo(other: ActionData) = when (other) {
-            is AppShortcut -> shortcutTitle.compareTo(other.shortcutTitle)
-            else -> super.compareTo(other)
-        }
+        override fun compareTo(other: ActionData) =
+            when (other) {
+                is AppShortcut -> shortcutTitle.compareTo(other.shortcutTitle)
+                else -> super.compareTo(other)
+            }
     }
 
     @Serializable
@@ -51,7 +53,6 @@ sealed class ActionData : Comparable<ActionData> {
         val metaState: Int = 0,
         val device: Device? = null,
     ) : ActionData() {
-
         override val id: ActionId = ActionId.KEY_EVENT
 
         @Serializable
@@ -60,10 +61,11 @@ sealed class ActionData : Comparable<ActionData> {
             val name: String,
         )
 
-        override fun compareTo(other: ActionData) = when (other) {
-            is InputKeyEvent -> keyCode.compareTo(other.keyCode)
-            else -> super.compareTo(other)
-        }
+        override fun compareTo(other: ActionData) =
+            when (other) {
+                is InputKeyEvent -> keyCode.compareTo(other.keyCode)
+                else -> super.compareTo(other)
+            }
     }
 
     @Serializable
@@ -75,24 +77,22 @@ sealed class ActionData : Comparable<ActionData> {
             val soundUid: String,
             val soundDescription: String,
         ) : Sound() {
-            override fun compareTo(other: ActionData): Int {
-                return when (other) {
+            override fun compareTo(other: ActionData): Int =
+                when (other) {
                     is SoundFile -> soundUid.compareTo(other.soundUid)
                     else -> super.compareTo(other)
                 }
-            }
         }
 
         @Serializable
         data class Ringtone(
             val uri: String,
         ) : Sound() {
-            override fun compareTo(other: ActionData): Int {
-                return when (other) {
+            override fun compareTo(other: ActionData): Int =
+                when (other) {
                     is Ringtone -> uri.compareTo(other.uri)
                     else -> super.compareTo(other)
                 }
-            }
         }
     }
 
@@ -105,15 +105,17 @@ sealed class ActionData : Comparable<ActionData> {
         ) : Volume() {
             override val id = ActionId.VOLUME_UP
 
-            override fun compareTo(other: ActionData) = when (other) {
-                is Up -> compareValuesBy(
-                    this,
-                    other,
-                    { it.showVolumeUi },
-                    { it.volumeStream },
-                )
-                else -> super.compareTo(other)
-            }
+            override fun compareTo(other: ActionData) =
+                when (other) {
+                    is Up ->
+                        compareValuesBy(
+                            this,
+                            other,
+                            { it.showVolumeUi },
+                            { it.volumeStream },
+                        )
+                    else -> super.compareTo(other)
+                }
         }
 
         @Serializable
@@ -123,29 +125,37 @@ sealed class ActionData : Comparable<ActionData> {
         ) : Volume() {
             override val id = ActionId.VOLUME_DOWN
 
-            override fun compareTo(other: ActionData) = when (other) {
-                is Down -> compareValuesBy(
-                    this,
-                    other,
-                    { it.showVolumeUi },
-                    { it.volumeStream },
-                )
-                else -> super.compareTo(other)
-            }
+            override fun compareTo(other: ActionData) =
+                when (other) {
+                    is Down ->
+                        compareValuesBy(
+                            this,
+                            other,
+                            { it.showVolumeUi },
+                            { it.volumeStream },
+                        )
+                    else -> super.compareTo(other)
+                }
         }
 
         @Serializable
-        data class Mute(val showVolumeUi: Boolean) : Volume() {
+        data class Mute(
+            val showVolumeUi: Boolean,
+        ) : Volume() {
             override val id = ActionId.VOLUME_MUTE
         }
 
         @Serializable
-        data class UnMute(val showVolumeUi: Boolean) : Volume() {
+        data class UnMute(
+            val showVolumeUi: Boolean,
+        ) : Volume() {
             override val id = ActionId.VOLUME_UNMUTE
         }
 
         @Serializable
-        data class ToggleMute(val showVolumeUi: Boolean) : Volume() {
+        data class ToggleMute(
+            val showVolumeUi: Boolean,
+        ) : Volume() {
             override val id = ActionId.VOLUME_TOGGLE_MUTE
         }
 
@@ -155,10 +165,11 @@ sealed class ActionData : Comparable<ActionData> {
         ) : Volume() {
             override val id: ActionId = ActionId.CHANGE_RINGER_MODE
 
-            override fun compareTo(other: ActionData) = when (other) {
-                is SetRingerMode -> ringerMode.compareTo(other.ringerMode)
-                else -> super.compareTo(other)
-            }
+            override fun compareTo(other: ActionData) =
+                when (other) {
+                    is SetRingerMode -> ringerMode.compareTo(other.ringerMode)
+                    else -> super.compareTo(other)
+                }
         }
 
         @Serializable
@@ -199,16 +210,18 @@ sealed class ActionData : Comparable<ActionData> {
     sealed class Flashlight : ActionData() {
         abstract val lens: CameraLens
 
-        override fun compareTo(other: ActionData) = when (other) {
-            is Flashlight -> compareValuesBy(
-                this,
-                other,
-                { it.id },
-                { it.lens },
-            )
+        override fun compareTo(other: ActionData) =
+            when (other) {
+                is Flashlight ->
+                    compareValuesBy(
+                        this,
+                        other,
+                        { it.id },
+                        { it.lens },
+                    )
 
-            else -> super.compareTo(other)
-        }
+                else -> super.compareTo(other)
+            }
 
         @Serializable
         data class Toggle(
@@ -237,7 +250,9 @@ sealed class ActionData : Comparable<ActionData> {
         }
 
         @Serializable
-        data class Disable(override val lens: CameraLens) : Flashlight() {
+        data class Disable(
+            override val lens: CameraLens,
+        ) : Flashlight() {
             override val id = ActionId.DISABLE_FLASHLIGHT
         }
 
@@ -260,33 +275,39 @@ sealed class ActionData : Comparable<ActionData> {
     ) : ActionData() {
         override val id = ActionId.SWITCH_KEYBOARD
 
-        override fun compareTo(other: ActionData) = when (other) {
-            is SwitchKeyboard -> savedImeName.compareTo(other.savedImeName)
-            else -> super.compareTo(other)
-        }
+        override fun compareTo(other: ActionData) =
+            when (other) {
+                is SwitchKeyboard -> savedImeName.compareTo(other.savedImeName)
+                else -> super.compareTo(other)
+            }
     }
 
     @Serializable
     sealed class DoNotDisturb : ActionData() {
-
         @Serializable
-        data class Toggle(val dndMode: DndMode) : DoNotDisturb() {
+        data class Toggle(
+            val dndMode: DndMode,
+        ) : DoNotDisturb() {
             override val id: ActionId = ActionId.TOGGLE_DND_MODE
 
-            override fun compareTo(other: ActionData) = when (other) {
-                is Toggle -> dndMode.compareTo(other.dndMode)
-                else -> super.compareTo(other)
-            }
+            override fun compareTo(other: ActionData) =
+                when (other) {
+                    is Toggle -> dndMode.compareTo(other.dndMode)
+                    else -> super.compareTo(other)
+                }
         }
 
         @Serializable
-        data class Enable(val dndMode: DndMode) : DoNotDisturb() {
+        data class Enable(
+            val dndMode: DndMode,
+        ) : DoNotDisturb() {
             override val id: ActionId = ActionId.ENABLE_DND_MODE
 
-            override fun compareTo(other: ActionData) = when (other) {
-                is Enable -> dndMode.compareTo(other.dndMode)
-                else -> super.compareTo(other)
-            }
+            override fun compareTo(other: ActionData) =
+                when (other) {
+                    is Enable -> dndMode.compareTo(other.dndMode)
+                    else -> super.compareTo(other)
+                }
         }
 
         @Serializable
@@ -333,15 +354,18 @@ sealed class ActionData : Comparable<ActionData> {
         ) : Rotation() {
             override val id = ActionId.CYCLE_ROTATIONS
 
-            override fun compareTo(other: ActionData) = when (other) {
-                // Compare orientations one by one until a difference is found otherwise compare the size
-                is CycleRotations -> orientations.zip(other.orientations)
-                    .map { (a, b) -> a.compareTo(b) }
-                    .firstOrNull { it != 0 }
-                    ?: orientations.size.compareTo(other.orientations.size)
+            override fun compareTo(other: ActionData) =
+                when (other) {
+                    // Compare orientations one by one until a difference is found otherwise compare the size
+                    is CycleRotations ->
+                        orientations
+                            .zip(other.orientations)
+                            .map { (a, b) -> a.compareTo(b) }
+                            .firstOrNull { it != 0 }
+                            ?: orientations.size.compareTo(other.orientations.size)
 
-                else -> super.compareTo(other)
-            }
+                    else -> super.compareTo(other)
+                }
         }
     }
 
@@ -349,64 +373,86 @@ sealed class ActionData : Comparable<ActionData> {
     sealed class ControlMediaForApp : ActionData() {
         abstract val packageName: String
 
-        override fun compareTo(other: ActionData) = when (other) {
-            is ControlMediaForApp -> compareValuesBy(
-                this,
-                other,
-                { it.id },
-                { it.packageName },
-            )
+        override fun compareTo(other: ActionData) =
+            when (other) {
+                is ControlMediaForApp ->
+                    compareValuesBy(
+                        this,
+                        other,
+                        { it.id },
+                        { it.packageName },
+                    )
 
-            else -> super.compareTo(other)
-        }
+                else -> super.compareTo(other)
+            }
 
         @Serializable
-        data class Pause(override val packageName: String) : ControlMediaForApp() {
+        data class Pause(
+            override val packageName: String,
+        ) : ControlMediaForApp() {
             override val id = ActionId.PAUSE_MEDIA_PACKAGE
         }
 
         @Serializable
-        data class Play(override val packageName: String) : ControlMediaForApp() {
+        data class Play(
+            override val packageName: String,
+        ) : ControlMediaForApp() {
             override val id = ActionId.PLAY_MEDIA_PACKAGE
         }
 
         @Serializable
-        data class PlayPause(override val packageName: String) : ControlMediaForApp() {
+        data class PlayPause(
+            override val packageName: String,
+        ) : ControlMediaForApp() {
             override val id = ActionId.PLAY_PAUSE_MEDIA_PACKAGE
         }
 
         @Serializable
-        data class NextTrack(override val packageName: String) : ControlMediaForApp() {
+        data class NextTrack(
+            override val packageName: String,
+        ) : ControlMediaForApp() {
             override val id = ActionId.NEXT_TRACK_PACKAGE
         }
 
         @Serializable
-        data class PreviousTrack(override val packageName: String) : ControlMediaForApp() {
+        data class PreviousTrack(
+            override val packageName: String,
+        ) : ControlMediaForApp() {
             override val id = ActionId.PREVIOUS_TRACK_PACKAGE
         }
 
         @Serializable
-        data class FastForward(override val packageName: String) : ControlMediaForApp() {
+        data class FastForward(
+            override val packageName: String,
+        ) : ControlMediaForApp() {
             override val id = ActionId.FAST_FORWARD_PACKAGE
         }
 
         @Serializable
-        data class Rewind(override val packageName: String) : ControlMediaForApp() {
+        data class Rewind(
+            override val packageName: String,
+        ) : ControlMediaForApp() {
             override val id = ActionId.REWIND_PACKAGE
         }
 
         @Serializable
-        data class Stop(override val packageName: String) : ControlMediaForApp() {
+        data class Stop(
+            override val packageName: String,
+        ) : ControlMediaForApp() {
             override val id = ActionId.STOP_MEDIA_PACKAGE
         }
 
         @Serializable
-        data class StepForward(override val packageName: String) : ControlMediaForApp() {
+        data class StepForward(
+            override val packageName: String,
+        ) : ControlMediaForApp() {
             override val id = ActionId.STEP_FORWARD_PACKAGE
         }
 
         @Serializable
-        data class StepBackward(override val packageName: String) : ControlMediaForApp() {
+        data class StepBackward(
+            override val packageName: String,
+        ) : ControlMediaForApp() {
             override val id = ActionId.STEP_BACKWARD_PACKAGE
         }
     }
@@ -473,10 +519,11 @@ sealed class ActionData : Comparable<ActionData> {
     ) : ActionData() {
         override val id = ActionId.INTENT
 
-        override fun compareTo(other: ActionData) = when (other) {
-            is Intent -> description.compareTo(other.description)
-            else -> super.compareTo(other)
-        }
+        override fun compareTo(other: ActionData) =
+            when (other) {
+                is Intent -> description.compareTo(other.description)
+                else -> super.compareTo(other)
+            }
     }
 
     @Serializable
@@ -487,17 +534,19 @@ sealed class ActionData : Comparable<ActionData> {
     ) : ActionData() {
         override val id = ActionId.TAP_SCREEN
 
-        override fun compareTo(other: ActionData) = when (other) {
-            is TapScreen -> compareValuesBy(
-                this,
-                other,
-                { it.description },
-                { it.x },
-                { it.y },
-            )
+        override fun compareTo(other: ActionData) =
+            when (other) {
+                is TapScreen ->
+                    compareValuesBy(
+                        this,
+                        other,
+                        { it.description },
+                        { it.x },
+                        { it.y },
+                    )
 
-            else -> super.compareTo(other)
-        }
+                else -> super.compareTo(other)
+            }
     }
 
     @Serializable
@@ -512,21 +561,23 @@ sealed class ActionData : Comparable<ActionData> {
     ) : ActionData() {
         override val id = ActionId.SWIPE_SCREEN
 
-        override fun compareTo(other: ActionData) = when (other) {
-            is SwipeScreen -> compareValuesBy(
-                this,
-                other,
-                { it.description },
-                { it.fingerCount },
-                { it.xStart },
-                { it.yStart },
-                { it.xEnd },
-                { it.yEnd },
-                { it.duration },
-            )
+        override fun compareTo(other: ActionData) =
+            when (other) {
+                is SwipeScreen ->
+                    compareValuesBy(
+                        this,
+                        other,
+                        { it.description },
+                        { it.fingerCount },
+                        { it.xStart },
+                        { it.yStart },
+                        { it.xEnd },
+                        { it.yEnd },
+                        { it.duration },
+                    )
 
-            else -> super.compareTo(other)
-        }
+                else -> super.compareTo(other)
+            }
     }
 
     @Serializable
@@ -541,21 +592,23 @@ sealed class ActionData : Comparable<ActionData> {
     ) : ActionData() {
         override val id = ActionId.PINCH_SCREEN
 
-        override fun compareTo(other: ActionData) = when (other) {
-            is PinchScreen -> compareValuesBy(
-                this,
-                other,
-                { it.description },
-                { it.pinchType },
-                { it.fingerCount },
-                { it.x },
-                { it.y },
-                { it.distance },
-                { it.duration },
-            )
+        override fun compareTo(other: ActionData) =
+            when (other) {
+                is PinchScreen ->
+                    compareValuesBy(
+                        this,
+                        other,
+                        { it.description },
+                        { it.pinchType },
+                        { it.fingerCount },
+                        { it.x },
+                        { it.y },
+                        { it.distance },
+                        { it.duration },
+                    )
 
-            else -> super.compareTo(other)
-        }
+                else -> super.compareTo(other)
+            }
     }
 
     @Serializable
@@ -564,10 +617,11 @@ sealed class ActionData : Comparable<ActionData> {
     ) : ActionData() {
         override val id = ActionId.PHONE_CALL
 
-        override fun compareTo(other: ActionData) = when (other) {
-            is PhoneCall -> number.compareTo(other.number)
-            else -> super.compareTo(other)
-        }
+        override fun compareTo(other: ActionData) =
+            when (other) {
+                is PhoneCall -> number.compareTo(other.number)
+                else -> super.compareTo(other)
+            }
     }
 
     @Serializable
@@ -577,10 +631,11 @@ sealed class ActionData : Comparable<ActionData> {
     ) : ActionData() {
         override val id = ActionId.SEND_SMS
 
-        override fun compareTo(other: ActionData) = when (other) {
-            is SendSms -> compareValuesBy(this, other, { it.number }, { it.message })
-            else -> super.compareTo(other)
-        }
+        override fun compareTo(other: ActionData) =
+            when (other) {
+                is SendSms -> compareValuesBy(this, other, { it.number }, { it.message })
+                else -> super.compareTo(other)
+            }
     }
 
     @Serializable
@@ -590,10 +645,11 @@ sealed class ActionData : Comparable<ActionData> {
     ) : ActionData() {
         override val id = ActionId.COMPOSE_SMS
 
-        override fun compareTo(other: ActionData) = when (other) {
-            is ComposeSms -> compareValuesBy(this, other, { it.number }, { it.message })
-            else -> super.compareTo(other)
-        }
+        override fun compareTo(other: ActionData) =
+            when (other) {
+                is ComposeSms -> compareValuesBy(this, other, { it.number }, { it.message })
+                else -> super.compareTo(other)
+            }
     }
 
     @Serializable
@@ -602,10 +658,11 @@ sealed class ActionData : Comparable<ActionData> {
     ) : ActionData() {
         override val id = ActionId.URL
 
-        override fun compareTo(other: ActionData) = when (other) {
-            is Url -> url.compareTo(other.url)
-            else -> super.compareTo(other)
-        }
+        override fun compareTo(other: ActionData) =
+            when (other) {
+                is Url -> url.compareTo(other.url)
+                else -> super.compareTo(other)
+            }
     }
 
     @Serializable
@@ -614,10 +671,11 @@ sealed class ActionData : Comparable<ActionData> {
     ) : ActionData() {
         override val id = ActionId.TEXT
 
-        override fun compareTo(other: ActionData) = when (other) {
-            is Text -> text.compareTo(other.text)
-            else -> super.compareTo(other)
-        }
+        override fun compareTo(other: ActionData) =
+            when (other) {
+                is Text -> text.compareTo(other.text)
+                else -> super.compareTo(other)
+            }
     }
 
     @Serializable
@@ -802,7 +860,10 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
-    data class MoveCursor(val moveType: Type, val direction: Direction) : ActionData() {
+    data class MoveCursor(
+        val moveType: Type,
+        val direction: Direction,
+    ) : ActionData() {
         override val id = ActionId.MOVE_CURSOR
 
         enum class Type {

@@ -8,7 +8,9 @@ sealed class TriggerMode : Comparable<TriggerMode> {
     override fun compareTo(other: TriggerMode) = this.javaClass.name.compareTo(other.javaClass.name)
 
     @Serializable
-    data class Parallel(val clickType: ClickType) : TriggerMode() {
+    data class Parallel(
+        val clickType: ClickType,
+    ) : TriggerMode() {
         override fun compareTo(other: TriggerMode): Int {
             if (other !is Parallel) {
                 return super.compareTo(other)
@@ -24,9 +26,10 @@ sealed class TriggerMode : Comparable<TriggerMode> {
     @Serializable
     object Undefined : TriggerMode()
 
-    override fun toString(): String = when (this) {
-        is Parallel -> Parallel(clickType).toString()
-        Sequence -> "Sequence"
-        Undefined -> "Undefined"
-    }
+    override fun toString(): String =
+        when (this) {
+            is Parallel -> Parallel(clickType).toString()
+            Sequence -> "Sequence"
+            Undefined -> "Undefined"
+        }
 }

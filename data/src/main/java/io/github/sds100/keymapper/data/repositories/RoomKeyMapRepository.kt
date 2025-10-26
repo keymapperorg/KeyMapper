@@ -24,141 +24,142 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RoomKeyMapRepository @Inject constructor(
-    private val keyMapDao: KeyMapDao,
-    private val fingerprintMapDao: FingerprintMapDao,
-    private val coroutineScope: CoroutineScope,
-    private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
-) : KeyMapRepository {
-
-    companion object {
-        private const val MAX_KEY_MAP_BATCH_SIZE = 200
-    }
-
-    override val keyMapList: StateFlow<State<List<KeyMapEntity>>> = keyMapDao.getAll()
-        .map { State.Data(it) }
-        .flowOn(dispatchers.io())
-        .stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
-
-    init {
-        coroutineScope.launch {
-            migrateFingerprintMaps()
+class RoomKeyMapRepository
+    @Inject
+    constructor(
+        private val keyMapDao: KeyMapDao,
+        private val fingerprintMapDao: FingerprintMapDao,
+        private val coroutineScope: CoroutineScope,
+        private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
+    ) : KeyMapRepository {
+        companion object {
+            private const val MAX_KEY_MAP_BATCH_SIZE = 200
         }
-    }
 
-    override fun getAll(): Flow<List<KeyMapEntity>> {
-        return keyMapDao.getAll().flowOn(dispatchers.io())
-    }
+        override val keyMapList: StateFlow<State<List<KeyMapEntity>>> =
+            keyMapDao
+                .getAll()
+                .map { State.Data(it) }
+                .flowOn(dispatchers.io())
+                .stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
 
-    override fun getByGroup(groupUid: String?): Flow<List<KeyMapEntity>> {
-        return keyMapDao.getByGroup(groupUid).flowOn(dispatchers.io())
-    }
-
-    override fun insert(vararg keyMap: KeyMapEntity) {
-        coroutineScope.launch(dispatchers.io()) {
-            for (it in keyMap.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
-                keyMapDao.insert(*it)
+        init {
+            coroutineScope.launch {
+                migrateFingerprintMaps()
             }
         }
-    }
 
-    override suspend fun deleteAll() {
-        withContext(dispatchers.io()) {
-            keyMapDao.deleteAll()
-        }
-    }
+        override fun getAll(): Flow<List<KeyMapEntity>> = keyMapDao.getAll().flowOn(dispatchers.io())
 
-    override fun update(vararg keyMap: KeyMapEntity) {
-        coroutineScope.launch(dispatchers.io()) {
-            for (it in keyMap.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
-                keyMapDao.update(*it)
-            }
-        }
-    }
+        override fun getByGroup(groupUid: String?): Flow<List<KeyMapEntity>> = keyMapDao.getByGroup(groupUid).flowOn(dispatchers.io())
 
-    override suspend fun get(uid: String): KeyMapEntity? = keyMapDao.getByUid(uid)
-
-    override fun delete(vararg uid: String) {
-        coroutineScope.launch(dispatchers.io()) {
-            for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
-                keyMapDao.deleteById(*it)
-            }
-        }
-    }
-
-    override fun duplicate(vararg uid: String) {
-        coroutineScope.launch(dispatchers.io()) {
-            for (uidBatch in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
-                val keymaps = mutableListOf<KeyMapEntity>()
-
-                for (keyMapUid in uidBatch) {
-                    val keymap = get(keyMapUid) ?: continue
-                    keymaps.add(keymap.copy(id = 0, uid = UUID.randomUUID().toString()))
+        override fun insert(vararg keyMap: KeyMapEntity) {
+            coroutineScope.launch(dispatchers.io()) {
+                for (it in keyMap.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
+                    keyMapDao.insert(*it)
                 }
-
-                keyMapDao.insert(*keymaps.toTypedArray())
             }
         }
-    }
 
-    override fun enableById(vararg uid: String) {
-        coroutineScope.launch(dispatchers.io()) {
-            for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
-                keyMapDao.enableKeyMapByUid(*it)
+        override suspend fun deleteAll() {
+            withContext(dispatchers.io()) {
+                keyMapDao.deleteAll()
             }
         }
-    }
 
-    override fun enableByGroup(groupUid: String?) {
-        coroutineScope.launch(dispatchers.io()) {
-            keyMapDao.enableKeyMapByGroup(groupUid)
-        }
-    }
-
-    override fun disableByGroup(groupUid: String?) {
-        coroutineScope.launch(dispatchers.io()) {
-            keyMapDao.disableKeyMapByGroup(groupUid)
-        }
-    }
-
-    override fun disableById(vararg uid: String) {
-        coroutineScope.launch(dispatchers.io()) {
-            for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
-                keyMapDao.disableKeyMapByUid(*it)
+        override fun update(vararg keyMap: KeyMapEntity) {
+            coroutineScope.launch(dispatchers.io()) {
+                for (it in keyMap.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
+                    keyMapDao.update(*it)
+                }
             }
         }
-    }
 
-    override fun toggleById(vararg uid: String) {
-        coroutineScope.launch(dispatchers.io()) {
-            for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
-                keyMapDao.toggleKeyMapByUid(*it)
+        override suspend fun get(uid: String): KeyMapEntity? = keyMapDao.getByUid(uid)
+
+        override fun delete(vararg uid: String) {
+            coroutineScope.launch(dispatchers.io()) {
+                for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
+                    keyMapDao.deleteById(*it)
+                }
             }
         }
-    }
 
-    override fun moveToGroup(groupUid: String?, vararg uid: String) {
-        coroutineScope.launch {
-            for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
-                keyMapDao.setKeyMapGroup(groupUid, *it)
+        override fun duplicate(vararg uid: String) {
+            coroutineScope.launch(dispatchers.io()) {
+                for (uidBatch in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
+                    val keymaps = mutableListOf<KeyMapEntity>()
+
+                    for (keyMapUid in uidBatch) {
+                        val keymap = get(keyMapUid) ?: continue
+                        keymaps.add(keymap.copy(id = 0, uid = UUID.randomUUID().toString()))
+                    }
+
+                    keyMapDao.insert(*keymaps.toTypedArray())
+                }
             }
         }
-    }
 
-    override fun count(): Flow<Int> {
-        return keyMapDao.count().flowOn(dispatchers.io())
-    }
-
-    private suspend fun migrateFingerprintMaps() = withContext(dispatchers.io()) {
-        val entities = fingerprintMapDao.getAll().first()
-
-        for (entity in entities) {
-            val keyMapEntity = FingerprintToKeyMapMigration.migrate(entity) ?: continue
-            keyMapDao.insert(keyMapEntity)
-
-            val migratedFingerprintMapEntity =
-                entity.copy(flags = entity.flags or FingerprintMapEntity.FLAG_MIGRATED_TO_KEY_MAP)
-            fingerprintMapDao.update(migratedFingerprintMapEntity)
+        override fun enableById(vararg uid: String) {
+            coroutineScope.launch(dispatchers.io()) {
+                for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
+                    keyMapDao.enableKeyMapByUid(*it)
+                }
+            }
         }
+
+        override fun enableByGroup(groupUid: String?) {
+            coroutineScope.launch(dispatchers.io()) {
+                keyMapDao.enableKeyMapByGroup(groupUid)
+            }
+        }
+
+        override fun disableByGroup(groupUid: String?) {
+            coroutineScope.launch(dispatchers.io()) {
+                keyMapDao.disableKeyMapByGroup(groupUid)
+            }
+        }
+
+        override fun disableById(vararg uid: String) {
+            coroutineScope.launch(dispatchers.io()) {
+                for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
+                    keyMapDao.disableKeyMapByUid(*it)
+                }
+            }
+        }
+
+        override fun toggleById(vararg uid: String) {
+            coroutineScope.launch(dispatchers.io()) {
+                for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
+                    keyMapDao.toggleKeyMapByUid(*it)
+                }
+            }
+        }
+
+        override fun moveToGroup(
+            groupUid: String?,
+            vararg uid: String,
+        ) {
+            coroutineScope.launch {
+                for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
+                    keyMapDao.setKeyMapGroup(groupUid, *it)
+                }
+            }
+        }
+
+        override fun count(): Flow<Int> = keyMapDao.count().flowOn(dispatchers.io())
+
+        private suspend fun migrateFingerprintMaps() =
+            withContext(dispatchers.io()) {
+                val entities = fingerprintMapDao.getAll().first()
+
+                for (entity in entities) {
+                    val keyMapEntity = FingerprintToKeyMapMigration.migrate(entity) ?: continue
+                    keyMapDao.insert(keyMapEntity)
+
+                    val migratedFingerprintMapEntity =
+                        entity.copy(flags = entity.flags or FingerprintMapEntity.FLAG_MIGRATED_TO_KEY_MAP)
+                    fingerprintMapDao.update(migratedFingerprintMapEntity)
+                }
+            }
     }
-}

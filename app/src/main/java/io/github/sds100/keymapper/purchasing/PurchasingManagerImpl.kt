@@ -14,21 +14,13 @@ class PurchasingManagerImpl : PurchasingManager {
     override val purchases: Flow<State<KMResult<Set<ProductId>>>> =
         MutableStateFlow(State.Data(PurchasingError.PurchasingNotImplemented))
 
-    override suspend fun launchPurchasingFlow(product: ProductId): KMResult<Unit> {
-        return PurchasingError.PurchasingNotImplemented
-    }
+    override suspend fun launchPurchasingFlow(product: ProductId): KMResult<Unit> = PurchasingError.PurchasingNotImplemented
 
-    override suspend fun getProductPrice(product: ProductId): KMResult<String> {
-        return PurchasingError.PurchasingNotImplemented
-    }
+    override suspend fun getProductPrice(product: ProductId): KMResult<String> = PurchasingError.PurchasingNotImplemented
 
-    override suspend fun isPurchased(product: ProductId): KMResult<Boolean> {
-        return PurchasingError.PurchasingNotImplemented
-    }
+    override suspend fun isPurchased(product: ProductId): KMResult<Boolean> = PurchasingError.PurchasingNotImplemented
 
-    override suspend fun getMetadata(): KMResult<Map<String, Any>> {
-        return PurchasingError.PurchasingNotImplemented
-    }
+    override suspend fun getMetadata(): KMResult<Map<String, Any>> = PurchasingError.PurchasingNotImplemented
 
     override fun refresh() {}
 }

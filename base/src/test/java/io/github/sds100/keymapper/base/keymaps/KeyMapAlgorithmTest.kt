@@ -77,56 +77,62 @@ import org.mockito.kotlin.whenever
 @ExperimentalCoroutinesApi
 @RunWith(JUnitParamsRunner::class)
 class KeyMapAlgorithmTest {
-
     companion object {
         private const val FAKE_KEYBOARD_DEVICE_ID = 123
         private const val FAKE_KEYBOARD_DESCRIPTOR = "fake_keyboard"
-        private val FAKE_KEYBOARD_TRIGGER_KEY_DEVICE = KeyEventTriggerDevice.External(
-            descriptor = FAKE_KEYBOARD_DESCRIPTOR,
-            name = "Fake Keyboard",
-        )
-        private val FAKE_INTERNAL_DEVICE = InputDeviceInfo(
-            descriptor = "volume_keys",
-            name = "Volume keys",
-            id = 0,
-            isExternal = false,
-            isGameController = false,
-            sources = InputDevice.SOURCE_UNKNOWN,
-        )
+        private val FAKE_KEYBOARD_TRIGGER_KEY_DEVICE =
+            KeyEventTriggerDevice.External(
+                descriptor = FAKE_KEYBOARD_DESCRIPTOR,
+                name = "Fake Keyboard",
+            )
+        private val FAKE_INTERNAL_DEVICE =
+            InputDeviceInfo(
+                descriptor = "volume_keys",
+                name = "Volume keys",
+                id = 0,
+                isExternal = false,
+                isGameController = false,
+                sources = InputDevice.SOURCE_UNKNOWN,
+            )
 
         private const val FAKE_HEADPHONE_DESCRIPTOR = "fake_headphone"
-        private val FAKE_HEADPHONE_TRIGGER_KEY_DEVICE = KeyEventTriggerDevice.External(
-            descriptor = FAKE_HEADPHONE_DESCRIPTOR,
-            name = "Fake Headphones",
-        )
+        private val FAKE_HEADPHONE_TRIGGER_KEY_DEVICE =
+            KeyEventTriggerDevice.External(
+                descriptor = FAKE_HEADPHONE_DESCRIPTOR,
+                name = "Fake Headphones",
+            )
 
         private const val FAKE_CONTROLLER_DESCRIPTOR = "fake_controller"
-        private val FAKE_CONTROLLER_TRIGGER_KEY_DEVICE = KeyEventTriggerDevice.External(
-            descriptor = FAKE_CONTROLLER_DESCRIPTOR,
-            name = "Fake Controller",
-        )
-        private val FAKE_CONTROLLER_INPUT_DEVICE = InputDeviceInfo(
-            descriptor = FAKE_CONTROLLER_DESCRIPTOR,
-            name = "Fake Controller",
-            id = 1,
-            isExternal = true,
-            isGameController = true,
-            sources = InputDevice.SOURCE_GAMEPAD,
-        )
+        private val FAKE_CONTROLLER_TRIGGER_KEY_DEVICE =
+            KeyEventTriggerDevice.External(
+                descriptor = FAKE_CONTROLLER_DESCRIPTOR,
+                name = "Fake Controller",
+            )
+        private val FAKE_CONTROLLER_INPUT_DEVICE =
+            InputDeviceInfo(
+                descriptor = FAKE_CONTROLLER_DESCRIPTOR,
+                name = "Fake Controller",
+                id = 1,
+                isExternal = true,
+                isGameController = true,
+                sources = InputDevice.SOURCE_GAMEPAD,
+            )
 
-        private val FAKE_CONTROLLER_EVDEV_DEVICE = EvdevDeviceInfo(
-            name = "Fake Controller",
-            bus = 1,
-            vendor = 2,
-            product = 1,
-        )
+        private val FAKE_CONTROLLER_EVDEV_DEVICE =
+            EvdevDeviceInfo(
+                name = "Fake Controller",
+                bus = 1,
+                vendor = 2,
+                product = 1,
+            )
 
-        private val FAKE_VOLUME_EVDEV_DEVICE = EvdevDeviceInfo(
-            name = "Volume Keys",
-            bus = 0,
-            vendor = 1,
-            product = 2,
-        )
+        private val FAKE_VOLUME_EVDEV_DEVICE =
+            EvdevDeviceInfo(
+                name = "Volume Keys",
+                bus = 0,
+                vendor = 1,
+                product = 2,
+            )
 
         private const val FAKE_PACKAGE_NAME = "test_package"
 
@@ -139,13 +145,15 @@ class KeyMapAlgorithmTest {
         private const val VIBRATION_DURATION = 100L
         private const val HOLD_DOWN_DURATION = 1000L
 
-        private val TEST_ACTION: Action = Action(
-            data = ActionData.Flashlight.Toggle(CameraLens.BACK, strengthPercent = null),
-        )
+        private val TEST_ACTION: Action =
+            Action(
+                data = ActionData.Flashlight.Toggle(CameraLens.BACK, strengthPercent = null),
+            )
 
-        private val TEST_ACTION_2: Action = Action(
-            data = ActionData.App(FAKE_PACKAGE_NAME),
-        )
+        private val TEST_ACTION_2: Action =
+            Action(
+                data = ActionData.App(FAKE_PACKAGE_NAME),
+            )
     }
 
     private lateinit var controller: KeyMapAlgorithm
@@ -170,64 +178,68 @@ class KeyMapAlgorithmTest {
 
     @Before
     fun init() {
-        detectKeyMapsUseCase = mock {
-            MutableStateFlow(VIBRATION_DURATION).apply {
-                on { defaultVibrateDuration } doReturn this
-            }
+        detectKeyMapsUseCase =
+            mock {
+                MutableStateFlow(VIBRATION_DURATION).apply {
+                    on { defaultVibrateDuration } doReturn this
+                }
 
-            MutableStateFlow(SEQUENCE_TRIGGER_TIMEOUT).apply {
-                on { defaultSequenceTriggerTimeout } doReturn this
-            }
+                MutableStateFlow(SEQUENCE_TRIGGER_TIMEOUT).apply {
+                    on { defaultSequenceTriggerTimeout } doReturn this
+                }
 
-            MutableStateFlow(LONG_PRESS_DELAY).apply {
-                on { defaultLongPressDelay } doReturn this
-            }
+                MutableStateFlow(LONG_PRESS_DELAY).apply {
+                    on { defaultLongPressDelay } doReturn this
+                }
 
-            MutableStateFlow(FORCE_VIBRATE).apply {
-                on { forceVibrate } doReturn this
-            }
+                MutableStateFlow(FORCE_VIBRATE).apply {
+                    on { forceVibrate } doReturn this
+                }
 
-            MutableStateFlow(DOUBLE_PRESS_DELAY).apply {
-                on { defaultDoublePressDelay } doReturn this
+                MutableStateFlow(DOUBLE_PRESS_DELAY).apply {
+                    on { defaultDoublePressDelay } doReturn this
+                }
             }
-        }
 
         whenever(detectKeyMapsUseCase.currentTime).thenAnswer { testScope.currentTime }
 
-        performActionsUseCase = mock {
-            MutableStateFlow(REPEAT_DELAY).apply {
-                on { defaultRepeatDelay } doReturn this
-            }
-
-            MutableStateFlow(REPEAT_RATE).apply {
-                on { defaultRepeatRate } doReturn this
-            }
-
-            MutableStateFlow(HOLD_DOWN_DURATION).apply {
-                on { defaultHoldDownDuration } doReturn this
-            }
-
-            on { getErrorSnapshot() } doReturn object : ActionErrorSnapshot {
-                override fun getError(action: ActionData): KMError? = null
-                override fun getErrors(actions: List<ActionData>): Map<ActionData, KMError?> {
-                    return emptyMap()
+        performActionsUseCase =
+            mock {
+                MutableStateFlow(REPEAT_DELAY).apply {
+                    on { defaultRepeatDelay } doReturn this
                 }
-            }
-        }
 
-        detectConstraintsUseCase = mock {
-            on { getSnapshot() } doReturn TestConstraintSnapshot()
-        }
+                MutableStateFlow(REPEAT_RATE).apply {
+                    on { defaultRepeatRate } doReturn this
+                }
+
+                MutableStateFlow(HOLD_DOWN_DURATION).apply {
+                    on { defaultHoldDownDuration } doReturn this
+                }
+
+                on { getErrorSnapshot() } doReturn
+                    object : ActionErrorSnapshot {
+                        override fun getError(action: ActionData): KMError? = null
+
+                        override fun getErrors(actions: List<ActionData>): Map<ActionData, KMError?> = emptyMap()
+                    }
+            }
+
+        detectConstraintsUseCase =
+            mock {
+                on { getSnapshot() } doReturn TestConstraintSnapshot()
+            }
 
         mockedKeyEvent = mockStatic(KeyEvent::class.java)
         mockedKeyEvent.`when`<Int> { KeyEvent.getMaxKeyCode() }.thenReturn(1000)
 
-        controller = KeyMapAlgorithm(
-            testScope,
-            detectKeyMapsUseCase,
-            performActionsUseCase,
-            detectConstraintsUseCase,
-        )
+        controller =
+            KeyMapAlgorithm(
+                testScope,
+                detectKeyMapsUseCase,
+                performActionsUseCase,
+                detectConstraintsUseCase,
+            )
     }
 
     @After
@@ -236,36 +248,39 @@ class KeyMapAlgorithmTest {
     }
 
     @Test
-    fun `Detect mouse button which only has scan code`() = runTest(testDispatcher) {
-        val trigger = singleKeyTrigger(
-            EvdevTriggerKey(
-                keyCode = KeyEvent.KEYCODE_UNKNOWN,
-                scanCode = Scancode.BTN_LEFT,
-                device = FAKE_CONTROLLER_EVDEV_DEVICE,
-            ),
-        )
-        loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
+    fun `Detect mouse button which only has scan code`() =
+        runTest(testDispatcher) {
+            val trigger =
+                singleKeyTrigger(
+                    EvdevTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_UNKNOWN,
+                        scanCode = Scancode.BTN_LEFT,
+                        device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                    ),
+                )
+            loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
-        inputDownEvdevEvent(
-            KeyEvent.KEYCODE_UNKNOWN,
-            Scancode.BTN_LEFT,
-            FAKE_CONTROLLER_EVDEV_DEVICE,
-        )
-        inputUpEvdevEvent(KeyEvent.KEYCODE_UNKNOWN, Scancode.BTN_LEFT, FAKE_CONTROLLER_EVDEV_DEVICE)
+            inputDownEvdevEvent(
+                KeyEvent.KEYCODE_UNKNOWN,
+                Scancode.BTN_LEFT,
+                FAKE_CONTROLLER_EVDEV_DEVICE,
+            )
+            inputUpEvdevEvent(KeyEvent.KEYCODE_UNKNOWN, Scancode.BTN_LEFT, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-    }
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        }
 
     @Test
     fun `Detect evdev trigger with scan code if key has unknown key code`() =
         runTest(testDispatcher) {
-            val trigger = singleKeyTrigger(
-                EvdevTriggerKey(
-                    keyCode = KeyEvent.KEYCODE_UNKNOWN,
-                    scanCode = Scancode.KEY_B,
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
-                ),
-            )
+            val trigger =
+                singleKeyTrigger(
+                    EvdevTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_UNKNOWN,
+                        scanCode = Scancode.KEY_B,
+                        device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                    ),
+                )
             loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
             inputDownEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
@@ -275,34 +290,37 @@ class KeyMapAlgorithmTest {
         }
 
     @Test
-    fun `Detect evdev trigger with scan code if user setting enabled`() = runTest(testDispatcher) {
-        val trigger = singleKeyTrigger(
-            EvdevTriggerKey(
-                keyCode = KeyEvent.KEYCODE_A,
-                scanCode = Scancode.KEY_B,
-                device = FAKE_CONTROLLER_EVDEV_DEVICE,
-                detectWithScanCodeUserSetting = true,
-            ),
-        )
-        loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
+    fun `Detect evdev trigger with scan code if user setting enabled`() =
+        runTest(testDispatcher) {
+            val trigger =
+                singleKeyTrigger(
+                    EvdevTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_A,
+                        scanCode = Scancode.KEY_B,
+                        device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                        detectWithScanCodeUserSetting = true,
+                    ),
+                )
+            loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
-        inputDownEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
-        inputUpEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
+            inputDownEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
+            inputUpEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-    }
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        }
 
     @Test
     fun `Detect evdev trigger with scan code when scan code matches but key code differs`() =
         runTest(testDispatcher) {
-            val trigger = singleKeyTrigger(
-                EvdevTriggerKey(
-                    keyCode = KeyEvent.KEYCODE_A,
-                    scanCode = Scancode.KEY_B,
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
-                    detectWithScanCodeUserSetting = true,
-                ),
-            )
+            val trigger =
+                singleKeyTrigger(
+                    EvdevTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_A,
+                        scanCode = Scancode.KEY_B,
+                        device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                        detectWithScanCodeUserSetting = true,
+                    ),
+                )
             loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
             // Input with different key code but matching scan code
@@ -313,43 +331,46 @@ class KeyMapAlgorithmTest {
         }
 
     @Test
-    fun `Do not detect evdev trigger when scan code differs`() = runTest(testDispatcher) {
-        val trigger = singleKeyTrigger(
-            EvdevTriggerKey(
-                keyCode = KeyEvent.KEYCODE_A,
-                scanCode = Scancode.KEY_B,
-                device = FAKE_CONTROLLER_EVDEV_DEVICE,
-                detectWithScanCodeUserSetting = true,
-            ),
-        )
-        loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
+    fun `Do not detect evdev trigger when scan code differs`() =
+        runTest(testDispatcher) {
+            val trigger =
+                singleKeyTrigger(
+                    EvdevTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_A,
+                        scanCode = Scancode.KEY_B,
+                        device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                        detectWithScanCodeUserSetting = true,
+                    ),
+                )
+            loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
-        // Input with matching key code but different scan code
-        inputDownEvdevEvent(KeyEvent.KEYCODE_A, Scancode.KEY_C, FAKE_CONTROLLER_EVDEV_DEVICE)
-        inputUpEvdevEvent(KeyEvent.KEYCODE_A, Scancode.KEY_C, FAKE_CONTROLLER_EVDEV_DEVICE)
+            // Input with matching key code but different scan code
+            inputDownEvdevEvent(KeyEvent.KEYCODE_A, Scancode.KEY_C, FAKE_CONTROLLER_EVDEV_DEVICE)
+            inputUpEvdevEvent(KeyEvent.KEYCODE_A, Scancode.KEY_C, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-        verify(performActionsUseCase, never()).perform(TEST_ACTION.data)
-    }
+            verify(performActionsUseCase, never()).perform(TEST_ACTION.data)
+        }
 
     @Test
     fun `Sequence trigger with multiple evdev keys and scan code detection is triggered`() =
         runTest(testDispatcher) {
-            val trigger = sequenceTrigger(
-                EvdevTriggerKey(
-                    keyCode = KeyEvent.KEYCODE_A,
-                    // Different scan code
-                    scanCode = Scancode.KEY_B,
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
-                    detectWithScanCodeUserSetting = true,
-                ),
-                EvdevTriggerKey(
-                    keyCode = KeyEvent.KEYCODE_C,
-                    // Different scan code
-                    scanCode = Scancode.KEY_D,
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
-                    detectWithScanCodeUserSetting = true,
-                ),
-            )
+            val trigger =
+                sequenceTrigger(
+                    EvdevTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_A,
+                        // Different scan code
+                        scanCode = Scancode.KEY_B,
+                        device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                        detectWithScanCodeUserSetting = true,
+                    ),
+                    EvdevTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_C,
+                        // Different scan code
+                        scanCode = Scancode.KEY_D,
+                        device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                        detectWithScanCodeUserSetting = true,
+                    ),
+                )
 
             loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
@@ -366,22 +387,23 @@ class KeyMapAlgorithmTest {
     @Test
     fun `Parallel trigger with multiple evdev keys and scan code detection is triggered`() =
         runTest(testDispatcher) {
-            val trigger = parallelTrigger(
-                EvdevTriggerKey(
-                    keyCode = KeyEvent.KEYCODE_A,
-                    // Different scan code
-                    scanCode = Scancode.KEY_B,
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
-                    detectWithScanCodeUserSetting = true,
-                ),
-                EvdevTriggerKey(
-                    keyCode = KeyEvent.KEYCODE_C,
-                    // Different scan code
-                    scanCode = Scancode.KEY_D,
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
-                    detectWithScanCodeUserSetting = true,
-                ),
-            )
+            val trigger =
+                parallelTrigger(
+                    EvdevTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_A,
+                        // Different scan code
+                        scanCode = Scancode.KEY_B,
+                        device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                        detectWithScanCodeUserSetting = true,
+                    ),
+                    EvdevTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_C,
+                        // Different scan code
+                        scanCode = Scancode.KEY_D,
+                        device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                        detectWithScanCodeUserSetting = true,
+                    ),
+                )
 
             loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
@@ -396,63 +418,68 @@ class KeyMapAlgorithmTest {
         }
 
     @Test
-    fun `Scan code detection works with long press evdev trigger`() = runTest(testDispatcher) {
-        val trigger = singleKeyTrigger(
-            EvdevTriggerKey(
-                keyCode = KeyEvent.KEYCODE_A,
-                scanCode = Scancode.KEY_B,
-                device = FAKE_CONTROLLER_EVDEV_DEVICE,
-                clickType = ClickType.LONG_PRESS,
-                detectWithScanCodeUserSetting = true,
-            ),
-        )
-        loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
+    fun `Scan code detection works with long press evdev trigger`() =
+        runTest(testDispatcher) {
+            val trigger =
+                singleKeyTrigger(
+                    EvdevTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_A,
+                        scanCode = Scancode.KEY_B,
+                        device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                        clickType = ClickType.LONG_PRESS,
+                        detectWithScanCodeUserSetting = true,
+                    ),
+                )
+            loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
-        inputDownEvdevEvent(KeyEvent.KEYCODE_X, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
-        // Wait for long press duration
-        delay(LONG_PRESS_DELAY + 100L)
-        inputUpEvdevEvent(KeyEvent.KEYCODE_X, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
+            inputDownEvdevEvent(KeyEvent.KEYCODE_X, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
+            // Wait for long press duration
+            delay(LONG_PRESS_DELAY + 100L)
+            inputUpEvdevEvent(KeyEvent.KEYCODE_X, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-    }
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        }
 
     @Test
-    fun `Scan code detection works with double press evdev trigger`() = runTest(testDispatcher) {
-        val trigger = singleKeyTrigger(
-            EvdevTriggerKey(
-                keyCode = KeyEvent.KEYCODE_A,
-                scanCode = Scancode.KEY_B,
-                device = FAKE_CONTROLLER_EVDEV_DEVICE,
-                clickType = ClickType.DOUBLE_PRESS,
-                detectWithScanCodeUserSetting = true,
-            ),
-        )
-        loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
+    fun `Scan code detection works with double press evdev trigger`() =
+        runTest(testDispatcher) {
+            val trigger =
+                singleKeyTrigger(
+                    EvdevTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_A,
+                        scanCode = Scancode.KEY_B,
+                        device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                        clickType = ClickType.DOUBLE_PRESS,
+                        detectWithScanCodeUserSetting = true,
+                    ),
+                )
+            loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
-        // First press
-        inputDownEvdevEvent(KeyEvent.KEYCODE_X, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
-        delay(50L)
-        inputUpEvdevEvent(KeyEvent.KEYCODE_X, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
-        delay(50L)
+            // First press
+            inputDownEvdevEvent(KeyEvent.KEYCODE_X, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
+            delay(50L)
+            inputUpEvdevEvent(KeyEvent.KEYCODE_X, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
+            delay(50L)
 
-        // Second press
-        inputDownEvdevEvent(KeyEvent.KEYCODE_X, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
-        delay(50L)
-        inputUpEvdevEvent(KeyEvent.KEYCODE_X, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
+            // Second press
+            inputDownEvdevEvent(KeyEvent.KEYCODE_X, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
+            delay(50L)
+            inputUpEvdevEvent(KeyEvent.KEYCODE_X, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-    }
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        }
 
     @Test
     fun `Scan code detection fails when device differs for evdev trigger`() =
         runTest(testDispatcher) {
-            val trigger = singleKeyTrigger(
-                EvdevTriggerKey(
-                    keyCode = KeyEvent.KEYCODE_A,
-                    scanCode = Scancode.KEY_B,
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
-                ),
-            )
+            val trigger =
+                singleKeyTrigger(
+                    EvdevTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_A,
+                        scanCode = Scancode.KEY_B,
+                        device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                    ),
+                )
             loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
             // Input from different device
@@ -465,16 +492,17 @@ class KeyMapAlgorithmTest {
     @Test
     fun `Detect key event trigger with scan code if key has unknown key code`() =
         runTest(testDispatcher) {
-            val trigger = singleKeyTrigger(
-                KeyEventTriggerKey(
-                    keyCode = KeyEvent.KEYCODE_UNKNOWN,
-                    scanCode = Scancode.KEY_B,
-                    device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.SHORT_PRESS,
-                    // It will be automatically enabled even if the user hasn't explicitly turned it on
-                    detectWithScanCodeUserSetting = false,
-                ),
-            )
+            val trigger =
+                singleKeyTrigger(
+                    KeyEventTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_UNKNOWN,
+                        scanCode = Scancode.KEY_B,
+                        device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
+                        clickType = ClickType.SHORT_PRESS,
+                        // It will be automatically enabled even if the user hasn't explicitly turned it on
+                        detectWithScanCodeUserSetting = false,
+                    ),
+                )
             loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
             inputKeyEvent(
@@ -496,15 +524,16 @@ class KeyMapAlgorithmTest {
     @Test
     fun `Detect key event trigger with scan code if user setting enabled`() =
         runTest(testDispatcher) {
-            val trigger = singleKeyTrigger(
-                KeyEventTriggerKey(
-                    keyCode = KeyEvent.KEYCODE_A,
-                    scanCode = Scancode.KEY_B,
-                    device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.SHORT_PRESS,
-                    detectWithScanCodeUserSetting = true,
-                ),
-            )
+            val trigger =
+                singleKeyTrigger(
+                    KeyEventTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_A,
+                        scanCode = Scancode.KEY_B,
+                        device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
+                        clickType = ClickType.SHORT_PRESS,
+                        detectWithScanCodeUserSetting = true,
+                    ),
+                )
             loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
             inputKeyEvent(
@@ -524,67 +553,72 @@ class KeyMapAlgorithmTest {
         }
 
     @Test
-    fun `Sequence trigger with multiple evdev keys is triggered`() = runTest(testDispatcher) {
-        val trigger = sequenceTrigger(
-            EvdevTriggerKey(
-                keyCode = KeyEvent.KEYCODE_A,
-                scanCode = Scancode.KEY_A,
-                device = FAKE_CONTROLLER_EVDEV_DEVICE,
-            ),
-            EvdevTriggerKey(
-                keyCode = KeyEvent.KEYCODE_B,
-                scanCode = Scancode.KEY_B,
-                device = FAKE_CONTROLLER_EVDEV_DEVICE,
-            ),
-        )
+    fun `Sequence trigger with multiple evdev keys is triggered`() =
+        runTest(testDispatcher) {
+            val trigger =
+                sequenceTrigger(
+                    EvdevTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_A,
+                        scanCode = Scancode.KEY_A,
+                        device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                    ),
+                    EvdevTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_B,
+                        scanCode = Scancode.KEY_B,
+                        device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                    ),
+                )
 
-        loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
+            loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
-        inputDownEvdevEvent(KeyEvent.KEYCODE_A, Scancode.KEY_A, FAKE_CONTROLLER_EVDEV_DEVICE)
-        inputUpEvdevEvent(KeyEvent.KEYCODE_A, Scancode.KEY_A, FAKE_CONTROLLER_EVDEV_DEVICE)
+            inputDownEvdevEvent(KeyEvent.KEYCODE_A, Scancode.KEY_A, FAKE_CONTROLLER_EVDEV_DEVICE)
+            inputUpEvdevEvent(KeyEvent.KEYCODE_A, Scancode.KEY_A, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-        inputDownEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
-        inputUpEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
+            inputDownEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
+            inputUpEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-    }
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        }
 
     @Test
-    fun `Parallel trigger with multiple evdev keys is triggered`() = runTest(testDispatcher) {
-        val trigger = parallelTrigger(
-            EvdevTriggerKey(
-                keyCode = KeyEvent.KEYCODE_A,
-                scanCode = Scancode.KEY_A,
-                device = FAKE_CONTROLLER_EVDEV_DEVICE,
-            ),
-            EvdevTriggerKey(
-                keyCode = KeyEvent.KEYCODE_B,
-                scanCode = Scancode.KEY_B,
-                device = FAKE_CONTROLLER_EVDEV_DEVICE,
-            ),
-        )
+    fun `Parallel trigger with multiple evdev keys is triggered`() =
+        runTest(testDispatcher) {
+            val trigger =
+                parallelTrigger(
+                    EvdevTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_A,
+                        scanCode = Scancode.KEY_A,
+                        device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                    ),
+                    EvdevTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_B,
+                        scanCode = Scancode.KEY_B,
+                        device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                    ),
+                )
 
-        loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
+            loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
-        inputDownEvdevEvent(KeyEvent.KEYCODE_A, Scancode.KEY_A, FAKE_CONTROLLER_EVDEV_DEVICE)
-        inputDownEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
+            inputDownEvdevEvent(KeyEvent.KEYCODE_A, Scancode.KEY_A, FAKE_CONTROLLER_EVDEV_DEVICE)
+            inputDownEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-        inputUpEvdevEvent(KeyEvent.KEYCODE_A, Scancode.KEY_A, FAKE_CONTROLLER_EVDEV_DEVICE)
-        inputUpEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
+            inputUpEvdevEvent(KeyEvent.KEYCODE_A, Scancode.KEY_A, FAKE_CONTROLLER_EVDEV_DEVICE)
+            inputUpEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-    }
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        }
 
     @Test
     fun `Evdev trigger is not triggered from events from other devices`() =
         runTest(testDispatcher) {
-            val trigger = singleKeyTrigger(
-                EvdevTriggerKey(
-                    keyCode = KeyEvent.KEYCODE_POWER,
-                    scanCode = Scancode.KEY_POWER,
-                    device = FAKE_VOLUME_EVDEV_DEVICE,
-                ),
-            )
+            val trigger =
+                singleKeyTrigger(
+                    EvdevTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_POWER,
+                        scanCode = Scancode.KEY_POWER,
+                        device = FAKE_VOLUME_EVDEV_DEVICE,
+                    ),
+                )
 
             loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
@@ -594,88 +628,99 @@ class KeyMapAlgorithmTest {
         }
 
     @Test
-    fun `Short press trigger evdev trigger from external device`() = runTest(testDispatcher) {
-        val trigger = singleKeyTrigger(
-            EvdevTriggerKey(
-                keyCode = KeyEvent.KEYCODE_A,
-                scanCode = Scancode.KEY_POWER,
-                device = FAKE_CONTROLLER_EVDEV_DEVICE,
-            ),
-        )
+    fun `Short press trigger evdev trigger from external device`() =
+        runTest(testDispatcher) {
+            val trigger =
+                singleKeyTrigger(
+                    EvdevTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_A,
+                        scanCode = Scancode.KEY_POWER,
+                        device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                    ),
+                )
 
-        loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
+            loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
-        mockEvdevKeyInput(trigger.keys[0], FAKE_CONTROLLER_EVDEV_DEVICE)
+            mockEvdevKeyInput(trigger.keys[0], FAKE_CONTROLLER_EVDEV_DEVICE)
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-    }
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        }
 
     @Test
-    fun `Short press trigger evdev trigger from internal device`() = runTest(testDispatcher) {
-        val trigger = singleKeyTrigger(
-            EvdevTriggerKey(
-                keyCode = KeyEvent.KEYCODE_POWER,
-                scanCode = Scancode.KEY_POWER,
-                device = FAKE_VOLUME_EVDEV_DEVICE,
-            ),
-        )
+    fun `Short press trigger evdev trigger from internal device`() =
+        runTest(testDispatcher) {
+            val trigger =
+                singleKeyTrigger(
+                    EvdevTriggerKey(
+                        keyCode = KeyEvent.KEYCODE_POWER,
+                        scanCode = Scancode.KEY_POWER,
+                        device = FAKE_VOLUME_EVDEV_DEVICE,
+                    ),
+                )
 
-        loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
+            loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
-        mockEvdevKeyInput(trigger.keys[0], FAKE_VOLUME_EVDEV_DEVICE)
+            mockEvdevKeyInput(trigger.keys[0], FAKE_VOLUME_EVDEV_DEVICE)
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-    }
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        }
 
     @Test
-    fun `Do not perform if one group constraint set is not satisfied`() = runTest(testDispatcher) {
-        val trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN))
-        loadKeyMaps(
-            DetectKeyMapModel(
-                keyMap = KeyMap(
-                    trigger = trigger,
-                    actionList = listOf(TEST_ACTION),
-                    constraintState = ConstraintState(
-                        constraints = setOf(
-                            Constraint(data = ConstraintData.WifiOn),
-                            Constraint(data = ConstraintData.DeviceIsLocked),
+    fun `Do not perform if one group constraint set is not satisfied`() =
+        runTest(testDispatcher) {
+            val trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN))
+            loadKeyMaps(
+                DetectKeyMapModel(
+                    keyMap =
+                        KeyMap(
+                            trigger = trigger,
+                            actionList = listOf(TEST_ACTION),
+                            constraintState =
+                                ConstraintState(
+                                    constraints =
+                                        setOf(
+                                            Constraint(data = ConstraintData.WifiOn),
+                                            Constraint(data = ConstraintData.DeviceIsLocked),
+                                        ),
+                                    mode = ConstraintMode.OR,
+                                ),
                         ),
-                        mode = ConstraintMode.OR,
-                    ),
-                ),
-                groupConstraintStates = listOf(
-                    ConstraintState(
-                        constraints = setOf(
-                            Constraint(data = ConstraintData.LockScreenNotShowing),
-                            Constraint(data = ConstraintData.DeviceIsLocked),
+                    groupConstraintStates =
+                        listOf(
+                            ConstraintState(
+                                constraints =
+                                    setOf(
+                                        Constraint(data = ConstraintData.LockScreenNotShowing),
+                                        Constraint(data = ConstraintData.DeviceIsLocked),
+                                    ),
+                                mode = ConstraintMode.AND,
+                            ),
+                            ConstraintState(
+                                constraints =
+                                    setOf(
+                                        Constraint(data = ConstraintData.AppInForeground(packageName = "app")),
+                                        Constraint(data = ConstraintData.DeviceIsUnlocked),
+                                    ),
+                                mode = ConstraintMode.OR,
+                            ),
                         ),
-                        mode = ConstraintMode.AND,
-                    ),
-                    ConstraintState(
-                        constraints = setOf(
-                            Constraint(data = ConstraintData.AppInForeground(packageName = "app")),
-                            Constraint(data = ConstraintData.DeviceIsUnlocked),
-                        ),
-                        mode = ConstraintMode.OR,
-                    ),
-                ),
-            ),
-        )
-
-        whenever(detectConstraintsUseCase.getSnapshot())
-            .thenReturn(
-                TestConstraintSnapshot(
-                    isWifiEnabled = true,
-                    isLocked = true,
-                    isLockscreenShowing = true,
-                    appInForeground = "app",
                 ),
             )
 
-        mockTriggerKeyInput(trigger.keys[0])
+            whenever(detectConstraintsUseCase.getSnapshot())
+                .thenReturn(
+                    TestConstraintSnapshot(
+                        isWifiEnabled = true,
+                        isLocked = true,
+                        isLockscreenShowing = true,
+                        appInForeground = "app",
+                    ),
+                )
 
-        verify(performActionsUseCase, never()).perform(TEST_ACTION.data)
-    }
+            mockTriggerKeyInput(trigger.keys[0])
+
+            verify(performActionsUseCase, never()).perform(TEST_ACTION.data)
+        }
 
     @Test
     fun `Perform if all group constraints and key map constraints are satisfied`() =
@@ -683,33 +728,39 @@ class KeyMapAlgorithmTest {
             val trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN))
             loadKeyMaps(
                 DetectKeyMapModel(
-                    keyMap = KeyMap(
-                        trigger = trigger,
-                        actionList = listOf(TEST_ACTION),
-                        constraintState = ConstraintState(
-                            constraints = setOf(
-                                Constraint(data = ConstraintData.WifiOn),
-                                Constraint(data = ConstraintData.DeviceIsLocked),
-                            ),
-                            mode = ConstraintMode.OR,
+                    keyMap =
+                        KeyMap(
+                            trigger = trigger,
+                            actionList = listOf(TEST_ACTION),
+                            constraintState =
+                                ConstraintState(
+                                    constraints =
+                                        setOf(
+                                            Constraint(data = ConstraintData.WifiOn),
+                                            Constraint(data = ConstraintData.DeviceIsLocked),
+                                        ),
+                                    mode = ConstraintMode.OR,
+                                ),
                         ),
-                    ),
-                    groupConstraintStates = listOf(
-                        ConstraintState(
-                            constraints = setOf(
-                                Constraint(data = ConstraintData.LockScreenNotShowing),
-                                Constraint(data = ConstraintData.DeviceIsLocked),
+                    groupConstraintStates =
+                        listOf(
+                            ConstraintState(
+                                constraints =
+                                    setOf(
+                                        Constraint(data = ConstraintData.LockScreenNotShowing),
+                                        Constraint(data = ConstraintData.DeviceIsLocked),
+                                    ),
+                                mode = ConstraintMode.AND,
                             ),
-                            mode = ConstraintMode.AND,
-                        ),
-                        ConstraintState(
-                            constraints = setOf(
-                                Constraint(data = ConstraintData.AppInForeground(packageName = "app")),
-                                Constraint(data = ConstraintData.DeviceIsUnlocked),
+                            ConstraintState(
+                                constraints =
+                                    setOf(
+                                        Constraint(data = ConstraintData.AppInForeground(packageName = "app")),
+                                        Constraint(data = ConstraintData.DeviceIsUnlocked),
+                                    ),
+                                mode = ConstraintMode.OR,
                             ),
-                            mode = ConstraintMode.OR,
                         ),
-                    ),
                 ),
             )
 
@@ -735,35 +786,41 @@ class KeyMapAlgorithmTest {
     fun `vibrate once with short press and long and double press trigger times out`() =
         runTest(testDispatcher) {
             // GIVEN
-            val shortPressTrigger = Trigger(
-                keys = listOf(
-                    triggerKey(
-                        KeyEvent.KEYCODE_VOLUME_DOWN,
-                        clickType = ClickType.SHORT_PRESS,
-                    ),
-                ),
-                vibrate = true,
-            )
+            val shortPressTrigger =
+                Trigger(
+                    keys =
+                        listOf(
+                            triggerKey(
+                                KeyEvent.KEYCODE_VOLUME_DOWN,
+                                clickType = ClickType.SHORT_PRESS,
+                            ),
+                        ),
+                    vibrate = true,
+                )
 
-            val longPressTrigger = Trigger(
-                keys = listOf(
-                    triggerKey(
-                        KeyEvent.KEYCODE_VOLUME_DOWN,
-                        clickType = ClickType.LONG_PRESS,
-                    ),
-                ),
-                vibrate = true,
-            )
+            val longPressTrigger =
+                Trigger(
+                    keys =
+                        listOf(
+                            triggerKey(
+                                KeyEvent.KEYCODE_VOLUME_DOWN,
+                                clickType = ClickType.LONG_PRESS,
+                            ),
+                        ),
+                    vibrate = true,
+                )
 
-            val doublePressTrigger = Trigger(
-                keys = listOf(
-                    triggerKey(
-                        KeyEvent.KEYCODE_VOLUME_DOWN,
-                        clickType = ClickType.DOUBLE_PRESS,
-                    ),
-                ),
-                vibrate = true,
-            )
+            val doublePressTrigger =
+                Trigger(
+                    keys =
+                        listOf(
+                            triggerKey(
+                                KeyEvent.KEYCODE_VOLUME_DOWN,
+                                clickType = ClickType.DOUBLE_PRESS,
+                            ),
+                        ),
+                    vibrate = true,
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
@@ -786,25 +843,29 @@ class KeyMapAlgorithmTest {
     fun `vibrate once with short press and double press trigger times out`() =
         runTest(testDispatcher) {
             // GIVEN
-            val shortPressTrigger = Trigger(
-                keys = listOf(
-                    triggerKey(
-                        KeyEvent.KEYCODE_VOLUME_DOWN,
-                        clickType = ClickType.SHORT_PRESS,
-                    ),
-                ),
-                vibrate = true,
-            )
+            val shortPressTrigger =
+                Trigger(
+                    keys =
+                        listOf(
+                            triggerKey(
+                                KeyEvent.KEYCODE_VOLUME_DOWN,
+                                clickType = ClickType.SHORT_PRESS,
+                            ),
+                        ),
+                    vibrate = true,
+                )
 
-            val doublePressTrigger = Trigger(
-                keys = listOf(
-                    triggerKey(
-                        KeyEvent.KEYCODE_VOLUME_DOWN,
-                        clickType = ClickType.DOUBLE_PRESS,
-                    ),
-                ),
-                vibrate = true,
-            )
+            val doublePressTrigger =
+                Trigger(
+                    keys =
+                        listOf(
+                            triggerKey(
+                                KeyEvent.KEYCODE_VOLUME_DOWN,
+                                clickType = ClickType.DOUBLE_PRESS,
+                            ),
+                        ),
+                    vibrate = true,
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
@@ -823,40 +884,45 @@ class KeyMapAlgorithmTest {
      * #1507
      */
     @Test
-    fun `vibrate once with short press and double press trigger`() = runTest(testDispatcher) {
-        // GIVEN
-        val shortPressTrigger = Trigger(
-            keys = listOf(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-            ),
-            vibrate = true,
-        )
+    fun `vibrate once with short press and double press trigger`() =
+        runTest(testDispatcher) {
+            // GIVEN
+            val shortPressTrigger =
+                Trigger(
+                    keys =
+                        listOf(
+                            triggerKey(
+                                KeyEvent.KEYCODE_VOLUME_DOWN,
+                                clickType = ClickType.SHORT_PRESS,
+                            ),
+                        ),
+                    vibrate = true,
+                )
 
-        val doublePressTrigger = Trigger(
-            keys = listOf(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    clickType = ClickType.DOUBLE_PRESS,
-                ),
-            ),
-            vibrate = true,
-        )
+            val doublePressTrigger =
+                Trigger(
+                    keys =
+                        listOf(
+                            triggerKey(
+                                KeyEvent.KEYCODE_VOLUME_DOWN,
+                                clickType = ClickType.DOUBLE_PRESS,
+                            ),
+                        ),
+                    vibrate = true,
+                )
 
-        loadKeyMaps(
-            KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
-            KeyMap(1, trigger = doublePressTrigger, actionList = listOf(TEST_ACTION_2)),
-        )
+            loadKeyMaps(
+                KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
+                KeyMap(1, trigger = doublePressTrigger, actionList = listOf(TEST_ACTION_2)),
+            )
 
-        // WHEN
-        mockTriggerKeyInput(doublePressTrigger.keys[0])
-        advanceUntilIdle()
+            // WHEN
+            mockTriggerKeyInput(doublePressTrigger.keys[0])
+            advanceUntilIdle()
 
-        // THEN
-        verify(detectKeyMapsUseCase, times(1)).vibrate(VIBRATION_DURATION)
-    }
+            // THEN
+            verify(detectKeyMapsUseCase, times(1)).vibrate(VIBRATION_DURATION)
+        }
 
     /**
      * #1507
@@ -865,26 +931,30 @@ class KeyMapAlgorithmTest {
     fun `vibrate once with short press and long press trigger times out`() =
         runTest(testDispatcher) {
             // GIVEN
-            val shortPressTrigger = Trigger(
-                keys = listOf(
-                    triggerKey(
-                        KeyEvent.KEYCODE_VOLUME_DOWN,
-                        clickType = ClickType.SHORT_PRESS,
-                    ),
-                ),
-                vibrate = true,
-            )
+            val shortPressTrigger =
+                Trigger(
+                    keys =
+                        listOf(
+                            triggerKey(
+                                KeyEvent.KEYCODE_VOLUME_DOWN,
+                                clickType = ClickType.SHORT_PRESS,
+                            ),
+                        ),
+                    vibrate = true,
+                )
 
-            val longPressTrigger = Trigger(
-                keys = listOf(
-                    triggerKey(
-                        KeyEvent.KEYCODE_VOLUME_DOWN,
-                        clickType = ClickType.LONG_PRESS,
-                    ),
-                ),
-                longPressDoubleVibration = true,
-                vibrate = true,
-            )
+            val longPressTrigger =
+                Trigger(
+                    keys =
+                        listOf(
+                            triggerKey(
+                                KeyEvent.KEYCODE_VOLUME_DOWN,
+                                clickType = ClickType.LONG_PRESS,
+                            ),
+                        ),
+                    longPressDoubleVibration = true,
+                    vibrate = true,
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
@@ -906,26 +976,30 @@ class KeyMapAlgorithmTest {
     fun `vibrate once with short press and long press trigger with double vibration and long press times out`() =
         runTest(testDispatcher) {
             // GIVEN
-            val shortPressTrigger = Trigger(
-                keys = listOf(
-                    triggerKey(
-                        KeyEvent.KEYCODE_VOLUME_DOWN,
-                        clickType = ClickType.SHORT_PRESS,
-                    ),
-                ),
-                vibrate = true,
-            )
+            val shortPressTrigger =
+                Trigger(
+                    keys =
+                        listOf(
+                            triggerKey(
+                                KeyEvent.KEYCODE_VOLUME_DOWN,
+                                clickType = ClickType.SHORT_PRESS,
+                            ),
+                        ),
+                    vibrate = true,
+                )
 
-            val longPressTrigger = Trigger(
-                keys = listOf(
-                    triggerKey(
-                        KeyEvent.KEYCODE_VOLUME_DOWN,
-                        clickType = ClickType.LONG_PRESS,
-                    ),
-                ),
-                longPressDoubleVibration = true,
-                vibrate = true,
-            )
+            val longPressTrigger =
+                Trigger(
+                    keys =
+                        listOf(
+                            triggerKey(
+                                KeyEvent.KEYCODE_VOLUME_DOWN,
+                                clickType = ClickType.LONG_PRESS,
+                            ),
+                        ),
+                    longPressDoubleVibration = true,
+                    vibrate = true,
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
@@ -947,26 +1021,30 @@ class KeyMapAlgorithmTest {
     fun `vibrate twice with short press and long press trigger with double vibration`() =
         runTest(testDispatcher) {
             // GIVEN
-            val shortPressTrigger = Trigger(
-                keys = listOf(
-                    triggerKey(
-                        KeyEvent.KEYCODE_VOLUME_DOWN,
-                        clickType = ClickType.SHORT_PRESS,
-                    ),
-                ),
-                vibrate = true,
-            )
+            val shortPressTrigger =
+                Trigger(
+                    keys =
+                        listOf(
+                            triggerKey(
+                                KeyEvent.KEYCODE_VOLUME_DOWN,
+                                clickType = ClickType.SHORT_PRESS,
+                            ),
+                        ),
+                    vibrate = true,
+                )
 
-            val longPressTrigger = Trigger(
-                keys = listOf(
-                    triggerKey(
-                        KeyEvent.KEYCODE_VOLUME_DOWN,
-                        clickType = ClickType.LONG_PRESS,
-                    ),
-                ),
-                longPressDoubleVibration = true,
-                vibrate = true,
-            )
+            val longPressTrigger =
+                Trigger(
+                    keys =
+                        listOf(
+                            triggerKey(
+                                KeyEvent.KEYCODE_VOLUME_DOWN,
+                                clickType = ClickType.LONG_PRESS,
+                            ),
+                        ),
+                    longPressDoubleVibration = true,
+                    vibrate = true,
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
@@ -985,87 +1063,96 @@ class KeyMapAlgorithmTest {
      * #1507
      */
     @Test
-    fun `vibrate once with short press and long press trigger`() = runTest(testDispatcher) {
-        // GIVEN
-        val shortPressTrigger = Trigger(
-            keys = listOf(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-            ),
-            vibrate = true,
-        )
+    fun `vibrate once with short press and long press trigger`() =
+        runTest(testDispatcher) {
+            // GIVEN
+            val shortPressTrigger =
+                Trigger(
+                    keys =
+                        listOf(
+                            triggerKey(
+                                KeyEvent.KEYCODE_VOLUME_DOWN,
+                                clickType = ClickType.SHORT_PRESS,
+                            ),
+                        ),
+                    vibrate = true,
+                )
 
-        val longPressTrigger = Trigger(
-            keys = listOf(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-            ),
-            vibrate = true,
-        )
+            val longPressTrigger =
+                Trigger(
+                    keys =
+                        listOf(
+                            triggerKey(
+                                KeyEvent.KEYCODE_VOLUME_DOWN,
+                                clickType = ClickType.LONG_PRESS,
+                            ),
+                        ),
+                    vibrate = true,
+                )
 
-        loadKeyMaps(
-            KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
-            KeyMap(1, trigger = longPressTrigger, actionList = listOf(TEST_ACTION_2)),
-        )
+            loadKeyMaps(
+                KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
+                KeyMap(1, trigger = longPressTrigger, actionList = listOf(TEST_ACTION_2)),
+            )
 
-        // WHEN
-        mockTriggerKeyInput(longPressTrigger.keys[0])
-        advanceUntilIdle()
+            // WHEN
+            mockTriggerKeyInput(longPressTrigger.keys[0])
+            advanceUntilIdle()
 
-        // THEN
-        verify(detectKeyMapsUseCase, times(1)).vibrate(VIBRATION_DURATION)
-    }
-
-    @Test
-    fun `Sequence trigger with fingerprint gesture and key code`() = runTest(testDispatcher) {
-        // GIVEN
-        loadKeyMaps(
-            KeyMap(
-                trigger = sequenceTrigger(
-                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
-                    FingerprintTriggerKey(
-                        type = FingerprintGestureType.SWIPE_DOWN,
-                        clickType = ClickType.SHORT_PRESS,
-                    ),
-                ),
-                actionList = listOf(TEST_ACTION),
-            ),
-        )
-
-        // WHEN
-        inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN)
-        inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP)
-        controller.onFingerprintGesture(FingerprintGestureType.SWIPE_DOWN)
-
-        // THEN
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-    }
+            // THEN
+            verify(detectKeyMapsUseCase, times(1)).vibrate(VIBRATION_DURATION)
+        }
 
     @Test
-    fun `Input fingerprint gesture`() = runTest(testDispatcher) {
-        // GIVEN
-        loadKeyMaps(
-            KeyMap(
-                trigger = singleKeyTrigger(
-                    FingerprintTriggerKey(
-                        type = FingerprintGestureType.SWIPE_DOWN,
-                        clickType = ClickType.SHORT_PRESS,
-                    ),
+    fun `Sequence trigger with fingerprint gesture and key code`() =
+        runTest(testDispatcher) {
+            // GIVEN
+            loadKeyMaps(
+                KeyMap(
+                    trigger =
+                        sequenceTrigger(
+                            triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+                            FingerprintTriggerKey(
+                                type = FingerprintGestureType.SWIPE_DOWN,
+                                clickType = ClickType.SHORT_PRESS,
+                            ),
+                        ),
+                    actionList = listOf(TEST_ACTION),
                 ),
-                actionList = listOf(TEST_ACTION),
-            ),
-        )
+            )
 
-        // WHEN
-        controller.onFingerprintGesture(FingerprintGestureType.SWIPE_DOWN)
+            // WHEN
+            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN)
+            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP)
+            controller.onFingerprintGesture(FingerprintGestureType.SWIPE_DOWN)
 
-        // THEN
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-    }
+            // THEN
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        }
+
+    @Test
+    fun `Input fingerprint gesture`() =
+        runTest(testDispatcher) {
+            // GIVEN
+            loadKeyMaps(
+                KeyMap(
+                    trigger =
+                        singleKeyTrigger(
+                            FingerprintTriggerKey(
+                                type = FingerprintGestureType.SWIPE_DOWN,
+                                clickType = ClickType.SHORT_PRESS,
+                            ),
+                        ),
+                    actionList = listOf(TEST_ACTION),
+                ),
+            )
+
+            // WHEN
+            controller.onFingerprintGesture(FingerprintGestureType.SWIPE_DOWN)
+
+            // THEN
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        }
 
     /**
      * Issue #1386
@@ -1109,10 +1196,11 @@ class KeyMapAlgorithmTest {
 
             val sequenceTrigger1 =
                 Trigger(
-                    keys = listOf(
-                        triggerKey(KeyEvent.KEYCODE_J),
-                        triggerKey(KeyEvent.KEYCODE_K),
-                    ),
+                    keys =
+                        listOf(
+                            triggerKey(KeyEvent.KEYCODE_J),
+                            triggerKey(KeyEvent.KEYCODE_K),
+                        ),
                     mode = TriggerMode.Sequence,
                     sequenceTriggerTimeout = 500,
                 )
@@ -1122,10 +1210,11 @@ class KeyMapAlgorithmTest {
             // This has a different second key.
             val sequenceTrigger2 =
                 Trigger(
-                    keys = listOf(
-                        triggerKey(KeyEvent.KEYCODE_J),
-                        triggerKey(KeyEvent.KEYCODE_A),
-                    ),
+                    keys =
+                        listOf(
+                            triggerKey(KeyEvent.KEYCODE_J),
+                            triggerKey(KeyEvent.KEYCODE_A),
+                        ),
                     mode = TriggerMode.Sequence,
                     sequenceTriggerTimeout = 1000,
                 )
@@ -1259,19 +1348,21 @@ class KeyMapAlgorithmTest {
     @Test
     fun `Hold down key event action while DPAD button is held down via motion events`() =
         runTest(testDispatcher) {
-            val trigger = singleKeyTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_DPAD_LEFT,
-                    clickType = ClickType.SHORT_PRESS,
-                    requiresIme = true,
-                    device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
-                ),
-            )
+            val trigger =
+                singleKeyTrigger(
+                    triggerKey(
+                        KeyEvent.KEYCODE_DPAD_LEFT,
+                        clickType = ClickType.SHORT_PRESS,
+                        requiresIme = true,
+                        device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
+                    ),
+                )
 
-            val action = Action(
-                data = ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_Q),
-                holdDown = true,
-            )
+            val action =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_Q),
+                    holdDown = true,
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = trigger, actionList = listOf(action)),
@@ -1290,14 +1381,15 @@ class KeyMapAlgorithmTest {
     @Test
     fun `Trigger short press key map from DPAD motion event while another DPAD button is held down`() =
         runTest(testDispatcher) {
-            val trigger = singleKeyTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_DPAD_LEFT,
-                    clickType = ClickType.SHORT_PRESS,
-                    requiresIme = true,
-                    device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
-                ),
-            )
+            val trigger =
+                singleKeyTrigger(
+                    triggerKey(
+                        KeyEvent.KEYCODE_DPAD_LEFT,
+                        clickType = ClickType.SHORT_PRESS,
+                        requiresIme = true,
+                        device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
+                    ),
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)),
@@ -1325,14 +1417,15 @@ class KeyMapAlgorithmTest {
     @Test
     fun `Trigger short press key map from DPAD motion event while a volume button is held down`() =
         runTest(testDispatcher) {
-            val trigger = singleKeyTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_DPAD_LEFT,
-                    clickType = ClickType.SHORT_PRESS,
-                    requiresIme = true,
-                    device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
-                ),
-            )
+            val trigger =
+                singleKeyTrigger(
+                    triggerKey(
+                        KeyEvent.KEYCODE_DPAD_LEFT,
+                        clickType = ClickType.SHORT_PRESS,
+                        requiresIme = true,
+                        device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
+                    ),
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)),
@@ -1353,56 +1446,60 @@ class KeyMapAlgorithmTest {
         }
 
     @Test
-    fun `Trigger long press key map from DPAD motion event`() = runTest(testDispatcher) {
-        val trigger = singleKeyTrigger(
-            triggerKey(
-                KeyEvent.KEYCODE_DPAD_LEFT,
-                clickType = ClickType.LONG_PRESS,
-                requiresIme = true,
-                device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
-            ),
-        )
+    fun `Trigger long press key map from DPAD motion event`() =
+        runTest(testDispatcher) {
+            val trigger =
+                singleKeyTrigger(
+                    triggerKey(
+                        KeyEvent.KEYCODE_DPAD_LEFT,
+                        clickType = ClickType.LONG_PRESS,
+                        requiresIme = true,
+                        device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
+                    ),
+                )
 
-        loadKeyMaps(
-            KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)),
-        )
+            loadKeyMaps(
+                KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)),
+            )
 
-        val consumeDown = inputMotionEvent(axisHatX = -1.0f)
-        assertThat(consumeDown, `is`(true))
+            val consumeDown = inputMotionEvent(axisHatX = -1.0f)
+            assertThat(consumeDown, `is`(true))
 
-        delay(LONG_PRESS_DELAY)
+            delay(LONG_PRESS_DELAY)
 
-        val consumeUp = inputMotionEvent(axisHatX = 0.0f)
+            val consumeUp = inputMotionEvent(axisHatX = 0.0f)
 
-        assertThat(consumeUp, `is`(true))
+            assertThat(consumeUp, `is`(true))
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-    }
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        }
 
     @Test
-    fun `Trigger short press key map from DPAD motion event`() = runTest(testDispatcher) {
-        val trigger = singleKeyTrigger(
-            triggerKey(
-                KeyEvent.KEYCODE_DPAD_LEFT,
-                clickType = ClickType.SHORT_PRESS,
-                requiresIme = true,
-                device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
-            ),
-        )
+    fun `Trigger short press key map from DPAD motion event`() =
+        runTest(testDispatcher) {
+            val trigger =
+                singleKeyTrigger(
+                    triggerKey(
+                        KeyEvent.KEYCODE_DPAD_LEFT,
+                        clickType = ClickType.SHORT_PRESS,
+                        requiresIme = true,
+                        device = FAKE_CONTROLLER_TRIGGER_KEY_DEVICE,
+                    ),
+                )
 
-        loadKeyMaps(
-            KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)),
-        )
+            loadKeyMaps(
+                KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)),
+            )
 
-        val consumeDown = inputMotionEvent(axisHatX = -1.0f)
-        assertThat(consumeDown, `is`(true))
+            val consumeDown = inputMotionEvent(axisHatX = -1.0f)
+            assertThat(consumeDown, `is`(true))
 
-        val consumeUp = inputMotionEvent(axisHatX = 0.0f)
+            val consumeUp = inputMotionEvent(axisHatX = 0.0f)
 
-        assertThat(consumeUp, `is`(true))
+            assertThat(consumeUp, `is`(true))
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-    }
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        }
 
     /**
      * Issue #491. While a DPAD button is held down many key events are sent with increasing
@@ -1411,13 +1508,14 @@ class KeyMapAlgorithmTest {
     @Test
     fun `Trigger short press key map once when a key event is repeated`() =
         runTest(testDispatcher) {
-            val trigger = singleKeyTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_DPAD_LEFT,
-                    clickType = ClickType.SHORT_PRESS,
-                    requiresIme = true,
-                ),
-            )
+            val trigger =
+                singleKeyTrigger(
+                    triggerKey(
+                        KeyEvent.KEYCODE_DPAD_LEFT,
+                        clickType = ClickType.SHORT_PRESS,
+                        requiresIme = true,
+                    ),
+                )
 
             loadKeyMaps(
                 KeyMap(
@@ -1459,39 +1557,41 @@ class KeyMapAlgorithmTest {
      * be consumed.
      */
     @Test
-    fun `Consume repeated DPAD key events for a long press trigger`() = runTest(testDispatcher) {
-        val longPressTrigger = singleKeyTrigger(
-            triggerKey(
-                KeyEvent.KEYCODE_DPAD_LEFT,
-                clickType = ClickType.LONG_PRESS,
-                requiresIme = true,
-            ),
-        )
+    fun `Consume repeated DPAD key events for a long press trigger`() =
+        runTest(testDispatcher) {
+            val longPressTrigger =
+                singleKeyTrigger(
+                    triggerKey(
+                        KeyEvent.KEYCODE_DPAD_LEFT,
+                        clickType = ClickType.LONG_PRESS,
+                        requiresIme = true,
+                    ),
+                )
 
-        loadKeyMaps(
-            KeyMap(
-                0,
-                trigger = longPressTrigger,
-                actionList = listOf(TEST_ACTION),
-            ),
-        )
+            loadKeyMaps(
+                KeyMap(
+                    0,
+                    trigger = longPressTrigger,
+                    actionList = listOf(TEST_ACTION),
+                ),
+            )
 
-        repeat(20) { count ->
-            val consumeDown =
-                inputKeyEvent(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.ACTION_DOWN, repeatCount = count)
+            repeat(20) { count ->
+                val consumeDown =
+                    inputKeyEvent(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.ACTION_DOWN, repeatCount = count)
 
-            assertThat(consumeDown, `is`(true))
+                assertThat(consumeDown, `is`(true))
 
-            delay(50)
+                delay(50)
+            }
+
+            val consumeUp =
+                inputKeyEvent(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.ACTION_UP, repeatCount = 0)
+
+            assertThat(consumeUp, `is`(true))
+
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
         }
-
-        val consumeUp =
-            inputKeyEvent(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.ACTION_UP, repeatCount = 0)
-
-        assertThat(consumeUp, `is`(true))
-
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-    }
 
     /**
      * #1271 but with long press trigger instead of double press.
@@ -1499,15 +1599,17 @@ class KeyMapAlgorithmTest {
     @Test
     fun `Trigger short press key map if constraints allow it and a long press key map to the same button is not allowed`() =
         runTest(testDispatcher) {
-            val shortPressTrigger = singleKeyTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
-            )
+            val shortPressTrigger =
+                singleKeyTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+                )
             val shortPressConstraints =
                 ConstraintState(constraints = setOf(Constraint(data = ConstraintData.WifiOn)))
 
-            val longPressTrigger = singleKeyTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
-            )
+            val longPressTrigger =
+                singleKeyTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
+                )
             val doublePressConstraints =
                 ConstraintState(constraints = setOf(Constraint(data = ConstraintData.WifiOff)))
 
@@ -1542,15 +1644,17 @@ class KeyMapAlgorithmTest {
     @Test
     fun `ignore double press key maps overlapping short press key maps if the constraints aren't satisfied`() =
         runTest(testDispatcher) {
-            val shortPressTrigger = singleKeyTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
-            )
+            val shortPressTrigger =
+                singleKeyTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+                )
             val shortPressConstraints =
                 ConstraintState(constraints = setOf(Constraint(data = ConstraintData.WifiOn)))
 
-            val doublePressTrigger = singleKeyTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.DOUBLE_PRESS),
-            )
+            val doublePressTrigger =
+                singleKeyTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.DOUBLE_PRESS),
+                )
             val doublePressConstraints =
                 ConstraintState(constraints = setOf(Constraint(data = ConstraintData.WifiOff)))
 
@@ -1590,8 +1694,7 @@ class KeyMapAlgorithmTest {
                         KeyEvent.KEYCODE_VOLUME_DOWN,
                         clickType = ClickType.LONG_PRESS,
                     ),
-                )
-                    .copy(longPressDelay = 900)
+                ).copy(longPressDelay = 900)
 
             val shorterTrigger =
                 singleKeyTrigger(
@@ -1599,8 +1702,7 @@ class KeyMapAlgorithmTest {
                         KeyEvent.KEYCODE_VOLUME_DOWN,
                         clickType = ClickType.LONG_PRESS,
                     ),
-                )
-                    .copy(longPressDelay = 500)
+                ).copy(longPressDelay = 500)
 
             loadKeyMaps(
                 KeyMap(0, trigger = longerTrigger, actionList = listOf(TEST_ACTION)),
@@ -1663,20 +1765,24 @@ class KeyMapAlgorithmTest {
             // GIVEN
             val actionData = ActionData.Flashlight.Toggle(CameraLens.BACK, strengthPercent = null)
 
-            val keyMap = KeyMap(
-                trigger = singleKeyTrigger(
-                    triggerKey(
-                        KeyEvent.KEYCODE_VOLUME_DOWN,
-                        clickType = ClickType.LONG_PRESS,
-                    ),
-                ),
-                actionList = listOf(Action(data = actionData)),
-                constraintState = ConstraintState(
-                    constraints = setOf(
-                        Constraint(data = ConstraintData.FlashlightOn(lens = CameraLens.BACK)),
-                    ),
-                ),
-            )
+            val keyMap =
+                KeyMap(
+                    trigger =
+                        singleKeyTrigger(
+                            triggerKey(
+                                KeyEvent.KEYCODE_VOLUME_DOWN,
+                                clickType = ClickType.LONG_PRESS,
+                            ),
+                        ),
+                    actionList = listOf(Action(data = actionData)),
+                    constraintState =
+                        ConstraintState(
+                            constraints =
+                                setOf(
+                                    Constraint(data = ConstraintData.FlashlightOn(lens = CameraLens.BACK)),
+                                ),
+                        ),
+                )
 
             loadKeyMaps(keyMap)
 
@@ -1716,21 +1822,25 @@ class KeyMapAlgorithmTest {
     fun `multiple key maps with the same long press trigger but different long press delays should all work`() =
         runTest(testDispatcher) {
             // GIVEN
-            val keyMap1 = KeyMap(
-                trigger = Trigger(
-                    keys = listOf(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN)),
-                    longPressDelay = 500,
-                ),
-                actionList = listOf(TEST_ACTION),
-            )
+            val keyMap1 =
+                KeyMap(
+                    trigger =
+                        Trigger(
+                            keys = listOf(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN)),
+                            longPressDelay = 500,
+                        ),
+                    actionList = listOf(TEST_ACTION),
+                )
 
-            val keyMap2 = KeyMap(
-                trigger = Trigger(
-                    keys = listOf(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN)),
-                    longPressDelay = 1000,
-                ),
-                actionList = listOf(TEST_ACTION_2),
-            )
+            val keyMap2 =
+                KeyMap(
+                    trigger =
+                        Trigger(
+                            keys = listOf(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN)),
+                            longPressDelay = 1000,
+                        ),
+                    actionList = listOf(TEST_ACTION_2),
+                )
 
             loadKeyMaps(keyMap1, keyMap2)
 
@@ -1781,16 +1891,15 @@ class KeyMapAlgorithmTest {
             loadKeyMaps(KeyMap(trigger = trigger, actionList = actionList))
 
             // WHEN
-            whenever(performActionsUseCase.getErrorSnapshot()).thenReturn(object :
-                ActionErrorSnapshot {
-                override fun getError(action: ActionData): KMError {
-                    return KMError.NoCompatibleImeChosen
-                }
+            whenever(performActionsUseCase.getErrorSnapshot()).thenReturn(
+                object :
+                    ActionErrorSnapshot {
+                    override fun getError(action: ActionData): KMError = KMError.NoCompatibleImeChosen
 
-                override fun getErrors(actions: List<ActionData>): Map<ActionData, KMError?> {
-                    return mapOf(actionList[0].data to KMError.NoCompatibleImeChosen)
-                }
-            })
+                    override fun getErrors(actions: List<ActionData>): Map<ActionData, KMError?> =
+                        mapOf(actionList[0].data to KMError.NoCompatibleImeChosen)
+                },
+            )
 
             assertThat(
                 inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN),
@@ -1807,28 +1916,30 @@ class KeyMapAlgorithmTest {
      * #689
      */
     @Test
-    fun `perform all actions once when key map is triggered`() = runTest(testDispatcher) {
-        // GIVEN
-        val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
+    fun `perform all actions once when key map is triggered`() =
+        runTest(testDispatcher) {
+            // GIVEN
+            val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
 
-        val actionList = listOf(
-            Action(data = ActionData.InputKeyEvent(1), delayBeforeNextAction = 1000),
-            Action(data = ActionData.InputKeyEvent(2)),
-        )
+            val actionList =
+                listOf(
+                    Action(data = ActionData.InputKeyEvent(1), delayBeforeNextAction = 1000),
+                    Action(data = ActionData.InputKeyEvent(2)),
+                )
 
-        loadKeyMaps(
-            KeyMap(trigger = trigger, actionList = actionList),
-        )
+            loadKeyMaps(
+                KeyMap(trigger = trigger, actionList = actionList),
+            )
 
-        // WHEN
-        assertThat(inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN), `is`(true))
-        assertThat(inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP), `is`(true))
-        advanceUntilIdle()
+            // WHEN
+            assertThat(inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN), `is`(true))
+            assertThat(inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP), `is`(true))
+            advanceUntilIdle()
 
-        // THEN
-        verify(performActionsUseCase, times(1)).perform(actionList[0].data)
-        verify(performActionsUseCase, times(1)).perform(actionList[1].data)
-    }
+            // THEN
+            verify(performActionsUseCase, times(1)).perform(actionList[0].data)
+            verify(performActionsUseCase, times(1)).perform(actionList[1].data)
+        }
 
     /**
      * #663
@@ -1839,12 +1950,13 @@ class KeyMapAlgorithmTest {
             // GIVEN
             val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
 
-            val action = Action(
-                data = ActionData.InputKeyEvent(1),
-                repeat = true,
-                repeatMode = RepeatMode.LIMIT_REACHED,
-                repeatLimit = 2,
-            )
+            val action =
+                Action(
+                    data = ActionData.InputKeyEvent(1),
+                    repeat = true,
+                    repeatMode = RepeatMode.LIMIT_REACHED,
+                    repeatLimit = 2,
+                )
 
             loadKeyMaps(
                 KeyMap(trigger = trigger, actionList = listOf(action)),
@@ -1869,19 +1981,22 @@ class KeyMapAlgorithmTest {
             // GIVEN
             val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
 
-            val action1 = Action(
-                data = ActionData.InputKeyEvent(keyCode = 1),
-                delayBeforeNextAction = 500,
-            )
+            val action1 =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = 1),
+                    delayBeforeNextAction = 500,
+                )
 
-            val action2 = Action(
-                data = ActionData.InputKeyEvent(keyCode = 2),
-                delayBeforeNextAction = 1000,
-            )
+            val action2 =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = 2),
+                    delayBeforeNextAction = 1000,
+                )
 
-            val action3 = Action(
-                data = ActionData.InputKeyEvent(keyCode = 3),
-            )
+            val action3 =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = 3),
+                )
 
             loadKeyMaps(
                 KeyMap(
@@ -1904,36 +2019,37 @@ class KeyMapAlgorithmTest {
         }
 
     @Test
-    fun `multiple key maps with same trigger, perform both key maps`() = runTest(testDispatcher) {
-        // GIVEN
-        val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
+    fun `multiple key maps with same trigger, perform both key maps`() =
+        runTest(testDispatcher) {
+            // GIVEN
+            val trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
 
-        loadKeyMaps(
-            KeyMap(
-                trigger = trigger,
-                actionList = listOf(TEST_ACTION),
-            ),
-            KeyMap(
-                trigger = trigger,
-                actionList = listOf(TEST_ACTION_2),
-            ),
-        )
+            loadKeyMaps(
+                KeyMap(
+                    trigger = trigger,
+                    actionList = listOf(TEST_ACTION),
+                ),
+                KeyMap(
+                    trigger = trigger,
+                    actionList = listOf(TEST_ACTION_2),
+                ),
+            )
 
-        // WHEN
+            // WHEN
 
-        // ensure consumed
-        assertThat(
-            inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN),
-            `is`(true),
-        )
-        delay(50)
-        assertThat(inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP), `is`(true))
+            // ensure consumed
+            assertThat(
+                inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_DOWN),
+                `is`(true),
+            )
+            delay(50)
+            assertThat(inputKeyEvent(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.ACTION_UP), `is`(true))
 
-        // THEN
+            // THEN
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION_2.data)
-    }
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+            verify(performActionsUseCase, times(1)).perform(TEST_ACTION_2.data)
+        }
 
     /**
      * issue #663
@@ -1942,17 +2058,19 @@ class KeyMapAlgorithmTest {
     fun `when triggering action that repeats until limit reached, then stop repeating when the limit has been reached and not when the trigger is released`() =
         runTest(testDispatcher) {
             // GIVEN
-            val action = Action(
-                data = ActionData.InputKeyEvent(keyCode = 1),
-                repeat = true,
-                repeatMode = RepeatMode.LIMIT_REACHED,
-                repeatLimit = 10,
-            )
+            val action =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = 1),
+                    repeat = true,
+                    repeatMode = RepeatMode.LIMIT_REACHED,
+                    repeatLimit = 10,
+                )
 
-            val keyMap = KeyMap(
-                trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)),
-                actionList = listOf(action),
-            )
+            val keyMap =
+                KeyMap(
+                    trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)),
+                    actionList = listOf(action),
+                )
 
             loadKeyMaps(keyMap)
 
@@ -1971,19 +2089,21 @@ class KeyMapAlgorithmTest {
     fun `when triggering action that repeats until pressed again with repeat limit, then stop repeating when the trigger has been pressed again`() =
         runTest(testDispatcher) {
             // GIVEN
-            val action = Action(
-                data = ActionData.InputKeyEvent(keyCode = 1),
-                repeat = true,
-                repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
-                repeatLimit = 10,
-                repeatRate = 100,
-                repeatDelay = 100,
-            )
+            val action =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = 1),
+                    repeat = true,
+                    repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
+                    repeatLimit = 10,
+                    repeatRate = 100,
+                    repeatDelay = 100,
+                )
 
-            val keyMap = KeyMap(
-                trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)),
-                actionList = listOf(action),
-            )
+            val keyMap =
+                KeyMap(
+                    trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)),
+                    actionList = listOf(action),
+                )
 
             loadKeyMaps(keyMap)
 
@@ -2006,17 +2126,19 @@ class KeyMapAlgorithmTest {
     fun `when triggering action that repeats until pressed again with repeat limit, then stop repeating when limit reached and trigger hasn't been pressed again`() =
         runTest(testDispatcher) {
             // GIVEN
-            val action = Action(
-                data = ActionData.InputKeyEvent(keyCode = 1),
-                repeat = true,
-                repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
-                repeatLimit = 10,
-            )
+            val action =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = 1),
+                    repeat = true,
+                    repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
+                    repeatLimit = 10,
+                )
 
-            val keyMap = KeyMap(
-                trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)),
-                actionList = listOf(action),
-            )
+            val keyMap =
+                KeyMap(
+                    trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)),
+                    actionList = listOf(action),
+                )
 
             loadKeyMaps(keyMap)
 
@@ -2040,19 +2162,21 @@ class KeyMapAlgorithmTest {
     fun `when triggering action that repeats until released with repeat limit, then stop repeating when the trigger has been released`() =
         runTest(testDispatcher) {
             // GIVEN
-            val action = Action(
-                data = ActionData.InputKeyEvent(keyCode = 1),
-                repeat = true,
-                repeatMode = RepeatMode.TRIGGER_RELEASED,
-                repeatLimit = 10,
-                repeatRate = 100,
-                repeatDelay = 100,
-            )
+            val action =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = 1),
+                    repeat = true,
+                    repeatMode = RepeatMode.TRIGGER_RELEASED,
+                    repeatLimit = 10,
+                    repeatRate = 100,
+                    repeatDelay = 100,
+                )
 
-            val keyMap = KeyMap(
-                trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)),
-                actionList = listOf(action),
-            )
+            val keyMap =
+                KeyMap(
+                    trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)),
+                    actionList = listOf(action),
+                )
 
             loadKeyMaps(keyMap)
 
@@ -2070,17 +2194,19 @@ class KeyMapAlgorithmTest {
     fun `when triggering action that repeats until released with repeat limit, then stop repeating when the limit has been reached and the action is still being held down`() =
         runTest(testDispatcher) {
             // GIVEN
-            val action = Action(
-                data = ActionData.InputKeyEvent(keyCode = 1),
-                repeat = true,
-                repeatMode = RepeatMode.TRIGGER_RELEASED,
-                repeatLimit = 10,
-            )
+            val action =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = 1),
+                    repeat = true,
+                    repeatMode = RepeatMode.TRIGGER_RELEASED,
+                    repeatLimit = 10,
+                )
 
-            val keyMap = KeyMap(
-                trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)),
-                actionList = listOf(action),
-            )
+            val keyMap =
+                KeyMap(
+                    trigger = singleKeyTrigger(triggerKey(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)),
+                    actionList = listOf(action),
+                )
 
             loadKeyMaps(keyMap)
 
@@ -2097,226 +2223,246 @@ class KeyMapAlgorithmTest {
      * issue #653
      */
     @Test
-    fun `overlapping triggers 3`() = runTest(testDispatcher) {
-        // GIVEN
-        val keyMaps = arrayOf(
-            KeyMap(
-                trigger = parallelTrigger(
-                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
-                ),
-                actionList = listOf(Action(data = ActionData.InputKeyEvent(keyCode = 45))),
-            ),
-            KeyMap(
-                trigger = parallelTrigger(
-                    triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
-                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
-                ),
-                actionList = listOf(Action(data = ActionData.InputKeyEvent(keyCode = 81))),
-            ),
-        )
+    fun `overlapping triggers 3`() =
+        runTest(testDispatcher) {
+            // GIVEN
+            val keyMaps =
+                arrayOf(
+                    KeyMap(
+                        trigger =
+                            parallelTrigger(
+                                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+                            ),
+                        actionList = listOf(Action(data = ActionData.InputKeyEvent(keyCode = 45))),
+                    ),
+                    KeyMap(
+                        trigger =
+                            parallelTrigger(
+                                triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
+                                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+                            ),
+                        actionList = listOf(Action(data = ActionData.InputKeyEvent(keyCode = 81))),
+                    ),
+                )
 
-        loadKeyMaps(*keyMaps)
+            loadKeyMaps(*keyMaps)
 
-        inOrder(performActionsUseCase) {
-            // WHEN
-            inputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_VOLUME_UP,
-                action = KeyEvent.ACTION_DOWN,
-            )
+            inOrder(performActionsUseCase) {
+                // WHEN
+                inputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+                    action = KeyEvent.ACTION_DOWN,
+                )
 
-            inputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
-                action = KeyEvent.ACTION_DOWN,
-            )
+                inputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                    action = KeyEvent.ACTION_DOWN,
+                )
 
-            inputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_VOLUME_UP,
-                action = KeyEvent.ACTION_UP,
-            )
+                inputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_VOLUME_UP,
+                    action = KeyEvent.ACTION_UP,
+                )
 
-            inputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
-                action = KeyEvent.ACTION_UP,
-            )
+                inputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                    action = KeyEvent.ACTION_UP,
+                )
 
-            // THEN
-            verify(performActionsUseCase, times(1)).perform(keyMaps[1].actionList[0].data)
-            verify(performActionsUseCase, never()).perform(keyMaps[0].actionList[0].data)
+                // THEN
+                verify(performActionsUseCase, times(1)).perform(keyMaps[1].actionList[0].data)
+                verify(performActionsUseCase, never()).perform(keyMaps[0].actionList[0].data)
 
-            // WHEN
+                // WHEN
 
-            inputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
-                action = KeyEvent.ACTION_DOWN,
-            )
+                inputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                    action = KeyEvent.ACTION_DOWN,
+                )
 
-            inputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
-                action = KeyEvent.ACTION_UP,
-            )
+                inputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                    action = KeyEvent.ACTION_UP,
+                )
 
-            // THEN
-            verify(performActionsUseCase, times(1)).perform(keyMaps[0].actionList[0].data)
-            verify(performActionsUseCase, never()).perform(keyMaps[1].actionList[0].data)
+                // THEN
+                verify(performActionsUseCase, times(1)).perform(keyMaps[0].actionList[0].data)
+                verify(performActionsUseCase, never()).perform(keyMaps[1].actionList[0].data)
+            }
         }
-    }
 
     /**
      * issue #653
      */
     @Test
-    fun `overlapping triggers 2`() = runTest(testDispatcher) {
-        // GIVEN
-        val keyMaps = arrayOf(
-            KeyMap(
-                trigger = parallelTrigger(
-                    triggerKey(KeyEvent.KEYCODE_P),
-                ),
-                actionList = listOf(Action(data = ActionData.InputKeyEvent(keyCode = 45))),
-            ),
-            KeyMap(
-                trigger = parallelTrigger(
-                    triggerKey(KeyEvent.KEYCODE_META_LEFT),
-                    triggerKey(KeyEvent.KEYCODE_P),
-                ),
-                actionList = listOf(Action(data = ActionData.InputKeyEvent(keyCode = 81))),
-            ),
-        )
+    fun `overlapping triggers 2`() =
+        runTest(testDispatcher) {
+            // GIVEN
+            val keyMaps =
+                arrayOf(
+                    KeyMap(
+                        trigger =
+                            parallelTrigger(
+                                triggerKey(KeyEvent.KEYCODE_P),
+                            ),
+                        actionList = listOf(Action(data = ActionData.InputKeyEvent(keyCode = 45))),
+                    ),
+                    KeyMap(
+                        trigger =
+                            parallelTrigger(
+                                triggerKey(KeyEvent.KEYCODE_META_LEFT),
+                                triggerKey(KeyEvent.KEYCODE_P),
+                            ),
+                        actionList = listOf(Action(data = ActionData.InputKeyEvent(keyCode = 81))),
+                    ),
+                )
 
-        loadKeyMaps(*keyMaps)
+            loadKeyMaps(*keyMaps)
 
-        inOrder(performActionsUseCase) {
-            // WHEN
-            inputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_META_LEFT,
-                action = KeyEvent.ACTION_DOWN,
-                metaState = KeyEvent.META_META_LEFT_ON or KeyEvent.META_META_ON,
-            )
+            inOrder(performActionsUseCase) {
+                // WHEN
+                inputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_META_LEFT,
+                    action = KeyEvent.ACTION_DOWN,
+                    metaState = KeyEvent.META_META_LEFT_ON or KeyEvent.META_META_ON,
+                )
 
-            inputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_P,
-                action = KeyEvent.ACTION_DOWN,
-                metaState = KeyEvent.META_META_LEFT_ON or KeyEvent.META_META_ON,
-            )
+                inputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_P,
+                    action = KeyEvent.ACTION_DOWN,
+                    metaState = KeyEvent.META_META_LEFT_ON or KeyEvent.META_META_ON,
+                )
 
-            inputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_META_LEFT,
-                action = KeyEvent.ACTION_UP,
-            )
+                inputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_META_LEFT,
+                    action = KeyEvent.ACTION_UP,
+                )
 
-            inputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_P,
-                action = KeyEvent.ACTION_UP,
-            )
+                inputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_P,
+                    action = KeyEvent.ACTION_UP,
+                )
 
-            // THEN
-            verify(performActionsUseCase, times(1)).perform(keyMaps[1].actionList[0].data)
-            verify(performActionsUseCase, never()).perform(keyMaps[0].actionList[0].data)
+                // THEN
+                verify(performActionsUseCase, times(1)).perform(keyMaps[1].actionList[0].data)
+                verify(performActionsUseCase, never()).perform(keyMaps[0].actionList[0].data)
 
-            // WHEN
-            mockParallelTrigger(keyMaps[0].trigger)
+                // WHEN
+                mockParallelTrigger(keyMaps[0].trigger)
 
-            // THEN
-            verify(performActionsUseCase, times(1)).perform(keyMaps[0].actionList[0].data)
-            verify(performActionsUseCase, never()).perform(keyMaps[1].actionList[0].data)
+                // THEN
+                verify(performActionsUseCase, times(1)).perform(keyMaps[0].actionList[0].data)
+                verify(performActionsUseCase, never()).perform(keyMaps[1].actionList[0].data)
+            }
         }
-    }
 
     /**
      * issue #653
      */
     @Test
-    fun `overlapping triggers 1`() = runTest(testDispatcher) {
-        // GIVEN
-        val keyMaps = arrayOf(
-            KeyMap(
-                trigger = parallelTrigger(
-                    triggerKey(KeyEvent.KEYCODE_CTRL_LEFT),
-                    triggerKey(KeyEvent.KEYCODE_SHIFT_LEFT),
-                    triggerKey(KeyEvent.KEYCODE_1),
-                ),
-                actionList = listOf(Action(data = ActionData.InputKeyEvent(keyCode = 1))),
-            ),
-            KeyMap(
-                trigger = parallelTrigger(
-                    triggerKey(KeyEvent.KEYCODE_CTRL_LEFT),
-                    triggerKey(KeyEvent.KEYCODE_1),
-                ),
-                actionList = listOf(Action(data = ActionData.InputKeyEvent(keyCode = 2))),
-            ),
-        )
+    fun `overlapping triggers 1`() =
+        runTest(testDispatcher) {
+            // GIVEN
+            val keyMaps =
+                arrayOf(
+                    KeyMap(
+                        trigger =
+                            parallelTrigger(
+                                triggerKey(KeyEvent.KEYCODE_CTRL_LEFT),
+                                triggerKey(KeyEvent.KEYCODE_SHIFT_LEFT),
+                                triggerKey(KeyEvent.KEYCODE_1),
+                            ),
+                        actionList = listOf(Action(data = ActionData.InputKeyEvent(keyCode = 1))),
+                    ),
+                    KeyMap(
+                        trigger =
+                            parallelTrigger(
+                                triggerKey(KeyEvent.KEYCODE_CTRL_LEFT),
+                                triggerKey(KeyEvent.KEYCODE_1),
+                            ),
+                        actionList = listOf(Action(data = ActionData.InputKeyEvent(keyCode = 2))),
+                    ),
+                )
 
-        loadKeyMaps(*keyMaps)
+            loadKeyMaps(*keyMaps)
 
-        inOrder(performActionsUseCase) {
-            // WHEN
-            inputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_CTRL_LEFT,
-                action = KeyEvent.ACTION_DOWN,
-                metaState = KeyEvent.META_CTRL_LEFT_ON or KeyEvent.META_CTRL_ON,
-            )
+            inOrder(performActionsUseCase) {
+                // WHEN
+                inputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_CTRL_LEFT,
+                    action = KeyEvent.ACTION_DOWN,
+                    metaState = KeyEvent.META_CTRL_LEFT_ON or KeyEvent.META_CTRL_ON,
+                )
 
-            inputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_SHIFT_LEFT,
-                action = KeyEvent.ACTION_DOWN,
-                metaState = KeyEvent.META_CTRL_LEFT_ON or KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_LEFT_ON or KeyEvent.META_SHIFT_ON,
-            )
+                inputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_SHIFT_LEFT,
+                    action = KeyEvent.ACTION_DOWN,
+                    metaState =
+                        KeyEvent.META_CTRL_LEFT_ON or
+                            KeyEvent.META_CTRL_ON or
+                            KeyEvent.META_SHIFT_LEFT_ON or
+                            KeyEvent.META_SHIFT_ON,
+                )
 
-            inputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_1,
-                action = KeyEvent.ACTION_DOWN,
-                metaState = KeyEvent.META_CTRL_LEFT_ON or KeyEvent.META_CTRL_ON or KeyEvent.META_SHIFT_LEFT_ON or KeyEvent.META_SHIFT_ON,
-            )
+                inputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_1,
+                    action = KeyEvent.ACTION_DOWN,
+                    metaState =
+                        KeyEvent.META_CTRL_LEFT_ON or
+                            KeyEvent.META_CTRL_ON or
+                            KeyEvent.META_SHIFT_LEFT_ON or
+                            KeyEvent.META_SHIFT_ON,
+                )
 
-            inputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_CTRL_LEFT,
-                action = KeyEvent.ACTION_UP,
-                metaState = KeyEvent.META_SHIFT_LEFT_ON or KeyEvent.META_SHIFT_ON,
-            )
+                inputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_CTRL_LEFT,
+                    action = KeyEvent.ACTION_UP,
+                    metaState = KeyEvent.META_SHIFT_LEFT_ON or KeyEvent.META_SHIFT_ON,
+                )
 
-            inputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_SHIFT_LEFT,
-                action = KeyEvent.ACTION_UP,
-            )
+                inputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_SHIFT_LEFT,
+                    action = KeyEvent.ACTION_UP,
+                )
 
-            inputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_1,
-                action = KeyEvent.ACTION_UP,
-            )
+                inputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_1,
+                    action = KeyEvent.ACTION_UP,
+                )
 
-            // THEN
-            verify(performActionsUseCase, times(1)).perform(keyMaps[0].actionList[0].data)
-            verify(performActionsUseCase, never()).perform(keyMaps[1].actionList[0].data)
+                // THEN
+                verify(performActionsUseCase, times(1)).perform(keyMaps[0].actionList[0].data)
+                verify(performActionsUseCase, never()).perform(keyMaps[1].actionList[0].data)
 
-            // WHEN
-            inputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_CTRL_LEFT,
-                action = KeyEvent.ACTION_DOWN,
-                metaState = KeyEvent.META_CTRL_LEFT_ON or KeyEvent.META_CTRL_ON,
-            )
+                // WHEN
+                inputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_CTRL_LEFT,
+                    action = KeyEvent.ACTION_DOWN,
+                    metaState = KeyEvent.META_CTRL_LEFT_ON or KeyEvent.META_CTRL_ON,
+                )
 
-            inputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_1,
-                action = KeyEvent.ACTION_DOWN,
-                metaState = KeyEvent.META_CTRL_LEFT_ON or KeyEvent.META_CTRL_ON,
-            )
+                inputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_1,
+                    action = KeyEvent.ACTION_DOWN,
+                    metaState = KeyEvent.META_CTRL_LEFT_ON or KeyEvent.META_CTRL_ON,
+                )
 
-            inputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_CTRL_LEFT,
-                action = KeyEvent.ACTION_UP,
-                metaState = KeyEvent.META_SHIFT_LEFT_ON or KeyEvent.META_SHIFT_ON,
-            )
+                inputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_CTRL_LEFT,
+                    action = KeyEvent.ACTION_UP,
+                    metaState = KeyEvent.META_SHIFT_LEFT_ON or KeyEvent.META_SHIFT_ON,
+                )
 
-            inputKeyEvent(
-                keyCode = KeyEvent.KEYCODE_1,
-                action = KeyEvent.ACTION_UP,
-            )
+                inputKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_1,
+                    action = KeyEvent.ACTION_UP,
+                )
 
-            // THEN
-            verify(performActionsUseCase, times(1)).perform(keyMaps[1].actionList[0].data)
-            verify(performActionsUseCase, never()).perform(keyMaps[0].actionList[0].data)
+                // THEN
+                verify(performActionsUseCase, times(1)).perform(keyMaps[1].actionList[0].data)
+                verify(performActionsUseCase, never()).perform(keyMaps[0].actionList[0].data)
+            }
         }
-    }
 
     /**
      * issue #664
@@ -2325,10 +2471,11 @@ class KeyMapAlgorithmTest {
     fun `imitate button presses when a short press trigger with multiple keys fails`() =
         runTest(testDispatcher) {
             // GIVEN
-            val trigger = parallelTrigger(
-                triggerKey(keyCode = 1),
-                triggerKey(keyCode = 2),
-            )
+            val trigger =
+                parallelTrigger(
+                    triggerKey(keyCode = 1),
+                    triggerKey(keyCode = 2),
+                )
 
             loadKeyMaps(
                 KeyMap(
@@ -2406,10 +2553,11 @@ class KeyMapAlgorithmTest {
     fun `don't imitate button press when a short press trigger is triggered`() =
         runTest(testDispatcher) {
             // GIVEN
-            val trigger = parallelTrigger(
-                triggerKey(keyCode = 1),
-                triggerKey(keyCode = 2),
-            )
+            val trigger =
+                parallelTrigger(
+                    triggerKey(keyCode = 1),
+                    triggerKey(keyCode = 2),
+                )
 
             loadKeyMaps(
                 KeyMap(
@@ -2450,18 +2598,20 @@ class KeyMapAlgorithmTest {
     fun `don't repeat when trigger is released for an action that has these options when the trigger is held down`() =
         runTest(testDispatcher) {
             // GIVEN
-            val action = Action(
-                data = ActionData.InputKeyEvent(keyCode = 1),
-                repeat = true,
-                delayBeforeNextAction = 10,
-                repeatDelay = 10,
-                repeatRate = 190,
-            )
+            val action =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = 1),
+                    repeat = true,
+                    delayBeforeNextAction = 10,
+                    repeatDelay = 10,
+                    repeatRate = 190,
+                )
 
-            val keyMap = KeyMap(
-                trigger = singleKeyTrigger(triggerKey(keyCode = 2)),
-                actionList = listOf(action),
-            )
+            val keyMap =
+                KeyMap(
+                    trigger = singleKeyTrigger(triggerKey(keyCode = 2)),
+                    actionList = listOf(action),
+                )
 
             loadKeyMaps(keyMap)
             // WHEN
@@ -2495,17 +2645,19 @@ class KeyMapAlgorithmTest {
         runTest(testDispatcher) {
             // given
             val trigger1 = parallelTrigger(triggerKey(keyCode = 1))
-            val action1 = Action(
-                data = ActionData.InputKeyEvent(keyCode = 2),
-                repeat = true,
-            )
+            val action1 =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = 2),
+                    repeat = true,
+                )
 
             val trigger2 =
                 parallelTrigger(triggerKey(clickType = ClickType.LONG_PRESS, keyCode = 1))
-            val action2 = Action(
-                data = ActionData.InputKeyEvent(keyCode = 3),
-                repeat = true,
-            )
+            val action2 =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = 3),
+                    repeat = true,
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = trigger1, actionList = listOf(action1)),
@@ -2545,10 +2697,11 @@ class KeyMapAlgorithmTest {
         runTest(testDispatcher) {
             // given
             val trigger1 = parallelTrigger(triggerKey(keyCode = 1))
-            val action1 = Action(
-                data = ActionData.InputKeyEvent(keyCode = 2),
-                repeat = true,
-            )
+            val action1 =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = 2),
+                    repeat = true,
+                )
 
             val trigger2 =
                 sequenceTrigger(triggerKey(clickType = ClickType.DOUBLE_PRESS, keyCode = 1))
@@ -2594,17 +2747,19 @@ class KeyMapAlgorithmTest {
         runTest(testDispatcher) {
             // given
             val trigger1 = parallelTrigger(triggerKey(keyCode = 1))
-            val action1 = Action(
-                data = ActionData.InputKeyEvent(keyCode = 2),
-                repeat = true,
-            )
+            val action1 =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = 2),
+                    repeat = true,
+                )
 
             val trigger2 =
                 parallelTrigger(triggerKey(clickType = ClickType.LONG_PRESS, keyCode = 1))
-            val action2 = Action(
-                data = ActionData.InputKeyEvent(keyCode = 3),
-                repeat = true,
-            )
+            val action2 =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = 3),
+                    repeat = true,
+                )
 
             val trigger3 =
                 sequenceTrigger(triggerKey(clickType = ClickType.DOUBLE_PRESS, keyCode = 1))
@@ -2655,11 +2810,12 @@ class KeyMapAlgorithmTest {
         runTest(testDispatcher) {
             // given
             val trigger1 = parallelTrigger(triggerKey(keyCode = 1))
-            val action1 = Action(
-                data = ActionData.InputKeyEvent(keyCode = 2),
-                repeat = true,
-                repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
-            )
+            val action1 =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = 2),
+                    repeat = true,
+                    repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
+                )
 
             val trigger2 =
                 parallelTrigger(triggerKey(clickType = ClickType.LONG_PRESS, keyCode = 1))
@@ -2705,11 +2861,12 @@ class KeyMapAlgorithmTest {
         runTest(testDispatcher) {
             // given
             val trigger1 = parallelTrigger(triggerKey(keyCode = 1))
-            val action1 = Action(
-                data = ActionData.InputKeyEvent(keyCode = 2),
-                repeat = true,
-                repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
-            )
+            val action1 =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = 2),
+                    repeat = true,
+                    repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
+                )
 
             val trigger2 =
                 sequenceTrigger(triggerKey(clickType = ClickType.DOUBLE_PRESS, keyCode = 1))
@@ -2760,18 +2917,20 @@ class KeyMapAlgorithmTest {
         runTest(testDispatcher) {
             // given
             val trigger1 = parallelTrigger(triggerKey(keyCode = 1))
-            val action1 = Action(
-                data = ActionData.InputKeyEvent(keyCode = 2),
-                repeat = true,
-                repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
-            )
+            val action1 =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = 2),
+                    repeat = true,
+                    repeatMode = RepeatMode.TRIGGER_PRESSED_AGAIN,
+                )
 
             val trigger2 =
                 parallelTrigger(triggerKey(clickType = ClickType.LONG_PRESS, keyCode = 1))
-            val action2 = Action(
-                data = ActionData.InputKeyEvent(keyCode = 3),
-                repeat = true,
-            )
+            val action2 =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = 3),
+                    repeat = true,
+                )
 
             val trigger3 =
                 sequenceTrigger(triggerKey(clickType = ClickType.DOUBLE_PRESS, keyCode = 1))
@@ -2819,10 +2978,11 @@ class KeyMapAlgorithmTest {
     @Test
     fun `short press key and double press same key sequence trigger, double press key, don't perform action`() =
         runTest(testDispatcher) {
-            val trigger = sequenceTrigger(
-                triggerKey(KeyEvent.KEYCODE_A),
-                triggerKey(KeyEvent.KEYCODE_A, clickType = ClickType.DOUBLE_PRESS),
-            )
+            val trigger =
+                sequenceTrigger(
+                    triggerKey(KeyEvent.KEYCODE_A),
+                    triggerKey(KeyEvent.KEYCODE_A, clickType = ClickType.DOUBLE_PRESS),
+                )
 
             loadKeyMaps(
                 KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)),
@@ -2842,177 +3002,182 @@ class KeyMapAlgorithmTest {
      * issue #563
      */
     @Test
-    fun sendKeyEventActionWhenImitatingButtonPresses() = runTest(testDispatcher) {
-        val trigger = singleKeyTrigger(
-            triggerKey(
-                keyCode = KeyEvent.KEYCODE_META_LEFT,
-                device = FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-            ),
-        )
+    fun sendKeyEventActionWhenImitatingButtonPresses() =
+        runTest(testDispatcher) {
+            val trigger =
+                singleKeyTrigger(
+                    triggerKey(
+                        keyCode = KeyEvent.KEYCODE_META_LEFT,
+                        device = FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                    ),
+                )
 
-        val action = Action(
-            data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_META_LEFT),
-            holdDown = true,
-        )
+            val action =
+                Action(
+                    data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_META_LEFT),
+                    holdDown = true,
+                )
 
-        loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(action)))
+            loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(action)))
 
-        val metaState = KeyEvent.META_META_ON.withFlag(KeyEvent.META_META_LEFT_ON)
+            val metaState = KeyEvent.META_META_ON.withFlag(KeyEvent.META_META_LEFT_ON)
 
-        inOrder(detectKeyMapsUseCase, performActionsUseCase) {
-            inputKeyEvent(
-                KeyEvent.KEYCODE_META_LEFT,
-                KeyEvent.ACTION_DOWN,
-                triggerKeyDeviceToInputDevice(
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+            inOrder(detectKeyMapsUseCase, performActionsUseCase) {
+                inputKeyEvent(
+                    KeyEvent.KEYCODE_META_LEFT,
+                    KeyEvent.ACTION_DOWN,
+                    triggerKeyDeviceToInputDevice(
+                        FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                        FAKE_KEYBOARD_DEVICE_ID,
+                    ),
+                    metaState,
+                    scanCode = 117,
+                )
+                inputKeyEvent(
+                    KeyEvent.KEYCODE_E,
+                    KeyEvent.ACTION_DOWN,
+                    triggerKeyDeviceToInputDevice(
+                        FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                        FAKE_KEYBOARD_DEVICE_ID,
+                    ),
+                    metaState,
+                    scanCode = 33,
+                )
+                inputKeyEvent(
+                    KeyEvent.KEYCODE_META_LEFT,
+                    KeyEvent.ACTION_UP,
+                    triggerKeyDeviceToInputDevice(
+                        FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                        FAKE_KEYBOARD_DEVICE_ID,
+                    ),
+                    metaState,
+                    scanCode = 117,
+                )
+                inputKeyEvent(
+                    KeyEvent.KEYCODE_E,
+                    KeyEvent.ACTION_UP,
+                    triggerKeyDeviceToInputDevice(
+                        FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                        FAKE_KEYBOARD_DEVICE_ID,
+                    ),
+                    scanCode = 33,
+                )
+
+                verify(performActionsUseCase, times(1)).perform(
+                    action.data,
+                    InputEventAction.DOWN,
+                    metaState,
+                )
+
+                verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
+                    KeyEvent.KEYCODE_E,
+                    metaState,
                     FAKE_KEYBOARD_DEVICE_ID,
-                ),
-                metaState,
-                scanCode = 117,
-            )
-            inputKeyEvent(
-                KeyEvent.KEYCODE_E,
-                KeyEvent.ACTION_DOWN,
-                triggerKeyDeviceToInputDevice(
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                    KeyEvent.ACTION_DOWN,
+                    scanCode = 33,
+                )
+
+                verify(performActionsUseCase, times(1)).perform(
+                    action.data,
+                    InputEventAction.UP,
+                    0,
+                )
+
+                verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
+                    KeyEvent.KEYCODE_E,
+                    0,
                     FAKE_KEYBOARD_DEVICE_ID,
-                ),
-                metaState,
-                scanCode = 33,
-            )
-            inputKeyEvent(
-                KeyEvent.KEYCODE_META_LEFT,
-                KeyEvent.ACTION_UP,
-                triggerKeyDeviceToInputDevice(
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                    KeyEvent.ACTION_UP,
+                    scanCode = 33,
+                )
+
+                inputKeyEvent(
+                    KeyEvent.KEYCODE_META_LEFT,
+                    KeyEvent.ACTION_DOWN,
+                    triggerKeyDeviceToInputDevice(
+                        FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                        FAKE_KEYBOARD_DEVICE_ID,
+                    ),
+                    metaState,
+                    scanCode = 117,
+                )
+                inputKeyEvent(
+                    KeyEvent.KEYCODE_E,
+                    KeyEvent.ACTION_DOWN,
+                    triggerKeyDeviceToInputDevice(
+                        FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                        FAKE_KEYBOARD_DEVICE_ID,
+                    ),
+                    metaState,
+                    scanCode = 33,
+                )
+                inputKeyEvent(
+                    KeyEvent.KEYCODE_E,
+                    KeyEvent.ACTION_UP,
+                    triggerKeyDeviceToInputDevice(
+                        FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                        FAKE_KEYBOARD_DEVICE_ID,
+                    ),
+                    metaState,
+                    scanCode = 33,
+                )
+                inputKeyEvent(
+                    KeyEvent.KEYCODE_META_LEFT,
+                    KeyEvent.ACTION_UP,
+                    triggerKeyDeviceToInputDevice(
+                        FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                        FAKE_KEYBOARD_DEVICE_ID,
+                    ),
+                    metaState = 0,
+                    scanCode = 117,
+                )
+
+                verify(performActionsUseCase, times(1)).perform(
+                    action.data,
+                    InputEventAction.DOWN,
+                    metaState,
+                )
+
+                verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
+                    KeyEvent.KEYCODE_E,
+                    metaState,
                     FAKE_KEYBOARD_DEVICE_ID,
-                ),
-                metaState,
-                scanCode = 117,
-            )
-            inputKeyEvent(
-                KeyEvent.KEYCODE_E,
-                KeyEvent.ACTION_UP,
-                triggerKeyDeviceToInputDevice(
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                    KeyEvent.ACTION_DOWN,
+                    scanCode = 33,
+                )
+
+                verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
+                    KeyEvent.KEYCODE_E,
+                    metaState,
                     FAKE_KEYBOARD_DEVICE_ID,
-                ),
-                scanCode = 33,
-            )
+                    KeyEvent.ACTION_UP,
+                    scanCode = 33,
+                )
 
-            verify(performActionsUseCase, times(1)).perform(
-                action.data,
-                InputEventAction.DOWN,
-                metaState,
-            )
+                verify(performActionsUseCase, times(1)).perform(
+                    action.data,
+                    InputEventAction.UP,
+                    0,
+                )
 
-            verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
-                KeyEvent.KEYCODE_E,
-                metaState,
-                FAKE_KEYBOARD_DEVICE_ID,
-                KeyEvent.ACTION_DOWN,
-                scanCode = 33,
-            )
-
-            verify(performActionsUseCase, times(1)).perform(
-                action.data,
-                InputEventAction.UP,
-                0,
-            )
-
-            verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
-                KeyEvent.KEYCODE_E,
-                0,
-                FAKE_KEYBOARD_DEVICE_ID,
-                KeyEvent.ACTION_UP,
-                scanCode = 33,
-            )
-
-            inputKeyEvent(
-                KeyEvent.KEYCODE_META_LEFT,
-                KeyEvent.ACTION_DOWN,
-                triggerKeyDeviceToInputDevice(
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    FAKE_KEYBOARD_DEVICE_ID,
-                ),
-                metaState,
-                scanCode = 117,
-            )
-            inputKeyEvent(
-                KeyEvent.KEYCODE_E,
-                KeyEvent.ACTION_DOWN,
-                triggerKeyDeviceToInputDevice(
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    FAKE_KEYBOARD_DEVICE_ID,
-                ),
-                metaState,
-                scanCode = 33,
-            )
-            inputKeyEvent(
-                KeyEvent.KEYCODE_E,
-                KeyEvent.ACTION_UP,
-                triggerKeyDeviceToInputDevice(
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    FAKE_KEYBOARD_DEVICE_ID,
-                ),
-                metaState,
-                scanCode = 33,
-            )
-            inputKeyEvent(
-                KeyEvent.KEYCODE_META_LEFT,
-                KeyEvent.ACTION_UP,
-                triggerKeyDeviceToInputDevice(
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    FAKE_KEYBOARD_DEVICE_ID,
-                ),
-                metaState = 0,
-                scanCode = 117,
-            )
-
-            verify(performActionsUseCase, times(1)).perform(
-                action.data,
-                InputEventAction.DOWN,
-                metaState,
-            )
-
-            verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
-                KeyEvent.KEYCODE_E,
-                metaState,
-                FAKE_KEYBOARD_DEVICE_ID,
-                KeyEvent.ACTION_DOWN,
-                scanCode = 33,
-            )
-
-            verify(detectKeyMapsUseCase, times(1)).imitateKeyEvent(
-                KeyEvent.KEYCODE_E,
-                metaState,
-                FAKE_KEYBOARD_DEVICE_ID,
-                KeyEvent.ACTION_UP,
-                scanCode = 33,
-            )
-
-            verify(performActionsUseCase, times(1)).perform(
-                action.data,
-                InputEventAction.UP,
-                0,
-            )
-
-            verifyNoMoreInteractions()
+                verifyNoMoreInteractions()
+            }
         }
-    }
 
     @Test
     fun `parallel trigger with 2 keys and the 2nd key is another trigger, press 2 key trigger, only the action for 2 key trigger should be performed `() =
         runTest(testDispatcher) {
             // GIVEN
-            val twoKeyTrigger = parallelTrigger(
-                triggerKey(KeyEvent.KEYCODE_SHIFT_LEFT),
-                triggerKey(KeyEvent.KEYCODE_A),
-            )
+            val twoKeyTrigger =
+                parallelTrigger(
+                    triggerKey(KeyEvent.KEYCODE_SHIFT_LEFT),
+                    triggerKey(KeyEvent.KEYCODE_A),
+                )
 
-            val oneKeyTrigger = singleKeyTrigger(
-                triggerKey(KeyEvent.KEYCODE_A),
-            )
+            val oneKeyTrigger =
+                singleKeyTrigger(
+                    triggerKey(KeyEvent.KEYCODE_A),
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = oneKeyTrigger, actionList = listOf(TEST_ACTION_2)),
@@ -3048,16 +3213,18 @@ class KeyMapAlgorithmTest {
     fun `trigger for a specific device and trigger for any device, input trigger from a different device, only detect trigger for any device`() =
         runTest(testDispatcher) {
             // GIVEN
-            val triggerKeyboard = singleKeyTrigger(
-                triggerKey(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_TRIGGER_KEY_DEVICE),
-            )
+            val triggerKeyboard =
+                singleKeyTrigger(
+                    triggerKey(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_TRIGGER_KEY_DEVICE),
+                )
 
-            val triggerAnyDevice = singleKeyTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    device = KeyEventTriggerDevice.Any,
-                ),
-            )
+            val triggerAnyDevice =
+                singleKeyTrigger(
+                    triggerKey(
+                        KeyEvent.KEYCODE_A,
+                        device = KeyEventTriggerDevice.Any,
+                    ),
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = triggerKeyboard, actionList = listOf(TEST_ACTION)),
@@ -3075,9 +3242,10 @@ class KeyMapAlgorithmTest {
     fun `trigger for a specific device, input trigger from a different device, do not detect trigger`() =
         runTest(testDispatcher) {
             // GIVEN
-            val triggerHeadphone = singleKeyTrigger(
-                triggerKey(KeyEvent.KEYCODE_A, FAKE_HEADPHONE_TRIGGER_KEY_DEVICE),
-            )
+            val triggerHeadphone =
+                singleKeyTrigger(
+                    triggerKey(KeyEvent.KEYCODE_A, FAKE_HEADPHONE_TRIGGER_KEY_DEVICE),
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = triggerHeadphone, actionList = listOf(TEST_ACTION)),
@@ -3097,17 +3265,19 @@ class KeyMapAlgorithmTest {
             val trigger =
                 singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_A, clickType = ClickType.LONG_PRESS))
 
-            val action = Action(
-                data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_B),
-                holdDown = true,
-                stopHoldDownWhenTriggerPressedAgain = true,
-            )
+            val action =
+                Action(
+                    data = ActionData.InputKeyEvent(KeyEvent.KEYCODE_B),
+                    holdDown = true,
+                    stopHoldDownWhenTriggerPressedAgain = true,
+                )
 
-            val keymap = KeyMap(
-                0,
-                trigger = trigger,
-                actionList = listOf(action),
-            )
+            val keymap =
+                KeyMap(
+                    0,
+                    trigger = trigger,
+                    actionList = listOf(action),
+                )
 
             loadKeyMaps(keymap)
 
@@ -3200,22 +3370,24 @@ class KeyMapAlgorithmTest {
     @Test
     fun `2x key sequence trigger and 3x key sequence trigger with the last 2 keys being the same, trigger 3x key trigger, ignore the first 2x key trigger`() =
         runTest(testDispatcher) {
-            val firstTrigger = sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    device = KeyEventTriggerDevice.Any,
-                ),
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
-            )
+            val firstTrigger =
+                sequenceTrigger(
+                    triggerKey(
+                        KeyEvent.KEYCODE_VOLUME_DOWN,
+                        device = KeyEventTriggerDevice.Any,
+                    ),
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
+                )
 
-            val secondTrigger = sequenceTrigger(
-                triggerKey(KeyEvent.KEYCODE_HOME),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    device = KeyEventTriggerDevice.Any,
-                ),
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
-            )
+            val secondTrigger =
+                sequenceTrigger(
+                    triggerKey(KeyEvent.KEYCODE_HOME),
+                    triggerKey(
+                        KeyEvent.KEYCODE_VOLUME_DOWN,
+                        device = KeyEventTriggerDevice.Any,
+                    ),
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = firstTrigger, actionList = listOf(TEST_ACTION)),
@@ -3241,10 +3413,11 @@ class KeyMapAlgorithmTest {
             HOME
              */
 
-            val homeTrigger = parallelTrigger(
-                triggerKey(KeyEvent.KEYCODE_HOME, clickType = ClickType.LONG_PRESS),
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
-            )
+            val homeTrigger =
+                parallelTrigger(
+                    triggerKey(KeyEvent.KEYCODE_HOME, clickType = ClickType.LONG_PRESS),
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = homeTrigger, actionList = listOf(TEST_ACTION)),
@@ -3265,10 +3438,11 @@ class KeyMapAlgorithmTest {
             RECENTS
              */
 
-            val recentsTrigger = parallelTrigger(
-                triggerKey(KeyEvent.KEYCODE_APP_SWITCH, clickType = ClickType.LONG_PRESS),
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
-            )
+            val recentsTrigger =
+                parallelTrigger(
+                    triggerKey(KeyEvent.KEYCODE_APP_SWITCH, clickType = ClickType.LONG_PRESS),
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = recentsTrigger, actionList = listOf(TEST_ACTION)),
@@ -3295,9 +3469,10 @@ class KeyMapAlgorithmTest {
         runTest(testDispatcher) {
             // given
             val shortPressTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
-            val doublePressTrigger = singleKeyTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.DOUBLE_PRESS),
-            )
+            val doublePressTrigger =
+                singleKeyTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.DOUBLE_PRESS),
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
@@ -3333,12 +3508,13 @@ class KeyMapAlgorithmTest {
         runTest(testDispatcher) {
             // GIVEN
             val shortPressTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
-            val longPressTrigger = singleKeyTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-            )
+            val longPressTrigger =
+                singleKeyTrigger(
+                    triggerKey(
+                        KeyEvent.KEYCODE_VOLUME_DOWN,
+                        clickType = ClickType.LONG_PRESS,
+                    ),
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
@@ -3365,53 +3541,57 @@ class KeyMapAlgorithmTest {
 
     @Test
     @Parameters(method = "params_repeatAction")
-    fun parallelTrigger_holdDown_repeatAction10Times(description: String, trigger: Trigger) =
-        runTest(testDispatcher) {
-            // given
-            val action = Action(
+    fun parallelTrigger_holdDown_repeatAction10Times(
+        description: String,
+        trigger: Trigger,
+    ) = runTest(testDispatcher) {
+        // given
+        val action =
+            Action(
                 data = ActionData.Volume.Up(showVolumeUi = false),
                 repeat = true,
             )
 
-            loadKeyMaps(KeyMap(0, trigger = trigger, actionList = listOf(action)))
+        loadKeyMaps(KeyMap(0, trigger = trigger, actionList = listOf(action)))
 
-            when (trigger.mode) {
-                is TriggerMode.Parallel -> mockParallelTrigger(trigger, delay = 2000L)
-                TriggerMode.Undefined -> mockTriggerKeyInput(trigger.keys[0], delay = 2000L)
-                TriggerMode.Sequence -> {}
-            }
-
-            verify(performActionsUseCase, atLeast(10)).perform(action.data)
+        when (trigger.mode) {
+            is TriggerMode.Parallel -> mockParallelTrigger(trigger, delay = 2000L)
+            TriggerMode.Undefined -> mockTriggerKeyInput(trigger.keys[0], delay = 2000L)
+            TriggerMode.Sequence -> {}
         }
 
-    fun params_repeatAction() = listOf(
-        arrayOf(
-            "long press multiple keys",
-            parallelTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP, clickType = ClickType.LONG_PRESS),
+        verify(performActionsUseCase, atLeast(10)).perform(action.data)
+    }
+
+    fun params_repeatAction() =
+        listOf(
+            arrayOf(
+                "long press multiple keys",
+                parallelTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_UP, clickType = ClickType.LONG_PRESS),
+                ),
             ),
-        ),
-        arrayOf(
-            "long press single key",
-            singleKeyTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
+            arrayOf(
+                "long press single key",
+                singleKeyTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
+                ),
             ),
-        ),
-        arrayOf(
-            "short press multiple keys",
-            parallelTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
+            arrayOf(
+                "short press multiple keys",
+                parallelTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
+                ),
             ),
-        ),
-        arrayOf(
-            "short press single key",
-            singleKeyTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
+            arrayOf(
+                "short press single key",
+                singleKeyTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
+                ),
             ),
-        ),
-    )
+        )
 
     @Test
     @Parameters(method = "params_dualParallelTrigger_input2ndKey_doNotConsumeUp")
@@ -3432,127 +3612,134 @@ class KeyMapAlgorithmTest {
         }
 
         (trigger.keys[1] as KeyEventTriggerKey).let {
-            val consumed = inputKeyEvent(
-                it.keyCode,
-                KeyEvent.ACTION_UP,
-                triggerKeyDeviceToInputDevice(it.device),
-            )
+            val consumed =
+                inputKeyEvent(
+                    it.keyCode,
+                    KeyEvent.ACTION_UP,
+                    triggerKeyDeviceToInputDevice(it.device),
+                )
 
             // then
             assertThat(consumed, `is`(false))
         }
     }
 
-    fun params_dualParallelTrigger_input2ndKey_doNotConsumeUp() = listOf(
-        arrayOf(
-            "long press",
-            parallelTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP, clickType = ClickType.LONG_PRESS),
+    fun params_dualParallelTrigger_input2ndKey_doNotConsumeUp() =
+        listOf(
+            arrayOf(
+                "long press",
+                parallelTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_UP, clickType = ClickType.LONG_PRESS),
+                ),
             ),
-        ),
-
-        arrayOf(
-            "short press",
-            parallelTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
+            arrayOf(
+                "short press",
+                parallelTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
+                ),
             ),
-        ),
-    )
-
-    @Test
-    fun dualShortPressParallelTrigger_validInput_consumeUp() = runTest(testDispatcher) {
-        // given
-        val trigger = parallelTrigger(
-            triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
-            triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
         )
 
-        loadKeyMaps(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
-
-        // when
-        for (key in trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
-            inputKeyEvent(
-                key.keyCode,
-                KeyEvent.ACTION_DOWN,
-                triggerKeyDeviceToInputDevice(key.device),
-            )
-        }
-
-        var consumedUpCount = 0
-
-        for (key in trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
-            val consumed =
-                inputKeyEvent(
-                    key.keyCode,
-                    KeyEvent.ACTION_UP,
-                    triggerKeyDeviceToInputDevice(key.device),
+    @Test
+    fun dualShortPressParallelTrigger_validInput_consumeUp() =
+        runTest(testDispatcher) {
+            // given
+            val trigger =
+                parallelTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
                 )
 
-            if (consumed) {
-                consumedUpCount += 1
-            }
-        }
+            loadKeyMaps(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
 
-        // then
-        assertThat(consumedUpCount, `is`(2))
-    }
+            // when
+            for (key in trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
+                inputKeyEvent(
+                    key.keyCode,
+                    KeyEvent.ACTION_DOWN,
+                    triggerKeyDeviceToInputDevice(key.device),
+                )
+            }
+
+            var consumedUpCount = 0
+
+            for (key in trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
+                val consumed =
+                    inputKeyEvent(
+                        key.keyCode,
+                        KeyEvent.ACTION_UP,
+                        triggerKeyDeviceToInputDevice(key.device),
+                    )
+
+                if (consumed) {
+                    consumedUpCount += 1
+                }
+            }
+
+            // then
+            assertThat(consumedUpCount, `is`(2))
+        }
 
     @Test
-    fun dualLongPressParallelTrigger_validInput_consumeUp() = runTest(testDispatcher) {
-        // given
-        val trigger = parallelTrigger(
-            triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
-            triggerKey(KeyEvent.KEYCODE_VOLUME_UP, clickType = ClickType.LONG_PRESS),
-        )
-
-        loadKeyMaps(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
-
-        // when
-        for (key in trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
-            inputKeyEvent(
-                key.keyCode,
-                KeyEvent.ACTION_DOWN,
-                triggerKeyDeviceToInputDevice(key.device),
-            )
-        }
-
-        advanceUntilIdle()
-
-        var consumedUpCount = 0
-
-        for (key in trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
-            val consumed =
-                inputKeyEvent(
-                    key.keyCode,
-                    KeyEvent.ACTION_UP,
-                    triggerKeyDeviceToInputDevice(key.device),
+    fun dualLongPressParallelTrigger_validInput_consumeUp() =
+        runTest(testDispatcher) {
+            // given
+            val trigger =
+                parallelTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_UP, clickType = ClickType.LONG_PRESS),
                 )
 
-            if (consumed) {
-                consumedUpCount += 1
-            }
-        }
+            loadKeyMaps(KeyMap(0, trigger = trigger, actionList = listOf(TEST_ACTION)))
 
-        // then
-        assertThat(consumedUpCount, `is`(2))
-    }
+            // when
+            for (key in trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
+                inputKeyEvent(
+                    key.keyCode,
+                    KeyEvent.ACTION_DOWN,
+                    triggerKeyDeviceToInputDevice(key.device),
+                )
+            }
+
+            advanceUntilIdle()
+
+            var consumedUpCount = 0
+
+            for (key in trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
+                val consumed =
+                    inputKeyEvent(
+                        key.keyCode,
+                        KeyEvent.ACTION_UP,
+                        triggerKeyDeviceToInputDevice(key.device),
+                    )
+
+                if (consumed) {
+                    consumedUpCount += 1
+                }
+            }
+
+            // then
+            assertThat(consumedUpCount, `is`(2))
+        }
 
     @Test
     fun keymappedToLongPressAndDoublePress_invalidLongPress_imitateOnce() =
         runTest(testDispatcher) {
             // given
-            val longPressTrigger = singleKeyTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
-            )
+            val longPressTrigger =
+                singleKeyTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
+                )
 
-            val doublePressTrigger = singleKeyTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    clickType = ClickType.DOUBLE_PRESS,
-                ),
-            )
+            val doublePressTrigger =
+                singleKeyTrigger(
+                    triggerKey(
+                        KeyEvent.KEYCODE_VOLUME_DOWN,
+                        clickType = ClickType.DOUBLE_PRESS,
+                    ),
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = longPressTrigger, actionList = listOf(TEST_ACTION)),
@@ -3582,9 +3769,10 @@ class KeyMapAlgorithmTest {
             // given
             val shortPressTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
 
-            val longPressTrigger = singleKeyTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
-            )
+            val longPressTrigger =
+                singleKeyTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
@@ -3613,9 +3801,10 @@ class KeyMapAlgorithmTest {
             // given
             val shortPressTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
 
-            val doublePressTrigger = singleKeyTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.DOUBLE_PRESS),
-            )
+            val doublePressTrigger =
+                singleKeyTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.DOUBLE_PRESS),
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = shortPressTrigger, actionList = listOf(TEST_ACTION)),
@@ -3645,10 +3834,11 @@ class KeyMapAlgorithmTest {
         runTest(testDispatcher) {
             // given
             val singleKeyTrigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN))
-            val parallelTrigger = parallelTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
-            )
+            val parallelTrigger =
+                parallelTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
+                )
 
             loadKeyMaps(
                 KeyMap(0, trigger = singleKeyTrigger, actionList = listOf(TEST_ACTION)),
@@ -3671,116 +3861,126 @@ class KeyMapAlgorithmTest {
         }
 
     @Test
-    fun longPressSequenceTrigger_invalidLongPress_keyImitated() = runTest(testDispatcher) {
-        val trigger = sequenceTrigger(
-            triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
-            triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
-        )
+    fun longPressSequenceTrigger_invalidLongPress_keyImitated() =
+        runTest(testDispatcher) {
+            val trigger =
+                sequenceTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
+                )
 
-        loadKeyMaps(
-            KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)),
-        )
-
-        mockTriggerKeyInput(
-            triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
-            delay = 100L,
-        )
-
-        verify(detectKeyMapsUseCase, times(1))
-            .imitateKeyEvent(
-                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
-                action = KeyEvent.ACTION_DOWN,
+            loadKeyMaps(
+                KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)),
             )
 
-        verify(detectKeyMapsUseCase, times(1))
-            .imitateKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN, action = KeyEvent.ACTION_UP)
-    }
+            mockTriggerKeyInput(
+                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN, clickType = ClickType.LONG_PRESS),
+                delay = 100L,
+            )
+
+            verify(detectKeyMapsUseCase, times(1))
+                .imitateKeyEvent(
+                    keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                    action = KeyEvent.ACTION_DOWN,
+                )
+
+            verify(detectKeyMapsUseCase, times(1))
+                .imitateKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN, action = KeyEvent.ACTION_UP)
+        }
 
     @Test
     @Parameters(method = "params_multipleActionsPerformed")
-    fun validInput_multipleActionsPerformed(description: String, trigger: Trigger) =
-        runTest(testDispatcher) {
-            val actionList = listOf(TEST_ACTION, TEST_ACTION_2)
-            // GIVEN
-            loadKeyMaps(
-                KeyMap(trigger = trigger, actionList = actionList),
-            )
+    fun validInput_multipleActionsPerformed(
+        description: String,
+        trigger: Trigger,
+    ) = runTest(testDispatcher) {
+        val actionList = listOf(TEST_ACTION, TEST_ACTION_2)
+        // GIVEN
+        loadKeyMaps(
+            KeyMap(trigger = trigger, actionList = actionList),
+        )
 
-            // WHEN
-            if (trigger.mode is TriggerMode.Parallel) {
-                mockParallelTrigger(trigger)
-            } else {
-                trigger.keys.forEach {
-                    mockTriggerKeyInput(it)
-                }
-            }
-
-            // THEN
-            actionList.forEach { action ->
-                verify(performActionsUseCase, times(1)).perform(action.data)
+        // WHEN
+        if (trigger.mode is TriggerMode.Parallel) {
+            mockParallelTrigger(trigger)
+        } else {
+            trigger.keys.forEach {
+                mockTriggerKeyInput(it)
             }
         }
 
-    fun params_multipleActionsPerformed() = listOf(
-        arrayOf(
-            "undefined",
-            singleKeyTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Any,
+        // THEN
+        actionList.forEach { action ->
+            verify(performActionsUseCase, times(1)).perform(action.data)
+        }
+    }
+
+    fun params_multipleActionsPerformed() =
+        listOf(
+            arrayOf(
+                "undefined",
+                singleKeyTrigger(
+                    triggerKey(
+                        KeyEvent.KEYCODE_VOLUME_DOWN,
+                        KeyEventTriggerDevice.Any,
+                    ),
                 ),
             ),
-        ),
-        arrayOf(
-            "sequence",
-            sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Any,
+            arrayOf(
+                "sequence",
+                sequenceTrigger(
+                    triggerKey(
+                        KeyEvent.KEYCODE_VOLUME_DOWN,
+                        KeyEventTriggerDevice.Any,
+                    ),
                 ),
             ),
-        ),
-        arrayOf(
-            "parallel",
-            parallelTrigger(
-                triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
-                triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
+            arrayOf(
+                "parallel",
+                parallelTrigger(
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_DOWN),
+                    triggerKey(KeyEvent.KEYCODE_VOLUME_UP),
+                ),
             ),
-        ),
-    )
+        )
 
     @Test
     @Parameters(method = "params_allTriggerKeyCombinations")
     @TestCaseName("{0}")
-    fun invalidInput_downNotConsumed(description: String, keyMap: KeyMap) =
-        runTest(testDispatcher) {
-            // GIVEN
-            loadKeyMaps(keyMap)
+    fun invalidInput_downNotConsumed(
+        description: String,
+        keyMap: KeyMap,
+    ) = runTest(testDispatcher) {
+        // GIVEN
+        loadKeyMaps(keyMap)
 
-            // WHEN
-            var consumedCount = 0
+        // WHEN
+        var consumedCount = 0
 
-            for (key in keyMap.trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
-                val consumed =
-                    inputKeyEvent(
-                        999,
-                        KeyEvent.ACTION_DOWN,
-                        triggerKeyDeviceToInputDevice(key.device),
-                    )
+        for (key in keyMap.trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
+            val consumed =
+                inputKeyEvent(
+                    999,
+                    KeyEvent.ACTION_DOWN,
+                    triggerKeyDeviceToInputDevice(key.device),
+                )
 
-                if (consumed) {
-                    consumedCount++
-                }
+            if (consumed) {
+                consumedCount++
             }
-
-            // THEN
-            assertThat(consumedCount, `is`(0))
         }
+
+        // THEN
+        assertThat(consumedCount, `is`(0))
+    }
 
     @Test
     @Parameters(method = "params_allTriggerKeyCombinations")
     @TestCaseName("{0}")
-    fun validInput_downConsumed(description: String, keyMap: KeyMap) = runTest(testDispatcher) {
+    fun validInput_downConsumed(
+        description: String,
+        keyMap: KeyMap,
+    ) = runTest(testDispatcher) {
         // GIVEN
         loadKeyMaps(keyMap)
 
@@ -3805,426 +4005,434 @@ class KeyMapAlgorithmTest {
     @Test
     @Parameters(method = "params_allTriggerKeyCombinationsdoNotConsume")
     @TestCaseName("{0}")
-    fun validInput_doNotConsumeFlag_doNotConsumeDown(description: String, keyMap: KeyMap) =
-        runTest(testDispatcher) {
-            loadKeyMaps(keyMap)
+    fun validInput_doNotConsumeFlag_doNotConsumeDown(
+        description: String,
+        keyMap: KeyMap,
+    ) = runTest(testDispatcher) {
+        loadKeyMaps(keyMap)
 
-            var consumedCount = 0
+        var consumedCount = 0
 
-            for (key in keyMap.trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
-                val consumed =
-                    inputKeyEvent(
-                        key.keyCode,
-                        KeyEvent.ACTION_DOWN,
-                        triggerKeyDeviceToInputDevice(key.device),
-                    )
+        for (key in keyMap.trigger.keys.mapNotNull { it as? KeyEventTriggerKey }) {
+            val consumed =
+                inputKeyEvent(
+                    key.keyCode,
+                    KeyEvent.ACTION_DOWN,
+                    triggerKeyDeviceToInputDevice(key.device),
+                )
 
-                if (consumed) {
-                    consumedCount++
-                }
+            if (consumed) {
+                consumedCount++
             }
-
-            assertThat(consumedCount, `is`(0))
         }
 
+        assertThat(consumedCount, `is`(0))
+    }
+
     fun params_allTriggerKeyCombinationsdoNotConsume(): List<Array<Any>> {
-        val triggerAndDescriptions = listOf(
-            "undefined single short-press this-device, do not consume" to singleKeyTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    consume = false,
-                ),
-            ),
-            "undefined single long-press this-device, do not consume" to singleKeyTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-            ),
-            "undefined single double-press this-device, do not consume" to singleKeyTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.DOUBLE_PRESS,
-                    consume = false,
-                ),
-            ),
-
-            "undefined single short-press any-device, do not consume" to singleKeyTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Any,
-                    consume = false,
-                ),
-            ),
-            "undefined single long-press any-device, do not consume" to singleKeyTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Any,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-            ),
-            "undefined single double-press any-device, do not consume" to singleKeyTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Any,
-                    clickType = ClickType.DOUBLE_PRESS,
-                    consume = false,
-                ),
-            ),
-
-            "sequence multiple short-press this-device, do not consume" to sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.SHORT_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.SHORT_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.SHORT_PRESS,
-                    consume = false,
-                ),
-            ),
-
-            "sequence multiple long-press this-device, do not consume" to sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-            ),
-
-            "sequence multiple double-press this-device, do not consume" to sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.DOUBLE_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.DOUBLE_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.DOUBLE_PRESS,
-                    consume = false,
-                ),
-            ),
-
-            "sequence multiple mix this-device, do not consume" to sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.SHORT_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.DOUBLE_PRESS,
-                    consume = false,
-                ),
-            ),
-
-            "sequence multiple mix external-device, do not consume" to sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.SHORT_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.DOUBLE_PRESS,
-                    consume = false,
-                ),
-            ),
-
-            "sequence multiple short-press mixed-device, do not consume" to sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.SHORT_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Any,
-                    clickType = ClickType.SHORT_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.SHORT_PRESS,
-                    consume = false,
-                ),
-            ),
-
-            "sequence multiple long-press mixed-device, do not consume" to sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Any,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-            ),
-
-            "sequence multiple double-press mixed-device, do not consume" to sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.DOUBLE_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Any,
-                    clickType = ClickType.DOUBLE_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.DOUBLE_PRESS,
-                    consume = false,
-                ),
-            ),
-
-            "sequence multiple mix mixed-device, do not consume" to sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Any,
-                    clickType = ClickType.SHORT_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.DOUBLE_PRESS,
-                    consume = false,
-                ),
-            ),
-
-            "sequence multiple mix mixed-device, do not consume" to sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Any,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.SHORT_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.DOUBLE_PRESS,
-                    consume = false,
-                ),
-            ),
-
-            "parallel multiple short-press this-device, do not consume" to parallelTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.SHORT_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.SHORT_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.SHORT_PRESS,
-                    consume = false,
-                ),
-            ),
-
-            "parallel multiple long-press this-device, do not consume" to parallelTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-            ),
-
-            "parallel multiple short-press external-device, do not consume" to parallelTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.SHORT_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.SHORT_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.SHORT_PRESS,
-                    consume = false,
-                ),
-            ),
-
-            "parallel multiple long-press external-device, do not consume" to parallelTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-            ),
-
-            "parallel multiple short-press mix-device, do not consume" to parallelTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.SHORT_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Any,
-                    clickType = ClickType.SHORT_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.SHORT_PRESS,
-                    consume = false,
-                ),
-            ),
-
-            "parallel multiple long-press mix-device, do not consume" to parallelTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Any,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.LONG_PRESS,
-                    consume = false,
-                ),
-            ),
-        )
+        val triggerAndDescriptions =
+            listOf(
+                "undefined single short-press this-device, do not consume" to
+                    singleKeyTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            consume = false,
+                        ),
+                    ),
+                "undefined single long-press this-device, do not consume" to
+                    singleKeyTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                    ),
+                "undefined single double-press this-device, do not consume" to
+                    singleKeyTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.DOUBLE_PRESS,
+                            consume = false,
+                        ),
+                    ),
+                "undefined single short-press any-device, do not consume" to
+                    singleKeyTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Any,
+                            consume = false,
+                        ),
+                    ),
+                "undefined single long-press any-device, do not consume" to
+                    singleKeyTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Any,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                    ),
+                "undefined single double-press any-device, do not consume" to
+                    singleKeyTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Any,
+                            clickType = ClickType.DOUBLE_PRESS,
+                            consume = false,
+                        ),
+                    ),
+                "sequence multiple short-press this-device, do not consume" to
+                    sequenceTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.SHORT_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.SHORT_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.SHORT_PRESS,
+                            consume = false,
+                        ),
+                    ),
+                "sequence multiple long-press this-device, do not consume" to
+                    sequenceTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                    ),
+                "sequence multiple double-press this-device, do not consume" to
+                    sequenceTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.DOUBLE_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.DOUBLE_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.DOUBLE_PRESS,
+                            consume = false,
+                        ),
+                    ),
+                "sequence multiple mix this-device, do not consume" to
+                    sequenceTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.SHORT_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.DOUBLE_PRESS,
+                            consume = false,
+                        ),
+                    ),
+                "sequence multiple mix external-device, do not consume" to
+                    sequenceTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.SHORT_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.DOUBLE_PRESS,
+                            consume = false,
+                        ),
+                    ),
+                "sequence multiple short-press mixed-device, do not consume" to
+                    sequenceTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.SHORT_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Any,
+                            clickType = ClickType.SHORT_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.SHORT_PRESS,
+                            consume = false,
+                        ),
+                    ),
+                "sequence multiple long-press mixed-device, do not consume" to
+                    sequenceTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Any,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                    ),
+                "sequence multiple double-press mixed-device, do not consume" to
+                    sequenceTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.DOUBLE_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Any,
+                            clickType = ClickType.DOUBLE_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.DOUBLE_PRESS,
+                            consume = false,
+                        ),
+                    ),
+                "sequence multiple mix mixed-device, do not consume" to
+                    sequenceTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Any,
+                            clickType = ClickType.SHORT_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.DOUBLE_PRESS,
+                            consume = false,
+                        ),
+                    ),
+                "sequence multiple mix mixed-device, do not consume" to
+                    sequenceTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Any,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.SHORT_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.DOUBLE_PRESS,
+                            consume = false,
+                        ),
+                    ),
+                "parallel multiple short-press this-device, do not consume" to
+                    parallelTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.SHORT_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.SHORT_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.SHORT_PRESS,
+                            consume = false,
+                        ),
+                    ),
+                "parallel multiple long-press this-device, do not consume" to
+                    parallelTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                    ),
+                "parallel multiple short-press external-device, do not consume" to
+                    parallelTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.SHORT_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.SHORT_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.SHORT_PRESS,
+                            consume = false,
+                        ),
+                    ),
+                "parallel multiple long-press external-device, do not consume" to
+                    parallelTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                    ),
+                "parallel multiple short-press mix-device, do not consume" to
+                    parallelTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.SHORT_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Any,
+                            clickType = ClickType.SHORT_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.SHORT_PRESS,
+                            consume = false,
+                        ),
+                    ),
+                "parallel multiple long-press mix-device, do not consume" to
+                    parallelTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Any,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.LONG_PRESS,
+                            consume = false,
+                        ),
+                    ),
+            )
 
         return triggerAndDescriptions.mapIndexed { i, triggerAndDescription ->
             arrayOf(
@@ -4239,334 +4447,353 @@ class KeyMapAlgorithmTest {
     }
 
     fun params_allTriggerKeyCombinations(): List<Array<Any>> {
-        val triggerAndDescriptions = listOf(
-            "undefined single short-press this-device" to singleKeyTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                ),
-            ),
-            "undefined single long-press this-device" to singleKeyTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-            ),
-            "undefined single double-press this-device" to singleKeyTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.DOUBLE_PRESS,
-                ),
-            ),
-
-            "undefined single short-press any-device" to singleKeyTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Any,
-                ),
-            ),
-            "undefined single long-press any-device" to singleKeyTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Any,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-            ),
-            "undefined single double-press any-device" to singleKeyTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Any,
-                    clickType = ClickType.DOUBLE_PRESS,
-                ),
-            ),
-
-            "sequence multiple short-press this-device" to sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-            ),
-            "sequence multiple long-press this-device" to sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-            ),
-            "sequence multiple double-press this-device" to sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.DOUBLE_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.DOUBLE_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.DOUBLE_PRESS,
-                ),
-            ),
-            "sequence multiple mix this-device" to sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.DOUBLE_PRESS,
-                ),
-            ),
-            "sequence multiple mix external-device" to sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.DOUBLE_PRESS,
-                ),
-            ),
-
-            "sequence multiple short-press mixed-device" to sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Any,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-            ),
-            "sequence multiple long-press mixed-device" to sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Any,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-            ),
-            "sequence multiple double-press mixed-device" to sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.DOUBLE_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Any,
-                    clickType = ClickType.DOUBLE_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.DOUBLE_PRESS,
-                ),
-            ),
-            "sequence multiple mix mixed-device" to sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Any,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.DOUBLE_PRESS,
-                ),
-            ),
-            "sequence multiple mix mixed-device" to sequenceTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Any,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.DOUBLE_PRESS,
-                ),
-            ),
-
-            "parallel multiple short-press this-device" to parallelTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-            ),
-            "parallel multiple long-press this-device" to parallelTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-            ),
-            "parallel multiple short-press external-device" to parallelTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-            ),
-            "parallel multiple long-press external-device" to parallelTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-            ),
-            "parallel multiple short-press mix-device" to parallelTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Any,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.SHORT_PRESS,
-                ),
-            ),
-            "parallel multiple long-press mix-device" to parallelTrigger(
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_DOWN,
-                    KeyEventTriggerDevice.Internal,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_VOLUME_UP,
-                    KeyEventTriggerDevice.Any,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-                triggerKey(
-                    KeyEvent.KEYCODE_A,
-                    FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
-                    clickType = ClickType.LONG_PRESS,
-                ),
-            ),
-        )
+        val triggerAndDescriptions =
+            listOf(
+                "undefined single short-press this-device" to
+                    singleKeyTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                        ),
+                    ),
+                "undefined single long-press this-device" to
+                    singleKeyTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                    ),
+                "undefined single double-press this-device" to
+                    singleKeyTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.DOUBLE_PRESS,
+                        ),
+                    ),
+                "undefined single short-press any-device" to
+                    singleKeyTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Any,
+                        ),
+                    ),
+                "undefined single long-press any-device" to
+                    singleKeyTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Any,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                    ),
+                "undefined single double-press any-device" to
+                    singleKeyTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Any,
+                            clickType = ClickType.DOUBLE_PRESS,
+                        ),
+                    ),
+                "sequence multiple short-press this-device" to
+                    sequenceTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                    ),
+                "sequence multiple long-press this-device" to
+                    sequenceTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                    ),
+                "sequence multiple double-press this-device" to
+                    sequenceTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.DOUBLE_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.DOUBLE_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.DOUBLE_PRESS,
+                        ),
+                    ),
+                "sequence multiple mix this-device" to
+                    sequenceTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.DOUBLE_PRESS,
+                        ),
+                    ),
+                "sequence multiple mix external-device" to
+                    sequenceTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.DOUBLE_PRESS,
+                        ),
+                    ),
+                "sequence multiple short-press mixed-device" to
+                    sequenceTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Any,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                    ),
+                "sequence multiple long-press mixed-device" to
+                    sequenceTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Any,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                    ),
+                "sequence multiple double-press mixed-device" to
+                    sequenceTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.DOUBLE_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Any,
+                            clickType = ClickType.DOUBLE_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.DOUBLE_PRESS,
+                        ),
+                    ),
+                "sequence multiple mix mixed-device" to
+                    sequenceTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Any,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.DOUBLE_PRESS,
+                        ),
+                    ),
+                "sequence multiple mix mixed-device" to
+                    sequenceTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Any,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.DOUBLE_PRESS,
+                        ),
+                    ),
+                "parallel multiple short-press this-device" to
+                    parallelTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                    ),
+                "parallel multiple long-press this-device" to
+                    parallelTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                    ),
+                "parallel multiple short-press external-device" to
+                    parallelTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                    ),
+                "parallel multiple long-press external-device" to
+                    parallelTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            FAKE_HEADPHONE_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                    ),
+                "parallel multiple short-press mix-device" to
+                    parallelTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Any,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.SHORT_PRESS,
+                        ),
+                    ),
+                "parallel multiple long-press mix-device" to
+                    parallelTrigger(
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_DOWN,
+                            KeyEventTriggerDevice.Internal,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_VOLUME_UP,
+                            KeyEventTriggerDevice.Any,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                        triggerKey(
+                            KeyEvent.KEYCODE_A,
+                            FAKE_KEYBOARD_TRIGGER_KEY_DEVICE,
+                            clickType = ClickType.LONG_PRESS,
+                        ),
+                    ),
+            )
 
         return triggerAndDescriptions.mapIndexed { i, triggerAndDescription ->
             arrayOf(
@@ -4583,7 +4810,10 @@ class KeyMapAlgorithmTest {
     @Test
     @Parameters(method = "params_allTriggerKeyCombinations")
     @TestCaseName("{0}")
-    fun validInput_actionPerformed(description: String, keyMap: KeyMap) = runTest(testDispatcher) {
+    fun validInput_actionPerformed(
+        description: String,
+        keyMap: KeyMap,
+    ) = runTest(testDispatcher) {
         // GIVEN
         loadKeyMaps(keyMap)
 
@@ -4604,16 +4834,20 @@ class KeyMapAlgorithmTest {
         verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
     }
 
-    private suspend fun mockTriggerKeyInput(key: TriggerKey, delay: Long? = null) {
+    private suspend fun mockTriggerKeyInput(
+        key: TriggerKey,
+        delay: Long? = null,
+    ) {
         if (key !is KeyEventTriggerKey) {
             throw IllegalArgumentException("Key must be a KeyEventTriggerKey")
         }
 
         val inputDevice = triggerKeyDeviceToInputDevice(key.device)
-        val pressDuration: Long = delay ?: when (key.clickType) {
-            ClickType.LONG_PRESS -> LONG_PRESS_DELAY + 100L
-            else -> 50L
-        }
+        val pressDuration: Long =
+            delay ?: when (key.clickType) {
+                ClickType.LONG_PRESS -> LONG_PRESS_DELAY + 100L
+                else -> 50L
+            }
 
         inputKeyEvent(key.keyCode, KeyEvent.ACTION_DOWN, inputDevice)
 
@@ -4649,10 +4883,11 @@ class KeyMapAlgorithmTest {
             throw IllegalArgumentException("Key must be an EvdevTriggerKey")
         }
 
-        val pressDuration: Long = delay ?: when (key.clickType) {
-            ClickType.LONG_PRESS -> LONG_PRESS_DELAY + 100L
-            else -> 50L
-        }
+        val pressDuration: Long =
+            delay ?: when (key.clickType) {
+                ClickType.LONG_PRESS -> LONG_PRESS_DELAY + 100L
+                else -> 50L
+            }
 
         inputDownEvdevEvent(key.keyCode, key.scanCode, evdevDevice)
 
@@ -4683,29 +4918,29 @@ class KeyMapAlgorithmTest {
         axisHatX: Float = 0.0f,
         axisHatY: Float = 0.0f,
         device: InputDeviceInfo = FAKE_CONTROLLER_INPUT_DEVICE,
-    ): KMGamePadEvent {
-        return KMGamePadEvent(
-            metaState = 0,
-            device = device,
-            axisHatX = axisHatX,
-            axisHatY = axisHatY,
-            eventTime = System.currentTimeMillis(),
-        )
-    }
-
-    private fun inputMotionEvent(
-        axisHatX: Float = 0.0f,
-        axisHatY: Float = 0.0f,
-        device: InputDeviceInfo = FAKE_CONTROLLER_INPUT_DEVICE,
-    ): Boolean = controller.onMotionEvent(
+    ): KMGamePadEvent =
         KMGamePadEvent(
             metaState = 0,
             device = device,
             axisHatX = axisHatX,
             axisHatY = axisHatY,
             eventTime = System.currentTimeMillis(),
-        ),
-    )
+        )
+
+    private fun inputMotionEvent(
+        axisHatX: Float = 0.0f,
+        axisHatY: Float = 0.0f,
+        device: InputDeviceInfo = FAKE_CONTROLLER_INPUT_DEVICE,
+    ): Boolean =
+        controller.onMotionEvent(
+            KMGamePadEvent(
+                metaState = 0,
+                device = device,
+                axisHatX = axisHatX,
+                axisHatY = axisHatY,
+                eventTime = System.currentTimeMillis(),
+            ),
+        )
 
     private fun inputKeyEvent(
         keyCode: Int,
@@ -4714,62 +4949,67 @@ class KeyMapAlgorithmTest {
         metaState: Int? = null,
         scanCode: Int = 0,
         repeatCount: Int = 0,
-    ): Boolean = controller.onInputEvent(
-        KMKeyEvent(
-            keyCode = keyCode,
-            action = action,
-            metaState = metaState ?: 0,
-            scanCode = scanCode,
-            device = device,
-            repeatCount = repeatCount,
-            source = 0,
-            eventTime = System.currentTimeMillis(),
-        ),
-    )
+    ): Boolean =
+        controller.onInputEvent(
+            KMKeyEvent(
+                keyCode = keyCode,
+                action = action,
+                metaState = metaState ?: 0,
+                scanCode = scanCode,
+                device = device,
+                repeatCount = repeatCount,
+                source = 0,
+                eventTime = System.currentTimeMillis(),
+            ),
+        )
 
     private fun inputDownEvdevEvent(
         keyCode: Int,
         scanCode: Int,
         device: EvdevDeviceInfo,
-    ): Boolean = controller.onInputEvent(
-        KMEvdevEvent(
-            type = KMEvdevEvent.TYPE_KEY_EVENT,
-            device = EvdevDeviceHandle(
-                path = "/dev/input${device.name}",
-                name = device.name,
-                bus = device.bus,
-                vendor = device.vendor,
-                product = device.product,
+    ): Boolean =
+        controller.onInputEvent(
+            KMEvdevEvent(
+                type = KMEvdevEvent.TYPE_KEY_EVENT,
+                device =
+                    EvdevDeviceHandle(
+                        path = "/dev/input${device.name}",
+                        name = device.name,
+                        bus = device.bus,
+                        vendor = device.vendor,
+                        product = device.product,
+                    ),
+                code = scanCode,
+                androidCode = keyCode,
+                value = KMEvdevEvent.VALUE_DOWN,
+                timeSec = testScope.currentTime,
+                timeUsec = 0,
             ),
-            code = scanCode,
-            androidCode = keyCode,
-            value = KMEvdevEvent.VALUE_DOWN,
-            timeSec = testScope.currentTime,
-            timeUsec = 0,
-        ),
-    )
+        )
 
     private fun inputUpEvdevEvent(
         keyCode: Int,
         scanCode: Int,
         device: EvdevDeviceInfo,
-    ): Boolean = controller.onInputEvent(
-        KMEvdevEvent(
-            type = KMEvdevEvent.TYPE_KEY_EVENT,
-            device = EvdevDeviceHandle(
-                path = "/dev/input${device.name}",
-                name = device.name,
-                bus = device.bus,
-                vendor = device.vendor,
-                product = device.product,
+    ): Boolean =
+        controller.onInputEvent(
+            KMEvdevEvent(
+                type = KMEvdevEvent.TYPE_KEY_EVENT,
+                device =
+                    EvdevDeviceHandle(
+                        path = "/dev/input${device.name}",
+                        name = device.name,
+                        bus = device.bus,
+                        vendor = device.vendor,
+                        product = device.product,
+                    ),
+                code = scanCode,
+                androidCode = keyCode,
+                value = KMEvdevEvent.VALUE_UP,
+                timeSec = testScope.currentTime,
+                timeUsec = 0,
             ),
-            code = scanCode,
-            androidCode = keyCode,
-            value = KMEvdevEvent.VALUE_UP,
-            timeSec = testScope.currentTime,
-            timeUsec = 0,
-        ),
-    )
+        )
 
     private suspend fun mockParallelTrigger(
         trigger: Trigger,
@@ -4813,32 +5053,36 @@ class KeyMapAlgorithmTest {
         device: KeyEventTriggerDevice,
         deviceId: Int = 0,
         isGameController: Boolean = false,
-    ): InputDeviceInfo = when (device) {
-        KeyEventTriggerDevice.Any -> InputDeviceInfo(
-            descriptor = "any_device",
-            name = "any_device_name",
-            isExternal = false,
-            id = deviceId,
-            isGameController = isGameController,
-            sources = if (isGameController) InputDevice.SOURCE_GAMEPAD else InputDevice.SOURCE_KEYBOARD,
-        )
+    ): InputDeviceInfo =
+        when (device) {
+            KeyEventTriggerDevice.Any ->
+                InputDeviceInfo(
+                    descriptor = "any_device",
+                    name = "any_device_name",
+                    isExternal = false,
+                    id = deviceId,
+                    isGameController = isGameController,
+                    sources = if (isGameController) InputDevice.SOURCE_GAMEPAD else InputDevice.SOURCE_KEYBOARD,
+                )
 
-        is KeyEventTriggerDevice.External -> InputDeviceInfo(
-            descriptor = device.descriptor,
-            name = "device_name",
-            isExternal = true,
-            id = deviceId,
-            isGameController = isGameController,
-            sources = if (isGameController) InputDevice.SOURCE_GAMEPAD else InputDevice.SOURCE_KEYBOARD,
-        )
+            is KeyEventTriggerDevice.External ->
+                InputDeviceInfo(
+                    descriptor = device.descriptor,
+                    name = "device_name",
+                    isExternal = true,
+                    id = deviceId,
+                    isGameController = isGameController,
+                    sources = if (isGameController) InputDevice.SOURCE_GAMEPAD else InputDevice.SOURCE_KEYBOARD,
+                )
 
-        KeyEventTriggerDevice.Internal -> InputDeviceInfo(
-            descriptor = "internal_device",
-            name = "internal_device_name",
-            isExternal = false,
-            id = deviceId,
-            isGameController = isGameController,
-            sources = if (isGameController) InputDevice.SOURCE_GAMEPAD else InputDevice.SOURCE_KEYBOARD,
-        )
-    }
+            KeyEventTriggerDevice.Internal ->
+                InputDeviceInfo(
+                    descriptor = "internal_device",
+                    name = "internal_device_name",
+                    isExternal = false,
+                    id = deviceId,
+                    isGameController = isGameController,
+                    sources = if (isGameController) InputDevice.SOURCE_GAMEPAD else InputDevice.SOURCE_KEYBOARD,
+                )
+        }
 }

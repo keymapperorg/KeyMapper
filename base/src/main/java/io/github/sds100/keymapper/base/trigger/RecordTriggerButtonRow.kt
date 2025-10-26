@@ -69,28 +69,31 @@ fun RecordTriggerButton(
     state: RecordTriggerState,
     onClick: () -> Unit,
 ) {
-    val colors = ButtonDefaults.filledTonalButtonColors().copy(
-        containerColor = LocalCustomColorsPalette.current.red,
-        contentColor = LocalCustomColorsPalette.current.onRed,
-    )
+    val colors =
+        ButtonDefaults.filledTonalButtonColors().copy(
+            containerColor = LocalCustomColorsPalette.current.red,
+            contentColor = LocalCustomColorsPalette.current.onRed,
+        )
 
-    val text: String = when (state) {
-        is RecordTriggerState.CountingDown ->
-            stringResource(R.string.button_recording_trigger_countdown, state.timeLeft)
+    val text: String =
+        when (state) {
+            is RecordTriggerState.CountingDown ->
+                stringResource(R.string.button_recording_trigger_countdown, state.timeLeft)
 
-        else ->
-            stringResource(R.string.button_record_trigger)
-    }
+            else ->
+                stringResource(R.string.button_record_trigger)
+        }
 
     // Create pulsing animation for the recording dot
     val infiniteTransition = rememberInfiniteTransition(label = "recording_dot_pulse")
     val alpha by infiniteTransition.animateFloat(
         initialValue = 0.3f,
         targetValue = 1.0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000),
-            repeatMode = RepeatMode.Reverse,
-        ),
+        animationSpec =
+            infiniteRepeatable(
+                animation = tween(1000),
+                repeatMode = RepeatMode.Reverse,
+            ),
         label = "recording_dot_alpha",
     )
 
@@ -105,13 +108,14 @@ fun RecordTriggerButton(
             // White recording dot
             if (state is RecordTriggerState.CountingDown) {
                 Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .alpha(alpha)
-                        .background(
-                            color = Color.White,
-                            shape = CircleShape,
-                        ),
+                    modifier =
+                        Modifier
+                            .size(8.dp)
+                            .alpha(alpha)
+                            .background(
+                                color = Color.White,
+                                shape = CircleShape,
+                            ),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
             }
@@ -119,10 +123,11 @@ fun RecordTriggerButton(
             BasicText(
                 text = text,
                 maxLines = 1,
-                autoSize = TextAutoSize.StepBased(
-                    minFontSize = 5.sp,
-                    maxFontSize = MaterialTheme.typography.labelLarge.fontSize,
-                ),
+                autoSize =
+                    TextAutoSize.StepBased(
+                        minFontSize = 5.sp,
+                        maxFontSize = MaterialTheme.typography.labelLarge.fontSize,
+                    ),
                 style = MaterialTheme.typography.labelLarge,
                 color = { colors.contentColor },
                 overflow = TextOverflow.Ellipsis,
@@ -139,10 +144,11 @@ private fun AdvancedTriggersButton(
     IconButton(
         modifier = modifier,
         onClick = onClick,
-        colors = IconButtonDefaults.iconButtonColors(
-            containerColor = LocalCustomColorsPalette.current.amber,
-            contentColor = LocalCustomColorsPalette.current.onAmber,
-        ),
+        colors =
+            IconButtonDefaults.iconButtonColors(
+                containerColor = LocalCustomColorsPalette.current.amber,
+                contentColor = LocalCustomColorsPalette.current.onAmber,
+            ),
     ) {
         Icon(Icons.Outlined.ShoppingCart, contentDescription = null)
     }

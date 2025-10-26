@@ -158,24 +158,25 @@ private fun ChooseConstraintScreen(
         val endPadding = innerPadding.calculateEndPadding(layoutDirection)
 
         Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    bottom = innerPadding.calculateBottomPadding(),
-                    start = startPadding,
-                    end = endPadding,
-                ),
-
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom = innerPadding.calculateBottomPadding(),
+                        start = startPadding,
+                        end = endPadding,
+                    ),
         ) {
             Column {
                 Text(
-                    modifier = Modifier.padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 16.dp,
-                        bottom = 8.dp,
-                    ),
+                    modifier =
+                        Modifier.padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            top = 16.dp,
+                            bottom = 8.dp,
+                        ),
                     text = stringResource(R.string.choose_constraint_title),
                     style = MaterialTheme.typography.titleLarge,
                 )
@@ -216,16 +217,17 @@ private fun EmptyScreen(modifier: Modifier = Modifier) {
         val text = stringResource(R.string.action_list_empty)
         Text(
             modifier = Modifier.align(Alignment.Center),
-            text = buildAnnotatedString {
-                withStyle(MaterialTheme.typography.headlineLarge.toSpanStyle()) {
-                    append(shrug)
-                }
-                appendLine()
-                appendLine()
-                withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
-                    append(text)
-                }
-            },
+            text =
+                buildAnnotatedString {
+                    withStyle(MaterialTheme.typography.headlineLarge.toSpanStyle()) {
+                        append(shrug)
+                    }
+                    appendLine()
+                    appendLine()
+                    withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
+                        append(text)
+                    }
+                },
             textAlign = TextAlign.Center,
         )
     }
@@ -260,23 +262,24 @@ private fun PreviewList() {
     KeyMapperTheme {
         ChooseConstraintScreen(
             query = "Search query",
-            state = State.Data(
-                listOf(
-                    SimpleListItemModel(
-                        "app",
-                        title = "App in foreground",
-                        icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
-                    ),
-                    SimpleListItemModel(
-                        "app",
-                        title = "App not in foreground",
-                        icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
-                        subtitle = "Error",
-                        isSubtitleError = true,
-                        isEnabled = false,
+            state =
+                State.Data(
+                    listOf(
+                        SimpleListItemModel(
+                            "app",
+                            title = "App in foreground",
+                            icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
+                        ),
+                        SimpleListItemModel(
+                            "app",
+                            title = "App not in foreground",
+                            icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
+                            subtitle = "Error",
+                            isSubtitleError = true,
+                            isEnabled = false,
+                        ),
                     ),
                 ),
-            ),
         )
     }
 }
@@ -287,23 +290,24 @@ private fun PreviewGrid() {
     KeyMapperTheme {
         ChooseConstraintScreen(
             query = "Search query",
-            state = State.Data(
-                listOf(
-                    SimpleListItemModel(
-                        "app1",
-                        title = "App in foreground",
-                        icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
-                    ),
-                    SimpleListItemModel(
-                        "app2",
-                        title = "App not in foreground",
-                        icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
-                        subtitle = "Error",
-                        isSubtitleError = true,
-                        isEnabled = false,
+            state =
+                State.Data(
+                    listOf(
+                        SimpleListItemModel(
+                            "app1",
+                            title = "App in foreground",
+                            icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
+                        ),
+                        SimpleListItemModel(
+                            "app2",
+                            title = "App not in foreground",
+                            icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
+                            subtitle = "Error",
+                            isSubtitleError = true,
+                            isEnabled = false,
+                        ),
                     ),
                 ),
-            ),
         )
     }
 }

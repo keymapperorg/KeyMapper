@@ -12,20 +12,16 @@ import java.io.InputStream
 class FakeFileAdapter(
     private val tempFolder: TemporaryFolder,
 ) : FileAdapter {
-
     val privateFolder = tempFolder.newFolder("private")
 
-    override fun openAsset(fileName: String): InputStream {
-        throw Exception()
-    }
+    override fun openAsset(fileName: String): InputStream = throw Exception()
 
-    override fun getPicturesFolder(): String {
-        throw Exception()
-    }
+    override fun getPicturesFolder(): String = throw Exception()
 
-    override fun openDownloadsFile(fileName: String, mimeType: String): KMResult<IFile> {
-        throw Exception()
-    }
+    override fun openDownloadsFile(
+        fileName: String,
+        mimeType: String,
+    ): KMResult<IFile> = throw Exception()
 
     override fun getPrivateFile(path: String): IFile {
         val file = File(privateFolder, path)
@@ -33,19 +29,19 @@ class FakeFileAdapter(
         return JavaFile(file)
     }
 
-    override fun getFile(parent: IFile, path: String): IFile {
-        return JavaFile(File((parent as JavaFile).file, path))
-    }
+    override fun getFile(
+        parent: IFile,
+        path: String,
+    ): IFile = JavaFile(File((parent as JavaFile).file, path))
 
-    override fun getFileFromUri(uri: String): IFile {
-        return JavaFile(File(uri))
-    }
+    override fun getFileFromUri(uri: String): IFile = JavaFile(File(uri))
 
-    override fun getPublicUriForPrivateFile(privateFile: IFile): String {
-        return ""
-    }
+    override fun getPublicUriForPrivateFile(privateFile: IFile): String = ""
 
-    override fun createZipFile(destination: IFile, files: Set<IFile>): KMResult<*> {
+    override fun createZipFile(
+        destination: IFile,
+        files: Set<IFile>,
+    ): KMResult<*> {
         runBlocking {
             files.forEach { file ->
                 file.copyTo(destination)
@@ -55,7 +51,10 @@ class FakeFileAdapter(
         return Success(Unit)
     }
 
-    override suspend fun extractZipFile(zipFile: IFile, destination: IFile): KMResult<*> {
+    override suspend fun extractZipFile(
+        zipFile: IFile,
+        destination: IFile,
+    ): KMResult<*> {
         zipFile.listFiles()!!.forEach { file ->
             file.copyTo(destination)
         }

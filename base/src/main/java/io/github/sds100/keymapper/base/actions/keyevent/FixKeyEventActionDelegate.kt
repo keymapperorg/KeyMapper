@@ -36,147 +36,158 @@ import javax.inject.Inject
 import javax.inject.Named
 
 @ViewModelScoped
-class FixKeyEventActionDelegateImpl @Inject constructor(
-    @Named("viewmodel")
-    val viewModelScope: CoroutineScope,
-    val controlAccessibilityServiceUseCase: ControlAccessibilityServiceUseCase,
-    val systemBridgeConnectionManager: SystemBridgeConnectionManager,
-    val setupInputMethodUseCase: SetupInputMethodUseCase,
-    val preferenceRepository: PreferenceRepository,
-    val setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
-    resourceProvider: ResourceProvider,
-    dialogProvider: DialogProvider,
-    navigationProvider: NavigationProvider,
-) : FixKeyEventActionDelegate,
-    ResourceProvider by resourceProvider,
-    DialogProvider by dialogProvider,
-    NavigationProvider by navigationProvider {
-
-    private val proModeStatus: Flow<ProModeStatus> =
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
-            systemBridgeConnectionManager.connectionState.map { state ->
-                when (state) {
-                    is SystemBridgeConnectionState.Connected -> ProModeStatus.ENABLED
-                    is SystemBridgeConnectionState.Disconnected -> ProModeStatus.DISABLED
-                }
-            }
-        } else {
-            flowOf(ProModeStatus.UNSUPPORTED)
-        }
-
-    private val isProModeSelected: Flow<Boolean> =
-        preferenceRepository.get(Keys.keyEventActionsUseSystemBridge)
-            .map { it ?: PreferenceDefaults.KEY_EVENT_ACTIONS_USE_SYSTEM_BRIDGE }
-
-    private val showBottomSheet: MutableStateFlow<Boolean> = MutableStateFlow(false)
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override val fixKeyEventActionState: StateFlow<FixKeyEventActionState?> =
-        showBottomSheet.flatMapLatest { showBottomSheet ->
-            if (showBottomSheet) {
-                buildStateFlow()
-            } else {
-                flowOf(null)
-            }
-        }.stateIn(viewModelScope, SharingStarted.Lazily, null)
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun buildStateFlow(): Flow<FixKeyEventActionState> {
-        return isProModeSelected.flatMapLatest { isProModeSelected ->
-            if (isProModeSelected) {
-                combine(
-                    proModeStatus,
-                    controlAccessibilityServiceUseCase.serviceState,
-                ) { proModeStatus, serviceState ->
-                    FixKeyEventActionState.ProMode(
-                        proModeStatus = proModeStatus,
-                        isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
-                    )
+class FixKeyEventActionDelegateImpl
+    @Inject
+    constructor(
+        @Named("viewmodel")
+        val viewModelScope: CoroutineScope,
+        val controlAccessibilityServiceUseCase: ControlAccessibilityServiceUseCase,
+        val systemBridgeConnectionManager: SystemBridgeConnectionManager,
+        val setupInputMethodUseCase: SetupInputMethodUseCase,
+        val preferenceRepository: PreferenceRepository,
+        val setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
+        resourceProvider: ResourceProvider,
+        dialogProvider: DialogProvider,
+        navigationProvider: NavigationProvider,
+    ) : FixKeyEventActionDelegate,
+        ResourceProvider by resourceProvider,
+        DialogProvider by dialogProvider,
+        NavigationProvider by navigationProvider {
+        private val proModeStatus: Flow<ProModeStatus> =
+            if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
+                systemBridgeConnectionManager.connectionState.map { state ->
+                    when (state) {
+                        is SystemBridgeConnectionState.Connected -> ProModeStatus.ENABLED
+                        is SystemBridgeConnectionState.Disconnected -> ProModeStatus.DISABLED
+                    }
                 }
             } else {
-                combine(
-                    proModeStatus,
-                    setupInputMethodUseCase.isEnabled,
-                    setupInputMethodUseCase.isChosen,
-                    controlAccessibilityServiceUseCase.serviceState,
-                    preferenceRepository.get(Keys.changeImeOnInputFocus),
-                ) { proModeStatus, isEnabled, isChosen, serviceState, changeImeOnInputFocus ->
-                    val enablingRequiresUserInput =
-                        Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+                flowOf(ProModeStatus.UNSUPPORTED)
+            }
 
-                    FixKeyEventActionState.InputMethod(
-                        isEnabled = isEnabled,
-                        isChosen = isChosen,
-                        enablingRequiresUserInput = enablingRequiresUserInput,
-                        isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
-                        proModeStatus = proModeStatus,
-                        isAutoSwitchImeEnabled = changeImeOnInputFocus
-                            ?: PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS,
-                    )
+        private val isProModeSelected: Flow<Boolean> =
+            preferenceRepository
+                .get(Keys.keyEventActionsUseSystemBridge)
+                .map { it ?: PreferenceDefaults.KEY_EVENT_ACTIONS_USE_SYSTEM_BRIDGE }
+
+        private val showBottomSheet: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+        @OptIn(ExperimentalCoroutinesApi::class)
+        override val fixKeyEventActionState: StateFlow<FixKeyEventActionState?> =
+            showBottomSheet
+                .flatMapLatest { showBottomSheet ->
+                    if (showBottomSheet) {
+                        buildStateFlow()
+                    } else {
+                        flowOf(null)
+                    }
+                }.stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+        @OptIn(ExperimentalCoroutinesApi::class)
+        private fun buildStateFlow(): Flow<FixKeyEventActionState> =
+            isProModeSelected.flatMapLatest { isProModeSelected ->
+                if (isProModeSelected) {
+                    combine(
+                        proModeStatus,
+                        controlAccessibilityServiceUseCase.serviceState,
+                    ) { proModeStatus, serviceState ->
+                        FixKeyEventActionState.ProMode(
+                            proModeStatus = proModeStatus,
+                            isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
+                        )
+                    }
+                } else {
+                    combine(
+                        proModeStatus,
+                        setupInputMethodUseCase.isEnabled,
+                        setupInputMethodUseCase.isChosen,
+                        controlAccessibilityServiceUseCase.serviceState,
+                        preferenceRepository.get(Keys.changeImeOnInputFocus),
+                    ) { proModeStatus, isEnabled, isChosen, serviceState, changeImeOnInputFocus ->
+                        val enablingRequiresUserInput =
+                            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+
+                        FixKeyEventActionState.InputMethod(
+                            isEnabled = isEnabled,
+                            isChosen = isChosen,
+                            enablingRequiresUserInput = enablingRequiresUserInput,
+                            isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
+                            proModeStatus = proModeStatus,
+                            isAutoSwitchImeEnabled =
+                                changeImeOnInputFocus
+                                    ?: PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS,
+                        )
+                    }
+                }
+            }
+
+        override fun showFixKeyEventActionBottomSheet() {
+            showBottomSheet.value = true
+        }
+
+        override fun dismissFixKeyEventActionBottomSheet() {
+            showBottomSheet.value = false
+        }
+
+        override fun onEnableAccessibilityServiceClick() {
+            viewModelScope.launch {
+                setupAccessibilityServiceDelegate.showEnableAccessibilityServiceDialog()
+            }
+        }
+
+        override fun onEnableProModeForKeyEventActionsClick() {
+            viewModelScope.launch {
+                navigate("fix_key_event_action_pro_mode", NavDestination.ProMode)
+            }
+        }
+
+        override fun onEnableImeClick() {
+            viewModelScope.launch {
+                setupInputMethodUseCase.enableInputMethod()
+            }
+        }
+
+        override fun onChooseImeClick() {
+            viewModelScope.launch {
+                setupInputMethodUseCase.chooseInputMethod().onFailure {
+                    Timber.e("Failed to choose input method when fixing key event action. Error: $it")
                 }
             }
         }
-    }
 
-    override fun showFixKeyEventActionBottomSheet() {
-        showBottomSheet.value = true
-    }
-
-    override fun dismissFixKeyEventActionBottomSheet() {
-        showBottomSheet.value = false
-    }
-
-    override fun onEnableAccessibilityServiceClick() {
-        viewModelScope.launch {
-            setupAccessibilityServiceDelegate.showEnableAccessibilityServiceDialog()
+        override fun onSelectProMode() {
+            preferenceRepository.set(Keys.keyEventActionsUseSystemBridge, true)
         }
-    }
 
-    override fun onEnableProModeForKeyEventActionsClick() {
-        viewModelScope.launch {
-            navigate("fix_key_event_action_pro_mode", NavDestination.ProMode)
+        override fun onSelectInputMethod() {
+            preferenceRepository.set(Keys.keyEventActionsUseSystemBridge, false)
         }
-    }
 
-    override fun onEnableImeClick() {
-        viewModelScope.launch {
-            setupInputMethodUseCase.enableInputMethod()
-        }
-    }
-
-    override fun onChooseImeClick() {
-        viewModelScope.launch {
-            setupInputMethodUseCase.chooseInputMethod().onFailure {
-                Timber.e("Failed to choose input method when fixing key event action. Error: $it")
+        override fun onAutoSwitchImeCheckedChange(checked: Boolean) {
+            viewModelScope.launch {
+                preferenceRepository.set(Keys.changeImeOnInputFocus, checked)
             }
         }
     }
-
-    override fun onSelectProMode() {
-        preferenceRepository.set(Keys.keyEventActionsUseSystemBridge, true)
-    }
-
-    override fun onSelectInputMethod() {
-        preferenceRepository.set(Keys.keyEventActionsUseSystemBridge, false)
-    }
-
-    override fun onAutoSwitchImeCheckedChange(checked: Boolean) {
-        viewModelScope.launch {
-            preferenceRepository.set(Keys.changeImeOnInputFocus, checked)
-        }
-    }
-}
 
 interface FixKeyEventActionDelegate {
     val fixKeyEventActionState: StateFlow<FixKeyEventActionState?>
 
     fun showFixKeyEventActionBottomSheet()
+
     fun dismissFixKeyEventActionBottomSheet()
+
     fun onEnableAccessibilityServiceClick()
+
     fun onEnableProModeForKeyEventActionsClick()
+
     fun onEnableImeClick()
+
     fun onChooseImeClick()
+
     fun onSelectProMode()
+
     fun onSelectInputMethod()
+
     fun onAutoSwitchImeCheckedChange(checked: Boolean)
 }

@@ -42,10 +42,10 @@ fun GroupBreadcrumbRow(
     BoxWithConstraints(modifier = modifier) {
         val maxCrumbWidth = constraints.maxWidth / 3
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(scrollState),
-
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(scrollState),
         ) {
             val color = LocalContentColor.current.copy(alpha = 0.7f)
             Breadcrumb(
@@ -66,11 +66,12 @@ fun GroupBreadcrumbRow(
                     modifier = Modifier.widthIn(max = LocalDensity.current.run { maxCrumbWidth.toDp() }),
                     text = group.name,
                     onClick = { onGroupClick(group.uid) },
-                    color = if (index == groups.lastIndex) {
-                        LocalContentColor.current
-                    } else {
-                        color
-                    },
+                    color =
+                        if (index == groups.lastIndex) {
+                            LocalContentColor.current
+                        } else {
+                            color
+                        },
                     enabled = enabled,
                 )
             }

@@ -75,34 +75,38 @@ abstract class BaseAccessibilityServiceController(
         private const val CALLBACK_ID_ACCESSIBILITY_SERVICE = "accessibility_service"
     }
 
-    private val performActionsUseCase = performActionsUseCaseFactory.create(
-        accessibilityService = service,
-        coroutineScope = service.lifecycleScope,
-    )
+    private val performActionsUseCase =
+        performActionsUseCaseFactory.create(
+            accessibilityService = service,
+            coroutineScope = service.lifecycleScope,
+        )
 
-    private val detectKeyMapsUseCase = detectKeyMapsUseCaseFactory.create(
-        accessibilityService = service,
-        coroutineScope = service.lifecycleScope,
-    )
+    private val detectKeyMapsUseCase =
+        detectKeyMapsUseCaseFactory.create(
+            accessibilityService = service,
+            coroutineScope = service.lifecycleScope,
+        )
 
     val detectConstraintsUseCase = detectConstraintsUseCaseFactory.create(service)
 
-    val keyMapDetectionController = KeyMapDetectionController(
-        service.lifecycleScope,
-        detectKeyMapsUseCase,
-        performActionsUseCase,
-        detectConstraintsUseCase,
-        inputEventHub,
-        pauseKeyMapsUseCase,
-        recordTriggerController,
-    )
+    val keyMapDetectionController =
+        KeyMapDetectionController(
+            service.lifecycleScope,
+            detectKeyMapsUseCase,
+            performActionsUseCase,
+            detectConstraintsUseCase,
+            inputEventHub,
+            pauseKeyMapsUseCase,
+            recordTriggerController,
+        )
 
-    val triggerKeyMapFromOtherAppsController = TriggerKeyMapFromOtherAppsController(
-        service.lifecycleScope,
-        detectKeyMapsUseCase,
-        performActionsUseCase,
-        detectConstraintsUseCase,
-    )
+    val triggerKeyMapFromOtherAppsController =
+        TriggerKeyMapFromOtherAppsController(
+            service.lifecycleScope,
+            detectKeyMapsUseCase,
+            performActionsUseCase,
+            detectConstraintsUseCase,
+        )
 
     val accessibilityNodeRecorder = accessibilityNodeRecorderFactory.create(service)
 
@@ -136,15 +140,16 @@ abstract class BaseAccessibilityServiceController(
             )
 
     private val initialServiceFlags: Int by lazy {
-        var flags = AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
-            .withFlag(AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS)
-            .withFlag(AccessibilityServiceInfo.DEFAULT)
-            .withFlag(AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS)
-            // This is required for receive TYPE_WINDOWS_CHANGED events so can
-            // detect when to show/hide overlays.
-            .withFlag(AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS)
-            .withFlag(AccessibilityServiceInfo.FLAG_INPUT_METHOD_EDITOR)
-            .withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
+        var flags =
+            AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
+                .withFlag(AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS)
+                .withFlag(AccessibilityServiceInfo.DEFAULT)
+                .withFlag(AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS)
+                // This is required for receive TYPE_WINDOWS_CHANGED events so can
+                // detect when to show/hide overlays.
+                .withFlag(AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS)
+                .withFlag(AccessibilityServiceInfo.FLAG_INPUT_METHOD_EDITOR)
+                .withFlag(AccessibilityServiceInfo.FLAG_ENABLE_ACCESSIBILITY_VOLUME)
 
         return@lazy flags
     }
@@ -187,40 +192,45 @@ abstract class BaseAccessibilityServiceController(
             override fun onMotionEvent(event: MotionEvent?): Boolean {
                 event ?: return false
 
-                val gamePadEvent = KMGamePadEvent.fromMotionEvent(event)
-                    ?: return false
+                val gamePadEvent =
+                    KMGamePadEvent.fromMotionEvent(event)
+                        ?: return false
                 return onMotionEventFromIme(gamePadEvent)
             }
         }
 
     init {
-        serviceFlags.onEach { flags ->
-            // check that it isn't null because this can only be called once the service is bound
-            if (service.serviceFlags != null) {
-                service.serviceFlags = flags
-            }
-        }.launchIn(service.lifecycleScope)
+        serviceFlags
+            .onEach { flags ->
+                // check that it isn't null because this can only be called once the service is bound
+                if (service.serviceFlags != null) {
+                    service.serviceFlags = flags
+                }
+            }.launchIn(service.lifecycleScope)
 
-        serviceFeedbackType.onEach { feedbackType ->
-            // check that it isn't null because this can only be called once the service is bound
-            if (service.serviceFeedbackType != null) {
-                service.serviceFeedbackType = feedbackType
-            }
-        }.launchIn(service.lifecycleScope)
+        serviceFeedbackType
+            .onEach { feedbackType ->
+                // check that it isn't null because this can only be called once the service is bound
+                if (service.serviceFeedbackType != null) {
+                    service.serviceFeedbackType = feedbackType
+                }
+            }.launchIn(service.lifecycleScope)
 
-        serviceEventTypes.onEach { eventTypes ->
-            // check that it isn't null because this can only be called once the service is bound
-            if (service.serviceEventTypes != null) {
-                service.serviceEventTypes = eventTypes
-            }
-        }.launchIn(service.lifecycleScope)
+        serviceEventTypes
+            .onEach { eventTypes ->
+                // check that it isn't null because this can only be called once the service is bound
+                if (service.serviceEventTypes != null) {
+                    service.serviceEventTypes = eventTypes
+                }
+            }.launchIn(service.lifecycleScope)
 
-        serviceNotificationTimeout.onEach { timeout ->
-            // check that it isn't null because this can only be called once the service is bound
-            if (service.notificationTimeout != null) {
-                service.notificationTimeout = timeout
-            }
-        }.launchIn(service.lifecycleScope)
+        serviceNotificationTimeout
+            .onEach { timeout ->
+                // check that it isn't null because this can only be called once the service is bound
+                if (service.notificationTimeout != null) {
+                    service.notificationTimeout = timeout
+                }
+            }.launchIn(service.lifecycleScope)
 
         combine(
             detectKeyMapsUseCase.requestFingerprintGestureDetection,
@@ -233,13 +243,16 @@ abstract class BaseAccessibilityServiceController(
             }
         }.launchIn(service.lifecycleScope)
 
-        pauseKeyMapsUseCase.isPaused.distinctUntilChanged().onEach {
-            triggerKeyMapFromOtherAppsController.reset()
-        }.launchIn(service.lifecycleScope)
+        pauseKeyMapsUseCase.isPaused
+            .distinctUntilChanged()
+            .onEach {
+                triggerKeyMapFromOtherAppsController.reset()
+            }.launchIn(service.lifecycleScope)
 
-        inputEvents.onEach {
-            onEventFromUi(it)
-        }.launchIn(service.lifecycleScope)
+        inputEvents
+            .onEach {
+                onEventFromUi(it)
+            }.launchIn(service.lifecycleScope)
 
         service.isKeyboardHidden
             .drop(1) // Don't send it when collecting initially
@@ -260,9 +273,10 @@ abstract class BaseAccessibilityServiceController(
             if (isPaused) {
                 enableAccessibilityVolumeStream = false
             } else {
-                enableAccessibilityVolumeStream = keyMaps.any { model ->
-                    model.keyMap.isEnabled && model.keyMap.actionList.any { it.data is ActionData.Sound }
-                }
+                enableAccessibilityVolumeStream =
+                    keyMaps.any { model ->
+                        model.keyMap.isEnabled && model.keyMap.actionList.any { it.data is ActionData.Sound }
+                    }
             }
 
             if (enableAccessibilityVolumeStream) {
@@ -280,11 +294,12 @@ abstract class BaseAccessibilityServiceController(
 
         // The accessibility event is only used on older than SDK 33. On newer versions the
         // accessibility input method API is used.
-        val imeInputStartedEvents = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            AccessibilityEvent.TYPE_WINDOWS_CHANGED
-        } else {
-            0
-        }
+        val imeInputStartedEvents =
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                AccessibilityEvent.TYPE_WINDOWS_CHANGED
+            } else {
+                0
+            }
 
         val recordNodeEvents =
             AccessibilityEvent.TYPE_VIEW_FOCUSED or AccessibilityEvent.TYPE_VIEW_CLICKED
@@ -379,9 +394,7 @@ abstract class BaseAccessibilityServiceController(
     fun onKeyEvent(
         event: KMKeyEvent,
         detectionSource: InputEventDetectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
-    ): Boolean {
-        return inputEventHub.onInputEvent(event, detectionSource)
-    }
+    ): Boolean = inputEventHub.onInputEvent(event, detectionSource)
 
     fun onKeyEventFromIme(event: KMKeyEvent): Boolean {
         /*
@@ -391,7 +404,9 @@ abstract class BaseAccessibilityServiceController(
         is sent. This is a restriction in Android. So send a fake DOWN key event as well
         before returning the UP key event.
          */
-        if (event.action == KeyEvent.ACTION_UP && (event.keyCode == KeyEvent.KEYCODE_VOLUME_UP || event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
+        if (event.action == KeyEvent.ACTION_UP &&
+            (event.keyCode == KeyEvent.KEYCODE_VOLUME_UP || event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)
+        ) {
             inputEventHub.onInputEvent(
                 event.copy(action = KeyEvent.ACTION_DOWN),
                 detectionSource = InputEventDetectionSource.INPUT_METHOD,
@@ -401,12 +416,11 @@ abstract class BaseAccessibilityServiceController(
         return inputEventHub.onInputEvent(event, InputEventDetectionSource.INPUT_METHOD)
     }
 
-    fun onMotionEventFromIme(event: KMGamePadEvent): Boolean {
-        return inputEventHub.onInputEvent(
+    fun onMotionEventFromIme(event: KMGamePadEvent): Boolean =
+        inputEventHub.onInputEvent(
             event,
             detectionSource = InputEventDetectionSource.INPUT_METHOD,
         )
-    }
 
     open fun onAccessibilityEvent(event: AccessibilityEvent) {
         accessibilityNodeRecorder.onAccessibilityEvent(event)
@@ -421,7 +435,10 @@ abstract class BaseAccessibilityServiceController(
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun onStartInput(attribute: EditorInfo, restarting: Boolean) {
+    fun onStartInput(
+        attribute: EditorInfo,
+        restarting: Boolean,
+    ) {
         autoSwitchImeController?.onStartInput(attribute, restarting)
     }
 
@@ -442,15 +459,17 @@ abstract class BaseAccessibilityServiceController(
         Timber.d("Service received event from UI: $event")
 
         when (event) {
-            is TestActionEvent -> service.lifecycleScope.launch {
-                performActionsUseCase.perform(
-                    event.action,
-                )
-            }
+            is TestActionEvent ->
+                service.lifecycleScope.launch {
+                    performActionsUseCase.perform(
+                        event.action,
+                    )
+                }
 
-            is AccessibilityServiceEvent.Ping -> service.lifecycleScope.launch {
-                outputEvents.emit(AccessibilityServiceEvent.Pong(event.key))
-            }
+            is AccessibilityServiceEvent.Ping ->
+                service.lifecycleScope.launch {
+                    outputEvents.emit(AccessibilityServiceEvent.Pong(event.key))
+                }
 
             is AccessibilityServiceEvent.HideKeyboard -> service.hideKeyboard()
             is AccessibilityServiceEvent.ShowKeyboard -> service.showKeyboard()
@@ -464,9 +483,10 @@ abstract class BaseAccessibilityServiceController(
 
             is TriggerKeyMapEvent -> triggerKeyMapFromIntent(event.uid)
 
-            is AccessibilityServiceEvent.EnableInputMethod -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                service.enableIme(event.imeId)
-            }
+            is AccessibilityServiceEvent.EnableInputMethod ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    service.enableIme(event.imeId)
+                }
 
             is RecordAccessibilityNodeEvent.StartRecordingNodes -> {
                 accessibilityNodeRecorder.startRecording()

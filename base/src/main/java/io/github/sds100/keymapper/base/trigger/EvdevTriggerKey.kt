@@ -35,12 +35,13 @@ data class EvdevTriggerKey(
 
     companion object {
         fun fromEntity(entity: EvdevTriggerKeyEntity): TriggerKey {
-            val clickType = when (entity.clickType) {
-                TriggerKeyEntity.SHORT_PRESS -> ClickType.SHORT_PRESS
-                TriggerKeyEntity.LONG_PRESS -> ClickType.LONG_PRESS
-                TriggerKeyEntity.DOUBLE_PRESS -> ClickType.DOUBLE_PRESS
-                else -> ClickType.SHORT_PRESS
-            }
+            val clickType =
+                when (entity.clickType) {
+                    TriggerKeyEntity.SHORT_PRESS -> ClickType.SHORT_PRESS
+                    TriggerKeyEntity.LONG_PRESS -> ClickType.LONG_PRESS
+                    TriggerKeyEntity.DOUBLE_PRESS -> ClickType.DOUBLE_PRESS
+                    else -> ClickType.SHORT_PRESS
+                }
 
             val consumeEvent =
                 !entity.flags.hasFlag(EvdevTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT)
@@ -52,12 +53,13 @@ data class EvdevTriggerKey(
                 uid = entity.uid,
                 keyCode = entity.keyCode,
                 scanCode = entity.scanCode,
-                device = EvdevDeviceInfo(
-                    name = entity.deviceName,
-                    bus = entity.deviceBus,
-                    vendor = entity.deviceVendor,
-                    product = entity.deviceProduct,
-                ),
+                device =
+                    EvdevDeviceInfo(
+                        name = entity.deviceName,
+                        bus = entity.deviceBus,
+                        vendor = entity.deviceVendor,
+                        product = entity.deviceProduct,
+                    ),
                 clickType = clickType,
                 consumeEvent = consumeEvent,
                 detectWithScanCodeUserSetting = detectWithScancode,
@@ -65,11 +67,12 @@ data class EvdevTriggerKey(
         }
 
         fun toEntity(key: EvdevTriggerKey): EvdevTriggerKeyEntity {
-            val clickType = when (key.clickType) {
-                ClickType.SHORT_PRESS -> TriggerKeyEntity.SHORT_PRESS
-                ClickType.LONG_PRESS -> TriggerKeyEntity.LONG_PRESS
-                ClickType.DOUBLE_PRESS -> TriggerKeyEntity.DOUBLE_PRESS
-            }
+            val clickType =
+                when (key.clickType) {
+                    ClickType.SHORT_PRESS -> TriggerKeyEntity.SHORT_PRESS
+                    ClickType.LONG_PRESS -> TriggerKeyEntity.LONG_PRESS
+                    ClickType.DOUBLE_PRESS -> TriggerKeyEntity.DOUBLE_PRESS
+                }
 
             var flags = 0
 

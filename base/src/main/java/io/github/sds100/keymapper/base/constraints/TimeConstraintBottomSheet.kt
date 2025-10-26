@@ -62,16 +62,18 @@ fun TimeConstraintBottomSheet(viewModel: ChooseConstraintViewModel) {
             },
             state = viewModel.timeConstraintState!!,
             onSelectStartTime = { hour, min ->
-                viewModel.timeConstraintState = viewModel.timeConstraintState?.copy(
-                    startHour = hour,
-                    startMinute = min,
-                )
+                viewModel.timeConstraintState =
+                    viewModel.timeConstraintState?.copy(
+                        startHour = hour,
+                        startMinute = min,
+                    )
             },
             onSelectEndTime = { hour, min ->
-                viewModel.timeConstraintState = viewModel.timeConstraintState?.copy(
-                    endHour = hour,
-                    endMinute = min,
-                )
+                viewModel.timeConstraintState =
+                    viewModel.timeConstraintState?.copy(
+                        endHour = hour,
+                        endMinute = min,
+                    )
             },
             onDoneClick = {
                 scope.launch {
@@ -137,9 +139,10 @@ private fun TimeConstraintBottomSheet(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp),
                 textAlign = TextAlign.Center,
                 text = stringResource(R.string.constraint_time_bottom_sheet_title),
                 style = MaterialTheme.typography.headlineMedium,
@@ -210,9 +213,10 @@ private fun TimeConstraintBottomSheet(
             }
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -273,21 +277,23 @@ private fun TimePickerDialog(
 @Composable
 private fun Preview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         TimeConstraintBottomSheet(
             sheetState = sheetState,
             onDismissRequest = {},
-            state = ConstraintData.Time(
-                startHour = 0,
-                startMinute = 0,
-                endHour = 23,
-                endMinute = 59,
-            ),
+            state =
+                ConstraintData.Time(
+                    startHour = 0,
+                    startMinute = 0,
+                    endHour = 23,
+                    endMinute = 59,
+                ),
             onSelectStartTime = { _, _ -> },
             onSelectEndTime = { _, _ -> },
             onDoneClick = {},

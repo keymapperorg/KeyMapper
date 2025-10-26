@@ -40,6 +40,4 @@ fun String.getWordBoundaries(cursorPosition: Int): Pair<Int, Int>? {
     return Pair(firstBoundary ?: 0, secondBoundary ?: lastIndex)
 }
 
-fun Float.toPercentString(): String {
-    return "${(this * 100).roundToInt()}%"
-}
+fun Float.toPercentString(): String = "${(this * 100).roundToInt()}%"

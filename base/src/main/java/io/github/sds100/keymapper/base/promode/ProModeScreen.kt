@@ -148,14 +148,15 @@ private fun ProModeScreen(
         val endPadding = innerPadding.calculateEndPadding(layoutDirection)
 
         Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    bottom = innerPadding.calculateBottomPadding(),
-                    start = startPadding,
-                    end = endPadding,
-                ),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom = innerPadding.calculateBottomPadding(),
+                        start = startPadding,
+                        end = endPadding,
+                    ),
         ) {
             content()
         }
@@ -185,9 +186,10 @@ private fun Content(
             exit = fadeOut() + shrinkVertically(),
         ) {
             ProModeInfoCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
                 onDismiss = onInfoCardDismiss,
             )
         }
@@ -197,9 +199,10 @@ private fun Content(
         }
 
         WarningCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
             state = warningState,
             onButtonClick = onWarningButtonClick,
         )
@@ -260,9 +263,10 @@ private fun LoadedContent(
         // Show notification permission warning if permission not granted
         if (state is ProModeState.Stopped && !state.isNotificationPermissionGranted) {
             SetupCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
                 color = MaterialTheme.colorScheme.errorContainer,
                 icon = {
                     Icon(
@@ -287,9 +291,10 @@ private fun LoadedContent(
         when (state) {
             ProModeState.Started -> {
                 ProModeStartedCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
                     onStopClick = onStopServiceClick,
                 )
             }
@@ -297,9 +302,10 @@ private fun LoadedContent(
             is ProModeState.Stopped -> {
                 if (state.isRootGranted) {
                     SetupCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp),
                         color = LocalCustomColorsPalette.current.magiskTeal,
                         icon = {
                             Icon(
@@ -323,18 +329,20 @@ private fun LoadedContent(
                     Spacer(modifier = Modifier.height(8.dp))
                 }
 
-                val shizukuButtonText: String? = when (state.shizukuSetupState) {
-                    ShizukuSetupState.INSTALLED -> stringResource(R.string.pro_mode_shizuku_detected_button_start)
-                    ShizukuSetupState.STARTED -> stringResource(R.string.pro_mode_shizuku_detected_button_request_permission)
-                    ShizukuSetupState.PERMISSION_GRANTED -> stringResource(R.string.pro_mode_shizuku_detected_button_start_service)
-                    ShizukuSetupState.NOT_FOUND -> null
-                }
+                val shizukuButtonText: String? =
+                    when (state.shizukuSetupState) {
+                        ShizukuSetupState.INSTALLED -> stringResource(R.string.pro_mode_shizuku_detected_button_start)
+                        ShizukuSetupState.STARTED -> stringResource(R.string.pro_mode_shizuku_detected_button_request_permission)
+                        ShizukuSetupState.PERMISSION_GRANTED -> stringResource(R.string.pro_mode_shizuku_detected_button_start_service)
+                        ShizukuSetupState.NOT_FOUND -> null
+                    }
 
                 if (shizukuButtonText != null) {
                     SetupCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp),
                         color = LocalCustomColorsPalette.current.shizukuBlue,
                         icon = {
                             Image(
@@ -357,15 +365,20 @@ private fun LoadedContent(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                val setupKeyMapperText: String = when {
-                    Build.VERSION.SDK_INT < Build.VERSION_CODES.R -> stringResource(R.string.pro_mode_set_up_with_key_mapper_button_incompatible)
-                    else -> stringResource(R.string.pro_mode_set_up_with_key_mapper_button)
-                }
+                val setupKeyMapperText: String =
+                    when {
+                        Build.VERSION.SDK_INT < Build.VERSION_CODES.R ->
+                            stringResource(
+                                R.string.pro_mode_set_up_with_key_mapper_button_incompatible,
+                            )
+                        else -> stringResource(R.string.pro_mode_set_up_with_key_mapper_button)
+                    }
 
                 SetupCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
                     color = MaterialTheme.colorScheme.primaryContainer,
                     icon = {
                         Image(
@@ -413,11 +426,12 @@ private fun WarningCard(
     state: ProModeWarningState,
     onButtonClick: () -> Unit = {},
 ) {
-    val borderStroke = if (state is ProModeWarningState.Understood) {
-        CardDefaults.outlinedCardBorder()
-    } else {
-        BorderStroke(1.dp, MaterialTheme.colorScheme.error)
-    }
+    val borderStroke =
+        if (state is ProModeWarningState.Understood) {
+            CardDefaults.outlinedCardBorder()
+        } else {
+            BorderStroke(1.dp, MaterialTheme.colorScheme.error)
+        }
 
     OutlinedCard(
         modifier = modifier,
@@ -451,15 +465,17 @@ private fun WarningCard(
         Spacer(modifier = Modifier.height(8.dp))
 
         FilledTonalButton(
-            modifier = Modifier
-                .align(Alignment.End)
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.End)
+                    .padding(horizontal = 16.dp),
             onClick = onButtonClick,
             enabled = state is ProModeWarningState.Idle,
-            colors = ButtonDefaults.filledTonalButtonColors(
-                containerColor = MaterialTheme.colorScheme.error,
-                contentColor = MaterialTheme.colorScheme.onError,
-            ),
+            colors =
+                ButtonDefaults.filledTonalButtonColors(
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError,
+                ),
         ) {
             if (state is ProModeWarningState.Understood) {
                 Icon(imageVector = Icons.Rounded.Check, contentDescription = null)
@@ -467,15 +483,17 @@ private fun WarningCard(
                 Spacer(modifier = Modifier.width(8.dp))
             }
 
-            val text = when (state) {
-                is ProModeWarningState.CountingDown -> stringResource(
-                    R.string.pro_mode_warning_understand_button_countdown,
-                    state.seconds,
-                )
+            val text =
+                when (state) {
+                    is ProModeWarningState.CountingDown ->
+                        stringResource(
+                            R.string.pro_mode_warning_understand_button_countdown,
+                            state.seconds,
+                        )
 
-                ProModeWarningState.Idle -> stringResource(R.string.pro_mode_warning_understand_button_not_completed)
-                ProModeWarningState.Understood -> stringResource(R.string.pro_mode_warning_understand_button_completed)
-            }
+                    ProModeWarningState.Idle -> stringResource(R.string.pro_mode_warning_understand_button_not_completed)
+                    ProModeWarningState.Understood -> stringResource(R.string.pro_mode_warning_understand_button_completed)
+                }
 
             Text(text)
         }
@@ -504,9 +522,10 @@ private fun ProModeStartedCard(
             Spacer(modifier = Modifier.width(16.dp))
 
             Text(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(vertical = 8.dp),
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .padding(vertical = 8.dp),
                 text = stringResource(R.string.pro_mode_service_started),
                 style = MaterialTheme.typography.titleMedium,
             )
@@ -554,9 +573,10 @@ private fun SetupCard(
         Spacer(modifier = Modifier.height(8.dp))
 
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
         ) {
             content()
         }
@@ -564,15 +584,17 @@ private fun SetupCard(
         Spacer(modifier = Modifier.height(8.dp))
 
         FilledTonalButton(
-            modifier = Modifier
-                .align(Alignment.End)
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.End)
+                    .padding(horizontal = 16.dp),
             onClick = onButtonClick,
             enabled = enabled,
-            colors = ButtonDefaults.filledTonalButtonColors(
-                containerColor = color,
-                contentColor = LocalCustomColorsPalette.current.contentColorFor(color),
-            ),
+            colors =
+                ButtonDefaults.filledTonalButtonColors(
+                    containerColor = color,
+                    contentColor = LocalCustomColorsPalette.current.contentColorFor(color),
+                ),
         ) {
             Text(buttonText)
         }
@@ -592,9 +614,10 @@ private fun ProModeInfoCard(
         elevation = CardDefaults.elevatedCardElevation(),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
             verticalAlignment = Alignment.Top,
         ) {
             Column(modifier = Modifier.weight(1f)) {
@@ -645,13 +668,14 @@ private fun Preview() {
         ProModeScreen {
             Content(
                 warningState = ProModeWarningState.Understood,
-                setupState = State.Data(
-                    ProModeState.Stopped(
-                        isRootGranted = false,
-                        shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
-                        isNotificationPermissionGranted = true,
+                setupState =
+                    State.Data(
+                        ProModeState.Stopped(
+                            isRootGranted = false,
+                            shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
+                            isNotificationPermissionGranted = true,
+                        ),
                     ),
-                ),
                 showInfoCard = true,
                 onInfoCardDismiss = {},
                 autoStartAtBoot = false,
@@ -684,9 +708,10 @@ private fun PreviewCountingDown() {
     KeyMapperTheme {
         ProModeScreen {
             Content(
-                warningState = ProModeWarningState.CountingDown(
-                    seconds = 5,
-                ),
+                warningState =
+                    ProModeWarningState.CountingDown(
+                        seconds = 5,
+                    ),
                 setupState = State.Loading,
                 showInfoCard = true,
                 onInfoCardDismiss = {},
@@ -721,13 +746,14 @@ private fun PreviewNotificationPermissionNotGranted() {
         ProModeScreen {
             Content(
                 warningState = ProModeWarningState.Understood,
-                setupState = State.Data(
-                    ProModeState.Stopped(
-                        isRootGranted = true,
-                        shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
-                        isNotificationPermissionGranted = false,
+                setupState =
+                    State.Data(
+                        ProModeState.Stopped(
+                            isRootGranted = true,
+                            shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
+                            isNotificationPermissionGranted = false,
+                        ),
                     ),
-                ),
                 showInfoCard = false,
                 onInfoCardDismiss = {},
                 autoStartAtBoot = false,

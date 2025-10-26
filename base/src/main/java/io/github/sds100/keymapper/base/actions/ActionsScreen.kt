@@ -54,7 +54,10 @@ import kotlinx.coroutines.flow.update
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewModel) {
+fun ActionsScreen(
+    modifier: Modifier = Modifier,
+    viewModel: ConfigActionsViewModel,
+) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val state by viewModel.state.collectAsStateWithLifecycle()
     val optionsState by viewModel.actionOptionsState.collectAsStateWithLifecycle()
@@ -150,106 +153,112 @@ private fun ActionsScreen(
 
     when (state) {
         State.Loading -> Loading()
-        is State.Data<ConfigActionsState> -> Surface(modifier = modifier) {
-            Column {
-                Spacer(Modifier.height(8.dp))
-
-                // Display action tip if available
-                tipModel?.let { tip ->
-                    TipCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        title = tip.title,
-                        message = tip.message,
-                        isDismissable = tip.isDismissable,
-                        onDismiss = onActionTipDismiss,
-                        buttonText = tip.buttonText,
-                        onButtonClick = { onTipButtonClick(tip.id) },
-                    )
-
+        is State.Data<ConfigActionsState> ->
+            Surface(modifier = modifier) {
+                Column {
                     Spacer(Modifier.height(8.dp))
-                }
 
-                when (val data = state.data) {
-                    is ConfigActionsState.Empty -> {
-                        Column(
-                            modifier = Modifier.weight(1f),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            Text(
-                                modifier = Modifier
-                                    .padding(32.dp)
-                                    .fillMaxWidth(),
-                                text = stringResource(R.string.actions_recyclerview_placeholder),
-                                textAlign = TextAlign.Center,
-                            )
-
-                            if (data.shortcuts.isNotEmpty()) {
-                                Text(
-                                    text = stringResource(R.string.recently_used_actions),
-                                    style = MaterialTheme.typography.titleSmall,
-                                )
-
-                                Spacer(Modifier.height(8.dp))
-
-                                ShortcutRow(
-                                    modifier = Modifier
-                                        .padding(horizontal = 32.dp)
-                                        .fillMaxWidth(),
-                                    shortcuts = data.shortcuts,
-                                    onClick = onClickShortcut,
-                                )
-                            }
-                        }
-                    }
-
-                    is ConfigActionsState.Loaded -> {
-                        if (data.actions.isNotEmpty()) {
-                            Spacer(Modifier.height(8.dp))
-
-                            Text(
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                                text = stringResource(R.string.action_list_explanation_header),
-                                style = MaterialTheme.typography.titleSmall,
-                            )
-                        }
+                    // Display action tip if available
+                    tipModel?.let { tip ->
+                        TipCard(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
+                            title = tip.title,
+                            message = tip.message,
+                            isDismissable = tip.isDismissable,
+                            onDismiss = onActionTipDismiss,
+                            buttonText = tip.buttonText,
+                            onButtonClick = { onTipButtonClick(tip.id) },
+                        )
 
                         Spacer(Modifier.height(8.dp))
+                    }
 
-                        ActionList(
-                            modifier = Modifier.weight(1f),
-                            actionList = data.actions,
-                            shortcuts = data.shortcuts,
-                            isReorderingEnabled = data.isReorderingEnabled,
-                            onRemoveClick = {
-                                actionToDelete = it
-                                showDeleteDialog = true
-                            },
-                            onEditClick = onEditClick,
-                            onFixErrorClick = onFixErrorClick,
-                            onMove = onMoveAction,
-                            onClickShortcut = onClickShortcut,
-                            onTestClick = onTestClick,
-                        )
+                    when (val data = state.data) {
+                        is ConfigActionsState.Empty -> {
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
+                                Text(
+                                    modifier =
+                                        Modifier
+                                            .padding(32.dp)
+                                            .fillMaxWidth(),
+                                    text = stringResource(R.string.actions_recyclerview_placeholder),
+                                    textAlign = TextAlign.Center,
+                                )
+
+                                if (data.shortcuts.isNotEmpty()) {
+                                    Text(
+                                        text = stringResource(R.string.recently_used_actions),
+                                        style = MaterialTheme.typography.titleSmall,
+                                    )
+
+                                    Spacer(Modifier.height(8.dp))
+
+                                    ShortcutRow(
+                                        modifier =
+                                            Modifier
+                                                .padding(horizontal = 32.dp)
+                                                .fillMaxWidth(),
+                                        shortcuts = data.shortcuts,
+                                        onClick = onClickShortcut,
+                                    )
+                                }
+                            }
+                        }
+
+                        is ConfigActionsState.Loaded -> {
+                            if (data.actions.isNotEmpty()) {
+                                Spacer(Modifier.height(8.dp))
+
+                                Text(
+                                    modifier = Modifier.padding(horizontal = 16.dp),
+                                    text = stringResource(R.string.action_list_explanation_header),
+                                    style = MaterialTheme.typography.titleSmall,
+                                )
+                            }
+
+                            Spacer(Modifier.height(8.dp))
+
+                            ActionList(
+                                modifier = Modifier.weight(1f),
+                                actionList = data.actions,
+                                shortcuts = data.shortcuts,
+                                isReorderingEnabled = data.isReorderingEnabled,
+                                onRemoveClick = {
+                                    actionToDelete = it
+                                    showDeleteDialog = true
+                                },
+                                onEditClick = onEditClick,
+                                onFixErrorClick = onFixErrorClick,
+                                onMove = onMoveAction,
+                                onClickShortcut = onClickShortcut,
+                                onTestClick = onTestClick,
+                            )
+                        }
+                    }
+
+                    FilledTonalButton(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                        onClick = onAddClick,
+                        colors =
+                            ButtonDefaults.filledTonalButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                            ),
+                    ) {
+                        Text(stringResource(R.string.button_add_action))
                     }
                 }
-
-                FilledTonalButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    onClick = onAddClick,
-                    colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                    ),
-                ) {
-                    Text(stringResource(R.string.button_add_action))
-                }
             }
-        }
     }
 }
 
@@ -274,16 +283,18 @@ private fun ActionList(
     onTestClick: (String) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
-    val dragDropState = rememberDragDropState(
-        lazyListState = lazyListState,
-        onMove = onMove,
-        // Do not drag and drop the row of shortcuts
-        ignoreLastItems = if (shortcuts.isEmpty()) {
-            0
-        } else {
-            1
-        },
-    )
+    val dragDropState =
+        rememberDragDropState(
+            lazyListState = lazyListState,
+            onMove = onMove,
+            // Do not drag and drop the row of shortcuts
+            ignoreLastItems =
+                if (shortcuts.isEmpty()) {
+                    0
+                } else {
+                    1
+                },
+        )
 
     // Use dragContainer rather than .draggable() modifier because that causes
     // dragging the first item to be always be dropped in the next position.
@@ -328,9 +339,10 @@ private fun ActionList(
                     Spacer(Modifier.height(8.dp))
 
                     ShortcutRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 32.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 32.dp),
                         shortcuts = shortcuts,
                         onClick = { onClickShortcut(it) },
                     )
@@ -345,25 +357,28 @@ private fun ActionList(
 private fun EmptyPreview() {
     KeyMapperTheme {
         ActionsScreen(
-            state = State.Data(
-                ConfigActionsState.Empty(
-                    shortcuts = setOf(
-                        ShortcutModel(
-                            icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
-                            text = "Toggle Back flashlight",
-                            data = ActionData.Flashlight.Toggle(
-                                lens = CameraLens.BACK,
-                                strengthPercent = null,
+            state =
+                State.Data(
+                    ConfigActionsState.Empty(
+                        shortcuts =
+                            setOf(
+                                ShortcutModel(
+                                    icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
+                                    text = "Toggle Back flashlight",
+                                    data =
+                                        ActionData.Flashlight.Toggle(
+                                            lens = CameraLens.BACK,
+                                            strengthPercent = null,
+                                        ),
+                                ),
+                                ShortcutModel(
+                                    icon = ComposeIconInfo.Vector(Icons.Rounded.Pinch),
+                                    text = "Pinch in with 2 finger(s) on coordinates 5/4 with a pinch distance of 8px in 200ms",
+                                    data = ActionData.ConsumeKeyEvent,
+                                ),
                             ),
-                        ),
-                        ShortcutModel(
-                            icon = ComposeIconInfo.Vector(Icons.Rounded.Pinch),
-                            text = "Pinch in with 2 finger(s) on coordinates 5/4 with a pinch distance of 8px in 200ms",
-                            data = ActionData.ConsumeKeyEvent,
-                        ),
                     ),
                 ),
-            ),
         )
     }
 }
@@ -373,45 +388,49 @@ private fun EmptyPreview() {
 private fun LoadedPreview() {
     KeyMapperTheme {
         ActionsScreen(
-            state = State.Data(
-                ConfigActionsState.Loaded(
-                    actions = listOf(
-                        ActionListItemModel(
-                            id = "1",
-                            icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
-                            text = "Toggle Back flashlight",
-                            secondaryText = "Repeat until released",
-                            error = "Flashlight not found",
-                            isErrorFixable = true,
-                            linkType = LinkType.ARROW,
-                        ),
-                        ActionListItemModel(
-                            id = "2",
-                            icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
-                            text = "Toggle Back flashlight",
-                            secondaryText = "Repeat until released",
-                            error = null,
-                            isErrorFixable = true,
-                        ),
-                    ),
-                    shortcuts = setOf(
-                        ShortcutModel(
-                            icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
-                            text = "Toggle Back flashlight",
-                            data = ActionData.Flashlight.Toggle(
-                                lens = CameraLens.BACK,
-                                strengthPercent = null,
+            state =
+                State.Data(
+                    ConfigActionsState.Loaded(
+                        actions =
+                            listOf(
+                                ActionListItemModel(
+                                    id = "1",
+                                    icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
+                                    text = "Toggle Back flashlight",
+                                    secondaryText = "Repeat until released",
+                                    error = "Flashlight not found",
+                                    isErrorFixable = true,
+                                    linkType = LinkType.ARROW,
+                                ),
+                                ActionListItemModel(
+                                    id = "2",
+                                    icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
+                                    text = "Toggle Back flashlight",
+                                    secondaryText = "Repeat until released",
+                                    error = null,
+                                    isErrorFixable = true,
+                                ),
                             ),
-                        ),
-                        ShortcutModel(
-                            icon = ComposeIconInfo.Vector(Icons.Rounded.Pinch),
-                            text = "Pinch in with 2 finger(s) on coordinates 5/4 with a pinch distance of 8px in 200ms",
-                            data = ActionData.ConsumeKeyEvent,
-                        ),
+                        shortcuts =
+                            setOf(
+                                ShortcutModel(
+                                    icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
+                                    text = "Toggle Back flashlight",
+                                    data =
+                                        ActionData.Flashlight.Toggle(
+                                            lens = CameraLens.BACK,
+                                            strengthPercent = null,
+                                        ),
+                                ),
+                                ShortcutModel(
+                                    icon = ComposeIconInfo.Vector(Icons.Rounded.Pinch),
+                                    text = "Pinch in with 2 finger(s) on coordinates 5/4 with a pinch distance of 8px in 200ms",
+                                    data = ActionData.ConsumeKeyEvent,
+                                ),
+                            ),
+                        isReorderingEnabled = true,
                     ),
-                    isReorderingEnabled = true,
                 ),
-            ),
         )
     }
 }

@@ -14,31 +14,33 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AutoGrantPermissionController @Inject constructor(
-    private val coroutineScope: CoroutineScope,
-    private val permissionAdapter: PermissionAdapter,
-    private val shizukuAdapter: ShizukuAdapter,
-) {
+class AutoGrantPermissionController
+    @Inject
+    constructor(
+        private val coroutineScope: CoroutineScope,
+        private val permissionAdapter: PermissionAdapter,
+        private val shizukuAdapter: ShizukuAdapter,
+    ) {
+        fun start() {
+            // automatically grant WRITE_SECURE_SETTINGS if Key Mapper has root or shizuku permission
+            permissionAdapter
+                .isGrantedFlow(Permission.WRITE_SECURE_SETTINGS)
+                .flatMapLatest { isGranted ->
+                    if (isGranted) {
+                        emptyFlow()
+                    } else {
+                        combine(
+                            permissionAdapter.isGrantedFlow(Permission.ROOT),
+                            permissionAdapter.isGrantedFlow(Permission.SHIZUKU),
+                            shizukuAdapter.isStarted,
+                        ) { isRootGranted, isShizukuGranted, isShizukuStarted ->
 
-    fun start() {
-        // automatically grant WRITE_SECURE_SETTINGS if Key Mapper has root or shizuku permission
-        permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS)
-            .flatMapLatest { isGranted ->
-                if (isGranted) {
-                    emptyFlow()
-                } else {
-                    combine(
-                        permissionAdapter.isGrantedFlow(Permission.ROOT),
-                        permissionAdapter.isGrantedFlow(Permission.SHIZUKU),
-                        shizukuAdapter.isStarted,
-                    ) { isRootGranted, isShizukuGranted, isShizukuStarted ->
-
-                        if (isRootGranted || (isShizukuGranted && isShizukuStarted)) {
-                            Timber.i("Auto-granting WRITE_SECURE_SETTINGS permission")
-                            permissionAdapter.grant(Manifest.permission.WRITE_SECURE_SETTINGS)
+                            if (isRootGranted || (isShizukuGranted && isShizukuStarted)) {
+                                Timber.i("Auto-granting WRITE_SECURE_SETTINGS permission")
+                                permissionAdapter.grant(Manifest.permission.WRITE_SECURE_SETTINGS)
+                            }
                         }
                     }
-                }
-            }.launchIn(coroutineScope)
+                }.launchIn(coroutineScope)
+        }
     }
-}

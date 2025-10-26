@@ -49,11 +49,12 @@ class KeyMapConstraintsComparator(
         return invertIfReverse(comparison)
     }
 
-    private fun invertIfReverse(result: Int) = if (reverse) {
-        result * -1
-    } else {
-        result
-    }
+    private fun invertIfReverse(result: Int) =
+        if (reverse) {
+            result * -1
+        } else {
+            result
+        }
 
     private fun compareConstraints(
         constraint: Constraint,
@@ -74,11 +75,12 @@ class KeyMapConstraintsComparator(
 
         if (constraint.id == otherConstraint.id) {
             // If constraints are the same then sort by a secondary field.
-            val comparison = getSecondarySortField(constraint).then { sortData ->
-                return@then getSecondarySortField(otherConstraint).then { otherSortData ->
-                    Success(sortData.compareTo(otherSortData))
+            val comparison =
+                getSecondarySortField(constraint).then { sortData ->
+                    return@then getSecondarySortField(otherConstraint).then { otherSortData ->
+                        Success(sortData.compareTo(otherSortData))
+                    }
                 }
-            }
 
             return comparison.valueOrNull() ?: 0
         }
@@ -86,8 +88,8 @@ class KeyMapConstraintsComparator(
         return constraint.id.ordinal.compareTo(otherConstraint.id.ordinal)
     }
 
-    private fun getSecondarySortField(constraint: Constraint): KMResult<String> {
-        return when (constraint.data) {
+    private fun getSecondarySortField(constraint: Constraint): KMResult<String> =
+        when (constraint.data) {
             is ConstraintData.AppInForeground -> displayConstraints.getAppName(constraint.data.packageName)
             is ConstraintData.AppNotInForeground -> displayConstraints.getAppName(constraint.data.packageName)
             is ConstraintData.AppNotPlayingMedia -> displayConstraints.getAppName(constraint.data.packageName)
@@ -112,30 +114,32 @@ class KeyMapConstraintsComparator(
             is ConstraintData.PhoneRinging -> Success("")
             is ConstraintData.ScreenOff -> Success("")
             is ConstraintData.ScreenOn -> Success("")
-            is ConstraintData.WifiConnected -> if (constraint.data.ssid == null) {
-                Success("")
-            } else {
-                Success(constraint.data.ssid)
-            }
+            is ConstraintData.WifiConnected ->
+                if (constraint.data.ssid == null) {
+                    Success("")
+                } else {
+                    Success(constraint.data.ssid)
+                }
 
-            is ConstraintData.WifiDisconnected -> if (constraint.data.ssid == null) {
-                Success("")
-            } else {
-                Success(constraint.data.ssid)
-            }
+            is ConstraintData.WifiDisconnected ->
+                if (constraint.data.ssid == null) {
+                    Success("")
+                } else {
+                    Success(constraint.data.ssid)
+                }
 
             is ConstraintData.WifiOff -> Success("")
             is ConstraintData.WifiOn -> Success("")
             is ConstraintData.LockScreenNotShowing -> Success("")
             is ConstraintData.LockScreenShowing -> Success("")
-            is ConstraintData.Time -> Success(
-                constraint.data.startTime
-                    .toEpochSecond(LocalDate.now(), ZoneOffset.UTC)
-                    .toString(),
-            )
+            is ConstraintData.Time ->
+                Success(
+                    constraint.data.startTime
+                        .toEpochSecond(LocalDate.now(), ZoneOffset.UTC)
+                        .toString(),
+                )
 
             ConstraintData.HingeClosed -> Success("")
             ConstraintData.HingeOpen -> Success("")
         }
-    }
 }

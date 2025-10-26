@@ -28,7 +28,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class CreateKeyMapShortcutActivity : AppCompatActivity() {
-
     @Inject
     lateinit var permissionAdapter: AndroidPermissionAdapter
 
@@ -59,14 +58,16 @@ class CreateKeyMapShortcutActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.auto(
-                ComposeColors.surfaceContainerLight.toArgb(),
-                ComposeColors.surfaceContainerDark.toArgb(),
-            ),
-            navigationBarStyle = SystemBarStyle.auto(
-                ComposeColors.surfaceContainerLight.toArgb(),
-                ComposeColors.surfaceContainerDark.toArgb(),
-            ),
+            statusBarStyle =
+                SystemBarStyle.auto(
+                    ComposeColors.surfaceContainerLight.toArgb(),
+                    ComposeColors.surfaceContainerDark.toArgb(),
+                ),
+            navigationBarStyle =
+                SystemBarStyle.auto(
+                    ComposeColors.surfaceContainerLight.toArgb(),
+                    ComposeColors.surfaceContainerDark.toArgb(),
+                ),
         )
         super.onCreate(savedInstanceState)
 
@@ -79,14 +80,15 @@ class CreateKeyMapShortcutActivity : AppCompatActivity() {
             }
         }
 
-        requestPermissionDelegate = RequestPermissionDelegate(
-            this,
-            showDialogs = true,
-            permissionAdapter,
-            notificationReceiverAdapter = notificationReceiverAdapter,
-            buildConfigProvider = buildConfigProvider,
-            shizukuAdapter = shizukuAdapter,
-        )
+        requestPermissionDelegate =
+            RequestPermissionDelegate(
+                this,
+                showDialogs = true,
+                permissionAdapter,
+                notificationReceiverAdapter = notificationReceiverAdapter,
+                buildConfigProvider = buildConfigProvider,
+                shizukuAdapter = shizukuAdapter,
+            )
 
         launchRepeatOnLifecycle(Lifecycle.State.STARTED) {
             permissionAdapter.request

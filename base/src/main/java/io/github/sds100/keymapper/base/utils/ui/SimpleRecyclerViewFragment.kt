@@ -9,17 +9,18 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.databinding.FragmentSimpleRecyclerviewBinding
 
 abstract class SimpleRecyclerViewFragment<T> : RecyclerViewFragment<T, FragmentSimpleRecyclerviewBinding>() {
-
     @MenuRes
     open val appBarMenu: Int = R.menu.menu_recyclerview_fragment
 
     @StringRes
     open val emptyListPlaceholder: Int = R.string.recyclerview_placeholder
 
-    override fun bind(inflater: LayoutInflater, container: ViewGroup?) =
-        FragmentSimpleRecyclerviewBinding.inflate(inflater, container, false).apply {
-            lifecycleOwner = viewLifecycleOwner
-        }
+    override fun bind(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+    ) = FragmentSimpleRecyclerviewBinding.inflate(inflater, container, false).apply {
+        lifecycleOwner = viewLifecycleOwner
+    }
 
     override fun subscribeUi(binding: FragmentSimpleRecyclerviewBinding) {
         binding.emptyListPlaceholder = str(emptyListPlaceholder)
@@ -32,12 +33,10 @@ abstract class SimpleRecyclerViewFragment<T> : RecyclerViewFragment<T, FragmentS
     }
 
     override fun getProgressBar(binding: FragmentSimpleRecyclerviewBinding) = binding.progressBar
-    override fun getRecyclerView(binding: FragmentSimpleRecyclerviewBinding) =
-        binding.epoxyRecyclerView
 
-    override fun getEmptyListPlaceHolderTextView(binding: FragmentSimpleRecyclerviewBinding) =
-        binding.textViewEmptyListPlaceholder
+    override fun getRecyclerView(binding: FragmentSimpleRecyclerviewBinding) = binding.epoxyRecyclerView
 
-    override fun getBottomAppBar(binding: FragmentSimpleRecyclerviewBinding): BottomAppBar? =
-        binding.appBar
+    override fun getEmptyListPlaceHolderTextView(binding: FragmentSimpleRecyclerviewBinding) = binding.textViewEmptyListPlaceholder
+
+    override fun getBottomAppBar(binding: FragmentSimpleRecyclerviewBinding): BottomAppBar? = binding.appBar
 }

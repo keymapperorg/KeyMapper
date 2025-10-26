@@ -14,46 +14,60 @@ import io.github.sds100.keymapper.base.BaseMainActivity
 import io.github.sds100.keymapper.base.R
 
 object ShareUtils {
-    fun sendMail(ctx: Context, email: String, subject: String, body: String) {
+    fun sendMail(
+        ctx: Context,
+        email: String,
+        subject: String,
+        body: String,
+    ) {
         try {
-            val intent = Intent(Intent.ACTION_SENDTO).apply {
-                data = "mailto:$email".toUri()
-                putExtra(Intent.EXTRA_SUBJECT, subject)
-                putExtra(Intent.EXTRA_TEXT, body)
-            }
+            val intent =
+                Intent(Intent.ACTION_SENDTO).apply {
+                    data = "mailto:$email".toUri()
+                    putExtra(Intent.EXTRA_SUBJECT, subject)
+                    putExtra(Intent.EXTRA_TEXT, body)
+                }
 
             ctx.startActivity(Intent.createChooser(intent, null))
         } catch (_: ActivityNotFoundException) {
         }
     }
 
-    fun shareFile(ctx: Context, file: Uri, packageName: String) {
+    fun shareFile(
+        ctx: Context,
+        file: Uri,
+        packageName: String,
+    ) {
         try {
             val type = ctx.contentResolver.getType(file)
 
-            ShareCompat.IntentBuilder(ctx)
+            ShareCompat
+                .IntentBuilder(ctx)
                 .setType(type)
                 .setStream(file)
                 .createChooserIntent()
                 .also { intent ->
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                        val broadcast = Intent(BaseMainActivity.ACTION_SAVE_FILE).apply {
-                            setPackage(packageName)
-                            putExtra(BaseMainActivity.EXTRA_FILE_URI, file)
-                        }
+                        val broadcast =
+                            Intent(BaseMainActivity.ACTION_SAVE_FILE).apply {
+                                setPackage(packageName)
+                                putExtra(BaseMainActivity.EXTRA_FILE_URI, file)
+                            }
 
-                        val customActions = arrayOf(
-                            ChooserAction.Builder(
-                                Icon.createWithResource(ctx, R.drawable.ic_outline_save_24),
-                                ctx.getString(R.string.home_export_share_sheet_save_to_files),
-                                PendingIntent.getBroadcast(
-                                    ctx,
-                                    1,
-                                    broadcast,
-                                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_CANCEL_CURRENT,
-                                ),
-                            ).build(),
-                        )
+                        val customActions =
+                            arrayOf(
+                                ChooserAction
+                                    .Builder(
+                                        Icon.createWithResource(ctx, R.drawable.ic_outline_save_24),
+                                        ctx.getString(R.string.home_export_share_sheet_save_to_files),
+                                        PendingIntent.getBroadcast(
+                                            ctx,
+                                            1,
+                                            broadcast,
+                                            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_CANCEL_CURRENT,
+                                        ),
+                                    ).build(),
+                            )
 
                         intent.putExtra(Intent.EXTRA_CHOOSER_CUSTOM_ACTIONS, customActions)
                     }

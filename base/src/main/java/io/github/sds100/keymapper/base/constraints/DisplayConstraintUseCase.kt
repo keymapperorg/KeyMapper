@@ -6,8 +6,12 @@ import io.github.sds100.keymapper.common.utils.KMResult
 
 interface DisplayConstraintUseCase : GetConstraintErrorUseCase {
     fun getAppName(packageName: String): KMResult<String>
+
     fun getAppIcon(packageName: String): KMResult<Drawable>
+
     fun getInputMethodLabel(imeId: String): KMResult<String>
+
     fun neverShowDndTriggerError()
+
     suspend fun fixError(error: KMError)
 }

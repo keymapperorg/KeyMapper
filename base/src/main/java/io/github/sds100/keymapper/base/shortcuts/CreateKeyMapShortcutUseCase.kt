@@ -10,65 +10,68 @@ import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import javax.inject.Inject
 
 @ViewModelScoped
-class CreateKeyMapShortcutUseCaseImpl @Inject constructor(
-    private val appShortcutAdapter: AppShortcutAdapter,
-) : CreateKeyMapShortcutUseCase {
-
-    companion object {
-        private const val ACTION_TRIGGER_KEYMAP_BY_UID =
-            "io.github.sds100.keymapper.ACTION_TRIGGER_KEYMAP_BY_UID"
-        private const val EXTRA_KEYMAP_UID = "io.github.sds100.keymapper.EXTRA_KEYMAP_UID"
-    }
-
-    override val isSupported: Boolean
-        get() = appShortcutAdapter.areLauncherShortcutsSupported
-
-    override fun pinShortcut(
-        keyMapUid: String,
-        shortcutLabel: String,
-        icon: Drawable?,
-    ): KMResult<*> {
-        val shortcut = if (icon == null) {
-            appShortcutAdapter.createLauncherShortcut(
-                iconResId = R.mipmap.ic_launcher_round,
-                label = shortcutLabel,
-                intentAction = ACTION_TRIGGER_KEYMAP_BY_UID,
-                bundleOf(EXTRA_KEYMAP_UID to keyMapUid),
-            )
-        } else {
-            appShortcutAdapter.createLauncherShortcut(
-                icon = icon,
-                label = shortcutLabel,
-                intentAction = ACTION_TRIGGER_KEYMAP_BY_UID,
-                bundleOf(EXTRA_KEYMAP_UID to keyMapUid),
-            )
+class CreateKeyMapShortcutUseCaseImpl
+    @Inject
+    constructor(
+        private val appShortcutAdapter: AppShortcutAdapter,
+    ) : CreateKeyMapShortcutUseCase {
+        companion object {
+            private const val ACTION_TRIGGER_KEYMAP_BY_UID =
+                "io.github.sds100.keymapper.ACTION_TRIGGER_KEYMAP_BY_UID"
+            private const val EXTRA_KEYMAP_UID = "io.github.sds100.keymapper.EXTRA_KEYMAP_UID"
         }
-        return appShortcutAdapter.pinShortcut(shortcut)
-    }
 
-    override fun createIntent(
-        keyMapUid: String,
-        shortcutLabel: String,
-        icon: Drawable?,
-    ): Intent {
-        val shortcut = if (icon == null) {
-            appShortcutAdapter.createLauncherShortcut(
-                iconResId = R.mipmap.ic_launcher_round,
-                label = shortcutLabel,
-                intentAction = ACTION_TRIGGER_KEYMAP_BY_UID,
-                bundleOf(EXTRA_KEYMAP_UID to keyMapUid),
-            )
-        } else {
-            appShortcutAdapter.createLauncherShortcut(
-                icon = icon,
-                label = shortcutLabel,
-                intentAction = ACTION_TRIGGER_KEYMAP_BY_UID,
-                bundleOf(EXTRA_KEYMAP_UID to keyMapUid),
-            )
+        override val isSupported: Boolean
+            get() = appShortcutAdapter.areLauncherShortcutsSupported
+
+        override fun pinShortcut(
+            keyMapUid: String,
+            shortcutLabel: String,
+            icon: Drawable?,
+        ): KMResult<*> {
+            val shortcut =
+                if (icon == null) {
+                    appShortcutAdapter.createLauncherShortcut(
+                        iconResId = R.mipmap.ic_launcher_round,
+                        label = shortcutLabel,
+                        intentAction = ACTION_TRIGGER_KEYMAP_BY_UID,
+                        bundleOf(EXTRA_KEYMAP_UID to keyMapUid),
+                    )
+                } else {
+                    appShortcutAdapter.createLauncherShortcut(
+                        icon = icon,
+                        label = shortcutLabel,
+                        intentAction = ACTION_TRIGGER_KEYMAP_BY_UID,
+                        bundleOf(EXTRA_KEYMAP_UID to keyMapUid),
+                    )
+                }
+            return appShortcutAdapter.pinShortcut(shortcut)
         }
-        return appShortcutAdapter.createShortcutResultIntent(shortcut)
+
+        override fun createIntent(
+            keyMapUid: String,
+            shortcutLabel: String,
+            icon: Drawable?,
+        ): Intent {
+            val shortcut =
+                if (icon == null) {
+                    appShortcutAdapter.createLauncherShortcut(
+                        iconResId = R.mipmap.ic_launcher_round,
+                        label = shortcutLabel,
+                        intentAction = ACTION_TRIGGER_KEYMAP_BY_UID,
+                        bundleOf(EXTRA_KEYMAP_UID to keyMapUid),
+                    )
+                } else {
+                    appShortcutAdapter.createLauncherShortcut(
+                        icon = icon,
+                        label = shortcutLabel,
+                        intentAction = ACTION_TRIGGER_KEYMAP_BY_UID,
+                        bundleOf(EXTRA_KEYMAP_UID to keyMapUid),
+                    )
+                }
+            return appShortcutAdapter.createShortcutResultIntent(shortcut)
+        }
     }
-}
 
 interface CreateKeyMapShortcutUseCase {
     val isSupported: Boolean

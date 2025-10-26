@@ -14,7 +14,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun OptionsHeaderRow(modifier: Modifier = Modifier, icon: ImageVector, text: String) {
+fun OptionsHeaderRow(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    text: String,
+) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,

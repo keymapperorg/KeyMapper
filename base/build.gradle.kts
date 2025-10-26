@@ -15,14 +15,21 @@ plugins {
 
 android {
     namespace = "io.github.sds100.keymapper.base"
-    compileSdk = libs.versions.compile.sdk.get().toInt()
+    compileSdk =
+        libs.versions.compile.sdk
+            .get()
+            .toInt()
 
-    val versionProperties = Properties().apply {
-        project.file("../app/version.properties").inputStream().use { load(it) }
-    }
+    val versionProperties =
+        Properties().apply {
+            project.file("../app/version.properties").inputStream().use { load(it) }
+        }
 
     defaultConfig {
-        minSdk = libs.versions.min.sdk.get().toInt()
+        minSdk =
+            libs.versions.min.sdk
+                .get()
+                .toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -66,7 +73,9 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
+        kotlinCompilerExtensionVersion =
+            libs.versions.compose.compiler
+                .get()
     }
 }
 

@@ -28,29 +28,29 @@ import io.github.sds100.keymapper.system.volume.VolumeStream
 import kotlinx.serialization.json.Json
 
 object ActionDataEntityMapper {
-
     fun fromEntity(entity: ActionEntity): ActionData? {
-        val actionId = when (entity.type) {
-            ActionEntity.Type.APP -> ActionId.APP
-            ActionEntity.Type.APP_SHORTCUT -> ActionId.APP_SHORTCUT
-            ActionEntity.Type.KEY_EVENT -> ActionId.KEY_EVENT
-            ActionEntity.Type.TEXT_BLOCK -> ActionId.TEXT
-            ActionEntity.Type.URL -> ActionId.URL
-            ActionEntity.Type.TAP_COORDINATE -> ActionId.TAP_SCREEN
-            ActionEntity.Type.SWIPE_COORDINATE -> ActionId.SWIPE_SCREEN
-            ActionEntity.Type.PINCH_COORDINATE -> ActionId.PINCH_SCREEN
-            ActionEntity.Type.INTENT -> ActionId.INTENT
-            ActionEntity.Type.PHONE_CALL -> ActionId.PHONE_CALL
-            ActionEntity.Type.SEND_SMS -> ActionId.SEND_SMS
-            ActionEntity.Type.COMPOSE_SMS -> ActionId.COMPOSE_SMS
-            ActionEntity.Type.SOUND -> ActionId.SOUND
-            ActionEntity.Type.SYSTEM_ACTION -> {
-                SYSTEM_ACTION_ID_MAP.getKey(entity.data) ?: return null
-            }
+        val actionId =
+            when (entity.type) {
+                ActionEntity.Type.APP -> ActionId.APP
+                ActionEntity.Type.APP_SHORTCUT -> ActionId.APP_SHORTCUT
+                ActionEntity.Type.KEY_EVENT -> ActionId.KEY_EVENT
+                ActionEntity.Type.TEXT_BLOCK -> ActionId.TEXT
+                ActionEntity.Type.URL -> ActionId.URL
+                ActionEntity.Type.TAP_COORDINATE -> ActionId.TAP_SCREEN
+                ActionEntity.Type.SWIPE_COORDINATE -> ActionId.SWIPE_SCREEN
+                ActionEntity.Type.PINCH_COORDINATE -> ActionId.PINCH_SCREEN
+                ActionEntity.Type.INTENT -> ActionId.INTENT
+                ActionEntity.Type.PHONE_CALL -> ActionId.PHONE_CALL
+                ActionEntity.Type.SEND_SMS -> ActionId.SEND_SMS
+                ActionEntity.Type.COMPOSE_SMS -> ActionId.COMPOSE_SMS
+                ActionEntity.Type.SOUND -> ActionId.SOUND
+                ActionEntity.Type.SYSTEM_ACTION -> {
+                    SYSTEM_ACTION_ID_MAP.getKey(entity.data) ?: return null
+                }
 
-            ActionEntity.Type.INTERACT_UI_ELEMENT -> ActionId.INTERACT_UI_ELEMENT
-            ActionEntity.Type.SHELL_COMMAND -> ActionId.SHELL_COMMAND
-        }
+                ActionEntity.Type.INTERACT_UI_ELEMENT -> ActionId.INTERACT_UI_ELEMENT
+                ActionEntity.Type.SHELL_COMMAND -> ActionId.SHELL_COMMAND
+            }
 
         return when (actionId) {
             ActionId.APP -> ActionData.App(packageName = entity.data)
@@ -72,23 +72,28 @@ object ActionDataEntityMapper {
 
             ActionId.KEY_EVENT, ActionId.KEY_CODE -> {
                 val metaState =
-                    entity.extras.getData(ActionEntity.EXTRA_KEY_EVENT_META_STATE).valueOrNull()
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_KEY_EVENT_META_STATE)
+                        .valueOrNull()
                         ?.toInt()
                         ?: 0
 
                 val deviceDescriptor =
-                    entity.extras.getData(ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR)
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR)
                         .valueOrNull()
 
                 val deviceName =
-                    entity.extras.getData(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME)
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME)
                         .valueOrNull() ?: ""
 
-                val device = if (deviceDescriptor != null) {
-                    ActionData.InputKeyEvent.Device(deviceDescriptor, deviceName)
-                } else {
-                    null
-                }
+                val device =
+                    if (deviceDescriptor != null) {
+                        ActionData.InputKeyEvent.Device(deviceDescriptor, deviceName)
+                    } else {
+                        null
+                    }
 
                 ActionData.InputKeyEvent(
                     keyCode = entity.data.toInt(),
@@ -104,8 +109,10 @@ object ActionDataEntityMapper {
             ActionId.TAP_SCREEN -> {
                 val x = entity.data.split(',')[0].toInt()
                 val y = entity.data.split(',')[1].toInt()
-                val description = entity.extras.getData(ActionEntity.EXTRA_COORDINATE_DESCRIPTION)
-                    .valueOrNull()
+                val description =
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_COORDINATE_DESCRIPTION)
+                        .valueOrNull()
 
                 ActionData.TapScreen(x = x, y = y, description = description)
             }
@@ -143,8 +150,10 @@ object ActionDataEntityMapper {
                     duration = splitData[5].trim().toInt()
                 }
 
-                val description = entity.extras.getData(ActionEntity.EXTRA_COORDINATE_DESCRIPTION)
-                    .valueOrNull()
+                val description =
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_COORDINATE_DESCRIPTION)
+                        .valueOrNull()
 
                 ActionData.SwipeScreen(
                     xStart = xStart,
@@ -182,11 +191,12 @@ object ActionDataEntityMapper {
                 if (splitData.size >= 4) {
                     val tempType = splitData[3].trim()
 
-                    pinchType = if (tempType == PinchScreenType.PINCH_IN.name) {
-                        PinchScreenType.PINCH_IN
-                    } else {
-                        PinchScreenType.PINCH_OUT
-                    }
+                    pinchType =
+                        if (tempType == PinchScreenType.PINCH_IN.name) {
+                            PinchScreenType.PINCH_IN
+                        } else {
+                            PinchScreenType.PINCH_OUT
+                        }
                 }
 
                 if (splitData.size >= 5) {
@@ -197,8 +207,10 @@ object ActionDataEntityMapper {
                     duration = splitData[5].trim().toInt()
                 }
 
-                val description = entity.extras.getData(ActionEntity.EXTRA_COORDINATE_DESCRIPTION)
-                    .valueOrNull()
+                val description =
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_COORDINATE_DESCRIPTION)
+                        .valueOrNull()
 
                 ActionData.PinchScreen(
                     x = x,
@@ -212,17 +224,23 @@ object ActionDataEntityMapper {
             }
 
             ActionId.INTENT -> {
-                val target = entity.extras.getData(ActionEntity.EXTRA_INTENT_TARGET).then {
-                    INTENT_TARGET_MAP.getKey(it).success()
-                }.valueOrNull() ?: return null
+                val target =
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_INTENT_TARGET)
+                        .then {
+                            INTENT_TARGET_MAP.getKey(it).success()
+                        }.valueOrNull() ?: return null
 
                 val description =
                     entity.extras.getData(ActionEntity.EXTRA_INTENT_DESCRIPTION).valueOrNull()
                         ?: return null
 
-                val intentExtras = entity.extras.getData(ActionEntity.EXTRA_INTENT_EXTRAS).then {
-                    Json.decodeFromString<List<IntentExtraModel>>(it).success()
-                }.valueOrNull()
+                val intentExtras =
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_INTENT_EXTRAS)
+                        .then {
+                            Json.decodeFromString<List<IntentExtraModel>>(it).success()
+                        }.valueOrNull()
 
                 return ActionData.Intent(
                     target = target,
@@ -235,34 +253,40 @@ object ActionDataEntityMapper {
             ActionId.PHONE_CALL -> ActionData.PhoneCall(number = entity.data)
 
             ActionId.SEND_SMS, ActionId.COMPOSE_SMS -> {
-                val message = entity.extras.getData(ActionEntity.EXTRA_SMS_MESSAGE)
-                    .valueOrNull() ?: return null
+                val message =
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_SMS_MESSAGE)
+                        .valueOrNull() ?: return null
 
                 when (actionId) {
-                    ActionId.SEND_SMS -> ActionData.SendSms(
-                        number = entity.data,
-                        message = message,
-                    )
-                    ActionId.COMPOSE_SMS -> ActionData.ComposeSms(
-                        number = entity.data,
-                        message = message,
-                    )
+                    ActionId.SEND_SMS ->
+                        ActionData.SendSms(
+                            number = entity.data,
+                            message = message,
+                        )
+                    ActionId.COMPOSE_SMS ->
+                        ActionData.ComposeSms(
+                            number = entity.data,
+                            message = message,
+                        )
                     else -> return null
                 }
             }
 
             ActionId.SOUND -> {
-                val isRingtoneUri = try {
-                    entity.data.toUri().scheme != null
-                } catch (e: Exception) {
-                    false
-                }
+                val isRingtoneUri =
+                    try {
+                        entity.data.toUri().scheme != null
+                    } catch (e: Exception) {
+                        false
+                    }
 
                 if (isRingtoneUri) {
                     return ActionData.Sound.Ringtone(entity.data)
                 } else {
                     val soundFileDescription =
-                        entity.extras.getData(ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION)
+                        entity.extras
+                            .getData(ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION)
                             .valueOrNull() ?: return null
 
                     ActionData.Sound.SoundFile(
@@ -274,11 +298,13 @@ object ActionDataEntityMapper {
 
             ActionId.VOLUME_INCREASE_STREAM,
             ActionId.VOLUME_DECREASE_STREAM,
-                -> {
+            -> {
                 val stream =
-                    entity.extras.getData(ActionEntity.EXTRA_STREAM_TYPE).then {
-                        VOLUME_STREAM_MAP.getKey(it)!!.success()
-                    }.valueOrNull() ?: return null
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_STREAM_TYPE)
+                        .then {
+                            VOLUME_STREAM_MAP.getKey(it)!!.success()
+                        }.valueOrNull() ?: return null
 
                 val showVolumeUi =
                     entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI)
@@ -300,25 +326,29 @@ object ActionDataEntityMapper {
             ActionId.VOLUME_TOGGLE_MUTE,
             ActionId.VOLUME_UNMUTE,
             ActionId.VOLUME_MUTE,
-                -> {
+            -> {
                 val showVolumeUi =
                     entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI)
 
                 // For VOLUME_UP and VOLUME_DOWN, optionally read the stream type
-                val volumeStream = if (actionId == ActionId.VOLUME_UP || actionId == ActionId.VOLUME_DOWN) {
-                    entity.extras.getData(ActionEntity.EXTRA_STREAM_TYPE).then {
-                        VOLUME_STREAM_MAP.getKey(it)?.success() ?: null.success()
-                    }.valueOrNull()
-                } else {
-                    null
-                }
+                val volumeStream =
+                    if (actionId == ActionId.VOLUME_UP || actionId == ActionId.VOLUME_DOWN) {
+                        entity.extras
+                            .getData(ActionEntity.EXTRA_STREAM_TYPE)
+                            .then {
+                                VOLUME_STREAM_MAP.getKey(it)?.success() ?: null.success()
+                            }.valueOrNull()
+                    } else {
+                        null
+                    }
 
                 when (actionId) {
                     ActionId.VOLUME_UP -> ActionData.Volume.Up(showVolumeUi, volumeStream)
                     ActionId.VOLUME_DOWN -> ActionData.Volume.Down(showVolumeUi, volumeStream)
-                    ActionId.VOLUME_TOGGLE_MUTE -> ActionData.Volume.ToggleMute(
-                        showVolumeUi,
-                    )
+                    ActionId.VOLUME_TOGGLE_MUTE ->
+                        ActionData.Volume.ToggleMute(
+                            showVolumeUi,
+                        )
 
                     ActionId.VOLUME_UNMUTE -> ActionData.Volume.UnMute(showVolumeUi)
                     ActionId.VOLUME_MUTE -> ActionData.Volume.Mute(showVolumeUi)
@@ -334,14 +364,20 @@ object ActionDataEntityMapper {
             ActionId.TOGGLE_FLASHLIGHT,
             ActionId.ENABLE_FLASHLIGHT,
             ActionId.CHANGE_FLASHLIGHT_STRENGTH,
-                -> {
-                val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
-                    LENS_MAP.getKey(it)!!.success()
-                }.valueOrNull() ?: return null
+            -> {
+                val lens =
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_LENS)
+                        .then {
+                            LENS_MAP.getKey(it)!!.success()
+                        }.valueOrNull() ?: return null
 
-                val flashStrength = entity.extras.getData(ActionEntity.EXTRA_FLASH_STRENGTH).then {
-                    it.toFloatOrNull().success()
-                }.valueOrNull()
+                val flashStrength =
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_FLASH_STRENGTH)
+                        .then {
+                            it.toFloatOrNull().success()
+                        }.valueOrNull()
 
                 when (actionId) {
                     ActionId.TOGGLE_FLASHLIGHT -> ActionData.Flashlight.Toggle(lens, flashStrength)
@@ -360,19 +396,25 @@ object ActionDataEntityMapper {
             }
 
             ActionId.DISABLE_FLASHLIGHT,
-                -> {
-                val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
-                    LENS_MAP.getKey(it)!!.success()
-                }.valueOrNull() ?: return null
+            -> {
+                val lens =
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_LENS)
+                        .then {
+                            LENS_MAP.getKey(it)!!.success()
+                        }.valueOrNull() ?: return null
                 ActionData.Flashlight.Disable(lens)
             }
 
             ActionId.TOGGLE_DND_MODE,
             ActionId.ENABLE_DND_MODE,
-                -> {
-                val dndMode = entity.extras.getData(ActionEntity.EXTRA_DND_MODE).then {
-                    DND_MODE_MAP.getKey(it)!!.success()
-                }.valueOrNull() ?: return null
+            -> {
+                val dndMode =
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_DND_MODE)
+                        .then {
+                            DND_MODE_MAP.getKey(it)!!.success()
+                        }.valueOrNull() ?: return null
 
                 when (actionId) {
                     ActionId.TOGGLE_DND_MODE ->
@@ -399,7 +441,7 @@ object ActionDataEntityMapper {
             ActionId.STOP_MEDIA_PACKAGE,
             ActionId.STEP_FORWARD_PACKAGE,
             ActionId.STEP_BACKWARD_PACKAGE,
-                -> {
+            -> {
                 val packageName =
                     entity.extras.getData(ActionEntity.EXTRA_PACKAGE_NAME).valueOrNull()
                         ?: return null
@@ -441,26 +483,33 @@ object ActionDataEntityMapper {
 
             ActionId.CHANGE_RINGER_MODE -> {
                 val ringerMode =
-                    entity.extras.getData(ActionEntity.EXTRA_RINGER_MODE).then {
-                        RINGER_MODE_MAP.getKey(it)!!.success()
-                    }.valueOrNull() ?: return null
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_RINGER_MODE)
+                        .then {
+                            RINGER_MODE_MAP.getKey(it)!!.success()
+                        }.valueOrNull() ?: return null
 
                 ActionData.Volume.SetRingerMode(ringerMode)
             }
 
             ActionId.SWITCH_KEYBOARD -> {
-                val imeId = entity.extras.getData(ActionEntity.EXTRA_IME_ID)
-                    .valueOrNull() ?: return null
+                val imeId =
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_IME_ID)
+                        .valueOrNull() ?: return null
 
-                val imeName = entity.extras.getData(ActionEntity.EXTRA_IME_NAME)
-                    .valueOrNull() ?: return null
+                val imeName =
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_IME_NAME)
+                        .valueOrNull() ?: return null
 
                 ActionData.SwitchKeyboard(imeId, imeName)
             }
 
             ActionId.CYCLE_ROTATIONS -> {
                 val orientations =
-                    entity.extras.getData(ActionEntity.EXTRA_ORIENTATIONS)
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_ORIENTATIONS)
                         .then { extraValue ->
                             extraValue
                                 .split(",")
@@ -558,21 +607,26 @@ object ActionDataEntityMapper {
             ActionId.END_PHONE_CALL -> ActionData.EndCall
             ActionId.DEVICE_CONTROLS -> ActionData.DeviceControls
             ActionId.HTTP_REQUEST -> {
-                val method = entity.extras.getData(ActionEntity.EXTRA_HTTP_METHOD).then {
-                    HTTP_METHOD_MAP.getKey(it)!!.success()
-                }.valueOrNull() ?: return null
+                val method =
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_HTTP_METHOD)
+                        .then {
+                            HTTP_METHOD_MAP.getKey(it)!!.success()
+                        }.valueOrNull() ?: return null
 
                 val description =
                     entity.extras.getData(ActionEntity.EXTRA_HTTP_DESCRIPTION).valueOrNull()
                         ?: return null
 
-                val url = entity.extras.getData(ActionEntity.EXTRA_HTTP_URL).valueOrNull()
-                    ?: return null
+                val url =
+                    entity.extras.getData(ActionEntity.EXTRA_HTTP_URL).valueOrNull()
+                        ?: return null
 
                 val body = entity.extras.getData(ActionEntity.EXTRA_HTTP_BODY).valueOrNull() ?: ""
 
                 val authorizationHeader =
-                    entity.extras.getData(ActionEntity.EXTRA_HTTP_AUTHORIZATION_HEADER)
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_HTTP_AUTHORIZATION_HEADER)
                         .valueOrNull() ?: ""
 
                 ActionData.HttpRequest(
@@ -586,11 +640,13 @@ object ActionDataEntityMapper {
 
             ActionId.INTERACT_UI_ELEMENT -> {
                 val packageName =
-                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_PACKAGE_NAME)
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_ACCESSIBILITY_PACKAGE_NAME)
                         .valueOrNull()!!
 
                 val contentDescription =
-                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_CONTENT_DESCRIPTION)
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_ACCESSIBILITY_CONTENT_DESCRIPTION)
                         .valueOrNull()
 
                 val text =
@@ -606,20 +662,26 @@ object ActionDataEntityMapper {
                     entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_CLASS_NAME).valueOrNull()
 
                 val viewResourceId =
-                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_VIEW_RESOURCE_ID)
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_ACCESSIBILITY_VIEW_RESOURCE_ID)
                         .valueOrNull()
 
                 val uniqueId =
                     entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_UNIQUE_ID).valueOrNull()
 
-                val actions = entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_ACTIONS).then {
-                    Success(NodeInteractionTypeSetTypeConverter().toSet(it.toInt()))
-                }.valueOrNull() ?: emptySet()
+                val actions =
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_ACCESSIBILITY_ACTIONS)
+                        .then {
+                            Success(NodeInteractionTypeSetTypeConverter().toSet(it.toInt()))
+                        }.valueOrNull() ?: emptySet()
 
                 val nodeAction =
-                    entity.extras.getData(ActionEntity.EXTRA_ACCESSIBILITY_NODE_ACTION).then {
-                        convertNodeInteractionType(it)
-                    }.valueOrNull() ?: return null
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_ACCESSIBILITY_NODE_ACTION)
+                        .then {
+                            convertNodeInteractionType(it)
+                        }.valueOrNull() ?: return null
 
                 ActionData.InteractUiElement(
                     description = entity.data,
@@ -646,25 +708,29 @@ object ActionDataEntityMapper {
                 }
 
                 val type =
-                    entity.extras.getData(ActionEntity.EXTRA_MOVE_CURSOR_TYPE).then { value ->
-                        when (value) {
-                            ActionEntity.CURSOR_TYPE_CHAR -> Success(ActionData.MoveCursor.Type.CHAR)
-                            ActionEntity.CURSOR_TYPE_WORD -> Success(ActionData.MoveCursor.Type.WORD)
-                            ActionEntity.CURSOR_TYPE_LINE -> Success(ActionData.MoveCursor.Type.LINE)
-                            ActionEntity.CURSOR_TYPE_PARAGRAPH -> Success(ActionData.MoveCursor.Type.PARAGRAPH)
-                            ActionEntity.CURSOR_TYPE_PAGE -> Success(ActionData.MoveCursor.Type.PAGE)
-                            else -> KMError.Exception(IllegalArgumentException("Unknown move cursor type: $value"))
-                        }
-                    }.valueOrNull() ?: return null
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_MOVE_CURSOR_TYPE)
+                        .then { value ->
+                            when (value) {
+                                ActionEntity.CURSOR_TYPE_CHAR -> Success(ActionData.MoveCursor.Type.CHAR)
+                                ActionEntity.CURSOR_TYPE_WORD -> Success(ActionData.MoveCursor.Type.WORD)
+                                ActionEntity.CURSOR_TYPE_LINE -> Success(ActionData.MoveCursor.Type.LINE)
+                                ActionEntity.CURSOR_TYPE_PARAGRAPH -> Success(ActionData.MoveCursor.Type.PARAGRAPH)
+                                ActionEntity.CURSOR_TYPE_PAGE -> Success(ActionData.MoveCursor.Type.PAGE)
+                                else -> KMError.Exception(IllegalArgumentException("Unknown move cursor type: $value"))
+                            }
+                        }.valueOrNull() ?: return null
 
                 val direction =
-                    entity.extras.getData(ActionEntity.EXTRA_MOVE_CURSOR_DIRECTION).then { value ->
-                        when (value) {
-                            ActionEntity.CURSOR_DIRECTION_START -> Success(ActionData.MoveCursor.Direction.START)
-                            ActionEntity.CURSOR_DIRECTION_END -> Success(ActionData.MoveCursor.Direction.END)
-                            else -> KMError.Exception(IllegalArgumentException("Unknown move cursor direction: $value"))
-                        }
-                    }.valueOrNull() ?: return null
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_MOVE_CURSOR_DIRECTION)
+                        .then { value ->
+                            when (value) {
+                                ActionEntity.CURSOR_DIRECTION_START -> Success(ActionData.MoveCursor.Direction.START)
+                                ActionEntity.CURSOR_DIRECTION_END -> Success(ActionData.MoveCursor.Direction.END)
+                                else -> KMError.Exception(IllegalArgumentException("Unknown move cursor direction: $value"))
+                            }
+                        }.valueOrNull() ?: return null
 
                 ActionData.MoveCursor(moveType = type, direction = direction)
             }
@@ -673,25 +739,31 @@ object ActionDataEntityMapper {
                 val useRoot = entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHELL_COMMAND_USE_ROOT)
                 val useAdb = entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHELL_COMMAND_USE_ADB)
 
-                val executionMode = when {
-                    useAdb -> ShellExecutionMode.ADB
-                    useRoot -> ShellExecutionMode.ROOT
-                    else -> ShellExecutionMode.STANDARD
-                }
+                val executionMode =
+                    when {
+                        useAdb -> ShellExecutionMode.ADB
+                        useRoot -> ShellExecutionMode.ROOT
+                        else -> ShellExecutionMode.STANDARD
+                    }
 
                 val description =
-                    entity.extras.getData(ActionEntity.EXTRA_SHELL_COMMAND_DESCRIPTION)
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_SHELL_COMMAND_DESCRIPTION)
                         .valueOrNull() ?: return null
 
-                val timeoutMs = entity.extras.getData(ActionEntity.EXTRA_SHELL_COMMAND_TIMEOUT)
-                    .valueOrNull()?.toIntOrNull() ?: 10000
+                val timeoutMs =
+                    entity.extras
+                        .getData(ActionEntity.EXTRA_SHELL_COMMAND_TIMEOUT)
+                        .valueOrNull()
+                        ?.toIntOrNull() ?: 10000
 
                 // Decode Base64 command
-                val command = try {
-                    String(Base64.decode(entity.data, Base64.DEFAULT))
-                } catch (e: Exception) {
-                    return null
-                }
+                val command =
+                    try {
+                        String(Base64.decode(entity.data, Base64.DEFAULT))
+                    } catch (e: Exception) {
+                        return null
+                    }
 
                 ActionData.ShellCommand(
                     description = description,
@@ -706,31 +778,33 @@ object ActionDataEntityMapper {
         }
     }
 
-    private fun convertNodeInteractionType(string: String): KMResult<NodeInteractionType> = try {
-        Success(NodeInteractionType.valueOf(string))
-    } catch (e: IllegalArgumentException) {
-        KMError.Exception(e)
-    }
+    private fun convertNodeInteractionType(string: String): KMResult<NodeInteractionType> =
+        try {
+            Success(NodeInteractionType.valueOf(string))
+        } catch (e: IllegalArgumentException) {
+            KMError.Exception(e)
+        }
 
     fun toEntity(data: ActionData): ActionEntity {
-        val type = when (data) {
-            is ActionData.Intent -> ActionEntity.Type.INTENT
-            is ActionData.InputKeyEvent -> ActionEntity.Type.KEY_EVENT
-            is ActionData.App -> ActionEntity.Type.APP
-            is ActionData.AppShortcut -> ActionEntity.Type.APP_SHORTCUT
-            is ActionData.PhoneCall -> ActionEntity.Type.PHONE_CALL
-            is ActionData.SendSms -> ActionEntity.Type.SEND_SMS
-            is ActionData.ComposeSms -> ActionEntity.Type.COMPOSE_SMS
-            is ActionData.TapScreen -> ActionEntity.Type.TAP_COORDINATE
-            is ActionData.SwipeScreen -> ActionEntity.Type.SWIPE_COORDINATE
-            is ActionData.PinchScreen -> ActionEntity.Type.PINCH_COORDINATE
-            is ActionData.Text -> ActionEntity.Type.TEXT_BLOCK
-            is ActionData.Url -> ActionEntity.Type.URL
-            is ActionData.Sound -> ActionEntity.Type.SOUND
-            is ActionData.InteractUiElement -> ActionEntity.Type.INTERACT_UI_ELEMENT
-            is ActionData.ShellCommand -> ActionEntity.Type.SHELL_COMMAND
-            else -> ActionEntity.Type.SYSTEM_ACTION
-        }
+        val type =
+            when (data) {
+                is ActionData.Intent -> ActionEntity.Type.INTENT
+                is ActionData.InputKeyEvent -> ActionEntity.Type.KEY_EVENT
+                is ActionData.App -> ActionEntity.Type.APP
+                is ActionData.AppShortcut -> ActionEntity.Type.APP_SHORTCUT
+                is ActionData.PhoneCall -> ActionEntity.Type.PHONE_CALL
+                is ActionData.SendSms -> ActionEntity.Type.SEND_SMS
+                is ActionData.ComposeSms -> ActionEntity.Type.COMPOSE_SMS
+                is ActionData.TapScreen -> ActionEntity.Type.TAP_COORDINATE
+                is ActionData.SwipeScreen -> ActionEntity.Type.SWIPE_COORDINATE
+                is ActionData.PinchScreen -> ActionEntity.Type.PINCH_COORDINATE
+                is ActionData.Text -> ActionEntity.Type.TEXT_BLOCK
+                is ActionData.Url -> ActionEntity.Type.URL
+                is ActionData.Sound -> ActionEntity.Type.SOUND
+                is ActionData.InteractUiElement -> ActionEntity.Type.INTERACT_UI_ELEMENT
+                is ActionData.ShellCommand -> ActionEntity.Type.SHELL_COMMAND
+                else -> ActionEntity.Type.SYSTEM_ACTION
+            }
 
         return ActionEntity(
             type = type,
@@ -743,14 +817,15 @@ object ActionDataEntityMapper {
     private fun getFlags(data: ActionData): Int {
         var flags = 0
 
-        val showVolumeUiFlag = when (data) {
-            is ActionData.Volume.Up -> data.showVolumeUi
-            is ActionData.Volume.Down -> data.showVolumeUi
-            is ActionData.Volume.Mute -> data.showVolumeUi
-            is ActionData.Volume.UnMute -> data.showVolumeUi
-            is ActionData.Volume.ToggleMute -> data.showVolumeUi
-            else -> false
-        }
+        val showVolumeUiFlag =
+            when (data) {
+                is ActionData.Volume.Up -> data.showVolumeUi
+                is ActionData.Volume.Down -> data.showVolumeUi
+                is ActionData.Volume.Mute -> data.showVolumeUi
+                is ActionData.Volume.UnMute -> data.showVolumeUi
+                is ActionData.Volume.ToggleMute -> data.showVolumeUi
+                else -> false
+            }
 
         if (showVolumeUiFlag) {
             flags = flags or ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI
@@ -775,486 +850,507 @@ object ActionDataEntityMapper {
         return flags
     }
 
-    private fun getDataString(data: ActionData): String = when (data) {
-        is ActionData.Intent -> data.uri
-        is ActionData.InputKeyEvent -> data.keyCode.toString()
-        is ActionData.App -> data.packageName
-        is ActionData.AppShortcut -> data.uri
-        is ActionData.PhoneCall -> data.number
-        is ActionData.SendSms -> data.number
-        is ActionData.ComposeSms -> data.number
-        is ActionData.TapScreen -> "${data.x},${data.y}"
-        is ActionData.SwipeScreen -> "${data.xStart},${data.yStart},${data.xEnd},${data.yEnd},${data.fingerCount},${data.duration}"
-        is ActionData.PinchScreen -> "${data.x},${data.y},${data.distance},${data.pinchType},${data.fingerCount},${data.duration}"
-        is ActionData.Text -> data.text
-        is ActionData.Url -> data.url
-        is ActionData.Sound -> when (data) {
-            is ActionData.Sound.Ringtone -> data.uri
-            is ActionData.Sound.SoundFile -> data.soundUid
+    private fun getDataString(data: ActionData): String =
+        when (data) {
+            is ActionData.Intent -> data.uri
+            is ActionData.InputKeyEvent -> data.keyCode.toString()
+            is ActionData.App -> data.packageName
+            is ActionData.AppShortcut -> data.uri
+            is ActionData.PhoneCall -> data.number
+            is ActionData.SendSms -> data.number
+            is ActionData.ComposeSms -> data.number
+            is ActionData.TapScreen -> "${data.x},${data.y}"
+            is ActionData.SwipeScreen -> "${data.xStart},${data.yStart},${data.xEnd},${data.yEnd},${data.fingerCount},${data.duration}"
+            is ActionData.PinchScreen -> "${data.x},${data.y},${data.distance},${data.pinchType},${data.fingerCount},${data.duration}"
+            is ActionData.Text -> data.text
+            is ActionData.Url -> data.url
+            is ActionData.Sound ->
+                when (data) {
+                    is ActionData.Sound.Ringtone -> data.uri
+                    is ActionData.Sound.SoundFile -> data.soundUid
+                }
+
+            is ActionData.InteractUiElement -> data.description
+            is ActionData.ShellCommand ->
+                Base64
+                    .encodeToString(
+                        data.command.toByteArray(),
+                        Base64.DEFAULT,
+                    ).trim() // Trim to remove trailing newline added by Base64.DEFAULT
+            is ActionData.HttpRequest -> SYSTEM_ACTION_ID_MAP[data.id]!!
+            is ActionData.ControlMediaForApp.Rewind -> SYSTEM_ACTION_ID_MAP[data.id]!!
+            is ActionData.ControlMediaForApp.Stop -> SYSTEM_ACTION_ID_MAP[data.id]!!
+            is ActionData.ControlMedia.Rewind -> SYSTEM_ACTION_ID_MAP[data.id]!!
+            is ActionData.ControlMedia.Stop -> SYSTEM_ACTION_ID_MAP[data.id]!!
+            is ActionData.GoBack -> SYSTEM_ACTION_ID_MAP[data.id]!!
+            else -> SYSTEM_ACTION_ID_MAP[data.id]!!
         }
 
-        is ActionData.InteractUiElement -> data.description
-        is ActionData.ShellCommand -> Base64.encodeToString(
-            data.command.toByteArray(),
-            Base64.DEFAULT,
-        ).trim() // Trim to remove trailing newline added by Base64.DEFAULT
-        is ActionData.HttpRequest -> SYSTEM_ACTION_ID_MAP[data.id]!!
-        is ActionData.ControlMediaForApp.Rewind -> SYSTEM_ACTION_ID_MAP[data.id]!!
-        is ActionData.ControlMediaForApp.Stop -> SYSTEM_ACTION_ID_MAP[data.id]!!
-        is ActionData.ControlMedia.Rewind -> SYSTEM_ACTION_ID_MAP[data.id]!!
-        is ActionData.ControlMedia.Stop -> SYSTEM_ACTION_ID_MAP[data.id]!!
-        is ActionData.GoBack -> SYSTEM_ACTION_ID_MAP[data.id]!!
-        else -> SYSTEM_ACTION_ID_MAP[data.id]!!
-    }
-
-    private fun getExtras(data: ActionData): List<EntityExtra> = when (data) {
-        is ActionData.Intent ->
-            listOf(
-                EntityExtra(ActionEntity.EXTRA_INTENT_DESCRIPTION, data.description),
-                EntityExtra(ActionEntity.EXTRA_INTENT_TARGET, INTENT_TARGET_MAP[data.target]!!),
-                EntityExtra(ActionEntity.EXTRA_INTENT_EXTRAS, Json.encodeToString(data.extras)),
-            )
-
-        is ActionData.InputKeyEvent -> sequence {
-            if (data.metaState != 0) {
-                yield(
-                    EntityExtra(
-                        ActionEntity.EXTRA_KEY_EVENT_META_STATE,
-                        data.metaState.toString(),
-                    ),
-                )
-            }
-
-            if (data.device != null) {
-                yield(
-                    EntityExtra(
-                        ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR,
-                        data.device.descriptor,
-                    ),
+    private fun getExtras(data: ActionData): List<EntityExtra> =
+        when (data) {
+            is ActionData.Intent ->
+                listOf(
+                    EntityExtra(ActionEntity.EXTRA_INTENT_DESCRIPTION, data.description),
+                    EntityExtra(ActionEntity.EXTRA_INTENT_TARGET, INTENT_TARGET_MAP[data.target]!!),
+                    EntityExtra(ActionEntity.EXTRA_INTENT_EXTRAS, Json.encodeToString(data.extras)),
                 )
 
-                yield(
-                    EntityExtra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, data.device.name),
-                )
-            }
-        }.toList()
-
-        is ActionData.App -> emptyList()
-        is ActionData.AppShortcut -> sequence {
-            yield(EntityExtra(ActionEntity.EXTRA_SHORTCUT_TITLE, data.shortcutTitle))
-            data.packageName?.let { yield(EntityExtra(ActionEntity.EXTRA_PACKAGE_NAME, it)) }
-        }.toList()
-
-        is ActionData.PhoneCall -> emptyList()
-
-        is ActionData.SendSms -> listOf(
-            EntityExtra(ActionEntity.EXTRA_SMS_MESSAGE, data.message),
-        )
-
-        is ActionData.ComposeSms -> listOf(
-            EntityExtra(ActionEntity.EXTRA_SMS_MESSAGE, data.message),
-        )
-
-        is ActionData.DoNotDisturb.Enable -> listOf(
-            EntityExtra(ActionEntity.EXTRA_DND_MODE, DND_MODE_MAP[data.dndMode]!!),
-        )
-
-        is ActionData.DoNotDisturb.Toggle -> listOf(
-            EntityExtra(ActionEntity.EXTRA_DND_MODE, DND_MODE_MAP[data.dndMode]!!),
-        )
-
-        is ActionData.Volume.SetRingerMode -> listOf(
-            EntityExtra(ActionEntity.EXTRA_RINGER_MODE, RINGER_MODE_MAP[data.ringerMode]!!),
-        )
-
-        is ActionData.ControlMediaForApp -> listOf(
-            EntityExtra(ActionEntity.EXTRA_PACKAGE_NAME, data.packageName),
-        )
-
-        is ActionData.Rotation.CycleRotations -> listOf(
-            EntityExtra(
-                ActionEntity.EXTRA_ORIENTATIONS,
-                data.orientations.joinToString(",") { ConstantTypeConverters.ORIENTATION_MAP[it]!! },
-            ),
-        )
-
-        is ActionData.Flashlight -> {
-            val lensExtra = EntityExtra(ActionEntity.EXTRA_LENS, LENS_MAP[data.lens]!!)
-
-            when (data) {
-                is ActionData.Flashlight.Toggle -> buildList {
-                    add(lensExtra)
-
-                    if (data.strengthPercent != null) {
-                        add(
+            is ActionData.InputKeyEvent ->
+                sequence {
+                    if (data.metaState != 0) {
+                        yield(
                             EntityExtra(
-                                ActionEntity.EXTRA_FLASH_STRENGTH,
-                                data.strengthPercent.toString(),
+                                ActionEntity.EXTRA_KEY_EVENT_META_STATE,
+                                data.metaState.toString(),
                             ),
                         )
                     }
-                }
 
-                is ActionData.Flashlight.Enable -> buildList {
-                    add(lensExtra)
-
-                    if (data.strengthPercent != null) {
-                        add(
+                    if (data.device != null) {
+                        yield(
                             EntityExtra(
-                                ActionEntity.EXTRA_FLASH_STRENGTH,
-                                data.strengthPercent.toString(),
+                                ActionEntity.EXTRA_KEY_EVENT_DEVICE_DESCRIPTOR,
+                                data.device.descriptor,
                             ),
                         )
+
+                        yield(
+                            EntityExtra(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME, data.device.name),
+                        )
                     }
+                }.toList()
+
+            is ActionData.App -> emptyList()
+            is ActionData.AppShortcut ->
+                sequence {
+                    yield(EntityExtra(ActionEntity.EXTRA_SHORTCUT_TITLE, data.shortcutTitle))
+                    data.packageName?.let { yield(EntityExtra(ActionEntity.EXTRA_PACKAGE_NAME, it)) }
+                }.toList()
+
+            is ActionData.PhoneCall -> emptyList()
+
+            is ActionData.SendSms ->
+                listOf(
+                    EntityExtra(ActionEntity.EXTRA_SMS_MESSAGE, data.message),
+                )
+
+            is ActionData.ComposeSms ->
+                listOf(
+                    EntityExtra(ActionEntity.EXTRA_SMS_MESSAGE, data.message),
+                )
+
+            is ActionData.DoNotDisturb.Enable ->
+                listOf(
+                    EntityExtra(ActionEntity.EXTRA_DND_MODE, DND_MODE_MAP[data.dndMode]!!),
+                )
+
+            is ActionData.DoNotDisturb.Toggle ->
+                listOf(
+                    EntityExtra(ActionEntity.EXTRA_DND_MODE, DND_MODE_MAP[data.dndMode]!!),
+                )
+
+            is ActionData.Volume.SetRingerMode ->
+                listOf(
+                    EntityExtra(ActionEntity.EXTRA_RINGER_MODE, RINGER_MODE_MAP[data.ringerMode]!!),
+                )
+
+            is ActionData.ControlMediaForApp ->
+                listOf(
+                    EntityExtra(ActionEntity.EXTRA_PACKAGE_NAME, data.packageName),
+                )
+
+            is ActionData.Rotation.CycleRotations ->
+                listOf(
+                    EntityExtra(
+                        ActionEntity.EXTRA_ORIENTATIONS,
+                        data.orientations.joinToString(",") { ConstantTypeConverters.ORIENTATION_MAP[it]!! },
+                    ),
+                )
+
+            is ActionData.Flashlight -> {
+                val lensExtra = EntityExtra(ActionEntity.EXTRA_LENS, LENS_MAP[data.lens]!!)
+
+                when (data) {
+                    is ActionData.Flashlight.Toggle ->
+                        buildList {
+                            add(lensExtra)
+
+                            if (data.strengthPercent != null) {
+                                add(
+                                    EntityExtra(
+                                        ActionEntity.EXTRA_FLASH_STRENGTH,
+                                        data.strengthPercent.toString(),
+                                    ),
+                                )
+                            }
+                        }
+
+                    is ActionData.Flashlight.Enable ->
+                        buildList {
+                            add(lensExtra)
+
+                            if (data.strengthPercent != null) {
+                                add(
+                                    EntityExtra(
+                                        ActionEntity.EXTRA_FLASH_STRENGTH,
+                                        data.strengthPercent.toString(),
+                                    ),
+                                )
+                            }
+                        }
+
+                    is ActionData.Flashlight.Disable -> listOf(lensExtra)
+                    is ActionData.Flashlight.ChangeStrength ->
+                        buildList {
+                            add(lensExtra)
+                            add(
+                                EntityExtra(
+                                    ActionEntity.EXTRA_FLASH_STRENGTH,
+                                    data.percent.toString(),
+                                ),
+                            )
+                        }
+                }
+            }
+
+            is ActionData.SwitchKeyboard ->
+                listOf(
+                    EntityExtra(ActionEntity.EXTRA_IME_ID, data.imeId),
+                    EntityExtra(ActionEntity.EXTRA_IME_NAME, data.savedImeName),
+                )
+
+            is ActionData.Volume ->
+                when (data) {
+                    is ActionData.Volume.Up ->
+                        buildList {
+                            if (data.volumeStream != null) {
+                                VOLUME_STREAM_MAP[data.volumeStream]?.let { streamValue ->
+                                    add(
+                                        EntityExtra(
+                                            ActionEntity.EXTRA_STREAM_TYPE,
+                                            streamValue,
+                                        ),
+                                    )
+                                }
+                            }
+                        }
+
+                    is ActionData.Volume.Down ->
+                        buildList {
+                            if (data.volumeStream != null) {
+                                VOLUME_STREAM_MAP[data.volumeStream]?.let { streamValue ->
+                                    add(
+                                        EntityExtra(
+                                            ActionEntity.EXTRA_STREAM_TYPE,
+                                            streamValue,
+                                        ),
+                                    )
+                                }
+                            }
+                        }
+
+                    else -> emptyList()
                 }
 
-                is ActionData.Flashlight.Disable -> listOf(lensExtra)
-                is ActionData.Flashlight.ChangeStrength -> buildList {
-                    add(lensExtra)
+            is ActionData.TapScreen ->
+                sequence {
+                    if (!data.description.isNullOrBlank()) {
+                        yield(EntityExtra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
+                    }
+                }.toList()
+
+            is ActionData.SwipeScreen ->
+                sequence {
+                    if (!data.description.isNullOrBlank()) {
+                        yield(EntityExtra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
+                    }
+                }.toList()
+
+            is ActionData.PinchScreen ->
+                sequence {
+                    if (!data.description.isNullOrBlank()) {
+                        yield(EntityExtra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
+                    }
+                }.toList()
+
+            is ActionData.Text -> emptyList()
+            is ActionData.Url -> emptyList()
+
+            is ActionData.Sound.SoundFile ->
+                listOf(
+                    EntityExtra(ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION, data.soundDescription),
+                )
+
+            is ActionData.HttpRequest ->
+                listOf(
+                    EntityExtra(ActionEntity.EXTRA_HTTP_DESCRIPTION, data.description),
+                    EntityExtra(ActionEntity.EXTRA_HTTP_METHOD, HTTP_METHOD_MAP[data.method]!!),
+                    EntityExtra(ActionEntity.EXTRA_HTTP_URL, data.url),
+                    EntityExtra(ActionEntity.EXTRA_HTTP_BODY, data.body),
+                    EntityExtra(
+                        ActionEntity.EXTRA_HTTP_AUTHORIZATION_HEADER,
+                        data.authorizationHeader,
+                    ),
+                )
+
+            is ActionData.InteractUiElement ->
+                buildList {
                     add(
                         EntityExtra(
-                            ActionEntity.EXTRA_FLASH_STRENGTH,
-                            data.percent.toString(),
+                            ActionEntity.EXTRA_ACCESSIBILITY_NODE_ACTION,
+                            data.nodeAction.toString(),
                         ),
                     )
-                }
-            }
-        }
 
-        is ActionData.SwitchKeyboard -> listOf(
-            EntityExtra(ActionEntity.EXTRA_IME_ID, data.imeId),
-            EntityExtra(ActionEntity.EXTRA_IME_NAME, data.savedImeName),
-        )
+                    add(
+                        EntityExtra(
+                            ActionEntity.EXTRA_ACCESSIBILITY_PACKAGE_NAME,
+                            data.packageName,
+                        ),
+                    )
 
-        is ActionData.Volume ->
-            when (data) {
-                is ActionData.Volume.Up -> buildList {
-                    if (data.volumeStream != null) {
-                        VOLUME_STREAM_MAP[data.volumeStream]?.let { streamValue ->
-                            add(
-                                EntityExtra(
-                                    ActionEntity.EXTRA_STREAM_TYPE,
-                                    streamValue,
-                                ),
-                            )
-                        }
+                    data.contentDescription?.let {
+                        add(
+                            EntityExtra(
+                                ActionEntity.EXTRA_ACCESSIBILITY_CONTENT_DESCRIPTION,
+                                it,
+                            ),
+                        )
+                    }
+
+                    data.text?.let { add(EntityExtra(ActionEntity.EXTRA_ACCESSIBILITY_TEXT, it)) }
+
+                    data.tooltip?.let { add(EntityExtra(ActionEntity.EXTRA_ACCESSIBILITY_TOOLTIP, it)) }
+
+                    data.hint?.let { add(EntityExtra(ActionEntity.EXTRA_ACCESSIBILITY_HINT, it)) }
+
+                    data.className?.let {
+                        add(
+                            EntityExtra(
+                                ActionEntity.EXTRA_ACCESSIBILITY_CLASS_NAME,
+                                it,
+                            ),
+                        )
+                    }
+
+                    data.viewResourceId?.let {
+                        add(
+                            EntityExtra(
+                                ActionEntity.EXTRA_ACCESSIBILITY_VIEW_RESOURCE_ID,
+                                it,
+                            ),
+                        )
+                    }
+
+                    data.uniqueId?.let {
+                        add(
+                            EntityExtra(
+                                ActionEntity.EXTRA_ACCESSIBILITY_UNIQUE_ID,
+                                it,
+                            ),
+                        )
+                    }
+
+                    if (data.nodeActions.isNotEmpty()) {
+                        add(
+                            EntityExtra(
+                                ActionEntity.EXTRA_ACCESSIBILITY_ACTIONS,
+                                NodeInteractionTypeSetTypeConverter().toMask(data.nodeActions).toString(),
+                            ),
+                        )
                     }
                 }
 
-                is ActionData.Volume.Down -> buildList {
-                    if (data.volumeStream != null) {
-                        VOLUME_STREAM_MAP[data.volumeStream]?.let { streamValue ->
-                            add(
-                                EntityExtra(
-                                    ActionEntity.EXTRA_STREAM_TYPE,
-                                    streamValue,
-                                ),
-                            )
+            is ActionData.MoveCursor ->
+                buildList {
+                    val typeString =
+                        when (data.moveType) {
+                            ActionData.MoveCursor.Type.CHAR -> ActionEntity.CURSOR_TYPE_CHAR
+                            ActionData.MoveCursor.Type.WORD -> ActionEntity.CURSOR_TYPE_WORD
+                            ActionData.MoveCursor.Type.LINE -> ActionEntity.CURSOR_TYPE_LINE
+                            ActionData.MoveCursor.Type.PARAGRAPH -> ActionEntity.CURSOR_TYPE_PARAGRAPH
+                            ActionData.MoveCursor.Type.PAGE -> ActionEntity.CURSOR_TYPE_PAGE
                         }
-                    }
+                    add(EntityExtra(ActionEntity.EXTRA_MOVE_CURSOR_TYPE, typeString))
+
+                    val directionString =
+                        when (data.direction) {
+                            ActionData.MoveCursor.Direction.START -> ActionEntity.CURSOR_DIRECTION_START
+                            ActionData.MoveCursor.Direction.END -> ActionEntity.CURSOR_DIRECTION_END
+                        }
+                    add(EntityExtra(ActionEntity.EXTRA_MOVE_CURSOR_DIRECTION, directionString))
                 }
 
-                else -> emptyList()
-            }
-
-        is ActionData.TapScreen -> sequence {
-            if (!data.description.isNullOrBlank()) {
-                yield(EntityExtra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
-            }
-        }.toList()
-
-        is ActionData.SwipeScreen -> sequence {
-            if (!data.description.isNullOrBlank()) {
-                yield(EntityExtra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
-            }
-        }.toList()
-
-        is ActionData.PinchScreen -> sequence {
-            if (!data.description.isNullOrBlank()) {
-                yield(EntityExtra(ActionEntity.EXTRA_COORDINATE_DESCRIPTION, data.description))
-            }
-        }.toList()
-
-        is ActionData.Text -> emptyList()
-        is ActionData.Url -> emptyList()
-
-        is ActionData.Sound.SoundFile -> listOf(
-            EntityExtra(ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION, data.soundDescription),
-        )
-
-        is ActionData.HttpRequest -> listOf(
-            EntityExtra(ActionEntity.EXTRA_HTTP_DESCRIPTION, data.description),
-            EntityExtra(ActionEntity.EXTRA_HTTP_METHOD, HTTP_METHOD_MAP[data.method]!!),
-            EntityExtra(ActionEntity.EXTRA_HTTP_URL, data.url),
-            EntityExtra(ActionEntity.EXTRA_HTTP_BODY, data.body),
-            EntityExtra(
-                ActionEntity.EXTRA_HTTP_AUTHORIZATION_HEADER,
-                data.authorizationHeader,
-            ),
-        )
-
-        is ActionData.InteractUiElement -> buildList {
-            add(
-                EntityExtra(
-                    ActionEntity.EXTRA_ACCESSIBILITY_NODE_ACTION,
-                    data.nodeAction.toString(),
-                ),
-            )
-
-            add(
-                EntityExtra(
-                    ActionEntity.EXTRA_ACCESSIBILITY_PACKAGE_NAME,
-                    data.packageName,
-                ),
-            )
-
-            data.contentDescription?.let {
-                add(
-                    EntityExtra(
-                        ActionEntity.EXTRA_ACCESSIBILITY_CONTENT_DESCRIPTION,
-                        it,
-                    ),
+            is ActionData.ShellCommand ->
+                listOf(
+                    EntityExtra(ActionEntity.EXTRA_SHELL_COMMAND_DESCRIPTION, data.description),
+                    EntityExtra(ActionEntity.EXTRA_SHELL_COMMAND_TIMEOUT, data.timeoutMillis.toString()),
                 )
-            }
 
-            data.text?.let { add(EntityExtra(ActionEntity.EXTRA_ACCESSIBILITY_TEXT, it)) }
-
-            data.tooltip?.let { add(EntityExtra(ActionEntity.EXTRA_ACCESSIBILITY_TOOLTIP, it)) }
-
-            data.hint?.let { add(EntityExtra(ActionEntity.EXTRA_ACCESSIBILITY_HINT, it)) }
-
-            data.className?.let {
-                add(
-                    EntityExtra(
-                        ActionEntity.EXTRA_ACCESSIBILITY_CLASS_NAME,
-                        it,
-                    ),
-                )
-            }
-
-            data.viewResourceId?.let {
-                add(
-                    EntityExtra(
-                        ActionEntity.EXTRA_ACCESSIBILITY_VIEW_RESOURCE_ID,
-                        it,
-                    ),
-                )
-            }
-
-            data.uniqueId?.let {
-                add(
-                    EntityExtra(
-                        ActionEntity.EXTRA_ACCESSIBILITY_UNIQUE_ID,
-                        it,
-                    ),
-                )
-            }
-
-            if (data.nodeActions.isNotEmpty()) {
-                add(
-                    EntityExtra(
-                        ActionEntity.EXTRA_ACCESSIBILITY_ACTIONS,
-                        NodeInteractionTypeSetTypeConverter().toMask(data.nodeActions).toString(),
-                    ),
-                )
-            }
+            else -> emptyList()
         }
 
-        is ActionData.MoveCursor -> buildList {
-            val typeString = when (data.moveType) {
-                ActionData.MoveCursor.Type.CHAR -> ActionEntity.CURSOR_TYPE_CHAR
-                ActionData.MoveCursor.Type.WORD -> ActionEntity.CURSOR_TYPE_WORD
-                ActionData.MoveCursor.Type.LINE -> ActionEntity.CURSOR_TYPE_LINE
-                ActionData.MoveCursor.Type.PARAGRAPH -> ActionEntity.CURSOR_TYPE_PARAGRAPH
-                ActionData.MoveCursor.Type.PAGE -> ActionEntity.CURSOR_TYPE_PAGE
-            }
-            add(EntityExtra(ActionEntity.EXTRA_MOVE_CURSOR_TYPE, typeString))
-
-            val directionString = when (data.direction) {
-                ActionData.MoveCursor.Direction.START -> ActionEntity.CURSOR_DIRECTION_START
-                ActionData.MoveCursor.Direction.END -> ActionEntity.CURSOR_DIRECTION_END
-            }
-            add(EntityExtra(ActionEntity.EXTRA_MOVE_CURSOR_DIRECTION, directionString))
-        }
-
-        is ActionData.ShellCommand -> listOf(
-            EntityExtra(ActionEntity.EXTRA_SHELL_COMMAND_DESCRIPTION, data.description),
-            EntityExtra(ActionEntity.EXTRA_SHELL_COMMAND_TIMEOUT, data.timeoutMillis.toString()),
+    private val RINGER_MODE_MAP =
+        mapOf(
+            RingerMode.NORMAL to "option_ringer_mode_normal",
+            RingerMode.SILENT to "option_ringer_mode_silent",
+            RingerMode.VIBRATE to "option_ringer_mode_vibrate",
         )
 
-        else -> emptyList()
-    }
+    private val LENS_MAP =
+        mapOf(
+            CameraLens.BACK to "option_lens_back",
+            CameraLens.FRONT to "option_lens_front",
+        )
 
-    private val RINGER_MODE_MAP = mapOf(
-        RingerMode.NORMAL to "option_ringer_mode_normal",
-        RingerMode.SILENT to "option_ringer_mode_silent",
-        RingerMode.VIBRATE to "option_ringer_mode_vibrate",
-    )
+    private val VOLUME_STREAM_MAP =
+        mapOf(
+            VolumeStream.ACCESSIBILITY to "option_stream_accessibility",
+            VolumeStream.ALARM to "option_stream_alarm",
+            VolumeStream.DTMF to "option_stream_dtmf",
+            VolumeStream.MUSIC to "option_stream_music",
+            VolumeStream.NOTIFICATION to "option_stream_notification",
+            VolumeStream.RING to "option_stream_ring",
+            VolumeStream.SYSTEM to "option_stream_system",
+            VolumeStream.VOICE_CALL to "option_stream_voice_call",
+        )
 
-    private val LENS_MAP = mapOf(
-        CameraLens.BACK to "option_lens_back",
-        CameraLens.FRONT to "option_lens_front",
-    )
+    private val DND_MODE_MAP =
+        mapOf(
+            DndMode.ALARMS to "do_not_disturb_alarms",
+            DndMode.PRIORITY to "do_not_disturb_priority",
+            DndMode.NONE to "do_not_disturb_none",
+        )
 
-    private val VOLUME_STREAM_MAP = mapOf(
-        VolumeStream.ACCESSIBILITY to "option_stream_accessibility",
-        VolumeStream.ALARM to "option_stream_alarm",
-        VolumeStream.DTMF to "option_stream_dtmf",
-        VolumeStream.MUSIC to "option_stream_music",
-        VolumeStream.NOTIFICATION to "option_stream_notification",
-        VolumeStream.RING to "option_stream_ring",
-        VolumeStream.SYSTEM to "option_stream_system",
-        VolumeStream.VOICE_CALL to "option_stream_voice_call",
-    )
+    private val INTENT_TARGET_MAP =
+        mapOf(
+            IntentTarget.ACTIVITY to "ACTIVITY",
+            IntentTarget.BROADCAST_RECEIVER to "BROADCAST_RECEIVER",
+            IntentTarget.SERVICE to "SERVICE",
+        )
 
-    private val DND_MODE_MAP = mapOf(
-        DndMode.ALARMS to "do_not_disturb_alarms",
-        DndMode.PRIORITY to "do_not_disturb_priority",
-        DndMode.NONE to "do_not_disturb_none",
-    )
-
-    private val INTENT_TARGET_MAP = mapOf(
-        IntentTarget.ACTIVITY to "ACTIVITY",
-        IntentTarget.BROADCAST_RECEIVER to "BROADCAST_RECEIVER",
-        IntentTarget.SERVICE to "SERVICE",
-    )
-
-    private val HTTP_METHOD_MAP = mapOf(
-        HttpMethod.GET to "GET",
-        HttpMethod.POST to "POST",
-        HttpMethod.PUT to "PUT",
-        HttpMethod.DELETE to "DELETE",
-        HttpMethod.PATCH to "PATCH",
-    )
+    private val HTTP_METHOD_MAP =
+        mapOf(
+            HttpMethod.GET to "GET",
+            HttpMethod.POST to "POST",
+            HttpMethod.PUT to "PUT",
+            HttpMethod.DELETE to "DELETE",
+            HttpMethod.PATCH to "PATCH",
+        )
 
     /**
      * DON'T CHANGE THESE
      */
-    private val SYSTEM_ACTION_ID_MAP = mapOf(
-        ActionId.TOGGLE_WIFI to "toggle_wifi",
-        ActionId.ENABLE_WIFI to "enable_wifi",
-        ActionId.DISABLE_WIFI to "disable_wifi",
-
-        ActionId.TOGGLE_BLUETOOTH to "toggle_bluetooth",
-        ActionId.ENABLE_BLUETOOTH to "enable_bluetooth",
-        ActionId.DISABLE_BLUETOOTH to "disable_bluetooth",
-
-        ActionId.TOGGLE_MOBILE_DATA to "toggle_mobile_data",
-        ActionId.ENABLE_MOBILE_DATA to "enable_mobile_data",
-        ActionId.DISABLE_MOBILE_DATA to "disable_mobile_data",
-
-        ActionId.TOGGLE_AUTO_BRIGHTNESS to "toggle_auto_brightness",
-        ActionId.DISABLE_AUTO_BRIGHTNESS to "disable_auto_brightness",
-        ActionId.ENABLE_AUTO_BRIGHTNESS to "enable_auto_brightness",
-        ActionId.INCREASE_BRIGHTNESS to "increase_brightness",
-        ActionId.DECREASE_BRIGHTNESS to "decrease_brightness",
-
-        ActionId.TOGGLE_AUTO_ROTATE to "toggle_auto_rotate",
-        ActionId.ENABLE_AUTO_ROTATE to "enable_auto_rotate",
-        ActionId.DISABLE_AUTO_ROTATE to "disable_auto_rotate",
-        ActionId.PORTRAIT_MODE to "portrait_mode",
-        ActionId.LANDSCAPE_MODE to "landscape_mode",
-        ActionId.SWITCH_ORIENTATION to "switch_orientation",
-        ActionId.CYCLE_ROTATIONS to "cycle_rotations",
-
-        ActionId.VOLUME_UP to "volume_up",
-        ActionId.VOLUME_DOWN to "volume_down",
-        ActionId.VOLUME_SHOW_DIALOG to "volume_show_dialog",
-        ActionId.VOLUME_DECREASE_STREAM to "volume_decrease_stream",
-        ActionId.VOLUME_INCREASE_STREAM to "volume_increase_stream",
-        ActionId.CYCLE_RINGER_MODE to "ringer_mode_cycle",
-        ActionId.CHANGE_RINGER_MODE to "ringer_mode_change",
-        ActionId.CYCLE_VIBRATE_RING to "ringer_mode_cycle_vibrate_ring",
-        ActionId.TOGGLE_DND_MODE to "toggle_do_not_disturb_mode",
-        ActionId.ENABLE_DND_MODE to "set_do_not_disturb_mode",
-        ActionId.DISABLE_DND_MODE to "disable_do_not_disturb_mode",
-        ActionId.VOLUME_UNMUTE to "volume_unmute",
-        ActionId.VOLUME_MUTE to "volume_mute",
-        ActionId.VOLUME_TOGGLE_MUTE to "volume_toggle_mute",
-        ActionId.MUTE_MICROPHONE to "mute_microphone",
-        ActionId.UNMUTE_MICROPHONE to "unmute_microphone",
-        ActionId.TOGGLE_MUTE_MICROPHONE to "toggle_mute_microphone",
-
-        ActionId.EXPAND_NOTIFICATION_DRAWER to "expand_notification_drawer",
-        ActionId.TOGGLE_NOTIFICATION_DRAWER to "toggle_notification_drawer",
-        ActionId.EXPAND_QUICK_SETTINGS to "expand_quick_settings",
-        ActionId.TOGGLE_QUICK_SETTINGS to "toggle_quick_settings_drawer",
-        ActionId.COLLAPSE_STATUS_BAR to "collapse_status_bar",
-
-        ActionId.PAUSE_MEDIA to "pause_media",
-        ActionId.PAUSE_MEDIA_PACKAGE to "pause_media_package",
-        ActionId.PLAY_MEDIA to "play_media",
-        ActionId.PLAY_MEDIA_PACKAGE to "play_media_package",
-        ActionId.PLAY_PAUSE_MEDIA to "play_pause_media",
-        ActionId.PLAY_PAUSE_MEDIA_PACKAGE to "play_pause_media_package",
-        ActionId.NEXT_TRACK to "next_track",
-        ActionId.NEXT_TRACK_PACKAGE to "next_track_package",
-        ActionId.PREVIOUS_TRACK to "previous_track",
-        ActionId.PREVIOUS_TRACK_PACKAGE to "previous_track_package",
-        ActionId.FAST_FORWARD to "fast_forward",
-        ActionId.FAST_FORWARD_PACKAGE to "fast_forward_package",
-        ActionId.REWIND to "rewind",
-        ActionId.REWIND_PACKAGE to "rewind_package",
-        ActionId.STOP_MEDIA to "stop_media",
-        ActionId.STOP_MEDIA_PACKAGE to "stop_media_package",
-        ActionId.STEP_FORWARD to "step_forward",
-        ActionId.STEP_FORWARD_PACKAGE to "step_forward_package",
-        ActionId.STEP_BACKWARD to "step_backward",
-        ActionId.STEP_BACKWARD_PACKAGE to "step_backward_package",
-
-        ActionId.GO_BACK to "go_back",
-        ActionId.GO_HOME to "go_home",
-        ActionId.OPEN_RECENTS to "open_recents",
-        ActionId.TOGGLE_SPLIT_SCREEN to "toggle_split_screen",
-        ActionId.GO_LAST_APP to "go_last_app",
-        ActionId.OPEN_MENU to "open_menu",
-
-        ActionId.TOGGLE_FLASHLIGHT to "toggle_flashlight",
-        ActionId.ENABLE_FLASHLIGHT to "enable_flashlight",
-        ActionId.DISABLE_FLASHLIGHT to "disable_flashlight",
-        ActionId.CHANGE_FLASHLIGHT_STRENGTH to "change_flashlight_strength",
-
-        ActionId.ENABLE_NFC to "nfc_enable",
-        ActionId.DISABLE_NFC to "nfc_disable",
-        ActionId.TOGGLE_NFC to "nfc_toggle",
-
-        // This action used to just move the cursor to the end. Do not change the
-        // id for compatibility reasons.
-        ActionId.MOVE_CURSOR to "move_cursor_to_end",
-        ActionId.TOGGLE_KEYBOARD to "toggle_keyboard",
-        ActionId.SHOW_KEYBOARD to "show_keyboard",
-        ActionId.HIDE_KEYBOARD to "hide_keyboard",
-        ActionId.SHOW_KEYBOARD_PICKER to "show_keyboard_picker",
-        ActionId.TEXT_CUT to "text_cut",
-        ActionId.TEXT_COPY to "text_copy",
-        ActionId.TEXT_PASTE to "text_paste",
-        ActionId.SELECT_WORD_AT_CURSOR to "select_word_at_cursor",
-
-        ActionId.SWITCH_KEYBOARD to "switch_keyboard",
-
-        ActionId.TOGGLE_AIRPLANE_MODE to "toggle_airplane_mode",
-        ActionId.ENABLE_AIRPLANE_MODE to "enable_airplane_mode",
-        ActionId.DISABLE_AIRPLANE_MODE to "disable_airplane_mode",
-
-        ActionId.SCREENSHOT to "screenshot",
-        ActionId.OPEN_VOICE_ASSISTANT to "open_assistant",
-        ActionId.OPEN_DEVICE_ASSISTANT to "open_device_assistant",
-        ActionId.OPEN_CAMERA to "open_camera",
-        ActionId.LOCK_DEVICE to "lock_device",
-        ActionId.POWER_ON_OFF_DEVICE to "power_on_off_device",
-        ActionId.SECURE_LOCK_DEVICE to "secure_lock_device",
-        ActionId.CONSUME_KEY_EVENT to "consume_key_event",
-        ActionId.OPEN_SETTINGS to "open_settings",
-        ActionId.SHOW_POWER_MENU to "show_power_menu",
-
-        ActionId.DISMISS_MOST_RECENT_NOTIFICATION to "dismiss_most_recent_notification",
-        ActionId.DISMISS_ALL_NOTIFICATIONS to "dismiss_all_notifications",
-
-        ActionId.ANSWER_PHONE_CALL to "answer_phone_call",
-        ActionId.END_PHONE_CALL to "end_phone_call",
-        ActionId.DEVICE_CONTROLS to "device_controls",
-        ActionId.HTTP_REQUEST to "http_request",
-        ActionId.FORCE_STOP_APP to "force_stop_app",
-        ActionId.CLEAR_RECENT_APP to "clear_recent_app",
-    )
+    private val SYSTEM_ACTION_ID_MAP =
+        mapOf(
+            ActionId.TOGGLE_WIFI to "toggle_wifi",
+            ActionId.ENABLE_WIFI to "enable_wifi",
+            ActionId.DISABLE_WIFI to "disable_wifi",
+            ActionId.TOGGLE_BLUETOOTH to "toggle_bluetooth",
+            ActionId.ENABLE_BLUETOOTH to "enable_bluetooth",
+            ActionId.DISABLE_BLUETOOTH to "disable_bluetooth",
+            ActionId.TOGGLE_MOBILE_DATA to "toggle_mobile_data",
+            ActionId.ENABLE_MOBILE_DATA to "enable_mobile_data",
+            ActionId.DISABLE_MOBILE_DATA to "disable_mobile_data",
+            ActionId.TOGGLE_AUTO_BRIGHTNESS to "toggle_auto_brightness",
+            ActionId.DISABLE_AUTO_BRIGHTNESS to "disable_auto_brightness",
+            ActionId.ENABLE_AUTO_BRIGHTNESS to "enable_auto_brightness",
+            ActionId.INCREASE_BRIGHTNESS to "increase_brightness",
+            ActionId.DECREASE_BRIGHTNESS to "decrease_brightness",
+            ActionId.TOGGLE_AUTO_ROTATE to "toggle_auto_rotate",
+            ActionId.ENABLE_AUTO_ROTATE to "enable_auto_rotate",
+            ActionId.DISABLE_AUTO_ROTATE to "disable_auto_rotate",
+            ActionId.PORTRAIT_MODE to "portrait_mode",
+            ActionId.LANDSCAPE_MODE to "landscape_mode",
+            ActionId.SWITCH_ORIENTATION to "switch_orientation",
+            ActionId.CYCLE_ROTATIONS to "cycle_rotations",
+            ActionId.VOLUME_UP to "volume_up",
+            ActionId.VOLUME_DOWN to "volume_down",
+            ActionId.VOLUME_SHOW_DIALOG to "volume_show_dialog",
+            ActionId.VOLUME_DECREASE_STREAM to "volume_decrease_stream",
+            ActionId.VOLUME_INCREASE_STREAM to "volume_increase_stream",
+            ActionId.CYCLE_RINGER_MODE to "ringer_mode_cycle",
+            ActionId.CHANGE_RINGER_MODE to "ringer_mode_change",
+            ActionId.CYCLE_VIBRATE_RING to "ringer_mode_cycle_vibrate_ring",
+            ActionId.TOGGLE_DND_MODE to "toggle_do_not_disturb_mode",
+            ActionId.ENABLE_DND_MODE to "set_do_not_disturb_mode",
+            ActionId.DISABLE_DND_MODE to "disable_do_not_disturb_mode",
+            ActionId.VOLUME_UNMUTE to "volume_unmute",
+            ActionId.VOLUME_MUTE to "volume_mute",
+            ActionId.VOLUME_TOGGLE_MUTE to "volume_toggle_mute",
+            ActionId.MUTE_MICROPHONE to "mute_microphone",
+            ActionId.UNMUTE_MICROPHONE to "unmute_microphone",
+            ActionId.TOGGLE_MUTE_MICROPHONE to "toggle_mute_microphone",
+            ActionId.EXPAND_NOTIFICATION_DRAWER to "expand_notification_drawer",
+            ActionId.TOGGLE_NOTIFICATION_DRAWER to "toggle_notification_drawer",
+            ActionId.EXPAND_QUICK_SETTINGS to "expand_quick_settings",
+            ActionId.TOGGLE_QUICK_SETTINGS to "toggle_quick_settings_drawer",
+            ActionId.COLLAPSE_STATUS_BAR to "collapse_status_bar",
+            ActionId.PAUSE_MEDIA to "pause_media",
+            ActionId.PAUSE_MEDIA_PACKAGE to "pause_media_package",
+            ActionId.PLAY_MEDIA to "play_media",
+            ActionId.PLAY_MEDIA_PACKAGE to "play_media_package",
+            ActionId.PLAY_PAUSE_MEDIA to "play_pause_media",
+            ActionId.PLAY_PAUSE_MEDIA_PACKAGE to "play_pause_media_package",
+            ActionId.NEXT_TRACK to "next_track",
+            ActionId.NEXT_TRACK_PACKAGE to "next_track_package",
+            ActionId.PREVIOUS_TRACK to "previous_track",
+            ActionId.PREVIOUS_TRACK_PACKAGE to "previous_track_package",
+            ActionId.FAST_FORWARD to "fast_forward",
+            ActionId.FAST_FORWARD_PACKAGE to "fast_forward_package",
+            ActionId.REWIND to "rewind",
+            ActionId.REWIND_PACKAGE to "rewind_package",
+            ActionId.STOP_MEDIA to "stop_media",
+            ActionId.STOP_MEDIA_PACKAGE to "stop_media_package",
+            ActionId.STEP_FORWARD to "step_forward",
+            ActionId.STEP_FORWARD_PACKAGE to "step_forward_package",
+            ActionId.STEP_BACKWARD to "step_backward",
+            ActionId.STEP_BACKWARD_PACKAGE to "step_backward_package",
+            ActionId.GO_BACK to "go_back",
+            ActionId.GO_HOME to "go_home",
+            ActionId.OPEN_RECENTS to "open_recents",
+            ActionId.TOGGLE_SPLIT_SCREEN to "toggle_split_screen",
+            ActionId.GO_LAST_APP to "go_last_app",
+            ActionId.OPEN_MENU to "open_menu",
+            ActionId.TOGGLE_FLASHLIGHT to "toggle_flashlight",
+            ActionId.ENABLE_FLASHLIGHT to "enable_flashlight",
+            ActionId.DISABLE_FLASHLIGHT to "disable_flashlight",
+            ActionId.CHANGE_FLASHLIGHT_STRENGTH to "change_flashlight_strength",
+            ActionId.ENABLE_NFC to "nfc_enable",
+            ActionId.DISABLE_NFC to "nfc_disable",
+            ActionId.TOGGLE_NFC to "nfc_toggle",
+            // This action used to just move the cursor to the end. Do not change the
+            // id for compatibility reasons.
+            ActionId.MOVE_CURSOR to "move_cursor_to_end",
+            ActionId.TOGGLE_KEYBOARD to "toggle_keyboard",
+            ActionId.SHOW_KEYBOARD to "show_keyboard",
+            ActionId.HIDE_KEYBOARD to "hide_keyboard",
+            ActionId.SHOW_KEYBOARD_PICKER to "show_keyboard_picker",
+            ActionId.TEXT_CUT to "text_cut",
+            ActionId.TEXT_COPY to "text_copy",
+            ActionId.TEXT_PASTE to "text_paste",
+            ActionId.SELECT_WORD_AT_CURSOR to "select_word_at_cursor",
+            ActionId.SWITCH_KEYBOARD to "switch_keyboard",
+            ActionId.TOGGLE_AIRPLANE_MODE to "toggle_airplane_mode",
+            ActionId.ENABLE_AIRPLANE_MODE to "enable_airplane_mode",
+            ActionId.DISABLE_AIRPLANE_MODE to "disable_airplane_mode",
+            ActionId.SCREENSHOT to "screenshot",
+            ActionId.OPEN_VOICE_ASSISTANT to "open_assistant",
+            ActionId.OPEN_DEVICE_ASSISTANT to "open_device_assistant",
+            ActionId.OPEN_CAMERA to "open_camera",
+            ActionId.LOCK_DEVICE to "lock_device",
+            ActionId.POWER_ON_OFF_DEVICE to "power_on_off_device",
+            ActionId.SECURE_LOCK_DEVICE to "secure_lock_device",
+            ActionId.CONSUME_KEY_EVENT to "consume_key_event",
+            ActionId.OPEN_SETTINGS to "open_settings",
+            ActionId.SHOW_POWER_MENU to "show_power_menu",
+            ActionId.DISMISS_MOST_RECENT_NOTIFICATION to "dismiss_most_recent_notification",
+            ActionId.DISMISS_ALL_NOTIFICATIONS to "dismiss_all_notifications",
+            ActionId.ANSWER_PHONE_CALL to "answer_phone_call",
+            ActionId.END_PHONE_CALL to "end_phone_call",
+            ActionId.DEVICE_CONTROLS to "device_controls",
+            ActionId.HTTP_REQUEST to "http_request",
+            ActionId.FORCE_STOP_APP to "force_stop_app",
+            ActionId.CLEAR_RECENT_APP to "clear_recent_app",
+        )
 }

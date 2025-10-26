@@ -39,13 +39,14 @@ class DpadMotionEventTracker {
             return false
         }
 
-        val dpadFlag = when (event.keyCode) {
-            KeyEvent.KEYCODE_DPAD_DOWN -> DPAD_DOWN
-            KeyEvent.KEYCODE_DPAD_UP -> DPAD_UP
-            KeyEvent.KEYCODE_DPAD_LEFT -> DPAD_LEFT
-            KeyEvent.KEYCODE_DPAD_RIGHT -> DPAD_RIGHT
-            else -> return false
-        }
+        val dpadFlag =
+            when (event.keyCode) {
+                KeyEvent.KEYCODE_DPAD_DOWN -> DPAD_DOWN
+                KeyEvent.KEYCODE_DPAD_UP -> DPAD_UP
+                KeyEvent.KEYCODE_DPAD_LEFT -> DPAD_LEFT
+                KeyEvent.KEYCODE_DPAD_RIGHT -> DPAD_RIGHT
+                else -> return false
+            }
 
         val dpadState = dpadState[device.descriptor] ?: return false
 
@@ -94,11 +95,12 @@ class DpadMotionEventTracker {
         }
 
         // If the new state contains the dpad press then it has just been pressed down.
-        val action = if (newState and diff == diff) {
-            KeyEvent.ACTION_DOWN
-        } else {
-            KeyEvent.ACTION_UP
-        }
+        val action =
+            if (newState and diff == diff) {
+                KeyEvent.ACTION_DOWN
+            } else {
+                KeyEvent.ACTION_UP
+            }
 
         return keyCodes.map {
             KMKeyEvent(
@@ -118,9 +120,7 @@ class DpadMotionEventTracker {
         dpadState.clear()
     }
 
-    private fun InputDeviceInfo?.getDescriptor(): String {
-        return this?.descriptor ?: ""
-    }
+    private fun InputDeviceInfo?.getDescriptor(): String = this?.descriptor ?: ""
 
     private fun eventToDpadState(event: KMGamePadEvent): Int {
         var state = 0

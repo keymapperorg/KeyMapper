@@ -113,95 +113,101 @@ private fun ConstraintsScreen(
 
     when (val state = state) {
         State.Loading -> Loading()
-        is State.Data<ConfigConstraintsState> -> Surface(modifier = modifier) {
-            Column {
-                when (val data = state.data) {
-                    is ConfigConstraintsState.Empty -> {
-                        Column(
-                            modifier = Modifier.weight(1f),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            Text(
-                                modifier = Modifier
-                                    .padding(32.dp)
-                                    .fillMaxWidth(),
-                                text = stringResource(R.string.constraints_recyclerview_placeholder),
-                                textAlign = TextAlign.Center,
-                            )
-
-                            if (data.shortcuts.isNotEmpty()) {
+        is State.Data<ConfigConstraintsState> ->
+            Surface(modifier = modifier) {
+                Column {
+                    when (val data = state.data) {
+                        is ConfigConstraintsState.Empty -> {
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
                                 Text(
-                                    text = stringResource(R.string.recently_used_constraints),
-                                    style = MaterialTheme.typography.titleSmall,
+                                    modifier =
+                                        Modifier
+                                            .padding(32.dp)
+                                            .fillMaxWidth(),
+                                    text = stringResource(R.string.constraints_recyclerview_placeholder),
+                                    textAlign = TextAlign.Center,
                                 )
 
+                                if (data.shortcuts.isNotEmpty()) {
+                                    Text(
+                                        text = stringResource(R.string.recently_used_constraints),
+                                        style = MaterialTheme.typography.titleSmall,
+                                    )
+
+                                    Spacer(Modifier.height(8.dp))
+
+                                    ShortcutRow(
+                                        modifier =
+                                            Modifier
+                                                .padding(horizontal = 32.dp)
+                                                .fillMaxWidth(),
+                                        shortcuts = data.shortcuts,
+                                        onClick = onClickShortcut,
+                                    )
+                                }
+                            }
+                        }
+
+                        is ConfigConstraintsState.Loaded -> {
+                            Spacer(Modifier.height(8.dp))
+
+                            if (data.constraintList.isNotEmpty()) {
                                 Spacer(Modifier.height(8.dp))
 
-                                ShortcutRow(
-                                    modifier = Modifier
-                                        .padding(horizontal = 32.dp)
-                                        .fillMaxWidth(),
-                                    shortcuts = data.shortcuts,
-                                    onClick = onClickShortcut,
+                                Text(
+                                    modifier = Modifier.padding(horizontal = 16.dp),
+                                    text = stringResource(R.string.constraint_list_explanation_header),
+                                    style = MaterialTheme.typography.titleSmall,
+                                )
+                            }
+
+                            Spacer(Modifier.height(8.dp))
+
+                            ConstraintList(
+                                modifier = Modifier.weight(1f),
+                                constraintList = data.constraintList,
+                                shortcuts = data.shortcuts,
+                                onRemoveClick = {
+                                    constraintToDelete = it
+                                    showDeleteDialog = true
+                                },
+                                onFixErrorClick = onFixErrorClick,
+                                onClickShortcut = onClickShortcut,
+                            )
+
+                            if (data.constraintList.size > 1) {
+                                ConstraintModeRow(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 8.dp),
+                                    mode = data.selectedMode,
+                                    onSelectMode = onSelectMode,
                                 )
                             }
                         }
                     }
 
-                    is ConfigConstraintsState.Loaded -> {
-                        Spacer(Modifier.height(8.dp))
-
-                        if (data.constraintList.isNotEmpty()) {
-                            Spacer(Modifier.height(8.dp))
-
-                            Text(
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                                text = stringResource(R.string.constraint_list_explanation_header),
-                                style = MaterialTheme.typography.titleSmall,
-                            )
-                        }
-
-                        Spacer(Modifier.height(8.dp))
-
-                        ConstraintList(
-                            modifier = Modifier.weight(1f),
-                            constraintList = data.constraintList,
-                            shortcuts = data.shortcuts,
-                            onRemoveClick = {
-                                constraintToDelete = it
-                                showDeleteDialog = true
-                            },
-                            onFixErrorClick = onFixErrorClick,
-                            onClickShortcut = onClickShortcut,
-                        )
-
-                        if (data.constraintList.size > 1) {
-                            ConstraintModeRow(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 8.dp),
-                                mode = data.selectedMode,
-                                onSelectMode = onSelectMode,
-                            )
-                        }
+                    FilledTonalButton(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                        onClick = onAddClick,
+                        colors =
+                            ButtonDefaults.filledTonalButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                            ),
+                    ) {
+                        Text(stringResource(R.string.button_add_constraint))
                     }
                 }
-
-                FilledTonalButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    onClick = onAddClick,
-                    colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                    ),
-                ) {
-                    Text(stringResource(R.string.button_add_constraint))
-                }
             }
-        }
     }
 }
 
@@ -284,9 +290,10 @@ private fun ConstraintList(
                     Spacer(Modifier.height(8.dp))
 
                     ShortcutRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 32.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 32.dp),
                         shortcuts = shortcuts,
                         onClick = { onClickShortcut(it) },
                     )
@@ -301,17 +308,19 @@ private fun ConstraintList(
 private fun EmptyPreview() {
     KeyMapperTheme {
         ConstraintsScreen(
-            state = State.Data(
-                ConfigConstraintsState.Empty(
-                    shortcuts = setOf(
-                        ShortcutModel(
-                            icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
-                            text = "Flashlight is on",
-                            data = ConstraintData.FlashlightOn(lens = CameraLens.BACK),
-                        ),
+            state =
+                State.Data(
+                    ConfigConstraintsState.Empty(
+                        shortcuts =
+                            setOf(
+                                ShortcutModel(
+                                    icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
+                                    text = "Flashlight is on",
+                                    data = ConstraintData.FlashlightOn(lens = CameraLens.BACK),
+                                ),
+                            ),
                     ),
                 ),
-            ),
         )
     }
 }
@@ -323,36 +332,39 @@ private fun LoadedPreview() {
         val ctx = LocalContext.current
 
         ConstraintsScreen(
-            state = State.Data(
-                ConfigConstraintsState.Loaded(
-                    constraintList = listOf(
-                        ConstraintListItemModel(
-                            id = "1",
-                            icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
-                            constraintModeLink = ConstraintMode.AND,
-                            text = "Flashlight is on",
-                            error = "Flashlight not found",
-                            isErrorFixable = true,
-                        ),
-                        ConstraintListItemModel(
-                            id = "2",
-                            icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
-                            constraintModeLink = null,
-                            text = "Key Mapper in foreground",
-                            error = null,
-                            isErrorFixable = true,
-                        ),
+            state =
+                State.Data(
+                    ConfigConstraintsState.Loaded(
+                        constraintList =
+                            listOf(
+                                ConstraintListItemModel(
+                                    id = "1",
+                                    icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
+                                    constraintModeLink = ConstraintMode.AND,
+                                    text = "Flashlight is on",
+                                    error = "Flashlight not found",
+                                    isErrorFixable = true,
+                                ),
+                                ConstraintListItemModel(
+                                    id = "2",
+                                    icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
+                                    constraintModeLink = null,
+                                    text = "Key Mapper in foreground",
+                                    error = null,
+                                    isErrorFixable = true,
+                                ),
+                            ),
+                        shortcuts =
+                            setOf(
+                                ShortcutModel(
+                                    icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
+                                    text = "Flashlight is on",
+                                    data = ConstraintData.FlashlightOn(lens = CameraLens.BACK),
+                                ),
+                            ),
+                        selectedMode = ConstraintMode.AND,
                     ),
-                    shortcuts = setOf(
-                        ShortcutModel(
-                            icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
-                            text = "Flashlight is on",
-                            data = ConstraintData.FlashlightOn(lens = CameraLens.BACK),
-                        ),
-                    ),
-                    selectedMode = ConstraintMode.AND,
                 ),
-            ),
         )
     }
 }

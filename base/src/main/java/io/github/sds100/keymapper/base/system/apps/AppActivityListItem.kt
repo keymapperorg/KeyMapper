@@ -24,6 +24,5 @@ data class AppActivityListItem(
 
     override val isEnabled: Boolean = true
 
-    override fun getSearchableString() =
-        "$appName ${activityInfo.packageName} ${activityInfo.activityName}"
+    override fun getSearchableString() = "$appName ${activityInfo.packageName} ${activityInfo.activityName}"
 }

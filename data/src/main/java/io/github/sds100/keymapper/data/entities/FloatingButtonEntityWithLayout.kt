@@ -10,7 +10,6 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class FloatingButtonEntityWithLayout(
     @Embedded val button: FloatingButtonEntity,
-
     @Relation(
         parentColumn = FloatingButtonDao.KEY_LAYOUT_UID,
         entityColumn = FloatingLayoutDao.KEY_UID,

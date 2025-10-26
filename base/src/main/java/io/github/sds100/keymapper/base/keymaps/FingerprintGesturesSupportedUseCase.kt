@@ -9,20 +9,22 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class FingerprintGesturesSupportedUseCaseImpl @Inject constructor(
-    private val preferenceRepository: PreferenceRepository,
-) : FingerprintGesturesSupportedUseCase {
-    override val isSupported: Flow<Boolean?> =
-        preferenceRepository.get(Keys.fingerprintGesturesAvailable).map {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return@map false
+class FingerprintGesturesSupportedUseCaseImpl
+    @Inject
+    constructor(
+        private val preferenceRepository: PreferenceRepository,
+    ) : FingerprintGesturesSupportedUseCase {
+        override val isSupported: Flow<Boolean?> =
+            preferenceRepository.get(Keys.fingerprintGesturesAvailable).map {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return@map false
 
-            it
+                it
+            }
+
+        override fun setSupported(supported: Boolean) {
+            preferenceRepository.set(Keys.fingerprintGesturesAvailable, supported)
         }
-
-    override fun setSupported(supported: Boolean) {
-        preferenceRepository.set(Keys.fingerprintGesturesAvailable, supported)
     }
-}
 
 interface FingerprintGesturesSupportedUseCase {
     /**

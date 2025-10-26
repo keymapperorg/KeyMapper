@@ -15,7 +15,6 @@ class IsActionSupportedUseCaseImpl(
     private val cameraAdapter: CameraAdapter,
     private val permissionAdapter: PermissionAdapter,
 ) : IsActionSupportedUseCase {
-
     override fun isSupported(id: ActionId): KMError? {
         if (Build.VERSION.SDK_INT != 0) {
             val minApi = ActionUtils.getMinApi(id)

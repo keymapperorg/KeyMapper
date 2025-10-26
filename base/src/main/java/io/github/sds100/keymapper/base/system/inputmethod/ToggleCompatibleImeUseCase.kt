@@ -19,46 +19,49 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ToggleCompatibleImeUseCaseImpl @Inject constructor(
-    private val inputMethodAdapter: InputMethodAdapter,
-    private val buildConfigProvider: BuildConfigProvider,
-    private val switchImeInterface: SwitchImeInterface,
-    private val serviceAdapter: AccessibilityServiceAdapter,
-    private val permissionAdapter: PermissionAdapter,
-) : ToggleCompatibleImeUseCase {
-    private val keyMapperImeHelper =
-        KeyMapperImeHelper(switchImeInterface, inputMethodAdapter, buildConfigProvider.packageName)
+class ToggleCompatibleImeUseCaseImpl
+    @Inject
+    constructor(
+        private val inputMethodAdapter: InputMethodAdapter,
+        private val buildConfigProvider: BuildConfigProvider,
+        private val switchImeInterface: SwitchImeInterface,
+        private val serviceAdapter: AccessibilityServiceAdapter,
+        private val permissionAdapter: PermissionAdapter,
+    ) : ToggleCompatibleImeUseCase {
+        private val keyMapperImeHelper =
+            KeyMapperImeHelper(switchImeInterface, inputMethodAdapter, buildConfigProvider.packageName)
 
-    override val sufficientPermissions: Flow<Boolean> = channelFlow {
-        suspend fun invalidate() {
-            when {
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
-                    serviceAdapter.state.first() == AccessibilityServiceState.ENABLED -> send(true)
+        override val sufficientPermissions: Flow<Boolean> =
+            channelFlow {
+                suspend fun invalidate() {
+                    when {
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+                            serviceAdapter.state.first() == AccessibilityServiceState.ENABLED -> send(true)
 
-                permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS) -> send(true)
+                        permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS) -> send(true)
 
-                else -> send(false)
-            }
-        }
+                        else -> send(false)
+                    }
+                }
 
-        invalidate()
-
-        launch {
-            permissionAdapter.onPermissionsUpdate.collectLatest {
                 invalidate()
-            }
-        }
 
-        launch {
-            serviceAdapter.state.collectLatest {
-                invalidate()
+                launch {
+                    permissionAdapter.onPermissionsUpdate.collectLatest {
+                        invalidate()
+                    }
+                }
+
+                launch {
+                    serviceAdapter.state.collectLatest {
+                        invalidate()
+                    }
+                }
             }
-        }
+
+        override suspend fun toggle(): KMResult<ImeInfo> =
+            keyMapperImeHelper.toggleCompatibleInputMethod().then { inputMethodAdapter.getInfoById(it) }
     }
-
-    override suspend fun toggle(): KMResult<ImeInfo> =
-        keyMapperImeHelper.toggleCompatibleInputMethod().then { inputMethodAdapter.getInfoById(it) }
-}
 
 interface ToggleCompatibleImeUseCase {
     val sufficientPermissions: Flow<Boolean>

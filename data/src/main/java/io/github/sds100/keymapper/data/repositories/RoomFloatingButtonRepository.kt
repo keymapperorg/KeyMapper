@@ -16,33 +16,36 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RoomFloatingButtonRepository @Inject constructor(
-    private val dao: FloatingButtonDao,
-    private val coroutineScope: CoroutineScope,
-    private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
-) : FloatingButtonRepository {
-    override val buttonsList: StateFlow<State<List<FloatingButtonEntityWithLayout>>> = dao.getAll()
-        .map { State.Data(it) }
-        .stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
+class RoomFloatingButtonRepository
+    @Inject
+    constructor(
+        private val dao: FloatingButtonDao,
+        private val coroutineScope: CoroutineScope,
+        private val dispatchers: DispatcherProvider = DefaultDispatcherProvider(),
+    ) : FloatingButtonRepository {
+        override val buttonsList: StateFlow<State<List<FloatingButtonEntityWithLayout>>> =
+            dao
+                .getAll()
+                .map { State.Data(it) }
+                .stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
 
-    override fun insert(vararg button: FloatingButtonEntity) {
-        coroutineScope.launch(dispatchers.default()) {
-            dao.insert(*button)
+        override fun insert(vararg button: FloatingButtonEntity) {
+            coroutineScope.launch(dispatchers.default()) {
+                dao.insert(*button)
+            }
+        }
+
+        override fun update(button: FloatingButtonEntity) {
+            coroutineScope.launch(dispatchers.default()) {
+                dao.update(button)
+            }
+        }
+
+        override suspend fun get(uid: String): FloatingButtonEntityWithLayout? = dao.getByUidWithLayout(uid)
+
+        override fun delete(vararg uid: String) {
+            coroutineScope.launch(dispatchers.default()) {
+                dao.deleteByUid(*uid)
+            }
         }
     }
-
-    override fun update(button: FloatingButtonEntity) {
-        coroutineScope.launch(dispatchers.default()) {
-            dao.update(button)
-        }
-    }
-
-    override suspend fun get(uid: String): FloatingButtonEntityWithLayout? =
-        dao.getByUidWithLayout(uid)
-
-    override fun delete(vararg uid: String) {
-        coroutineScope.launch(dispatchers.default()) {
-            dao.deleteByUid(*uid)
-        }
-    }
-}

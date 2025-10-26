@@ -14,7 +14,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : BaseMainActivity() {
-
     @Inject
     lateinit var dialogProvider: DialogProvider
 
@@ -28,15 +27,17 @@ class MainActivity : BaseMainActivity() {
         val fragmentNavigator =
             navController.navigatorProvider.getNavigator(FragmentNavigator::class.java)
 
-        val homeDest = fragmentNavigator.createDestination().apply {
-            id = R.id.home_fragment
-            setClassName(MainFragment::class.java.name)
-        }
+        val homeDest =
+            fragmentNavigator.createDestination().apply {
+                id = R.id.home_fragment
+                setClassName(MainFragment::class.java.name)
+            }
 
-        navController.graph = navController.navInflater.inflate(R.navigation.nav_base_app).apply {
-            addDestination(homeDest)
-            setStartDestination(R.id.home_fragment)
-        }
+        navController.graph =
+            navController.navInflater.inflate(R.navigation.nav_base_app).apply {
+                addDestination(homeDest)
+                setStartDestination(R.id.home_fragment)
+            }
 
         dialogProvider.showDialogs(this, binding.coordinatorLayout)
     }

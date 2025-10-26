@@ -123,9 +123,10 @@ private fun HttpRequestBottomSheet(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp),
                 textAlign = TextAlign.Center,
                 text = stringResource(R.string.action_http_request),
                 style = MaterialTheme.typography.headlineMedium,
@@ -134,24 +135,25 @@ private fun HttpRequestBottomSheet(
             Spacer(modifier = Modifier.height(8.dp))
 
             KeyMapperDropdownMenu(
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .wrapContentWidth()
+                        .padding(horizontal = 16.dp),
                 expanded = methodExpanded,
                 onExpandedChange = { methodExpanded = it },
                 label = { Text(stringResource(R.string.action_http_request_method_label)) },
                 selectedValue = state.method,
                 values = HttpMethod.entries.map { it to it.toString() },
                 onValueChanged = onSelectMethod,
-
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 value = state.description,
                 label = { Text(stringResource(R.string.action_http_request_description_label)) },
                 onValueChange = {
@@ -160,11 +162,12 @@ private fun HttpRequestBottomSheet(
                 },
                 maxLines = 1,
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences,
-                    autoCorrectEnabled = true,
-                    keyboardType = KeyboardType.Uri,
-                ),
+                keyboardOptions =
+                    KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        autoCorrectEnabled = true,
+                        keyboardType = KeyboardType.Uri,
+                    ),
                 isError = descriptionError != null,
                 supportingText = {
                     if (descriptionError != null) {
@@ -179,9 +182,10 @@ private fun HttpRequestBottomSheet(
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 value = state.url,
                 label = { Text(stringResource(R.string.action_http_request_url_label)) },
                 onValueChange = {
@@ -190,11 +194,12 @@ private fun HttpRequestBottomSheet(
                 },
                 maxLines = 1,
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.None,
-                    autoCorrectEnabled = false,
-                    keyboardType = KeyboardType.Uri,
-                ),
+                keyboardOptions =
+                    KeyboardOptions(
+                        capitalization = KeyboardCapitalization.None,
+                        autoCorrectEnabled = false,
+                        keyboardType = KeyboardType.Uri,
+                    ),
                 isError = urlError != null,
                 supportingText = {
                     if (urlError != null) {
@@ -209,9 +214,10 @@ private fun HttpRequestBottomSheet(
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 value = state.body,
                 label = { Text(stringResource(R.string.action_http_request_body_label)) },
                 onValueChange = {
@@ -222,9 +228,10 @@ private fun HttpRequestBottomSheet(
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 value = state.authorizationHeader,
                 label = { Text(stringResource(R.string.action_http_request_authorization_label)) },
                 onValueChange = {
@@ -233,19 +240,21 @@ private fun HttpRequestBottomSheet(
                 supportingText = {
                     Text(stringResource(R.string.action_http_request_authorization_supporting_text))
                 },
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.None,
-                    autoCorrectEnabled = false,
-                    keyboardType = KeyboardType.Text,
-                ),
+                keyboardOptions =
+                    KeyboardOptions(
+                        capitalization = KeyboardCapitalization.None,
+                        autoCorrectEnabled = false,
+                        keyboardType = KeyboardType.Text,
+                    ),
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -297,21 +306,23 @@ private fun HttpRequestBottomSheet(
 @Composable
 private fun PreviewEmpty() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
         HttpRequestBottomSheet(
             sheetState = sheetState,
             onDismissRequest = {},
-            state = ActionData.HttpRequest(
-                description = "",
-                method = HttpMethod.GET,
-                url = "",
-                body = "",
-                authorizationHeader = "",
-            ),
+            state =
+                ActionData.HttpRequest(
+                    description = "",
+                    method = HttpMethod.GET,
+                    url = "",
+                    body = "",
+                    authorizationHeader = "",
+                ),
         )
     }
 }
@@ -321,21 +332,23 @@ private fun PreviewEmpty() {
 @Composable
 private fun PreviewFilled() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
         HttpRequestBottomSheet(
             sheetState = sheetState,
             onDismissRequest = {},
-            state = ActionData.HttpRequest(
-                description = "Example HTTP request",
-                method = HttpMethod.GET,
-                url = "https://example.com",
-                body = "Hello, world!",
-                authorizationHeader = "Bearer token",
-            ),
+            state =
+                ActionData.HttpRequest(
+                    description = "Example HTTP request",
+                    method = HttpMethod.GET,
+                    url = "https://example.com",
+                    body = "Hello, world!",
+                    authorizationHeader = "Bearer token",
+                ),
         )
     }
 }

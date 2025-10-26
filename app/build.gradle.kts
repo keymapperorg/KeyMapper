@@ -17,17 +17,29 @@ plugins {
 
 android {
     namespace = "io.github.sds100.keymapper"
-    compileSdk = libs.versions.compile.sdk.get().toInt()
-    buildToolsVersion = libs.versions.build.tools.get()
+    compileSdk =
+        libs.versions.compile.sdk
+            .get()
+            .toInt()
+    buildToolsVersion =
+        libs.versions.build.tools
+            .get()
 
-    val versionProperties = Properties().apply {
-        project.file("version.properties").inputStream().use { load(it) }
-    }
+    val versionProperties =
+        Properties().apply {
+            project.file("version.properties").inputStream().use { load(it) }
+        }
 
     defaultConfig {
         applicationId = "io.github.sds100.keymapper"
-        minSdk = libs.versions.min.sdk.get().toInt()
-        targetSdk = libs.versions.target.sdk.get().toInt()
+        minSdk =
+            libs.versions.min.sdk
+                .get()
+                .toInt()
+        targetSdk =
+            libs.versions.target.sdk
+                .get()
+                .toInt()
 
         versionCode = versionProperties.getProperty("VERSION_CODE").toInt()
         versionName = versionProperties.getProperty("VERSION_NAME")
@@ -113,7 +125,9 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
+        kotlinCompilerExtensionVersion =
+            libs.versions.compose.compiler
+                .get()
     }
 
     packaging {

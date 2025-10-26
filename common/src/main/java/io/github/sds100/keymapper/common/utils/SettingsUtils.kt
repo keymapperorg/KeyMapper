@@ -17,11 +17,13 @@ import kotlinx.coroutines.flow.callbackFlow
 import timber.log.Timber
 
 object SettingsUtils {
-
     /**
      * @return If the setting can't be found, it returns null
      */
-    inline fun <reified T> getSystemSetting(ctx: Context, name: String): T? {
+    inline fun <reified T> getSystemSetting(
+        ctx: Context,
+        name: String,
+    ): T? {
         val contentResolver = ctx.contentResolver
 
         return try {
@@ -43,7 +45,10 @@ object SettingsUtils {
     /**
      * @return If the setting can't be found, it returns null
      */
-    inline fun <reified T> getSecureSetting(ctx: Context, name: String): T? {
+    inline fun <reified T> getSecureSetting(
+        ctx: Context,
+        name: String,
+    ): T? {
         val contentResolver = ctx.contentResolver
 
         return try {
@@ -65,7 +70,10 @@ object SettingsUtils {
     /**
      * @return If the setting can't be found, it returns null
      */
-    inline fun <reified T> getGlobalSetting(ctx: Context, name: String): T? {
+    inline fun <reified T> getGlobalSetting(
+        ctx: Context,
+        name: String,
+    ): T? {
         val contentResolver = ctx.contentResolver
 
         return try {
@@ -88,7 +96,11 @@ object SettingsUtils {
      * @return whether the setting was changed successfully
      */
     @RequiresPermission(Manifest.permission.WRITE_SETTINGS)
-    inline fun <reified T> putSystemSetting(ctx: Context, name: String, value: T): Boolean {
+    inline fun <reified T> putSystemSetting(
+        ctx: Context,
+        name: String,
+        value: T,
+    ): Boolean {
         val contentResolver = ctx.contentResolver
 
         return when (T::class) {
@@ -107,7 +119,11 @@ object SettingsUtils {
      * @return whether the setting was changed successfully
      */
     @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
-    inline fun <reified T> putSecureSetting(ctx: Context, name: String, value: T): Boolean {
+    inline fun <reified T> putSecureSetting(
+        ctx: Context,
+        name: String,
+        value: T,
+    ): Boolean {
         val contentResolver = ctx.contentResolver
 
         return when (T::class) {
@@ -126,7 +142,11 @@ object SettingsUtils {
      * @return whether the setting was changed successfully
      */
     @RequiresPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
-    inline fun <reified T> putGlobalSetting(ctx: Context, name: String, value: T): Boolean {
+    inline fun <reified T> putGlobalSetting(
+        ctx: Context,
+        name: String,
+        value: T,
+    ): Boolean {
         val contentResolver = ctx.contentResolver
 
         return when (T::class) {
@@ -141,23 +161,28 @@ object SettingsUtils {
         }
     }
 
-    fun launchSettingsScreen(ctx: Context, action: String, fragmentArg: String? = null) {
-        val intent = Intent(action).apply {
-            if (fragmentArg != null) {
-                val fragmentArgKey = ":settings:fragment_args_key"
-                val showFragmentArgsKey = ":settings:show_fragment_args"
+    fun launchSettingsScreen(
+        ctx: Context,
+        action: String,
+        fragmentArg: String? = null,
+    ) {
+        val intent =
+            Intent(action).apply {
+                if (fragmentArg != null) {
+                    val fragmentArgKey = ":settings:fragment_args_key"
+                    val showFragmentArgsKey = ":settings:show_fragment_args"
 
-                putExtra(fragmentArgKey, fragmentArg)
+                    putExtra(fragmentArgKey, fragmentArg)
 
-                val bundle = bundleOf(fragmentArgKey to fragmentArg)
-                putExtra(showFragmentArgsKey, bundle)
+                    val bundle = bundleOf(fragmentArgKey to fragmentArg)
+                    putExtra(showFragmentArgsKey, bundle)
+                }
+
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_NO_HISTORY or
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                    Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
             }
-
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                Intent.FLAG_ACTIVITY_NO_HISTORY or
-                Intent.FLAG_ACTIVITY_CLEAR_TASK or
-                Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
-        }
 
         try {
             ctx.startActivity(intent)
@@ -166,18 +191,25 @@ object SettingsUtils {
         }
     }
 
-    fun settingsCallbackFlow(ctx: Context, uri: Uri): Flow<Unit> = callbackFlow {
-        val observer =
-            object : ContentObserver(Handler(Looper.getMainLooper())) {
-                override fun onChange(selfChange: Boolean, uri: Uri?) {
-                    super.onChange(selfChange, uri)
+    fun settingsCallbackFlow(
+        ctx: Context,
+        uri: Uri,
+    ): Flow<Unit> =
+        callbackFlow {
+            val observer =
+                object : ContentObserver(Handler(Looper.getMainLooper())) {
+                    override fun onChange(
+                        selfChange: Boolean,
+                        uri: Uri?,
+                    ) {
+                        super.onChange(selfChange, uri)
 
-                    trySend(Unit)
+                        trySend(Unit)
+                    }
                 }
-            }
 
-        ctx.contentResolver.registerContentObserver(uri, false, observer)
+            ctx.contentResolver.registerContentObserver(uri, false, observer)
 
-        this.awaitClose { ctx.contentResolver.unregisterContentObserver(observer) }
-    }
+            this.awaitClose { ctx.contentResolver.unregisterContentObserver(observer) }
+        }
 }

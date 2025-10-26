@@ -11,11 +11,13 @@ import javax.inject.Inject
 // DON'T MOVE THIS CLASS TO A DIFFERENT PACKAGE OR RENAME BECAUSE IT BREAKS THE API
 @AndroidEntryPoint
 class PauseMappingsBroadcastReceiver : BroadcastReceiver() {
-
     @Inject
     lateinit var useCase: PauseKeyMapsUseCase
 
-    override fun onReceive(context: Context?, intent: Intent?) {
+    override fun onReceive(
+        context: Context?,
+        intent: Intent?,
+    ) {
         context ?: return
 
         when (intent?.action) {

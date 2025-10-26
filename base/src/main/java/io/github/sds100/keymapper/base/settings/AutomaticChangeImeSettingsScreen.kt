@@ -43,7 +43,10 @@ import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
 import io.github.sds100.keymapper.base.utils.ui.compose.SwitchPreferenceCompose
 
 @Composable
-fun AutomaticChangeImeSettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) {
+fun AutomaticChangeImeSettingsScreen(
+    modifier: Modifier = Modifier,
+    viewModel: SettingsViewModel,
+) {
     val state by viewModel.automaticChangeImeSettingsState.collectAsStateWithLifecycle()
     val snackbarHostState = SnackbarHostState()
 
@@ -96,14 +99,15 @@ private fun AutomaticChangeImeSettingsScreen(
         val endPadding = innerPadding.calculateEndPadding(layoutDirection)
 
         Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    bottom = innerPadding.calculateBottomPadding(),
-                    start = startPadding,
-                    end = endPadding,
-                ),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom = innerPadding.calculateBottomPadding(),
+                        start = startPadding,
+                        end = endPadding,
+                    ),
         ) {
             content()
         }

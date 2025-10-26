@@ -11,21 +11,24 @@ class FakePreferenceRepository : PreferenceRepository {
         MutableStateFlow(emptyMap())
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T> get(key: Preferences.Key<T>): Flow<T?> {
-        return preferences.map { it[key] as T? }
-    }
+    override fun <T> get(key: Preferences.Key<T>): Flow<T?> = preferences.map { it[key] as T? }
 
-    override fun <T> set(key: Preferences.Key<T>, value: T?) {
-        preferences.value = preferences.value.toMutableMap().apply {
-            this[key] = value
-        }
+    override fun <T> set(
+        key: Preferences.Key<T>,
+        value: T?,
+    ) {
+        preferences.value =
+            preferences.value.toMutableMap().apply {
+                this[key] = value
+            }
     }
 
     override fun deleteAll() {
         preferences.value = emptyMap()
     }
 
-    override fun <T> update(key: Preferences.Key<T>, update: suspend (T?) -> T?) {
-        throw NotImplementedError()
-    }
+    override fun <T> update(
+        key: Preferences.Key<T>,
+        update: suspend (T?) -> T?,
+    ): Unit = throw NotImplementedError()
 }

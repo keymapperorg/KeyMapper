@@ -13,7 +13,9 @@ import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import kotlinx.serialization.Serializable
 
 @Serializable
-abstract class NavDestination<R>(val isCompose: Boolean = false) {
+abstract class NavDestination<R>(
+    val isCompose: Boolean = false,
+) {
     abstract val id: String
 
     companion object {
@@ -69,32 +71,37 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data class ConfigKeyEventAction(val action: ActionData.InputKeyEvent? = null) :
-        NavDestination<ActionData.InputKeyEvent>() {
+    data class ConfigKeyEventAction(
+        val action: ActionData.InputKeyEvent? = null,
+    ) : NavDestination<ActionData.InputKeyEvent>() {
         override val id: String = ID_KEY_EVENT
     }
 
     @Serializable
-    data class PickCoordinate(val result: PickCoordinateResult? = null) :
-        NavDestination<PickCoordinateResult>() {
+    data class PickCoordinate(
+        val result: PickCoordinateResult? = null,
+    ) : NavDestination<PickCoordinateResult>() {
         override val id: String = ID_PICK_COORDINATE
     }
 
     @Serializable
-    data class PickSwipeCoordinate(val result: SwipePickCoordinateResult? = null) :
-        NavDestination<SwipePickCoordinateResult>() {
+    data class PickSwipeCoordinate(
+        val result: SwipePickCoordinateResult? = null,
+    ) : NavDestination<SwipePickCoordinateResult>() {
         override val id: String = ID_PICK_SWIPE_COORDINATE
     }
 
     @Serializable
-    data class PickPinchCoordinate(val result: PinchPickCoordinateResult? = null) :
-        NavDestination<PinchPickCoordinateResult>() {
+    data class PickPinchCoordinate(
+        val result: PinchPickCoordinateResult? = null,
+    ) : NavDestination<PinchPickCoordinateResult>() {
         override val id: String = ID_PICK_PINCH_COORDINATE
     }
 
     @Serializable
-    data class ConfigIntent(val result: ConfigIntentResult? = null) :
-        NavDestination<ConfigIntentResult>() {
+    data class ConfigIntent(
+        val result: ConfigIntentResult? = null,
+    ) : NavDestination<ConfigIntentResult>() {
         override val id: String = ID_CONFIG_INTENT
     }
 
@@ -144,7 +151,9 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data class OpenKeyMap(val keyMapUid: String) : NavDestination<Unit>(isCompose = true) {
+    data class OpenKeyMap(
+        val keyMapUid: String,
+    ) : NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_CONFIG_KEY_MAP
     }
 
@@ -161,14 +170,16 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data class InteractUiElement(val actionJson: String?) :
-        NavDestination<ActionData.InteractUiElement>(isCompose = true) {
+    data class InteractUiElement(
+        val actionJson: String?,
+    ) : NavDestination<ActionData.InteractUiElement>(isCompose = true) {
         override val id: String = ID_INTERACT_UI_ELEMENT_ACTION
     }
 
     @Serializable
-    data class ConfigShellCommand(val actionJson: String?) :
-        NavDestination<ActionData.ShellCommand>(isCompose = true) {
+    data class ConfigShellCommand(
+        val actionJson: String?,
+    ) : NavDestination<ActionData.ShellCommand>(isCompose = true) {
         override val id: String = ID_SHELL_COMMAND_ACTION
     }
 

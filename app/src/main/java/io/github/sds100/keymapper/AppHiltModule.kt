@@ -29,32 +29,30 @@ class AppHiltModule {
 
     @Singleton
     @Provides
-    fun provideBuildConfigProvider(): BuildConfigProvider = object : BuildConfigProvider {
-        override val minApi: Int
-            get() = Build.VERSION_CODES.O
-        override val maxApi: Int
-            get() = 1000
-        override val packageName: String
-            get() = BuildConfig.APPLICATION_ID
-        override val version: String
-            get() = BuildConfig.VERSION_NAME
-        override val versionCode: Int
-            get() = BuildConfig.VERSION_CODE
-        override val sdkInt: Int
-            get() = Build.VERSION.SDK_INT
-    }
+    fun provideBuildConfigProvider(): BuildConfigProvider =
+        object : BuildConfigProvider {
+            override val minApi: Int
+                get() = Build.VERSION_CODES.O
+            override val maxApi: Int
+                get() = 1000
+            override val packageName: String
+                get() = BuildConfig.APPLICATION_ID
+            override val version: String
+                get() = BuildConfig.VERSION_NAME
+            override val versionCode: Int
+                get() = BuildConfig.VERSION_CODE
+            override val sdkInt: Int
+                get() = Build.VERSION.SDK_INT
+        }
 
     @Singleton
     @Provides
-    fun provideClassProvider(): KeyMapperClassProvider = object : KeyMapperClassProvider {
-        override fun getMainActivity(): Class<*> {
-            return MainActivity::class.java
-        }
+    fun provideClassProvider(): KeyMapperClassProvider =
+        object : KeyMapperClassProvider {
+            override fun getMainActivity(): Class<*> = MainActivity::class.java
 
-        override fun getAccessibilityService(): Class<*> {
-            return MyAccessibilityService::class.java
+            override fun getAccessibilityService(): Class<*> = MyAccessibilityService::class.java
         }
-    }
 
     @Provides
     @Singleton

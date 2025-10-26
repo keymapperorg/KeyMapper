@@ -10,39 +10,37 @@ import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class ManageNotificationsUseCaseImpl @Inject constructor(
-    private val notificationAdapter: NotificationAdapter,
-    private val permissionAdapter: PermissionAdapter,
-) : ManageNotificationsUseCase {
+class ManageNotificationsUseCaseImpl
+    @Inject
+    constructor(
+        private val notificationAdapter: NotificationAdapter,
+        private val permissionAdapter: PermissionAdapter,
+    ) : ManageNotificationsUseCase {
+        override val onNotificationTextInput: Flow<NotificationRemoteInput> =
+            notificationAdapter.onNotificationRemoteInput
+        override val onActionClick: Flow<KMNotificationAction.IntentAction> =
+            notificationAdapter.onNotificationActionClick
 
-    override val onNotificationTextInput: Flow<NotificationRemoteInput> =
-        notificationAdapter.onNotificationRemoteInput
-    override val onActionClick: Flow<KMNotificationAction.IntentAction> =
-        notificationAdapter.onNotificationActionClick
+        override fun show(notification: NotificationModel) {
+            notificationAdapter.showNotification(notification)
+        }
 
-    override fun show(notification: NotificationModel) {
-        notificationAdapter.showNotification(notification)
+        override fun dismiss(notificationId: Int) {
+            notificationAdapter.dismissNotification(notificationId)
+        }
+
+        override fun createChannel(channel: NotificationChannelModel) {
+            notificationAdapter.createChannel(channel)
+        }
+
+        override fun deleteChannel(channelId: String) {
+            notificationAdapter.deleteChannel(channelId)
+        }
+
+        override fun isPermissionGranted(): Boolean = permissionAdapter.isGranted(Permission.POST_NOTIFICATIONS)
     }
-
-    override fun dismiss(notificationId: Int) {
-        notificationAdapter.dismissNotification(notificationId)
-    }
-
-    override fun createChannel(channel: NotificationChannelModel) {
-        notificationAdapter.createChannel(channel)
-    }
-
-    override fun deleteChannel(channelId: String) {
-        notificationAdapter.deleteChannel(channelId)
-    }
-
-    override fun isPermissionGranted(): Boolean {
-        return permissionAdapter.isGranted(Permission.POST_NOTIFICATIONS)
-    }
-}
 
 interface ManageNotificationsUseCase {
-
     /**
      * Emits text input from notification actions that support RemoteInput.
      */
@@ -51,8 +49,12 @@ interface ManageNotificationsUseCase {
     val onActionClick: Flow<KMNotificationAction.IntentAction>
 
     fun isPermissionGranted(): Boolean
+
     fun show(notification: NotificationModel)
+
     fun dismiss(notificationId: Int)
+
     fun createChannel(channel: NotificationChannelModel)
+
     fun deleteChannel(channelId: String)
 }

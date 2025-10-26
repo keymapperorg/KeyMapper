@@ -80,9 +80,10 @@ fun FixKeyEventActionBottomSheet(
         dragHandle = {},
     ) {
         Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
@@ -94,9 +95,10 @@ fun FixKeyEventActionBottomSheet(
             )
 
             Column(
-                modifier = Modifier
-                    .animateContentSize()
-                    .verticalScroll(rememberScrollState()),
+                modifier =
+                    Modifier
+                        .animateContentSize()
+                        .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(stringResource(R.string.fix_key_event_action_text))
@@ -107,29 +109,31 @@ fun FixKeyEventActionBottomSheet(
                     title = stringResource(R.string.fix_key_event_action_input_method_title),
                     icon = Icons.Rounded.Keyboard,
                 ) {
-                    val annotatedText = buildAnnotatedString {
-                        appendInlineContent("icon", "[icon]")
-                        append(" ")
-                        append(stringResource(R.string.fix_key_event_action_input_method_text))
-                    }
-                    val inlineContent = mapOf(
-                        Pair(
-                            "icon",
-                            InlineTextContent(
-                                Placeholder(
-                                    width = MaterialTheme.typography.bodyLarge.fontSize,
-                                    height = MaterialTheme.typography.bodyLarge.fontSize,
-                                    placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
-                                ),
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Remove,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.error,
-                                )
-                            },
-                        ),
-                    )
+                    val annotatedText =
+                        buildAnnotatedString {
+                            appendInlineContent("icon", "[icon]")
+                            append(" ")
+                            append(stringResource(R.string.fix_key_event_action_input_method_text))
+                        }
+                    val inlineContent =
+                        mapOf(
+                            Pair(
+                                "icon",
+                                InlineTextContent(
+                                    Placeholder(
+                                        width = MaterialTheme.typography.bodyLarge.fontSize,
+                                        height = MaterialTheme.typography.bodyLarge.fontSize,
+                                        placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
+                                    ),
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Remove,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.error,
+                                    )
+                                },
+                            ),
+                        )
                     Text(
                         annotatedText,
                         inlineContent = inlineContent,
@@ -153,33 +157,35 @@ fun FixKeyEventActionBottomSheet(
                             color = MaterialTheme.colorScheme.error,
                         )
                     } else {
-                        val annotatedText = buildAnnotatedString {
-                            appendInlineContent("icon", "[icon]")
-                            append(" ")
-                            append(stringResource(R.string.fix_key_event_action_pro_mode_text_1))
-                            appendLine()
-                            appendInlineContent("icon", "[icon]")
-                            append(" ")
-                            append(stringResource(R.string.fix_key_event_action_pro_mode_text_2))
-                        }
-                        val inlineContent = mapOf(
-                            Pair(
-                                "icon",
-                                InlineTextContent(
-                                    Placeholder(
-                                        width = MaterialTheme.typography.bodyLarge.fontSize,
-                                        height = MaterialTheme.typography.bodyLarge.fontSize,
-                                        placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
-                                    ),
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Rounded.Add,
-                                        contentDescription = null,
-                                        tint = LocalCustomColorsPalette.current.green,
-                                    )
-                                },
-                            ),
-                        )
+                        val annotatedText =
+                            buildAnnotatedString {
+                                appendInlineContent("icon", "[icon]")
+                                append(" ")
+                                append(stringResource(R.string.fix_key_event_action_pro_mode_text_1))
+                                appendLine()
+                                appendInlineContent("icon", "[icon]")
+                                append(" ")
+                                append(stringResource(R.string.fix_key_event_action_pro_mode_text_2))
+                            }
+                        val inlineContent =
+                            mapOf(
+                                Pair(
+                                    "icon",
+                                    InlineTextContent(
+                                        Placeholder(
+                                            width = MaterialTheme.typography.bodyLarge.fontSize,
+                                            height = MaterialTheme.typography.bodyLarge.fontSize,
+                                            placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
+                                        ),
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Add,
+                                            contentDescription = null,
+                                            tint = LocalCustomColorsPalette.current.green,
+                                        )
+                                    },
+                                ),
+                            )
                         Text(
                             annotatedText,
                             inlineContent = inlineContent,
@@ -253,17 +259,19 @@ private fun FixKeyEventActionOptionCard(
     enabled: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val cardBorder = if (selected) {
-        BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
-    } else {
-        CardDefaults.outlinedCardBorder()
-    }
+    val cardBorder =
+        if (selected) {
+            BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+        } else {
+            CardDefaults.outlinedCardBorder()
+        }
 
-    val cardElevation = if (selected) {
-        CardDefaults.outlinedCardElevation(defaultElevation = 1.dp)
-    } else {
-        CardDefaults.outlinedCardElevation()
-    }
+    val cardElevation =
+        if (selected) {
+            CardDefaults.outlinedCardElevation(defaultElevation = 1.dp)
+        } else {
+            CardDefaults.outlinedCardElevation()
+        }
 
     OutlinedCard(
         modifier = modifier.fillMaxWidth(),
@@ -273,9 +281,10 @@ private fun FixKeyEventActionOptionCard(
         elevation = cardElevation,
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 16.dp, end = 8.dp, bottom = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, top = 16.dp, end = 8.dp, bottom = 16.dp),
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -304,22 +313,24 @@ private fun FixKeyEventActionOptionCard(
 @Composable
 private fun InputMethodPreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         FixKeyEventActionBottomSheet(
             sheetState = sheetState,
-            state = FixKeyEventActionState.InputMethod(
-                isEnabled = true,
-                isChosen = true,
-                enablingRequiresUserInput = true,
-                isAccessibilityServiceEnabled = true,
-                isAutoSwitchImeEnabled = true,
-                proModeStatus = ProModeStatus.ENABLED,
-            ),
+            state =
+                FixKeyEventActionState.InputMethod(
+                    isEnabled = true,
+                    isChosen = true,
+                    enablingRequiresUserInput = true,
+                    isAccessibilityServiceEnabled = true,
+                    isAutoSwitchImeEnabled = true,
+                    proModeStatus = ProModeStatus.ENABLED,
+                ),
         )
     }
 }
@@ -329,18 +340,20 @@ private fun InputMethodPreview() {
 @Composable
 private fun ProModePreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         FixKeyEventActionBottomSheet(
             sheetState = sheetState,
-            state = FixKeyEventActionState.ProMode(
-                proModeStatus = ProModeStatus.DISABLED,
-                isAccessibilityServiceEnabled = true,
-            ),
+            state =
+                FixKeyEventActionState.ProMode(
+                    proModeStatus = ProModeStatus.DISABLED,
+                    isAccessibilityServiceEnabled = true,
+                ),
         )
     }
 }
@@ -350,22 +363,24 @@ private fun ProModePreview() {
 @Composable
 private fun ProModeUnsupportedPreview() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         FixKeyEventActionBottomSheet(
             sheetState = sheetState,
-            state = FixKeyEventActionState.InputMethod(
-                proModeStatus = ProModeStatus.UNSUPPORTED,
-                isEnabled = false,
-                isChosen = false,
-                enablingRequiresUserInput = true,
-                isAutoSwitchImeEnabled = false,
-                isAccessibilityServiceEnabled = true,
-            ),
+            state =
+                FixKeyEventActionState.InputMethod(
+                    proModeStatus = ProModeStatus.UNSUPPORTED,
+                    isEnabled = false,
+                    isChosen = false,
+                    enablingRequiresUserInput = true,
+                    isAutoSwitchImeEnabled = false,
+                    isAccessibilityServiceEnabled = true,
+                ),
         )
     }
 }

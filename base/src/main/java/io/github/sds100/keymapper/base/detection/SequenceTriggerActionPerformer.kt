@@ -21,13 +21,14 @@ class SequenceTriggerActionPerformer(
         once before repeating (if configured).
          */
         job?.cancel()
-        job = coroutineScope.launch {
-            for (action in actionList) {
-                performAction(action, metaState)
+        job =
+            coroutineScope.launch {
+                for (action in actionList) {
+                    performAction(action, metaState)
 
-                delay(action.delayBeforeNextAction?.toLong() ?: 0L)
+                    delay(action.delayBeforeNextAction?.toLong() ?: 0L)
+                }
             }
-        }
     }
 
     fun reset() {
@@ -35,7 +36,10 @@ class SequenceTriggerActionPerformer(
         job = null
     }
 
-    private suspend fun performAction(action: Action, metaState: Int) {
+    private suspend fun performAction(
+        action: Action,
+        metaState: Int,
+    ) {
         repeat(action.multiplier ?: 1) {
             useCase.perform(action.data, InputEventAction.DOWN_UP, metaState)
         }

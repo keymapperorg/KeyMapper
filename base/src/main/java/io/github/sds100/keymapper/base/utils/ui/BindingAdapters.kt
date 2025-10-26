@@ -35,24 +35,29 @@ fun MaterialTextView.tintType(tintType: TintType?) {
 fun TextInputLayout.errorWhenEmpty(enabled: Boolean) {
     // need to set it up when the view is created
     if (editText?.text.isNullOrBlank()) {
-        error = if (enabled) {
-            str(R.string.error_cant_be_empty)
-        } else {
-            null
-        }
+        error =
+            if (enabled) {
+                str(R.string.error_cant_be_empty)
+            } else {
+                null
+            }
     }
 
     editText?.addTextChangedListener {
-        error = if (it.isNullOrBlank() && enabled) {
-            str(R.string.error_cant_be_empty)
-        } else {
-            null
-        }
+        error =
+            if (it.isNullOrBlank() && enabled) {
+                str(R.string.error_cant_be_empty)
+            } else {
+                null
+            }
     }
 }
 
 @BindingAdapter("app:onLongClick")
-fun setLongClickListener(view: View, onLongClickListener: View.OnLongClickListener?) {
+fun setLongClickListener(
+    view: View,
+    onLongClickListener: View.OnLongClickListener?,
+) {
     view.setOnLongClickListener(onLongClickListener)
 }
 
@@ -62,12 +67,16 @@ fun Slider.enabled(enabled: Boolean) {
 }
 
 @BindingAdapter("app:customBackgroundTint")
-fun View.backgroundTint(@ColorInt color: Int) {
+fun View.backgroundTint(
+    @ColorInt color: Int,
+) {
     backgroundTintList = ColorStateList.valueOf(color)
 }
 
 @BindingAdapter("app:harmonizeDrawableTint")
-fun MaterialTextView.harmonizeDrawableTint(@ColorInt color: Int) {
+fun MaterialTextView.harmonizeDrawableTint(
+    @ColorInt color: Int,
+) {
     val harmonizedColor = MaterialColors.harmonizeWithPrimary(context, color)
 
     setCompoundDrawablesRelativeWithIntrinsicBounds(
@@ -107,9 +116,10 @@ fun View.enabled(isEnabled: Boolean) {
     }
 }
 
-fun TintType.toColor(ctx: Context): Int? = when (this) {
-    TintType.None -> null
-    TintType.OnSurface -> ctx.color(R.color.md_theme_onSurface)
-    TintType.Error -> ctx.color(R.color.md_theme_error)
-    is TintType.Color -> this.color
-}
+fun TintType.toColor(ctx: Context): Int? =
+    when (this) {
+        TintType.None -> null
+        TintType.OnSurface -> ctx.color(R.color.md_theme_onSurface)
+        TintType.Error -> ctx.color(R.color.md_theme_error)
+        is TintType.Color -> this.color
+    }

@@ -37,15 +37,16 @@ fun <T> KeyMapperSegmentedButtonRow(
     isCompact: Boolean = false,
     isEnabled: Boolean = true,
 ) {
-    val colors = if (isEnabled) {
-        SegmentedButtonDefaults.colors()
-    } else {
-        // The disabled border color of the inactive button is by default not greyed out enough
-        SegmentedButtonDefaults.colors(
-            disabledInactiveBorderColor =
-            SegmentedButtonDefaults.colors().inactiveBorderColor.copy(alpha = 0.5f),
-        )
-    }
+    val colors =
+        if (isEnabled) {
+            SegmentedButtonDefaults.colors()
+        } else {
+            // The disabled border color of the inactive button is by default not greyed out enough
+            SegmentedButtonDefaults.colors(
+                disabledInactiveBorderColor =
+                    SegmentedButtonDefaults.colors().inactiveBorderColor.copy(alpha = 0.5f),
+            )
+        }
 
     SingleChoiceSegmentedButtonRow(
         modifier = modifier,
@@ -63,11 +64,12 @@ fun <T> KeyMapperSegmentedButtonRow(
                     onClick = { onStateSelected(state) },
                     enabled = isEnabled,
                     icon = { },
-                    shape = SegmentedButtonDefaults.itemShape(
-                        index = buttonStates.indexOf(content),
-                        count = buttonStates.size,
-                        baseShape = MaterialTheme.shapes.extraSmall,
-                    ),
+                    shape =
+                        SegmentedButtonDefaults.itemShape(
+                            index = buttonStates.indexOf(content),
+                            count = buttonStates.size,
+                            baseShape = MaterialTheme.shapes.extraSmall,
+                        ),
                     colors = colors,
                 ) {
                     BasicText(
@@ -75,10 +77,11 @@ fun <T> KeyMapperSegmentedButtonRow(
                         text = label,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        autoSize = TextAutoSize.StepBased(
-                            maxFontSize = LocalTextStyle.current.fontSize,
-                            minFontSize = 10.sp,
-                        ),
+                        autoSize =
+                            TextAutoSize.StepBased(
+                                maxFontSize = LocalTextStyle.current.fontSize,
+                                minFontSize = 10.sp,
+                            ),
                     )
                 }
             } else {
@@ -86,10 +89,11 @@ fun <T> KeyMapperSegmentedButtonRow(
                     selected = isSelected,
                     onClick = { onStateSelected(state) },
                     enabled = isEnabled,
-                    shape = SegmentedButtonDefaults.itemShape(
-                        index = buttonStates.indexOf(content),
-                        count = buttonStates.size,
-                    ),
+                    shape =
+                        SegmentedButtonDefaults.itemShape(
+                            index = buttonStates.indexOf(content),
+                            count = buttonStates.size,
+                        ),
                     colors = colors,
                 ) {
                     Text(

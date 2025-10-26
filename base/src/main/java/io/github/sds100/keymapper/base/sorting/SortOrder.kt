@@ -9,11 +9,10 @@ enum class SortOrder {
     DESCENDING,
     ;
 
-    fun toggle(): SortOrder {
-        return when (this) {
+    fun toggle(): SortOrder =
+        when (this) {
             NONE -> ASCENDING
             ASCENDING -> DESCENDING
             DESCENDING -> NONE
         }
-    }
 }

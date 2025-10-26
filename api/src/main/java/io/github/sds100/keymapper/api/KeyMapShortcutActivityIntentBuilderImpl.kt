@@ -9,14 +9,18 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class KeyMapShortcutActivityIntentBuilderImpl @Inject constructor(
-    @ApplicationContext private val ctx: Context,
-) : KeyMapShortcutActivityIntentBuilder {
-    override fun build(intentAction: String, intentExtras: Bundle): Intent {
-        return Intent(ctx, LaunchKeyMapShortcutActivity::class.java).apply {
-            action = intentAction
+class KeyMapShortcutActivityIntentBuilderImpl
+    @Inject
+    constructor(
+        @ApplicationContext private val ctx: Context,
+    ) : KeyMapShortcutActivityIntentBuilder {
+        override fun build(
+            intentAction: String,
+            intentExtras: Bundle,
+        ): Intent =
+            Intent(ctx, LaunchKeyMapShortcutActivity::class.java).apply {
+                action = intentAction
 
-            putExtras(intentExtras)
-        }
+                putExtras(intentExtras)
+            }
     }
-}

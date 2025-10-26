@@ -93,12 +93,13 @@ sealed class ConstraintData {
     data class OrientationCustom(
         val orientation: Orientation,
     ) : ConstraintData() {
-        override val id: ConstraintId = when (orientation) {
-            Orientation.ORIENTATION_0 -> ConstraintId.ORIENTATION_0
-            Orientation.ORIENTATION_90 -> ConstraintId.ORIENTATION_90
-            Orientation.ORIENTATION_180 -> ConstraintId.ORIENTATION_180
-            Orientation.ORIENTATION_270 -> ConstraintId.ORIENTATION_270
-        }
+        override val id: ConstraintId =
+            when (orientation) {
+                Orientation.ORIENTATION_0 -> ConstraintId.ORIENTATION_0
+                Orientation.ORIENTATION_90 -> ConstraintId.ORIENTATION_90
+                Orientation.ORIENTATION_180 -> ConstraintId.ORIENTATION_180
+                Orientation.ORIENTATION_270 -> ConstraintId.ORIENTATION_270
+            }
     }
 
     @Serializable
@@ -233,24 +234,26 @@ data class Constraint(
 }
 
 object ConstraintModeEntityMapper {
-    fun fromEntity(entity: Int): ConstraintMode = when (entity) {
-        ConstraintEntity.MODE_AND -> ConstraintMode.AND
-        ConstraintEntity.MODE_OR -> ConstraintMode.OR
-        else -> throw Exception("don't know how to convert constraint mode entity $entity")
-    }
+    fun fromEntity(entity: Int): ConstraintMode =
+        when (entity) {
+            ConstraintEntity.MODE_AND -> ConstraintMode.AND
+            ConstraintEntity.MODE_OR -> ConstraintMode.OR
+            else -> throw Exception("don't know how to convert constraint mode entity $entity")
+        }
 
-    fun toEntity(constraintMode: ConstraintMode): Int = when (constraintMode) {
-        ConstraintMode.AND -> ConstraintEntity.MODE_AND
-        ConstraintMode.OR -> ConstraintEntity.MODE_OR
-    }
+    fun toEntity(constraintMode: ConstraintMode): Int =
+        when (constraintMode) {
+            ConstraintMode.AND -> ConstraintEntity.MODE_AND
+            ConstraintMode.OR -> ConstraintEntity.MODE_OR
+        }
 }
 
 object ConstraintEntityMapper {
-
-    private val LENS_MAP = mapOf(
-        CameraLens.BACK to "option_lens_back",
-        CameraLens.FRONT to "option_lens_front",
-    )
+    private val LENS_MAP =
+        mapOf(
+            CameraLens.BACK to "option_lens_back",
+            CameraLens.FRONT to "option_lens_front",
+        )
 
     fun fromEntity(entity: ConstraintEntity): Constraint {
         fun getPackageName(): String = entity.extras.getData(ConstraintEntity.EXTRA_PACKAGE_NAME).valueOrNull()!!
@@ -283,123 +286,141 @@ object ConstraintEntityMapper {
             return extraValue
         }
 
-        val constraintData = when (entity.type) {
-            ConstraintEntity.APP_FOREGROUND -> ConstraintData.AppInForeground(
-                getPackageName(),
-            )
+        val constraintData =
+            when (entity.type) {
+                ConstraintEntity.APP_FOREGROUND ->
+                    ConstraintData.AppInForeground(
+                        getPackageName(),
+                    )
 
-            ConstraintEntity.APP_NOT_FOREGROUND -> ConstraintData.AppNotInForeground(
-                getPackageName(),
-            )
+                ConstraintEntity.APP_NOT_FOREGROUND ->
+                    ConstraintData.AppNotInForeground(
+                        getPackageName(),
+                    )
 
-            ConstraintEntity.APP_PLAYING_MEDIA -> ConstraintData.AppPlayingMedia(
-                getPackageName(),
-            )
+                ConstraintEntity.APP_PLAYING_MEDIA ->
+                    ConstraintData.AppPlayingMedia(
+                        getPackageName(),
+                    )
 
-            ConstraintEntity.APP_NOT_PLAYING_MEDIA -> ConstraintData.AppNotPlayingMedia(
-                getPackageName(),
-            )
+                ConstraintEntity.APP_NOT_PLAYING_MEDIA ->
+                    ConstraintData.AppNotPlayingMedia(
+                        getPackageName(),
+                    )
 
-            ConstraintEntity.MEDIA_PLAYING -> ConstraintData.MediaPlaying
-            ConstraintEntity.NO_MEDIA_PLAYING -> ConstraintData.NoMediaPlaying
+                ConstraintEntity.MEDIA_PLAYING -> ConstraintData.MediaPlaying
+                ConstraintEntity.NO_MEDIA_PLAYING -> ConstraintData.NoMediaPlaying
 
-            ConstraintEntity.BT_DEVICE_CONNECTED ->
-                ConstraintData.BtDeviceConnected(
-                    getBluetoothAddress(),
-                    getBluetoothDeviceName(),
-                )
+                ConstraintEntity.BT_DEVICE_CONNECTED ->
+                    ConstraintData.BtDeviceConnected(
+                        getBluetoothAddress(),
+                        getBluetoothDeviceName(),
+                    )
 
-            ConstraintEntity.BT_DEVICE_DISCONNECTED ->
-                ConstraintData.BtDeviceDisconnected(
-                    getBluetoothAddress(),
-                    getBluetoothDeviceName(),
-                )
+                ConstraintEntity.BT_DEVICE_DISCONNECTED ->
+                    ConstraintData.BtDeviceDisconnected(
+                        getBluetoothAddress(),
+                        getBluetoothDeviceName(),
+                    )
 
-            ConstraintEntity.ORIENTATION_0 -> ConstraintData.OrientationCustom(
-                Orientation.ORIENTATION_0,
-            )
+                ConstraintEntity.ORIENTATION_0 ->
+                    ConstraintData.OrientationCustom(
+                        Orientation.ORIENTATION_0,
+                    )
 
-            ConstraintEntity.ORIENTATION_90 -> ConstraintData.OrientationCustom(
-                Orientation.ORIENTATION_90,
-            )
+                ConstraintEntity.ORIENTATION_90 ->
+                    ConstraintData.OrientationCustom(
+                        Orientation.ORIENTATION_90,
+                    )
 
-            ConstraintEntity.ORIENTATION_180 -> ConstraintData.OrientationCustom(
-                Orientation.ORIENTATION_180,
-            )
+                ConstraintEntity.ORIENTATION_180 ->
+                    ConstraintData.OrientationCustom(
+                        Orientation.ORIENTATION_180,
+                    )
 
-            ConstraintEntity.ORIENTATION_270 -> ConstraintData.OrientationCustom(
-                Orientation.ORIENTATION_270,
-            )
+                ConstraintEntity.ORIENTATION_270 ->
+                    ConstraintData.OrientationCustom(
+                        Orientation.ORIENTATION_270,
+                    )
 
-            ConstraintEntity.ORIENTATION_PORTRAIT -> ConstraintData.OrientationPortrait
-            ConstraintEntity.ORIENTATION_LANDSCAPE -> ConstraintData.OrientationLandscape
+                ConstraintEntity.ORIENTATION_PORTRAIT -> ConstraintData.OrientationPortrait
+                ConstraintEntity.ORIENTATION_LANDSCAPE -> ConstraintData.OrientationLandscape
 
-            ConstraintEntity.SCREEN_OFF -> ConstraintData.ScreenOff
-            ConstraintEntity.SCREEN_ON -> ConstraintData.ScreenOn
+                ConstraintEntity.SCREEN_OFF -> ConstraintData.ScreenOff
+                ConstraintEntity.SCREEN_ON -> ConstraintData.ScreenOn
 
-            ConstraintEntity.FLASHLIGHT_ON -> ConstraintData.FlashlightOn(
-                getCameraLens(),
-            )
+                ConstraintEntity.FLASHLIGHT_ON ->
+                    ConstraintData.FlashlightOn(
+                        getCameraLens(),
+                    )
 
-            ConstraintEntity.FLASHLIGHT_OFF -> ConstraintData.FlashlightOff(
-                getCameraLens(),
-            )
+                ConstraintEntity.FLASHLIGHT_OFF ->
+                    ConstraintData.FlashlightOff(
+                        getCameraLens(),
+                    )
 
-            ConstraintEntity.WIFI_ON -> ConstraintData.WifiOn
-            ConstraintEntity.WIFI_OFF -> ConstraintData.WifiOff
-            ConstraintEntity.WIFI_CONNECTED -> ConstraintData.WifiConnected(getSsid())
-            ConstraintEntity.WIFI_DISCONNECTED -> ConstraintData.WifiDisconnected(
-                getSsid(),
-            )
+                ConstraintEntity.WIFI_ON -> ConstraintData.WifiOn
+                ConstraintEntity.WIFI_OFF -> ConstraintData.WifiOff
+                ConstraintEntity.WIFI_CONNECTED -> ConstraintData.WifiConnected(getSsid())
+                ConstraintEntity.WIFI_DISCONNECTED ->
+                    ConstraintData.WifiDisconnected(
+                        getSsid(),
+                    )
 
-            ConstraintEntity.IME_CHOSEN -> ConstraintData.ImeChosen(
-                getImeId(),
-                getImeLabel(),
-            )
+                ConstraintEntity.IME_CHOSEN ->
+                    ConstraintData.ImeChosen(
+                        getImeId(),
+                        getImeLabel(),
+                    )
 
-            ConstraintEntity.IME_NOT_CHOSEN -> ConstraintData.ImeNotChosen(
-                getImeId(),
-                getImeLabel(),
-            )
+                ConstraintEntity.IME_NOT_CHOSEN ->
+                    ConstraintData.ImeNotChosen(
+                        getImeId(),
+                        getImeLabel(),
+                    )
 
-            ConstraintEntity.DEVICE_IS_UNLOCKED -> ConstraintData.DeviceIsUnlocked
-            ConstraintEntity.DEVICE_IS_LOCKED -> ConstraintData.DeviceIsLocked
-            ConstraintEntity.LOCK_SCREEN_SHOWING -> ConstraintData.LockScreenShowing
-            ConstraintEntity.LOCK_SCREEN_NOT_SHOWING -> ConstraintData.LockScreenNotShowing
+                ConstraintEntity.DEVICE_IS_UNLOCKED -> ConstraintData.DeviceIsUnlocked
+                ConstraintEntity.DEVICE_IS_LOCKED -> ConstraintData.DeviceIsLocked
+                ConstraintEntity.LOCK_SCREEN_SHOWING -> ConstraintData.LockScreenShowing
+                ConstraintEntity.LOCK_SCREEN_NOT_SHOWING -> ConstraintData.LockScreenNotShowing
 
-            ConstraintEntity.PHONE_RINGING -> ConstraintData.PhoneRinging
-            ConstraintEntity.IN_PHONE_CALL -> ConstraintData.InPhoneCall
-            ConstraintEntity.NOT_IN_PHONE_CALL -> ConstraintData.NotInPhoneCall
+                ConstraintEntity.PHONE_RINGING -> ConstraintData.PhoneRinging
+                ConstraintEntity.IN_PHONE_CALL -> ConstraintData.InPhoneCall
+                ConstraintEntity.NOT_IN_PHONE_CALL -> ConstraintData.NotInPhoneCall
 
-            ConstraintEntity.CHARGING -> ConstraintData.Charging
-            ConstraintEntity.DISCHARGING -> ConstraintData.Discharging
+                ConstraintEntity.CHARGING -> ConstraintData.Charging
+                ConstraintEntity.DISCHARGING -> ConstraintData.Discharging
 
-            ConstraintEntity.HINGE_CLOSED -> ConstraintData.HingeClosed
-            ConstraintEntity.HINGE_OPEN -> ConstraintData.HingeOpen
+                ConstraintEntity.HINGE_CLOSED -> ConstraintData.HingeClosed
+                ConstraintEntity.HINGE_OPEN -> ConstraintData.HingeOpen
 
-            ConstraintEntity.TIME -> {
-                val startTime =
-                    entity.extras.getData(ConstraintEntity.EXTRA_START_TIME).valueOrNull()!!
-                        .split(":")
-                val startHour = startTime[0].toInt()
-                val startMin = startTime[1].toInt()
+                ConstraintEntity.TIME -> {
+                    val startTime =
+                        entity.extras
+                            .getData(ConstraintEntity.EXTRA_START_TIME)
+                            .valueOrNull()!!
+                            .split(":")
+                    val startHour = startTime[0].toInt()
+                    val startMin = startTime[1].toInt()
 
-                val endTime =
-                    entity.extras.getData(ConstraintEntity.EXTRA_END_TIME).valueOrNull()!!
-                        .split(":")
-                val endHour = endTime[0].toInt()
-                val endMin = endTime[1].toInt()
+                    val endTime =
+                        entity.extras
+                            .getData(ConstraintEntity.EXTRA_END_TIME)
+                            .valueOrNull()!!
+                            .split(":")
+                    val endHour = endTime[0].toInt()
+                    val endMin = endTime[1].toInt()
 
-                ConstraintData.Time(
-                    startHour = startHour,
-                    startMinute = startMin,
-                    endHour = endHour,
-                    endMinute = endMin,
-                )
+                    ConstraintData.Time(
+                        startHour = startHour,
+                        startMinute = startMin,
+                        endHour = endHour,
+                        endMinute = endMin,
+                    )
+                }
+
+                else -> throw Exception("don't know how to convert constraint entity with type ${entity.type}")
             }
-
-            else -> throw Exception("don't know how to convert constraint entity with type ${entity.type}")
-        }
 
         return Constraint(
             uid = entity.uid,
@@ -407,261 +428,301 @@ object ConstraintEntityMapper {
         )
     }
 
-    fun toEntity(constraint: Constraint): ConstraintEntity = when (constraint.data) {
-        is ConstraintData.AppInForeground -> ConstraintEntity(
-            uid = constraint.uid,
-            type = ConstraintEntity.APP_FOREGROUND,
-            extras = listOf(
-                EntityExtra(
-                    ConstraintEntity.EXTRA_PACKAGE_NAME,
-                    constraint.data.packageName,
-                ),
-            ),
-        )
+    fun toEntity(constraint: Constraint): ConstraintEntity =
+        when (constraint.data) {
+            is ConstraintData.AppInForeground ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    type = ConstraintEntity.APP_FOREGROUND,
+                    extras =
+                        listOf(
+                            EntityExtra(
+                                ConstraintEntity.EXTRA_PACKAGE_NAME,
+                                constraint.data.packageName,
+                            ),
+                        ),
+                )
 
-        is ConstraintData.AppNotInForeground -> ConstraintEntity(
-            uid = constraint.uid,
-            type = ConstraintEntity.APP_NOT_FOREGROUND,
-            extras = listOf(
-                EntityExtra(
-                    ConstraintEntity.EXTRA_PACKAGE_NAME,
-                    constraint.data.packageName,
-                ),
-            ),
-        )
+            is ConstraintData.AppNotInForeground ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    type = ConstraintEntity.APP_NOT_FOREGROUND,
+                    extras =
+                        listOf(
+                            EntityExtra(
+                                ConstraintEntity.EXTRA_PACKAGE_NAME,
+                                constraint.data.packageName,
+                            ),
+                        ),
+                )
 
-        is ConstraintData.AppPlayingMedia -> ConstraintEntity(
-            uid = constraint.uid,
-            type = ConstraintEntity.APP_PLAYING_MEDIA,
-            extras = listOf(
-                EntityExtra(
-                    ConstraintEntity.EXTRA_PACKAGE_NAME,
-                    constraint.data.packageName,
-                ),
-            ),
-        )
+            is ConstraintData.AppPlayingMedia ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    type = ConstraintEntity.APP_PLAYING_MEDIA,
+                    extras =
+                        listOf(
+                            EntityExtra(
+                                ConstraintEntity.EXTRA_PACKAGE_NAME,
+                                constraint.data.packageName,
+                            ),
+                        ),
+                )
 
-        is ConstraintData.AppNotPlayingMedia -> ConstraintEntity(
-            uid = constraint.uid,
-            type = ConstraintEntity.APP_NOT_PLAYING_MEDIA,
-            extras = listOf(
-                EntityExtra(
-                    ConstraintEntity.EXTRA_PACKAGE_NAME,
-                    constraint.data.packageName,
-                ),
-            ),
-        )
+            is ConstraintData.AppNotPlayingMedia ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    type = ConstraintEntity.APP_NOT_PLAYING_MEDIA,
+                    extras =
+                        listOf(
+                            EntityExtra(
+                                ConstraintEntity.EXTRA_PACKAGE_NAME,
+                                constraint.data.packageName,
+                            ),
+                        ),
+                )
 
-        is ConstraintData.MediaPlaying -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.MEDIA_PLAYING,
-        )
+            is ConstraintData.MediaPlaying ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.MEDIA_PLAYING,
+                )
 
-        is ConstraintData.NoMediaPlaying -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.NO_MEDIA_PLAYING,
-        )
+            is ConstraintData.NoMediaPlaying ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.NO_MEDIA_PLAYING,
+                )
 
-        is ConstraintData.BtDeviceConnected -> ConstraintEntity(
-            uid = constraint.uid,
-            type = ConstraintEntity.BT_DEVICE_CONNECTED,
-            extras = listOf(
-                EntityExtra(ConstraintEntity.EXTRA_BT_ADDRESS, constraint.data.bluetoothAddress),
-                EntityExtra(ConstraintEntity.EXTRA_BT_NAME, constraint.data.deviceName),
-            ),
-        )
+            is ConstraintData.BtDeviceConnected ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    type = ConstraintEntity.BT_DEVICE_CONNECTED,
+                    extras =
+                        listOf(
+                            EntityExtra(ConstraintEntity.EXTRA_BT_ADDRESS, constraint.data.bluetoothAddress),
+                            EntityExtra(ConstraintEntity.EXTRA_BT_NAME, constraint.data.deviceName),
+                        ),
+                )
 
-        is ConstraintData.BtDeviceDisconnected -> ConstraintEntity(
-            uid = constraint.uid,
-            type = ConstraintEntity.BT_DEVICE_DISCONNECTED,
-            extras = listOf(
-                EntityExtra(ConstraintEntity.EXTRA_BT_ADDRESS, constraint.data.bluetoothAddress),
-                EntityExtra(ConstraintEntity.EXTRA_BT_NAME, constraint.data.deviceName),
-            ),
-        )
+            is ConstraintData.BtDeviceDisconnected ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    type = ConstraintEntity.BT_DEVICE_DISCONNECTED,
+                    extras =
+                        listOf(
+                            EntityExtra(ConstraintEntity.EXTRA_BT_ADDRESS, constraint.data.bluetoothAddress),
+                            EntityExtra(ConstraintEntity.EXTRA_BT_NAME, constraint.data.deviceName),
+                        ),
+                )
 
-        is ConstraintData.OrientationCustom -> when (constraint.data.orientation) {
-            Orientation.ORIENTATION_0 -> ConstraintEntity(
-                uid = constraint.uid,
-                ConstraintEntity.ORIENTATION_0,
-            )
+            is ConstraintData.OrientationCustom ->
+                when (constraint.data.orientation) {
+                    Orientation.ORIENTATION_0 ->
+                        ConstraintEntity(
+                            uid = constraint.uid,
+                            ConstraintEntity.ORIENTATION_0,
+                        )
 
-            Orientation.ORIENTATION_90 -> ConstraintEntity(
-                uid = constraint.uid,
-                ConstraintEntity.ORIENTATION_90,
-            )
+                    Orientation.ORIENTATION_90 ->
+                        ConstraintEntity(
+                            uid = constraint.uid,
+                            ConstraintEntity.ORIENTATION_90,
+                        )
 
-            Orientation.ORIENTATION_180 -> ConstraintEntity(
-                uid = constraint.uid,
-                ConstraintEntity.ORIENTATION_180,
-            )
+                    Orientation.ORIENTATION_180 ->
+                        ConstraintEntity(
+                            uid = constraint.uid,
+                            ConstraintEntity.ORIENTATION_180,
+                        )
 
-            Orientation.ORIENTATION_270 -> ConstraintEntity(
-                uid = constraint.uid,
-                ConstraintEntity.ORIENTATION_270,
-            )
-        }
+                    Orientation.ORIENTATION_270 ->
+                        ConstraintEntity(
+                            uid = constraint.uid,
+                            ConstraintEntity.ORIENTATION_270,
+                        )
+                }
 
-        is ConstraintData.OrientationLandscape -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.ORIENTATION_LANDSCAPE,
-        )
+            is ConstraintData.OrientationLandscape ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.ORIENTATION_LANDSCAPE,
+                )
 
-        is ConstraintData.OrientationPortrait -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.ORIENTATION_PORTRAIT,
-        )
+            is ConstraintData.OrientationPortrait ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.ORIENTATION_PORTRAIT,
+                )
 
-        is ConstraintData.ScreenOff -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.SCREEN_OFF,
-        )
+            is ConstraintData.ScreenOff ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.SCREEN_OFF,
+                )
 
-        is ConstraintData.ScreenOn -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.SCREEN_ON,
-        )
+            is ConstraintData.ScreenOn ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.SCREEN_ON,
+                )
 
-        is ConstraintData.FlashlightOff -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.FLASHLIGHT_OFF,
-            EntityExtra(
-                ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS,
-                LENS_MAP[constraint.data.lens]!!,
-            ),
-        )
+            is ConstraintData.FlashlightOff ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.FLASHLIGHT_OFF,
+                    EntityExtra(
+                        ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS,
+                        LENS_MAP[constraint.data.lens]!!,
+                    ),
+                )
 
-        is ConstraintData.FlashlightOn -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.FLASHLIGHT_ON,
-            EntityExtra(
-                ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS,
-                LENS_MAP[constraint.data.lens]!!,
-            ),
-        )
+            is ConstraintData.FlashlightOn ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.FLASHLIGHT_ON,
+                    EntityExtra(
+                        ConstraintEntity.EXTRA_FLASHLIGHT_CAMERA_LENS,
+                        LENS_MAP[constraint.data.lens]!!,
+                    ),
+                )
 
-        is ConstraintData.WifiConnected -> {
-            val extras = mutableListOf<EntityExtra>()
+            is ConstraintData.WifiConnected -> {
+                val extras = mutableListOf<EntityExtra>()
 
-            if (constraint.data.ssid != null) {
-                extras.add(EntityExtra(ConstraintEntity.EXTRA_SSID, constraint.data.ssid))
+                if (constraint.data.ssid != null) {
+                    extras.add(EntityExtra(ConstraintEntity.EXTRA_SSID, constraint.data.ssid))
+                }
+
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    type = ConstraintEntity.WIFI_CONNECTED,
+                    extras = extras,
+                )
             }
 
-            ConstraintEntity(
-                uid = constraint.uid,
-                type = ConstraintEntity.WIFI_CONNECTED,
-                extras = extras,
-            )
-        }
+            is ConstraintData.WifiDisconnected -> {
+                val extras = mutableListOf<EntityExtra>()
 
-        is ConstraintData.WifiDisconnected -> {
-            val extras = mutableListOf<EntityExtra>()
+                if (constraint.data.ssid != null) {
+                    extras.add(EntityExtra(ConstraintEntity.EXTRA_SSID, constraint.data.ssid))
+                }
 
-            if (constraint.data.ssid != null) {
-                extras.add(EntityExtra(ConstraintEntity.EXTRA_SSID, constraint.data.ssid))
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    type = ConstraintEntity.WIFI_DISCONNECTED,
+                    extras = extras,
+                )
             }
 
-            ConstraintEntity(
-                uid = constraint.uid,
-                type = ConstraintEntity.WIFI_DISCONNECTED,
-                extras = extras,
-            )
+            is ConstraintData.WifiOff ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.WIFI_OFF,
+                )
+
+            is ConstraintData.WifiOn ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.WIFI_ON,
+                )
+
+            is ConstraintData.ImeChosen -> {
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.IME_CHOSEN,
+                    EntityExtra(ConstraintEntity.EXTRA_IME_ID, constraint.data.imeId),
+                    EntityExtra(ConstraintEntity.EXTRA_IME_LABEL, constraint.data.imeLabel),
+                )
+            }
+
+            is ConstraintData.ImeNotChosen -> {
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.IME_NOT_CHOSEN,
+                    EntityExtra(ConstraintEntity.EXTRA_IME_ID, constraint.data.imeId),
+                    EntityExtra(ConstraintEntity.EXTRA_IME_LABEL, constraint.data.imeLabel),
+                )
+            }
+
+            is ConstraintData.DeviceIsLocked ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.DEVICE_IS_LOCKED,
+                )
+
+            is ConstraintData.DeviceIsUnlocked ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.DEVICE_IS_UNLOCKED,
+                )
+
+            is ConstraintData.LockScreenShowing ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.LOCK_SCREEN_SHOWING,
+                )
+
+            is ConstraintData.LockScreenNotShowing ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.LOCK_SCREEN_NOT_SHOWING,
+                )
+
+            is ConstraintData.InPhoneCall ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.IN_PHONE_CALL,
+                )
+
+            is ConstraintData.NotInPhoneCall ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.NOT_IN_PHONE_CALL,
+                )
+
+            is ConstraintData.PhoneRinging ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.PHONE_RINGING,
+                )
+
+            is ConstraintData.Charging ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.CHARGING,
+                )
+
+            is ConstraintData.Discharging ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.DISCHARGING,
+                )
+
+            is ConstraintData.HingeClosed ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.HINGE_CLOSED,
+                )
+
+            is ConstraintData.HingeOpen ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    ConstraintEntity.HINGE_OPEN,
+                )
+
+            is ConstraintData.Time ->
+                ConstraintEntity(
+                    uid = constraint.uid,
+                    type = ConstraintEntity.TIME,
+                    EntityExtra(
+                        ConstraintEntity.EXTRA_START_TIME,
+                        "${constraint.data.startHour}:${constraint.data.startMinute}",
+                    ),
+                    EntityExtra(
+                        ConstraintEntity.EXTRA_END_TIME,
+                        "${constraint.data.endHour}:${constraint.data.endMinute}",
+                    ),
+                )
         }
-
-        is ConstraintData.WifiOff -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.WIFI_OFF,
-        )
-
-        is ConstraintData.WifiOn -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.WIFI_ON,
-        )
-
-        is ConstraintData.ImeChosen -> {
-            ConstraintEntity(
-                uid = constraint.uid,
-                ConstraintEntity.IME_CHOSEN,
-                EntityExtra(ConstraintEntity.EXTRA_IME_ID, constraint.data.imeId),
-                EntityExtra(ConstraintEntity.EXTRA_IME_LABEL, constraint.data.imeLabel),
-            )
-        }
-
-        is ConstraintData.ImeNotChosen -> {
-            ConstraintEntity(
-                uid = constraint.uid,
-                ConstraintEntity.IME_NOT_CHOSEN,
-                EntityExtra(ConstraintEntity.EXTRA_IME_ID, constraint.data.imeId),
-                EntityExtra(ConstraintEntity.EXTRA_IME_LABEL, constraint.data.imeLabel),
-            )
-        }
-
-        is ConstraintData.DeviceIsLocked -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.DEVICE_IS_LOCKED,
-        )
-
-        is ConstraintData.DeviceIsUnlocked -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.DEVICE_IS_UNLOCKED,
-        )
-
-        is ConstraintData.LockScreenShowing -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.LOCK_SCREEN_SHOWING,
-        )
-
-        is ConstraintData.LockScreenNotShowing -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.LOCK_SCREEN_NOT_SHOWING,
-        )
-
-        is ConstraintData.InPhoneCall -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.IN_PHONE_CALL,
-        )
-
-        is ConstraintData.NotInPhoneCall -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.NOT_IN_PHONE_CALL,
-        )
-
-        is ConstraintData.PhoneRinging -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.PHONE_RINGING,
-        )
-
-        is ConstraintData.Charging -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.CHARGING,
-        )
-
-        is ConstraintData.Discharging -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.DISCHARGING,
-        )
-
-        is ConstraintData.HingeClosed -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.HINGE_CLOSED,
-        )
-
-        is ConstraintData.HingeOpen -> ConstraintEntity(
-            uid = constraint.uid,
-            ConstraintEntity.HINGE_OPEN,
-        )
-
-        is ConstraintData.Time -> ConstraintEntity(
-            uid = constraint.uid,
-            type = ConstraintEntity.TIME,
-            EntityExtra(
-                ConstraintEntity.EXTRA_START_TIME,
-                "${constraint.data.startHour}:${constraint.data.startMinute}",
-            ),
-            EntityExtra(
-                ConstraintEntity.EXTRA_END_TIME,
-                "${constraint.data.endHour}:${constraint.data.endMinute}",
-            ),
-        )
-    }
 }

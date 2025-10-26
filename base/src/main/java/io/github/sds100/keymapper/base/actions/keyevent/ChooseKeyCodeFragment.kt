@@ -43,7 +43,10 @@ class ChooseKeyCodeFragment : SimpleRecyclerViewFragment<SimpleListItemOld>() {
         }
     }
 
-    override fun populateList(recyclerView: EpoxyRecyclerView, listItems: List<SimpleListItemOld>) {
+    override fun populateList(
+        recyclerView: EpoxyRecyclerView,
+        listItems: List<SimpleListItemOld>,
+    ) {
         recyclerView.withModels {
             listItems.forEach {
                 simple {

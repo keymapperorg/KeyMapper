@@ -28,7 +28,6 @@ import org.mockito.kotlin.mock
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class ConfigKeyServiceEventActionViewModelTest {
-
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
@@ -45,16 +44,19 @@ class ConfigKeyServiceEventActionViewModelTest {
         Dispatchers.setMain(testDispatcher)
         inputDevices = MutableStateFlow(emptyList())
 
-        mockUseCase = mock {
-            on { showDeviceDescriptors }.then { MutableStateFlow(false) }
-            on { inputDevices }.then { inputDevices }
-        }
-        viewModel = ConfigKeyEventActionViewModel(
-            useCase = mockUseCase,
-            resourceProvider = mock {
-                on { getString(any()) }.then { "" }
-            },
-        )
+        mockUseCase =
+            mock {
+                on { showDeviceDescriptors }.then { MutableStateFlow(false) }
+                on { inputDevices }.then { inputDevices }
+            }
+        viewModel =
+            ConfigKeyEventActionViewModel(
+                useCase = mockUseCase,
+                resourceProvider =
+                    mock {
+                        on { getString(any()) }.then { "" }
+                    },
+            )
     }
 
     @After
@@ -66,23 +68,25 @@ class ConfigKeyServiceEventActionViewModelTest {
     fun `multiple input devices with same descriptor but a different name, choose a device, ensure device with correct name is chosen`() =
         runTest(testDispatcher) {
             // GIVEN
-            val fakeDevice1 = InputDeviceInfo(
-                descriptor = "bla",
-                name = "fake device 1",
-                id = 0,
-                isExternal = false,
-                isGameController = false,
-                sources = InputDevice.SOURCE_KEYBOARD,
-            )
+            val fakeDevice1 =
+                InputDeviceInfo(
+                    descriptor = "bla",
+                    name = "fake device 1",
+                    id = 0,
+                    isExternal = false,
+                    isGameController = false,
+                    sources = InputDevice.SOURCE_KEYBOARD,
+                )
 
-            val fakeDevice2 = InputDeviceInfo(
-                descriptor = "bla",
-                name = "fake device 2",
-                id = 1,
-                isExternal = false,
-                isGameController = false,
-                sources = InputDevice.SOURCE_KEYBOARD,
-            )
+            val fakeDevice2 =
+                InputDeviceInfo(
+                    descriptor = "bla",
+                    name = "fake device 2",
+                    id = 1,
+                    isExternal = false,
+                    isGameController = false,
+                    sources = InputDevice.SOURCE_KEYBOARD,
+                )
 
             // WHEN
             inputDevices.value = listOf(fakeDevice1, fakeDevice2)

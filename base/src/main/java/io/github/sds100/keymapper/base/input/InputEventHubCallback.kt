@@ -6,5 +6,8 @@ interface InputEventHubCallback {
     /**
      * @return whether to consume the event.
      */
-    fun onInputEvent(event: KMInputEvent, detectionSource: InputEventDetectionSource): Boolean
+    fun onInputEvent(
+        event: KMInputEvent,
+        detectionSource: InputEventDetectionSource,
+    ): Boolean
 }

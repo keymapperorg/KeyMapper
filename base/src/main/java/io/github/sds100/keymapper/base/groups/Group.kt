@@ -29,16 +29,16 @@ object GroupEntityMapper {
         )
     }
 
-    fun toEntity(group: Group): GroupEntity {
-        return GroupEntity(
+    fun toEntity(group: Group): GroupEntity =
+        GroupEntity(
             uid = group.uid,
             name = group.name,
-            constraintList = group.constraintState.constraints.map {
-                ConstraintEntityMapper.toEntity(it)
-            },
+            constraintList =
+                group.constraintState.constraints.map {
+                    ConstraintEntityMapper.toEntity(it)
+                },
             constraintMode = ConstraintModeEntityMapper.toEntity(group.constraintState.mode),
             parentUid = group.parentUid,
             lastOpenedDate = group.lastOpenedDate,
         )
-    }
 }

@@ -96,23 +96,25 @@ fun ChooseElementScreen(
         val endPadding = innerPadding.calculateEndPadding(layoutDirection)
 
         Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    bottom = innerPadding.calculateBottomPadding(),
-                    start = startPadding,
-                    end = endPadding,
-                ),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom = innerPadding.calculateBottomPadding(),
+                        start = startPadding,
+                        end = endPadding,
+                    ),
         ) {
             Column {
                 Text(
-                    modifier = Modifier.padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 16.dp,
-                        bottom = 8.dp,
-                    ),
+                    modifier =
+                        Modifier.padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            top = 16.dp,
+                            bottom = 8.dp,
+                        ),
                     text = stringResource(R.string.action_interact_ui_element_choose_element_title),
                     style = MaterialTheme.typography.titleLarge,
                 )
@@ -120,9 +122,10 @@ fun ChooseElementScreen(
                 if (heightSizeClass == WindowHeightSizeClass.COMPACT || widthSizeClass >= WindowWidthSizeClass.EXPANDED) {
                     Row {
                         InfoSection(
-                            modifier = Modifier
-                                .verticalScroll(rememberScrollState())
-                                .weight(1f),
+                            modifier =
+                                Modifier
+                                    .verticalScroll(rememberScrollState())
+                                    .weight(1f),
                             state = state,
                             onSelectInteractionType = onSelectInteractionType,
                             onAdditionalElementsCheckedChange = onAdditionalElementsCheckedChange,
@@ -199,9 +202,10 @@ private fun InfoSection(
             var interactionTypeExpanded by rememberSaveable { mutableStateOf(false) }
 
             CheckBoxText(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
                 text = stringResource(R.string.action_interact_ui_element_checkbox_additional_elements),
                 isChecked = state.data.showAdditionalElements,
                 onCheckedChange = onAdditionalElementsCheckedChange,
@@ -238,9 +242,10 @@ private fun ListSection(
             Column(modifier = modifier) {
                 if (listItems.isEmpty()) {
                     EmptyList(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
                     )
                 } else {
                     LoadedList(
@@ -268,16 +273,17 @@ private fun EmptyList(modifier: Modifier = Modifier) {
         val text = stringResource(R.string.ui_element_list_empty)
         Text(
             modifier = Modifier.align(Alignment.Center),
-            text = buildAnnotatedString {
-                withStyle(MaterialTheme.typography.headlineLarge.toSpanStyle()) {
-                    append(shrug)
-                }
-                appendLine()
-                appendLine()
-                withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
-                    append(text)
-                }
-            },
+            text =
+                buildAnnotatedString {
+                    withStyle(MaterialTheme.typography.headlineLarge.toSpanStyle()) {
+                        append(shrug)
+                    }
+                    appendLine()
+                    appendLine()
+                    withStyle(MaterialTheme.typography.bodyLarge.toSpanStyle()) {
+                        append(text)
+                    }
+                },
             textAlign = TextAlign.Center,
         )
     }
@@ -369,15 +375,18 @@ private fun TextWithLeadingLabel(
     title: String,
     text: String,
 ) {
-    val text = buildAnnotatedString {
-        pushStyle(
-            MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold).toSpanStyle(),
-        )
-        append(title)
-        pop()
-        append(": ")
-        append(text)
-    }
+    val text =
+        buildAnnotatedString {
+            pushStyle(
+                MaterialTheme.typography.bodySmall
+                    .copy(fontWeight = FontWeight.Bold)
+                    .toSpanStyle(),
+            )
+            append(title)
+            pop()
+            append(": ")
+            append(text)
+        }
 
     Text(
         modifier = modifier,
@@ -393,14 +402,15 @@ private fun TextWithLeadingLabel(
 private fun Empty() {
     KeyMapperTheme {
         ChooseElementScreen(
-            state = State.Data(
-                SelectUiElementState(
-                    listItems = emptyList(),
-                    interactionTypes = emptyList(),
-                    selectedInteractionType = null,
-                    showAdditionalElements = false,
+            state =
+                State.Data(
+                    SelectUiElementState(
+                        listItems = emptyList(),
+                        interactionTypes = emptyList(),
+                        selectedInteractionType = null,
+                        showAdditionalElements = false,
+                    ),
                 ),
-            ),
             query = "Key Mapper",
         )
     }
@@ -417,34 +427,38 @@ private fun Loading() {
     }
 }
 
-private val listItems = listOf(
-    UiElementListItemModel(
-        id = 1L,
-        nodeText = "Open Settings",
-        nodeClassName = "android.widget.ImageButton",
-        nodeViewResourceId = "menu_button",
-        nodeUniqueId = "123456789",
-        nodeTooltipHint = "Open menu",
-        interactionTypesText = "Tap, Tap and hold, Scroll forward",
-        interactionTypes = setOf(
-            NodeInteractionType.CLICK,
-            NodeInteractionType.LONG_CLICK,
-            NodeInteractionType.SCROLL_FORWARD,
+private val listItems =
+    listOf(
+        UiElementListItemModel(
+            id = 1L,
+            nodeText = "Open Settings",
+            nodeClassName = "android.widget.ImageButton",
+            nodeViewResourceId = "menu_button",
+            nodeUniqueId = "123456789",
+            nodeTooltipHint = "Open menu",
+            interactionTypesText = "Tap, Tap and hold, Scroll forward",
+            interactionTypes =
+                setOf(
+                    NodeInteractionType.CLICK,
+                    NodeInteractionType.LONG_CLICK,
+                    NodeInteractionType.SCROLL_FORWARD,
+                ),
+            interacted = true,
         ),
-        interacted = true,
-    ),
-)
+    )
 
-private val loadedState = SelectUiElementState(
-    listItems = listItems,
-    interactionTypes = listOf(
-        null to "Any",
-        NodeInteractionType.CLICK to "Tap",
-        NodeInteractionType.LONG_CLICK to "Tap and hold",
-    ),
-    selectedInteractionType = null,
-    showAdditionalElements = true,
-)
+private val loadedState =
+    SelectUiElementState(
+        listItems = listItems,
+        interactionTypes =
+            listOf(
+                null to "Any",
+                NodeInteractionType.CLICK to "Tap",
+                NodeInteractionType.LONG_CLICK to "Tap and hold",
+            ),
+        selectedInteractionType = null,
+        showAdditionalElements = true,
+    )
 
 @Preview
 @Composable

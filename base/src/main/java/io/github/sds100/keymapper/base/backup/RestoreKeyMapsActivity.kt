@@ -25,7 +25,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class RestoreKeyMapsActivity : ComponentActivity() {
-
     @Inject
     lateinit var classProvider: KeyMapperClassProvider
 
@@ -45,24 +44,27 @@ class RestoreKeyMapsActivity : ComponentActivity() {
             KeyMapperTheme {
                 val state by viewModel.importExportState.collectAsStateWithLifecycle()
 
-                val title = when (val state = state) {
-                    ImportExportState.Idle -> stringResource(R.string.import_dialog_title_loading)
-                    is ImportExportState.ConfirmImport -> pluralStringResource(
-                        R.plurals.home_importing_dialog_title,
-                        state.keyMapCount,
-                        state.keyMapCount,
-                    )
+                val title =
+                    when (val state = state) {
+                        ImportExportState.Idle -> stringResource(R.string.import_dialog_title_loading)
+                        is ImportExportState.ConfirmImport ->
+                            pluralStringResource(
+                                R.plurals.home_importing_dialog_title,
+                                state.keyMapCount,
+                                state.keyMapCount,
+                            )
 
-                    is ImportExportState.Error -> stringResource(R.string.import_dialog_title_error)
-                    ImportExportState.FinishedImport -> stringResource(R.string.import_dialog_title_success)
-                    ImportExportState.Importing -> stringResource(R.string.import_dialog_title_importing)
-                    else -> ""
-                }
+                        is ImportExportState.Error -> stringResource(R.string.import_dialog_title_error)
+                        ImportExportState.FinishedImport -> stringResource(R.string.import_dialog_title_success)
+                        ImportExportState.Importing -> stringResource(R.string.import_dialog_title_importing)
+                        else -> ""
+                    }
 
-                val text = when (state) {
-                    is ImportExportState.ConfirmImport -> stringResource(R.string.home_importing_dialog_text)
-                    else -> null
-                }
+                val text =
+                    when (state) {
+                        is ImportExportState.ConfirmImport -> stringResource(R.string.home_importing_dialog_text)
+                        else -> null
+                    }
 
                 val ctx = LocalContext.current
 

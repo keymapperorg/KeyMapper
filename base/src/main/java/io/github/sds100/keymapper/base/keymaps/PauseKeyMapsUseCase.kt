@@ -11,30 +11,33 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PauseKeyMapsUseCaseImpl @Inject constructor(
-    private val preferenceRepository: PreferenceRepository,
-    private val mediaAdapter: MediaAdapter,
-    private val ringtoneAdapter: RingtoneAdapter,
-) : PauseKeyMapsUseCase {
+class PauseKeyMapsUseCaseImpl
+    @Inject
+    constructor(
+        private val preferenceRepository: PreferenceRepository,
+        private val mediaAdapter: MediaAdapter,
+        private val ringtoneAdapter: RingtoneAdapter,
+    ) : PauseKeyMapsUseCase {
+        override val isPaused: Flow<Boolean> =
+            preferenceRepository.get(Keys.mappingsPaused).map { it ?: false }
 
-    override val isPaused: Flow<Boolean> =
-        preferenceRepository.get(Keys.mappingsPaused).map { it ?: false }
+        override fun pause() {
+            preferenceRepository.set(Keys.mappingsPaused, true)
+            mediaAdapter.stopFileMedia()
+            ringtoneAdapter.stopPlaying()
+            Timber.d("Pause mappings")
+        }
 
-    override fun pause() {
-        preferenceRepository.set(Keys.mappingsPaused, true)
-        mediaAdapter.stopFileMedia()
-        ringtoneAdapter.stopPlaying()
-        Timber.d("Pause mappings")
+        override fun resume() {
+            preferenceRepository.set(Keys.mappingsPaused, false)
+            Timber.d("Resume mappings")
+        }
     }
-
-    override fun resume() {
-        preferenceRepository.set(Keys.mappingsPaused, false)
-        Timber.d("Resume mappings")
-    }
-}
 
 interface PauseKeyMapsUseCase {
     val isPaused: Flow<Boolean>
+
     fun pause()
+
     fun resume()
 }

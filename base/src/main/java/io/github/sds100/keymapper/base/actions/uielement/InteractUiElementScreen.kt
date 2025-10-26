@@ -226,23 +226,25 @@ private fun LandingScreen(
         val endPadding = innerPadding.calculateEndPadding(layoutDirection)
 
         Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    bottom = innerPadding.calculateBottomPadding(),
-                    start = startPadding,
-                    end = endPadding,
-                ),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom = innerPadding.calculateBottomPadding(),
+                        start = startPadding,
+                        end = endPadding,
+                    ),
         ) {
             Column {
                 Text(
-                    modifier = Modifier.padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 16.dp,
-                        bottom = 8.dp,
-                    ),
+                    modifier =
+                        Modifier.padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            top = 16.dp,
+                            bottom = 8.dp,
+                        ),
                     text = stringResource(R.string.action_interact_ui_element_title),
                     style = MaterialTheme.typography.titleLarge,
                 )
@@ -250,15 +252,17 @@ private fun LandingScreen(
                 if (heightSizeClass == WindowHeightSizeClass.COMPACT || widthSizeClass >= WindowWidthSizeClass.EXPANDED) {
                     Row {
                         Column(
-                            modifier = Modifier
-                                .verticalScroll(rememberScrollState())
-                                .fillMaxHeight()
-                                .weight(1f),
+                            modifier =
+                                Modifier
+                                    .verticalScroll(rememberScrollState())
+                                    .fillMaxHeight()
+                                    .weight(1f),
                         ) {
                             Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp),
                                 text = stringResource(R.string.action_interact_ui_element_description),
                                 style = MaterialTheme.typography.bodyMedium,
                             )
@@ -266,9 +270,10 @@ private fun LandingScreen(
                             Spacer(modifier = Modifier.height(8.dp))
 
                             RecordingSection(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp),
                                 state = recordState,
                                 onRecordClick = onRecordClick,
                                 openSelectAppScreen = openSelectAppScreen,
@@ -279,11 +284,12 @@ private fun LandingScreen(
 
                         if (selectedElementState != null) {
                             SelectedElementSection(
-                                modifier = Modifier
-                                    .verticalScroll(rememberScrollState())
-                                    .fillMaxHeight()
-                                    .padding(horizontal = 16.dp)
-                                    .weight(1f),
+                                modifier =
+                                    Modifier
+                                        .verticalScroll(rememberScrollState())
+                                        .fillMaxHeight()
+                                        .padding(horizontal = 16.dp)
+                                        .weight(1f),
                                 state = selectedElementState,
                                 onSelectInteractionType = onSelectInteractionType,
                                 onDescriptionChanged = onDescriptionChanged,
@@ -293,9 +299,10 @@ private fun LandingScreen(
                 } else {
                     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                         Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
                             text = stringResource(R.string.action_interact_ui_element_description),
                             style = MaterialTheme.typography.bodyMedium,
                         )
@@ -303,9 +310,10 @@ private fun LandingScreen(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         RecordingSection(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
                             state = recordState,
                             onRecordClick = onRecordClick,
                             openSelectAppScreen = openSelectAppScreen,
@@ -315,17 +323,19 @@ private fun LandingScreen(
 
                         if (selectedElementState != null) {
                             HorizontalDivider(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp),
                             )
 
                             Spacer(modifier = Modifier.height(8.dp))
 
                             SelectedElementSection(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp),
                                 state = selectedElementState,
                                 onSelectInteractionType = onSelectInteractionType,
                                 onDescriptionChanged = onDescriptionChanged,
@@ -351,14 +361,15 @@ private fun DisabledExtendedFloatingActionButton(
     ) {
         Row(
             modifier =
-            Modifier
-                .sizeIn(minWidth = 80.dp, minHeight = 56.dp)
-                .padding(start = 16.dp, end = 20.dp),
+                Modifier
+                    .sizeIn(minWidth = 80.dp, minHeight = 56.dp)
+                    .padding(start = 16.dp, end = 20.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start,
         ) {
             val contentColor =
-                MaterialTheme.colorScheme.contentColorFor(FloatingActionButtonDefaults.containerColor)
+                MaterialTheme.colorScheme
+                    .contentColorFor(FloatingActionButtonDefaults.containerColor)
                     .copy(alpha = 0.5f)
 
             CompositionLocalProvider(LocalContentColor provides contentColor) {
@@ -383,11 +394,12 @@ private fun RecordingSection(
     Column(modifier = modifier) {
         when (val state = state) {
             is State.Data<RecordUiElementState> -> {
-                val interactionCount: Int = when (val data = state.data) {
-                    is RecordUiElementState.CountingDown -> data.interactionCount
-                    is RecordUiElementState.Recorded -> data.interactionCount
-                    RecordUiElementState.Empty -> 0
-                }
+                val interactionCount: Int =
+                    when (val data = state.data) {
+                        is RecordUiElementState.CountingDown -> data.interactionCount
+                        is RecordUiElementState.Recorded -> data.interactionCount
+                        RecordUiElementState.Empty -> 0
+                    }
 
                 InteractionCountBox(
                     modifier = Modifier.fillMaxWidth(),
@@ -421,11 +433,12 @@ private fun InteractionCountBox(
 ) {
     val enabled = interactionCount > 0
 
-    val color = if (enabled) {
-        MaterialTheme.colorScheme.onSurface
-    } else {
-        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-    }
+    val color =
+        if (enabled) {
+            MaterialTheme.colorScheme.onSurface
+        } else {
+            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+        }
 
     Surface(
         modifier = modifier,
@@ -437,9 +450,10 @@ private fun InteractionCountBox(
             LocalContentColor provides color,
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(imageVector = KeyMapperIcons.AdGroup, contentDescription = null)
@@ -473,22 +487,25 @@ private fun RecordButton(
     state: RecordUiElementState,
     onClick: () -> Unit,
 ) {
-    val text: String = when (state) {
-        is RecordUiElementState.Empty -> stringResource(R.string.action_interact_ui_element_start_recording)
-        is RecordUiElementState.Recorded -> stringResource(R.string.action_interact_ui_element_record_again)
-        is RecordUiElementState.CountingDown -> stringResource(
-            R.string.action_interact_ui_element_stop_recording,
-            state.timeRemaining,
-        )
-    }
+    val text: String =
+        when (state) {
+            is RecordUiElementState.Empty -> stringResource(R.string.action_interact_ui_element_start_recording)
+            is RecordUiElementState.Recorded -> stringResource(R.string.action_interact_ui_element_record_again)
+            is RecordUiElementState.CountingDown ->
+                stringResource(
+                    R.string.action_interact_ui_element_stop_recording,
+                    state.timeRemaining,
+                )
+        }
 
     if (state is RecordUiElementState.Recorded) {
         OutlinedButton(
             modifier = modifier,
             onClick = onClick,
-            colors = ButtonDefaults.outlinedButtonColors().copy(
-                contentColor = LocalCustomColorsPalette.current.red,
-            ),
+            colors =
+                ButtonDefaults.outlinedButtonColors().copy(
+                    contentColor = LocalCustomColorsPalette.current.red,
+                ),
             border = BorderStroke(1.dp, color = LocalCustomColorsPalette.current.red),
         ) {
             Text(
@@ -501,10 +518,11 @@ private fun RecordButton(
         FilledTonalButton(
             modifier = modifier,
             onClick = onClick,
-            colors = ButtonDefaults.filledTonalButtonColors().copy(
-                containerColor = LocalCustomColorsPalette.current.red,
-                contentColor = LocalCustomColorsPalette.current.onRed,
-            ),
+            colors =
+                ButtonDefaults.filledTonalButtonColors().copy(
+                    containerColor = LocalCustomColorsPalette.current.red,
+                    contentColor = LocalCustomColorsPalette.current.onRed,
+                ),
         ) {
             Text(
                 text = text,
@@ -534,11 +552,12 @@ private fun SelectedElementSection(
             isError = isError,
             maxLines = 1,
             singleLine = true,
-            supportingText = if (isError) {
-                { Text(stringResource(R.string.error_cant_be_empty)) }
-            } else {
-                null
-            },
+            supportingText =
+                if (isError) {
+                    { Text(stringResource(R.string.error_cant_be_empty)) }
+                } else {
+                    null
+                },
             label = {
                 Text(stringResource(R.string.action_interact_ui_element_description_label))
             },

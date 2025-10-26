@@ -24,15 +24,12 @@ class FakeDevicesAdapter : DevicesAdapter {
     override val connectedBluetoothDevices: StateFlow<Set<BluetoothDeviceInfo>>
         get() = throw Exception()
 
-    override fun deviceHasKey(id: Int, keyCode: Int): Boolean {
-        return deviceHasKey.invoke(id, keyCode)
-    }
+    override fun deviceHasKey(
+        id: Int,
+        keyCode: Int,
+    ): Boolean = deviceHasKey.invoke(id, keyCode)
 
-    override fun getInputDeviceName(descriptor: String): KMResult<String> {
-        throw Exception()
-    }
+    override fun getInputDeviceName(descriptor: String): KMResult<String> = throw Exception()
 
-    override fun getInputDevice(deviceId: Int): InputDeviceInfo? {
-        throw NotImplementedError()
-    }
+    override fun getInputDevice(deviceId: Int): InputDeviceInfo? = throw NotImplementedError()
 }

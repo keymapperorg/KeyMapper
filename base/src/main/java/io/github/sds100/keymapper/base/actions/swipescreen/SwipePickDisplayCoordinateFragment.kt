@@ -47,10 +47,11 @@ class SwipePickDisplayCoordinateFragment : Fragment() {
 
             bitmap ?: return@registerForActivityResult
 
-            val displaySize = Point().apply {
-                @Suppress("DEPRECATION")
-                ContextCompat.getDisplayOrDefault(requireContext()).getRealSize(this)
-            }
+            val displaySize =
+                Point().apply {
+                    @Suppress("DEPRECATION")
+                    ContextCompat.getDisplayOrDefault(requireContext()).getRealSize(this)
+                }
 
             viewModel.selectedScreenshot(bitmap, displaySize)
         }
@@ -84,12 +85,17 @@ class SwipePickDisplayCoordinateFragment : Fragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
         ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
             val insets =
-                insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime())
+                insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime(),
+                )
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
             WindowInsetsCompat.CONSUMED
         }

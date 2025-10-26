@@ -14,11 +14,11 @@ class TriggerKeyMapFromOtherAppsController(
     performActionsUseCase: PerformActionsUseCase,
     detectConstraintsUseCase: DetectConstraintsUseCase,
 ) : SimpleMappingController(
-    coroutineScope,
-    detectKeyMapsUseCase,
-    performActionsUseCase,
-    detectConstraintsUseCase,
-) {
+        coroutineScope,
+        detectKeyMapsUseCase,
+        performActionsUseCase,
+        detectConstraintsUseCase,
+    ) {
     private var keyMapList = emptyList<KeyMap>()
 
     init {

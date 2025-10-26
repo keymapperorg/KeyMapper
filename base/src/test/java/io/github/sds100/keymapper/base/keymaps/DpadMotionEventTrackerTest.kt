@@ -19,25 +19,26 @@ import org.junit.runner.RunWith
 @ExperimentalCoroutinesApi
 @RunWith(JUnitParamsRunner::class)
 class DpadMotionEventTrackerTest {
-
     companion object {
-        private val CONTROLLER_1_DEVICE = InputDeviceInfo(
-            id = 0,
-            descriptor = "controller_1",
-            name = "Controller 1",
-            isExternal = true,
-            isGameController = true,
-            sources = InputDevice.SOURCE_GAMEPAD,
-        )
+        private val CONTROLLER_1_DEVICE =
+            InputDeviceInfo(
+                id = 0,
+                descriptor = "controller_1",
+                name = "Controller 1",
+                isExternal = true,
+                isGameController = true,
+                sources = InputDevice.SOURCE_GAMEPAD,
+            )
 
-        private val CONTROLLER_2_DEVICE = InputDeviceInfo(
-            id = 1,
-            descriptor = "controller_2",
-            name = "Controller 2",
-            isExternal = true,
-            isGameController = true,
-            sources = InputDevice.SOURCE_GAMEPAD,
-        )
+        private val CONTROLLER_2_DEVICE =
+            InputDeviceInfo(
+                id = 1,
+                descriptor = "controller_2",
+                name = "Controller 2",
+                isExternal = true,
+                isGameController = true,
+                sources = InputDevice.SOURCE_GAMEPAD,
+            )
     }
 
     private lateinit var tracker: DpadMotionEventTracker
@@ -140,12 +141,13 @@ class DpadMotionEventTrackerTest {
                 device = CONTROLLER_1_DEVICE,
             ),
         )
-        val keyEvent = tracker.convertMotionEvent(
-            createMotionEvent(
-                axisHatX = 1.0f,
-                device = CONTROLLER_2_DEVICE,
-            ),
-        )
+        val keyEvent =
+            tracker.convertMotionEvent(
+                createMotionEvent(
+                    axisHatX = 1.0f,
+                    device = CONTROLLER_2_DEVICE,
+                ),
+            )
 
         assertThat(keyEvent.first().keyCode, `is`(KeyEvent.KEYCODE_DPAD_RIGHT))
         assertThat(keyEvent.first().action, `is`(KeyEvent.ACTION_DOWN))
@@ -159,12 +161,13 @@ class DpadMotionEventTrackerTest {
                 device = CONTROLLER_1_DEVICE,
             ),
         )
-        val keyEvent = tracker.convertMotionEvent(
-            createMotionEvent(
-                axisHatX = -1.0f,
-                device = CONTROLLER_2_DEVICE,
-            ),
-        )
+        val keyEvent =
+            tracker.convertMotionEvent(
+                createMotionEvent(
+                    axisHatX = -1.0f,
+                    device = CONTROLLER_2_DEVICE,
+                ),
+            )
 
         assertThat(keyEvent.first().keyCode, `is`(KeyEvent.KEYCODE_DPAD_LEFT))
         assertThat(keyEvent.first().action, `is`(KeyEvent.ACTION_DOWN))
@@ -261,18 +264,20 @@ class DpadMotionEventTrackerTest {
         axisHatX: Float = 0.0f,
         axisHatY: Float = 0.0f,
         device: InputDeviceInfo = CONTROLLER_1_DEVICE,
-    ): KMGamePadEvent {
-        return KMGamePadEvent(
+    ): KMGamePadEvent =
+        KMGamePadEvent(
             metaState = 0,
             device = device,
             axisHatX = axisHatX,
             axisHatY = axisHatY,
             eventTime = System.currentTimeMillis(),
         )
-    }
 
-    private fun createDownKeyEvent(keyCode: Int, device: InputDeviceInfo): KMKeyEvent {
-        return KMKeyEvent(
+    private fun createDownKeyEvent(
+        keyCode: Int,
+        device: InputDeviceInfo,
+    ): KMKeyEvent =
+        KMKeyEvent(
             keyCode = keyCode,
             action = KeyEvent.ACTION_DOWN,
             metaState = 0,
@@ -282,10 +287,12 @@ class DpadMotionEventTrackerTest {
             source = 0,
             eventTime = System.currentTimeMillis(),
         )
-    }
 
-    private fun createUpKeyEvent(keyCode: Int, device: InputDeviceInfo): KMKeyEvent {
-        return KMKeyEvent(
+    private fun createUpKeyEvent(
+        keyCode: Int,
+        device: InputDeviceInfo,
+    ): KMKeyEvent =
+        KMKeyEvent(
             keyCode = keyCode,
             action = KeyEvent.ACTION_UP,
             metaState = 0,
@@ -294,7 +301,5 @@ class DpadMotionEventTrackerTest {
             repeatCount = 0,
             source = 0,
             eventTime = System.currentTimeMillis(),
-
         )
-    }
 }

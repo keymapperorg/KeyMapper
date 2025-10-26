@@ -62,34 +62,38 @@ fun TriggerKeyListItem(
     onRemoveClick: () -> Unit = {},
     onFixClick: (TriggerError) -> Unit = {},
 ) {
-    val draggableState = rememberDraggableState {
-        dragDropState?.onDrag(Offset(0f, it))
-    }
+    val draggableState =
+        rememberDraggableState {
+            dragDropState?.onDrag(Offset(0f, it))
+        }
 
     Column(modifier = modifier.fillMaxWidth()) {
         ElevatedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 48.dp)
-                .height(IntrinsicSize.Min)
-                .padding(start = 16.dp, end = 16.dp)
-                .draggable(
-                    state = draggableState,
-                    enabled = isDraggingEnabled,
-                    orientation = Orientation.Vertical,
-                    startDragImmediately = false,
-                    onDragStarted = { offset ->
-                        dragDropState?.onDragStart(index, offset)
-                    },
-                    onDragStopped = { dragDropState?.onDragInterrupted() },
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 48.dp)
+                    .height(IntrinsicSize.Min)
+                    .padding(start = 16.dp, end = 16.dp)
+                    .draggable(
+                        state = draggableState,
+                        enabled = isDraggingEnabled,
+                        orientation = Orientation.Vertical,
+                        startDragImmediately = false,
+                        onDragStarted = { offset ->
+                            dragDropState?.onDragStart(index, offset)
+                        },
+                        onDragStopped = { dragDropState?.onDragInterrupted() },
+                    ),
+            colors =
+                CardDefaults.elevatedCardColors(
+                    containerColor =
+                        if (isDragging) {
+                            MaterialTheme.colorScheme.surfaceContainerHighest
+                        } else {
+                            MaterialTheme.colorScheme.surfaceContainer
+                        },
                 ),
-            colors = CardDefaults.elevatedCardColors(
-                containerColor = if (isDragging) {
-                    MaterialTheme.colorScheme.surfaceContainerHighest
-                } else {
-                    MaterialTheme.colorScheme.surfaceContainer
-                },
-            ),
         ) {
             Row(
                 modifier = Modifier.fillMaxSize(),
@@ -110,13 +114,14 @@ fun TriggerKeyListItem(
 
                 // To save space only show the icon if there is no error.
                 if (model.error == null) {
-                    val icon = when (model) {
-                        is TriggerKeyListItemModel.Assistant -> Icons.Outlined.Assistant
-                        is TriggerKeyListItemModel.FloatingButton -> Icons.Outlined.BubbleChart
-                        is TriggerKeyListItemModel.FingerprintGesture -> Icons.Outlined.Fingerprint
-                        is TriggerKeyListItemModel.EvdevEvent -> KeyMapperIcons.ProModeIcon
-                        else -> null
-                    }
+                    val icon =
+                        when (model) {
+                            is TriggerKeyListItemModel.Assistant -> Icons.Outlined.Assistant
+                            is TriggerKeyListItemModel.FloatingButton -> Icons.Outlined.BubbleChart
+                            is TriggerKeyListItemModel.FingerprintGesture -> Icons.Outlined.Fingerprint
+                            is TriggerKeyListItemModel.EvdevEvent -> KeyMapperIcons.ProModeIcon
+                            else -> null
+                        }
 
                     if (icon != null) {
                         Icon(
@@ -128,61 +133,72 @@ fun TriggerKeyListItem(
                     }
                 }
 
-                val primaryText = when (model) {
-                    is TriggerKeyListItemModel.Assistant -> when (model.assistantType) {
-                        AssistantTriggerType.ANY -> stringResource(R.string.assistant_any_trigger_name)
-                        AssistantTriggerType.VOICE -> stringResource(R.string.assistant_voice_trigger_name)
-                        AssistantTriggerType.DEVICE -> stringResource(R.string.assistant_device_trigger_name)
+                val primaryText =
+                    when (model) {
+                        is TriggerKeyListItemModel.Assistant ->
+                            when (model.assistantType) {
+                                AssistantTriggerType.ANY -> stringResource(R.string.assistant_any_trigger_name)
+                                AssistantTriggerType.VOICE -> stringResource(R.string.assistant_voice_trigger_name)
+                                AssistantTriggerType.DEVICE -> stringResource(R.string.assistant_device_trigger_name)
+                            }
+
+                        is TriggerKeyListItemModel.FloatingButton ->
+                            stringResource(
+                                R.string.trigger_key_floating_button_description,
+                                model.buttonName,
+                            )
+
+                        is TriggerKeyListItemModel.KeyEvent -> model.keyName
+                        is TriggerKeyListItemModel.EvdevEvent -> model.keyName
+
+                        is TriggerKeyListItemModel.FloatingButtonDeleted ->
+                            stringResource(
+                                R.string.trigger_error_floating_button_deleted_title,
+                            )
+
+                        is TriggerKeyListItemModel.FingerprintGesture ->
+                            when (model.gestureType) {
+                                FingerprintGestureType.SWIPE_UP -> stringResource(R.string.trigger_key_fingerprint_gesture_up)
+                                FingerprintGestureType.SWIPE_DOWN -> stringResource(R.string.trigger_key_fingerprint_gesture_down)
+                                FingerprintGestureType.SWIPE_LEFT -> stringResource(R.string.trigger_key_fingerprint_gesture_left)
+                                FingerprintGestureType.SWIPE_RIGHT -> stringResource(R.string.trigger_key_fingerprint_gesture_right)
+                            }
                     }
-
-                    is TriggerKeyListItemModel.FloatingButton -> stringResource(
-                        R.string.trigger_key_floating_button_description,
-                        model.buttonName,
-                    )
-
-                    is TriggerKeyListItemModel.KeyEvent -> model.keyName
-                    is TriggerKeyListItemModel.EvdevEvent -> model.keyName
-
-                    is TriggerKeyListItemModel.FloatingButtonDeleted -> stringResource(R.string.trigger_error_floating_button_deleted_title)
-
-                    is TriggerKeyListItemModel.FingerprintGesture -> when (model.gestureType) {
-                        FingerprintGestureType.SWIPE_UP -> stringResource(R.string.trigger_key_fingerprint_gesture_up)
-                        FingerprintGestureType.SWIPE_DOWN -> stringResource(R.string.trigger_key_fingerprint_gesture_down)
-                        FingerprintGestureType.SWIPE_LEFT -> stringResource(R.string.trigger_key_fingerprint_gesture_left)
-                        FingerprintGestureType.SWIPE_RIGHT -> stringResource(R.string.trigger_key_fingerprint_gesture_right)
-                    }
-                }
 
                 Spacer(Modifier.width(8.dp))
 
                 if (model.error == null) {
-                    val clickTypeString = when (model.clickType) {
-                        ClickType.SHORT_PRESS -> null
-                        ClickType.LONG_PRESS -> stringResource(R.string.clicktype_long_press)
-                        ClickType.DOUBLE_PRESS -> stringResource(R.string.clicktype_double_press)
-                    }
+                    val clickTypeString =
+                        when (model.clickType) {
+                            ClickType.SHORT_PRESS -> null
+                            ClickType.LONG_PRESS -> stringResource(R.string.clicktype_long_press)
+                            ClickType.DOUBLE_PRESS -> stringResource(R.string.clicktype_double_press)
+                        }
 
-                    val tertiaryText = when (model) {
-                        is TriggerKeyListItemModel.KeyEvent -> model.extraInfo
-                        is TriggerKeyListItemModel.EvdevEvent -> model.extraInfo
-                        is TriggerKeyListItemModel.FloatingButton -> model.layoutName
+                    val tertiaryText =
+                        when (model) {
+                            is TriggerKeyListItemModel.KeyEvent -> model.extraInfo
+                            is TriggerKeyListItemModel.EvdevEvent -> model.extraInfo
+                            is TriggerKeyListItemModel.FloatingButton -> model.layoutName
 
-                        else -> null
-                    }
+                            else -> null
+                        }
 
                     TextColumn(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(vertical = 8.dp),
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .padding(vertical = 8.dp),
                         primaryText = primaryText,
                         secondaryText = clickTypeString,
                         tertiaryText = tertiaryText,
                     )
                 } else {
                     ErrorTextColumn(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(vertical = 8.dp),
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .padding(vertical = 8.dp),
                         primaryText = primaryText,
                         errorText = getErrorMessage(model.error!!),
                     )
@@ -195,10 +211,11 @@ fun TriggerKeyListItem(
                         FilledTonalButton(
                             modifier = Modifier.padding(start = 8.dp, end = 8.dp),
                             onClick = { onFixClick(model.error!!) },
-                            colors = ButtonDefaults.filledTonalButtonColors(
-                                containerColor = MaterialTheme.colorScheme.error,
-                                contentColor = MaterialTheme.colorScheme.onError,
-                            ),
+                            colors =
+                                ButtonDefaults.filledTonalButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.error,
+                                    contentColor = MaterialTheme.colorScheme.onError,
+                                ),
                         ) {
                             Text(
                                 text = stringResource(R.string.button_fix),
@@ -238,16 +255,18 @@ fun TriggerKeyListItem(
             Spacer(Modifier.height(4.dp))
 
             Icon(
-                imageVector = when (model.linkType) {
-                    LinkType.ARROW -> Icons.Rounded.ArrowDownward
-                    LinkType.PLUS -> Icons.Rounded.Add
-                    LinkType.HIDDEN -> Icons.Rounded.Add
-                },
+                imageVector =
+                    when (model.linkType) {
+                        LinkType.ARROW -> Icons.Rounded.ArrowDownward
+                        LinkType.PLUS -> Icons.Rounded.Add
+                        LinkType.HIDDEN -> Icons.Rounded.Add
+                    },
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier
-                    .size(24.dp)
-                    .align(Alignment.CenterHorizontally),
+                modifier =
+                    Modifier
+                        .size(24.dp)
+                        .align(Alignment.CenterHorizontally),
             )
             Spacer(Modifier.height(4.dp))
         }
@@ -255,8 +274,8 @@ fun TriggerKeyListItem(
 }
 
 @Composable
-private fun getErrorMessage(error: TriggerError): String {
-    return when (error) {
+private fun getErrorMessage(error: TriggerError): String =
+    when (error) {
         TriggerError.DND_ACCESS_DENIED -> stringResource(R.string.trigger_error_dnd_access_denied)
         TriggerError.CANT_DETECT_IN_PHONE_CALL -> stringResource(R.string.trigger_error_cant_detect_in_phone_call)
         TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> stringResource(R.string.trigger_error_assistant_not_purchased)
@@ -268,7 +287,6 @@ private fun getErrorMessage(error: TriggerError): String {
         TriggerError.SYSTEM_BRIDGE_DISCONNECTED -> stringResource(R.string.trigger_error_system_bridge_disconnected)
         TriggerError.EVDEV_DEVICE_NOT_FOUND -> stringResource(R.string.trigger_error_evdev_device_not_found)
     }
-}
 
 @Composable
 private fun TextColumn(
@@ -331,14 +349,15 @@ private fun ErrorTextColumn(
 @Composable
 private fun KeyEventPreview() {
     TriggerKeyListItem(
-        model = TriggerKeyListItemModel.KeyEvent(
-            id = "id",
-            keyName = "Volume Up",
-            clickType = ClickType.SHORT_PRESS,
-            extraInfo = "External Keyboard",
-            linkType = LinkType.ARROW,
-            error = null,
-        ),
+        model =
+            TriggerKeyListItemModel.KeyEvent(
+                id = "id",
+                keyName = "Volume Up",
+                clickType = ClickType.SHORT_PRESS,
+                extraInfo = "External Keyboard",
+                linkType = LinkType.ARROW,
+                error = null,
+            ),
         isDragging = false,
         isReorderingEnabled = true,
         index = 0,
@@ -349,14 +368,15 @@ private fun KeyEventPreview() {
 @Composable
 private fun EvdevEventPreview() {
     TriggerKeyListItem(
-        model = TriggerKeyListItemModel.EvdevEvent(
-            id = "id",
-            keyName = "Volume Up",
-            clickType = ClickType.SHORT_PRESS,
-            extraInfo = "Gpio-keys",
-            linkType = LinkType.ARROW,
-            error = null,
-        ),
+        model =
+            TriggerKeyListItemModel.EvdevEvent(
+                id = "id",
+                keyName = "Volume Up",
+                clickType = ClickType.SHORT_PRESS,
+                extraInfo = "Gpio-keys",
+                linkType = LinkType.ARROW,
+                error = null,
+            ),
         isDragging = false,
         isReorderingEnabled = true,
         index = 0,
@@ -367,14 +387,15 @@ private fun EvdevEventPreview() {
 @Composable
 private fun NoDragPreview() {
     TriggerKeyListItem(
-        model = TriggerKeyListItemModel.KeyEvent(
-            id = "id",
-            keyName = "Volume Up",
-            clickType = ClickType.LONG_PRESS,
-            extraInfo = "External Keyboard",
-            linkType = LinkType.ARROW,
-            error = null,
-        ),
+        model =
+            TriggerKeyListItemModel.KeyEvent(
+                id = "id",
+                keyName = "Volume Up",
+                clickType = ClickType.LONG_PRESS,
+                extraInfo = "External Keyboard",
+                linkType = LinkType.ARROW,
+                error = null,
+            ),
         isDragging = false,
         isReorderingEnabled = false,
         index = 0,
@@ -385,13 +406,14 @@ private fun NoDragPreview() {
 @Composable
 private fun AssistantPreview() {
     TriggerKeyListItem(
-        model = TriggerKeyListItemModel.Assistant(
-            id = "id",
-            assistantType = AssistantTriggerType.DEVICE,
-            clickType = ClickType.SHORT_PRESS,
-            linkType = LinkType.ARROW,
-            error = null,
-        ),
+        model =
+            TriggerKeyListItemModel.Assistant(
+                id = "id",
+                assistantType = AssistantTriggerType.DEVICE,
+                clickType = ClickType.SHORT_PRESS,
+                linkType = LinkType.ARROW,
+                error = null,
+            ),
         isDragging = false,
         isReorderingEnabled = true,
         index = 0,
@@ -402,13 +424,14 @@ private fun AssistantPreview() {
 @Composable
 private fun AssistantErrorPreview() {
     TriggerKeyListItem(
-        model = TriggerKeyListItemModel.Assistant(
-            id = "id",
-            assistantType = AssistantTriggerType.DEVICE,
-            clickType = ClickType.DOUBLE_PRESS,
-            linkType = LinkType.ARROW,
-            error = TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED,
-        ),
+        model =
+            TriggerKeyListItemModel.Assistant(
+                id = "id",
+                assistantType = AssistantTriggerType.DEVICE,
+                clickType = ClickType.DOUBLE_PRESS,
+                linkType = LinkType.ARROW,
+                error = TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED,
+            ),
         isDragging = false,
         isReorderingEnabled = true,
         index = 0,
@@ -419,14 +442,15 @@ private fun AssistantErrorPreview() {
 @Composable
 private fun FloatingButtonPreview() {
     TriggerKeyListItem(
-        model = TriggerKeyListItemModel.FloatingButton(
-            id = "id",
-            buttonName = "😎",
-            layoutName = "Gaming",
-            clickType = ClickType.DOUBLE_PRESS,
-            linkType = LinkType.ARROW,
-            error = null,
-        ),
+        model =
+            TriggerKeyListItemModel.FloatingButton(
+                id = "id",
+                buttonName = "😎",
+                layoutName = "Gaming",
+                clickType = ClickType.DOUBLE_PRESS,
+                linkType = LinkType.ARROW,
+                error = null,
+            ),
         isDragging = false,
         isReorderingEnabled = false,
         index = 0,
@@ -437,11 +461,12 @@ private fun FloatingButtonPreview() {
 @Composable
 private fun FloatingButtonErrorPreview() {
     TriggerKeyListItem(
-        model = TriggerKeyListItemModel.FloatingButtonDeleted(
-            id = "id",
-            clickType = ClickType.DOUBLE_PRESS,
-            linkType = LinkType.ARROW,
-        ),
+        model =
+            TriggerKeyListItemModel.FloatingButtonDeleted(
+                id = "id",
+                clickType = ClickType.DOUBLE_PRESS,
+                linkType = LinkType.ARROW,
+            ),
         isDragging = false,
         isReorderingEnabled = false,
         index = 0,

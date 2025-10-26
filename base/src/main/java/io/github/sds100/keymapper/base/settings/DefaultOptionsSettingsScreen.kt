@@ -37,7 +37,10 @@ import io.github.sds100.keymapper.base.utils.ui.SliderStepSizes
 import io.github.sds100.keymapper.base.utils.ui.compose.SliderOptionText
 
 @Composable
-fun DefaultOptionsSettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) {
+fun DefaultOptionsSettingsScreen(
+    modifier: Modifier = Modifier,
+    viewModel: SettingsViewModel,
+) {
     val state by viewModel.defaultSettingsScreenState.collectAsStateWithLifecycle()
 
     DefaultOptionsSettingsScreen(
@@ -81,14 +84,15 @@ fun DefaultOptionsSettingsScreen(
         val endPadding = innerPadding.calculateEndPadding(layoutDirection)
 
         Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    bottom = innerPadding.calculateBottomPadding(),
-                    start = startPadding,
-                    end = endPadding,
-                ),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom = innerPadding.calculateBottomPadding(),
+                        start = startPadding,
+                        end = endPadding,
+                    ),
         ) {
             content()
         }
@@ -102,17 +106,19 @@ private fun Content(
     callback: DefaultOptionsSettingsCallback = object : DefaultOptionsSettingsCallback {},
 ) {
     Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState())
-            .fillMaxWidth(),
+        modifier =
+            modifier
+                .verticalScroll(rememberScrollState())
+                .fillMaxWidth(),
     ) {
         Spacer(modifier = Modifier.height(8.dp))
 
         // Long press delay
         SliderOptionText(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             title = stringResource(R.string.title_pref_long_press_delay),
             defaultValue = state.defaultLongPressDelay.toFloat(),
             value = state.longPressDelay.toFloat(),
@@ -125,9 +131,10 @@ private fun Content(
 
         // Double press delay
         SliderOptionText(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             title = stringResource(R.string.title_pref_double_press_delay),
             defaultValue = state.defaultDoublePressDelay.toFloat(),
             value = state.doublePressDelay.toFloat(),
@@ -140,9 +147,10 @@ private fun Content(
 
         // Vibrate duration
         SliderOptionText(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             title = stringResource(R.string.title_pref_vibration_duration),
             defaultValue = state.defaultVibrateDuration.toFloat(),
             value = state.vibrateDuration.toFloat(),
@@ -155,9 +163,10 @@ private fun Content(
 
         // Repeat delay
         SliderOptionText(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             title = stringResource(R.string.title_pref_repeat_delay),
             defaultValue = state.defaultRepeatDelay.toFloat(),
             value = state.repeatDelay.toFloat(),
@@ -170,9 +179,10 @@ private fun Content(
 
         // Repeat rate
         SliderOptionText(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             title = stringResource(R.string.title_pref_repeat_rate),
             defaultValue = state.defaultRepeatRate.toFloat(),
             value = state.repeatRate.toFloat(),
@@ -185,15 +195,17 @@ private fun Content(
 
         // Sequence trigger timeout
         SliderOptionText(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             title = stringResource(R.string.title_pref_sequence_trigger_timeout),
             defaultValue = state.defaultSequenceTriggerTimeout.toFloat(),
             value = state.sequenceTriggerTimeout.toFloat(),
             valueText = { "${it.toInt()} ms" },
             onValueChange = { callback.onSequenceTriggerTimeoutChanged(it.toInt()) },
-            valueRange = SliderMinimums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT.toFloat()..SliderMaximums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT.toFloat(),
+            valueRange =
+                SliderMinimums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT.toFloat()..SliderMaximums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT.toFloat(),
             stepSize = SliderStepSizes.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT,
         )
         Spacer(Modifier.height(8.dp))
@@ -202,10 +214,15 @@ private fun Content(
 
 interface DefaultOptionsSettingsCallback {
     fun onLongPressDelayChanged(delay: Int) = run { }
+
     fun onDoublePressDelayChanged(delay: Int) = run { }
+
     fun onVibrateDurationChanged(duration: Int) = run { }
+
     fun onRepeatDelayChanged(delay: Int) = run { }
+
     fun onRepeatRateChanged(rate: Int) = run { }
+
     fun onSequenceTriggerTimeoutChanged(timeout: Int) = run { }
 }
 

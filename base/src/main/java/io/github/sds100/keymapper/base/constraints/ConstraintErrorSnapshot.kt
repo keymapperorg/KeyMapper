@@ -20,7 +20,6 @@ class LazyConstraintErrorSnapshot(
     private val inputMethodAdapter: InputMethodAdapter,
     private val cameraAdapter: CameraAdapter,
 ) : ConstraintErrorSnapshot {
-
     private val inputMethods by lazy { inputMethodAdapter.inputMethods.value }
     private val grantedPermissions: MutableMap<Permission, Boolean> = mutableMapOf()
     private val flashLenses by lazy {
@@ -64,7 +63,7 @@ class LazyConstraintErrorSnapshot(
 
             is ConstraintData.BtDeviceConnected,
             is ConstraintData.BtDeviceDisconnected,
-                -> {
+            -> {
                 if (!systemFeatureAdapter.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
                     return KMError.SystemFeatureNotSupported(PackageManager.FEATURE_BLUETOOTH)
                 }
@@ -77,7 +76,7 @@ class LazyConstraintErrorSnapshot(
             is ConstraintData.OrientationCustom,
             ConstraintData.OrientationLandscape,
             ConstraintData.OrientationPortrait,
-                ->
+            ->
                 if (!isPermissionGranted(Permission.WRITE_SETTINGS)) {
                     return SystemError.PermissionDenied(Permission.WRITE_SETTINGS)
                 }

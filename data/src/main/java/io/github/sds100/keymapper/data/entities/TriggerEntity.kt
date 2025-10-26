@@ -13,18 +13,14 @@ import kotlinx.parcelize.Parcelize
 data class TriggerEntity(
     @SerializedName(NAME_KEYS)
     val keys: List<TriggerKeyEntity> = listOf(),
-
     @SerializedName(NAME_EXTRAS)
     val extras: List<EntityExtra> = listOf(),
-
     @Mode
     @SerializedName(NAME_MODE)
     val mode: Int = DEFAULT_TRIGGER_MODE,
-
     @SerializedName(NAME_FLAGS)
     val flags: Int = 0,
 ) : Parcelable {
-
     companion object {
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_KEYS = "keys"
@@ -53,19 +49,20 @@ data class TriggerEntity(
         const val EXTRA_DOUBLE_PRESS_DELAY = "extra_double_press_timeout"
         const val EXTRA_VIBRATION_DURATION = "extra_vibration_duration"
 
-        val DESERIALIZER = jsonDeserializer {
-            val triggerKeysJsonArray by it.json.byArray(NAME_KEYS)
-            val keys = it.context.deserialize<List<TriggerKeyEntity>>(triggerKeysJsonArray)
+        val DESERIALIZER =
+            jsonDeserializer {
+                val triggerKeysJsonArray by it.json.byArray(NAME_KEYS)
+                val keys = it.context.deserialize<List<TriggerKeyEntity>>(triggerKeysJsonArray)
 
-            val extrasJsonArray by it.json.byArray(NAME_EXTRAS)
-            val extraList = it.context.deserialize<List<EntityExtra>>(extrasJsonArray) ?: listOf()
+                val extrasJsonArray by it.json.byArray(NAME_EXTRAS)
+                val extraList = it.context.deserialize<List<EntityExtra>>(extrasJsonArray) ?: listOf()
 
-            val mode by it.json.byInt(NAME_MODE)
+                val mode by it.json.byInt(NAME_MODE)
 
-            val flags by it.json.byNullableInt(NAME_FLAGS)
+                val flags by it.json.byNullableInt(NAME_FLAGS)
 
-            TriggerEntity(keys, extraList, mode, flags ?: 0)
-        }
+                TriggerEntity(keys, extraList, mode, flags ?: 0)
+            }
     }
 
     @IntDef(value = [PARALLEL, SEQUENCE, UNDEFINED])

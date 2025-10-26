@@ -53,7 +53,10 @@ import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.launch
 
 @Composable
-fun KeyMapOptionsScreen(modifier: Modifier = Modifier, viewModel: ConfigKeyMapOptionsViewModel) {
+fun KeyMapOptionsScreen(
+    modifier: Modifier = Modifier,
+    viewModel: ConfigKeyMapOptionsViewModel,
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     KeyMapOptionsScreen(
@@ -75,9 +78,10 @@ fun KeyMapOptionsScreen(
                 Loading(Modifier.fillMaxSize())
             }
 
-        is State.Data -> Surface(modifier) {
-            Loaded(Modifier.fillMaxSize(), state.data, callback)
-        }
+        is State.Data ->
+            Surface(modifier) {
+                Loaded(Modifier.fillMaxSize(), state.data, callback)
+            }
     }
 }
 
@@ -95,16 +99,18 @@ private fun Loaded(
     callback: KeyMapOptionsCallback = object : KeyMapOptionsCallback {},
 ) {
     Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState())
-            .fillMaxWidth(),
+        modifier =
+            modifier
+                .verticalScroll(rememberScrollState())
+                .fillMaxWidth(),
     ) {
         Spacer(modifier = Modifier.height(8.dp))
 
         TriggerFromOtherAppsSection(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
             isChecked = state.triggerFromOtherApps,
             onCheckedChange = callback::onTriggerFromOtherAppsChanged,
             isLauncherShortcutEnabled = state.isLauncherShortcutButtonEnabled,
@@ -115,9 +121,10 @@ private fun Loaded(
         Spacer(Modifier.height(8.dp))
 
         CheckBoxText(
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .padding(horizontal = 8.dp)
+                    .fillMaxWidth(),
             text = stringResource(R.string.flag_show_toast),
             isChecked = state.showToast,
             onCheckedChange = callback::onShowToastChanged,
@@ -126,9 +133,10 @@ private fun Loaded(
 
         if (state.showVibrate) {
             CheckBoxText(
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .padding(horizontal = 8.dp)
+                        .fillMaxWidth(),
                 text = stringResource(R.string.flag_vibrate),
                 isChecked = state.vibrate,
                 onCheckedChange = callback::onVibrateChanged,
@@ -138,9 +146,10 @@ private fun Loaded(
 
         if (state.showVibrateDuration) {
             SliderOptionText(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 title = stringResource(R.string.extra_label_vibration_duration),
                 defaultValue = state.defaultVibrateDuration.toFloat(),
                 value = state.vibrateDuration.toFloat(),
@@ -154,9 +163,10 @@ private fun Loaded(
 
         if (state.showLongPressDoubleVibration) {
             CheckBoxText(
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .padding(horizontal = 8.dp)
+                        .fillMaxWidth(),
                 text = stringResource(R.string.flag_long_press_double_vibration),
                 isChecked = state.longPressDoubleVibration,
                 onCheckedChange = callback::onLongPressDoubleVibrationChanged,
@@ -166,9 +176,10 @@ private fun Loaded(
 
         if (state.showLongPressDelay) {
             SliderOptionText(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 title = stringResource(R.string.extra_label_long_press_delay_timeout),
                 defaultValue = state.defaultLongPressDelay.toFloat(),
                 value = state.longPressDelay.toFloat(),
@@ -182,9 +193,10 @@ private fun Loaded(
 
         if (state.showDoublePressDelay) {
             SliderOptionText(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 title = stringResource(R.string.extra_label_double_press_delay_timeout),
                 defaultValue = state.defaultDoublePressDelay.toFloat(),
                 value = state.doublePressDelay.toFloat(),
@@ -198,15 +210,17 @@ private fun Loaded(
 
         if (state.showSequenceTriggerTimeout) {
             SliderOptionText(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 title = stringResource(R.string.extra_label_sequence_trigger_timeout),
                 defaultValue = state.defaultSequenceTriggerTimeout.toFloat(),
                 value = state.sequenceTriggerTimeout.toFloat(),
                 valueText = { "${it.toInt()} ms" },
                 onValueChange = { callback.onSequenceTriggerTimeoutChanged(it.toInt()) },
-                valueRange = SliderMinimums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT.toFloat()..SliderMaximums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT.toFloat(),
+                valueRange =
+                    SliderMinimums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT.toFloat()..SliderMaximums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT.toFloat(),
                 stepSize = SliderStepSizes.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT,
             )
             Spacer(Modifier.height(8.dp))
@@ -233,9 +247,10 @@ private fun TriggerFromOtherAppsSection(
                 color = Color.Transparent,
             ) {
                 Row(
-                    modifier = Modifier
-                        .clickable { onCheckedChange(!isChecked) }
-                        .padding(8.dp),
+                    modifier =
+                        Modifier
+                            .clickable { onCheckedChange(!isChecked) }
+                            .padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Checkbox(
@@ -246,7 +261,6 @@ private fun TriggerFromOtherAppsSection(
 
                     Text(
                         modifier = Modifier.padding(horizontal = 12.dp),
-
                         text = stringResource(R.string.flag_trigger_from_other_apps),
                         style = MaterialTheme.typography.bodyLarge,
                         maxLines = 2,
@@ -264,9 +278,10 @@ private fun TriggerFromOtherAppsSection(
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .weight(1f),
+                        modifier =
+                            Modifier
+                                .padding(horizontal = 16.dp)
+                                .weight(1f),
                         text = keyMapUid,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -278,9 +293,10 @@ private fun TriggerFromOtherAppsSection(
                     val clipboardLabel = stringResource(R.string.clipboard_label_keymap_uid)
 
                     IconButton(
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp)
-                            .size(36.dp),
+                        modifier =
+                            Modifier
+                                .padding(horizontal = 8.dp)
+                                .size(36.dp),
                         onClick = {
                             scope.launch {
                                 clipboard.setClipEntry(
@@ -299,17 +315,19 @@ private fun TriggerFromOtherAppsSection(
                 Spacer(Modifier.height(8.dp))
 
                 OutlinedButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                     onClick = onCreateShortcutClick,
                     enabled = isLauncherShortcutEnabled,
                 ) {
-                    val text = if (isLauncherShortcutEnabled) {
-                        stringResource(R.string.button_create_keymap_shortcut_in_launcher_enabled)
-                    } else {
-                        stringResource(R.string.button_create_keymap_shortcut_in_launcher_disabled)
-                    }
+                    val text =
+                        if (isLauncherShortcutEnabled) {
+                            stringResource(R.string.button_create_keymap_shortcut_in_launcher_enabled)
+                        } else {
+                            stringResource(R.string.button_create_keymap_shortcut_in_launcher_disabled)
+                        }
 
                     Text(text = text)
                 }
@@ -319,9 +337,10 @@ private fun TriggerFromOtherAppsSection(
                 val intentGuideUrl = stringResource(R.string.url_trigger_by_intent_guide)
 
                 FilledTonalButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                     onClick = {
                         uriHandler.openUriSafe(ctx, intentGuideUrl)
                     },
@@ -335,13 +354,21 @@ private fun TriggerFromOtherAppsSection(
 
 interface KeyMapOptionsCallback {
     fun onLongPressDelayChanged(delay: Int) = run { }
+
     fun onDoublePressDelayChanged(delay: Int) = run { }
+
     fun onSequenceTriggerTimeoutChanged(timeout: Int) = run { }
+
     fun onVibrateDurationChanged(duration: Int) = run { }
+
     fun onVibrateChanged(checked: Boolean) = run { }
+
     fun onLongPressDoubleVibrationChanged(checked: Boolean) = run { }
+
     fun onShowToastChanged(checked: Boolean) = run { }
+
     fun onTriggerFromOtherAppsChanged(checked: Boolean) = run {}
+
     fun onCreateShortcutClick() = run { }
 }
 
@@ -351,37 +378,31 @@ private fun Preview() {
     KeyMapperTheme {
         Surface {
             KeyMapOptionsScreen(
-                state = State.Data(
-                    KeyMapOptionsState(
-                        showLongPressDelay = true,
-                        longPressDelay = 300,
-                        defaultLongPressDelay = 400,
-
-                        showDoublePressDelay = true,
-                        doublePressDelay = 100,
-                        defaultDoublePressDelay = 100,
-
-                        showSequenceTriggerTimeout = true,
-                        sequenceTriggerTimeout = 1000,
-                        defaultSequenceTriggerTimeout = 1000,
-
-                        showVibrateDuration = true,
-                        vibrateDuration = 100,
-                        defaultVibrateDuration = 100,
-
-                        showVibrate = true,
-                        vibrate = true,
-
-                        showLongPressDoubleVibration = true,
-                        longPressDoubleVibration = false,
-
-                        triggerFromOtherApps = true,
-                        keyMapUid = "00000-00000-00000-0000000000000000000000000000000000",
-                        isLauncherShortcutButtonEnabled = false,
-
-                        showToast = true,
+                state =
+                    State.Data(
+                        KeyMapOptionsState(
+                            showLongPressDelay = true,
+                            longPressDelay = 300,
+                            defaultLongPressDelay = 400,
+                            showDoublePressDelay = true,
+                            doublePressDelay = 100,
+                            defaultDoublePressDelay = 100,
+                            showSequenceTriggerTimeout = true,
+                            sequenceTriggerTimeout = 1000,
+                            defaultSequenceTriggerTimeout = 1000,
+                            showVibrateDuration = true,
+                            vibrateDuration = 100,
+                            defaultVibrateDuration = 100,
+                            showVibrate = true,
+                            vibrate = true,
+                            showLongPressDoubleVibration = true,
+                            longPressDoubleVibration = false,
+                            triggerFromOtherApps = true,
+                            keyMapUid = "00000-00000-00000-0000000000000000000000000000000000",
+                            isLauncherShortcutButtonEnabled = false,
+                            showToast = true,
+                        ),
                     ),
-                ),
                 callback = object : KeyMapOptionsCallback {},
             )
         }

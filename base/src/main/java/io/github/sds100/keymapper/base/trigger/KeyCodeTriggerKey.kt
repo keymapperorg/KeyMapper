@@ -32,25 +32,20 @@ sealed interface KeyCodeTriggerKey {
     fun isSameDevice(otherKey: KeyCodeTriggerKey): Boolean
 }
 
-fun KeyCodeTriggerKey.detectWithScancode(): Boolean {
-    return scanCode != null && (detectWithScanCodeUserSetting || isKeyCodeUnknown())
-}
+fun KeyCodeTriggerKey.detectWithScancode(): Boolean = scanCode != null && (detectWithScanCodeUserSetting || isKeyCodeUnknown())
 
-fun KeyCodeTriggerKey.isKeyCodeUnknown(): Boolean {
-    return KeyEventUtils.isKeyCodeUnknown(keyCode)
-}
+fun KeyCodeTriggerKey.isKeyCodeUnknown(): Boolean = KeyEventUtils.isKeyCodeUnknown(keyCode)
 
-fun KeyCodeTriggerKey.isScanCodeDetectionUserConfigurable(): Boolean {
-    return scanCode != null && !isKeyCodeUnknown()
-}
+fun KeyCodeTriggerKey.isScanCodeDetectionUserConfigurable(): Boolean = scanCode != null && !isKeyCodeUnknown()
 
 /**
  * Get the label for the key code or scan code, depending on whether to detect it with a scan code.
  */
 fun KeyCodeTriggerKey.getCodeLabel(resourceProvider: ResourceProvider): String {
     if (detectWithScancode() && scanCode != null) {
-        val codeLabel = ScancodeStrings.getScancodeLabel(scanCode!!)
-            ?: resourceProvider.getString(R.string.trigger_key_unknown_scan_code, scanCode!!)
+        val codeLabel =
+            ScancodeStrings.getScancodeLabel(scanCode!!)
+                ?: resourceProvider.getString(R.string.trigger_key_unknown_scan_code, scanCode!!)
 
         return "$codeLabel (${resourceProvider.getString(R.string.trigger_key_scan_code_detection_flag)})"
     } else {

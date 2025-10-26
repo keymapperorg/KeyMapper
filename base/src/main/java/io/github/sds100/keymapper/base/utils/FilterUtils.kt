@@ -8,21 +8,23 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import java.util.Locale
 
-fun <T : ISearchable> List<T>.filterByQuery(query: String?): Flow<State<List<T>>> = flow {
-    if (query.isNullOrBlank()) {
-        emit(State.Data(this@filterByQuery))
-    } else {
-        emit(State.Loading)
+fun <T : ISearchable> List<T>.filterByQuery(query: String?): Flow<State<List<T>>> =
+    flow {
+        if (query.isNullOrBlank()) {
+            emit(State.Data(this@filterByQuery))
+        } else {
+            emit(State.Loading)
 
-        val filteredList = withContext(Dispatchers.Default) {
-            this@filterByQuery.filter { model ->
-                model.getSearchableString().containsQuery(query)
-            }
+            val filteredList =
+                withContext(Dispatchers.Default) {
+                    this@filterByQuery.filter { model ->
+                        model.getSearchableString().containsQuery(query)
+                    }
+                }
+
+            emit(State.Data(filteredList))
         }
-
-        emit(State.Data(filteredList))
     }
-}
 
 fun String.containsQuery(query: String?): Boolean {
     if (query.isNullOrBlank()) return true

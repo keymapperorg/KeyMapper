@@ -13,25 +13,26 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ActivityViewModel @Inject constructor(
-    private val setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
-    resourceProvider: ResourceProvider,
-    dialogProvider: DialogProvider,
-    navigationProvider: NavigationProvider,
-) : ViewModel(),
-    ResourceProvider by resourceProvider,
-    DialogProvider by dialogProvider,
-    NavigationProvider by navigationProvider {
+class ActivityViewModel
+    @Inject
+    constructor(
+        private val setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
+        resourceProvider: ResourceProvider,
+        dialogProvider: DialogProvider,
+        navigationProvider: NavigationProvider,
+    ) : ViewModel(),
+        ResourceProvider by resourceProvider,
+        DialogProvider by dialogProvider,
+        NavigationProvider by navigationProvider {
+        var previousNightMode: Int? = null
 
-    var previousNightMode: Int? = null
+        fun onCantFindAccessibilitySettings() {
+            setupAccessibilityServiceDelegate.showCantFindAccessibilitySettingsDialog()
+        }
 
-    fun onCantFindAccessibilitySettings() {
-        setupAccessibilityServiceDelegate.showCantFindAccessibilitySettingsDialog()
-    }
-
-    fun launchProModeSetup() {
-        viewModelScope.launch {
-            navigate("pro_mode_setup", NavDestination.ProModeSetup)
+        fun launchProModeSetup() {
+            viewModelScope.launch {
+                navigate("pro_mode_setup", NavDestination.ProModeSetup)
+            }
         }
     }
-}

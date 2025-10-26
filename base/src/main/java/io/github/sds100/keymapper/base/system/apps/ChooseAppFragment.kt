@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.map
 
 @AndroidEntryPoint
 class ChooseAppFragment : RecyclerViewFragment<SimpleListItemOld, FragmentChooseAppBinding>() {
-
     companion object {
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
         const val SEARCH_STATE_KEY = "key_app_search_state"
@@ -37,7 +36,10 @@ class ChooseAppFragment : RecyclerViewFragment<SimpleListItemOld, FragmentChoose
     override val listItems: Flow<State<List<SimpleListItemOld>>>
         get() = viewModel.state.map { it.listItems }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.allowHiddenApps = args.allowHiddenApps
@@ -59,12 +61,17 @@ class ChooseAppFragment : RecyclerViewFragment<SimpleListItemOld, FragmentChoose
         viewModel.searchQuery.value = query
     }
 
-    override fun bind(inflater: LayoutInflater, container: ViewGroup?) =
-        FragmentChooseAppBinding.inflate(inflater, container, false).apply {
-            lifecycleOwner = viewLifecycleOwner
-        }
+    override fun bind(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+    ) = FragmentChooseAppBinding.inflate(inflater, container, false).apply {
+        lifecycleOwner = viewLifecycleOwner
+    }
 
-    override fun populateList(recyclerView: EpoxyRecyclerView, listItems: List<SimpleListItemOld>) {
+    override fun populateList(
+        recyclerView: EpoxyRecyclerView,
+        listItems: List<SimpleListItemOld>,
+    ) {
         binding.epoxyRecyclerView.withModels {
             listItems.forEach {
                 simple {
@@ -82,8 +89,10 @@ class ChooseAppFragment : RecyclerViewFragment<SimpleListItemOld, FragmentChoose
     override fun getRequestKey(): String = args.requestKey
 
     override fun getBottomAppBar(binding: FragmentChooseAppBinding) = binding.appBar
+
     override fun getRecyclerView(binding: FragmentChooseAppBinding) = binding.epoxyRecyclerView
+
     override fun getProgressBar(binding: FragmentChooseAppBinding) = binding.progressBar
-    override fun getEmptyListPlaceHolderTextView(binding: FragmentChooseAppBinding) =
-        binding.emptyListPlaceHolder
+
+    override fun getEmptyListPlaceHolderTextView(binding: FragmentChooseAppBinding) = binding.emptyListPlaceHolder
 }

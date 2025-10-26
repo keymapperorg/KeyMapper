@@ -37,7 +37,6 @@ abstract class BaseHomeViewModel(
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider {
-
     val keyMapListViewModel by lazy {
         KeyMapListViewModel(
             viewModelScope,
@@ -79,12 +78,13 @@ abstract class BaseHomeViewModel(
     }
 
     private suspend fun showWhatsNewDialog() {
-        val dialog = DialogModel.Alert(
-            title = getString(R.string.whats_new),
-            message = onboarding.getWhatsNewText(),
-            positiveButtonText = getString(R.string.pos_ok),
-            neutralButtonText = getString(R.string.neutral_changelog),
-        )
+        val dialog =
+            DialogModel.Alert(
+                title = getString(R.string.whats_new),
+                message = onboarding.getWhatsNewText(),
+                positiveButtonText = getString(R.string.pos_ok),
+                neutralButtonText = getString(R.string.neutral_changelog),
+            )
 
         // don't return if they dismiss the dialog because this is common behaviour.
         val response = showDialog("whats-new", dialog)

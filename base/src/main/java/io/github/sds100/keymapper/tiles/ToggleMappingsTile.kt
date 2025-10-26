@@ -27,7 +27,6 @@ import javax.inject.Inject
 class ToggleMappingsTile :
     TileService(),
     LifecycleOwner {
-
     @Inject
     lateinit var serviceAdapter: AccessibilityServiceAdapter
 

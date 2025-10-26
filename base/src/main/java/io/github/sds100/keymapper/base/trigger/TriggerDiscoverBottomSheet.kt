@@ -66,11 +66,12 @@ fun TriggerDiscoverBottomSheet(
 @Composable
 private fun PreviewNoKeyRecordedComplete() {
     KeyMapperTheme {
-        val sheetState = SheetState(
-            skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
-        )
+        val sheetState =
+            SheetState(
+                skipPartiallyExpanded = true,
+                density = LocalDensity.current,
+                initialValue = SheetValue.Expanded,
+            )
 
         TriggerDiscoverBottomSheet(
             sheetState = sheetState,

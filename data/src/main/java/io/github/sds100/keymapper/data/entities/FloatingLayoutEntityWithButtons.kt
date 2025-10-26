@@ -8,7 +8,6 @@ import io.github.sds100.keymapper.data.db.dao.FloatingLayoutDao
 data class FloatingLayoutEntityWithButtons(
     @Embedded
     val layout: FloatingLayoutEntity,
-
     @Relation(
         parentColumn = FloatingLayoutDao.KEY_UID,
         entityColumn = FloatingButtonDao.KEY_LAYOUT_UID,

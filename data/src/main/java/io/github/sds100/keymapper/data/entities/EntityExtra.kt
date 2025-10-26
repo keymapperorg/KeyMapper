@@ -13,22 +13,21 @@ import kotlinx.parcelize.Parcelize
 data class EntityExtra(
     @SerializedName(NAME_ID)
     val id: String,
-
     @SerializedName(NAME_DATA)
     val data: String,
 ) : Parcelable {
     companion object {
-
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_ID = "id"
         const val NAME_DATA = "data"
 
-        val DESERIALIZER = jsonDeserializer {
-            val id by it.json.byString(NAME_ID)
-            val data by it.json.byString(NAME_DATA)
+        val DESERIALIZER =
+            jsonDeserializer {
+                val id by it.json.byString(NAME_ID)
+                val data by it.json.byString(NAME_DATA)
 
-            EntityExtra(id, data)
-        }
+                EntityExtra(id, data)
+            }
     }
 }
 

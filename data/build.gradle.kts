@@ -10,10 +10,16 @@ plugins {
 
 android {
     namespace = "io.github.sds100.keymapper.data"
-    compileSdk = libs.versions.compile.sdk.get().toInt()
+    compileSdk =
+        libs.versions.compile.sdk
+            .get()
+            .toInt()
 
     defaultConfig {
-        minSdk = libs.versions.min.sdk.get().toInt()
+        minSdk =
+            libs.versions.min.sdk
+                .get()
+                .toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")

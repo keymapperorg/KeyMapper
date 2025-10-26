@@ -27,69 +27,68 @@ import javax.inject.Singleton
 
 @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
 @Singleton
-class EvdevHandleCache @Inject constructor(
-    private val coroutineScope: CoroutineScope,
-    private val devicesAdapter: DevicesAdapter,
-    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
-) {
-    private val devicesByPath: MutableStateFlow<Map<String, EvdevDeviceHandle>> =
-        MutableStateFlow(emptyMap())
+class EvdevHandleCache
+    @Inject
+    constructor(
+        private val coroutineScope: CoroutineScope,
+        private val devicesAdapter: DevicesAdapter,
+        private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
+    ) {
+        private val devicesByPath: MutableStateFlow<Map<String, EvdevDeviceHandle>> =
+            MutableStateFlow(emptyMap())
 
-    val devices: StateFlow<List<EvdevDeviceInfo>> =
-        devicesByPath
-            .map { pathMap ->
-                pathMap.values.map { device ->
-                    EvdevDeviceInfo(
-                        name = device.name,
-                        bus = device.bus,
-                        vendor = device.vendor,
-                        product = device.product,
-                    )
-                }
+        val devices: StateFlow<List<EvdevDeviceInfo>> =
+            devicesByPath
+                .map { pathMap ->
+                    pathMap.values.map { device ->
+                        EvdevDeviceInfo(
+                            name = device.name,
+                            bus = device.bus,
+                            vendor = device.vendor,
+                            product = device.product,
+                        )
+                    }
+                }.stateIn(coroutineScope, SharingStarted.Eagerly, emptyList())
+
+        init {
+            coroutineScope.launch {
+                combine(
+                    devicesAdapter.connectedInputDevices,
+                    systemBridgeConnectionManager.connectionState,
+                ) { _, connectionState ->
+                    if (connectionState !is SystemBridgeConnectionState.Connected) {
+                        devicesByPath.value = emptyMap()
+                    } else {
+                        invalidate()
+                    }
+                }.collect()
             }
-            .stateIn(coroutineScope, SharingStarted.Eagerly, emptyList())
-
-    init {
-        coroutineScope.launch {
-            combine(
-                devicesAdapter.connectedInputDevices,
-                systemBridgeConnectionManager.connectionState,
-            ) { _, connectionState ->
-                if (connectionState !is SystemBridgeConnectionState.Connected) {
-                    devicesByPath.value = emptyMap()
-                } else {
-                    invalidate()
-                }
-            }.collect()
-        }
-    }
-
-    fun getByPath(path: String): EvdevDeviceHandle? {
-        return devicesByPath.value[path]
-    }
-
-    fun getByInfo(deviceInfo: EvdevDeviceInfo): EvdevDeviceHandle? {
-        return devicesByPath.value.values.firstOrNull {
-            it.name == deviceInfo.name &&
-                it.bus == deviceInfo.bus &&
-                it.vendor == deviceInfo.vendor &&
-                it.product == deviceInfo.product
-        }
-    }
-
-    suspend fun invalidate() {
-        if (!systemBridgeConnectionManager.isConnected()) {
-            devicesByPath.value = emptyMap()
-            return
         }
 
-        // Do it on a separate thread in case there is deadlock
-        val newDevices = withContext(Dispatchers.IO) {
-            systemBridgeConnectionManager.run { bridge -> bridge.evdevInputDevices.associateBy { it.path } }
-        }.onFailure { error ->
-            Timber.e("Failed to get evdev input devices from system bridge $error")
-        }.valueIfFailure { emptyMap() }
+        fun getByPath(path: String): EvdevDeviceHandle? = devicesByPath.value[path]
 
-        devicesByPath.value = newDevices
+        fun getByInfo(deviceInfo: EvdevDeviceInfo): EvdevDeviceHandle? =
+            devicesByPath.value.values.firstOrNull {
+                it.name == deviceInfo.name &&
+                    it.bus == deviceInfo.bus &&
+                    it.vendor == deviceInfo.vendor &&
+                    it.product == deviceInfo.product
+            }
+
+        suspend fun invalidate() {
+            if (!systemBridgeConnectionManager.isConnected()) {
+                devicesByPath.value = emptyMap()
+                return
+            }
+
+            // Do it on a separate thread in case there is deadlock
+            val newDevices =
+                withContext(Dispatchers.IO) {
+                    systemBridgeConnectionManager.run { bridge -> bridge.evdevInputDevices.associateBy { it.path } }
+                }.onFailure { error ->
+                    Timber.e("Failed to get evdev input devices from system bridge $error")
+                }.valueIfFailure { emptyMap() }
+
+            devicesByPath.value = newDevices
+        }
     }
-}

@@ -8,32 +8,25 @@ import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class FakeInputMethodAdapter : InputMethodAdapter {
-
     override val inputMethodHistory = MutableStateFlow<List<ImeInfo>>(emptyList())
 
     override val inputMethods = MutableStateFlow<List<ImeInfo>>(emptyList())
 
     override val chosenIme = MutableStateFlow<ImeInfo?>(null)
 
-    override fun getChosenIme(): ImeInfo? {
-        return chosenIme.value
-    }
+    override fun getChosenIme(): ImeInfo? = chosenIme.value
 
-    override fun showImePicker(fromForeground: Boolean): KMResult<*> {
-        return Success(Unit)
-    }
+    override fun showImePicker(fromForeground: Boolean): KMResult<*> = Success(Unit)
 
-    override fun getInfoById(imeId: String): KMResult<ImeInfo> {
-        return inputMethods.value
+    override fun getInfoById(imeId: String): KMResult<ImeInfo> =
+        inputMethods.value
             .firstOrNull { it.id == imeId }
             ?.let { Success(it) }
             ?: KMError.InputMethodNotFound(imeId)
-    }
 
-    override fun getInfoByPackageName(packageName: String): KMResult<ImeInfo> {
-        return inputMethods.value
+    override fun getInfoByPackageName(packageName: String): KMResult<ImeInfo> =
+        inputMethods.value
             .firstOrNull { it.packageName == packageName }
             ?.let { Success(it) }
             ?: KMError.InputMethodNotFound(packageName)
-    }
 }

@@ -22,63 +22,66 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ChooseBluetoothDeviceViewModel @Inject constructor(
-    private val useCase: ChooseBluetoothDeviceUseCase,
-    private val resourceProvider: ResourceProvider,
-    dialogProvider: DialogProvider,
-) : ViewModel(),
-    ResourceProvider by resourceProvider,
-    DialogProvider by dialogProvider {
+class ChooseBluetoothDeviceViewModel
+    @Inject
+    constructor(
+        private val useCase: ChooseBluetoothDeviceUseCase,
+        private val resourceProvider: ResourceProvider,
+        dialogProvider: DialogProvider,
+    ) : ViewModel(),
+        ResourceProvider by resourceProvider,
+        DialogProvider by dialogProvider {
+        private val _caption = MutableStateFlow<String?>(null)
+        val caption: StateFlow<String?> = _caption
 
-    private val _caption = MutableStateFlow<String?>(null)
-    val caption: StateFlow<String?> = _caption
+        private val _listItems: MutableStateFlow<State<List<ListItem>>> =
+            MutableStateFlow(State.Loading)
+        val listItems: StateFlow<State<List<ListItem>>> = _listItems.asStateFlow()
 
-    private val _listItems: MutableStateFlow<State<List<ListItem>>> =
-        MutableStateFlow(State.Loading)
-    val listItems: StateFlow<State<List<ListItem>>> = _listItems.asStateFlow()
+        private val _returnResult = MutableSharedFlow<BluetoothDeviceInfo>()
+        val returnResult = _returnResult.asSharedFlow()
 
-    private val _returnResult = MutableSharedFlow<BluetoothDeviceInfo>()
-    val returnResult = _returnResult.asSharedFlow()
+        private val missingPermissionListItem: TextListItem.Error by lazy {
+            TextListItem.Error(
+                "missing_permission",
+                getString(R.string.error_choose_bluetooth_devices_permission_denied),
+            )
+        }
 
-    private val missingPermissionListItem: TextListItem.Error by lazy {
-        TextListItem.Error(
-            "missing_permission",
-            getString(R.string.error_choose_bluetooth_devices_permission_denied),
-        )
-    }
-
-    init {
-        combine(useCase.devices, useCase.hasPermissionToSeeDevices) { devices, permissionGranted ->
-            if (!permissionGranted) {
-                _caption.value = null
-                _listItems.value = State.Data(listOf(missingPermissionListItem))
-            } else {
-                val devicesListItems = devices.map { device ->
-                    DefaultSimpleListItem(
-                        id = device.address,
-                        title = device.name,
-                    )
-                }
-
-                _caption.value = if (devices.isEmpty()) {
-                    getString(R.string.caption_no_paired_bt_devices)
+        init {
+            combine(useCase.devices, useCase.hasPermissionToSeeDevices) { devices, permissionGranted ->
+                if (!permissionGranted) {
+                    _caption.value = null
+                    _listItems.value = State.Data(listOf(missingPermissionListItem))
                 } else {
-                    null
+                    val devicesListItems =
+                        devices.map { device ->
+                            DefaultSimpleListItem(
+                                id = device.address,
+                                title = device.name,
+                            )
+                        }
+
+                    _caption.value =
+                        if (devices.isEmpty()) {
+                            getString(R.string.caption_no_paired_bt_devices)
+                        } else {
+                            null
+                        }
+
+                    _listItems.value = State.Data(devicesListItems)
                 }
+            }.launchIn(viewModelScope)
+        }
 
-                _listItems.value = State.Data(devicesListItems)
+        fun onFixMissingPermissionListItemClick() {
+            useCase.requestPermission()
+        }
+
+        fun onBluetoothDeviceListItemClick(id: String) {
+            viewModelScope.launch {
+                val deviceInfo = useCase.devices.value.find { it.address == id } ?: return@launch
+                _returnResult.emit(deviceInfo)
             }
-        }.launchIn(viewModelScope)
-    }
-
-    fun onFixMissingPermissionListItemClick() {
-        useCase.requestPermission()
-    }
-
-    fun onBluetoothDeviceListItemClick(id: String) {
-        viewModelScope.launch {
-            val deviceInfo = useCase.devices.value.find { it.address == id } ?: return@launch
-            _returnResult.emit(deviceInfo)
         }
     }
-}

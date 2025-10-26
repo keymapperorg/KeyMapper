@@ -62,123 +62,122 @@ class LazyConstraintSnapshot(
 
     private val localTime = LocalTime.now()
 
-    private fun isMediaPlaying(): Boolean {
-        return audioVolumeStreams.contains(AudioManager.STREAM_MUSIC) || appsPlayingMedia.isNotEmpty()
-    }
+    private fun isMediaPlaying(): Boolean = audioVolumeStreams.contains(AudioManager.STREAM_MUSIC) || appsPlayingMedia.isNotEmpty()
 
     override fun isSatisfied(constraint: Constraint): Boolean {
-        val isSatisfied = when (constraint.data) {
-            is ConstraintData.AppInForeground -> appInForeground == constraint.data.packageName
-            is ConstraintData.AppNotInForeground -> appInForeground != constraint.data.packageName
-            is ConstraintData.AppPlayingMedia -> {
-                if (appsPlayingMedia.contains(constraint.data.packageName)) {
-                    return true
-                } else if (appInForeground == constraint.data.packageName && isMediaPlaying()) {
-                    return true
-                } else {
-                    return false
-                }
-            }
-
-            is ConstraintData.AppNotPlayingMedia ->
-                appsPlayingMedia.none { it == constraint.data.packageName } &&
-                    !(appInForeground == constraint.data.packageName && isMediaPlaying())
-
-            is ConstraintData.MediaPlaying -> isMediaPlaying()
-
-            is ConstraintData.NoMediaPlaying -> !isMediaPlaying()
-
-            is ConstraintData.BtDeviceConnected -> {
-                connectedBluetoothDevices.any { it.address == constraint.data.bluetoothAddress }
-            }
-
-            is ConstraintData.BtDeviceDisconnected -> {
-                connectedBluetoothDevices.none { it.address == constraint.data.bluetoothAddress }
-            }
-
-            is ConstraintData.OrientationCustom -> orientation == constraint.data.orientation
-            is ConstraintData.OrientationLandscape ->
-                orientation == Orientation.ORIENTATION_90 || orientation == Orientation.ORIENTATION_270
-
-            is ConstraintData.OrientationPortrait ->
-                orientation == Orientation.ORIENTATION_0 || orientation == Orientation.ORIENTATION_180
-
-            is ConstraintData.ScreenOff -> !isScreenOn
-            is ConstraintData.ScreenOn -> isScreenOn
-            is ConstraintData.FlashlightOff -> !cameraAdapter.isFlashlightOn(constraint.data.lens)
-            is ConstraintData.FlashlightOn -> cameraAdapter.isFlashlightOn(constraint.data.lens)
-            is ConstraintData.WifiConnected -> {
-                if (constraint.data.ssid == null) {
-                    // connected to any network
-                    connectedWifiSSID != null
-                } else {
-                    connectedWifiSSID == constraint.data.ssid
-                }
-            }
-
-            is ConstraintData.WifiDisconnected ->
-                if (constraint.data.ssid == null) {
-                    // connected to no network
-                    connectedWifiSSID == null
-                } else {
-                    connectedWifiSSID != constraint.data.ssid
-                }
-
-            is ConstraintData.WifiOff -> !isWifiEnabled
-            is ConstraintData.WifiOn -> isWifiEnabled
-            is ConstraintData.ImeChosen -> chosenImeId == constraint.data.imeId
-            is ConstraintData.ImeNotChosen -> chosenImeId != constraint.data.imeId
-            is ConstraintData.DeviceIsLocked -> isLocked
-            is ConstraintData.DeviceIsUnlocked -> !isLocked
-            is ConstraintData.InPhoneCall ->
-                callState == CallState.IN_PHONE_CALL ||
-                    audioVolumeStreams.contains(AudioManager.STREAM_VOICE_CALL)
-
-            is ConstraintData.NotInPhoneCall ->
-                callState == CallState.NONE &&
-                    !audioVolumeStreams.contains(AudioManager.STREAM_VOICE_CALL)
-
-            is ConstraintData.PhoneRinging ->
-                callState == CallState.RINGING ||
-                    audioVolumeStreams.contains(AudioManager.STREAM_RING)
-
-            is ConstraintData.Charging -> isCharging
-            is ConstraintData.Discharging -> !isCharging
-
-            is ConstraintData.HingeClosed -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    when (val state = foldableAdapter.hingeState.value) {
-                        is HingeState.Available -> state.angle < 30f
-                        is HingeState.Unavailable -> false
+        val isSatisfied =
+            when (constraint.data) {
+                is ConstraintData.AppInForeground -> appInForeground == constraint.data.packageName
+                is ConstraintData.AppNotInForeground -> appInForeground != constraint.data.packageName
+                is ConstraintData.AppPlayingMedia -> {
+                    if (appsPlayingMedia.contains(constraint.data.packageName)) {
+                        return true
+                    } else if (appInForeground == constraint.data.packageName && isMediaPlaying()) {
+                        return true
+                    } else {
+                        return false
                     }
-                } else {
-                    false
                 }
-            }
 
-            is ConstraintData.HingeOpen -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    when (val state = foldableAdapter.hingeState.value) {
-                        is HingeState.Available -> state.angle >= 150f
-                        is HingeState.Unavailable -> false
+                is ConstraintData.AppNotPlayingMedia ->
+                    appsPlayingMedia.none { it == constraint.data.packageName } &&
+                        !(appInForeground == constraint.data.packageName && isMediaPlaying())
+
+                is ConstraintData.MediaPlaying -> isMediaPlaying()
+
+                is ConstraintData.NoMediaPlaying -> !isMediaPlaying()
+
+                is ConstraintData.BtDeviceConnected -> {
+                    connectedBluetoothDevices.any { it.address == constraint.data.bluetoothAddress }
+                }
+
+                is ConstraintData.BtDeviceDisconnected -> {
+                    connectedBluetoothDevices.none { it.address == constraint.data.bluetoothAddress }
+                }
+
+                is ConstraintData.OrientationCustom -> orientation == constraint.data.orientation
+                is ConstraintData.OrientationLandscape ->
+                    orientation == Orientation.ORIENTATION_90 || orientation == Orientation.ORIENTATION_270
+
+                is ConstraintData.OrientationPortrait ->
+                    orientation == Orientation.ORIENTATION_0 || orientation == Orientation.ORIENTATION_180
+
+                is ConstraintData.ScreenOff -> !isScreenOn
+                is ConstraintData.ScreenOn -> isScreenOn
+                is ConstraintData.FlashlightOff -> !cameraAdapter.isFlashlightOn(constraint.data.lens)
+                is ConstraintData.FlashlightOn -> cameraAdapter.isFlashlightOn(constraint.data.lens)
+                is ConstraintData.WifiConnected -> {
+                    if (constraint.data.ssid == null) {
+                        // connected to any network
+                        connectedWifiSSID != null
+                    } else {
+                        connectedWifiSSID == constraint.data.ssid
                     }
-                } else {
-                    false
                 }
+
+                is ConstraintData.WifiDisconnected ->
+                    if (constraint.data.ssid == null) {
+                        // connected to no network
+                        connectedWifiSSID == null
+                    } else {
+                        connectedWifiSSID != constraint.data.ssid
+                    }
+
+                is ConstraintData.WifiOff -> !isWifiEnabled
+                is ConstraintData.WifiOn -> isWifiEnabled
+                is ConstraintData.ImeChosen -> chosenImeId == constraint.data.imeId
+                is ConstraintData.ImeNotChosen -> chosenImeId != constraint.data.imeId
+                is ConstraintData.DeviceIsLocked -> isLocked
+                is ConstraintData.DeviceIsUnlocked -> !isLocked
+                is ConstraintData.InPhoneCall ->
+                    callState == CallState.IN_PHONE_CALL ||
+                        audioVolumeStreams.contains(AudioManager.STREAM_VOICE_CALL)
+
+                is ConstraintData.NotInPhoneCall ->
+                    callState == CallState.NONE &&
+                        !audioVolumeStreams.contains(AudioManager.STREAM_VOICE_CALL)
+
+                is ConstraintData.PhoneRinging ->
+                    callState == CallState.RINGING ||
+                        audioVolumeStreams.contains(AudioManager.STREAM_RING)
+
+                is ConstraintData.Charging -> isCharging
+                is ConstraintData.Discharging -> !isCharging
+
+                is ConstraintData.HingeClosed -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        when (val state = foldableAdapter.hingeState.value) {
+                            is HingeState.Available -> state.angle < 30f
+                            is HingeState.Unavailable -> false
+                        }
+                    } else {
+                        false
+                    }
+                }
+
+                is ConstraintData.HingeOpen -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        when (val state = foldableAdapter.hingeState.value) {
+                            is HingeState.Available -> state.angle >= 150f
+                            is HingeState.Unavailable -> false
+                        }
+                    } else {
+                        false
+                    }
+                }
+
+                // The keyguard manager still reports the lock screen as showing if you are in
+                // an another activity like the camera app while the phone is locked.
+                is ConstraintData.LockScreenShowing -> isLockscreenShowing && appInForeground == "com.android.systemui"
+                is ConstraintData.LockScreenNotShowing -> !isLockscreenShowing || appInForeground != "com.android.systemui"
+
+                is ConstraintData.Time ->
+                    if (constraint.data.startTime.isAfter(constraint.data.endTime)) {
+                        localTime.isAfter(constraint.data.startTime) || localTime.isBefore(constraint.data.endTime)
+                    } else {
+                        localTime.isAfter(constraint.data.startTime) && localTime.isBefore(constraint.data.endTime)
+                    }
             }
-
-            // The keyguard manager still reports the lock screen as showing if you are in
-            // an another activity like the camera app while the phone is locked.
-            is ConstraintData.LockScreenShowing -> isLockscreenShowing && appInForeground == "com.android.systemui"
-            is ConstraintData.LockScreenNotShowing -> !isLockscreenShowing || appInForeground != "com.android.systemui"
-
-            is ConstraintData.Time ->
-                if (constraint.data.startTime.isAfter(constraint.data.endTime)) {
-                    localTime.isAfter(constraint.data.startTime) || localTime.isBefore(constraint.data.endTime)
-                } else {
-                    localTime.isAfter(constraint.data.startTime) && localTime.isBefore(constraint.data.endTime)
-                }
-        }
 
         return isSatisfied
     }

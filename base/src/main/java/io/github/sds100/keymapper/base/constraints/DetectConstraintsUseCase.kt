@@ -19,79 +19,80 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 
-class DetectConstraintsUseCaseImpl @AssistedInject constructor(
-    @Assisted
-    private val accessibilityService: IAccessibilityService,
-    private val mediaAdapter: MediaAdapter,
-    private val devicesAdapter: DevicesAdapter,
-    private val displayAdapter: DisplayAdapter,
-    private val cameraAdapter: CameraAdapter,
-    private val networkAdapter: NetworkAdapter,
-    private val inputMethodAdapter: InputMethodAdapter,
-    private val lockScreenAdapter: LockScreenAdapter,
-    private val phoneAdapter: PhoneAdapter,
-    private val powerAdapter: PowerAdapter,
-    private val foldableAdapter: FoldableAdapter,
-) : DetectConstraintsUseCase {
-
-    @AssistedFactory
-    interface Factory {
-        fun create(
-            accessibilityService: IAccessibilityService,
-        ): DetectConstraintsUseCaseImpl
-    }
-
-    override fun getSnapshot(): ConstraintSnapshot = LazyConstraintSnapshot(
-        accessibilityService,
-        mediaAdapter,
-        devicesAdapter,
-        displayAdapter,
-        networkAdapter,
-        cameraAdapter,
-        inputMethodAdapter,
-        lockScreenAdapter,
-        phoneAdapter,
-        powerAdapter,
-        foldableAdapter,
-    )
-
-    override fun onDependencyChanged(dependency: ConstraintDependency): Flow<ConstraintDependency> {
-        return when (dependency) {
-            ConstraintDependency.FOREGROUND_APP -> accessibilityService.activeWindowPackage.map { dependency }
-            ConstraintDependency.APP_PLAYING_MEDIA, ConstraintDependency.MEDIA_PLAYING ->
-                merge(
-                    mediaAdapter.getActiveMediaSessionPackagesFlow(),
-                    mediaAdapter.getActiveAudioVolumeStreamsFlow(),
-                ).map { dependency }
-
-            ConstraintDependency.CONNECTED_BT_DEVICES -> devicesAdapter.connectedBluetoothDevices.map { dependency }
-            ConstraintDependency.SCREEN_STATE -> displayAdapter.isScreenOn.map { dependency }
-            ConstraintDependency.DISPLAY_ORIENTATION -> displayAdapter.orientation.map { dependency }
-            ConstraintDependency.FLASHLIGHT_STATE -> merge(
-                cameraAdapter.isFlashlightOnFlow(CameraLens.FRONT),
-                cameraAdapter.isFlashlightOnFlow(CameraLens.BACK),
-            ).map { dependency }
-
-            ConstraintDependency.WIFI_SSID -> networkAdapter.connectedWifiSSIDFlow.map { dependency }
-            ConstraintDependency.WIFI_STATE -> networkAdapter.isWifiEnabledFlow().map { dependency }
-            ConstraintDependency.CHOSEN_IME -> inputMethodAdapter.chosenIme.map { dependency }
-            ConstraintDependency.DEVICE_LOCKED_STATE ->
-                lockScreenAdapter.isLockedFlow().map { dependency }
-
-            ConstraintDependency.LOCK_SCREEN_SHOWING ->
-                merge(
-                    lockScreenAdapter.isLockScreenShowingFlow(),
-                    accessibilityService.activeWindowPackage,
-                ).map { dependency }
-
-            ConstraintDependency.PHONE_STATE -> phoneAdapter.callStateFlow.map { dependency }
-            ConstraintDependency.CHARGING_STATE -> powerAdapter.isCharging.map { dependency }
-            ConstraintDependency.HINGE_STATE -> foldableAdapter.hingeState.map { dependency }
+class DetectConstraintsUseCaseImpl
+    @AssistedInject
+    constructor(
+        @Assisted
+        private val accessibilityService: IAccessibilityService,
+        private val mediaAdapter: MediaAdapter,
+        private val devicesAdapter: DevicesAdapter,
+        private val displayAdapter: DisplayAdapter,
+        private val cameraAdapter: CameraAdapter,
+        private val networkAdapter: NetworkAdapter,
+        private val inputMethodAdapter: InputMethodAdapter,
+        private val lockScreenAdapter: LockScreenAdapter,
+        private val phoneAdapter: PhoneAdapter,
+        private val powerAdapter: PowerAdapter,
+        private val foldableAdapter: FoldableAdapter,
+    ) : DetectConstraintsUseCase {
+        @AssistedFactory
+        interface Factory {
+            fun create(accessibilityService: IAccessibilityService): DetectConstraintsUseCaseImpl
         }
+
+        override fun getSnapshot(): ConstraintSnapshot =
+            LazyConstraintSnapshot(
+                accessibilityService,
+                mediaAdapter,
+                devicesAdapter,
+                displayAdapter,
+                networkAdapter,
+                cameraAdapter,
+                inputMethodAdapter,
+                lockScreenAdapter,
+                phoneAdapter,
+                powerAdapter,
+                foldableAdapter,
+            )
+
+        override fun onDependencyChanged(dependency: ConstraintDependency): Flow<ConstraintDependency> =
+            when (dependency) {
+                ConstraintDependency.FOREGROUND_APP -> accessibilityService.activeWindowPackage.map { dependency }
+                ConstraintDependency.APP_PLAYING_MEDIA, ConstraintDependency.MEDIA_PLAYING ->
+                    merge(
+                        mediaAdapter.getActiveMediaSessionPackagesFlow(),
+                        mediaAdapter.getActiveAudioVolumeStreamsFlow(),
+                    ).map { dependency }
+
+                ConstraintDependency.CONNECTED_BT_DEVICES -> devicesAdapter.connectedBluetoothDevices.map { dependency }
+                ConstraintDependency.SCREEN_STATE -> displayAdapter.isScreenOn.map { dependency }
+                ConstraintDependency.DISPLAY_ORIENTATION -> displayAdapter.orientation.map { dependency }
+                ConstraintDependency.FLASHLIGHT_STATE ->
+                    merge(
+                        cameraAdapter.isFlashlightOnFlow(CameraLens.FRONT),
+                        cameraAdapter.isFlashlightOnFlow(CameraLens.BACK),
+                    ).map { dependency }
+
+                ConstraintDependency.WIFI_SSID -> networkAdapter.connectedWifiSSIDFlow.map { dependency }
+                ConstraintDependency.WIFI_STATE -> networkAdapter.isWifiEnabledFlow().map { dependency }
+                ConstraintDependency.CHOSEN_IME -> inputMethodAdapter.chosenIme.map { dependency }
+                ConstraintDependency.DEVICE_LOCKED_STATE ->
+                    lockScreenAdapter.isLockedFlow().map { dependency }
+
+                ConstraintDependency.LOCK_SCREEN_SHOWING ->
+                    merge(
+                        lockScreenAdapter.isLockScreenShowingFlow(),
+                        accessibilityService.activeWindowPackage,
+                    ).map { dependency }
+
+                ConstraintDependency.PHONE_STATE -> phoneAdapter.callStateFlow.map { dependency }
+                ConstraintDependency.CHARGING_STATE -> powerAdapter.isCharging.map { dependency }
+                ConstraintDependency.HINGE_STATE -> foldableAdapter.hingeState.map { dependency }
+            }
     }
-}
 
 interface DetectConstraintsUseCase {
     fun getSnapshot(): ConstraintSnapshot
+
     fun onDependencyChanged(dependency: ConstraintDependency): Flow<ConstraintDependency>
 }

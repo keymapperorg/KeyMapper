@@ -16,51 +16,55 @@ data class FloatingButtonKey(
     val button: FloatingButtonData?,
     override val clickType: ClickType,
 ) : TriggerKey() {
-
     override val allowedLongPress: Boolean = true
     override val allowedDoublePress: Boolean = true
 
-    override fun compareTo(other: TriggerKey) = when (other) {
-        is FloatingButtonKey -> compareValuesBy(
-            this,
-            other,
-            { it.uid },
-            { it.clickType },
-        )
+    override fun compareTo(other: TriggerKey) =
+        when (other) {
+            is FloatingButtonKey ->
+                compareValuesBy(
+                    this,
+                    other,
+                    { it.uid },
+                    { it.clickType },
+                )
 
-        else -> super.compareTo(other)
-    }
+            else -> super.compareTo(other)
+        }
 
     companion object {
         fun fromEntity(
             entity: FloatingButtonKeyEntity,
             buttonEntity: FloatingButtonEntityWithLayout?,
         ): TriggerKey {
-            val clickType = when (entity.clickType) {
-                TriggerKeyEntity.SHORT_PRESS -> ClickType.SHORT_PRESS
-                TriggerKeyEntity.LONG_PRESS -> ClickType.LONG_PRESS
-                TriggerKeyEntity.DOUBLE_PRESS -> ClickType.DOUBLE_PRESS
-                else -> ClickType.SHORT_PRESS
-            }
+            val clickType =
+                when (entity.clickType) {
+                    TriggerKeyEntity.SHORT_PRESS -> ClickType.SHORT_PRESS
+                    TriggerKeyEntity.LONG_PRESS -> ClickType.LONG_PRESS
+                    TriggerKeyEntity.DOUBLE_PRESS -> ClickType.DOUBLE_PRESS
+                    else -> ClickType.SHORT_PRESS
+                }
             return FloatingButtonKey(
                 uid = entity.uid,
                 buttonUid = entity.buttonUid,
-                button = buttonEntity?.let { buttonEntity ->
-                    FloatingButtonEntityMapper.fromEntity(
-                        buttonEntity.button,
-                        buttonEntity.layout.name,
-                    )
-                },
+                button =
+                    buttonEntity?.let { buttonEntity ->
+                        FloatingButtonEntityMapper.fromEntity(
+                            buttonEntity.button,
+                            buttonEntity.layout.name,
+                        )
+                    },
                 clickType = clickType,
             )
         }
 
         fun toEntity(key: FloatingButtonKey): FloatingButtonKeyEntity {
-            val clickType = when (key.clickType) {
-                ClickType.SHORT_PRESS -> TriggerKeyEntity.SHORT_PRESS
-                ClickType.LONG_PRESS -> TriggerKeyEntity.LONG_PRESS
-                ClickType.DOUBLE_PRESS -> TriggerKeyEntity.DOUBLE_PRESS
-            }
+            val clickType =
+                when (key.clickType) {
+                    ClickType.SHORT_PRESS -> TriggerKeyEntity.SHORT_PRESS
+                    ClickType.LONG_PRESS -> TriggerKeyEntity.LONG_PRESS
+                    ClickType.DOUBLE_PRESS -> TriggerKeyEntity.DOUBLE_PRESS
+                }
 
             return FloatingButtonKeyEntity(
                 uid = key.uid,

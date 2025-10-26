@@ -43,51 +43,58 @@ object FloatingButtonEntityMapper {
     fun setAppearance(
         entity: FloatingButtonEntity,
         appearance: FloatingButtonAppearance,
-    ): FloatingButtonEntity {
-        return entity.copy(
+    ): FloatingButtonEntity =
+        entity.copy(
             text = appearance.text,
             buttonSize = appearance.size,
             borderOpacity = appearance.borderOpacity,
             backgroundOpacity = appearance.backgroundOpacity,
         )
-    }
 
-    fun setLocation(entity: FloatingButtonEntity, location: Location): FloatingButtonEntity {
-        return entity.copy(
+    fun setLocation(
+        entity: FloatingButtonEntity,
+        location: Location,
+    ): FloatingButtonEntity =
+        entity.copy(
             x = location.x,
             y = location.y,
             orientation = ConstantTypeConverters.ORIENTATION_MAP[location.orientation]!!,
             displayWidth = location.displaySize.width,
             displayHeight = location.displaySize.height,
         )
-    }
 
-    fun fromEntity(entity: FloatingButtonEntity, layoutName: String): FloatingButtonData {
-        return FloatingButtonData(
+    fun fromEntity(
+        entity: FloatingButtonEntity,
+        layoutName: String,
+    ): FloatingButtonData =
+        FloatingButtonData(
             uid = entity.uid,
             layoutUid = entity.layoutUid,
             layoutName = layoutName,
-            appearance = FloatingButtonAppearance(
-                text = entity.text,
-                size = entity.buttonSize,
-                borderOpacity = entity.borderOpacity
-                    ?: FloatingButtonAppearance.DEFAULT_BORDER_OPACITY,
-                backgroundOpacity = entity.backgroundOpacity
-                    ?: FloatingButtonAppearance.DEFAULT_BACKGROUND_OPACITY,
-            ),
-            location = Location(
-                x = entity.x,
-                y = entity.y,
-                orientation = ConstantTypeConverters.ORIENTATION_MAP.getKey(entity.orientation)!!,
-                displaySize = SizeKM(entity.displayWidth, entity.displayHeight),
-            ),
+            appearance =
+                FloatingButtonAppearance(
+                    text = entity.text,
+                    size = entity.buttonSize,
+                    borderOpacity =
+                        entity.borderOpacity
+                            ?: FloatingButtonAppearance.DEFAULT_BORDER_OPACITY,
+                    backgroundOpacity =
+                        entity.backgroundOpacity
+                            ?: FloatingButtonAppearance.DEFAULT_BACKGROUND_OPACITY,
+                ),
+            location =
+                Location(
+                    x = entity.x,
+                    y = entity.y,
+                    orientation = ConstantTypeConverters.ORIENTATION_MAP.getKey(entity.orientation)!!,
+                    displaySize = SizeKM(entity.displayWidth, entity.displayHeight),
+                ),
             showOverStatusBar = entity.showOverStatusBar ?: false,
             showOverInputMethod = entity.showOverInputMethod ?: false,
         )
-    }
 
-    fun toEntity(button: FloatingButtonData): FloatingButtonEntity {
-        return FloatingButtonEntity(
+    fun toEntity(button: FloatingButtonData): FloatingButtonEntity =
+        FloatingButtonEntity(
             uid = button.uid,
             layoutUid = button.layoutUid,
             text = button.appearance.text,
@@ -102,5 +109,4 @@ object FloatingButtonEntityMapper {
             showOverStatusBar = button.showOverStatusBar,
             showOverInputMethod = button.showOverInputMethod,
         )
-    }
 }

@@ -6,7 +6,10 @@ import androidx.compose.ui.platform.UriHandler
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.ui.str
 
-fun UriHandler.openUriSafe(ctx: Context, uri: String) {
+fun UriHandler.openUriSafe(
+    ctx: Context,
+    uri: String,
+) {
     try {
         openUri(uri)
     } catch (e: IllegalArgumentException) {

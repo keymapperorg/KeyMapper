@@ -18,27 +18,31 @@ object FingerprintToKeyMapMigration {
             return null
         }
 
-        val triggerKey = FingerprintTriggerKeyEntity(
-            type = when (entity.id) {
-                FingerprintMapEntity.ID_SWIPE_DOWN -> FingerprintTriggerKeyEntity.ID_SWIPE_DOWN
-                FingerprintMapEntity.ID_SWIPE_UP -> FingerprintTriggerKeyEntity.ID_SWIPE_UP
-                FingerprintMapEntity.ID_SWIPE_LEFT -> FingerprintTriggerKeyEntity.ID_SWIPE_LEFT
-                FingerprintMapEntity.ID_SWIPE_RIGHT -> FingerprintTriggerKeyEntity.ID_SWIPE_RIGHT
-                else -> FingerprintTriggerKeyEntity.ID_SWIPE_DOWN
-            },
-            clickType = TriggerKeyEntity.SHORT_PRESS,
-        )
+        val triggerKey =
+            FingerprintTriggerKeyEntity(
+                type =
+                    when (entity.id) {
+                        FingerprintMapEntity.ID_SWIPE_DOWN -> FingerprintTriggerKeyEntity.ID_SWIPE_DOWN
+                        FingerprintMapEntity.ID_SWIPE_UP -> FingerprintTriggerKeyEntity.ID_SWIPE_UP
+                        FingerprintMapEntity.ID_SWIPE_LEFT -> FingerprintTriggerKeyEntity.ID_SWIPE_LEFT
+                        FingerprintMapEntity.ID_SWIPE_RIGHT -> FingerprintTriggerKeyEntity.ID_SWIPE_RIGHT
+                        else -> FingerprintTriggerKeyEntity.ID_SWIPE_DOWN
+                    },
+                clickType = TriggerKeyEntity.SHORT_PRESS,
+            )
 
-        val extras = entity.extras.mapNotNull { extra ->
-            when (extra.id) {
-                FingerprintMapEntity.EXTRA_VIBRATION_DURATION -> EntityExtra(
-                    TriggerEntity.EXTRA_VIBRATION_DURATION,
-                    extra.data,
-                )
+        val extras =
+            entity.extras.mapNotNull { extra ->
+                when (extra.id) {
+                    FingerprintMapEntity.EXTRA_VIBRATION_DURATION ->
+                        EntityExtra(
+                            TriggerEntity.EXTRA_VIBRATION_DURATION,
+                            extra.data,
+                        )
 
-                else -> null
+                    else -> null
+                }
             }
-        }
 
         var flags = 0
 
@@ -52,12 +56,13 @@ object FingerprintToKeyMapMigration {
 
         return KeyMapEntity(
             id = 0,
-            trigger = TriggerEntity(
-                keys = listOf(triggerKey),
-                extras = extras,
-                mode = TriggerEntity.UNDEFINED,
-                flags = flags,
-            ),
+            trigger =
+                TriggerEntity(
+                    keys = listOf(triggerKey),
+                    extras = extras,
+                    mode = TriggerEntity.UNDEFINED,
+                    flags = flags,
+                ),
             actionList = entity.actionList,
             constraintList = entity.constraintList,
             constraintMode = entity.constraintMode,

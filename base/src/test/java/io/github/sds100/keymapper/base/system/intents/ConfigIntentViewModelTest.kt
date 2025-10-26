@@ -22,7 +22,6 @@ import org.junit.Test
 
 @ExperimentalCoroutinesApi
 internal class ConfigIntentViewModelTest {
-
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -35,10 +34,11 @@ internal class ConfigIntentViewModelTest {
         Dispatchers.setMain(testDispatcher)
 
         fakeResourceProvider = FakeResourceProvider()
-        viewModel = ConfigIntentViewModel(
-            fakeResourceProvider,
-            dialogProvider = DialogProviderImpl(),
-        )
+        viewModel =
+            ConfigIntentViewModel(
+                fakeResourceProvider,
+                dialogProvider = DialogProviderImpl(),
+            )
     }
 
     @Test

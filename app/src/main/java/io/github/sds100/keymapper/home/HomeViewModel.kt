@@ -17,30 +17,32 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
-    private val listKeyMaps: ListKeyMapsUseCase,
-    private val pauseKeyMaps: PauseKeyMapsUseCase,
-    private val backupRestore: BackupRestoreMappingsUseCase,
-    private val showAlertsUseCase: ShowHomeScreenAlertsUseCase,
-    private val onboarding: OnboardingUseCase,
-    resourceProvider: ResourceProvider,
-    private val sortKeyMaps: SortKeyMapsUseCase,
-    private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
-    val setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
-    fixKeyEventActionDelegate: FixKeyEventActionDelegate,
-    navigationProvider: NavigationProvider,
-    dialogProvider: DialogProvider,
-) : BaseHomeViewModel(
-    listKeyMaps,
-    pauseKeyMaps,
-    backupRestore,
-    showAlertsUseCase,
-    onboarding,
-    resourceProvider,
-    sortKeyMaps,
-    showInputMethodPickerUseCase,
-    setupAccessibilityServiceDelegate,
-    fixKeyEventActionDelegate,
-    navigationProvider,
-    dialogProvider,
-)
+class HomeViewModel
+    @Inject
+    constructor(
+        private val listKeyMaps: ListKeyMapsUseCase,
+        private val pauseKeyMaps: PauseKeyMapsUseCase,
+        private val backupRestore: BackupRestoreMappingsUseCase,
+        private val showAlertsUseCase: ShowHomeScreenAlertsUseCase,
+        private val onboarding: OnboardingUseCase,
+        resourceProvider: ResourceProvider,
+        private val sortKeyMaps: SortKeyMapsUseCase,
+        private val showInputMethodPickerUseCase: ShowInputMethodPickerUseCase,
+        val setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
+        fixKeyEventActionDelegate: FixKeyEventActionDelegate,
+        navigationProvider: NavigationProvider,
+        dialogProvider: DialogProvider,
+    ) : BaseHomeViewModel(
+            listKeyMaps,
+            pauseKeyMaps,
+            backupRestore,
+            showAlertsUseCase,
+            onboarding,
+            resourceProvider,
+            sortKeyMaps,
+            showInputMethodPickerUseCase,
+            setupAccessibilityServiceDelegate,
+            fixKeyEventActionDelegate,
+            navigationProvider,
+            dialogProvider,
+        )

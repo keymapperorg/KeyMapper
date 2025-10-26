@@ -25,61 +25,63 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class GetActionErrorUseCaseImpl @Inject constructor(
-    private val packageManagerAdapter: PackageManagerAdapter,
-    private val inputMethodAdapter: InputMethodAdapter,
-    private val switchImeInterface: SwitchImeInterface,
-    private val permissionAdapter: PermissionAdapter,
-    private val systemFeatureAdapter: SystemFeatureAdapter,
-    private val cameraAdapter: CameraAdapter,
-    private val soundsManager: SoundsManager,
-    private val ringtoneAdapter: RingtoneAdapter,
-    private val buildConfigProvider: BuildConfigProvider,
-    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
-    private val preferenceRepository: PreferenceRepository,
-) : GetActionErrorUseCase {
-
-    private val invalidateActionErrors = merge(
-        inputMethodAdapter.chosenIme.drop(1).map { },
-        // invalidate when the input methods change
-        inputMethodAdapter.inputMethods.drop(1).map { },
-        permissionAdapter.onPermissionsUpdate,
-        soundsManager.soundFiles.drop(1).map { },
-        packageManagerAdapter.onPackagesChanged,
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
+class GetActionErrorUseCaseImpl
+    @Inject
+    constructor(
+        private val packageManagerAdapter: PackageManagerAdapter,
+        private val inputMethodAdapter: InputMethodAdapter,
+        private val switchImeInterface: SwitchImeInterface,
+        private val permissionAdapter: PermissionAdapter,
+        private val systemFeatureAdapter: SystemFeatureAdapter,
+        private val cameraAdapter: CameraAdapter,
+        private val soundsManager: SoundsManager,
+        private val ringtoneAdapter: RingtoneAdapter,
+        private val buildConfigProvider: BuildConfigProvider,
+        private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
+        private val preferenceRepository: PreferenceRepository,
+    ) : GetActionErrorUseCase {
+        private val invalidateActionErrors =
             merge(
-                systemBridgeConnectionManager.connectionState.drop(1).map { },
-                preferenceRepository.get(Keys.keyEventActionsUseSystemBridge),
+                inputMethodAdapter.chosenIme.drop(1).map { },
+                // invalidate when the input methods change
+                inputMethodAdapter.inputMethods.drop(1).map { },
+                permissionAdapter.onPermissionsUpdate,
+                soundsManager.soundFiles.drop(1).map { },
+                packageManagerAdapter.onPackagesChanged,
+                if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
+                    merge(
+                        systemBridgeConnectionManager.connectionState.drop(1).map { },
+                        preferenceRepository.get(Keys.keyEventActionsUseSystemBridge),
+                    )
+                } else {
+                    emptyFlow()
+                },
             )
-        } else {
-            emptyFlow()
-        },
-    )
 
-    override val actionErrorSnapshot: Flow<ActionErrorSnapshot> = channelFlow {
-        send(createSnapshot())
+        override val actionErrorSnapshot: Flow<ActionErrorSnapshot> =
+            channelFlow {
+                send(createSnapshot())
 
-        invalidateActionErrors.collectLatest {
-            send(createSnapshot())
-        }
+                invalidateActionErrors.collectLatest {
+                    send(createSnapshot())
+                }
+            }
+
+        private fun createSnapshot(): ActionErrorSnapshot =
+            LazyActionErrorSnapshot(
+                packageManagerAdapter,
+                inputMethodAdapter,
+                switchImeInterface,
+                permissionAdapter,
+                systemFeatureAdapter,
+                cameraAdapter,
+                soundsManager,
+                ringtoneAdapter,
+                buildConfigProvider,
+                systemBridgeConnectionManager,
+                preferenceRepository,
+            )
     }
-
-    private fun createSnapshot(): ActionErrorSnapshot {
-        return LazyActionErrorSnapshot(
-            packageManagerAdapter,
-            inputMethodAdapter,
-            switchImeInterface,
-            permissionAdapter,
-            systemFeatureAdapter,
-            cameraAdapter,
-            soundsManager,
-            ringtoneAdapter,
-            buildConfigProvider,
-            systemBridgeConnectionManager,
-            preferenceRepository,
-        )
-    }
-}
 
 interface GetActionErrorUseCase {
     val actionErrorSnapshot: Flow<ActionErrorSnapshot>

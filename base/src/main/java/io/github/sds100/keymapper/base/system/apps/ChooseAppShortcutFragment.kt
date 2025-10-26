@@ -24,7 +24,6 @@ import kotlinx.serialization.json.Json
 
 @AndroidEntryPoint
 class ChooseAppShortcutFragment : SimpleRecyclerViewFragment<AppShortcutListItem>() {
-
     companion object {
         const val REQUEST_KEY = "request_app_shortcut"
         const val EXTRA_RESULT = "extra_choose_app_shortcut_result"
@@ -94,11 +93,12 @@ class ChooseAppShortcutFragment : SimpleRecyclerViewFragment<AppShortcutListItem
             try {
                 appShortcutConfigLauncher.launch(this)
             } catch (e: SecurityException) {
-                Toast.makeText(
-                    requireContext(),
-                    R.string.error_keymapper_doesnt_have_permission_app_shortcut,
-                    Toast.LENGTH_SHORT,
-                ).show()
+                Toast
+                    .makeText(
+                        requireContext(),
+                        R.string.error_keymapper_doesnt_have_permission_app_shortcut,
+                        Toast.LENGTH_SHORT,
+                    ).show()
             }
         }
     }

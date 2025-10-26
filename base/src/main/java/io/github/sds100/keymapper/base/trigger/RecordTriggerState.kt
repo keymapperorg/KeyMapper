@@ -10,5 +10,7 @@ sealed class RecordTriggerState {
         val timeLeft: Int,
     ) : RecordTriggerState()
 
-    data class Completed(val recordedKeys: List<RecordedKey>) : RecordTriggerState()
+    data class Completed(
+        val recordedKeys: List<RecordedKey>,
+    ) : RecordTriggerState()
 }

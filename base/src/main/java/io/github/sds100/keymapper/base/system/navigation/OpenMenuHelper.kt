@@ -15,7 +15,6 @@ class OpenMenuHelper(
     private val accessibilityService: IAccessibilityService,
     private val inputEventHub: InputEventHub,
 ) {
-
     companion object {
         private const val OVERFLOW_MENU_CONTENT_DESCRIPTION = "More options"
     }
@@ -23,15 +22,16 @@ class OpenMenuHelper(
     fun openMenu(): KMResult<*> {
         when {
             inputEventHub.isSystemBridgeConnected() -> {
-                val downEvent = InjectKeyEventModel(
-                    keyCode = KeyEvent.KEYCODE_MENU,
-                    action = KeyEvent.ACTION_DOWN,
-                    metaState = 0,
-                    scanCode = 0,
-                    deviceId = -1,
-                    repeatCount = 0,
-                    source = InputDevice.SOURCE_UNKNOWN,
-                )
+                val downEvent =
+                    InjectKeyEventModel(
+                        keyCode = KeyEvent.KEYCODE_MENU,
+                        action = KeyEvent.ACTION_DOWN,
+                        metaState = 0,
+                        scanCode = 0,
+                        deviceId = -1,
+                        repeatCount = 0,
+                        source = InputDevice.SOURCE_UNKNOWN,
+                    )
 
                 val upEvent = downEvent.copy(action = KeyEvent.ACTION_UP)
 

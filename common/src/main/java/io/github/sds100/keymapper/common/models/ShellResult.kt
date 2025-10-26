@@ -20,5 +20,7 @@ data class ShellResult(
 ) : Parcelable
 
 fun ShellResult.isExecuting(): Boolean = exitCode == null
+
 fun ShellResult.isSuccess(): Boolean = exitCode == 0
+
 fun ShellResult.isError(): Boolean = exitCode != null && exitCode != 0

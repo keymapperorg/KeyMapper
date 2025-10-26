@@ -37,10 +37,11 @@ fun <T> ShortcutRow(
 ) {
     FlowRow(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(
-            8.dp,
-            alignment = Alignment.CenterHorizontally,
-        ),
+        horizontalArrangement =
+            Arrangement.spacedBy(
+                8.dp,
+                alignment = Alignment.CenterHorizontally,
+            ),
         verticalArrangement = Arrangement.Center,
     ) {
         for (shortcut in shortcuts) {
@@ -110,13 +111,14 @@ private fun PreviewVector() {
     KeyMapperTheme {
         Surface {
             ShortcutRow(
-                shortcuts = setOf(
-                    ShortcutModel(
-                        icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),
-                        text = stringResource(R.string.trigger_key_shortcut_add_fingerprint_gesture),
-                        data = "",
+                shortcuts =
+                    setOf(
+                        ShortcutModel(
+                            icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),
+                            text = stringResource(R.string.trigger_key_shortcut_add_fingerprint_gesture),
+                            data = "",
+                        ),
                     ),
-                ),
             )
         }
     }
@@ -131,13 +133,14 @@ private fun PreviewDrawable() {
     KeyMapperTheme {
         Surface {
             ShortcutRow(
-                shortcuts = setOf(
-                    ShortcutModel(
-                        icon = ComposeIconInfo.Drawable(icon),
-                        text = stringResource(R.string.trigger_key_shortcut_add_fingerprint_gesture),
-                        data = "",
+                shortcuts =
+                    setOf(
+                        ShortcutModel(
+                            icon = ComposeIconInfo.Drawable(icon),
+                            text = stringResource(R.string.trigger_key_shortcut_add_fingerprint_gesture),
+                            data = "",
+                        ),
                     ),
-                ),
             )
         }
     }
@@ -152,13 +155,14 @@ private fun PreviewMultipleLines() {
     KeyMapperTheme {
         Surface {
             ShortcutRow(
-                shortcuts = setOf(
-                    ShortcutModel(
-                        icon = ComposeIconInfo.Drawable(icon),
-                        text = "Line 1\nLine 2\nLine 3",
-                        data = "",
+                shortcuts =
+                    setOf(
+                        ShortcutModel(
+                            icon = ComposeIconInfo.Drawable(icon),
+                            text = "Line 1\nLine 2\nLine 3",
+                            data = "",
+                        ),
                     ),
-                ),
             )
         }
     }

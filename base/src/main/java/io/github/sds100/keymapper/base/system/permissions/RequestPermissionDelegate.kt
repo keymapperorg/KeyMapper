@@ -39,7 +39,6 @@ class RequestPermissionDelegate(
     private val buildConfigProvider: BuildConfigProvider,
     private val shizukuAdapter: ShizukuAdapter,
 ) {
-
     private val startActivityForResultLauncher =
         activity.activityResultRegistry.register(
             "start_activity",
@@ -58,7 +57,10 @@ class RequestPermissionDelegate(
             permissionAdapter.onPermissionsChanged()
         }
 
-    fun requestPermission(permission: Permission, navController: NavController?) {
+    fun requestPermission(
+        permission: Permission,
+        navController: NavController?,
+    ) {
         when (permission) {
             Permission.WRITE_SETTINGS -> requestWriteSettings()
             Permission.CAMERA -> requestPermissionLauncher.launch(Manifest.permission.CAMERA)
@@ -81,25 +83,27 @@ class RequestPermissionDelegate(
             Permission.ACCESS_FINE_LOCATION ->
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
 
-            Permission.POST_NOTIFICATIONS -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(
-                    activity,
-                    Manifest.permission.POST_NOTIFICATIONS,
-                )
+            Permission.POST_NOTIFICATIONS ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    val showRationale =
+                        ActivityCompat.shouldShowRequestPermissionRationale(
+                            activity,
+                            Manifest.permission.POST_NOTIFICATIONS,
+                        )
 
-                // The system will say you have to show a rationale if the user previously
-                // denied the permission. Therefore, the permission dialog will not show and so
-                // open the notification settings to turn it on manually.
-                if (showRationale) {
-                    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                        putExtra(Settings.EXTRA_APP_PACKAGE, buildConfigProvider.packageName)
+                    // The system will say you have to show a rationale if the user previously
+                    // denied the permission. Therefore, the permission dialog will not show and so
+                    // open the notification settings to turn it on manually.
+                    if (showRationale) {
+                        Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                            putExtra(Settings.EXTRA_APP_PACKAGE, buildConfigProvider.packageName)
 
-                        activity.startActivity(this)
+                            activity.startActivity(this)
+                        }
+                    } else {
+                        requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                     }
-                } else {
-                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
-            }
         }
     }
 
@@ -117,11 +121,12 @@ class RequestPermissionDelegate(
         try {
             startActivityForResultLauncher.launch(intent)
         } catch (e: Exception) {
-            Toast.makeText(
-                activity,
-                R.string.error_cant_find_dnd_access_settings,
-                Toast.LENGTH_SHORT,
-            ).show()
+            Toast
+                .makeText(
+                    activity,
+                    R.string.error_cant_find_dnd_access_settings,
+                    Toast.LENGTH_SHORT,
+                ).show()
         }
     }
 
@@ -140,11 +145,12 @@ class RequestPermissionDelegate(
             try {
                 activity.startActivity(this)
             } catch (e: Exception) {
-                Toast.makeText(
-                    activity,
-                    R.string.error_cant_find_write_settings_page,
-                    Toast.LENGTH_SHORT,
-                ).show()
+                Toast
+                    .makeText(
+                        activity,
+                        R.string.error_cant_find_write_settings_page,
+                        Toast.LENGTH_SHORT,
+                    ).show()
             }
         }
     }
@@ -256,18 +262,20 @@ class RequestPermissionDelegate(
     @RequiresApi(Build.VERSION_CODES.M)
     private fun showBatteryOptimisationExemptionSystemDialog() {
         try {
-            val intent = Intent(
-                Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                Uri.parse("package:${buildConfigProvider.packageName}"),
-            )
+            val intent =
+                Intent(
+                    Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                    Uri.parse("package:${buildConfigProvider.packageName}"),
+                )
 
             activity.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            Toast.makeText(
-                activity,
-                R.string.error_battery_optimisation_activity_not_found,
-                Toast.LENGTH_LONG,
-            ).show()
+            Toast
+                .makeText(
+                    activity,
+                    R.string.error_battery_optimisation_activity_not_found,
+                    Toast.LENGTH_LONG,
+                ).show()
         }
     }
 }

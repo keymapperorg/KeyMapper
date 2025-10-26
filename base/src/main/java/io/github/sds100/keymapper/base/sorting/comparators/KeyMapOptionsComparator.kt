@@ -17,20 +17,22 @@ class KeyMapOptionsComparator(
             return 0
         }
 
-        val result = compareValuesBy(
-            keyMap,
-            otherKeyMap,
-            { it.vibrate },
-            { it.trigger.triggerFromOtherApps },
-            { it.showToast },
-        )
+        val result =
+            compareValuesBy(
+                keyMap,
+                otherKeyMap,
+                { it.vibrate },
+                { it.trigger.triggerFromOtherApps },
+                { it.showToast },
+            )
 
         return invertIfReverse(result)
     }
 
-    private fun invertIfReverse(result: Int) = if (reverse) {
-        result * -1
-    } else {
-        result
-    }
+    private fun invertIfReverse(result: Int) =
+        if (reverse) {
+            result * -1
+        } else {
+            result
+        }
 }

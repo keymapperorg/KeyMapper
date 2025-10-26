@@ -10,45 +10,54 @@ import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
  * This extracts the core logic when configuring a trigger which makes it easier to write tests.
  */
 class ConfigTriggerDelegate {
-
     fun addFloatingButtonTriggerKey(
         trigger: Trigger,
         buttonUid: String,
         button: FloatingButtonData?,
     ): Trigger {
-        val clickType = when (trigger.mode) {
-            is TriggerMode.Parallel -> trigger.mode.clickType
-            TriggerMode.Sequence -> ClickType.SHORT_PRESS
-            TriggerMode.Undefined -> ClickType.SHORT_PRESS
-        }
+        val clickType =
+            when (trigger.mode) {
+                is TriggerMode.Parallel -> trigger.mode.clickType
+                TriggerMode.Sequence -> ClickType.SHORT_PRESS
+                TriggerMode.Undefined -> ClickType.SHORT_PRESS
+            }
 
-        val triggerKey = FloatingButtonKey(
-            buttonUid = buttonUid,
-            button = button,
-            clickType = clickType,
-        )
+        val triggerKey =
+            FloatingButtonKey(
+                buttonUid = buttonUid,
+                button = button,
+                clickType = clickType,
+            )
 
         return addTriggerKey(trigger, triggerKey)
     }
 
-    fun addAssistantTriggerKey(trigger: Trigger, type: AssistantTriggerType): Trigger {
-        val clickType = when (trigger.mode) {
-            is TriggerMode.Parallel -> trigger.mode.clickType
-            TriggerMode.Sequence -> ClickType.SHORT_PRESS
-            TriggerMode.Undefined -> ClickType.SHORT_PRESS
-        }
+    fun addAssistantTriggerKey(
+        trigger: Trigger,
+        type: AssistantTriggerType,
+    ): Trigger {
+        val clickType =
+            when (trigger.mode) {
+                is TriggerMode.Parallel -> trigger.mode.clickType
+                TriggerMode.Sequence -> ClickType.SHORT_PRESS
+                TriggerMode.Undefined -> ClickType.SHORT_PRESS
+            }
 
         val triggerKey = AssistantTriggerKey(type = type, clickType = clickType)
 
         return addTriggerKey(trigger, triggerKey)
     }
 
-    fun addFingerprintGesture(trigger: Trigger, type: FingerprintGestureType): Trigger {
-        val clickType = when (trigger.mode) {
-            is TriggerMode.Parallel -> trigger.mode.clickType
-            TriggerMode.Sequence -> ClickType.SHORT_PRESS
-            TriggerMode.Undefined -> ClickType.SHORT_PRESS
-        }
+    fun addFingerprintGesture(
+        trigger: Trigger,
+        type: FingerprintGestureType,
+    ): Trigger {
+        val clickType =
+            when (trigger.mode) {
+                is TriggerMode.Parallel -> trigger.mode.clickType
+                TriggerMode.Sequence -> ClickType.SHORT_PRESS
+                TriggerMode.Undefined -> ClickType.SHORT_PRESS
+            }
 
         val triggerKey = FingerprintTriggerKey(type = type, clickType = clickType)
 
@@ -69,15 +78,16 @@ class ConfigTriggerDelegate {
     ): Trigger {
         val isPowerKey = KeyEventUtils.isPowerButtonKey(keyCode, scanCode)
 
-        val clickType = if (isPowerKey) {
-            ClickType.LONG_PRESS
-        } else {
-            when (trigger.mode) {
-                is TriggerMode.Parallel -> trigger.mode.clickType
-                TriggerMode.Sequence -> ClickType.SHORT_PRESS
-                TriggerMode.Undefined -> ClickType.SHORT_PRESS
+        val clickType =
+            if (isPowerKey) {
+                ClickType.LONG_PRESS
+            } else {
+                when (trigger.mode) {
+                    is TriggerMode.Parallel -> trigger.mode.clickType
+                    TriggerMode.Sequence -> ClickType.SHORT_PRESS
+                    TriggerMode.Undefined -> ClickType.SHORT_PRESS
+                }
             }
-        }
 
         var consumeKeyEvent = true
 
@@ -88,26 +98,29 @@ class ConfigTriggerDelegate {
 
         // Scan code detection should be turned on by default if there are other
         // keys from the same device that report the same key code but have a different scan code.
-        val logicallyEqualKeys = otherTriggerKeys.plus(trigger.keys)
-            .filterIsInstance<KeyEventTriggerKey>()
-            // Assume that keys without a scan code come from the same device so ignore them.
-            // The scan code was not saved on versions older than 4.0
-            .filter { it.scanCode != null }
-            .filter {
-                it.keyCode == keyCode &&
-                    it.scanCode != scanCode &&
-                    it.device == device
-            }
+        val logicallyEqualKeys =
+            otherTriggerKeys
+                .plus(trigger.keys)
+                .filterIsInstance<KeyEventTriggerKey>()
+                // Assume that keys without a scan code come from the same device so ignore them.
+                // The scan code was not saved on versions older than 4.0
+                .filter { it.scanCode != null }
+                .filter {
+                    it.keyCode == keyCode &&
+                        it.scanCode != scanCode &&
+                        it.device == device
+                }
 
-        val triggerKey = KeyEventTriggerKey(
-            keyCode = keyCode,
-            device = device,
-            clickType = clickType,
-            scanCode = scanCode,
-            consumeEvent = consumeKeyEvent,
-            requiresIme = requiresIme,
-            detectWithScanCodeUserSetting = logicallyEqualKeys.isNotEmpty(),
-        )
+        val triggerKey =
+            KeyEventTriggerKey(
+                keyCode = keyCode,
+                device = device,
+                clickType = clickType,
+                scanCode = scanCode,
+                consumeEvent = consumeKeyEvent,
+                requiresIme = requiresIme,
+                detectWithScanCodeUserSetting = logicallyEqualKeys.isNotEmpty(),
+            )
 
         var newKeys = trigger.keys.filter { it !is EvdevTriggerKey }
 
@@ -115,11 +128,12 @@ class ConfigTriggerDelegate {
             newKeys = newKeys.map { it.setClickType(ClickType.LONG_PRESS) }
         }
 
-        val newMode = if (isPowerKey && trigger.mode is TriggerMode.Parallel) {
-            TriggerMode.Parallel(ClickType.LONG_PRESS)
-        } else {
-            trigger.mode
-        }
+        val newMode =
+            if (isPowerKey && trigger.mode is TriggerMode.Parallel) {
+                TriggerMode.Parallel(ClickType.LONG_PRESS)
+            } else {
+                trigger.mode
+            }
 
         return addTriggerKey(trigger.copy(mode = newMode, keys = newKeys), triggerKey)
     }
@@ -133,34 +147,38 @@ class ConfigTriggerDelegate {
     ): Trigger {
         val isPowerKey = KeyEventUtils.isPowerButtonKey(keyCode, scanCode)
 
-        val clickType = if (isPowerKey) {
-            ClickType.LONG_PRESS
-        } else {
-            when (trigger.mode) {
-                is TriggerMode.Parallel -> trigger.mode.clickType
-                TriggerMode.Sequence -> ClickType.SHORT_PRESS
-                TriggerMode.Undefined -> ClickType.SHORT_PRESS
+        val clickType =
+            if (isPowerKey) {
+                ClickType.LONG_PRESS
+            } else {
+                when (trigger.mode) {
+                    is TriggerMode.Parallel -> trigger.mode.clickType
+                    TriggerMode.Sequence -> ClickType.SHORT_PRESS
+                    TriggerMode.Undefined -> ClickType.SHORT_PRESS
+                }
             }
-        }
 
         // Scan code detection should be turned on by default if there are other
         // keys from the same device that report the same key code but have a different scan code.
-        val conflictingKeys = otherTriggerKeys.plus(trigger.keys)
-            .filterIsInstance<EvdevTriggerKey>()
-            .filter {
-                it.keyCode == keyCode &&
-                    it.scanCode != scanCode &&
-                    it.device == device
-            }
+        val conflictingKeys =
+            otherTriggerKeys
+                .plus(trigger.keys)
+                .filterIsInstance<EvdevTriggerKey>()
+                .filter {
+                    it.keyCode == keyCode &&
+                        it.scanCode != scanCode &&
+                        it.device == device
+                }
 
-        val triggerKey = EvdevTriggerKey(
-            keyCode = keyCode,
-            scanCode = scanCode,
-            device = device,
-            clickType = clickType,
-            consumeEvent = true,
-            detectWithScanCodeUserSetting = conflictingKeys.isNotEmpty(),
-        )
+        val triggerKey =
+            EvdevTriggerKey(
+                keyCode = keyCode,
+                scanCode = scanCode,
+                device = device,
+                clickType = clickType,
+                consumeEvent = true,
+                detectWithScanCodeUserSetting = conflictingKeys.isNotEmpty(),
+            )
 
         var newKeys = trigger.keys.filter { it !is KeyEventTriggerKey }
 
@@ -168,11 +186,12 @@ class ConfigTriggerDelegate {
             newKeys = newKeys.map { it.setClickType(ClickType.LONG_PRESS) }
         }
 
-        val newMode = if (isPowerKey && trigger.mode is TriggerMode.Parallel) {
-            TriggerMode.Parallel(ClickType.LONG_PRESS)
-        } else {
-            trigger.mode
-        }
+        val newMode =
+            if (isPowerKey && trigger.mode is TriggerMode.Parallel) {
+                TriggerMode.Parallel(ClickType.LONG_PRESS)
+            } else {
+                trigger.mode
+            }
 
         return addTriggerKey(trigger.copy(mode = newMode, keys = newKeys), triggerKey)
     }
@@ -187,42 +206,53 @@ class ConfigTriggerDelegate {
 
         var newKeys: List<TriggerKey> = trigger.keys.plus(key)
 
-        val newMode = when {
-            trigger.mode != TriggerMode.Sequence && containsKey -> TriggerMode.Sequence
-            newKeys.size <= 1 -> TriggerMode.Undefined
+        val newMode =
+            when {
+                trigger.mode != TriggerMode.Sequence && containsKey -> TriggerMode.Sequence
+                newKeys.size <= 1 -> TriggerMode.Undefined
 
             /* Automatically make it a parallel trigger when the user makes a trigger with more than one key
             because this is what most users are expecting when they make a trigger with multiple keys */
-            newKeys.size == 2 && !containsKey -> {
-                newKeys = newKeys.map { it.setClickType(key.clickType) }
-                TriggerMode.Parallel(key.clickType)
+                newKeys.size == 2 && !containsKey -> {
+                    newKeys = newKeys.map { it.setClickType(key.clickType) }
+                    TriggerMode.Parallel(key.clickType)
+                }
+
+                else -> trigger.mode
             }
 
-            else -> trigger.mode
-        }
+        return trigger.copy(keys = newKeys, mode = newMode).validate()
+    }
+
+    fun removeTriggerKey(
+        trigger: Trigger,
+        uid: String,
+    ): Trigger {
+        val newKeys =
+            trigger.keys.toMutableList().apply {
+                removeAll { it.uid == uid }
+            }
+
+        val newMode =
+            when {
+                newKeys.size <= 1 -> TriggerMode.Undefined
+                else -> trigger.mode
+            }
 
         return trigger.copy(keys = newKeys, mode = newMode).validate()
     }
 
-    fun removeTriggerKey(trigger: Trigger, uid: String): Trigger {
-        val newKeys = trigger.keys.toMutableList().apply {
-            removeAll { it.uid == uid }
-        }
-
-        val newMode = when {
-            newKeys.size <= 1 -> TriggerMode.Undefined
-            else -> trigger.mode
-        }
-
-        return trigger.copy(keys = newKeys, mode = newMode).validate()
-    }
-
-    fun moveTriggerKey(trigger: Trigger, fromIndex: Int, toIndex: Int): Trigger {
+    fun moveTriggerKey(
+        trigger: Trigger,
+        fromIndex: Int,
+        toIndex: Int,
+    ): Trigger {
         // Don't need to validate. This should be low latency so moving is responsive.
         return trigger.copy(
-            keys = trigger.keys.toMutableList().apply {
-                add(toIndex, removeAt(fromIndex))
-            },
+            keys =
+                trigger.keys.toMutableList().apply {
+                    add(toIndex, removeAt(fromIndex))
+                },
         )
     }
 
@@ -284,11 +314,12 @@ class ConfigTriggerDelegate {
         }
 
         val newKeys = trigger.keys.map { it.setClickType(clickType = ClickType.SHORT_PRESS) }
-        val newMode = if (newKeys.size <= 1) {
-            TriggerMode.Undefined
-        } else {
-            TriggerMode.Parallel(ClickType.SHORT_PRESS)
-        }
+        val newMode =
+            if (newKeys.size <= 1) {
+                TriggerMode.Undefined
+            } else {
+                TriggerMode.Parallel(ClickType.SHORT_PRESS)
+            }
         return trigger.copy(keys = newKeys, mode = newMode).validate()
     }
 
@@ -305,11 +336,12 @@ class ConfigTriggerDelegate {
         }
 
         val newKeys = trigger.keys.map { it.setClickType(clickType = ClickType.LONG_PRESS) }
-        val newMode = if (newKeys.size <= 1) {
-            TriggerMode.Undefined
-        } else {
-            TriggerMode.Parallel(ClickType.LONG_PRESS)
-        }
+        val newMode =
+            if (newKeys.size <= 1) {
+                TriggerMode.Undefined
+            } else {
+                TriggerMode.Parallel(ClickType.LONG_PRESS)
+            }
 
         return trigger.copy(keys = newKeys, mode = newMode).validate()
     }
@@ -329,14 +361,19 @@ class ConfigTriggerDelegate {
         return trigger.copy(keys = newKeys, mode = newMode).validate()
     }
 
-    fun setTriggerKeyClickType(trigger: Trigger, keyUid: String, clickType: ClickType): Trigger {
-        val newKeys = trigger.keys.map {
-            if (it.uid == keyUid) {
-                it.setClickType(clickType = clickType)
-            } else {
-                it
+    fun setTriggerKeyClickType(
+        trigger: Trigger,
+        keyUid: String,
+        clickType: ClickType,
+    ): Trigger {
+        val newKeys =
+            trigger.keys.map {
+                if (it.uid == keyUid) {
+                    it.setClickType(clickType = clickType)
+                } else {
+                    it
+                }
             }
-        }
 
         return trigger.copy(keys = newKeys).validate()
     }
@@ -346,17 +383,18 @@ class ConfigTriggerDelegate {
         keyUid: String,
         device: KeyEventTriggerDevice,
     ): Trigger {
-        val newKeys = trigger.keys.map { key ->
-            if (key.uid == keyUid) {
-                if (key !is KeyEventTriggerKey) {
-                    throw IllegalArgumentException("You can not set the device for non KeyEventTriggerKeys.")
-                }
+        val newKeys =
+            trigger.keys.map { key ->
+                if (key.uid == keyUid) {
+                    if (key !is KeyEventTriggerKey) {
+                        throw IllegalArgumentException("You can not set the device for non KeyEventTriggerKeys.")
+                    }
 
-                key.copy(device = device)
-            } else {
-                key
+                    key.copy(device = device)
+                } else {
+                    key
+                }
             }
-        }
 
         return trigger.copy(keys = newKeys).validate()
     }
@@ -366,25 +404,26 @@ class ConfigTriggerDelegate {
         keyUid: String,
         consumeKeyEvent: Boolean,
     ): Trigger {
-        val newKeys = trigger.keys.map { key ->
-            if (key.uid == keyUid) {
-                when (key) {
-                    is KeyEventTriggerKey -> {
-                        key.copy(consumeEvent = consumeKeyEvent)
-                    }
+        val newKeys =
+            trigger.keys.map { key ->
+                if (key.uid == keyUid) {
+                    when (key) {
+                        is KeyEventTriggerKey -> {
+                            key.copy(consumeEvent = consumeKeyEvent)
+                        }
 
-                    is EvdevTriggerKey -> {
-                        key.copy(consumeEvent = consumeKeyEvent)
-                    }
+                        is EvdevTriggerKey -> {
+                            key.copy(consumeEvent = consumeKeyEvent)
+                        }
 
-                    else -> {
-                        key
+                        else -> {
+                            key
+                        }
                     }
+                } else {
+                    key
                 }
-            } else {
-                key
             }
-        }
 
         return trigger.copy(keys = newKeys).validate()
     }
@@ -394,17 +433,18 @@ class ConfigTriggerDelegate {
         keyUid: String,
         type: AssistantTriggerType,
     ): Trigger {
-        val newKeys = trigger.keys.map { key ->
-            if (key.uid == keyUid) {
-                if (key is AssistantTriggerKey) {
-                    key.copy(type = type)
+        val newKeys =
+            trigger.keys.map { key ->
+                if (key.uid == keyUid) {
+                    if (key is AssistantTriggerKey) {
+                        key.copy(type = type)
+                    } else {
+                        key
+                    }
                 } else {
                     key
                 }
-            } else {
-                key
             }
-        }
 
         return trigger.copy(keys = newKeys).validate()
     }
@@ -414,93 +454,107 @@ class ConfigTriggerDelegate {
         keyUid: String,
         type: FingerprintGestureType,
     ): Trigger {
-        val newKeys = trigger.keys.map { key ->
-            if (key.uid == keyUid) {
-                if (key is FingerprintTriggerKey) {
-                    key.copy(type = type)
+        val newKeys =
+            trigger.keys.map { key ->
+                if (key.uid == keyUid) {
+                    if (key is FingerprintTriggerKey) {
+                        key.copy(type = type)
+                    } else {
+                        key
+                    }
                 } else {
                     key
                 }
-            } else {
-                key
             }
-        }
 
         return trigger.copy(keys = newKeys).validate()
     }
 
-    fun setVibrateEnabled(trigger: Trigger, enabled: Boolean): Trigger {
-        return trigger.copy(vibrate = enabled).validate()
-    }
+    fun setVibrateEnabled(
+        trigger: Trigger,
+        enabled: Boolean,
+    ): Trigger = trigger.copy(vibrate = enabled).validate()
 
     fun setVibrationDuration(
         trigger: Trigger,
         duration: Int,
         defaultVibrateDuration: Int,
-    ): Trigger {
-        return if (duration == defaultVibrateDuration) {
+    ): Trigger =
+        if (duration == defaultVibrateDuration) {
             trigger.copy(vibrateDuration = null).validate()
         } else {
             trigger.copy(vibrateDuration = duration).validate()
         }
-    }
 
-    fun setLongPressDelay(trigger: Trigger, delay: Int, defaultLongPressDelay: Int): Trigger {
-        return if (delay == defaultLongPressDelay) {
+    fun setLongPressDelay(
+        trigger: Trigger,
+        delay: Int,
+        defaultLongPressDelay: Int,
+    ): Trigger =
+        if (delay == defaultLongPressDelay) {
             trigger.copy(longPressDelay = null).validate()
         } else {
             trigger.copy(longPressDelay = delay).validate()
         }
-    }
 
-    fun setDoublePressDelay(trigger: Trigger, delay: Int, defaultDoublePressDelay: Int): Trigger {
-        return if (delay == defaultDoublePressDelay) {
+    fun setDoublePressDelay(
+        trigger: Trigger,
+        delay: Int,
+        defaultDoublePressDelay: Int,
+    ): Trigger =
+        if (delay == defaultDoublePressDelay) {
             trigger.copy(doublePressDelay = null).validate()
         } else {
             trigger.copy(doublePressDelay = delay).validate()
         }
-    }
 
     fun setSequenceTriggerTimeout(
         trigger: Trigger,
         delay: Int,
         defaultSequenceTriggerTimeout: Int,
-    ): Trigger {
-        return if (delay == defaultSequenceTriggerTimeout) {
+    ): Trigger =
+        if (delay == defaultSequenceTriggerTimeout) {
             trigger.copy(sequenceTriggerTimeout = null).validate()
         } else {
             trigger.copy(sequenceTriggerTimeout = delay).validate()
         }
-    }
 
-    fun setLongPressDoubleVibrationEnabled(trigger: Trigger, enabled: Boolean): Trigger {
-        return trigger.copy(longPressDoubleVibration = enabled).validate()
-    }
+    fun setLongPressDoubleVibrationEnabled(
+        trigger: Trigger,
+        enabled: Boolean,
+    ): Trigger = trigger.copy(longPressDoubleVibration = enabled).validate()
 
-    fun setTriggerFromOtherAppsEnabled(trigger: Trigger, enabled: Boolean): Trigger {
-        return trigger.copy(triggerFromOtherApps = enabled).validate()
-    }
+    fun setTriggerFromOtherAppsEnabled(
+        trigger: Trigger,
+        enabled: Boolean,
+    ): Trigger = trigger.copy(triggerFromOtherApps = enabled).validate()
 
-    fun setShowToastEnabled(trigger: Trigger, enabled: Boolean): Trigger {
-        return trigger.copy(showToast = enabled).validate()
-    }
+    fun setShowToastEnabled(
+        trigger: Trigger,
+        enabled: Boolean,
+    ): Trigger = trigger.copy(showToast = enabled).validate()
 
-    fun setScanCodeDetectionEnabled(trigger: Trigger, keyUid: String, enabled: Boolean): Trigger {
-        val newKeys = trigger.keys.map { otherKey ->
-            if (otherKey.uid == keyUid && otherKey is KeyCodeTriggerKey && otherKey.isScanCodeDetectionUserConfigurable()) {
-                when (otherKey) {
-                    is KeyEventTriggerKey -> {
-                        otherKey.copy(detectWithScanCodeUserSetting = enabled)
+    fun setScanCodeDetectionEnabled(
+        trigger: Trigger,
+        keyUid: String,
+        enabled: Boolean,
+    ): Trigger {
+        val newKeys =
+            trigger.keys.map { otherKey ->
+                if (otherKey.uid == keyUid && otherKey is KeyCodeTriggerKey && otherKey.isScanCodeDetectionUserConfigurable()) {
+                    when (otherKey) {
+                        is KeyEventTriggerKey -> {
+                            otherKey.copy(detectWithScanCodeUserSetting = enabled)
+                        }
+
+                        is EvdevTriggerKey -> {
+                            otherKey.copy(detectWithScanCodeUserSetting = enabled)
+                        }
                     }
-
-                    is EvdevTriggerKey -> {
-                        otherKey.copy(detectWithScanCodeUserSetting = enabled)
-                    }
+                } else {
+                    otherKey
                 }
-            } else {
-                otherKey
             }
-        }
 
         return trigger.copy(keys = newKeys).validate()
     }

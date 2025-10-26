@@ -9,37 +9,26 @@ import io.github.sds100.keymapper.data.entities.KeyMapEntity
 data class BackupContent(
     @SerializedName(NAME_DB_VERSION)
     val dbVersion: Int,
-
     @SerializedName(NAME_APP_VERSION)
     val appVersion: Int?,
-
     @SerializedName(NAME_KEYMAP_LIST)
     val keyMapList: List<KeyMapEntity>? = null,
-
     @SerializedName(NAME_DEFAULT_LONG_PRESS_DELAY)
     val defaultLongPressDelay: Int? = null,
-
     @SerializedName(NAME_DEFAULT_DOUBLE_PRESS_DELAY)
     val defaultDoublePressDelay: Int? = null,
-
     @SerializedName(NAME_DEFAULT_VIBRATION_DURATION)
     val defaultVibrationDuration: Int? = null,
-
     @SerializedName(NAME_DEFAULT_REPEAT_DELAY)
     val defaultRepeatDelay: Int? = null,
-
     @SerializedName(NAME_DEFAULT_REPEAT_RATE)
     val defaultRepeatRate: Int? = null,
-
     @SerializedName(NAME_DEFAULT_SEQUENCE_TRIGGER_TIMEOUT)
     val defaultSequenceTriggerTimeout: Int? = null,
-
     @SerializedName(NAME_FLOATING_LAYOUTS)
     val floatingLayouts: List<FloatingLayoutEntity>? = null,
-
     @SerializedName(NAME_FLOATING_BUTTONS)
     val floatingButtons: List<FloatingButtonEntity>? = null,
-
     @SerializedName(NAME_GROUPS)
     val groups: List<GroupEntity>? = null,
 ) {

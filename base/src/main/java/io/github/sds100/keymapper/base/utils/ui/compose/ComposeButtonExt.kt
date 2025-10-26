@@ -6,9 +6,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 
 @Composable
-fun ButtonDefaults.filledTonalButtonColorsError(): ButtonColors {
-    return ButtonDefaults.filledTonalButtonColors(
+fun ButtonDefaults.filledTonalButtonColorsError(): ButtonColors =
+    ButtonDefaults.filledTonalButtonColors(
         containerColor = MaterialTheme.colorScheme.errorContainer,
         contentColor = MaterialTheme.colorScheme.onErrorContainer,
     )
-}

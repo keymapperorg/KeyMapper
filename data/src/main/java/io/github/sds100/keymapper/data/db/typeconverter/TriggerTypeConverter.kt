@@ -9,16 +9,16 @@ import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 
 class TriggerTypeConverter {
-    private val gson = GsonBuilder()
-        .registerTypeAdapter(TriggerEntity.DESERIALIZER)
-        .registerTypeAdapter(TriggerKeyEntity.SERIALIZER)
-        .registerTypeAdapter(TriggerKeyEntity.DESERIALIZER)
-        .registerTypeAdapter(EntityExtra.DESERIALIZER).create()
+    private val gson =
+        GsonBuilder()
+            .registerTypeAdapter(TriggerEntity.DESERIALIZER)
+            .registerTypeAdapter(TriggerKeyEntity.SERIALIZER)
+            .registerTypeAdapter(TriggerKeyEntity.DESERIALIZER)
+            .registerTypeAdapter(EntityExtra.DESERIALIZER)
+            .create()
 
     @TypeConverter
-    fun toTrigger(json: String): TriggerEntity {
-        return gson.fromJson(json)
-    }
+    fun toTrigger(json: String): TriggerEntity = gson.fromJson(json)
 
     @TypeConverter
     fun toJsonString(trigger: TriggerEntity) = gson.toJson(trigger)!!

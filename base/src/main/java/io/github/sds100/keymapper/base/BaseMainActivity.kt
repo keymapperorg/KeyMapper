@@ -51,7 +51,6 @@ import timber.log.Timber
 import javax.inject.Inject
 
 abstract class BaseMainActivity : AppCompatActivity() {
-
     companion object {
         const val ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG =
             "${BuildConfig.LIBRARY_PACKAGE_NAME}.ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG"
@@ -125,44 +124,51 @@ abstract class BaseMainActivity : AppCompatActivity() {
      * This is used when saving a file with the Android share sheet and want to copy
      * the private to the public location.
      */
-    private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            intent ?: return
+    private val broadcastReceiver: BroadcastReceiver =
+        object : BroadcastReceiver() {
+            override fun onReceive(
+                context: Context?,
+                intent: Intent?,
+            ) {
+                intent ?: return
 
-            when (intent.action) {
-                ACTION_SAVE_FILE -> {
-                    lifecycleScope.launch {
-                        withStateAtLeast(Lifecycle.State.RESUMED) {
-                            selectFileLocationAndSave(intent)
+                when (intent.action) {
+                    ACTION_SAVE_FILE -> {
+                        lifecycleScope.launch {
+                            withStateAtLeast(Lifecycle.State.RESUMED) {
+                                selectFileLocationAndSave(intent)
+                            }
                         }
                     }
                 }
             }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.auto(
-                ComposeColors.surfaceContainerLight.toArgb(),
-                ComposeColors.surfaceContainerDark.toArgb(),
-            ),
-            navigationBarStyle = SystemBarStyle.auto(
-                ComposeColors.surfaceContainerLight.toArgb(),
-                ComposeColors.surfaceContainerDark.toArgb(),
-            ),
+            statusBarStyle =
+                SystemBarStyle.auto(
+                    ComposeColors.surfaceContainerLight.toArgb(),
+                    ComposeColors.surfaceContainerDark.toArgb(),
+                ),
+            navigationBarStyle =
+                SystemBarStyle.auto(
+                    ComposeColors.surfaceContainerLight.toArgb(),
+                    ComposeColors.surfaceContainerDark.toArgb(),
+                ),
         )
         super.onCreate(savedInstanceState)
 
-        requestPermissionDelegate = RequestPermissionDelegate(
-            this,
-            showDialogs = true,
-            permissionAdapter,
-            notificationReceiverAdapter = notificationReceiverAdapter,
-            buildConfigProvider = buildConfigProvider,
-            shizukuAdapter = shizukuAdapter,
-        )
+        requestPermissionDelegate =
+            RequestPermissionDelegate(
+                this,
+                showDialogs = true,
+                permissionAdapter,
+                notificationReceiverAdapter = notificationReceiverAdapter,
+                buildConfigProvider = buildConfigProvider,
+                shizukuAdapter = shizukuAdapter,
+            )
 
         permissionAdapter.request
             .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
@@ -171,8 +177,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
                     permission,
                     findNavController(R.id.container),
                 )
-            }
-            .launchIn(lifecycleScope)
+            }.launchIn(lifecycleScope)
 
         IntentFilter().apply {
             addAction(ACTION_SAVE_FILE)
@@ -221,10 +226,11 @@ abstract class BaseMainActivity : AppCompatActivity() {
         event ?: return super.onGenericMotionEvent(event)
 
         val gamepadEvent = KMGamePadEvent.fromMotionEvent(event) ?: return false
-        val consume = inputEventHub.onInputEvent(
-            gamepadEvent,
-            detectionSource = InputEventDetectionSource.INPUT_METHOD,
-        )
+        val consume =
+            inputEventHub.onInputEvent(
+                gamepadEvent,
+                detectionSource = InputEventDetectionSource.INPUT_METHOD,
+            )
 
         return if (consume) {
             true
@@ -257,7 +263,10 @@ abstract class BaseMainActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveFile(originalFile: Uri, targetFile: Uri) {
+    private fun saveFile(
+        originalFile: Uri,
+        targetFile: Uri,
+    ) {
         lifecycleScope.launch(Dispatchers.IO) {
             targetFile.openOutputStream(this@BaseMainActivity)?.use { output ->
                 originalFile.openInputStream(this@BaseMainActivity)?.use { input ->

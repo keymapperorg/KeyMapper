@@ -27,37 +27,27 @@ data class AccessibilityNodeEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = KEY_ID)
     val id: Long = 0L,
-
     @ColumnInfo(name = KEY_PACKAGE_NAME)
     val packageName: String,
-
     @ColumnInfo(name = KEY_TEXT)
     val text: String?,
-
     @ColumnInfo(name = KEY_CONTENT_DESCRIPTION)
     val contentDescription: String?,
-
     @ColumnInfo(name = KEY_CLASS_NAME)
     val className: String?,
-
     @ColumnInfo(name = KEY_VIEW_RESOURCE_ID)
     val viewResourceId: String?,
-
     @ColumnInfo(name = KEY_UNIQUE_ID)
     val uniqueId: String?,
-
     @ColumnInfo(name = KEY_ACTIONS)
     val actions: Set<NodeInteractionType>,
-
     /**
      * Whether the user interacted with this node.
      */
     @ColumnInfo(name = KEY_INTERACTED, defaultValue = false.toString())
     val interacted: Boolean,
-
     @ColumnInfo(name = KEY_TOOLTIP, defaultValue = "NULL")
     val tooltip: String?,
-
     @ColumnInfo(name = KEY_HINT, defaultValue = "NULL")
     val hint: String?,
 ) : Parcelable

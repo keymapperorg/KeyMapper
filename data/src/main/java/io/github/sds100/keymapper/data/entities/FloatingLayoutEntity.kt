@@ -23,7 +23,6 @@ data class FloatingLayoutEntity(
     @ColumnInfo(name = KEY_UID)
     @SerializedName(NAME_UID)
     val uid: String,
-
     @ColumnInfo(name = KEY_NAME)
     @SerializedName(NAME_NAME)
     val name: String,
@@ -33,11 +32,12 @@ data class FloatingLayoutEntity(
         const val NAME_UID = "uid"
         const val NAME_NAME = "name"
 
-        val DESERIALIZER = jsonDeserializer {
-            val uid by it.json.byString(NAME_UID)
-            val name by it.json.byString(NAME_NAME)
+        val DESERIALIZER =
+            jsonDeserializer {
+                val uid by it.json.byString(NAME_UID)
+                val name by it.json.byString(NAME_NAME)
 
-            FloatingLayoutEntity(uid, name)
-        }
+                FloatingLayoutEntity(uid, name)
+            }
     }
 }

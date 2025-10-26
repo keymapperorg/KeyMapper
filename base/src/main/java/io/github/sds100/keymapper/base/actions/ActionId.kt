@@ -45,8 +45,10 @@ enum class ActionId {
     VOLUME_UP,
     VOLUME_DOWN,
     VOLUME_SHOW_DIALOG,
+
     @Deprecated("Use VOLUME_DOWN with volumeStream parameter instead")
     VOLUME_DECREASE_STREAM,
+
     @Deprecated("Use VOLUME_UP with volumeStream parameter instead")
     VOLUME_INCREASE_STREAM,
     CYCLE_RINGER_MODE,

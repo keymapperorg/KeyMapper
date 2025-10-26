@@ -5,7 +5,16 @@ import kotlinx.coroutines.flow.Flow
 
 interface PreferenceRepository {
     fun <T> get(key: Preferences.Key<T>): Flow<T?>
-    fun <T> set(key: Preferences.Key<T>, value: T?)
-    fun <T> update(key: Preferences.Key<T>, update: suspend (T?) -> T?)
+
+    fun <T> set(
+        key: Preferences.Key<T>,
+        value: T?,
+    )
+
+    fun <T> update(
+        key: Preferences.Key<T>,
+        update: suspend (T?) -> T?,
+    )
+
     fun deleteAll()
 }

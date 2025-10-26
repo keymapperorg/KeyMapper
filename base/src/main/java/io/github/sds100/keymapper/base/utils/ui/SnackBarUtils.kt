@@ -7,7 +7,6 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
 object SnackBarUtils {
-
     suspend fun show(
         view: CoordinatorLayout,
         text: String,
@@ -15,27 +14,33 @@ object SnackBarUtils {
         long: Boolean = false,
     ) = suspendCancellableCoroutine { continuation ->
 
-        val duration = if (long) {
-            Snackbar.LENGTH_LONG
-        } else {
-            Snackbar.LENGTH_SHORT
-        }
+        val duration =
+            if (long) {
+                Snackbar.LENGTH_LONG
+            } else {
+                Snackbar.LENGTH_SHORT
+            }
 
-        Snackbar.make(view, text, duration)
+        Snackbar
+            .make(view, text, duration)
             .setAnchorView(R.id.fab)
             .setAction(actionText, {
                 if (!continuation.isCompleted) {
                     continuation.resume(Unit)
                 }
             })
-            .addCallback(object : Snackbar.Callback() {
-                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                    if (!continuation.isCompleted) {
-                        continuation.resume(null)
+            .addCallback(
+                object : Snackbar.Callback() {
+                    override fun onDismissed(
+                        transientBottomBar: Snackbar?,
+                        event: Int,
+                    ) {
+                        if (!continuation.isCompleted) {
+                            continuation.resume(null)
+                        }
                     }
-                }
-            })
-            .show()
+                },
+            ).show()
 
         // if there is no action then there is no point waiting for a user response
         if (actionText == null) {

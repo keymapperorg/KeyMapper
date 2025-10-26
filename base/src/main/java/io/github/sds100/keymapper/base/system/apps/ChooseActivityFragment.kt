@@ -14,7 +14,6 @@ import kotlinx.serialization.json.Json
 
 @AndroidEntryPoint
 class ChooseActivityFragment : SimpleRecyclerViewFragment<AppActivityListItem>() {
-
     companion object {
         const val EXTRA_RESULT = "extra_activity_info"
         const val SEARCH_STATE_KEY = "key_activity_list_search_state"

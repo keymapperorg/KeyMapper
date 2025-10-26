@@ -14,36 +14,38 @@ import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
-class LogViewModel @Inject constructor(
-    private val displayLogUseCase: DisplayLogUseCase,
-) : ViewModel() {
-    @SuppressLint("ConstantLocale")
-    private val dateFormat = SimpleDateFormat("MM/dd HH:mm:ss.SSS", Locale.getDefault())
+class LogViewModel
+    @Inject
+    constructor(
+        private val displayLogUseCase: DisplayLogUseCase,
+    ) : ViewModel() {
+        @SuppressLint("ConstantLocale")
+        private val dateFormat = SimpleDateFormat("MM/dd HH:mm:ss.SSS", Locale.getDefault())
 
-    val log: StateFlow<List<LogListItem>> = displayLogUseCase.log
-        .map { list ->
-            list.map {
-                LogListItem(
-                    id = it.id,
-                    time = dateFormat.format(it.time),
-                    message = it.message,
-                    severity = it.severity,
+        val log: StateFlow<List<LogListItem>> =
+            displayLogUseCase.log
+                .map { list ->
+                    list.map {
+                        LogListItem(
+                            id = it.id,
+                            time = dateFormat.format(it.time),
+                            message = it.message,
+                            severity = it.severity,
+                        )
+                    }
+                }.stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(5_000),
+                    initialValue = emptyList(),
                 )
+
+        fun onCopyToClipboardClick() {
+            viewModelScope.launch {
+                displayLogUseCase.copyToClipboard()
             }
         }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = emptyList(),
-        )
 
-    fun onCopyToClipboardClick() {
-        viewModelScope.launch {
-            displayLogUseCase.copyToClipboard()
+        fun onClearLogClick() {
+            displayLogUseCase.clearLog()
         }
     }
-
-    fun onClearLogClick() {
-        displayLogUseCase.clearLog()
-    }
-}

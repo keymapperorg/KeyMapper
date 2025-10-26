@@ -1,10 +1,11 @@
 package io.github.sds100.keymapper.common.utils
 
-data class TreeNode<T>(val value: T, val children: MutableList<TreeNode<T>> = mutableListOf())
+data class TreeNode<T>(
+    val value: T,
+    val children: MutableList<TreeNode<T>> = mutableListOf(),
+)
 
-inline fun <T> TreeNode<T>.breadthFirstTraversal(
-    action: (T) -> Unit,
-) {
+inline fun <T> TreeNode<T>.breadthFirstTraversal(action: (T) -> Unit) {
     val queue = ArrayDeque<TreeNode<T>>()
     queue.add(this)
 

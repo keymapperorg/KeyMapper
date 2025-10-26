@@ -31,82 +31,85 @@ import javax.inject.Singleton
  * to the caller. A synchronous version is implemented in BaseAccessibilityService.
  */
 @Singleton
-class SwitchImeAsyncImpl @Inject constructor(
-    @ApplicationContext private val ctx: Context,
-    private val serviceAdapter: AccessibilityServiceAdapter,
-    private val inputMethodAdapter: InputMethodAdapter,
-    private val buildConfigProvider: BuildConfigProvider,
-    private val permissionAdapter: PermissionAdapter,
-    private val suAdapter: SuAdapter,
-) : SwitchImeInterface {
+class SwitchImeAsyncImpl
+    @Inject
+    constructor(
+        @ApplicationContext private val ctx: Context,
+        private val serviceAdapter: AccessibilityServiceAdapter,
+        private val inputMethodAdapter: InputMethodAdapter,
+        private val buildConfigProvider: BuildConfigProvider,
+        private val permissionAdapter: PermissionAdapter,
+        private val suAdapter: SuAdapter,
+    ) : SwitchImeInterface {
+        override fun enableIme(imeId: String): KMResult<Unit> =
+            enableImeWithoutUserInput(imeId).otherwise {
+                try {
+                    val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
+                    intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_NEW_TASK
 
-    override fun enableIme(imeId: String): KMResult<Unit> {
-        return enableImeWithoutUserInput(imeId).otherwise {
-            try {
-                val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
-                intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_NEW_TASK
-
-                ctx.startActivity(intent)
-                Success(Unit)
-            } catch (_: Exception) {
-                KMError.CantFindImeSettings
-            }
-        }
-    }
-
-    private fun enableImeWithoutUserInput(imeId: String): KMResult<Unit> {
-        return inputMethodAdapter.getInfoByPackageName(buildConfigProvider.packageName)
-            .then { keyMapperImeInfo ->
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && imeId == keyMapperImeInfo.id) {
-                    serviceAdapter.sendAsync(
-                        AccessibilityServiceEvent.EnableInputMethod(
-                            keyMapperImeInfo.id,
-                        ),
-                    )
-                } else {
-                    runBlocking { suAdapter.execute("ime enable $imeId").then { Success(Unit) } }
+                    ctx.startActivity(intent)
+                    Success(Unit)
+                } catch (_: Exception) {
+                    KMError.CantFindImeSettings
                 }
             }
-    }
 
-    override fun switchIme(imeId: String): KMResult<Unit> {
-        inputMethodAdapter.getInfoById(imeId).onSuccess {
-            if (!it.isEnabled) {
-                return SystemError.ImeDisabled(it)
-            }
-        }.onFailure {
-            return it
-        }
-
-        // First try using the accessibility service, and if that fails then
-        // try WRITE_SECURE_SETTINGS if possible. Otherwise return the accessibility service
-        // error.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return serviceAdapter.sendAsync(AccessibilityServiceEvent.ChangeIme(imeId))
-                .otherwise { error ->
-                    if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
-                        SettingsUtils.putSecureSetting(
-                            ctx,
-                            Settings.Secure.DEFAULT_INPUT_METHOD,
-                            imeId,
+        private fun enableImeWithoutUserInput(imeId: String): KMResult<Unit> =
+            inputMethodAdapter
+                .getInfoByPackageName(buildConfigProvider.packageName)
+                .then { keyMapperImeInfo ->
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && imeId == keyMapperImeInfo.id) {
+                        serviceAdapter.sendAsync(
+                            AccessibilityServiceEvent.EnableInputMethod(
+                                keyMapperImeInfo.id,
+                            ),
                         )
-                        Success(Unit)
                     } else {
-                        error
+                        runBlocking { suAdapter.execute("ime enable $imeId").then { Success(Unit) } }
                     }
                 }
+
+        override fun switchIme(imeId: String): KMResult<Unit> {
+            inputMethodAdapter
+                .getInfoById(imeId)
+                .onSuccess {
+                    if (!it.isEnabled) {
+                        return SystemError.ImeDisabled(it)
+                    }
+                }.onFailure {
+                    return it
+                }
+
+            // First try using the accessibility service, and if that fails then
+            // try WRITE_SECURE_SETTINGS if possible. Otherwise return the accessibility service
+            // error.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                return serviceAdapter
+                    .sendAsync(AccessibilityServiceEvent.ChangeIme(imeId))
+                    .otherwise { error ->
+                        if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
+                            SettingsUtils.putSecureSetting(
+                                ctx,
+                                Settings.Secure.DEFAULT_INPUT_METHOD,
+                                imeId,
+                            )
+                            Success(Unit)
+                        } else {
+                            error
+                        }
+                    }
+            }
+
+            if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
+                SettingsUtils.putSecureSetting(
+                    ctx,
+                    Settings.Secure.DEFAULT_INPUT_METHOD,
+                    imeId,
+                )
+
+                return Success(Unit)
+            }
+
+            return KMError.SwitchImeFailed
         }
-
-        if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
-            SettingsUtils.putSecureSetting(
-                ctx,
-                Settings.Secure.DEFAULT_INPUT_METHOD,
-                imeId,
-            )
-
-            return Success(Unit)
-        }
-
-        return KMError.SwitchImeFailed
     }
-}

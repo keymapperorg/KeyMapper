@@ -24,75 +24,77 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class InteractUiElementController @Inject constructor(
-    private val coroutineScope: CoroutineScope,
-    private val serviceAdapter: AccessibilityServiceAdapter,
-    private val nodeRepository: AccessibilityNodeRepository,
-    private val packageManagerAdapter: PackageManagerAdapter,
-) : InteractUiElementUseCase {
-    override val recordState: MutableStateFlow<RecordAccessibilityNodeState> =
-        MutableStateFlow(RecordAccessibilityNodeState.Idle)
+class InteractUiElementController
+    @Inject
+    constructor(
+        private val coroutineScope: CoroutineScope,
+        private val serviceAdapter: AccessibilityServiceAdapter,
+        private val nodeRepository: AccessibilityNodeRepository,
+        private val packageManagerAdapter: PackageManagerAdapter,
+    ) : InteractUiElementUseCase {
+        override val recordState: MutableStateFlow<RecordAccessibilityNodeState> =
+            MutableStateFlow(RecordAccessibilityNodeState.Idle)
 
-    override val interactionCount: Flow<State<Int>> =
-        nodeRepository.nodes.map { state -> state.mapData { it.size } }
+        override val interactionCount: Flow<State<Int>> =
+            nodeRepository.nodes.map { state -> state.mapData { it.size } }
 
-    override val interactedPackages: Flow<State<List<String>>> = nodeRepository.nodes.map { state ->
-        state.mapData { nodes ->
-            nodes.map { it.packageName }.distinct()
+        override val interactedPackages: Flow<State<List<String>>> =
+            nodeRepository.nodes.map { state ->
+                state.mapData { nodes ->
+                    nodes.map { it.packageName }.distinct()
+                }
+            }
+
+        init {
+            serviceAdapter.eventReceiver
+                .filterIsInstance<RecordAccessibilityNodeEvent.OnRecordNodeStateChanged>()
+                .onEach { event -> recordState.update { event.state } }
+                .launchIn(coroutineScope)
         }
-    }
 
-    init {
-        serviceAdapter.eventReceiver
-            .filterIsInstance<RecordAccessibilityNodeEvent.OnRecordNodeStateChanged>()
-            .onEach { event -> recordState.update { event.state } }
-            .launchIn(coroutineScope)
-    }
+        override fun getInteractionsByPackage(packageName: String): Flow<State<List<AccessibilityNodeEntity>>> =
+            nodeRepository.nodes.map { state ->
+                state.mapData { nodes ->
+                    nodes.filter { it.packageName == packageName }
+                }
+            }
 
-    override fun getInteractionsByPackage(packageName: String): Flow<State<List<AccessibilityNodeEntity>>> {
-        return nodeRepository.nodes.map { state ->
-            state.mapData { nodes ->
-                nodes.filter { it.packageName == packageName }
+        override suspend fun getInteractionById(id: Long): AccessibilityNodeEntity? = nodeRepository.get(id)
+
+        override fun getAppName(packageName: String): KMResult<String> = packageManagerAdapter.getAppName(packageName)
+
+        override fun getAppIcon(packageName: String): KMResult<Drawable> = packageManagerAdapter.getAppIcon(packageName)
+
+        override suspend fun startRecording(): KMResult<*> {
+            nodeRepository.deleteAll()
+            return serviceAdapter.send(RecordAccessibilityNodeEvent.StartRecordingNodes)
+        }
+
+        override suspend fun stopRecording() {
+            serviceAdapter.send(RecordAccessibilityNodeEvent.StopRecordingNodes).onFailure {
+                recordState.update { RecordAccessibilityNodeState.Idle }
             }
         }
+
+        override fun startService(): Boolean = serviceAdapter.start()
     }
-
-    override suspend fun getInteractionById(id: Long): AccessibilityNodeEntity? {
-        return nodeRepository.get(id)
-    }
-
-    override fun getAppName(packageName: String): KMResult<String> = packageManagerAdapter.getAppName(packageName)
-
-    override fun getAppIcon(packageName: String): KMResult<Drawable> = packageManagerAdapter.getAppIcon(packageName)
-
-    override suspend fun startRecording(): KMResult<*> {
-        nodeRepository.deleteAll()
-        return serviceAdapter.send(RecordAccessibilityNodeEvent.StartRecordingNodes)
-    }
-
-    override suspend fun stopRecording() {
-        serviceAdapter.send(RecordAccessibilityNodeEvent.StopRecordingNodes).onFailure {
-            recordState.update { RecordAccessibilityNodeState.Idle }
-        }
-    }
-
-    override fun startService(): Boolean {
-        return serviceAdapter.start()
-    }
-}
 
 interface InteractUiElementUseCase {
     val recordState: StateFlow<RecordAccessibilityNodeState>
 
     val interactionCount: Flow<State<Int>>
     val interactedPackages: Flow<State<List<String>>>
+
     fun getInteractionsByPackage(packageName: String): Flow<State<List<AccessibilityNodeEntity>>>
+
     suspend fun getInteractionById(id: Long): AccessibilityNodeEntity?
 
     fun getAppName(packageName: String): KMResult<String>
+
     fun getAppIcon(packageName: String): KMResult<Drawable>
 
     suspend fun startRecording(): KMResult<*>
+
     suspend fun stopRecording()
 
     fun startService(): Boolean

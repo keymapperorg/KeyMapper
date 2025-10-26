@@ -58,9 +58,10 @@ fun GroupConstraintRow(
     enabled: Boolean = true,
 ) {
     BoxWithConstraints(modifier = modifier) {
-        val maxChipWidth = LocalDensity.current.run {
-            (this@BoxWithConstraints.constraints.maxWidth / 2).toDp()
-        }
+        val maxChipWidth =
+            LocalDensity.current.run {
+                (this@BoxWithConstraints.constraints.maxWidth / 2).toDp()
+            }
 
         FlowRow(
             Modifier.verticalScroll(rememberScrollState()),
@@ -81,17 +82,19 @@ fun GroupConstraintRow(
                                 icon = {
                                     if (constraint.icon is ComposeIconInfo.Vector) {
                                         Icon(
-                                            modifier = Modifier
-                                                .size(24.dp)
-                                                .padding(end = 8.dp),
+                                            modifier =
+                                                Modifier
+                                                    .size(24.dp)
+                                                    .padding(end = 8.dp),
                                             imageVector = constraint.icon.imageVector,
                                             contentDescription = null,
                                         )
                                     } else if (constraint.icon is ComposeIconInfo.Drawable) {
                                         Icon(
-                                            modifier = Modifier
-                                                .size(24.dp)
-                                                .padding(end = 8.dp),
+                                            modifier =
+                                                Modifier
+                                                    .size(24.dp)
+                                                    .padding(end = 8.dp),
                                             painter = rememberDrawablePainter(constraint.icon.drawable),
                                             contentDescription = null,
                                             tint = Color.Unspecified,
@@ -116,28 +119,32 @@ fun GroupConstraintRow(
 
                 if (index < constraints.lastIndex) {
                     when (mode) {
-                        ConstraintMode.AND -> Text(
-                            text = stringResource(R.string.constraint_mode_and),
-                            style = MaterialTheme.typography.labelMedium,
-                        )
+                        ConstraintMode.AND ->
+                            Text(
+                                text = stringResource(R.string.constraint_mode_and),
+                                style = MaterialTheme.typography.labelMedium,
+                            )
 
-                        ConstraintMode.OR -> Text(
-                            text = stringResource(R.string.constraint_mode_or),
-                            style = MaterialTheme.typography.labelMedium,
-                        )
+                        ConstraintMode.OR ->
+                            Text(
+                                text = stringResource(R.string.constraint_mode_or),
+                                style = MaterialTheme.typography.labelMedium,
+                            )
                     }
                 }
             }
 
             if (parentConstraintCount > 0) {
                 Text(
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp),
-                    text = pluralStringResource(
-                        R.plurals.home_groups_inherited_constraints,
-                        parentConstraintCount,
-                        parentConstraintCount,
-                    ),
+                    modifier =
+                        Modifier
+                            .padding(horizontal = 8.dp),
+                    text =
+                        pluralStringResource(
+                            R.plurals.home_groups_inherited_constraints,
+                            parentConstraintCount,
+                            parentConstraintCount,
+                        ),
                     style = MaterialTheme.typography.labelMedium,
                 )
             }
@@ -208,9 +215,10 @@ private fun ConstraintButton(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
         ) {
             Row(
-                modifier = Modifier
-                    .padding(vertical = 4.dp, horizontal = 8.dp)
-                    .heightIn(min = 24.dp),
+                modifier =
+                    Modifier
+                        .padding(vertical = 4.dp, horizontal = 8.dp)
+                        .heightIn(min = 24.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 icon()
@@ -259,15 +267,17 @@ private fun ConstraintErrorButton(
             enabled = enabled,
         ) {
             Row(
-                modifier = Modifier
-                    .padding(vertical = 4.dp, horizontal = 8.dp)
-                    .heightIn(min = 24.dp),
+                modifier =
+                    Modifier
+                        .padding(vertical = 4.dp, horizontal = 8.dp)
+                        .heightIn(min = 24.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .padding(end = 8.dp),
+                    modifier =
+                        Modifier
+                            .size(24.dp)
+                            .padding(end = 8.dp),
                     imageVector = Icons.Rounded.ErrorOutline,
                     contentDescription = null,
                 )
@@ -317,13 +327,14 @@ private fun PreviewOneItem() {
     KeyMapperTheme {
         Surface {
             GroupConstraintRow(
-                constraints = listOf(
-                    ComposeChipModel.Normal(
-                        id = "1",
-                        text = "Device is locked",
-                        icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+                constraints =
+                    listOf(
+                        ComposeChipModel.Normal(
+                            id = "1",
+                            text = "Device is locked",
+                            icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+                        ),
                     ),
-                ),
                 mode = ConstraintMode.OR,
                 parentConstraintCount = 1,
             )
@@ -339,28 +350,29 @@ private fun PreviewMultipleItems() {
     KeyMapperTheme {
         Surface {
             GroupConstraintRow(
-                constraints = listOf(
-                    ComposeChipModel.Normal(
-                        id = "1",
-                        text = "Device is locked",
-                        icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+                constraints =
+                    listOf(
+                        ComposeChipModel.Normal(
+                            id = "1",
+                            text = "Device is locked",
+                            icon = ComposeIconInfo.Vector(Icons.Outlined.Lock),
+                        ),
+                        ComposeChipModel.Normal(
+                            id = "2",
+                            text = "Key Mapper is open",
+                            icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
+                        ),
+                        ComposeChipModel.Normal(
+                            id = "2",
+                            text = "Key Mapper is open",
+                            icon = null,
+                        ),
+                        ComposeChipModel.Error(
+                            id = "2",
+                            text = "Key Mapper not found",
+                            error = KMError.AppNotFound("io.github.sds100.keymapper"),
+                        ),
                     ),
-                    ComposeChipModel.Normal(
-                        id = "2",
-                        text = "Key Mapper is open",
-                        icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
-                    ),
-                    ComposeChipModel.Normal(
-                        id = "2",
-                        text = "Key Mapper is open",
-                        icon = null,
-                    ),
-                    ComposeChipModel.Error(
-                        id = "2",
-                        text = "Key Mapper not found",
-                        error = KMError.AppNotFound("io.github.sds100.keymapper"),
-                    ),
-                ),
                 mode = ConstraintMode.AND,
                 parentConstraintCount = 3,
             )

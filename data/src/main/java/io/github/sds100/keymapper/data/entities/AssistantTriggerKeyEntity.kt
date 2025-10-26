@@ -15,15 +15,12 @@ data class AssistantTriggerKeyEntity(
      */
     @SerializedName(NAME_ASSISTANT_TYPE)
     val type: String = ASSISTANT_TYPE_ANY,
-
     @SerializedName(NAME_CLICK_TYPE)
     override val clickType: Int = SHORT_PRESS,
-
     @SerializedName(NAME_UID)
     override val uid: String = UUID.randomUUID().toString(),
 ) : TriggerKeyEntity(),
     Parcelable {
-
     companion object {
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_ASSISTANT_TYPE = "assistantType"

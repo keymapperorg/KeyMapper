@@ -36,44 +36,35 @@ data class KeyMapEntity(
     @SerializedName(NAME_ID)
     @PrimaryKey(autoGenerate = true)
     val id: Long,
-
     @SerializedName(NAME_TRIGGER)
     @ColumnInfo(name = KeyMapDao.KEY_TRIGGER)
     val trigger: TriggerEntity = TriggerEntity(),
-
     @SerializedName(NAME_ACTION_LIST)
     @ColumnInfo(name = KeyMapDao.KEY_ACTION_LIST)
     val actionList: List<ActionEntity> = listOf(),
-
     @SerializedName(NAME_CONSTRAINT_LIST)
     @ColumnInfo(name = KeyMapDao.KEY_CONSTRAINT_LIST)
     val constraintList: List<ConstraintEntity> = listOf(),
-
     @SerializedName(NAME_CONSTRAINT_MODE)
     @ColumnInfo(name = KeyMapDao.KEY_CONSTRAINT_MODE)
     val constraintMode: Int = ConstraintEntity.DEFAULT_MODE,
-
     /**
      * Flags are stored as bits.
      */
     @SerializedName(NAME_FLAGS)
     @ColumnInfo(name = KeyMapDao.KEY_FLAGS)
     val flags: Int = 0,
-
     @SerializedName(NAME_IS_ENABLED)
     @ColumnInfo(name = KeyMapDao.KEY_ENABLED)
     val isEnabled: Boolean = true,
-
     @SerializedName(NAME_UID)
     @ColumnInfo(name = KeyMapDao.KEY_UID)
     val uid: String = UUID.randomUUID().toString(),
-
     @SerializedName(NAME_GROUP_UID)
     @ColumnInfo(name = KeyMapDao.KEY_GROUP_UID)
     val groupUid: String? = null,
 ) : Parcelable {
     companion object {
-
         // DON'T CHANGE THESE. Used for JSON serialization and parsing.
         const val NAME_ID = "id"
         const val NAME_TRIGGER = "trigger"
@@ -85,34 +76,35 @@ data class KeyMapEntity(
         const val NAME_UID = "uid"
         const val NAME_GROUP_UID = "group_uid"
 
-        val DESERIALIZER = jsonDeserializer {
-            val actionListJsonArray by it.json.byArray(NAME_ACTION_LIST)
-            val actionList = it.context.deserialize<List<ActionEntity>>(actionListJsonArray)
+        val DESERIALIZER =
+            jsonDeserializer {
+                val actionListJsonArray by it.json.byArray(NAME_ACTION_LIST)
+                val actionList = it.context.deserialize<List<ActionEntity>>(actionListJsonArray)
 
-            val triggerJsonObject by it.json.byObject(NAME_TRIGGER)
-            val trigger = it.context.deserialize<TriggerEntity>(triggerJsonObject)
+                val triggerJsonObject by it.json.byObject(NAME_TRIGGER)
+                val trigger = it.context.deserialize<TriggerEntity>(triggerJsonObject)
 
-            val constraintListJsonArray by it.json.byArray(NAME_CONSTRAINT_LIST)
-            val constraintList =
-                it.context.deserialize<List<ConstraintEntity>>(constraintListJsonArray)
+                val constraintListJsonArray by it.json.byArray(NAME_CONSTRAINT_LIST)
+                val constraintList =
+                    it.context.deserialize<List<ConstraintEntity>>(constraintListJsonArray)
 
-            val constraintMode by it.json.byInt(NAME_CONSTRAINT_MODE)
-            val flags by it.json.byInt(NAME_FLAGS)
-            val isEnabled by it.json.byBool(NAME_IS_ENABLED)
-            val uid by it.json.byString(NAME_UID) { UUID.randomUUID().toString() }
-            val groupUid by it.json.byNullableString(NAME_GROUP_UID)
+                val constraintMode by it.json.byInt(NAME_CONSTRAINT_MODE)
+                val flags by it.json.byInt(NAME_FLAGS)
+                val isEnabled by it.json.byBool(NAME_IS_ENABLED)
+                val uid by it.json.byString(NAME_UID) { UUID.randomUUID().toString() }
+                val groupUid by it.json.byNullableString(NAME_GROUP_UID)
 
-            KeyMapEntity(
-                id = 0,
-                trigger = trigger,
-                actionList = actionList,
-                constraintList = constraintList,
-                constraintMode = constraintMode,
-                flags = flags,
-                isEnabled = isEnabled,
-                uid = uid,
-                groupUid = groupUid,
-            )
-        }
+                KeyMapEntity(
+                    id = 0,
+                    trigger = trigger,
+                    actionList = actionList,
+                    constraintList = constraintList,
+                    constraintMode = constraintMode,
+                    flags = flags,
+                    isEnabled = isEnabled,
+                    uid = uid,
+                    groupUid = groupUid,
+                )
+            }
     }
 }

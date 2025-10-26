@@ -26,35 +26,40 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DialogProviderImpl @Inject constructor() : DialogProvider {
+class DialogProviderImpl
+    @Inject
+    constructor() : DialogProvider {
+        private val _onUserResponse by lazy { MutableSharedFlow<OnDialogResponseEvent>() }
+        override val onUserResponse by lazy { _onUserResponse.asSharedFlow() }
 
-    private val _onUserResponse by lazy { MutableSharedFlow<OnDialogResponseEvent>() }
-    override val onUserResponse by lazy { _onUserResponse.asSharedFlow() }
+        private val getUserResponse by lazy { MutableSharedFlow<ShowDialogEvent>() }
+        override val showDialog by lazy { getUserResponse.asSharedFlow() }
 
-    private val getUserResponse by lazy { MutableSharedFlow<ShowDialogEvent>() }
-    override val showDialog by lazy { getUserResponse.asSharedFlow() }
+        override suspend fun showDialog(event: ShowDialogEvent) {
+            // wait for the view to collect so no dialogs are missed
+            getUserResponse.subscriptionCount.first { it > 0 }
 
-    override suspend fun showDialog(event: ShowDialogEvent) {
-        // wait for the view to collect so no dialogs are missed
-        getUserResponse.subscriptionCount.first { it > 0 }
+            getUserResponse.emit(event)
+        }
 
-        getUserResponse.emit(event)
+        override fun onUserResponse(event: OnDialogResponseEvent) {
+            runBlocking { _onUserResponse.emit(event) }
+        }
     }
-
-    override fun onUserResponse(event: OnDialogResponseEvent) {
-        runBlocking { _onUserResponse.emit(event) }
-    }
-}
 
 interface DialogProvider {
     val showDialog: SharedFlow<ShowDialogEvent>
     val onUserResponse: SharedFlow<OnDialogResponseEvent>
 
     suspend fun showDialog(event: ShowDialogEvent)
+
     fun onUserResponse(event: OnDialogResponseEvent)
 }
 
-fun DialogProvider.onUserResponse(key: String, response: Any?) {
+fun DialogProvider.onUserResponse(
+    key: String,
+    response: Any?,
+) {
     onUserResponse(OnDialogResponseEvent(key, response))
 }
 
@@ -102,73 +107,77 @@ fun DialogProvider.showDialogs(
 ) {
     // must be onCreate because dismissing in onDestroy
     lifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.CREATED) {
-        showDialog.onEach { event ->
-            var responded = false
+        showDialog
+            .onEach { event ->
+                var responded = false
 
-            val observer = object : LifecycleObserver {
-                @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-                fun onDestroy() {
-                    if (!responded) {
-                        onUserResponse(event.key, null)
-                        responded = true
-                        lifecycleOwner.lifecycle.removeObserver(this)
+                val observer =
+                    object : LifecycleObserver {
+                        @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+                        fun onDestroy() {
+                            if (!responded) {
+                                onUserResponse(event.key, null)
+                                responded = true
+                                lifecycleOwner.lifecycle.removeObserver(this)
+                            }
+                        }
+                    }
+
+                lifecycleOwner.lifecycle.addObserver(observer)
+
+                val response: Any?
+
+                when (event.ui) {
+                    is DialogModel.Ok ->
+                        response = ctx.okDialog(lifecycleOwner, event.ui.message, event.ui.title)
+
+                    is DialogModel.MultiChoice<*> ->
+                        response = ctx.multiChoiceDialog(lifecycleOwner, event.ui.items)
+
+                    is DialogModel.SingleChoice<*> ->
+                        response = ctx.singleChoiceDialog(lifecycleOwner, event.ui.items)
+
+                    is DialogModel.SnackBar ->
+                        response =
+                            SnackBarUtils.show(
+                                rootView.findViewById(R.id.coordinatorLayout),
+                                event.ui.message,
+                                event.ui.actionText,
+                                event.ui.long,
+                            )
+
+                    is DialogModel.Text ->
+                        response =
+                            ctx.editTextStringAlertDialog(
+                                lifecycleOwner,
+                                event.ui.hint,
+                                event.ui.allowEmpty,
+                                event.ui.text,
+                                event.ui.inputType,
+                                event.ui.message,
+                                event.ui.autoCompleteEntries,
+                            )
+
+                    is DialogModel.Alert ->
+                        response = ctx.materialAlertDialog(lifecycleOwner, event.ui)
+
+                    is DialogModel.Toast -> {
+                        Toast.makeText(ctx, event.ui.text, Toast.LENGTH_SHORT).show()
+                        response = Unit
+                    }
+
+                    is DialogModel.OpenUrl -> {
+                        UrlUtils.openUrl(ctx, event.ui.url)
+                        response = Unit
                     }
                 }
-            }
 
-            lifecycleOwner.lifecycle.addObserver(observer)
-
-            val response: Any?
-
-            when (event.ui) {
-                is DialogModel.Ok ->
-                    response = ctx.okDialog(lifecycleOwner, event.ui.message, event.ui.title)
-
-                is DialogModel.MultiChoice<*> ->
-                    response = ctx.multiChoiceDialog(lifecycleOwner, event.ui.items)
-
-                is DialogModel.SingleChoice<*> ->
-                    response = ctx.singleChoiceDialog(lifecycleOwner, event.ui.items)
-
-                is DialogModel.SnackBar ->
-                    response = SnackBarUtils.show(
-                        rootView.findViewById(R.id.coordinatorLayout),
-                        event.ui.message,
-                        event.ui.actionText,
-                        event.ui.long,
-                    )
-
-                is DialogModel.Text ->
-                    response = ctx.editTextStringAlertDialog(
-                        lifecycleOwner,
-                        event.ui.hint,
-                        event.ui.allowEmpty,
-                        event.ui.text,
-                        event.ui.inputType,
-                        event.ui.message,
-                        event.ui.autoCompleteEntries,
-                    )
-
-                is DialogModel.Alert ->
-                    response = ctx.materialAlertDialog(lifecycleOwner, event.ui)
-
-                is DialogModel.Toast -> {
-                    Toast.makeText(ctx, event.ui.text, Toast.LENGTH_SHORT).show()
-                    response = Unit
+                if (!responded) {
+                    onUserResponse(event.key, response)
+                    responded = true
                 }
 
-                is DialogModel.OpenUrl -> {
-                    UrlUtils.openUrl(ctx, event.ui.url)
-                    response = Unit
-                }
-            }
-
-            if (!responded) {
-                onUserResponse(event.key, response)
-                responded = true
-            }
-
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }.launchIn(this)
+                lifecycleOwner.lifecycle.removeObserver(observer)
+            }.launchIn(this)
     }
 }

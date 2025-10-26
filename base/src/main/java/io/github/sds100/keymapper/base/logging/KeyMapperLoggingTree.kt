@@ -20,49 +20,59 @@ import timber.log.Timber
 import java.util.Calendar
 import javax.inject.Inject
 
-class KeyMapperLoggingTree @Inject constructor(
-    private val coroutineScope: CoroutineScope,
-    preferenceRepository: PreferenceRepository,
-    private val logRepository: LogRepository,
-) : Timber.Tree() {
-    private val logEverything: StateFlow<Boolean> = preferenceRepository.get(Keys.log)
-        .map { it ?: false }
-        .stateIn(coroutineScope, SharingStarted.Eagerly, false)
+class KeyMapperLoggingTree
+    @Inject
+    constructor(
+        private val coroutineScope: CoroutineScope,
+        preferenceRepository: PreferenceRepository,
+        private val logRepository: LogRepository,
+    ) : Timber.Tree() {
+        private val logEverything: StateFlow<Boolean> =
+            preferenceRepository
+                .get(Keys.log)
+                .map { it ?: false }
+                .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
-    private val messagesToLog = MutableSharedFlow<LogEntryEntity>(
-        extraBufferCapacity = 1000,
-        onBufferOverflow = BufferOverflow.SUSPEND,
-    )
+        private val messagesToLog =
+            MutableSharedFlow<LogEntryEntity>(
+                extraBufferCapacity = 1000,
+                onBufferOverflow = BufferOverflow.SUSPEND,
+            )
 
-    init {
-        messagesToLog
-            .onEach {
-                logRepository.insertSuspend(it)
+        init {
+            messagesToLog
+                .onEach {
+                    logRepository.insertSuspend(it)
+                }.flowOn(Dispatchers.Default)
+                .launchIn(coroutineScope)
+        }
+
+        override fun log(
+            priority: Int,
+            tag: String?,
+            message: String,
+            t: Throwable?,
+        ) {
+            // error, warn, and info logs should always log even if the user setting is turned off
+            if (!logEverything.value && priority != Log.ERROR && priority != Log.WARN && priority != Log.INFO) {
+                return
             }
-            .flowOn(Dispatchers.Default)
-            .launchIn(coroutineScope)
-    }
 
-    override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-        // error, warn, and info logs should always log even if the user setting is turned off
-        if (!logEverything.value && priority != Log.ERROR && priority != Log.WARN && priority != Log.INFO) {
-            return
+            val severity =
+                when (priority) {
+                    Log.ERROR -> LogEntryEntity.SEVERITY_ERROR
+                    Log.DEBUG -> LogEntryEntity.SEVERITY_DEBUG
+                    Log.INFO -> LogEntryEntity.SEVERITY_INFO
+                    else -> LogEntryEntity.SEVERITY_DEBUG
+                }
+
+            messagesToLog.tryEmit(
+                LogEntryEntity(
+                    id = 0,
+                    time = Calendar.getInstance().timeInMillis,
+                    severity = severity,
+                    message = message,
+                ),
+            )
         }
-
-        val severity = when (priority) {
-            Log.ERROR -> LogEntryEntity.SEVERITY_ERROR
-            Log.DEBUG -> LogEntryEntity.SEVERITY_DEBUG
-            Log.INFO -> LogEntryEntity.SEVERITY_INFO
-            else -> LogEntryEntity.SEVERITY_DEBUG
-        }
-
-        messagesToLog.tryEmit(
-            LogEntryEntity(
-                id = 0,
-                time = Calendar.getInstance().timeInMillis,
-                severity = severity,
-                message = message,
-            ),
-        )
     }
-}

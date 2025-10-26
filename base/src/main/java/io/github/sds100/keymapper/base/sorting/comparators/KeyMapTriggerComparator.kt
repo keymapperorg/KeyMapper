@@ -41,19 +41,21 @@ class KeyMapTriggerComparator(
 
         // If keys are equal compare length
         // Otherwise compare mode
-        val result = compareValuesBy(
-            trigger,
-            otherTrigger,
-            { it.keys.size },
-            { it.mode },
-        )
+        val result =
+            compareValuesBy(
+                trigger,
+                otherTrigger,
+                { it.keys.size },
+                { it.mode },
+            )
 
         return invertIfReverse(result)
     }
 
-    private fun invertIfReverse(result: Int) = if (reverse) {
-        result * -1
-    } else {
-        result
-    }
+    private fun invertIfReverse(result: Int) =
+        if (reverse) {
+            result * -1
+        } else {
+            result
+        }
 }

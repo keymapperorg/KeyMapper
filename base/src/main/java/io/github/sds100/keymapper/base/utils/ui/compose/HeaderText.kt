@@ -6,7 +6,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun HeaderText(modifier: Modifier = Modifier, text: String) {
+fun HeaderText(
+    modifier: Modifier = Modifier,
+    text: String,
+) {
     Text(
         modifier = modifier,
         text = text,

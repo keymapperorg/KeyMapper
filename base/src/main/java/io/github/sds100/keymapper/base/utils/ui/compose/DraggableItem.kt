@@ -16,24 +16,25 @@ fun LazyItemScope.DraggableItem(
     content: @Composable BoxScope.(isDragging: Boolean) -> Unit,
 ) {
     val dragging = index == dragDropState.draggingItemIndex
-    val draggingModifier = if (dragging) {
-        Modifier
-            .zIndex(1f)
-            .graphicsLayer {
-                translationY = dragDropState.draggingItemOffset
-            }
-    } else if (index == dragDropState.previousIndexOfDraggedItem) {
-        Modifier
-            .zIndex(1f)
-            .graphicsLayer {
-                translationY = dragDropState.previousItemOffset.value
-            }
-    } else {
-        Modifier.animateItem(
-            fadeInSpec = null,
-            fadeOutSpec = null,
-        )
-    }
+    val draggingModifier =
+        if (dragging) {
+            Modifier
+                .zIndex(1f)
+                .graphicsLayer {
+                    translationY = dragDropState.draggingItemOffset
+                }
+        } else if (index == dragDropState.previousIndexOfDraggedItem) {
+            Modifier
+                .zIndex(1f)
+                .graphicsLayer {
+                    translationY = dragDropState.previousItemOffset.value
+                }
+        } else {
+            Modifier.animateItem(
+                fadeInSpec = null,
+                fadeOutSpec = null,
+            )
+        }
     Box(modifier.then(draggingModifier)) {
         content(dragging)
     }

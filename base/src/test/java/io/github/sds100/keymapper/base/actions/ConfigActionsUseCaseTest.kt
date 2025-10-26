@@ -24,7 +24,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
 class ConfigActionsUseCaseTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testScope = TestScope(testDispatcher)
 
@@ -34,20 +33,22 @@ class ConfigActionsUseCaseTest {
 
     @Before
     fun before() {
-        configKeyMapState = ConfigKeyMapStateImpl(
-            testScope,
-            keyMapRepository = mock(),
-            floatingButtonRepository = mock(),
-        )
+        configKeyMapState =
+            ConfigKeyMapStateImpl(
+                testScope,
+                keyMapRepository = mock(),
+                floatingButtonRepository = mock(),
+            )
 
         mockConfigConstraintsUseCase = mock()
 
-        useCase = ConfigActionsUseCaseImpl(
-            state = configKeyMapState,
-            preferenceRepository = mock(),
-            configConstraints = mockConfigConstraintsUseCase,
-            defaultKeyMapOptionsUseCase = mock(),
-        )
+        useCase =
+            ConfigActionsUseCaseImpl(
+                state = configKeyMapState,
+                preferenceRepository = mock(),
+                configConstraints = mockConfigConstraintsUseCase,
+                defaultKeyMapOptionsUseCase = mock(),
+            )
     }
 
     @Test
@@ -55,20 +56,24 @@ class ConfigActionsUseCaseTest {
         runTest(testDispatcher) {
             configKeyMapState.setKeyMap(
                 KeyMap(
-                    trigger = singleKeyTrigger(
-                        KeyEventTriggerKey(
-                            keyCode = KeyEvent.KEYCODE_DPAD_LEFT,
-                            device = KeyEventTriggerDevice.Internal,
-                            clickType = ClickType.SHORT_PRESS,
-                            requiresIme = true,
+                    trigger =
+                        singleKeyTrigger(
+                            KeyEventTriggerKey(
+                                keyCode = KeyEvent.KEYCODE_DPAD_LEFT,
+                                device = KeyEventTriggerDevice.Internal,
+                                clickType = ClickType.SHORT_PRESS,
+                                requiresIme = true,
+                            ),
                         ),
-                    ),
                 ),
             )
 
             useCase.addAction(ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_W))
 
-            val actionList = useCase.keyMap.value.dataOrNull()!!.actionList
+            val actionList =
+                useCase.keyMap.value
+                    .dataOrNull()!!
+                    .actionList
             assertThat(actionList[0].holdDown, `is`(true))
             assertThat(actionList[0].repeat, `is`(false))
         }
@@ -116,22 +121,29 @@ class ConfigActionsUseCaseTest {
     fun `key map with hold down action, load key map, hold down flag shouldn't disappear`() =
         runTest(testDispatcher) {
             // given
-            val action = Action(
-                data = ActionData.TapScreen(100, 100, null),
-                holdDown = true,
-            )
+            val action =
+                Action(
+                    data = ActionData.TapScreen(100, 100, null),
+                    holdDown = true,
+                )
 
-            val keyMap = KeyMap(
-                0,
-                trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_0)),
-                actionList = listOf(action),
-            )
+            val keyMap =
+                KeyMap(
+                    0,
+                    trigger = singleKeyTrigger(triggerKey(KeyEvent.KEYCODE_0)),
+                    actionList = listOf(action),
+                )
 
             // when
             configKeyMapState.setKeyMap(keyMap)
 
             // then
-            assertThat(useCase.keyMap.value.dataOrNull()!!.actionList, `is`(listOf(action)))
+            assertThat(
+                useCase.keyMap.value
+                    .dataOrNull()!!
+                    .actionList,
+                `is`(listOf(action)),
+            )
         }
 
     @Test
@@ -142,7 +154,9 @@ class ConfigActionsUseCaseTest {
 
                 useCase.addAction(ActionData.InputKeyEvent(keyCode))
 
-                useCase.keyMap.value.dataOrNull()!!.actionList
+                useCase.keyMap.value
+                    .dataOrNull()!!
+                    .actionList
                     .single()
                     .let {
                         assertThat(it.holdDown, `is`(true))

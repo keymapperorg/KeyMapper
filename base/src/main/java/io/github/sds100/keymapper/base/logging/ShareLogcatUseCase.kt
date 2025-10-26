@@ -18,31 +18,32 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @ViewModelScoped
-class ShareLogcatUseCaseImpl @Inject constructor(
-    @ApplicationContext private val ctx: Context,
-    private val fileAdapter: FileAdapter,
-    private val shellAdapter: ShellAdapter,
-    private val buildConfigProvider: BuildConfigProvider,
-) : ShareLogcatUseCase {
+class ShareLogcatUseCaseImpl
+    @Inject
+    constructor(
+        @ApplicationContext private val ctx: Context,
+        private val fileAdapter: FileAdapter,
+        private val shellAdapter: ShellAdapter,
+        private val buildConfigProvider: BuildConfigProvider,
+    ) : ShareLogcatUseCase {
+        override suspend fun share(): KMResult<Unit> {
+            val fileName = "logs/logcat_${FileUtils.createFileDate()}.txt"
 
-    override suspend fun share(): KMResult<Unit> {
-        val fileName = "logs/logcat_${FileUtils.createFileDate()}.txt"
+            return withContext(Dispatchers.IO) {
+                val file: IFile = fileAdapter.getPrivateFile(fileName)
+                file.createFile()
 
-        return withContext(Dispatchers.IO) {
-            val file: IFile = fileAdapter.getPrivateFile(fileName)
-            file.createFile()
+                val command = "logcat -d -f ${file.path}"
 
-            val command = "logcat -d -f ${file.path}"
+                shellAdapter.execute(command).then {
+                    val publicUri = fileAdapter.getPublicUriForPrivateFile(file)
 
-            shellAdapter.execute(command).then {
-                val publicUri = fileAdapter.getPublicUriForPrivateFile(file)
-
-                ShareUtils.shareFile(ctx, publicUri.toUri(), buildConfigProvider.packageName)
-                Success(Unit)
+                    ShareUtils.shareFile(ctx, publicUri.toUri(), buildConfigProvider.packageName)
+                    Success(Unit)
+                }
             }
         }
     }
-}
 
 interface ShareLogcatUseCase {
     suspend fun share(): KMResult<Unit>

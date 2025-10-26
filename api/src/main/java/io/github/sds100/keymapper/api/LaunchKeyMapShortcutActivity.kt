@@ -11,6 +11,7 @@ import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import javax.inject.Inject
 
 // DON'T MOVE THIS CLASS TO A DIFFERENT PACKAGE BECAUSE IT BREAKS THE API
+
 /**
  * Use basic Activity, NOT AppCompatActivity so the NoDisplay theme works. Otherwise an
  * exception may be thrown because the theme doesn't extend AppCompat.
@@ -18,7 +19,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class LaunchKeyMapShortcutActivity : ComponentActivity() {
-
     @Inject
     lateinit var accessibilityServiceAdapter: AccessibilityServiceAdapter
 
@@ -40,17 +40,21 @@ class LaunchKeyMapShortcutActivity : ComponentActivity() {
                     }
                 }
 
-            AccessibilityServiceState.CRASHED -> Toast.makeText(
-                this,
-                R.string.error_accessibility_service_crashed,
-                Toast.LENGTH_SHORT,
-            ).show()
+            AccessibilityServiceState.CRASHED ->
+                Toast
+                    .makeText(
+                        this,
+                        R.string.error_accessibility_service_crashed,
+                        Toast.LENGTH_SHORT,
+                    ).show()
 
-            AccessibilityServiceState.DISABLED -> Toast.makeText(
-                this,
-                R.string.error_accessibility_service_disabled,
-                Toast.LENGTH_SHORT,
-            ).show()
+            AccessibilityServiceState.DISABLED ->
+                Toast
+                    .makeText(
+                        this,
+                        R.string.error_accessibility_service_disabled,
+                        Toast.LENGTH_SHORT,
+                    ).show()
         }
 
         finish()
