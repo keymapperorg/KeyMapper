@@ -309,6 +309,18 @@ class CreateActionDelegate(
                 return action
             }
 
+            ActionId.MUTE_MICROPHONE -> {
+                return ActionData.Microphone.Mute
+            }
+
+            ActionId.UNMUTE_MICROPHONE -> {
+                return ActionData.Microphone.Unmute
+            }
+
+            ActionId.TOGGLE_MUTE_MICROPHONE -> {
+                return ActionData.Microphone.Toggle
+            }
+
             ActionId.VOLUME_INCREASE_STREAM,
             ActionId.VOLUME_DECREASE_STREAM,
                 -> {

@@ -201,6 +201,8 @@
     <string name="toast_no_sound_files">You have saved no sound files!</string>
     <string name="toast_granted_itself_write_secure_settings_with_shizuku">Key Mapper has used Shizuku to grant itself WRITE_SECURE_SETTINGS permission</string>
     <string name="toast_granted_itself_write_secure_settings_with_root">Key Mapper has used Root to grant itself WRITE_SECURE_SETTINGS permission</string>
+    <string name="toast_microphone_muted">Microphone muted</string>
+    <string name="toast_microphone_unmuted">Microphone unmuted</string>
     <!--  Toasts  -->
 
     <!-- Extra labels -->
@@ -883,6 +885,9 @@
     <string name="action_volume_mute">Mute volume</string>
     <string name="action_toggle_mute">Toggle mute</string>
     <string name="action_volume_unmute">Unmute volume</string>
+    <string name="action_mute_microphone">Mute microphone</string>
+    <string name="action_unmute_microphone">Unmute microphone</string>
+    <string name="action_toggle_mute_microphone">Toggle mute microphone</string>
     <string name="action_volume_show_dialog">Show volume dialog</string>
     <string name="action_increase_stream">Increase stream</string>
     <string name="action_increase_stream_formatted">Increase %s stream</string>

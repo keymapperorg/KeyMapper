@@ -359,6 +359,30 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 result = audioAdapter.unmuteVolume(showVolumeUi = action.showVolumeUi)
             }
 
+            is ActionData.Microphone.Mute -> {
+                result = audioAdapter.muteMicrophone().onSuccess {
+                    toastAdapter.show(resourceProvider.getString(R.string.toast_microphone_muted))
+                }
+            }
+
+            is ActionData.Microphone.Unmute -> {
+                result = audioAdapter.unmuteMicrophone().onSuccess {
+                    toastAdapter.show(resourceProvider.getString(R.string.toast_microphone_unmuted))
+                }
+            }
+
+            is ActionData.Microphone.Toggle -> {
+                result = if (audioAdapter.isMicrophoneMuted) {
+                    audioAdapter.unmuteMicrophone().onSuccess {
+                        toastAdapter.show(resourceProvider.getString(R.string.toast_microphone_unmuted))
+                    }
+                } else {
+                    audioAdapter.muteMicrophone().onSuccess {
+                        toastAdapter.show(resourceProvider.getString(R.string.toast_microphone_muted))
+                    }
+                }
+            }
+
             is ActionData.TapScreen -> {
                 result = service.tapScreen(action.x, action.y, inputEventAction)
             }

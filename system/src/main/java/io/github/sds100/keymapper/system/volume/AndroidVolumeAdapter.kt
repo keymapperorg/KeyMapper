@@ -53,6 +53,9 @@ class AndroidVolumeAdapter @Inject constructor(
             }
         }
 
+    override val isMicrophoneMuted: Boolean
+        get() = audioManager.isMicrophoneMute
+
     override fun raiseVolume(stream: VolumeStream?, showVolumeUi: Boolean): KMResult<*> =
         stream.convert().then { streamType ->
             adjustVolume(AudioManager.ADJUST_RAISE, showVolumeUi, streamType)
@@ -124,6 +127,16 @@ class AndroidVolumeAdapter @Inject constructor(
 
     override fun isDndEnabled(): Boolean =
         notificationManager.currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL
+
+    override fun muteMicrophone(): KMResult<*> {
+        audioManager.isMicrophoneMute = true
+        return Success(Unit)
+    }
+
+    override fun unmuteMicrophone(): KMResult<*> {
+        audioManager.isMicrophoneMute = false
+        return Success(Unit)
+    }
 
     private fun DndMode.convert(): Int = when (this) {
         DndMode.ALARMS -> NotificationManager.INTERRUPTION_FILTER_ALARMS

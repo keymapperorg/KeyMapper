@@ -17,6 +17,7 @@
 - #727 Actions to send SMS messages: "Send SMS" and "Compose SMS"
 - #1819 Explain how to enable the accessibility service restricted setting
 - #661 Action to execute shell commands.
+- #1066 Action to mute/unmute microphone.
 
 ## Removed
 
