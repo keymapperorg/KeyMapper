@@ -11,7 +11,6 @@ import io.github.sds100.keymapper.base.actions.tapscreen.PickCoordinateResult
 import io.github.sds100.keymapper.base.system.intents.ConfigIntentResult
 import io.github.sds100.keymapper.base.utils.DndModeStrings
 import io.github.sds100.keymapper.base.utils.RingerModeStrings
-import io.github.sds100.keymapper.base.utils.VolumeStreamStrings
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
@@ -54,6 +53,7 @@ class CreateActionDelegate(
 
     var httpRequestBottomSheetState: ActionData.HttpRequest? by mutableStateOf(null)
     var smsActionBottomSheetState: SmsActionBottomSheetState? by mutableStateOf(null)
+    var volumeActionState: VolumeActionBottomSheetState? by mutableStateOf(null)
 
     init {
         coroutineScope.launch {
@@ -160,6 +160,25 @@ class CreateActionDelegate(
         actionResult.update { action }
     }
 
+    fun onDoneConfigVolumeClick() {
+        volumeActionState?.also { state ->
+            val action = when (state.actionId) {
+                ActionId.VOLUME_UP -> ActionData.Volume.Up(
+                    showVolumeUi = state.showVolumeUi,
+                    volumeStream = state.volumeStream,
+                )
+                ActionId.VOLUME_DOWN -> ActionData.Volume.Down(
+                    showVolumeUi = state.showVolumeUi,
+                    volumeStream = state.volumeStream,
+                )
+                else -> return
+            }
+
+            volumeActionState = null
+            actionResult.update { action }
+        }
+    }
+
     fun onTestSmsClick() {
         coroutineScope.launch {
             (smsActionBottomSheetState as? SmsActionBottomSheetState.SendSms)?.also { state ->
@@ -263,8 +282,26 @@ class CreateActionDelegate(
                 return action
             }
 
-            ActionId.VOLUME_UP,
-            ActionId.VOLUME_DOWN,
+            ActionId.VOLUME_UP -> {
+                val oldVolumeUpData = oldData as? ActionData.Volume.Up
+                volumeActionState = VolumeActionBottomSheetState(
+                    actionId = ActionId.VOLUME_UP,
+                    volumeStream = oldVolumeUpData?.volumeStream,
+                    showVolumeUi = oldVolumeUpData?.showVolumeUi ?: false,
+                )
+                return null
+            }
+
+            ActionId.VOLUME_DOWN -> {
+                val oldVolumeDownData = oldData as? ActionData.Volume.Down
+                volumeActionState = VolumeActionBottomSheetState(
+                    actionId = ActionId.VOLUME_DOWN,
+                    volumeStream = oldVolumeDownData?.volumeStream,
+                    showVolumeUi = oldVolumeDownData?.showVolumeUi ?: false,
+                )
+                return null
+            }
+
             ActionId.VOLUME_MUTE,
             ActionId.VOLUME_UNMUTE,
             ActionId.VOLUME_TOGGLE_MUTE,
@@ -272,8 +309,6 @@ class CreateActionDelegate(
                 val showVolumeUiId = 0
                 val isVolumeUiChecked =
                     when (oldData) {
-                        is ActionData.Volume.Up -> oldData.showVolumeUi
-                        is ActionData.Volume.Down -> oldData.showVolumeUi
                         is ActionData.Volume.Mute -> oldData.showVolumeUi
                         is ActionData.Volume.UnMute -> oldData.showVolumeUi
                         is ActionData.Volume.ToggleMute -> oldData.showVolumeUi
@@ -295,8 +330,6 @@ class CreateActionDelegate(
                 val showVolumeUi = chosenFlags.contains(showVolumeUiId)
 
                 val action = when (actionId) {
-                    ActionId.VOLUME_UP -> ActionData.Volume.Up(showVolumeUi)
-                    ActionId.VOLUME_DOWN -> ActionData.Volume.Down(showVolumeUi)
                     ActionId.VOLUME_MUTE -> ActionData.Volume.Mute(showVolumeUi)
                     ActionId.VOLUME_UNMUTE -> ActionData.Volume.UnMute(showVolumeUi)
                     ActionId.VOLUME_TOGGLE_MUTE -> ActionData.Volume.ToggleMute(
@@ -309,48 +342,48 @@ class CreateActionDelegate(
                 return action
             }
 
+            ActionId.MUTE_MICROPHONE -> {
+                return ActionData.Microphone.Mute
+            }
+
+            ActionId.UNMUTE_MICROPHONE -> {
+                return ActionData.Microphone.Unmute
+            }
+
+            ActionId.TOGGLE_MUTE_MICROPHONE -> {
+                return ActionData.Microphone.Toggle
+            }
+
             ActionId.VOLUME_INCREASE_STREAM,
             ActionId.VOLUME_DECREASE_STREAM,
                 -> {
-                val showVolumeUiId = 0
-                val isVolumeUiChecked = if (oldData is ActionData.Volume.Stream) {
-                    oldData.showVolumeUi
-                } else {
-                    false
+                // These deprecated actions are now converted to Volume.Up/Down with stream parameter
+                // Determine which action ID to use based on the old action
+                val newActionId = when (actionId) {
+                    ActionId.VOLUME_INCREASE_STREAM -> ActionId.VOLUME_UP
+                    ActionId.VOLUME_DECREASE_STREAM -> ActionId.VOLUME_DOWN
+                    else -> return null
                 }
 
-                val dialogItems = listOf(
-                    MultiChoiceItem(
-                        showVolumeUiId,
-                        getString(R.string.flag_show_volume_dialog),
-                        isVolumeUiChecked,
-                    ),
+                // Get the old stream if this is being edited
+                val oldStream = when (oldData) {
+                    is ActionData.Volume.Up -> oldData.volumeStream
+                    is ActionData.Volume.Down -> oldData.volumeStream
+                    else -> null
+                }
+
+                val oldShowVolumeUi = when (oldData) {
+                    is ActionData.Volume.Up -> oldData.showVolumeUi
+                    is ActionData.Volume.Down -> oldData.showVolumeUi
+                    else -> false
+                }
+
+                volumeActionState = VolumeActionBottomSheetState(
+                    actionId = newActionId,
+                    volumeStream = oldStream ?: VolumeStream.MUSIC, // Default to MUSIC for old stream actions
+                    showVolumeUi = oldShowVolumeUi,
                 )
-
-                val showVolumeUiDialog = DialogModel.MultiChoice(items = dialogItems)
-
-                val chosenFlags =
-                    showDialog("show_volume_ui", showVolumeUiDialog) ?: return null
-
-                val showVolumeUi = chosenFlags.contains(showVolumeUiId)
-
-                val items = VolumeStream.entries
-                    .map { it to getString(VolumeStreamStrings.getLabel(it)) }
-
-                val stream = showDialog("pick_volume_stream", DialogModel.SingleChoice(items))
-                    ?: return null
-
-                val action = when (actionId) {
-                    ActionId.VOLUME_INCREASE_STREAM ->
-                        ActionData.Volume.Stream.Increase(showVolumeUi = showVolumeUi, stream)
-
-                    ActionId.VOLUME_DECREASE_STREAM ->
-                        ActionData.Volume.Stream.Decrease(showVolumeUi = showVolumeUi, stream)
-
-                    else -> throw Exception("don't know how to create action for $actionId")
-                }
-
-                return action
+                return null
             }
 
             ActionId.CHANGE_RINGER_MODE -> {

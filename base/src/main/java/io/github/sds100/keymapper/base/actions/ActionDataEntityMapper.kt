@@ -274,7 +274,7 @@ object ActionDataEntityMapper {
 
             ActionId.VOLUME_INCREASE_STREAM,
             ActionId.VOLUME_DECREASE_STREAM,
-            -> {
+                -> {
                 val stream =
                     entity.extras.getData(ActionEntity.EXTRA_STREAM_TYPE).then {
                         VOLUME_STREAM_MAP.getKey(it)!!.success()
@@ -283,12 +283,13 @@ object ActionDataEntityMapper {
                 val showVolumeUi =
                     entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI)
 
+                // Convert old stream actions to new volume up/down with stream parameter
                 when (actionId) {
                     ActionId.VOLUME_INCREASE_STREAM ->
-                        ActionData.Volume.Stream.Increase(showVolumeUi, stream)
+                        ActionData.Volume.Up(showVolumeUi, stream)
 
                     ActionId.VOLUME_DECREASE_STREAM ->
-                        ActionData.Volume.Stream.Decrease(showVolumeUi, stream)
+                        ActionData.Volume.Down(showVolumeUi, stream)
 
                     else -> throw Exception("don't know how to create system action for $actionId")
                 }
@@ -299,13 +300,22 @@ object ActionDataEntityMapper {
             ActionId.VOLUME_TOGGLE_MUTE,
             ActionId.VOLUME_UNMUTE,
             ActionId.VOLUME_MUTE,
-            -> {
+                -> {
                 val showVolumeUi =
                     entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI)
 
+                // For VOLUME_UP and VOLUME_DOWN, optionally read the stream type
+                val volumeStream = if (actionId == ActionId.VOLUME_UP || actionId == ActionId.VOLUME_DOWN) {
+                    entity.extras.getData(ActionEntity.EXTRA_STREAM_TYPE).then {
+                        VOLUME_STREAM_MAP.getKey(it)?.success() ?: null.success()
+                    }.valueOrNull()
+                } else {
+                    null
+                }
+
                 when (actionId) {
-                    ActionId.VOLUME_UP -> ActionData.Volume.Up(showVolumeUi)
-                    ActionId.VOLUME_DOWN -> ActionData.Volume.Down(showVolumeUi)
+                    ActionId.VOLUME_UP -> ActionData.Volume.Up(showVolumeUi, volumeStream)
+                    ActionId.VOLUME_DOWN -> ActionData.Volume.Down(showVolumeUi, volumeStream)
                     ActionId.VOLUME_TOGGLE_MUTE -> ActionData.Volume.ToggleMute(
                         showVolumeUi,
                     )
@@ -317,10 +327,14 @@ object ActionDataEntityMapper {
                 }
             }
 
+            ActionId.MUTE_MICROPHONE -> ActionData.Microphone.Mute
+            ActionId.UNMUTE_MICROPHONE -> ActionData.Microphone.Unmute
+            ActionId.TOGGLE_MUTE_MICROPHONE -> ActionData.Microphone.Toggle
+
             ActionId.TOGGLE_FLASHLIGHT,
             ActionId.ENABLE_FLASHLIGHT,
             ActionId.CHANGE_FLASHLIGHT_STRENGTH,
-            -> {
+                -> {
                 val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
                     LENS_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -346,7 +360,7 @@ object ActionDataEntityMapper {
             }
 
             ActionId.DISABLE_FLASHLIGHT,
-            -> {
+                -> {
                 val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
                     LENS_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -355,7 +369,7 @@ object ActionDataEntityMapper {
 
             ActionId.TOGGLE_DND_MODE,
             ActionId.ENABLE_DND_MODE,
-            -> {
+                -> {
                 val dndMode = entity.extras.getData(ActionEntity.EXTRA_DND_MODE).then {
                     DND_MODE_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -385,7 +399,7 @@ object ActionDataEntityMapper {
             ActionId.STOP_MEDIA_PACKAGE,
             ActionId.STEP_FORWARD_PACKAGE,
             ActionId.STEP_BACKWARD_PACKAGE,
-            -> {
+                -> {
                 val packageName =
                     entity.extras.getData(ActionEntity.EXTRA_PACKAGE_NAME).valueOrNull()
                         ?: return null
@@ -730,7 +744,6 @@ object ActionDataEntityMapper {
         var flags = 0
 
         val showVolumeUiFlag = when (data) {
-            is ActionData.Volume.Stream -> data.showVolumeUi
             is ActionData.Volume.Up -> data.showVolumeUi
             is ActionData.Volume.Down -> data.showVolumeUi
             is ActionData.Volume.Mute -> data.showVolumeUi
@@ -915,12 +928,31 @@ object ActionDataEntityMapper {
 
         is ActionData.Volume ->
             when (data) {
-                is ActionData.Volume.Stream -> listOf(
-                    EntityExtra(
-                        ActionEntity.EXTRA_STREAM_TYPE,
-                        VOLUME_STREAM_MAP[data.volumeStream]!!,
-                    ),
-                )
+                is ActionData.Volume.Up -> buildList {
+                    if (data.volumeStream != null) {
+                        VOLUME_STREAM_MAP[data.volumeStream]?.let { streamValue ->
+                            add(
+                                EntityExtra(
+                                    ActionEntity.EXTRA_STREAM_TYPE,
+                                    streamValue,
+                                ),
+                            )
+                        }
+                    }
+                }
+
+                is ActionData.Volume.Down -> buildList {
+                    if (data.volumeStream != null) {
+                        VOLUME_STREAM_MAP[data.volumeStream]?.let { streamValue ->
+                            add(
+                                EntityExtra(
+                                    ActionEntity.EXTRA_STREAM_TYPE,
+                                    streamValue,
+                                ),
+                            )
+                        }
+                    }
+                }
 
                 else -> emptyList()
             }
@@ -1139,6 +1171,9 @@ object ActionDataEntityMapper {
         ActionId.VOLUME_UNMUTE to "volume_unmute",
         ActionId.VOLUME_MUTE to "volume_mute",
         ActionId.VOLUME_TOGGLE_MUTE to "volume_toggle_mute",
+        ActionId.MUTE_MICROPHONE to "mute_microphone",
+        ActionId.UNMUTE_MICROPHONE to "unmute_microphone",
+        ActionId.TOGGLE_MUTE_MICROPHONE to "toggle_mute_microphone",
 
         ActionId.EXPAND_NOTIFICATION_DRAWER to "expand_notification_drawer",
         ActionId.TOGGLE_NOTIFICATION_DRAWER to "toggle_notification_drawer",

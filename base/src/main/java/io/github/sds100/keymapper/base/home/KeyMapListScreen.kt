@@ -128,7 +128,9 @@ private fun EmptyKeyMapList(modifier: Modifier = Modifier) {
         val shrug = stringResource(R.string.shrug)
         val text = stringResource(R.string.home_key_map_list_empty)
         Text(
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(horizontal = 48.dp),
             text = buildAnnotatedString {
                 withStyle(MaterialTheme.typography.headlineLarge.toSpanStyle()) {
                     append(shrug)

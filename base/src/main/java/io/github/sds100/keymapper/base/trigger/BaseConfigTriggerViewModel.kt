@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.trigger
 
+import android.view.KeyEvent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -13,6 +14,7 @@ import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegate
+import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegateImpl
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
 import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
@@ -380,6 +382,10 @@ abstract class BaseConfigTriggerViewModel(
                 product = key.device.product,
             ),
         )
+
+        if (key.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || key.keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+            neverShowTipAgain(OnboardingTipDelegateImpl.VOLUME_BUTTONS_PRO_MODE_TIP_ID)
+        }
     }
 
     fun onParallelRadioButtonChecked() {
@@ -472,7 +478,7 @@ abstract class BaseConfigTriggerViewModel(
 
                 is RecordTriggerState.Completed,
                 RecordTriggerState.Idle,
-                -> recordTrigger.startRecording(enableEvdevRecording = false)
+                    -> recordTrigger.startRecording(enableEvdevRecording = false)
             }
 
             // Show dialog if the accessibility service is disabled or crashed
@@ -480,9 +486,21 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    suspend fun handleServiceEventResult(result: KMResult<*>) {
+    fun handleServiceEventResult(result: KMResult<*>) {
         if (result is AccessibilityServiceError) {
             showFixAccessibilityServiceDialog(result)
+        }
+    }
+
+    override fun onTipButtonClick(tipId: String) {
+        when (tipId) {
+            OnboardingTipDelegateImpl.CAPS_LOCK_PRO_MODE_COMPATIBILITY_TIP_ID -> {
+                showTriggerSetup(TriggerSetupShortcut.KEYBOARD, forceProMode = true)
+            }
+
+            OnboardingTipDelegateImpl.VOLUME_BUTTONS_PRO_MODE_TIP_ID -> {
+                showTriggerSetup(TriggerSetupShortcut.VOLUME, forceProMode = true)
+            }
         }
     }
 

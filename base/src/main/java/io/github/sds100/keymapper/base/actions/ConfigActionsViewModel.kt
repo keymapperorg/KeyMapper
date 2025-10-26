@@ -7,7 +7,9 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionDelegate
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
+import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegate
+import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.isFixable
@@ -47,6 +49,7 @@ class ConfigActionsViewModel @Inject constructor(
     private val createAction: CreateActionUseCase,
     private val testAction: TestActionUseCase,
     private val config: ConfigActionsUseCase,
+    private val onboardingUseCase: OnboardingUseCase,
     setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
     fixKeyEventActionDelegate: FixKeyEventActionDelegate,
     onboardingTipDelegate: OnboardingTipDelegate,
@@ -79,6 +82,8 @@ class ConfigActionsViewModel @Inject constructor(
         combine(config.keyMap, actionOptionsUid, transform = ::buildOptionsState)
             .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
+    private var editedActionUid: String? = null
+
     private val actionErrorSnapshot: StateFlow<ActionErrorSnapshot?> =
         displayAction.actionErrorSnapshot.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
@@ -96,7 +101,7 @@ class ConfigActionsViewModel @Inject constructor(
 
         viewModelScope.launch {
             createActionDelegate.actionResult.filterNotNull().collect { action ->
-                val actionUid = actionOptionsUid.value ?: return@collect
+                val actionUid = editedActionUid ?: return@collect
                 config.setActionData(actionUid, action)
                 actionOptionsUid.update { null }
             }
@@ -153,6 +158,9 @@ class ConfigActionsViewModel @Inject constructor(
             val actionData = navigate("add_action", NavDestination.ChooseAction) ?: return@launch
 
             config.addAction(actionData)
+
+            // Never show the tap target to add an action again.
+            onboardingUseCase.completedTapTarget(OnboardingTapTarget.CHOOSE_ACTION)
         }
     }
 
@@ -178,6 +186,10 @@ class ConfigActionsViewModel @Inject constructor(
     override fun onEditClick() {
         val actionUid = actionOptionsUid.value ?: return
         viewModelScope.launch {
+            // Clear the bottom sheet so navigating back with predicted-back works
+            actionOptionsUid.update { null }
+            editedActionUid = actionUid
+
             val keyMap = config.keyMap.first().dataOrNull() ?: return@launch
 
             val oldAction = keyMap.actionList.find { it.uid == actionUid } ?: return@launch
@@ -188,6 +200,7 @@ class ConfigActionsViewModel @Inject constructor(
     override fun onReplaceClick() {
         val actionUid = actionOptionsUid.value ?: return
         viewModelScope.launch {
+            // Clear the bottom sheet so navigating back with predicted-back works
             actionOptionsUid.update { null }
 
             val newActionData =

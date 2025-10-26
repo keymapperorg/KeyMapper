@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.onboarding
 
 import android.os.Build
+import android.view.KeyEvent
 import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.Action
@@ -37,7 +38,7 @@ class OnboardingTipDelegateImpl @Inject constructor(
     private val configTriggerUseCase: ConfigTriggerUseCase,
     private val configActionsUseCase: ConfigActionsUseCase,
     resourceProvider: ResourceProvider,
-    navigationProvider: NavigationProvider
+    navigationProvider: NavigationProvider,
 ) : OnboardingTipDelegate,
     NavigationProvider by navigationProvider,
     PreferenceRepository by preferenceRepository,
@@ -48,7 +49,8 @@ class OnboardingTipDelegateImpl @Inject constructor(
         private const val PARALLEL_TRIGGER_TIP_ID = "parallel_trigger_tip"
         private const val SEQUENCE_TRIGGER_TIP_ID = "sequence_trigger_tip"
         private const val TRIGGER_CONSTRAINTS_TIP_ID = "trigger_constraints_tip"
-        const val CAPS_LOCK_TIP_ID = "caps_lock_tip"
+        const val CAPS_LOCK_PRO_MODE_COMPATIBILITY_TIP_ID = "caps_lock_pro_mode_compatibility_tip"
+        const val VOLUME_BUTTONS_PRO_MODE_TIP_ID = "volume_buttons_pro_mode_tip"
         const val SCREEN_PINNING_TIP_ID = "screen_pinning_tip"
         const val IME_DETECTION_TIP_ID = "ime_detection_tip"
         const val RINGER_MODE_TIP_ID = "ringer_mode_tip"
@@ -72,8 +74,13 @@ class OnboardingTipDelegateImpl @Inject constructor(
         false,
     )
 
-    private var shownCapsLockTip: Boolean by PrefDelegate(
-        Keys.shownCapsLockTip,
+    private var shownCapsLockProModeTip: Boolean by PrefDelegate(
+        Keys.shownCapsLockProModeTip,
+        false,
+    )
+
+    private var shownVolumeButtonsProModeTip: Boolean by PrefDelegate(
+        Keys.shownVolumeButtonsProModeTip,
         false,
     )
 
@@ -113,33 +120,7 @@ class OnboardingTipDelegateImpl @Inject constructor(
     override fun onTriggerTipDismissClick() {
         val currentTip = triggerTip.value
 
-        when (currentTip?.id) {
-            PARALLEL_TRIGGER_TIP_ID -> {
-                shownParallelTriggerOrderExplanation = true
-            }
-
-            SEQUENCE_TRIGGER_TIP_ID -> {
-                shownSequenceTriggerExplanation = true
-            }
-
-            TRIGGER_CONSTRAINTS_TIP_ID -> {
-                shownTriggerConstraintsTip = true
-            }
-
-            CAPS_LOCK_TIP_ID -> {
-                shownCapsLockTip = true
-            }
-
-            SCREEN_PINNING_TIP_ID -> {
-                shownScreenPinningTip = true
-            }
-
-            IME_DETECTION_TIP_ID -> {
-                shownImeDetectionTip = true
-            }
-
-            // POWER_BUTTON_EMERGENCY_TIP_ID doesn't need preference setting as it's non-dismissable
-        }
+        currentTip?.let { neverShowTipAgain(it.id) }
 
         triggerTip.value = null
     }
@@ -163,21 +144,33 @@ class OnboardingTipDelegateImpl @Inject constructor(
                     navigate("ringer_mode_tip_pro_mode", NavDestination.ProMode)
                 }
             }
+
+            VOLUME_BUTTONS_PRO_MODE_TIP_ID -> {
+                viewModelScope.launch {
+                    navigate("volume_buttons_pro_mode_tip", NavDestination.ProMode)
+                }
+            }
         }
     }
 
     private fun onCollectTrigger(trigger: Trigger) {
         val showPowerButtonEmergencyTip = trigger.keys.any {
-            it is KeyCodeTriggerKey && KeyEventUtils.isPowerButtonKey(
-                it.keyCode,
-                it.scanCode ?: -1,
-            )
+            it is KeyCodeTriggerKey &&
+                KeyEventUtils.isPowerButtonKey(
+                    it.keyCode,
+                    it.scanCode ?: -1,
+                )
         }
 
         val hasCapsLockKey =
-            trigger.keys.any { it is KeyEventTriggerKey && it.keyCode == android.view.KeyEvent.KEYCODE_CAPS_LOCK }
+            trigger.keys.any { it is KeyEventTriggerKey && it.keyCode == KeyEvent.KEYCODE_CAPS_LOCK }
+        trigger.keys.any {
+            it is KeyEventTriggerKey &&
+                (it.keyCode == KeyEvent.KEYCODE_VOLUME_UP || it.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)
+        }
+
         val hasBackKey =
-            trigger.keys.any { it is KeyEventTriggerKey && it.keyCode == android.view.KeyEvent.KEYCODE_BACK }
+            trigger.keys.any { it is KeyEventTriggerKey && it.keyCode == KeyEvent.KEYCODE_BACK }
         val hasImeKey = trigger.keys.any { it is KeyEventTriggerKey && it.requiresIme }
 
         when {
@@ -214,23 +207,25 @@ class OnboardingTipDelegateImpl @Inject constructor(
                 triggerTip.value = tipModel
             }
 
-            trigger.keys.isNotEmpty() && !shownTriggerConstraintsTip -> {
-                val tipModel = OnboardingTipModel(
-                    id = TRIGGER_CONSTRAINTS_TIP_ID,
-                    title = getString(R.string.trigger_constraints_tip_title),
-                    message = getString(R.string.trigger_constraints_tip_text),
-                    isDismissable = true,
-                )
+            // DISABLE UNTIL PRO MODE IS STABLE
+//            hasVolumeKey && !shownVolumeButtonsProModeTip -> {
+//                val tip = OnboardingTipModel(
+//                    id = VOLUME_BUTTONS_PRO_MODE_TIP_ID,
+//                    title = getString(R.string.tip_volume_buttons_pro_mode_title),
+//                    message = getString(R.string.tip_volume_buttons_pro_mode_text),
+//                    isDismissable = true,
+//                    buttonText = getString(R.string.tip_volume_buttons_pro_mode_button),
+//                )
+//                triggerTip.value = tip
+//            }
 
-                triggerTip.value = tipModel
-            }
-
-            hasCapsLockKey && !shownCapsLockTip -> {
+            hasCapsLockKey && !shownCapsLockProModeTip -> {
                 val tip = OnboardingTipModel(
-                    id = CAPS_LOCK_TIP_ID,
-                    title = getString(R.string.tip_caps_lock_title),
-                    message = getString(R.string.tip_caps_lock_text),
+                    id = CAPS_LOCK_PRO_MODE_COMPATIBILITY_TIP_ID,
+                    title = getString(R.string.tip_caps_lock_pro_mode_title),
+                    message = getString(R.string.tip_caps_lock_pro_mode_text),
                     isDismissable = true,
+                    buttonText = getString(R.string.tip_caps_lock_pro_mode_button),
                 )
                 triggerTip.value = tip
             }
@@ -255,9 +250,55 @@ class OnboardingTipDelegateImpl @Inject constructor(
                 triggerTip.value = tip
             }
 
+            // Adding a constraint should be the lowest priority
+            trigger.keys.isNotEmpty() && !shownTriggerConstraintsTip -> {
+                val tipModel = OnboardingTipModel(
+                    id = TRIGGER_CONSTRAINTS_TIP_ID,
+                    title = getString(R.string.trigger_constraints_tip_title),
+                    message = getString(R.string.trigger_constraints_tip_text),
+                    isDismissable = true,
+                )
+
+                triggerTip.value = tipModel
+            }
+
             else -> {
                 triggerTip.value = null
             }
+        }
+    }
+
+    override fun neverShowTipAgain(tipId: String) {
+        when (tipId) {
+            PARALLEL_TRIGGER_TIP_ID -> {
+                shownParallelTriggerOrderExplanation = true
+            }
+
+            SEQUENCE_TRIGGER_TIP_ID -> {
+                shownSequenceTriggerExplanation = true
+            }
+
+            TRIGGER_CONSTRAINTS_TIP_ID -> {
+                shownTriggerConstraintsTip = true
+            }
+
+            CAPS_LOCK_PRO_MODE_COMPATIBILITY_TIP_ID -> {
+                shownCapsLockProModeTip = true
+            }
+
+            VOLUME_BUTTONS_PRO_MODE_TIP_ID -> {
+                shownVolumeButtonsProModeTip = true
+            }
+
+            SCREEN_PINNING_TIP_ID -> {
+                shownScreenPinningTip = true
+            }
+
+            IME_DETECTION_TIP_ID -> {
+                shownImeDetectionTip = true
+            }
+
+            // POWER_BUTTON_EMERGENCY_TIP_ID doesn't need preference setting as it's non-dismissable
         }
     }
 
@@ -266,7 +307,8 @@ class OnboardingTipDelegateImpl @Inject constructor(
             when (action.data) {
                 is ActionData.Volume.SetRingerMode,
                 is ActionData.Volume.CycleRingerMode,
-                is ActionData.Volume.CycleVibrateRing -> true
+                is ActionData.Volume.CycleVibrateRing,
+                    -> true
 
                 else -> false
             }
@@ -292,4 +334,5 @@ interface OnboardingTipDelegate {
     fun onTriggerTipDismissClick()
     fun onActionTipDismissClick()
     fun onTipButtonClick(tipId: String)
+    fun neverShowTipAgain(tipId: String)
 }

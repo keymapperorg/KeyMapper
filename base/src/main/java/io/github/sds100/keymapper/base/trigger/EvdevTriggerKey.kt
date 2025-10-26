@@ -21,7 +21,8 @@ data class EvdevTriggerKey(
     override val clickType: ClickType = ClickType.SHORT_PRESS,
     override val consumeEvent: Boolean = true,
     override val detectWithScanCodeUserSetting: Boolean = false,
-) : TriggerKey(), KeyCodeTriggerKey {
+) : TriggerKey(),
+    KeyCodeTriggerKey {
     override val allowedDoublePress: Boolean = true
     override val allowedLongPress: Boolean = true
 

@@ -8,10 +8,12 @@ import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCase
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
+import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -38,10 +40,13 @@ class ConfigKeyMapViewModel @Inject constructor(
     val showActionsTapTarget: StateFlow<Boolean> =
         combine(
             onboarding.showTapTarget(OnboardingTapTarget.CHOOSE_ACTION),
-            configKeyMapState.keyMap,
+            configKeyMapState.keyMap.filterIsInstance<State.Data<KeyMap>>(),
         ) { showTapTarget, keyMapState ->
-            // Show the choose action tap target if they have recorded a key.
-            showTapTarget && keyMapState.dataOrNull()?.trigger?.keys?.isNotEmpty() ?: false
+            // Show the choose action tap target if they have recorded a key and
+            // have no actions.
+            showTapTarget &&
+                keyMapState.data.trigger.keys.isNotEmpty() &&
+                keyMapState.data.actionList.isEmpty()
         }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     fun onDoneClick() {
@@ -52,13 +57,8 @@ class ConfigKeyMapViewModel @Inject constructor(
         }
     }
 
-    fun loadNewKeyMap(floatingButtonUid: String? = null, groupUid: String?) {
+    fun loadNewKeyMap(groupUid: String?) {
         configKeyMapState.loadNewKeyMap(groupUid)
-        if (floatingButtonUid != null) {
-            viewModelScope.launch {
-                configTrigger.addFloatingButtonTriggerKey(floatingButtonUid)
-            }
-        }
     }
 
     fun loadKeyMap(uid: String) {
@@ -71,14 +71,6 @@ class ConfigKeyMapViewModel @Inject constructor(
         viewModelScope.launch {
             popBackStack()
         }
-    }
-
-    fun onActionTapTargetCompleted() {
-        onboarding.completedTapTarget(OnboardingTapTarget.CHOOSE_ACTION)
-    }
-
-    fun onSkipTutorialClick() {
-        onboarding.skipTapTargetOnboarding()
     }
 
     fun onEnabledChanged(enabled: Boolean) {

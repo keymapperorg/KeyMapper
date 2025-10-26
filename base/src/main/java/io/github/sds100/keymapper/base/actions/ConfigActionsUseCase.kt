@@ -27,7 +27,8 @@ class ConfigActionsUseCaseImpl @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
     private val configConstraints: ConfigConstraintsUseCase,
     defaultKeyMapOptionsUseCase: GetDefaultKeyMapOptionsUseCase,
-) : ConfigActionsUseCase, GetDefaultKeyMapOptionsUseCase by defaultKeyMapOptionsUseCase {
+) : ConfigActionsUseCase,
+    GetDefaultKeyMapOptionsUseCase by defaultKeyMapOptionsUseCase {
 
     override val keyMap: StateFlow<State<KeyMap>> = state.keyMap
 
@@ -216,7 +217,7 @@ class ConfigActionsUseCaseImpl @Inject constructor(
             }
         }
 
-        if (data is ActionData.Volume.Down || data is ActionData.Volume.Up || data is ActionData.Volume.Stream) {
+        if (data is ActionData.Volume.Down || data is ActionData.Volume.Up) {
             repeat = true
         }
 

@@ -50,7 +50,8 @@ class InputEventHubImpl @Inject constructor(
     private val imeInputEventInjector: ImeInputEventInjector,
     private val preferenceRepository: PreferenceRepository,
     private val evdevHandlesCache: EvdevHandleCache,
-) : InputEventHub, IEvdevCallback.Stub() {
+) : IEvdevCallback.Stub(),
+    InputEventHub {
 
     companion object {
         const val INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH = 2

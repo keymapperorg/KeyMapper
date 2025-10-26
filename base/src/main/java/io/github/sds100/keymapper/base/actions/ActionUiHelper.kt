@@ -60,10 +60,8 @@ class ActionUiHelper(
             }
 
             if (action.device != null) {
-                val name = if (action.device.name.isBlank()) {
+                val name = action.device.name.ifBlank {
                     getString(R.string.unknown_device_name)
-                } else {
-                    action.device.name
                 }
 
                 val nameToShow = if (showDeviceDescriptors) {
@@ -116,34 +114,20 @@ class ActionUiHelper(
             val string: String
 
             when (action) {
-                is ActionData.Volume.Stream -> {
-                    val streamString = getString(
-                        VolumeStreamStrings.getLabel(action.volumeStream),
-                    )
-
-                    if (action.showVolumeUi) {
-                        hasShowVolumeUiFlag = true
-                    }
-
-                    string = when (action) {
-                        is ActionData.Volume.Stream.Decrease -> getString(
-                            R.string.action_decrease_stream_formatted,
-                            streamString,
-                        )
-
-                        is ActionData.Volume.Stream.Increase -> getString(
-                            R.string.action_increase_stream_formatted,
-                            streamString,
-                        )
-                    }
-                }
-
                 is ActionData.Volume.Down -> {
                     if (action.showVolumeUi) {
                         hasShowVolumeUiFlag = true
                     }
 
-                    string = getString(R.string.action_volume_down)
+                    string = if (action.volumeStream != null) {
+                        val streamString = getString(VolumeStreamStrings.getLabel(action.volumeStream))
+                        getString(
+                            R.string.action_decrease_stream_formatted,
+                            streamString,
+                        )
+                    } else {
+                        getString(R.string.action_volume_down)
+                    }
                 }
 
                 is ActionData.Volume.Mute -> {
@@ -175,7 +159,15 @@ class ActionUiHelper(
                         hasShowVolumeUiFlag = true
                     }
 
-                    string = getString(R.string.action_volume_up)
+                    string = if (action.volumeStream != null) {
+                        val streamString = getString(VolumeStreamStrings.getLabel(action.volumeStream))
+                        getString(
+                            R.string.action_increase_stream_formatted,
+                            streamString,
+                        )
+                    } else {
+                        getString(R.string.action_volume_up)
+                    }
                 }
 
                 ActionData.Volume.CycleRingerMode -> {
@@ -603,6 +595,10 @@ class ActionUiHelper(
             R.string.action_send_sms_description,
             arrayOf(action.message, action.number),
         )
+
+        ActionData.Microphone.Mute -> getString(R.string.action_mute_microphone)
+        ActionData.Microphone.Toggle -> getString(R.string.action_toggle_mute_microphone)
+        ActionData.Microphone.Unmute -> getString(R.string.action_unmute_microphone)
     }
 
     fun getIcon(action: ActionData): ComposeIconInfo = when (action) {

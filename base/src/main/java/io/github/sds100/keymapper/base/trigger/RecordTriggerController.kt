@@ -35,7 +35,8 @@ class RecordTriggerControllerImpl @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val inputEventHub: InputEventHub,
     private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
-) : RecordTriggerController, InputEventHubCallback {
+) : RecordTriggerController,
+    InputEventHubCallback {
     companion object {
         /**
          * How long should the accessibility service record a trigger in seconds.

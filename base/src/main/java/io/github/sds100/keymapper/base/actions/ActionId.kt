@@ -45,7 +45,9 @@ enum class ActionId {
     VOLUME_UP,
     VOLUME_DOWN,
     VOLUME_SHOW_DIALOG,
+    @Deprecated("Use VOLUME_DOWN with volumeStream parameter instead")
     VOLUME_DECREASE_STREAM,
+    @Deprecated("Use VOLUME_UP with volumeStream parameter instead")
     VOLUME_INCREASE_STREAM,
     CYCLE_RINGER_MODE,
     CHANGE_RINGER_MODE,
@@ -56,6 +58,9 @@ enum class ActionId {
     VOLUME_UNMUTE,
     VOLUME_MUTE,
     VOLUME_TOGGLE_MUTE,
+    MUTE_MICROPHONE,
+    UNMUTE_MICROPHONE,
+    TOGGLE_MUTE_MICROPHONE,
 
     EXPAND_NOTIFICATION_DRAWER,
     TOGGLE_NOTIFICATION_DRAWER,
