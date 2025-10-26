@@ -89,6 +89,9 @@ class ChooseConstraintViewModel @Inject constructor(
             ConstraintId.CHARGING,
             ConstraintId.DISCHARGING,
 
+            ConstraintId.HINGE_CLOSED,
+            ConstraintId.HINGE_OPEN,
+
             ConstraintId.TIME,
         )
     }
@@ -213,6 +216,12 @@ class ChooseConstraintViewModel @Inject constructor(
 
                 ConstraintId.DISCHARGING ->
                     returnResult.emit(ConstraintData.Discharging)
+
+                ConstraintId.HINGE_CLOSED ->
+                    returnResult.emit(ConstraintData.HingeClosed)
+
+                ConstraintId.HINGE_OPEN ->
+                    returnResult.emit(ConstraintData.HingeOpen)
 
                 ConstraintId.LOCK_SCREEN_SHOWING ->
                     returnResult.emit(ConstraintData.LockScreenShowing)

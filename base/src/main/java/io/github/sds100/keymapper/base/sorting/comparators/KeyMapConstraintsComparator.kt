@@ -133,6 +133,9 @@ class KeyMapConstraintsComparator(
                     .toEpochSecond(LocalDate.now(), ZoneOffset.UTC)
                     .toString(),
             )
+
+            ConstraintData.HingeClosed -> Success("")
+            ConstraintData.HingeOpen -> Success("")
         }
     }
 }

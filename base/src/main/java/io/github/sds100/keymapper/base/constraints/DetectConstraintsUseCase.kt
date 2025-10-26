@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
+import io.github.sds100.keymapper.system.foldable.FoldableAdapter
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
@@ -30,6 +31,7 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
     private val lockScreenAdapter: LockScreenAdapter,
     private val phoneAdapter: PhoneAdapter,
     private val powerAdapter: PowerAdapter,
+    private val foldableAdapter: FoldableAdapter,
 ) : DetectConstraintsUseCase {
 
     @AssistedFactory
@@ -50,6 +52,7 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
         lockScreenAdapter,
         phoneAdapter,
         powerAdapter,
+        foldableAdapter,
     )
 
     override fun onDependencyChanged(dependency: ConstraintDependency): Flow<ConstraintDependency> {
@@ -83,6 +86,7 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
 
             ConstraintDependency.PHONE_STATE -> phoneAdapter.callStateFlow.map { dependency }
             ConstraintDependency.CHARGING_STATE -> powerAdapter.isCharging.map { dependency }
+            ConstraintDependency.HINGE_STATE -> foldableAdapter.hingeState.map { dependency }
         }
     }
 }

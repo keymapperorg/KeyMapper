@@ -201,6 +201,16 @@ sealed class ConstraintData {
     }
 
     @Serializable
+    data object HingeClosed : ConstraintData() {
+        override val id: ConstraintId = ConstraintId.HINGE_CLOSED
+    }
+
+    @Serializable
+    data object HingeOpen : ConstraintData() {
+        override val id: ConstraintId = ConstraintId.HINGE_OPEN
+    }
+
+    @Serializable
     data class Time(
         val startHour: Int,
         val startMinute: Int,
@@ -363,6 +373,9 @@ object ConstraintEntityMapper {
 
             ConstraintEntity.CHARGING -> ConstraintData.Charging
             ConstraintEntity.DISCHARGING -> ConstraintData.Discharging
+
+            ConstraintEntity.HINGE_CLOSED -> ConstraintData.HingeClosed
+            ConstraintEntity.HINGE_OPEN -> ConstraintData.HingeOpen
 
             ConstraintEntity.TIME -> {
                 val startTime =
@@ -626,6 +639,16 @@ object ConstraintEntityMapper {
         is ConstraintData.Discharging -> ConstraintEntity(
             uid = constraint.uid,
             ConstraintEntity.DISCHARGING,
+        )
+
+        is ConstraintData.HingeClosed -> ConstraintEntity(
+            uid = constraint.uid,
+            ConstraintEntity.HINGE_CLOSED,
+        )
+
+        is ConstraintData.HingeOpen -> ConstraintEntity(
+            uid = constraint.uid,
+            ConstraintEntity.HINGE_OPEN,
         )
 
         is ConstraintData.Time -> ConstraintEntity(

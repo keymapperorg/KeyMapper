@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.constraints
 
 import android.media.AudioManager
+import android.os.Build
 import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.firstBlocking
@@ -8,6 +9,8 @@ import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.camera.CameraAdapter
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
+import io.github.sds100.keymapper.system.foldable.FoldableAdapter
+import io.github.sds100.keymapper.system.foldable.HingeState
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
@@ -31,6 +34,7 @@ class LazyConstraintSnapshot(
     lockScreenAdapter: LockScreenAdapter,
     phoneAdapter: PhoneAdapter,
     powerAdapter: PowerAdapter,
+    private val foldableAdapter: FoldableAdapter,
 ) : ConstraintSnapshot {
     private val appInForeground: String? by lazy { accessibilityService.rootNode?.packageName }
     private val connectedBluetoothDevices: Set<BluetoothDeviceInfo> by lazy { devicesAdapter.connectedBluetoothDevices.value }
@@ -140,6 +144,28 @@ class LazyConstraintSnapshot(
 
             is ConstraintData.Charging -> isCharging
             is ConstraintData.Discharging -> !isCharging
+
+            is ConstraintData.HingeClosed -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    when (val state = foldableAdapter.hingeState.value) {
+                        is HingeState.Available -> state.angle < 30f
+                        is HingeState.Unavailable -> false
+                    }
+                } else {
+                    false
+                }
+            }
+
+            is ConstraintData.HingeOpen -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    when (val state = foldableAdapter.hingeState.value) {
+                        is HingeState.Available -> state.angle >= 150f
+                        is HingeState.Unavailable -> false
+                    }
+                } else {
+                    false
+                }
+            }
 
             // The keyguard manager still reports the lock screen as showing if you are in
             // an another activity like the camera app while the phone is locked.

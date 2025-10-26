@@ -19,6 +19,7 @@
 - #661 Action to execute shell commands.
 - #991 Consolidated volume and stream actions.
 - #1066 Action to mute/unmute microphone.
+- #985 Constraints for foldable hinge being open/closed.
 
 ## Removed
 

@@ -81,6 +81,9 @@ data class ConstraintEntity(
         const val CHARGING = "charging"
         const val DISCHARGING = "discharging"
 
+        const val HINGE_CLOSED = "hinge_closed"
+        const val HINGE_OPEN = "hinge_open"
+
         const val TIME = "time"
 
         const val EXTRA_PACKAGE_NAME = "extra_package_name"

@@ -77,6 +77,10 @@ object ConstraintUtils {
 
         ConstraintId.CHARGING -> ComposeIconInfo.Vector(Icons.Outlined.BatteryChargingFull)
         ConstraintId.DISCHARGING -> ComposeIconInfo.Vector(Icons.Outlined.Battery2Bar)
+        
+        ConstraintId.HINGE_CLOSED -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
+        ConstraintId.HINGE_OPEN -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentLandscape)
+        
         ConstraintId.LOCK_SCREEN_SHOWING -> ComposeIconInfo.Vector(Icons.Outlined.ScreenLockPortrait)
         ConstraintId.LOCK_SCREEN_NOT_SHOWING -> ComposeIconInfo.Vector(Icons.Outlined.LockOpen)
         ConstraintId.TIME -> ComposeIconInfo.Vector(Icons.Outlined.Timer)
@@ -114,6 +118,8 @@ object ConstraintUtils {
         ConstraintId.PHONE_RINGING -> R.string.constraint_phone_ringing
         ConstraintId.CHARGING -> R.string.constraint_charging
         ConstraintId.DISCHARGING -> R.string.constraint_discharging
+        ConstraintId.HINGE_CLOSED -> R.string.constraint_hinge_closed
+        ConstraintId.HINGE_OPEN -> R.string.constraint_hinge_open
         ConstraintId.LOCK_SCREEN_SHOWING -> R.string.constraint_lock_screen_showing
         ConstraintId.LOCK_SCREEN_NOT_SHOWING -> R.string.constraint_lock_screen_not_showing
         ConstraintId.TIME -> R.string.constraint_time
