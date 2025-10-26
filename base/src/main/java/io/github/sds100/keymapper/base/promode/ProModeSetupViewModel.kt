@@ -20,7 +20,9 @@ class ProModeSetupViewModel @Inject constructor(
     private val useCase: SystemBridgeSetupUseCase,
     navigationProvider: NavigationProvider,
     resourceProvider: ResourceProvider,
-) : ViewModel(), NavigationProvider by navigationProvider, ResourceProvider by resourceProvider {
+) : ViewModel(),
+    NavigationProvider by navigationProvider,
+    ResourceProvider by resourceProvider {
     val setupState: StateFlow<State<ProModeSetupState>> =
         combine(useCase.nextSetupStep, useCase.isSetupAssistantEnabled, ::buildState).stateIn(
             viewModelScope,

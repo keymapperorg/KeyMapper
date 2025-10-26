@@ -39,7 +39,7 @@ sealed class KMNotificationAction {
         )
     }
 
-    sealed class Activity() : KMNotificationAction() {
+    sealed class Activity : KMNotificationAction() {
         data object AccessibilitySettings : Activity()
         data class MainActivity(val action: String? = null) : Activity()
     }

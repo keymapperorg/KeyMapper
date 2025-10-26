@@ -34,7 +34,7 @@ object ConstraintUtils {
         ConstraintId.APP_NOT_IN_FOREGROUND,
         ConstraintId.APP_PLAYING_MEDIA,
         ConstraintId.APP_NOT_PLAYING_MEDIA,
-        -> ComposeIconInfo.Vector(Icons.Rounded.Android)
+            -> ComposeIconInfo.Vector(Icons.Rounded.Android)
 
         ConstraintId.MEDIA_PLAYING -> ComposeIconInfo.Vector(Icons.Outlined.PlayArrow)
         ConstraintId.MEDIA_NOT_PLAYING -> ComposeIconInfo.Vector(Icons.Outlined.StopCircle)
@@ -44,11 +44,11 @@ object ConstraintUtils {
 
         ConstraintId.ORIENTATION_0,
         ConstraintId.ORIENTATION_180,
-        -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
+            -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
 
         ConstraintId.ORIENTATION_90,
         ConstraintId.ORIENTATION_270,
-        -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentLandscape)
+            -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentLandscape)
 
         ConstraintId.ORIENTATION_LANDSCAPE -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentLandscape)
         ConstraintId.ORIENTATION_PORTRAIT -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
@@ -66,7 +66,7 @@ object ConstraintUtils {
 
         ConstraintId.IME_CHOSEN,
         ConstraintId.IME_NOT_CHOSEN,
-        -> ComposeIconInfo.Vector(Icons.Outlined.Keyboard)
+            -> ComposeIconInfo.Vector(Icons.Outlined.Keyboard)
 
         ConstraintId.DEVICE_IS_LOCKED -> ComposeIconInfo.Vector(Icons.Outlined.Lock)
         ConstraintId.DEVICE_IS_UNLOCKED -> ComposeIconInfo.Vector(Icons.Outlined.LockOpen)

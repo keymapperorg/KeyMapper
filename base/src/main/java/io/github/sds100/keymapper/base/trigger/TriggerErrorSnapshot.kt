@@ -72,7 +72,8 @@ data class TriggerErrorSnapshot(
 
         val containsDpadKey =
             key is KeyEventTriggerKey &&
-                KeyEventUtils.isDpadKeyCode(key.keyCode) && key.requiresIme
+                KeyEventUtils.isDpadKeyCode(key.keyCode) &&
+                key.requiresIme
 
         if (showDpadImeSetupError && !isKeyMapperImeChosen && containsDpadKey) {
             return TriggerError.DPAD_IME_NOT_SELECTED

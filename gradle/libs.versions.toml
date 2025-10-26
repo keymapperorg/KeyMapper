@@ -1,6 +1,5 @@
 [versions]
 compile-sdk = "36"
-hilt-navigation-compose = "1.2.0"
 min-sdk = "26"
 build-tools = "36.0.0"
 target-sdk = "36"
@@ -30,6 +29,7 @@ androidx-test-core = "1.6.1"
 androidx-viewpager2 = "1.1.0"
 
 dagger-hilt-android = "2.56.2"
+hilt-navigation-compose = "1.2.0"
 
 compose-bom = "2025.05.01"
 compose-compiler = "1.5.10" # kotlinCompilerExtensionVersion
@@ -55,7 +55,7 @@ coroutines = "1.9.0"
 
 kotson = "2.5.0"
 ksp-gradle-plugin = "2.1.0-1.0.28"
-ktlint-gradle = "12.1.0"
+ktlint-gradle = "13.1.0"
 #leakcanary = "2.6" # Commented out in original file
 lingala-zip4j = "2.8.0"
 material = "1.13.0-alpha13"

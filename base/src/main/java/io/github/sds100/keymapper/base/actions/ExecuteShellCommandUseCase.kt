@@ -40,7 +40,7 @@ class ExecuteShellCommandUseCase @Inject constructor(
         return when (executionMode) {
             ShellExecutionMode.STANDARD -> shellAdapter.executeWithStreamingOutput(
                 command,
-                timeoutMillis
+                timeoutMillis,
             )
 
             ShellExecutionMode.ROOT -> suAdapter.executeWithStreamingOutput(command, timeoutMillis)
@@ -56,7 +56,7 @@ class ExecuteShellCommandUseCase @Inject constructor(
      */
     private suspend fun executeCommandSystemBridge(
         command: String,
-        timeoutMillis: Long
+        timeoutMillis: Long,
     ): KMResult<ShellResult> {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             runInterruptible(Dispatchers.IO) {

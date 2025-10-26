@@ -212,14 +212,13 @@ object Migration11To12 {
         }.toJsonArray()
     }
 
-    private fun String?.convertJsonValueToSqlValue() =
-        when {
-            this == null -> "NULL"
-            this == "true" -> 1
-            this == "false" -> 0
-            this.toIntOrNull() != null -> this.toInt()
-            else -> this
-        }
+    private fun String?.convertJsonValueToSqlValue() = when {
+        this == null -> "NULL"
+        this == "true" -> 1
+        this == "false" -> 0
+        this.toIntOrNull() != null -> this.toInt()
+        else -> this
+    }
 
     private fun JsonElement.convertValueToJson(gson: Gson, key: String) = try {
         gson.toJson(this[key])

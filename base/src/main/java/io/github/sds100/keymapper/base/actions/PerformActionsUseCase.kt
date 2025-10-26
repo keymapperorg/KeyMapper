@@ -36,7 +36,6 @@ import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.otherwise
 import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.common.utils.then
-import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
@@ -77,10 +76,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
 class PerformActionsUseCaseImpl @AssistedInject constructor(
@@ -203,7 +204,8 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                         }
                 } else {
                     result = inputEventHub.injectKeyEvent(
-                        model, useSystemBridgeIfAvailable = injectKeyEventsWithSystemBridge.value,
+                        model,
+                        useSystemBridgeIfAvailable = injectKeyEventsWithSystemBridge.value,
                     )
                 }
             }
@@ -309,19 +311,18 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.SwitchKeyboard -> {
-                result = switchImeInterface
-                    .switchIme(action.imeId)
-                    .onSuccess { imeId ->
-                        val imeInfo = inputMethodAdapter.getInfoById(action.imeId).valueOrNull()
-                            ?: return@onSuccess
+                switchImeInterface.switchIme(action.imeId)
 
-                        val message = resourceProvider.getString(
-                            R.string.toast_chose_keyboard,
-                            imeInfo.label,
-                        )
+                // See issue #1064. Wait for the input method to finish switching before returning.
+                val chosenIme = withTimeoutOrNull(2000) {
+                    inputMethodAdapter.chosenIme.filterNotNull().first { it.id == action.imeId }
+                }
 
-                        toastAdapter.show(message)
-                    }
+                if (chosenIme == null) {
+                    result = KMError.SwitchImeFailed
+                } else {
+                    result = Success(Unit)
+                }
             }
 
             is ActionData.Volume.Down -> {

@@ -137,14 +137,14 @@ class ChooseConstraintViewModel @Inject constructor(
                 ConstraintId.APP_NOT_IN_FOREGROUND,
                 ConstraintId.APP_PLAYING_MEDIA,
                 ConstraintId.APP_NOT_PLAYING_MEDIA,
-                -> onSelectAppConstraint(constraintType)
+                    -> onSelectAppConstraint(constraintType)
 
                 ConstraintId.MEDIA_PLAYING -> returnResult.emit(ConstraintData.MediaPlaying)
                 ConstraintId.MEDIA_NOT_PLAYING -> returnResult.emit(ConstraintData.NoMediaPlaying)
 
                 ConstraintId.BT_DEVICE_CONNECTED,
                 ConstraintId.BT_DEVICE_DISCONNECTED,
-                -> onSelectBluetoothConstraint(
+                    -> onSelectBluetoothConstraint(
                     constraintType,
                 )
 
@@ -185,13 +185,13 @@ class ChooseConstraintViewModel @Inject constructor(
 
                 ConstraintId.WIFI_CONNECTED,
                 ConstraintId.WIFI_DISCONNECTED,
-                -> onSelectWifiConnectedConstraint(
+                    -> onSelectWifiConnectedConstraint(
                     constraintType,
                 )
 
                 ConstraintId.IME_CHOSEN,
                 ConstraintId.IME_NOT_CHOSEN,
-                -> onSelectImeChosenConstraint(constraintType)
+                    -> onSelectImeChosenConstraint(constraintType)
 
                 ConstraintId.DEVICE_IS_LOCKED ->
                     returnResult.emit(ConstraintData.DeviceIsLocked)
