@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.system.hinge
+package io.github.sds100.keymapper.system.foldable
 
 import android.content.Context
 import android.hardware.Sensor

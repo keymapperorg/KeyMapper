@@ -1,7 +1,7 @@
-package io.github.sds100.keymapper.system.hinge
+package io.github.sds100.keymapper.system.foldable
 
-import androidx.annotation.RequiresApi
 import android.os.Build
+import androidx.annotation.RequiresApi
 import kotlinx.coroutines.flow.StateFlow
 
 /**
