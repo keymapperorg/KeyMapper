@@ -11,6 +11,8 @@ import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.system.apps.PackageInfo
+import java.util.Locale
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,13 +26,10 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import java.util.Locale
-import javax.inject.Inject
 
 @HiltViewModel
-class ChooseAppViewModel @Inject constructor(
-    private val useCase: DisplayAppsUseCase,
-) : ViewModel() {
+class ChooseAppViewModel @Inject constructor(private val useCase: DisplayAppsUseCase) :
+    ViewModel() {
 
     val searchQuery = MutableStateFlow<String?>(null)
 

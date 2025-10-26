@@ -30,7 +30,9 @@ object Migration11To12 {
         val parser = JsonParser()
         val gson = Gson()
 
-        database.execSQL("CREATE TABLE IF NOT EXISTS `fingerprintmaps` (`id` INTEGER NOT NULL, `action_list` TEXT NOT NULL, `constraint_list` TEXT NOT NULL, `constraint_mode` INTEGER NOT NULL, `extras` TEXT NOT NULL, `flags` INTEGER NOT NULL, `is_enabled` INTEGER NOT NULL, PRIMARY KEY(`id`))")
+        database.execSQL(
+            "CREATE TABLE IF NOT EXISTS `fingerprintmaps` (`id` INTEGER NOT NULL, `action_list` TEXT NOT NULL, `constraint_list` TEXT NOT NULL, `constraint_mode` INTEGER NOT NULL, `extras` TEXT NOT NULL, `flags` INTEGER NOT NULL, `is_enabled` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        )
 
         val legacyFingerprintIdMap = mapOf(
             "swipe_down" to 0,
@@ -86,7 +88,9 @@ object Migration11To12 {
                 val isEnabled =
                     rootElement.convertValueToJson(gson, "enabled").convertJsonValueToSqlValue()
 
-                database.execSQL("INSERT INTO fingerprintmaps (id, action_list, constraint_list, constraint_mode, extras, flags, is_enabled) VALUES('$newId', '$sqlActionList', '$constraintList', '$constraintMode', '$extras', '$flags', '$isEnabled')")
+                database.execSQL(
+                    "INSERT INTO fingerprintmaps (id, action_list, constraint_list, constraint_mode, extras, flags, is_enabled) VALUES('$newId', '$sqlActionList', '$constraintList', '$constraintMode', '$extras', '$flags', '$isEnabled')",
+                )
             }
         }
 
@@ -115,7 +119,9 @@ object Migration11To12 {
             val sqlTrigger = gson.toJson(newTriggerJson).convertJsonValueToSqlValue()
             val sqlActionList = gson.toJson(newActionListJson).convertJsonValueToSqlValue()
 
-            database.execSQL("UPDATE keymaps SET trigger='$sqlTrigger', action_list='$sqlActionList' WHERE id=$id")
+            database.execSQL(
+                "UPDATE keymaps SET trigger='$sqlTrigger', action_list='$sqlActionList' WHERE id=$id",
+            )
         }
 
         database.execSQL("DROP TABLE deviceinfo")
@@ -182,10 +188,7 @@ object Migration11To12 {
         return trigger
     }
 
-    private fun migrateActionList(
-        actionList: JsonArray,
-        deviceInfoList: JsonArray,
-    ): JsonArray {
+    private fun migrateActionList(actionList: JsonArray, deviceInfoList: JsonArray): JsonArray {
         return actionList.map { action ->
             if (action["type"].asString == "KEY_EVENT") {
                 val extras = action["extras"].asJsonArray

@@ -103,7 +103,4 @@ enum class SelectedKeyMapsEnabled {
     MIXED,
 }
 
-data class HomeWarningListItem(
-    val id: String,
-    val text: String,
-)
+data class HomeWarningListItem(val id: String, val text: String)

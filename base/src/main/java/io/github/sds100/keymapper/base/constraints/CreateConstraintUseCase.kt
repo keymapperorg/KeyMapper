@@ -10,10 +10,10 @@ import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
 class CreateConstraintUseCaseImpl @Inject constructor(
     private val networkAdapter: NetworkAdapter,
@@ -67,8 +67,9 @@ class CreateConstraintUseCaseImpl @Inject constructor(
         )
     }
 
-    override fun getSavedWifiSSIDs(): Flow<List<String>> = preferenceRepository.get(Keys.savedWifiSSIDs)
-        .map { it?.toList() ?: emptyList() }
+    override fun getSavedWifiSSIDs(): Flow<List<String>> =
+        preferenceRepository.get(Keys.savedWifiSSIDs)
+            .map { it?.toList() ?: emptyList() }
 
     override fun getFlashlightLenses(): Set<CameraLens> {
         return CameraLens.entries.filter { cameraAdapter.getFlashInfo(it) != null }.toSet()

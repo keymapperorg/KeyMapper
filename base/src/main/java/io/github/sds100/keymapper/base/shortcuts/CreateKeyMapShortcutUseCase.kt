@@ -46,11 +46,7 @@ class CreateKeyMapShortcutUseCaseImpl @Inject constructor(
         return appShortcutAdapter.pinShortcut(shortcut)
     }
 
-    override fun createIntent(
-        keyMapUid: String,
-        shortcutLabel: String,
-        icon: Drawable?,
-    ): Intent {
+    override fun createIntent(keyMapUid: String, shortcutLabel: String, icon: Drawable?): Intent {
         val shortcut = if (icon == null) {
             appShortcutAdapter.createLauncherShortcut(
                 iconResId = R.mipmap.ic_launcher_round,
@@ -73,15 +69,7 @@ class CreateKeyMapShortcutUseCaseImpl @Inject constructor(
 interface CreateKeyMapShortcutUseCase {
     val isSupported: Boolean
 
-    fun pinShortcut(
-        keyMapUid: String,
-        shortcutLabel: String,
-        icon: Drawable?,
-    ): KMResult<*>
+    fun pinShortcut(keyMapUid: String, shortcutLabel: String, icon: Drawable?): KMResult<*>
 
-    fun createIntent(
-        keyMapUid: String,
-        shortcutLabel: String,
-        icon: Drawable?,
-    ): Intent
+    fun createIntent(keyMapUid: String, shortcutLabel: String, icon: Drawable?): Intent
 }

@@ -12,14 +12,14 @@ import io.github.sds100.keymapper.common.utils.moveElement
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
+import java.util.LinkedList
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import java.util.LinkedList
-import javax.inject.Inject
 
 @ViewModelScoped
 class ConfigActionsUseCaseImpl @Inject constructor(
@@ -240,10 +240,7 @@ class ConfigActionsUseCaseImpl @Inject constructor(
         state.update { it.copy(actionList = block(it.actionList)) }
     }
 
-    private fun setActionOption(
-        uid: String,
-        block: (action: Action) -> Action,
-    ) {
+    private fun setActionOption(uid: String, block: (action: Action) -> Action) {
         state.update { keyMap ->
             val newActionList = keyMap.actionList.map { action ->
                 if (action.uid == uid) {

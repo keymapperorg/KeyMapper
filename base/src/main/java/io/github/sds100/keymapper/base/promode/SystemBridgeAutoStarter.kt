@@ -24,6 +24,8 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -41,8 +43,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * This class handles auto starting the system bridge when Key Mapper is launched and when
@@ -83,7 +83,9 @@ class SystemBridgeAutoStarter @Inject constructor(
                             permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS),
                             networkAdapter.isWifiConnected,
                         ) { isWriteSecureSettingsGranted, isWifiConnected ->
-                            isWriteSecureSettingsGranted && isWifiConnected && setupController.isAdbPaired()
+                            isWriteSecureSettingsGranted &&
+                                isWifiConnected &&
+                                setupController.isAdbPaired()
                         }.distinctUntilChanged()
                             .map { isAdbAutoStartAllowed ->
                                 if (isAdbAutoStartAllowed) AutoStartType.ADB else null
@@ -102,14 +104,22 @@ class SystemBridgeAutoStarter @Inject constructor(
     private val restartFlow: Flow<AutoStartType?> =
         connectionManager.connectionState.flatMapLatest { connectionState ->
             // Do not autostart if it is connected or it was killed from the user
-            if (connectionState !is SystemBridgeConnectionState.Disconnected || connectionState.isExpected) {
+            if (connectionState !is SystemBridgeConnectionState.Disconnected ||
+                connectionState.isExpected
+            ) {
                 flowOf(null)
             } else {
                 // Do not autostart if the system bridge was killed shortly after.
                 // This prevents infinite loops happening.
-                if (lastAutoStartTime != null && connectionState.time - lastAutoStartTime!! < 30000) {
-                    Timber.w("Not auto starting the system bridge because it was last auto started less than 30 secs ago")
-                    showSystemBridgeKilledNotification(getString(R.string.system_bridge_died_notification_not_restarting_text))
+                if (lastAutoStartTime != null &&
+                    connectionState.time - lastAutoStartTime!! < 30000
+                ) {
+                    Timber.w(
+                        "Not auto starting the system bridge because it was last auto started less than 30 secs ago",
+                    )
+                    showSystemBridgeKilledNotification(
+                        getString(R.string.system_bridge_died_notification_not_restarting_text),
+                    )
                     flowOf(null)
                 } else {
                     autoStartTypeFlow
@@ -134,7 +144,9 @@ class SystemBridgeAutoStarter @Inject constructor(
             // was broken and the user was trying to reset it.
             val isCleanShutdown = preferences.get(Keys.isCleanShutdown).map { it ?: false }.first()
 
-            Timber.i("SystemBridgeAutoStarter init: isBoot=$isBoot, isCleanShutdown=$isCleanShutdown")
+            Timber.i(
+                "SystemBridgeAutoStarter init: isBoot=$isBoot, isCleanShutdown=$isCleanShutdown",
+            )
 
             // Reset the value after reading it.
             preferences.set(Keys.isCleanShutdown, false)
@@ -149,7 +161,11 @@ class SystemBridgeAutoStarter @Inject constructor(
 
             val connectionState = connectionManager.connectionState.value
 
-            if (isBoot && isCleanShutdown && isBootAutoStartEnabled && connectionState !is SystemBridgeConnectionState.Connected) {
+            if (isBoot &&
+                isCleanShutdown &&
+                isBootAutoStartEnabled &&
+                connectionState !is SystemBridgeConnectionState.Connected
+            ) {
                 val autoStartType = autoStartTypeFlow.first()
 
                 if (autoStartType != null) {
@@ -169,7 +185,9 @@ class SystemBridgeAutoStarter @Inject constructor(
 
     private suspend fun autoStart(type: AutoStartType) {
         if (isSystemBridgeEmergencyKilled()) {
-            Timber.w("Not auto starting the system bridge because it was emergency killed by the user")
+            Timber.w(
+                "Not auto starting the system bridge because it was emergency killed by the user",
+            )
             return
         }
 
@@ -178,20 +196,32 @@ class SystemBridgeAutoStarter @Inject constructor(
         when (type) {
             AutoStartType.ADB -> {
                 Timber.i("Auto starting system bridge with ADB")
-                showAutoStartNotification(getString(R.string.pro_mode_setup_notification_auto_start_system_bridge_adb_text))
+                showAutoStartNotification(
+                    getString(
+                        R.string.pro_mode_setup_notification_auto_start_system_bridge_adb_text,
+                    ),
+                )
 
                 setupController.autoStartWithAdb()
             }
 
             AutoStartType.SHIZUKU -> {
                 Timber.i("Auto starting system bridge with Shizuku")
-                showAutoStartNotification(getString(R.string.pro_mode_setup_notification_auto_start_system_bridge_shizuku_text))
+                showAutoStartNotification(
+                    getString(
+                        R.string.pro_mode_setup_notification_auto_start_system_bridge_shizuku_text,
+                    ),
+                )
                 connectionManager.startWithShizuku()
             }
 
             AutoStartType.ROOT -> {
                 Timber.i("Auto starting system bridge with root")
-                showAutoStartNotification(getString(R.string.pro_mode_setup_notification_auto_start_system_bridge_root_text))
+                showAutoStartNotification(
+                    getString(
+                        R.string.pro_mode_setup_notification_auto_start_system_bridge_root_text,
+                    ),
+                )
                 connectionManager.startWithRoot()
             }
         }
@@ -199,7 +229,9 @@ class SystemBridgeAutoStarter @Inject constructor(
         // Wait 30 seconds for it to start, and if not then show failed notification.
         try {
             withTimeout(30000L) {
-                connectionManager.connectionState.first { it is SystemBridgeConnectionState.Connected }
+                connectionManager.connectionState.first {
+                    it is SystemBridgeConnectionState.Connected
+                }
             }
         } catch (_: TimeoutCancellationException) {
             showAutoStartFailedNotification()
@@ -221,7 +253,9 @@ class SystemBridgeAutoStarter @Inject constructor(
             onGoing = false,
             priority = NotificationCompat.PRIORITY_MAX,
             autoCancel = true,
-            onClickAction = KMNotificationAction.Activity.MainActivity(BaseMainActivity.ACTION_START_SYSTEM_BRIDGE),
+            onClickAction = KMNotificationAction.Activity.MainActivity(
+                BaseMainActivity.ACTION_START_SYSTEM_BRIDGE,
+            ),
             bigTextStyle = true,
         )
         notificationAdapter.showNotification(model)
@@ -246,7 +280,9 @@ class SystemBridgeAutoStarter @Inject constructor(
     private fun showAutoStartFailedNotification() {
         val model = NotificationModel(
             id = ID_SYSTEM_BRIDGE_STATUS,
-            title = getString(R.string.pro_mode_setup_notification_start_system_bridge_failed_title),
+            title = getString(
+                R.string.pro_mode_setup_notification_start_system_bridge_failed_title,
+            ),
             text = getString(R.string.pro_mode_setup_notification_start_system_bridge_failed_text),
             channel = CHANNEL_SETUP_ASSISTANT,
             icon = R.drawable.pro_mode,
@@ -254,7 +290,9 @@ class SystemBridgeAutoStarter @Inject constructor(
             showOnLockscreen = false,
             autoCancel = true,
             priority = NotificationCompat.PRIORITY_MAX,
-            onClickAction = KMNotificationAction.Activity.MainActivity(BaseMainActivity.ACTION_START_SYSTEM_BRIDGE),
+            onClickAction = KMNotificationAction.Activity.MainActivity(
+                BaseMainActivity.ACTION_START_SYSTEM_BRIDGE,
+            ),
         )
 
         notificationAdapter.showNotification(model)

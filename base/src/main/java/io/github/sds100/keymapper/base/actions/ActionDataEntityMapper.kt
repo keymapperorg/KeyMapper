@@ -305,7 +305,9 @@ object ActionDataEntityMapper {
                     entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI)
 
                 // For VOLUME_UP and VOLUME_DOWN, optionally read the stream type
-                val volumeStream = if (actionId == ActionId.VOLUME_UP || actionId == ActionId.VOLUME_DOWN) {
+                val volumeStream = if (actionId == ActionId.VOLUME_UP ||
+                    actionId == ActionId.VOLUME_DOWN
+                ) {
                     entity.extras.getData(ActionEntity.EXTRA_STREAM_TYPE).then {
                         VOLUME_STREAM_MAP.getKey(it)?.success() ?: null.success()
                     }.valueOrNull()
@@ -648,21 +650,39 @@ object ActionDataEntityMapper {
                 val type =
                     entity.extras.getData(ActionEntity.EXTRA_MOVE_CURSOR_TYPE).then { value ->
                         when (value) {
-                            ActionEntity.CURSOR_TYPE_CHAR -> Success(ActionData.MoveCursor.Type.CHAR)
-                            ActionEntity.CURSOR_TYPE_WORD -> Success(ActionData.MoveCursor.Type.WORD)
-                            ActionEntity.CURSOR_TYPE_LINE -> Success(ActionData.MoveCursor.Type.LINE)
-                            ActionEntity.CURSOR_TYPE_PARAGRAPH -> Success(ActionData.MoveCursor.Type.PARAGRAPH)
-                            ActionEntity.CURSOR_TYPE_PAGE -> Success(ActionData.MoveCursor.Type.PAGE)
-                            else -> KMError.Exception(IllegalArgumentException("Unknown move cursor type: $value"))
+                            ActionEntity.CURSOR_TYPE_CHAR -> Success(
+                                ActionData.MoveCursor.Type.CHAR,
+                            )
+                            ActionEntity.CURSOR_TYPE_WORD -> Success(
+                                ActionData.MoveCursor.Type.WORD,
+                            )
+                            ActionEntity.CURSOR_TYPE_LINE -> Success(
+                                ActionData.MoveCursor.Type.LINE,
+                            )
+                            ActionEntity.CURSOR_TYPE_PARAGRAPH -> Success(
+                                ActionData.MoveCursor.Type.PARAGRAPH,
+                            )
+                            ActionEntity.CURSOR_TYPE_PAGE -> Success(
+                                ActionData.MoveCursor.Type.PAGE,
+                            )
+                            else -> KMError.Exception(
+                                IllegalArgumentException("Unknown move cursor type: $value"),
+                            )
                         }
                     }.valueOrNull() ?: return null
 
                 val direction =
                     entity.extras.getData(ActionEntity.EXTRA_MOVE_CURSOR_DIRECTION).then { value ->
                         when (value) {
-                            ActionEntity.CURSOR_DIRECTION_START -> Success(ActionData.MoveCursor.Direction.START)
-                            ActionEntity.CURSOR_DIRECTION_END -> Success(ActionData.MoveCursor.Direction.END)
-                            else -> KMError.Exception(IllegalArgumentException("Unknown move cursor direction: $value"))
+                            ActionEntity.CURSOR_DIRECTION_START -> Success(
+                                ActionData.MoveCursor.Direction.START,
+                            )
+                            ActionEntity.CURSOR_DIRECTION_END -> Success(
+                                ActionData.MoveCursor.Direction.END,
+                            )
+                            else -> KMError.Exception(
+                                IllegalArgumentException("Unknown move cursor direction: $value"),
+                            )
                         }
                     }.valueOrNull() ?: return null
 
@@ -874,7 +894,9 @@ object ActionDataEntityMapper {
         is ActionData.Rotation.CycleRotations -> listOf(
             EntityExtra(
                 ActionEntity.EXTRA_ORIENTATIONS,
-                data.orientations.joinToString(",") { ConstantTypeConverters.ORIENTATION_MAP[it]!! },
+                data.orientations.joinToString(",") {
+                    ConstantTypeConverters.ORIENTATION_MAP[it]!!
+                },
             ),
         )
 

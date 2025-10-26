@@ -14,6 +14,8 @@ import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.common.utils.valueOrNull
+import java.util.Locale
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,8 +26,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import java.util.Locale
-import javax.inject.Inject
 
 @HiltViewModel
 class ChooseAppShortcutViewModel @Inject constructor(

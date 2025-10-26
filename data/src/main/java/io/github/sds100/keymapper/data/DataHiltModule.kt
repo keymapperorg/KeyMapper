@@ -37,7 +37,9 @@ abstract class DataHiltModule {
 
     @Singleton
     @Binds
-    abstract fun provideAccessibilityNodeRepository(impl: RoomAccessibilityNodeRepository): AccessibilityNodeRepository
+    abstract fun provideAccessibilityNodeRepository(
+        impl: RoomAccessibilityNodeRepository,
+    ): AccessibilityNodeRepository
 
     @Singleton
     @Binds
@@ -45,9 +47,13 @@ abstract class DataHiltModule {
 
     @Singleton
     @Binds
-    abstract fun provideFloatingButtonRepository(impl: RoomFloatingButtonRepository): FloatingButtonRepository
+    abstract fun provideFloatingButtonRepository(
+        impl: RoomFloatingButtonRepository,
+    ): FloatingButtonRepository
 
     @Singleton
     @Binds
-    abstract fun provideFloatingLayoutRepository(impl: RoomFloatingLayoutRepository): FloatingLayoutRepository
+    abstract fun provideFloatingLayoutRepository(
+        impl: RoomFloatingLayoutRepository,
+    ): FloatingLayoutRepository
 }

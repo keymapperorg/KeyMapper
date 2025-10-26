@@ -59,10 +59,8 @@ sealed class SmsActionBottomSheetState {
         val testResult: State<KMResult<Unit>>?,
     ) : SmsActionBottomSheetState()
 
-    data class ComposeSms(
-        override val number: String,
-        override val message: String,
-    ) : SmsActionBottomSheetState()
+    data class ComposeSms(override val number: String, override val message: String) :
+        SmsActionBottomSheetState()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

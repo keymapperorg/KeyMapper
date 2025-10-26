@@ -366,11 +366,15 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             is ActionData.Microphone.Toggle -> {
                 result = if (audioAdapter.isMicrophoneMuted) {
                     audioAdapter.unmuteMicrophone().onSuccess {
-                        toastAdapter.show(resourceProvider.getString(R.string.toast_microphone_unmuted))
+                        toastAdapter.show(
+                            resourceProvider.getString(R.string.toast_microphone_unmuted),
+                        )
                     }
                 } else {
                     audioAdapter.muteMicrophone().onSuccess {
-                        toastAdapter.show(resourceProvider.getString(R.string.toast_microphone_muted))
+                        toastAdapter.show(
+                            resourceProvider.getString(R.string.toast_microphone_muted),
+                        )
                     }
                 }
             }
@@ -569,7 +573,9 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                         val globalAction = AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS
 
                         service.doGlobalAction(globalAction).otherwise {
-                            getShellAdapter(useRoot = false).execute("cmd statusbar expand-notifications")
+                            getShellAdapter(
+                                useRoot = false,
+                            ).execute("cmd statusbar expand-notifications")
                         }
                     }
             }
@@ -591,7 +597,9 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                         val globalAction = AccessibilityService.GLOBAL_ACTION_QUICK_SETTINGS
 
                         service.doGlobalAction(globalAction).otherwise {
-                            getShellAdapter(useRoot = false).execute("cmd statusbar expand-settings")
+                            getShellAdapter(
+                                useRoot = false,
+                            ).execute("cmd statusbar expand-settings")
                         }
                     }
             }
@@ -705,7 +713,8 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                     AccessibilityNodeAction(
                         actionType,
                         mapOf(
-                            AccessibilityNodeInfo.ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT to granularity,
+                            AccessibilityNodeInfo.ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT to
+                                granularity,
                             AccessibilityNodeInfo.ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN to false,
                         ),
                     )
@@ -766,10 +775,12 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                                 ?: return@performActionOnNode null
 
                         val extras = mapOf(
-                            AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT to wordBoundary.first,
+                            AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT to
+                                wordBoundary.first,
 
                             // The index of the cursor is the index of the last char in the word + 1
-                            AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT to wordBoundary.second + 1,
+                            AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT to
+                                wordBoundary.second + 1,
                         )
 
                         AccessibilityNodeAction(
@@ -805,7 +816,11 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                     val fileDate = FileUtils.createFileDate()
 
                     result =
-                        getShellAdapter(useRoot = true).execute("mkdir -p $screenshotsFolder; screencap -p $screenshotsFolder/Screenshot_$fileDate.png")
+                        getShellAdapter(
+                            useRoot = true,
+                        ).execute(
+                            "mkdir -p $screenshotsFolder; screencap -p $screenshotsFolder/Screenshot_$fileDate.png",
+                        )
                             .onSuccess {
                                 // Wait 3 seconds so the message isn't shown in the screenshot.
                                 delay(3000)
@@ -836,7 +851,9 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
             is ActionData.LockDevice -> {
                 result = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-                    getShellAdapter(useRoot = true).execute("input keyevent ${KeyEvent.KEYCODE_POWER}")
+                    getShellAdapter(
+                        useRoot = true,
+                    ).execute("input keyevent ${KeyEvent.KEYCODE_POWER}")
                 } else {
                     service.doGlobalAction(AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN)
                 }
@@ -863,7 +880,9 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                         }
                 } else {
                     result =
-                        getShellAdapter(useRoot = true).execute("input keyevent ${KeyEvent.KEYCODE_POWER}")
+                        getShellAdapter(
+                            useRoot = true,
+                        ).execute("input keyevent ${KeyEvent.KEYCODE_POWER}")
                 }
             }
 
@@ -890,12 +909,16 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
             ActionData.DismissAllNotifications -> {
                 result =
-                    notificationReceiverAdapter.send(NotificationServiceEvent.DismissAllNotifications)
+                    notificationReceiverAdapter.send(
+                        NotificationServiceEvent.DismissAllNotifications,
+                    )
             }
 
             ActionData.DismissLastNotification -> {
                 result =
-                    notificationReceiverAdapter.send(NotificationServiceEvent.DismissLastNotification)
+                    notificationReceiverAdapter.send(
+                        NotificationServiceEvent.DismissLastNotification,
+                    )
             }
 
             ActionData.AnswerCall -> {
@@ -941,7 +964,11 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                         findNode = { node ->
                             matchAccessibilityNode(node, action)
                         },
-                        performAction = { AccessibilityNodeAction(action = action.nodeAction.accessibilityActionId) },
+                        performAction = {
+                            AccessibilityNodeAction(
+                                action = action.nodeAction.accessibilityActionId,
+                            )
+                        },
                     ).otherwise { KMError.UiElementNotFound }
                 }
             }
@@ -970,7 +997,9 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
                 if (packageName == null) {
                     result =
-                        KMError.Exception(Exception("No foreground app found to clear from recents"))
+                        KMError.Exception(
+                            Exception("No foreground app found to clear from recents"),
+                        )
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     result = systemBridgeConnectionManager.run { systemBridge ->
                         systemBridge.removeTasks(packageName)
@@ -982,9 +1011,13 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
         }
 
         when (result) {
-            is Success -> Timber.d("Performed action $action, input event type: $inputEventAction, key meta state: $keyMetaState")
+            is Success -> Timber.d(
+                "Performed action $action, input event type: $inputEventAction, key meta state: $keyMetaState",
+            )
             is KMError -> Timber.d(
-                "Failed to perform action $action, reason: ${result.getFullMessage(resourceProvider)}, action: $action, input event type: $inputEventAction, key meta state: $keyMetaState",
+                "Failed to perform action $action, reason: ${result.getFullMessage(
+                    resourceProvider,
+                )}, action: $action, input event type: $inputEventAction, key meta state: $keyMetaState",
             )
         }
 
@@ -1062,7 +1095,9 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             return service
                 .doGlobalAction(AccessibilityService.GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE)
         } else {
-            return runBlocking { getShellAdapter(useRoot = false).execute("cmd statusbar collapse") }
+            return runBlocking {
+                getShellAdapter(useRoot = false).execute("cmd statusbar collapse")
+            }
         }
     }
 

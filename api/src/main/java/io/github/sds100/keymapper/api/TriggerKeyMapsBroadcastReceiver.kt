@@ -6,9 +6,9 @@ import android.content.Intent
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.keymaps.TriggerKeyMapEvent
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 // DON'T MOVE THIS CLASS TO A DIFFERENT PACKAGE BECAUSE IT BREAKS THE API
 @AndroidEntryPoint

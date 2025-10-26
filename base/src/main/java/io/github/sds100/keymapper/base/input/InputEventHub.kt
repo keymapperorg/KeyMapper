@@ -24,6 +24,9 @@ import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
+import java.util.concurrent.ConcurrentHashMap
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -39,9 +42,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.util.concurrent.ConcurrentHashMap
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class InputEventHubImpl @Inject constructor(
@@ -211,11 +211,19 @@ class InputEventHubImpl @Inject constructor(
             is KMKeyEvent -> {
                 when (event.action) {
                     KeyEvent.ACTION_DOWN -> {
-                        Timber.d("Key down ${KeyEvent.keyCodeToString(event.keyCode)}: keyCode=${event.keyCode}, scanCode=${event.scanCode}, deviceId=${event.deviceId}, metaState=${event.metaState}, source=${event.source}")
+                        Timber.d(
+                            "Key down ${KeyEvent.keyCodeToString(
+                                event.keyCode,
+                            )}: keyCode=${event.keyCode}, scanCode=${event.scanCode}, deviceId=${event.deviceId}, metaState=${event.metaState}, source=${event.source}",
+                        )
                     }
 
                     KeyEvent.ACTION_UP -> {
-                        Timber.d("Key up ${KeyEvent.keyCodeToString(event.keyCode)}: keyCode=${event.keyCode}, scanCode=${event.scanCode}, deviceId=${event.deviceId}, metaState=${event.metaState}, source=${event.source}")
+                        Timber.d(
+                            "Key up ${KeyEvent.keyCodeToString(
+                                event.keyCode,
+                            )}: keyCode=${event.keyCode}, scanCode=${event.scanCode}, deviceId=${event.deviceId}, metaState=${event.metaState}, source=${event.source}",
+                        )
                     }
 
                     else -> {
@@ -247,7 +255,9 @@ class InputEventHubImpl @Inject constructor(
 
     override fun setGrabbedEvdevDevices(clientId: String, devices: List<EvdevDeviceInfo>) {
         if (!clients.containsKey(clientId)) {
-            throw IllegalArgumentException("This client $clientId is not registered when trying to grab devices!")
+            throw IllegalArgumentException(
+                "This client $clientId is not registered when trying to grab devices!",
+            )
         }
 
         clients[clientId] = clients[clientId]!!.copy(grabbedEvdevDevices = devices.toSet())
@@ -258,7 +268,9 @@ class InputEventHubImpl @Inject constructor(
     @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     override fun grabAllEvdevDevices(clientId: String) {
         if (!clients.containsKey(clientId)) {
-            throw IllegalArgumentException("This client $clientId is not registered when trying to grab devices!")
+            throw IllegalArgumentException(
+                "This client $clientId is not registered when trying to grab devices!",
+            )
         }
 
         val devices = evdevHandlesCache.devices.value.toSet()
@@ -288,7 +300,9 @@ class InputEventHubImpl @Inject constructor(
                     KMError.Exception(Exception("Failed to grab"))
                 }
             }
-            .onSuccess { result -> Timber.i("Grabbed evdev devices [${evdevDevices.joinToString { it.name }}]") }
+            .onSuccess { result ->
+                Timber.i("Grabbed evdev devices [${evdevDevices.joinToString { it.name }}]")
+            }
             .onFailure {
                 Timber.e("Failed to grab evdev devices.")
             }

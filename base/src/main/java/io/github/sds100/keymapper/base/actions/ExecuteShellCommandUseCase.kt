@@ -8,12 +8,12 @@ import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 class ExecuteShellCommandUseCase @Inject constructor(
     private val shellAdapter: ShellAdapter,

@@ -146,7 +146,8 @@ private fun Loaded(
                 value = state.vibrateDuration.toFloat(),
                 valueText = { "${it.toInt()} ms" },
                 onValueChange = { callback.onVibrateDurationChanged(it.toInt()) },
-                valueRange = SliderMinimums.VIBRATION_DURATION.toFloat()..SliderMaximums.VIBRATION_DURATION.toFloat(),
+                valueRange =
+                SliderMinimums.VIBRATION_DURATION.toFloat()..SliderMaximums.VIBRATION_DURATION.toFloat(),
                 stepSize = SliderStepSizes.VIBRATION_DURATION,
             )
             Spacer(Modifier.height(8.dp))
@@ -174,7 +175,8 @@ private fun Loaded(
                 value = state.longPressDelay.toFloat(),
                 valueText = { "${it.toInt()} ms" },
                 onValueChange = { callback.onLongPressDelayChanged(it.toInt()) },
-                valueRange = SliderMinimums.TRIGGER_LONG_PRESS_DELAY.toFloat()..SliderMaximums.TRIGGER_LONG_PRESS_DELAY.toFloat(),
+                valueRange =
+                SliderMinimums.TRIGGER_LONG_PRESS_DELAY.toFloat()..SliderMaximums.TRIGGER_LONG_PRESS_DELAY.toFloat(),
                 stepSize = SliderStepSizes.TRIGGER_LONG_PRESS_DELAY,
             )
             Spacer(Modifier.height(8.dp))
@@ -190,7 +192,8 @@ private fun Loaded(
                 value = state.doublePressDelay.toFloat(),
                 valueText = { "${it.toInt()} ms" },
                 onValueChange = { callback.onDoublePressDelayChanged(it.toInt()) },
-                valueRange = SliderMinimums.TRIGGER_DOUBLE_PRESS_DELAY.toFloat()..SliderMaximums.TRIGGER_DOUBLE_PRESS_DELAY.toFloat(),
+                valueRange =
+                SliderMinimums.TRIGGER_DOUBLE_PRESS_DELAY.toFloat()..SliderMaximums.TRIGGER_DOUBLE_PRESS_DELAY.toFloat(),
                 stepSize = SliderStepSizes.TRIGGER_DOUBLE_PRESS_DELAY,
             )
             Spacer(Modifier.height(8.dp))
@@ -206,7 +209,8 @@ private fun Loaded(
                 value = state.sequenceTriggerTimeout.toFloat(),
                 valueText = { "${it.toInt()} ms" },
                 onValueChange = { callback.onSequenceTriggerTimeoutChanged(it.toInt()) },
-                valueRange = SliderMinimums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT.toFloat()..SliderMaximums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT.toFloat(),
+                valueRange =
+                SliderMinimums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT.toFloat()..SliderMaximums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT.toFloat(),
                 stepSize = SliderStepSizes.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT,
             )
             Spacer(Modifier.height(8.dp))
@@ -291,7 +295,9 @@ private fun TriggerFromOtherAppsSection(
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.ContentCopy,
-                            contentDescription = stringResource(R.string.flag_trigger_from_other_apps_copy_uid),
+                            contentDescription = stringResource(
+                                R.string.flag_trigger_from_other_apps_copy_uid,
+                            ),
                         )
                     }
                 }
@@ -326,7 +332,11 @@ private fun TriggerFromOtherAppsSection(
                         uriHandler.openUriSafe(ctx, intentGuideUrl)
                     },
                 ) {
-                    Text(text = stringResource(R.string.button_open_trigger_keymap_from_intent_guide))
+                    Text(
+                        text = stringResource(
+                            R.string.button_open_trigger_keymap_from_intent_guide,
+                        ),
+                    )
                 }
             }
         }

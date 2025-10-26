@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.valueOrNull
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,7 +24,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class ChooseSoundFileViewModel @Inject constructor(
@@ -106,7 +106,9 @@ class ChooseSoundFileViewModel @Inject constructor(
                         )
                     }
                 }.onFailure { error ->
-                    val toast = DialogModel.Toast(error.getFullMessage(this@ChooseSoundFileViewModel))
+                    val toast = DialogModel.Toast(
+                        error.getFullMessage(this@ChooseSoundFileViewModel),
+                    )
                     showDialog("failed_toast", toast)
                 }
         }

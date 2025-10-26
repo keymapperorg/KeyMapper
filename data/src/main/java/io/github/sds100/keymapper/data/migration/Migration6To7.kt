@@ -43,7 +43,11 @@ object Migration6To7 {
                     .mapNotNull { it as? KeyEventTriggerKeyEntity }
                     .map { key ->
                         if (trigger.flags.hasFlag(TRIGGER_FLAG_DONT_OVERRIDE_DEFAULT_ACTION)) {
-                            key.copy(flags = key.flags.withFlag(KeyEventTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT))
+                            key.copy(
+                                flags = key.flags.withFlag(
+                                    KeyEventTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT,
+                                ),
+                            )
                         } else {
                             key
                         }

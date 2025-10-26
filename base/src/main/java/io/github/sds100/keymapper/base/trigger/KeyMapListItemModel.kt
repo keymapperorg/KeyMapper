@@ -4,10 +4,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
 
-data class KeyMapListItemModel(
-    val isSelected: Boolean,
-    val content: Content,
-) {
+data class KeyMapListItemModel(val isSelected: Boolean, val content: Content) {
     val uid = content.uid
 
     data class Content(

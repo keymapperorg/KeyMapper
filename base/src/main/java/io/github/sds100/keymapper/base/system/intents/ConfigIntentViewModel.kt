@@ -47,6 +47,7 @@ import io.github.sds100.keymapper.system.intents.ShortArrayExtraType
 import io.github.sds100.keymapper.system.intents.ShortExtraType
 import io.github.sds100.keymapper.system.intents.StringArrayExtraType
 import io.github.sds100.keymapper.system.intents.StringExtraType
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,7 +59,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class ConfigIntentViewModel @Inject constructor(
@@ -97,11 +97,20 @@ class ConfigIntentViewModel @Inject constructor(
                 yield(Intent.FLAG_ACTIVITY_CLEAR_TASK to "FLAG_ACTIVITY_CLEAR_TASK")
                 yield(Intent.FLAG_ACTIVITY_CLEAR_TOP to "FLAG_ACTIVITY_CLEAR_TOP")
 
-                yield(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET to "FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET")
+                yield(
+                    Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET to
+                        "FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET",
+                )
 
-                yield(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS to "FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS")
+                yield(
+                    Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS to
+                        "FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS",
+                )
                 yield(Intent.FLAG_ACTIVITY_FORWARD_RESULT to "FLAG_ACTIVITY_FORWARD_RESULT")
-                yield(Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY to "FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY")
+                yield(
+                    Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY to
+                        "FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY",
+                )
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     yield(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT to "FLAG_ACTIVITY_LAUNCH_ADJACENT")
@@ -124,10 +133,16 @@ class ConfigIntentViewModel @Inject constructor(
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     yield(Intent.FLAG_ACTIVITY_REQUIRE_DEFAULT to "FLAG_ACTIVITY_REQUIRE_DEFAULT")
-                    yield(Intent.FLAG_ACTIVITY_REQUIRE_NON_BROWSER to "FLAG_ACTIVITY_REQUIRE_NON_BROWSER")
+                    yield(
+                        Intent.FLAG_ACTIVITY_REQUIRE_NON_BROWSER to
+                            "FLAG_ACTIVITY_REQUIRE_NON_BROWSER",
+                    )
                 }
 
-                yield(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED to "FLAG_ACTIVITY_RESET_TASK_IF_NEEDED")
+                yield(
+                    Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED to
+                        "FLAG_ACTIVITY_RESET_TASK_IF_NEEDED",
+                )
 
                 yield(Intent.FLAG_ACTIVITY_RETAIN_IN_RECENTS to "FLAG_ACTIVITY_RETAIN_IN_RECENTS")
 
@@ -142,7 +157,10 @@ class ConfigIntentViewModel @Inject constructor(
                 yield(Intent.FLAG_EXCLUDE_STOPPED_PACKAGES to "FLAG_EXCLUDE_STOPPED_PACKAGES")
                 yield(Intent.FLAG_FROM_BACKGROUND to "FLAG_FROM_BACKGROUND")
 
-                yield(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION to "FLAG_GRANT_PERSISTABLE_URI_PERMISSION")
+                yield(
+                    Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION to
+                        "FLAG_GRANT_PERSISTABLE_URI_PERMISSION",
+                )
 
                 yield(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION to "FLAG_GRANT_PREFIX_URI_PERMISSION")
 
@@ -157,7 +175,10 @@ class ConfigIntentViewModel @Inject constructor(
                 yield(Intent.FLAG_RECEIVER_REPLACE_PENDING to "FLAG_RECEIVER_REPLACE_PENDING")
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    yield(Intent.FLAG_RECEIVER_VISIBLE_TO_INSTANT_APPS to "FLAG_RECEIVER_VISIBLE_TO_INSTANT_APPS")
+                    yield(
+                        Intent.FLAG_RECEIVER_VISIBLE_TO_INSTANT_APPS to
+                            "FLAG_RECEIVER_VISIBLE_TO_INSTANT_APPS",
+                    )
                 }
             }.toList()
     }
@@ -433,7 +454,9 @@ class ConfigIntentViewModel @Inject constructor(
                 is ShortArray -> ShortArrayExtraType
                 is String -> StringExtraType
                 is Array<*> -> StringArrayExtraType
-                else -> throw IllegalArgumentException("Don't know how to convert this extra (${value.javaClass.name}) to an IntentExtraType")
+                else -> throw IllegalArgumentException(
+                    "Don't know how to convert this extra (${value.javaClass.name}) to an IntentExtraType",
+                )
             }
 
             val extra = IntentExtraModel(

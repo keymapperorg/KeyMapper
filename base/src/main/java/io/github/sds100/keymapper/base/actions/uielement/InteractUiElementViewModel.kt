@@ -26,6 +26,8 @@ import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
+import java.util.Locale
+import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,8 +43,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import java.util.Locale
-import javax.inject.Inject
 
 @HiltViewModel
 class InteractUiElementViewModel @Inject constructor(
@@ -397,7 +397,9 @@ class InteractUiElementViewModel @Inject constructor(
         )
     }
 
-    private fun buildInteractionTypeFilterItems(interactionTypes: Set<NodeInteractionType>): List<Pair<NodeInteractionType, String>> {
+    private fun buildInteractionTypeFilterItems(
+        interactionTypes: Set<NodeInteractionType>,
+    ): List<Pair<NodeInteractionType, String>> {
         return buildList {
             // They should always be in the same order so iterate over the Enum entries.
             for (type in NodeInteractionType.entries) {
@@ -415,13 +417,27 @@ class InteractUiElementViewModel @Inject constructor(
 
     private fun getInteractionTypeString(interactionType: NodeInteractionType): String {
         return when (interactionType) {
-            NodeInteractionType.CLICK -> getString(R.string.action_interact_ui_element_interaction_type_click)
-            NodeInteractionType.LONG_CLICK -> getString(R.string.action_interact_ui_element_interaction_type_long_click)
-            NodeInteractionType.FOCUS -> getString(R.string.action_interact_ui_element_interaction_type_focus)
-            NodeInteractionType.SCROLL_FORWARD -> getString(R.string.action_interact_ui_element_interaction_type_scroll_forward)
-            NodeInteractionType.SCROLL_BACKWARD -> getString(R.string.action_interact_ui_element_interaction_type_scroll_backward)
-            NodeInteractionType.EXPAND -> getString(R.string.action_interact_ui_element_interaction_type_expand)
-            NodeInteractionType.COLLAPSE -> getString(R.string.action_interact_ui_element_interaction_type_collapse)
+            NodeInteractionType.CLICK -> getString(
+                R.string.action_interact_ui_element_interaction_type_click,
+            )
+            NodeInteractionType.LONG_CLICK -> getString(
+                R.string.action_interact_ui_element_interaction_type_long_click,
+            )
+            NodeInteractionType.FOCUS -> getString(
+                R.string.action_interact_ui_element_interaction_type_focus,
+            )
+            NodeInteractionType.SCROLL_FORWARD -> getString(
+                R.string.action_interact_ui_element_interaction_type_scroll_forward,
+            )
+            NodeInteractionType.SCROLL_BACKWARD -> getString(
+                R.string.action_interact_ui_element_interaction_type_scroll_backward,
+            )
+            NodeInteractionType.EXPAND -> getString(
+                R.string.action_interact_ui_element_interaction_type_expand,
+            )
+            NodeInteractionType.COLLAPSE -> getString(
+                R.string.action_interact_ui_element_interaction_type_collapse,
+            )
         }
     }
 }
@@ -443,10 +459,8 @@ data class SelectedUiElementState(
 sealed class RecordUiElementState {
     data class Recorded(val interactionCount: Int) : RecordUiElementState()
 
-    data class CountingDown(
-        val timeRemaining: String,
-        val interactionCount: Int,
-    ) : RecordUiElementState()
+    data class CountingDown(val timeRemaining: String, val interactionCount: Int) :
+        RecordUiElementState()
 
     data object Empty : RecordUiElementState()
 }

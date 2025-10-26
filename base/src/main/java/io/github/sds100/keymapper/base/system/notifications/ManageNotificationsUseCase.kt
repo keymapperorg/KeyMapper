@@ -7,8 +7,8 @@ import io.github.sds100.keymapper.system.notifications.NotificationModel
 import io.github.sds100.keymapper.system.notifications.NotificationRemoteInput
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 
 class ManageNotificationsUseCaseImpl @Inject constructor(
     private val notificationAdapter: NotificationAdapter,

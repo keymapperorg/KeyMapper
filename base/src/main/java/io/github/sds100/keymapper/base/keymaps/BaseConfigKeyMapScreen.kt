@@ -144,9 +144,13 @@ fun BaseConfigKeyMapScreen(
                                         // Check at the start of each repeat so that it is
                                         // a smooth animation to the old position when it stops.
                                         val isActionsTabSelected =
-                                            pagerState.targetPage == index && tab == ConfigKeyMapTab.ACTIONS
+                                            pagerState.targetPage == index &&
+                                                tab == ConfigKeyMapTab.ACTIONS
 
-                                        if (!showActionPulse || finishedAnimation || isActionsTabSelected) {
+                                        if (!showActionPulse ||
+                                            finishedAnimation ||
+                                            isActionsTabSelected
+                                        ) {
                                             return@repeat
                                         }
 

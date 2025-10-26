@@ -8,14 +8,14 @@ import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.IFile
+import java.util.UUID
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.UUID
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class SoundsManagerImpl @Inject constructor(
@@ -105,11 +105,12 @@ class SoundsManagerImpl @Inject constructor(
             .map { getSoundFileInfo(it.name!!) }
     }
 
-    private fun createSoundCopyFileName(originalSoundFile: IFile, uid: String): String = buildString {
-        append(originalSoundFile.baseName)
-        append("_$uid")
-        append(".${originalSoundFile.extension}")
-    }
+    private fun createSoundCopyFileName(originalSoundFile: IFile, uid: String): String =
+        buildString {
+            append(originalSoundFile.baseName)
+            append("_$uid")
+            append(".${originalSoundFile.extension}")
+        }
 }
 
 interface SoundsManager {

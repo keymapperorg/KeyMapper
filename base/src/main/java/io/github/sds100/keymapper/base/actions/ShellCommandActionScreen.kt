@@ -201,7 +201,9 @@ private fun ShellCommandActionScreen(
                             pagerState.animateScrollToPage(0)
                         }
                     },
-                    text = { Text(stringResource(R.string.action_shell_command_tab_configuration)) },
+                    text = {
+                        Text(stringResource(R.string.action_shell_command_tab_configuration))
+                    },
                 )
                 Tab(
                     selected = pagerState.targetPage == 1,
@@ -336,15 +338,20 @@ private fun ShellCommandConfigurationContent(
         KeyMapperSegmentedButtonRow(
             modifier = Modifier.fillMaxWidth(),
             buttonStates = listOf(
-                ShellExecutionMode.STANDARD to stringResource(R.string.action_shell_command_execution_mode_standard),
-                ShellExecutionMode.ROOT to stringResource(R.string.action_shell_command_execution_mode_root),
-                ShellExecutionMode.ADB to stringResource(R.string.action_shell_command_execution_mode_adb),
+                ShellExecutionMode.STANDARD to
+                    stringResource(R.string.action_shell_command_execution_mode_standard),
+                ShellExecutionMode.ROOT to
+                    stringResource(R.string.action_shell_command_execution_mode_root),
+                ShellExecutionMode.ADB to
+                    stringResource(R.string.action_shell_command_execution_mode_adb),
             ),
             selectedState = state.executionMode,
             onStateSelected = onExecutionModeChanged,
         )
 
-        if (state.executionMode == ShellExecutionMode.ADB && state.proModeStatus != ProModeStatus.ENABLED) {
+        if (state.executionMode == ShellExecutionMode.ADB &&
+            state.proModeStatus != ProModeStatus.ENABLED
+        ) {
             OutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = onSetupProModeClick,

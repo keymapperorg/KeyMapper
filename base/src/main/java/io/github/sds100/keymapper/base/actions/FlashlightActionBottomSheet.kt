@@ -53,8 +53,8 @@ import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.system.camera.CameraFlashInfo
 import io.github.sds100.keymapper.system.camera.CameraLens
-import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -193,7 +193,9 @@ private fun EnableFlashlightActionBottomSheet(
                     IconButton(onClick = { onSelectStrength(sliderDefault) }) {
                         Icon(
                             Icons.Rounded.RestartAlt,
-                            contentDescription = stringResource(R.string.slider_reset_content_description),
+                            contentDescription = stringResource(
+                                R.string.slider_reset_content_description,
+                            ),
                         )
                     }
                 }

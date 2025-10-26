@@ -141,7 +141,9 @@ class KeyMapListItemCreator(
                     append(label)
                 }
 
-                if (keyMap.isDelayBeforeNextActionAllowed() && action.delayBeforeNextAction != null) {
+                if (keyMap.isDelayBeforeNextActionAllowed() &&
+                    action.delayBeforeNextAction != null
+                ) {
                     if (this@buildString.isNotBlank()) {
                         append(" $midDot ")
                     }
@@ -344,10 +346,18 @@ class KeyMapListItemCreator(
         }
 
         when (key.type) {
-            FingerprintGestureType.SWIPE_DOWN -> append(getString(R.string.trigger_key_fingerprint_gesture_down))
-            FingerprintGestureType.SWIPE_UP -> append(getString(R.string.trigger_key_fingerprint_gesture_up))
-            FingerprintGestureType.SWIPE_LEFT -> append(getString(R.string.trigger_key_fingerprint_gesture_left))
-            FingerprintGestureType.SWIPE_RIGHT -> append(getString(R.string.trigger_key_fingerprint_gesture_right))
+            FingerprintGestureType.SWIPE_DOWN -> append(
+                getString(R.string.trigger_key_fingerprint_gesture_down),
+            )
+            FingerprintGestureType.SWIPE_UP -> append(
+                getString(R.string.trigger_key_fingerprint_gesture_up),
+            )
+            FingerprintGestureType.SWIPE_LEFT -> append(
+                getString(R.string.trigger_key_fingerprint_gesture_left),
+            )
+            FingerprintGestureType.SWIPE_RIGHT -> append(
+                getString(R.string.trigger_key_fingerprint_gesture_right),
+            )
         }
     }
 

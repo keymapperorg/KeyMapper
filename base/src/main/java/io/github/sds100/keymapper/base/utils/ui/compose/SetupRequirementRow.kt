@@ -72,8 +72,12 @@ fun AccessibilityServiceRequirementRow(
         text = stringResource(R.string.trigger_setup_accessibility_service_title),
     ) {
         SetupRequirementButton(
-            enabledText = stringResource(R.string.trigger_setup_accessibility_service_enable_button),
-            disabledText = stringResource(R.string.trigger_setup_accessibility_service_running_button),
+            enabledText = stringResource(
+                R.string.trigger_setup_accessibility_service_enable_button,
+            ),
+            disabledText = stringResource(
+                R.string.trigger_setup_accessibility_service_running_button,
+            ),
             isEnabled = !isServiceEnabled,
             colors = buttonColors,
             onClick = onClick,
@@ -96,7 +100,9 @@ fun InputMethodRequirementRow(
         text = stringResource(R.string.trigger_setup_input_method_title),
     ) {
         val enabledText = when {
-            !isEnabled && enablingRequiresUserInput -> stringResource(R.string.trigger_setup_input_method_enable_button)
+            !isEnabled && enablingRequiresUserInput -> stringResource(
+                R.string.trigger_setup_input_method_enable_button,
+            )
             !isChosen -> stringResource(R.string.trigger_setup_input_method_choose_button)
             else -> ""
         }

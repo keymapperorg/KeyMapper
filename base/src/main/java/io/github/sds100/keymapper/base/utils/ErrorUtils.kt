@@ -55,21 +55,41 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
             this.packageName,
         )
 
-        is KMError.NoCompatibleImeEnabled -> resourceProvider.getString(R.string.error_key_mapper_ime_service_disabled)
-        is KMError.NoCompatibleImeChosen -> resourceProvider.getString(R.string.error_ime_must_be_chosen)
+        is KMError.NoCompatibleImeEnabled -> resourceProvider.getString(
+            R.string.error_key_mapper_ime_service_disabled,
+        )
+        is KMError.NoCompatibleImeChosen -> resourceProvider.getString(
+            R.string.error_ime_must_be_chosen,
+        )
         is KMError.SystemFeatureNotSupported -> when (this.feature) {
-            PackageManager.FEATURE_NFC -> resourceProvider.getString(R.string.error_system_feature_nfc_unsupported)
-            PackageManager.FEATURE_CAMERA -> resourceProvider.getString(R.string.error_system_feature_camera_unsupported)
-            PackageManager.FEATURE_FINGERPRINT -> resourceProvider.getString(R.string.error_system_feature_fingerprint_unsupported)
-            PackageManager.FEATURE_WIFI -> resourceProvider.getString(R.string.error_system_feature_wifi_unsupported)
-            PackageManager.FEATURE_BLUETOOTH -> resourceProvider.getString(R.string.error_system_feature_bluetooth_unsupported)
-            PackageManager.FEATURE_DEVICE_ADMIN -> resourceProvider.getString(R.string.error_system_feature_device_admin_unsupported)
-            PackageManager.FEATURE_CAMERA_FLASH -> resourceProvider.getString(R.string.error_system_feature_camera_flash_unsupported)
+            PackageManager.FEATURE_NFC -> resourceProvider.getString(
+                R.string.error_system_feature_nfc_unsupported,
+            )
+            PackageManager.FEATURE_CAMERA -> resourceProvider.getString(
+                R.string.error_system_feature_camera_unsupported,
+            )
+            PackageManager.FEATURE_FINGERPRINT -> resourceProvider.getString(
+                R.string.error_system_feature_fingerprint_unsupported,
+            )
+            PackageManager.FEATURE_WIFI -> resourceProvider.getString(
+                R.string.error_system_feature_wifi_unsupported,
+            )
+            PackageManager.FEATURE_BLUETOOTH -> resourceProvider.getString(
+                R.string.error_system_feature_bluetooth_unsupported,
+            )
+            PackageManager.FEATURE_DEVICE_ADMIN -> resourceProvider.getString(
+                R.string.error_system_feature_device_admin_unsupported,
+            )
+            PackageManager.FEATURE_CAMERA_FLASH -> resourceProvider.getString(
+                R.string.error_system_feature_camera_flash_unsupported,
+            )
             PackageManager.FEATURE_TELEPHONY, PackageManager.FEATURE_TELEPHONY_DATA, PackageManager.FEATURE_TELEPHONY_MESSAGING -> resourceProvider.getString(
                 R.string.error_system_feature_telephony_unsupported,
             )
 
-            else -> throw Exception("Don't know how to get error message for this system feature ${this.feature}")
+            else -> throw Exception(
+                "Don't know how to get error message for this system feature ${this.feature}",
+            )
         }
 
         is DataError.ExtraNotFound -> resourceProvider.getString(
@@ -92,8 +112,12 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
             imeLabel,
         )
 
-        is KMError.FrontFlashNotFound -> resourceProvider.getString(R.string.error_front_flash_not_found)
-        is KMError.BackFlashNotFound -> resourceProvider.getString(R.string.error_back_flash_not_found)
+        is KMError.FrontFlashNotFound -> resourceProvider.getString(
+            R.string.error_front_flash_not_found,
+        )
+        is KMError.BackFlashNotFound -> resourceProvider.getString(
+            R.string.error_back_flash_not_found,
+        )
         is KMError.DeviceNotFound -> resourceProvider.getString(R.string.error_device_not_found)
         is KMError.Exception -> exception.toString()
         is KMError.EmptyJson -> resourceProvider.getString(R.string.error_empty_json)
@@ -105,38 +129,82 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
 
         is KMError.NumberTooBig -> resourceProvider.getString(R.string.error_number_too_big, max)
         is KMError.EmptyText -> resourceProvider.getString(R.string.error_cant_be_empty)
-        KMError.BackupVersionTooNew -> resourceProvider.getString(R.string.error_backup_version_too_new)
-        KMError.NoIncompatibleKeyboardsInstalled -> resourceProvider.getString(R.string.error_no_incompatible_input_methods_installed)
+        KMError.BackupVersionTooNew -> resourceProvider.getString(
+            R.string.error_backup_version_too_new,
+        )
+        KMError.NoIncompatibleKeyboardsInstalled -> resourceProvider.getString(
+            R.string.error_no_incompatible_input_methods_installed,
+        )
         KMError.NoMediaSessions -> resourceProvider.getString(R.string.error_no_media_sessions)
-        KMError.NoVoiceAssistant -> resourceProvider.getString(R.string.error_voice_assistant_not_found)
-        AccessibilityServiceError.Disabled -> resourceProvider.getString(R.string.error_accessibility_service_disabled)
-        AccessibilityServiceError.Crashed -> resourceProvider.getString(R.string.error_accessibility_service_crashed)
-        KMError.LauncherShortcutsNotSupported -> resourceProvider.getString(R.string.error_launcher_shortcuts_not_supported)
-        KMError.CantFindImeSettings -> resourceProvider.getString(R.string.error_cant_find_ime_settings)
-        KMError.CantShowImePickerInBackground -> resourceProvider.getString(R.string.error_cant_show_ime_picker_in_background)
-        KMError.FailedToFindAccessibilityNode -> resourceProvider.getString(R.string.error_failed_to_find_accessibility_node)
+        KMError.NoVoiceAssistant -> resourceProvider.getString(
+            R.string.error_voice_assistant_not_found,
+        )
+        AccessibilityServiceError.Disabled -> resourceProvider.getString(
+            R.string.error_accessibility_service_disabled,
+        )
+        AccessibilityServiceError.Crashed -> resourceProvider.getString(
+            R.string.error_accessibility_service_crashed,
+        )
+        KMError.LauncherShortcutsNotSupported -> resourceProvider.getString(
+            R.string.error_launcher_shortcuts_not_supported,
+        )
+        KMError.CantFindImeSettings -> resourceProvider.getString(
+            R.string.error_cant_find_ime_settings,
+        )
+        KMError.CantShowImePickerInBackground -> resourceProvider.getString(
+            R.string.error_cant_show_ime_picker_in_background,
+        )
+        KMError.FailedToFindAccessibilityNode -> resourceProvider.getString(
+            R.string.error_failed_to_find_accessibility_node,
+        )
         is KMError.FailedToPerformAccessibilityGlobalAction -> resourceProvider.getString(
             R.string.error_failed_to_perform_accessibility_global_action,
             action,
         )
 
-        KMError.FailedToDispatchGesture -> resourceProvider.getString(R.string.error_failed_to_dispatch_gesture)
-        KMError.AppShortcutCantBeOpened -> resourceProvider.getString(R.string.error_opening_app_shortcut)
-        KMError.InsufficientPermissionsToOpenAppShortcut -> resourceProvider.getString(R.string.error_keymapper_doesnt_have_permission_app_shortcut)
+        KMError.FailedToDispatchGesture -> resourceProvider.getString(
+            R.string.error_failed_to_dispatch_gesture,
+        )
+        KMError.AppShortcutCantBeOpened -> resourceProvider.getString(
+            R.string.error_opening_app_shortcut,
+        )
+        KMError.InsufficientPermissionsToOpenAppShortcut -> resourceProvider.getString(
+            R.string.error_keymapper_doesnt_have_permission_app_shortcut,
+        )
         KMError.NoAppToPhoneCall -> resourceProvider.getString(R.string.error_no_app_to_phone_call)
         KMError.NoAppToSendSms -> resourceProvider.getString(R.string.error_no_app_to_send_sms)
         is KMError.SendSmsError -> {
             when (resultCode) {
-                SmsManager.RESULT_ERROR_GENERIC_FAILURE -> resourceProvider.getString(R.string.error_sms_generic_failure)
-                SmsManager.RESULT_ERROR_RADIO_OFF -> resourceProvider.getString(R.string.error_sms_radio_off)
-                SmsManager.RESULT_ERROR_NO_SERVICE -> resourceProvider.getString(R.string.error_sms_no_service)
-                SmsManager.RESULT_ERROR_LIMIT_EXCEEDED -> resourceProvider.getString(R.string.error_sms_limit_exceeded)
-                SmsManager.RESULT_NETWORK_REJECT -> resourceProvider.getString(R.string.error_sms_network_reject)
-                SmsManager.RESULT_NO_MEMORY -> resourceProvider.getString(R.string.error_sms_no_memory)
-                SmsManager.RESULT_INVALID_SMS_FORMAT -> resourceProvider.getString(R.string.error_sms_invalid_format)
-                SmsManager.RESULT_NETWORK_ERROR -> resourceProvider.getString(R.string.error_sms_network_error)
-                SmsManager.RESULT_SMS_BLOCKED_DURING_EMERGENCY -> resourceProvider.getString(R.string.error_sms_blocked_during_emergency)
-                SmsManager.RESULT_RIL_SIM_ABSENT -> resourceProvider.getString(R.string.error_sms_no_sim)
+                SmsManager.RESULT_ERROR_GENERIC_FAILURE -> resourceProvider.getString(
+                    R.string.error_sms_generic_failure,
+                )
+                SmsManager.RESULT_ERROR_RADIO_OFF -> resourceProvider.getString(
+                    R.string.error_sms_radio_off,
+                )
+                SmsManager.RESULT_ERROR_NO_SERVICE -> resourceProvider.getString(
+                    R.string.error_sms_no_service,
+                )
+                SmsManager.RESULT_ERROR_LIMIT_EXCEEDED -> resourceProvider.getString(
+                    R.string.error_sms_limit_exceeded,
+                )
+                SmsManager.RESULT_NETWORK_REJECT -> resourceProvider.getString(
+                    R.string.error_sms_network_reject,
+                )
+                SmsManager.RESULT_NO_MEMORY -> resourceProvider.getString(
+                    R.string.error_sms_no_memory,
+                )
+                SmsManager.RESULT_INVALID_SMS_FORMAT -> resourceProvider.getString(
+                    R.string.error_sms_invalid_format,
+                )
+                SmsManager.RESULT_NETWORK_ERROR -> resourceProvider.getString(
+                    R.string.error_sms_network_error,
+                )
+                SmsManager.RESULT_SMS_BLOCKED_DURING_EMERGENCY -> resourceProvider.getString(
+                    R.string.error_sms_blocked_during_emergency,
+                )
+                SmsManager.RESULT_RIL_SIM_ABSENT -> resourceProvider.getString(
+                    R.string.error_sms_no_sim,
+                )
                 else -> resourceProvider.getString(R.string.error_sms_generic_failure)
             }
         }
@@ -146,7 +214,9 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         KMError.CameraDisabled -> resourceProvider.getString(R.string.error_camera_disabled)
         KMError.CameraDisconnected -> resourceProvider.getString(R.string.error_camera_disconnected)
         KMError.MaxCamerasInUse -> resourceProvider.getString(R.string.error_max_cameras_in_use)
-        KMError.CameraVariableFlashlightStrengthUnsupported -> resourceProvider.getString(R.string.error_variable_flashlight_strength_unsupported)
+        KMError.CameraVariableFlashlightStrengthUnsupported -> resourceProvider.getString(
+            R.string.error_variable_flashlight_strength_unsupported,
+        )
 
         is KMError.FailedToModifySystemSetting -> resourceProvider.getString(
             R.string.error_failed_to_modify_system_setting,
@@ -173,7 +243,9 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
             uri,
         )
 
-        KMError.FileOperationCancelled -> resourceProvider.getString(R.string.error_file_operation_cancelled)
+        KMError.FileOperationCancelled -> resourceProvider.getString(
+            R.string.error_file_operation_cancelled,
+        )
         is KMError.NoSpaceLeftOnTarget -> resourceProvider.getString(
             R.string.error_no_space_left_at_target,
             uri,
@@ -186,8 +258,12 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
             uri,
         )
 
-        KMError.StoragePermissionDenied -> resourceProvider.getString(R.string.error_storage_permission_denied)
-        KMError.TargetDirectoryMatchesSourceDirectory -> resourceProvider.getString(R.string.error_matching_source_and_target_paths)
+        KMError.StoragePermissionDenied -> resourceProvider.getString(
+            R.string.error_storage_permission_denied,
+        )
+        KMError.TargetDirectoryMatchesSourceDirectory -> resourceProvider.getString(
+            R.string.error_matching_source_and_target_paths,
+        )
         is KMError.TargetDirectoryNotFound -> resourceProvider.getString(
             R.string.error_directory_not_found,
             uri,
@@ -201,11 +277,19 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         KMError.UnknownIOError -> resourceProvider.getString(R.string.error_io_error)
         KMError.ShizukuNotStarted -> resourceProvider.getString(R.string.error_shizuku_not_started)
         KMError.NoFileName -> resourceProvider.getString(R.string.error_no_file_name)
-        KMError.CantDetectKeyEventsInPhoneCall -> resourceProvider.getString(R.string.trigger_error_cant_detect_in_phone_call_explanation)
-        KMError.GestureStrokeCountTooHigh -> resourceProvider.getString(R.string.trigger_error_gesture_stroke_count_too_high)
-        KMError.GestureDurationTooHigh -> resourceProvider.getString(R.string.trigger_error_gesture_duration_too_high)
+        KMError.CantDetectKeyEventsInPhoneCall -> resourceProvider.getString(
+            R.string.trigger_error_cant_detect_in_phone_call_explanation,
+        )
+        KMError.GestureStrokeCountTooHigh -> resourceProvider.getString(
+            R.string.trigger_error_gesture_stroke_count_too_high,
+        )
+        KMError.GestureDurationTooHigh -> resourceProvider.getString(
+            R.string.trigger_error_gesture_duration_too_high,
+        )
 
-        KMError.DpadTriggerImeNotSelected -> resourceProvider.getString(R.string.trigger_error_dpad_ime_not_selected)
+        KMError.DpadTriggerImeNotSelected -> resourceProvider.getString(
+            R.string.trigger_error_dpad_ime_not_selected,
+        )
         KMError.InvalidBackup -> resourceProvider.getString(R.string.error_invalid_backup)
         KMError.MalformedUrl -> resourceProvider.getString(R.string.error_malformed_url)
         KMError.UiElementNotFound -> resourceProvider.getString(R.string.error_ui_element_not_found)
@@ -213,7 +297,9 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
             R.string.error_shell_command_timeout,
             timeoutMillis / 1000,
         )
-        is SystemBridgeError.Disconnected -> resourceProvider.getString(R.string.error_system_bridge_disconnected)
+        is SystemBridgeError.Disconnected -> resourceProvider.getString(
+            R.string.error_system_bridge_disconnected,
+        )
 
         PurchasingError.PurchasingProcessError.Cancelled -> resourceProvider.getString(
             R.string.purchasing_error_cancelled,
@@ -242,14 +328,24 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
         is PurchasingError.PurchasingProcessError.Unexpected -> message
 
         is PurchasingError.ProductNotPurchased -> when (product) {
-            ProductId.ASSISTANT_TRIGGER -> resourceProvider.getString(R.string.purchasing_error_assistant_not_purchased_home_screen)
-            ProductId.FLOATING_BUTTONS -> resourceProvider.getString(R.string.purchasing_error_floating_buttons_not_purchased_home_screen)
+            ProductId.ASSISTANT_TRIGGER -> resourceProvider.getString(
+                R.string.purchasing_error_assistant_not_purchased_home_screen,
+            )
+            ProductId.FLOATING_BUTTONS -> resourceProvider.getString(
+                R.string.purchasing_error_floating_buttons_not_purchased_home_screen,
+            )
         }
 
-        PurchasingError.PurchasingNotImplemented -> resourceProvider.getString(R.string.purchasing_error_not_implemented)
+        PurchasingError.PurchasingNotImplemented -> resourceProvider.getString(
+            R.string.purchasing_error_not_implemented,
+        )
 
-        is KMError.KeyEventActionError -> resourceProvider.getString(R.string.error_fix_key_event_action)
-        is KMError.KeyMapperSmsRateLimit -> resourceProvider.getString(R.string.error_sms_rate_limit)
+        is KMError.KeyEventActionError -> resourceProvider.getString(
+            R.string.error_fix_key_event_action,
+        )
+        is KMError.KeyMapperSmsRateLimit -> resourceProvider.getString(
+            R.string.error_sms_rate_limit,
+        )
 
         else -> this.toString()
     }

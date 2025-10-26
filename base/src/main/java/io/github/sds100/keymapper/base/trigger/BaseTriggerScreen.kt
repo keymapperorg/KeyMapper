@@ -183,7 +183,8 @@ private fun isHorizontalLayout(): Boolean {
 private fun isVerticalCompactLayout(): Boolean {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-    return windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT && windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
+    return windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT &&
+        windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
 }
 
 @Composable

@@ -4,6 +4,8 @@ import android.database.sqlite.SQLiteConstraintException
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.data.db.dao.AccessibilityNodeDao
 import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
@@ -13,8 +15,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class RoomAccessibilityNodeRepository @Inject constructor(

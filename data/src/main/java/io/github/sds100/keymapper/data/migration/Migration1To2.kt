@@ -153,7 +153,11 @@ object Migration1To2 {
                         execSQL(
                             """
                             INSERT INTO 'new_keymaps' ('id', 'trigger', 'action_list', 'constraint_list', 'constraint_mode', 'flags', 'folder_name', 'is_enabled')
-                            VALUES ($id, '${gson.toJson(it)}', '${gson.toJson(actionListNew)}', '[]', 1, '$flagsNew', 'NULL', $isEnabledOld)
+                            VALUES ($id, '${gson.toJson(
+                                it,
+                            )}', '${gson.toJson(
+                                actionListNew,
+                            )}', '[]', 1, '$flagsNew', 'NULL', $isEnabledOld)
                             """.trimIndent(),
                         )
                         id++
@@ -168,7 +172,9 @@ object Migration1To2 {
 
         execSQL("DROP TABLE keymaps")
         execSQL("ALTER TABLE new_keymaps RENAME TO keymaps")
-        execSQL("CREATE TABLE IF NOT EXISTS `deviceinfo` (`descriptor` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`descriptor`))")
+        execSQL(
+            "CREATE TABLE IF NOT EXISTS `deviceinfo` (`descriptor` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`descriptor`))",
+        )
     }
 
     private fun createTriggerKey2(keyCode: Int, deviceId: String, clickType: Int) =
@@ -180,28 +186,22 @@ object Migration1To2 {
             )
         }
 
-    private fun createTrigger2(
-        keys: JsonArray = JsonArray(),
-        mode: Int = MODE_SEQUENCE,
-    ) = JsonObject().apply {
-        putAll(
-            "keys" to keys,
-            "extras" to JsonArray(),
-            "mode" to mode,
-        )
-    }
+    private fun createTrigger2(keys: JsonArray = JsonArray(), mode: Int = MODE_SEQUENCE) =
+        JsonObject().apply {
+            putAll(
+                "keys" to keys,
+                "extras" to JsonArray(),
+                "mode" to mode,
+            )
+        }
 
-    private fun createAction2(
-        type: String,
-        data: String,
-        extras: JsonArray,
-        flags: Int,
-    ) = JsonObject().apply {
-        putAll(
-            "type" to type,
-            "data" to data,
-            "extras" to extras,
-            "flags" to flags,
-        )
-    }
+    private fun createAction2(type: String, data: String, extras: JsonArray, flags: Int) =
+        JsonObject().apply {
+            putAll(
+                "type" to type,
+                "data" to data,
+                "extras" to extras,
+                "flags" to flags,
+            )
+        }
 }

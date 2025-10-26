@@ -363,7 +363,9 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 actions = listOf(
                     ComposeChipModel.Normal(
                         id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        ComposeIconInfo.Drawable(
+                            drawable = context.drawable(R.drawable.ic_launcher_web),
+                        ),
                         "Open Key Mapper",
                     ),
                     ComposeChipModel.Error(
@@ -386,7 +388,9 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 constraints = listOf(
                     ComposeChipModel.Normal(
                         id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        ComposeIconInfo.Drawable(
+                            drawable = context.drawable(R.drawable.ic_launcher_web),
+                        ),
                         "Key Mapper is not open",
                     ),
                     ComposeChipModel.Error(
@@ -409,7 +413,9 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 actions = listOf(
                     ComposeChipModel.Normal(
                         id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        ComposeIconInfo.Drawable(
+                            drawable = context.drawable(R.drawable.ic_launcher_web),
+                        ),
                         "Open Key Mapper",
                     ),
                 ),
@@ -417,7 +423,9 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 constraints = listOf(
                     ComposeChipModel.Normal(
                         id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        ComposeIconInfo.Drawable(
+                            drawable = context.drawable(R.drawable.ic_launcher_web),
+                        ),
                         "Key Mapper is not open",
                     ),
                 ),
@@ -438,7 +446,9 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 actions = listOf(
                     ComposeChipModel.Normal(
                         id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        ComposeIconInfo.Drawable(
+                            drawable = context.drawable(R.drawable.ic_launcher_web),
+                        ),
                         "Open Key Mapper",
                     ),
                 ),
@@ -446,7 +456,9 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 constraints = listOf(
                     ComposeChipModel.Normal(
                         id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        ComposeIconInfo.Drawable(
+                            drawable = context.drawable(R.drawable.ic_launcher_web),
+                        ),
                         "Key Mapper is not open",
                     ),
                 ),
@@ -464,7 +476,9 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 actions = listOf(
                     ComposeChipModel.Normal(
                         id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        ComposeIconInfo.Drawable(
+                            drawable = context.drawable(R.drawable.ic_launcher_web),
+                        ),
                         "Open Key Mapper",
                     ),
                 ),

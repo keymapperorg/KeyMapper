@@ -47,7 +47,9 @@ data class TriggerErrorSnapshot(
                 return TriggerError.FLOATING_BUTTONS_NOT_PURCHASED
             }
         }.onFailure { error ->
-            if ((key is AssistantTriggerKey || key is FloatingButtonKey) && error == PurchasingError.PurchasingProcessError.NetworkError) {
+            if ((key is AssistantTriggerKey || key is FloatingButtonKey) &&
+                error == PurchasingError.PurchasingProcessError.NetworkError
+            ) {
                 return TriggerError.PURCHASE_VERIFICATION_FAILED
             }
         }

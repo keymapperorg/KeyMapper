@@ -36,9 +36,7 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(
-            accessibilityService: IAccessibilityService,
-        ): DetectConstraintsUseCaseImpl
+        fun create(accessibilityService: IAccessibilityService): DetectConstraintsUseCaseImpl
     }
 
     override fun getSnapshot(): ConstraintSnapshot = LazyConstraintSnapshot(
@@ -57,22 +55,30 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
 
     override fun onDependencyChanged(dependency: ConstraintDependency): Flow<ConstraintDependency> {
         return when (dependency) {
-            ConstraintDependency.FOREGROUND_APP -> accessibilityService.activeWindowPackage.map { dependency }
+            ConstraintDependency.FOREGROUND_APP -> accessibilityService.activeWindowPackage.map {
+                dependency
+            }
             ConstraintDependency.APP_PLAYING_MEDIA, ConstraintDependency.MEDIA_PLAYING ->
                 merge(
                     mediaAdapter.getActiveMediaSessionPackagesFlow(),
                     mediaAdapter.getActiveAudioVolumeStreamsFlow(),
                 ).map { dependency }
 
-            ConstraintDependency.CONNECTED_BT_DEVICES -> devicesAdapter.connectedBluetoothDevices.map { dependency }
+            ConstraintDependency.CONNECTED_BT_DEVICES -> devicesAdapter.connectedBluetoothDevices.map {
+                dependency
+            }
             ConstraintDependency.SCREEN_STATE -> displayAdapter.isScreenOn.map { dependency }
-            ConstraintDependency.DISPLAY_ORIENTATION -> displayAdapter.orientation.map { dependency }
+            ConstraintDependency.DISPLAY_ORIENTATION -> displayAdapter.orientation.map {
+                dependency
+            }
             ConstraintDependency.FLASHLIGHT_STATE -> merge(
                 cameraAdapter.isFlashlightOnFlow(CameraLens.FRONT),
                 cameraAdapter.isFlashlightOnFlow(CameraLens.BACK),
             ).map { dependency }
 
-            ConstraintDependency.WIFI_SSID -> networkAdapter.connectedWifiSSIDFlow.map { dependency }
+            ConstraintDependency.WIFI_SSID -> networkAdapter.connectedWifiSSIDFlow.map {
+                dependency
+            }
             ConstraintDependency.WIFI_STATE -> networkAdapter.isWifiEnabledFlow().map { dependency }
             ConstraintDependency.CHOSEN_IME -> inputMethodAdapter.chosenIme.map { dependency }
             ConstraintDependency.DEVICE_LOCKED_STATE ->

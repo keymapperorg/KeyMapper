@@ -90,10 +90,7 @@ private const val DEST_SELECT_APP = "select_app"
 private const val DEST_SELECT_ELEMENT = "select_element"
 
 @Composable
-fun InteractUiElementScreen(
-    modifier: Modifier = Modifier,
-    viewModel: InteractUiElementViewModel,
-) {
+fun InteractUiElementScreen(modifier: Modifier = Modifier, viewModel: InteractUiElementViewModel) {
     val navController = rememberNavController()
 
     val recordState by viewModel.recordState.collectAsStateWithLifecycle()
@@ -117,10 +114,18 @@ fun InteractUiElementScreen(
         modifier = modifier,
         navController = navController,
         startDestination = DEST_LANDING,
-        enterTransition = { slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left) },
-        exitTransition = { slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right) },
-        popEnterTransition = { slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right) },
-        popExitTransition = { slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right) },
+        enterTransition = {
+            slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left)
+        },
+        exitTransition = {
+            slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right)
+        },
+        popEnterTransition = {
+            slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right)
+        },
+        popExitTransition = {
+            slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right)
+        },
     ) {
         composable(DEST_LANDING) {
             LandingScreen(
@@ -247,7 +252,9 @@ private fun LandingScreen(
                     style = MaterialTheme.typography.titleLarge,
                 )
 
-                if (heightSizeClass == WindowHeightSizeClass.COMPACT || widthSizeClass >= WindowWidthSizeClass.EXPANDED) {
+                if (heightSizeClass == WindowHeightSizeClass.COMPACT ||
+                    widthSizeClass >= WindowWidthSizeClass.EXPANDED
+                ) {
                     Row {
                         Column(
                             modifier = Modifier
@@ -259,7 +266,9 @@ private fun LandingScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 16.dp),
-                                text = stringResource(R.string.action_interact_ui_element_description),
+                                text = stringResource(
+                                    R.string.action_interact_ui_element_description,
+                                ),
                                 style = MaterialTheme.typography.bodyMedium,
                             )
 
@@ -358,7 +367,9 @@ private fun DisabledExtendedFloatingActionButton(
             horizontalArrangement = Arrangement.Start,
         ) {
             val contentColor =
-                MaterialTheme.colorScheme.contentColorFor(FloatingActionButtonDefaults.containerColor)
+                MaterialTheme.colorScheme.contentColorFor(
+                    FloatingActionButtonDefaults.containerColor,
+                )
                     .copy(alpha = 0.5f)
 
             CompositionLocalProvider(LocalContentColor provides contentColor) {
@@ -468,14 +479,14 @@ private fun InteractionCountBox(
 }
 
 @Composable
-private fun RecordButton(
-    modifier: Modifier,
-    state: RecordUiElementState,
-    onClick: () -> Unit,
-) {
+private fun RecordButton(modifier: Modifier, state: RecordUiElementState, onClick: () -> Unit) {
     val text: String = when (state) {
-        is RecordUiElementState.Empty -> stringResource(R.string.action_interact_ui_element_start_recording)
-        is RecordUiElementState.Recorded -> stringResource(R.string.action_interact_ui_element_record_again)
+        is RecordUiElementState.Empty -> stringResource(
+            R.string.action_interact_ui_element_start_recording,
+        )
+        is RecordUiElementState.Recorded -> stringResource(
+            R.string.action_interact_ui_element_record_again,
+        )
         is RecordUiElementState.CountingDown -> stringResource(
             R.string.action_interact_ui_element_stop_recording,
             state.timeRemaining,
@@ -635,7 +646,9 @@ private fun SelectedElementSection(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = stringResource(R.string.action_interact_ui_element_interaction_type_dropdown_caption),
+            text = stringResource(
+                R.string.action_interact_ui_element_interaction_type_dropdown_caption,
+            ),
             style = MaterialTheme.typography.bodyMedium,
         )
 

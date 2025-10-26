@@ -19,6 +19,8 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
+import javax.inject.Inject
+import javax.inject.Named
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -32,8 +34,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Named
 
 @ViewModelScoped
 class FixKeyEventActionDelegateImpl @Inject constructor(
@@ -90,7 +90,8 @@ class FixKeyEventActionDelegateImpl @Inject constructor(
                 ) { proModeStatus, serviceState ->
                     FixKeyEventActionState.ProMode(
                         proModeStatus = proModeStatus,
-                        isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
+                        isAccessibilityServiceEnabled =
+                        serviceState == AccessibilityServiceState.ENABLED,
                     )
                 }
             } else {
@@ -108,7 +109,8 @@ class FixKeyEventActionDelegateImpl @Inject constructor(
                         isEnabled = isEnabled,
                         isChosen = isChosen,
                         enablingRequiresUserInput = enablingRequiresUserInput,
-                        isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
+                        isAccessibilityServiceEnabled =
+                        serviceState == AccessibilityServiceState.ENABLED,
                         proModeStatus = proModeStatus,
                         isAutoSwitchImeEnabled = changeImeOnInputFocus
                             ?: PreferenceDefaults.CHANGE_IME_ON_INPUT_FOCUS,

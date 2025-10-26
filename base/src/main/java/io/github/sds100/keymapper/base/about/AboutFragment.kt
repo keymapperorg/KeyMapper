@@ -45,7 +45,10 @@ class AboutFragment : Fragment() {
 
         ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
             val insets =
-                insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime())
+                insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or
+                        WindowInsetsCompat.Type.ime(),
+                )
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
             WindowInsetsCompat.CONSUMED
         }

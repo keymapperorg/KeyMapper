@@ -5,8 +5,8 @@ import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import io.github.sds100.keymapper.system.apps.AppShortcutInfo
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 
 class DisplayAppShortcutsUseCaseImpl @Inject constructor(
     private val appShortcutAdapter: AppShortcutAdapter,

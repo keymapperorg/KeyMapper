@@ -88,9 +88,7 @@ class AccessibilityNodeRecorder @AssistedInject constructor(
         }
     }
 
-    private fun getNodesRecursively(
-        node: AccessibilityNodeInfo,
-    ): Set<AccessibilityNodeEntity> {
+    private fun getNodesRecursively(node: AccessibilityNodeInfo): Set<AccessibilityNodeEntity> {
         val set = mutableSetOf<AccessibilityNodeEntity>()
 
         val entity = buildNodeEntity(node, interacted = false)

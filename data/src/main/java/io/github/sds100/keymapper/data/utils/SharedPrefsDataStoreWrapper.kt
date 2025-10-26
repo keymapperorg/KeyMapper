@@ -9,9 +9,9 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.preference.PreferenceDataStore
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import javax.inject.Inject
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import javax.inject.Inject
 
 class SharedPrefsDataStoreWrapper @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
@@ -26,9 +26,14 @@ class SharedPrefsDataStoreWrapper @Inject constructor(
     override fun getInt(key: String, defValue: Int) = getFromSharedPrefs(key, defValue)
     override fun putInt(key: String, value: Int) = setFromSharedPrefs(key, value)
 
-    override fun getStringSet(key: String, defValues: MutableSet<String>?) = getStringSetFromSharedPrefs(key, defValues ?: emptySet())
+    override fun getStringSet(key: String, defValues: MutableSet<String>?) =
+        getStringSetFromSharedPrefs(
+            key,
+            defValues ?: emptySet(),
+        )
 
-    override fun putStringSet(key: String, defValues: MutableSet<String>?) = setStringSetFromSharedPrefs(key, defValues)
+    override fun putStringSet(key: String, defValues: MutableSet<String>?) =
+        setStringSetFromSharedPrefs(key, defValues)
 
     private inline fun <reified T> getFromSharedPrefs(key: String, default: T): T = runBlocking {
         when (default) {
@@ -52,7 +57,9 @@ class SharedPrefsDataStoreWrapper @Inject constructor(
 
             else -> {
                 val type = T::class.java.name
-                throw IllegalArgumentException("Don't know how to set a value in shared preferences for this type $type")
+                throw IllegalArgumentException(
+                    "Don't know how to set a value in shared preferences for this type $type",
+                )
             }
         } as T
     }
@@ -69,14 +76,17 @@ class SharedPrefsDataStoreWrapper @Inject constructor(
             is Double -> preferenceRepository.set(doublePreferencesKey(key), value)
             else -> {
                 val type = value?.let { it::class.java.name }
-                throw IllegalArgumentException("Don't know how to set a value in shared preferences for this type $type")
+                throw IllegalArgumentException(
+                    "Don't know how to set a value in shared preferences for this type $type",
+                )
             }
         }
     }
 
-    private fun getStringSetFromSharedPrefs(key: String, default: Set<String>?): Set<String> = runBlocking {
-        preferenceRepository.get(stringSetPreferencesKey(key)).first() ?: emptySet()
-    }
+    private fun getStringSetFromSharedPrefs(key: String, default: Set<String>?): Set<String> =
+        runBlocking {
+            preferenceRepository.get(stringSetPreferencesKey(key)).first() ?: emptySet()
+        }
 
     private fun setStringSetFromSharedPrefs(key: String?, value: Set<String>?) {
         key ?: return

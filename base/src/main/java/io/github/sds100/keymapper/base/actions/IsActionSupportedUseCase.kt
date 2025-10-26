@@ -37,7 +37,10 @@ class IsActionSupportedUseCaseImpl(
             }
         }
 
-        if (id == ActionId.ENABLE_FLASHLIGHT || id == ActionId.DISABLE_FLASHLIGHT || id == ActionId.TOGGLE_FLASHLIGHT) {
+        if (id == ActionId.ENABLE_FLASHLIGHT ||
+            id == ActionId.DISABLE_FLASHLIGHT ||
+            id == ActionId.TOGGLE_FLASHLIGHT
+        ) {
             if (cameraAdapter.getFlashInfo(CameraLens.BACK) == null &&
                 cameraAdapter.getFlashInfo(CameraLens.FRONT) == null
             ) {

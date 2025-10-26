@@ -6,15 +6,15 @@ import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.data.repositories.LogRepository
 import io.github.sds100.keymapper.system.clipboard.ClipboardAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import javax.inject.Inject
 
 class DisplayLogUseCaseImpl @Inject constructor(
     private val repository: LogRepository,

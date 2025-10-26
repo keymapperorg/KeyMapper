@@ -51,10 +51,7 @@ class ChooseBluetoothDeviceFragment : SimpleRecyclerViewFragment<ListItem>() {
         }
     }
 
-    override fun populateList(
-        recyclerView: EpoxyRecyclerView,
-        listItems: List<ListItem>,
-    ) {
+    override fun populateList(recyclerView: EpoxyRecyclerView, listItems: List<ListItem>) {
         recyclerView.withModels {
             listItems.forEach { listItem ->
                 if (listItem is SimpleListItemOld) {

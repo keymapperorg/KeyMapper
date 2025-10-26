@@ -12,9 +12,9 @@ import io.github.sds100.keymapper.common.utils.DefaultDispatcherProvider
 import io.github.sds100.keymapper.common.utils.DispatcherProvider
 import io.github.sds100.keymapper.purchasing.PurchasingManagerImpl
 import io.github.sds100.keymapper.system.accessibility.MyAccessibilityService
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)

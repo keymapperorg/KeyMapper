@@ -112,7 +112,9 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel) 
                         showAutomaticBackupDialog = false
 
                         try {
-                            automaticBackupLocationChooser.launch(BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME)
+                            automaticBackupLocationChooser.launch(
+                                BackupUtils.DEFAULT_AUTOMATIC_BACKUP_NAME,
+                            )
                         } catch (e: ActivityNotFoundException) {
                             scope.launch {
                                 snackbarHostState.showSnackbar(activityNotFoundText)

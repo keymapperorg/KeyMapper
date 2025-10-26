@@ -57,7 +57,9 @@ data class BackupContent(
         const val NAME_FLOATING_BUTTONS = "floating_buttons"
         const val NAME_GROUPS = "groups"
 
-        @Deprecated("Device info used to be stored in a database table but they are now stored inside the triggers and actions.")
+        @Deprecated(
+            "Device info used to be stored in a database table but they are now stored inside the triggers and actions.",
+        )
         const val NAME_DEVICE_INFO = "device_info"
 
         @Deprecated("Fingerprint maps were merged into key maps in version 3.0.0")

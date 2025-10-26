@@ -14,12 +14,23 @@ import org.junit.Assert
 object JsonTestUtils {
     private const val NAME_SEPARATOR = '/'
 
-    fun compareBothWays(element: JsonElement, elementName: String, other: JsonElement, otherName: String) {
+    fun compareBothWays(
+        element: JsonElement,
+        elementName: String,
+        other: JsonElement,
+        otherName: String,
+    ) {
         compare("", element, elementName, other, otherName)
         compare("", other, elementName, element, elementName)
     }
 
-    private fun compare(parentNamePath: String = "", element: JsonElement, elementName: String, rootToCompare: JsonElement, rootName: String) {
+    private fun compare(
+        parentNamePath: String = "",
+        element: JsonElement,
+        elementName: String,
+        rootToCompare: JsonElement,
+        rootName: String,
+    ) {
         when (element) {
             is JsonObject -> {
                 element.forEach { name, jsonElement ->
@@ -48,15 +59,27 @@ object JsonTestUtils {
                     arrayToCompare = parentElement as JsonArray
                 }
 
-                Assert.assertNotNull("can't find array $elementName/$parentNamePath in $rootName", arrayToCompare)
+                Assert.assertNotNull(
+                    "can't find array $elementName/$parentNamePath in $rootName",
+                    arrayToCompare,
+                )
                 arrayToCompare ?: return
 
                 element.forEachIndexed { index, arrayElement ->
                     val validIndex = index <= arrayToCompare.toList().lastIndex
 
-                    assertThat("$rootName/${pathToArrayToCompare.last()} doesn't contain $arrayElement at $index index", validIndex)
+                    assertThat(
+                        "$rootName/${pathToArrayToCompare.last()} doesn't contain $arrayElement at $index index",
+                        validIndex,
+                    )
 
-                    compare("", arrayElement, "$elementName/${pathToArrayToCompare.last()}", arrayToCompare[index]!!, "$rootName/${pathToArrayToCompare.last()}")
+                    compare(
+                        "",
+                        arrayElement,
+                        "$elementName/${pathToArrayToCompare.last()}",
+                        arrayToCompare[index]!!,
+                        "$rootName/${pathToArrayToCompare.last()}",
+                    )
                 }
             }
 
@@ -65,17 +88,28 @@ object JsonTestUtils {
                 var parentElement: JsonElement = rootToCompare
 
                 if (names == listOf("")) {
-                    assertThat("$elementName/:$element doesn't match $rootName/:$parentElement", (parentElement), `is`(element))
+                    assertThat(
+                        "$elementName/:$element doesn't match $rootName/:$parentElement",
+                        (parentElement),
+                        `is`(element),
+                    )
                 } else {
                     names.forEachIndexed { index, name ->
                         if (parentElement is JsonObject) {
-                            assertThat("$elementName/$parentNamePath not found in $rootName", (parentElement as JsonObject).contains(name))
+                            assertThat(
+                                "$elementName/$parentNamePath not found in $rootName",
+                                (parentElement as JsonObject).contains(name),
+                            )
                         }
 
                         parentElement = parentElement[name]
 
                         if (index == names.lastIndex) {
-                            assertThat("$elementName/$parentNamePath:$element doesn't match $rootName/$parentNamePath:$parentElement", (parentElement as JsonPrimitive), `is`(element))
+                            assertThat(
+                                "$elementName/$parentNamePath:$element doesn't match $rootName/$parentNamePath:$parentElement",
+                                (parentElement as JsonPrimitive),
+                                `is`(element),
+                            )
                         }
                     }
                 }

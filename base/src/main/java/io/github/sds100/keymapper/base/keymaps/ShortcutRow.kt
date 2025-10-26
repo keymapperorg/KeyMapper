@@ -113,7 +113,9 @@ private fun PreviewVector() {
                 shortcuts = setOf(
                     ShortcutModel(
                         icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),
-                        text = stringResource(R.string.trigger_key_shortcut_add_fingerprint_gesture),
+                        text = stringResource(
+                            R.string.trigger_key_shortcut_add_fingerprint_gesture,
+                        ),
                         data = "",
                     ),
                 ),
@@ -134,7 +136,9 @@ private fun PreviewDrawable() {
                 shortcuts = setOf(
                     ShortcutModel(
                         icon = ComposeIconInfo.Drawable(icon),
-                        text = stringResource(R.string.trigger_key_shortcut_add_fingerprint_gesture),
+                        text = stringResource(
+                            R.string.trigger_key_shortcut_add_fingerprint_gesture,
+                        ),
                         data = "",
                     ),
                 ),

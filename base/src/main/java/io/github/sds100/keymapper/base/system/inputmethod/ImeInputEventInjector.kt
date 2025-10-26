@@ -6,9 +6,9 @@ import android.view.KeyEvent
 import io.github.sds100.keymapper.base.input.InjectKeyEventModel
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
+import timber.log.Timber
 
 /**
  * This class handles communicating with the Key Mapper input method services

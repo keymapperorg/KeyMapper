@@ -150,7 +150,13 @@ class KeyMapListViewModel(
         showAlertsUseCase.hideAlerts,
         showAlertsUseCase.isLoggingEnabled,
         showAlertsUseCase.showNotificationPermissionAlert,
-    ) { isBatteryOptimised, serviceState, isHidden, isLoggingEnabled, showNotificationPermissionAlert ->
+    ) {
+            isBatteryOptimised,
+            serviceState,
+            isHidden,
+            isLoggingEnabled,
+            showNotificationPermissionAlert,
+        ->
         if (isHidden) {
             return@combine emptyList()
         }
@@ -373,9 +379,7 @@ class KeyMapListViewModel(
         )
     }
 
-    private fun getKeyMapSelectedState(
-        keyMaps: List<KeyMap>,
-    ): SelectedKeyMapsEnabled? {
+    private fun getKeyMapSelectedState(keyMaps: List<KeyMap>): SelectedKeyMapsEnabled? {
         var selectedKeyMapsEnabled: SelectedKeyMapsEnabled? = null
 
         for (keyMap in keyMaps) {
@@ -434,7 +438,9 @@ class KeyMapListViewModel(
                     constraintErrorSnapshot,
                 ),
                 constraintMode = keyMapGroup.group.constraintState.mode,
-                parentConstraintCount = keyMapGroup.parents.sumOf { it.constraintState.constraints.size },
+                parentConstraintCount = keyMapGroup.parents.sumOf {
+                    it.constraintState.constraints.size
+                },
                 subGroups = subGroupListItems,
                 breadcrumbs = breadcrumbs,
                 isEditingGroupName = isEditingGroupName,

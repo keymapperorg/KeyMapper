@@ -39,8 +39,12 @@ object ConstraintUtils {
         ConstraintId.MEDIA_PLAYING -> ComposeIconInfo.Vector(Icons.Outlined.PlayArrow)
         ConstraintId.MEDIA_NOT_PLAYING -> ComposeIconInfo.Vector(Icons.Outlined.StopCircle)
 
-        ConstraintId.BT_DEVICE_CONNECTED -> ComposeIconInfo.Vector(Icons.Outlined.BluetoothConnected)
-        ConstraintId.BT_DEVICE_DISCONNECTED -> ComposeIconInfo.Vector(Icons.Outlined.BluetoothDisabled)
+        ConstraintId.BT_DEVICE_CONNECTED -> ComposeIconInfo.Vector(
+            Icons.Outlined.BluetoothConnected,
+        )
+        ConstraintId.BT_DEVICE_DISCONNECTED -> ComposeIconInfo.Vector(
+            Icons.Outlined.BluetoothDisabled,
+        )
 
         ConstraintId.ORIENTATION_0,
         ConstraintId.ORIENTATION_180,
@@ -50,8 +54,12 @@ object ConstraintUtils {
         ConstraintId.ORIENTATION_270,
             -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentLandscape)
 
-        ConstraintId.ORIENTATION_LANDSCAPE -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentLandscape)
-        ConstraintId.ORIENTATION_PORTRAIT -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
+        ConstraintId.ORIENTATION_LANDSCAPE -> ComposeIconInfo.Vector(
+            Icons.Outlined.StayCurrentLandscape,
+        )
+        ConstraintId.ORIENTATION_PORTRAIT -> ComposeIconInfo.Vector(
+            Icons.Outlined.StayCurrentPortrait,
+        )
 
         ConstraintId.SCREEN_OFF -> ComposeIconInfo.Vector(Icons.Outlined.MobileOff)
         ConstraintId.SCREEN_ON -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
@@ -60,7 +68,9 @@ object ConstraintUtils {
         ConstraintId.FLASHLIGHT_ON -> ComposeIconInfo.Vector(Icons.Outlined.FlashlightOn)
 
         ConstraintId.WIFI_CONNECTED -> ComposeIconInfo.Vector(Icons.Outlined.Wifi)
-        ConstraintId.WIFI_DISCONNECTED -> ComposeIconInfo.Vector(Icons.Outlined.SignalWifiStatusbarNull)
+        ConstraintId.WIFI_DISCONNECTED -> ComposeIconInfo.Vector(
+            Icons.Outlined.SignalWifiStatusbarNull,
+        )
         ConstraintId.WIFI_OFF -> ComposeIconInfo.Vector(Icons.Outlined.WifiOff)
         ConstraintId.WIFI_ON -> ComposeIconInfo.Vector(Icons.Outlined.Wifi)
 
@@ -77,11 +87,13 @@ object ConstraintUtils {
 
         ConstraintId.CHARGING -> ComposeIconInfo.Vector(Icons.Outlined.BatteryChargingFull)
         ConstraintId.DISCHARGING -> ComposeIconInfo.Vector(Icons.Outlined.Battery2Bar)
-        
+
         ConstraintId.HINGE_CLOSED -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
         ConstraintId.HINGE_OPEN -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentLandscape)
-        
-        ConstraintId.LOCK_SCREEN_SHOWING -> ComposeIconInfo.Vector(Icons.Outlined.ScreenLockPortrait)
+
+        ConstraintId.LOCK_SCREEN_SHOWING -> ComposeIconInfo.Vector(
+            Icons.Outlined.ScreenLockPortrait,
+        )
         ConstraintId.LOCK_SCREEN_NOT_SHOWING -> ComposeIconInfo.Vector(Icons.Outlined.LockOpen)
         ConstraintId.TIME -> ComposeIconInfo.Vector(Icons.Outlined.Timer)
     }

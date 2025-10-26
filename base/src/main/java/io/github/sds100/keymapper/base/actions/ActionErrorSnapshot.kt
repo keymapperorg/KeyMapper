@@ -98,7 +98,11 @@ class LazyActionErrorSnapshot(
             var error = getError(action)
 
             val isImeNotChosenError =
-                error == KMError.NoCompatibleImeChosen || (error is KMError.KeyEventActionError && error.baseError == KMError.NoCompatibleImeChosen)
+                error == KMError.NoCompatibleImeChosen ||
+                    (
+                        error is KMError.KeyEventActionError &&
+                            error.baseError == KMError.NoCompatibleImeChosen
+                        )
 
             if (isImeNotChosenError && currentImeFromActions != null) {
                 val isCurrentImeCompatible =
@@ -125,7 +129,10 @@ class LazyActionErrorSnapshot(
             return isSupportedError
         }
 
-        if (buildConfigProvider.sdkInt >= Constants.SYSTEM_BRIDGE_MIN_API && action is ActionData.InputKeyEvent && keyEventActionsUseSystemBridge) {
+        if (buildConfigProvider.sdkInt >= Constants.SYSTEM_BRIDGE_MIN_API &&
+            action is ActionData.InputKeyEvent &&
+            keyEventActionsUseSystemBridge
+        ) {
             if (!isSystemBridgeConnected) {
                 return KMError.KeyEventActionError(SystemBridgeError.Disconnected)
             }

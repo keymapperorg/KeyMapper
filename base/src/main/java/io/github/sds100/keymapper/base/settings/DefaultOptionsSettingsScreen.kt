@@ -118,7 +118,8 @@ private fun Content(
             value = state.longPressDelay.toFloat(),
             valueText = { "${it.toInt()} ms" },
             onValueChange = { callback.onLongPressDelayChanged(it.toInt()) },
-            valueRange = SliderMinimums.TRIGGER_LONG_PRESS_DELAY.toFloat()..SliderMaximums.TRIGGER_LONG_PRESS_DELAY.toFloat(),
+            valueRange =
+            SliderMinimums.TRIGGER_LONG_PRESS_DELAY.toFloat()..SliderMaximums.TRIGGER_LONG_PRESS_DELAY.toFloat(),
             stepSize = SliderStepSizes.TRIGGER_LONG_PRESS_DELAY,
         )
         Spacer(Modifier.height(8.dp))
@@ -133,7 +134,8 @@ private fun Content(
             value = state.doublePressDelay.toFloat(),
             valueText = { "${it.toInt()} ms" },
             onValueChange = { callback.onDoublePressDelayChanged(it.toInt()) },
-            valueRange = SliderMinimums.TRIGGER_DOUBLE_PRESS_DELAY.toFloat()..SliderMaximums.TRIGGER_DOUBLE_PRESS_DELAY.toFloat(),
+            valueRange =
+            SliderMinimums.TRIGGER_DOUBLE_PRESS_DELAY.toFloat()..SliderMaximums.TRIGGER_DOUBLE_PRESS_DELAY.toFloat(),
             stepSize = SliderStepSizes.TRIGGER_DOUBLE_PRESS_DELAY,
         )
         Spacer(Modifier.height(8.dp))
@@ -148,7 +150,8 @@ private fun Content(
             value = state.vibrateDuration.toFloat(),
             valueText = { "${it.toInt()} ms" },
             onValueChange = { callback.onVibrateDurationChanged(it.toInt()) },
-            valueRange = SliderMinimums.VIBRATION_DURATION.toFloat()..SliderMaximums.VIBRATION_DURATION.toFloat(),
+            valueRange =
+            SliderMinimums.VIBRATION_DURATION.toFloat()..SliderMaximums.VIBRATION_DURATION.toFloat(),
             stepSize = SliderStepSizes.VIBRATION_DURATION,
         )
         Spacer(Modifier.height(8.dp))
@@ -163,7 +166,8 @@ private fun Content(
             value = state.repeatDelay.toFloat(),
             valueText = { "${it.toInt()} ms" },
             onValueChange = { callback.onRepeatDelayChanged(it.toInt()) },
-            valueRange = SliderMinimums.ACTION_REPEAT_DELAY.toFloat()..SliderMaximums.ACTION_REPEAT_DELAY.toFloat(),
+            valueRange =
+            SliderMinimums.ACTION_REPEAT_DELAY.toFloat()..SliderMaximums.ACTION_REPEAT_DELAY.toFloat(),
             stepSize = SliderStepSizes.ACTION_REPEAT_DELAY,
         )
         Spacer(Modifier.height(8.dp))
@@ -178,7 +182,8 @@ private fun Content(
             value = state.repeatRate.toFloat(),
             valueText = { "${it.toInt()} ms" },
             onValueChange = { callback.onRepeatRateChanged(it.toInt()) },
-            valueRange = SliderMinimums.ACTION_REPEAT_RATE.toFloat()..SliderMaximums.ACTION_REPEAT_RATE.toFloat(),
+            valueRange =
+            SliderMinimums.ACTION_REPEAT_RATE.toFloat()..SliderMaximums.ACTION_REPEAT_RATE.toFloat(),
             stepSize = SliderStepSizes.ACTION_REPEAT_RATE,
         )
         Spacer(Modifier.height(8.dp))
@@ -193,7 +198,8 @@ private fun Content(
             value = state.sequenceTriggerTimeout.toFloat(),
             valueText = { "${it.toInt()} ms" },
             onValueChange = { callback.onSequenceTriggerTimeoutChanged(it.toInt()) },
-            valueRange = SliderMinimums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT.toFloat()..SliderMaximums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT.toFloat(),
+            valueRange =
+            SliderMinimums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT.toFloat()..SliderMaximums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT.toFloat(),
             stepSize = SliderStepSizes.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT,
         )
         Spacer(Modifier.height(8.dp))

@@ -12,6 +12,8 @@ import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showDialog
+import javax.inject.Inject
+import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,8 +24,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import kotlin.math.roundToInt
 
 enum class ScreenshotTouchType {
     START,
@@ -89,7 +89,9 @@ class SwipePickDisplayCoordinateViewModel @Inject constructor(
         }
 
         if (count <= 0) {
-            return@map resourceProvider.getString(R.string.error_swipe_screen_fingercount_must_be_more_than_zero)
+            return@map resourceProvider.getString(
+                R.string.error_swipe_screen_fingercount_must_be_more_than_zero,
+            )
         }
 
         var maxFingerCount = 10
@@ -120,7 +122,9 @@ class SwipePickDisplayCoordinateViewModel @Inject constructor(
         }
 
         if (d <= 0) {
-            return@map resourceProvider.getString(R.string.error_swipe_screen_duration_must_be_more_than_zero)
+            return@map resourceProvider.getString(
+                R.string.error_swipe_screen_duration_must_be_more_than_zero,
+            )
         }
 
         null

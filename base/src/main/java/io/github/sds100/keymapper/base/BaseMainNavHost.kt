@@ -50,10 +50,18 @@ fun BaseMainNavHost(
         modifier = modifier,
         navController = navController,
         startDestination = NavDestination.Home,
-        enterTransition = { slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left) },
-        exitTransition = { slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right) },
-        popEnterTransition = { slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right) },
-        popExitTransition = { slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right) },
+        enterTransition = {
+            slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left)
+        },
+        exitTransition = {
+            slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right)
+        },
+        popEnterTransition = {
+            slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right)
+        },
+        popExitTransition = {
+            slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right)
+        },
     ) {
         composable<NavDestination.InteractUiElement> { backStackEntry ->
             val viewModel: InteractUiElementViewModel = hiltViewModel()
@@ -132,7 +140,11 @@ fun BaseMainNavHost(
                     .fillMaxSize()
                     .windowInsetsPadding(
                         WindowInsets.systemBars.only(sides = WindowInsetsSides.Horizontal)
-                            .add(WindowInsets.displayCutout.only(sides = WindowInsetsSides.Horizontal)),
+                            .add(
+                                WindowInsets.displayCutout.only(
+                                    sides = WindowInsetsSides.Horizontal,
+                                ),
+                            ),
                     ),
                 viewModel = hiltViewModel(),
             )

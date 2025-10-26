@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.data.migration.Migration10To11
 import io.github.sds100.keymapper.data.migration.Migration11To12
 import io.github.sds100.keymapper.data.migration.Migration9To10
 import io.github.sds100.keymapper.data.migration.MigrationUtils
+import java.io.InputStream
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -19,7 +20,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.io.InputStream
 
 @ExperimentalCoroutinesApi
 class KeyMapJsonMigrationTest {

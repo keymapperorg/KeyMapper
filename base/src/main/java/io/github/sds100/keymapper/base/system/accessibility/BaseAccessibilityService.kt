@@ -34,11 +34,11 @@ import io.github.sds100.keymapper.common.utils.PinchScreenType
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import timber.log.Timber
-import javax.inject.Inject
 
 @AndroidEntryPoint
 abstract class BaseAccessibilityService :
@@ -235,7 +235,9 @@ abstract class BaseAccessibilityService :
         val memoryInfo = ActivityManager.MemoryInfo()
         getSystemService<ActivityManager>()?.getMemoryInfo(memoryInfo)
 
-        Timber.i("Accessibility service: onLowMemory, total: ${memoryInfo.totalMem}, available: ${memoryInfo.availMem}, is low memory: ${memoryInfo.lowMemory}, threshold: ${memoryInfo.threshold}")
+        Timber.i(
+            "Accessibility service: onLowMemory, total: ${memoryInfo.totalMem}, available: ${memoryInfo.availMem}, is low memory: ${memoryInfo.lowMemory}, threshold: ${memoryInfo.threshold}",
+        )
 
         super.onTrimMemory(level)
     }

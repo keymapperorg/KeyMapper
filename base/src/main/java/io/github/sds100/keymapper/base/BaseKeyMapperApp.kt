@@ -35,6 +35,8 @@ import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.root.SuAdapterImpl
+import java.util.Calendar
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
@@ -44,8 +46,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
-import java.util.Calendar
-import javax.inject.Inject
 
 @SuppressLint("LogNotTimber")
 abstract class BaseKeyMapperApp : MultiDexApplication() {
@@ -202,7 +202,9 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
                 // when the user returns to the app let everything know that the permissions could have changed
                 notificationController.onOpenApp()
 
-                if (BuildConfig.DEBUG && permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
+                if (BuildConfig.DEBUG &&
+                    permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)
+                ) {
                     accessibilityServiceAdapter.start()
                 }
             }

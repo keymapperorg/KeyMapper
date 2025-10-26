@@ -57,7 +57,10 @@ class ParallelTriggerActionPerformer(
             for ((actionIndex, action) in actionList.withIndex()) {
                 var performUpAction = false
 
-                if (action.holdDown && action.repeat && action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN) {
+                if (action.holdDown &&
+                    action.repeat &&
+                    action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN
+                ) {
                     if (actionIsHeldDown[actionIndex]) {
                         actionIsHeldDown[actionIndex] = false
                         performUpAction = true
@@ -105,14 +108,18 @@ class ParallelTriggerActionPerformer(
             }
 
             // don't start repeating if it is already repeating
-            if (action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN && repeatJobs[actionIndex] != null) {
+            if (action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN &&
+                repeatJobs[actionIndex] != null
+            ) {
                 repeatJobs[actionIndex]?.cancel()
                 repeatJobs[actionIndex] = null
 
                 continue
             }
 
-            if (action.data is ActionData.InputKeyEvent && KeyEventUtils.isModifierKey(action.data.keyCode)) {
+            if (action.data is ActionData.InputKeyEvent &&
+                KeyEventUtils.isModifierKey(action.data.keyCode)
+            ) {
                 continue
             }
 

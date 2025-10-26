@@ -58,11 +58,7 @@ fun CompactChip(
 }
 
 @Composable
-fun ErrorCompactChip(
-    onClick: () -> Unit,
-    text: String,
-    enabled: Boolean,
-) {
+fun ErrorCompactChip(onClick: () -> Unit, text: String, enabled: Boolean) {
     CompactChip(
         text = text,
         icon = {

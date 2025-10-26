@@ -24,13 +24,13 @@ import io.github.sds100.keymapper.data.repositories.FloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.KeyMapRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import javax.inject.Inject
 
 @ViewModelScoped
 class ConfigTriggerUseCaseImpl @Inject constructor(
@@ -118,19 +118,16 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
         )
     }
 
-    override suspend fun addEvdevTriggerKey(
-        keyCode: Int,
-        scanCode: Int,
-        device: EvdevDeviceInfo,
-    ) = updateTrigger { trigger ->
-        delegate.addEvdevTriggerKey(
-            trigger,
-            keyCode,
-            scanCode,
-            device,
-            otherTriggerKeys = otherTriggerKeys,
-        )
-    }
+    override suspend fun addEvdevTriggerKey(keyCode: Int, scanCode: Int, device: EvdevDeviceInfo) =
+        updateTrigger { trigger ->
+            delegate.addEvdevTriggerKey(
+                trigger,
+                keyCode,
+                scanCode,
+                device,
+                otherTriggerKeys = otherTriggerKeys,
+            )
+        }
 
     override fun removeTriggerKey(uid: String) = updateTrigger { trigger ->
         delegate.removeTriggerKey(trigger, uid)
@@ -308,11 +305,7 @@ interface ConfigTriggerUseCase : GetDefaultKeyMapOptionsUseCase {
     suspend fun addFloatingButtonTriggerKey(buttonUid: String)
     fun addAssistantTriggerKey(type: AssistantTriggerType)
     fun addFingerprintGesture(type: FingerprintGestureType)
-    suspend fun addEvdevTriggerKey(
-        keyCode: Int,
-        scanCode: Int,
-        device: EvdevDeviceInfo,
-    )
+    suspend fun addEvdevTriggerKey(keyCode: Int, scanCode: Int, device: EvdevDeviceInfo)
 
     fun removeTriggerKey(uid: String)
     fun getTriggerKey(uid: String): TriggerKey?

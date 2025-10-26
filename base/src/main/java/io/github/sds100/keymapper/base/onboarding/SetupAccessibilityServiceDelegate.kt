@@ -8,9 +8,9 @@ import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.AccessibilityServiceError
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.Flow
 
 sealed class AccessibilityServiceDialog {
     data class EnableService(val isRestrictedSetting: Boolean) : AccessibilityServiceDialog()

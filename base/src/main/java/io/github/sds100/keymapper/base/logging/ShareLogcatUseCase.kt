@@ -13,9 +13,9 @@ import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
 import io.github.sds100.keymapper.system.files.IFile
 import io.github.sds100.keymapper.system.shell.ShellAdapter
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 @ViewModelScoped
 class ShareLogcatUseCaseImpl @Inject constructor(

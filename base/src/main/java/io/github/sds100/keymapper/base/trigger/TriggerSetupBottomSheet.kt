@@ -70,9 +70,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HandleTriggerSetupBottomSheet(
-    delegate: TriggerSetupDelegate,
-) {
+fun HandleTriggerSetupBottomSheet(delegate: TriggerSetupDelegate) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val triggerSetupState: TriggerSetupState? by delegate.triggerSetupState.collectAsStateWithLifecycle()
 
@@ -203,8 +201,10 @@ private fun GamepadTriggerSetupBottomSheet(
         HeaderText(text = stringResource(R.string.trigger_setup_options_title))
 
         val buttonStates = listOf(
-            TriggerSetupState.Gamepad.Type.DPAD to stringResource(R.string.trigger_setup_gamepad_type_dpad),
-            TriggerSetupState.Gamepad.Type.SIMPLE_BUTTONS to stringResource(R.string.trigger_setup_gamepad_type_simple_buttons),
+            TriggerSetupState.Gamepad.Type.DPAD to
+                stringResource(R.string.trigger_setup_gamepad_type_dpad),
+            TriggerSetupState.Gamepad.Type.SIMPLE_BUTTONS to
+                stringResource(R.string.trigger_setup_gamepad_type_simple_buttons),
         )
 
         val selectedState = when (state) {
@@ -778,11 +778,7 @@ private fun FingerprintGestureSetupBottomSheet(
 }
 
 @Composable
-fun RemapStatusRow(
-    modifier: Modifier = Modifier,
-    color: Color,
-    text: String,
-) {
+fun RemapStatusRow(modifier: Modifier = Modifier, color: Color, text: String) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,

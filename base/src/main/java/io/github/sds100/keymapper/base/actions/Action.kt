@@ -9,8 +9,8 @@ import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData
-import kotlinx.serialization.Serializable
 import java.util.UUID
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class Action(
@@ -117,7 +117,9 @@ object ActionEntityMapper {
                 add(EntityExtra(ActionEntity.EXTRA_MULTIPLIER, action.multiplier.toString()))
             }
 
-            if (keyMap.isHoldingDownActionBeforeRepeatingAllowed(action) && action.holdDownDuration != null) {
+            if (keyMap.isHoldingDownActionBeforeRepeatingAllowed(action) &&
+                action.holdDownDuration != null
+            ) {
                 add(
                     EntityExtra(
                         ActionEntity.EXTRA_HOLD_DOWN_DURATION,
@@ -138,7 +140,8 @@ object ActionEntityMapper {
                 add(EntityExtra(ActionEntity.EXTRA_REPEAT_LIMIT, action.repeatLimit.toString()))
             }
 
-            if (keyMap.isChangingRepeatModeAllowed(action) && action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN
+            if (keyMap.isChangingRepeatModeAllowed(action) &&
+                action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN
             ) {
                 add(
                     EntityExtra(
@@ -148,7 +151,9 @@ object ActionEntityMapper {
                 )
             }
 
-            if (keyMap.isChangingRepeatModeAllowed(action) && action.repeatMode == RepeatMode.LIMIT_REACHED) {
+            if (keyMap.isChangingRepeatModeAllowed(action) &&
+                action.repeatMode == RepeatMode.LIMIT_REACHED
+            ) {
                 add(
                     EntityExtra(
                         ActionEntity.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR,

@@ -71,7 +71,9 @@ abstract class BaseViewModelHiltModule {
 
     @Binds
     @ViewModelScoped
-    abstract fun bindDisplayConstraintUseCase(impl: DisplayKeyMapUseCaseImpl): DisplayConstraintUseCase
+    abstract fun bindDisplayConstraintUseCase(
+        impl: DisplayKeyMapUseCaseImpl,
+    ): DisplayConstraintUseCase
 
     @Binds
     @ViewModelScoped
@@ -79,11 +81,15 @@ abstract class BaseViewModelHiltModule {
 
     @Binds
     @ViewModelScoped
-    abstract fun bindBackupRestoreMappingsUseCase(impl: BackupRestoreMappingsUseCaseImpl): BackupRestoreMappingsUseCase
+    abstract fun bindBackupRestoreMappingsUseCase(
+        impl: BackupRestoreMappingsUseCaseImpl,
+    ): BackupRestoreMappingsUseCase
 
     @Binds
     @ViewModelScoped
-    abstract fun bindShowHomeScreenAlertsUseCase(impl: ShowHomeScreenAlertsUseCaseImpl): ShowHomeScreenAlertsUseCase
+    abstract fun bindShowHomeScreenAlertsUseCase(
+        impl: ShowHomeScreenAlertsUseCaseImpl,
+    ): ShowHomeScreenAlertsUseCase
 
     @Binds
     @ViewModelScoped
@@ -99,11 +105,15 @@ abstract class BaseViewModelHiltModule {
 
     @Binds
     @ViewModelScoped
-    abstract fun bindChooseBluetoothDeviceUseCase(impl: ChooseBluetoothDeviceUseCaseImpl): ChooseBluetoothDeviceUseCase
+    abstract fun bindChooseBluetoothDeviceUseCase(
+        impl: ChooseBluetoothDeviceUseCaseImpl,
+    ): ChooseBluetoothDeviceUseCase
 
     @Binds
     @ViewModelScoped
-    abstract fun bindChooseSoundFileUseCase(impl: ChooseSoundFileUseCaseImpl): ChooseSoundFileUseCase
+    abstract fun bindChooseSoundFileUseCase(
+        impl: ChooseSoundFileUseCaseImpl,
+    ): ChooseSoundFileUseCase
 
     @Binds
     @ViewModelScoped
@@ -111,7 +121,9 @@ abstract class BaseViewModelHiltModule {
 
     @Binds
     @ViewModelScoped
-    abstract fun bindDisplayAppShortcutsUseCase(impl: DisplayAppShortcutsUseCaseImpl): DisplayAppShortcutsUseCase
+    abstract fun bindDisplayAppShortcutsUseCase(
+        impl: DisplayAppShortcutsUseCaseImpl,
+    ): DisplayAppShortcutsUseCase
 
     @Binds
     @ViewModelScoped
@@ -123,7 +135,9 @@ abstract class BaseViewModelHiltModule {
 
     @Binds
     @ViewModelScoped
-    abstract fun bindCreateKeyMapShortcutUseCase(impl: CreateKeyMapShortcutUseCaseImpl): CreateKeyMapShortcutUseCase
+    abstract fun bindCreateKeyMapShortcutUseCase(
+        impl: CreateKeyMapShortcutUseCaseImpl,
+    ): CreateKeyMapShortcutUseCase
 
     @Binds
     @ViewModelScoped
@@ -131,15 +145,21 @@ abstract class BaseViewModelHiltModule {
 
     @Binds
     @ViewModelScoped
-    abstract fun bindCreateConstraintUseCase(impl: CreateConstraintUseCaseImpl): CreateConstraintUseCase
+    abstract fun bindCreateConstraintUseCase(
+        impl: CreateConstraintUseCaseImpl,
+    ): CreateConstraintUseCase
 
     @Binds
     @ViewModelScoped
-    abstract fun bindProModeSetupUseCase(impl: SystemBridgeSetupUseCaseImpl): SystemBridgeSetupUseCase
+    abstract fun bindProModeSetupUseCase(
+        impl: SystemBridgeSetupUseCaseImpl,
+    ): SystemBridgeSetupUseCase
 
     @Binds
     @ViewModelScoped
-    abstract fun bindConfigConstraintsUseCase(impl: ConfigConstraintsUseCaseImpl): ConfigConstraintsUseCase
+    abstract fun bindConfigConstraintsUseCase(
+        impl: ConfigConstraintsUseCaseImpl,
+    ): ConfigConstraintsUseCase
 
     @Binds
     @ViewModelScoped
@@ -155,7 +175,9 @@ abstract class BaseViewModelHiltModule {
 
     @Binds
     @ViewModelScoped
-    abstract fun bindSetupInputMethodUseCase(impl: SetupInputMethodUseCaseImpl): SetupInputMethodUseCase
+    abstract fun bindSetupInputMethodUseCase(
+        impl: SetupInputMethodUseCaseImpl,
+    ): SetupInputMethodUseCase
 
     @Binds
     @ViewModelScoped
@@ -167,5 +189,7 @@ abstract class BaseViewModelHiltModule {
 
     @Binds
     @ViewModelScoped
-    abstract fun bindFixKeyEventActionDelegate(impl: FixKeyEventActionDelegateImpl): FixKeyEventActionDelegate
+    abstract fun bindFixKeyEventActionDelegate(
+        impl: FixKeyEventActionDelegateImpl,
+    ): FixKeyEventActionDelegate
 }

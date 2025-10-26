@@ -4,14 +4,12 @@ import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.IFile
-import kotlinx.coroutines.runBlocking
-import org.junit.rules.TemporaryFolder
 import java.io.File
 import java.io.InputStream
+import kotlinx.coroutines.runBlocking
+import org.junit.rules.TemporaryFolder
 
-class FakeFileAdapter(
-    private val tempFolder: TemporaryFolder,
-) : FileAdapter {
+class FakeFileAdapter(private val tempFolder: TemporaryFolder) : FileAdapter {
 
     val privateFolder = tempFolder.newFolder("private")
 

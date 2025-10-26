@@ -126,7 +126,8 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
     override val requestFingerprintGestureDetection: Flow<Boolean> =
         allKeyMapList.map { models ->
             models.any { model ->
-                model.keyMap.isEnabled && model.keyMap.trigger.keys.any { it is FingerprintTriggerKey }
+                model.keyMap.isEnabled &&
+                    model.keyMap.trigger.keys.any { it is FingerprintTriggerKey }
             }
         }
 
@@ -192,18 +193,30 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
         )
 
         if (inputEventHub.isSystemBridgeConnected()) {
-            Timber.d("Imitate button press ${KeyEvent.keyCodeToString(keyCode)} with system bridge, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode")
+            Timber.d(
+                "Imitate button press ${KeyEvent.keyCodeToString(
+                    keyCode,
+                )} with system bridge, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode",
+            )
             inputEventHub.injectKeyEventAsync(model)
         } else {
-            Timber.d("Imitate button press ${KeyEvent.keyCodeToString(keyCode)}, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode")
+            Timber.d(
+                "Imitate button press ${KeyEvent.keyCodeToString(
+                    keyCode,
+                )}, key code: $keyCode, device id: $deviceId, meta state: $metaState, scan code: $scanCode",
+            )
 
             when (keyCode) {
                 KeyEvent.KEYCODE_VOLUME_UP -> volumeAdapter.raiseVolume(showVolumeUi = true)
 
                 KeyEvent.KEYCODE_VOLUME_DOWN -> volumeAdapter.lowerVolume(showVolumeUi = true)
 
-                KeyEvent.KEYCODE_BACK -> accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
-                KeyEvent.KEYCODE_HOME -> accessibilityService.doGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
+                KeyEvent.KEYCODE_BACK -> accessibilityService.doGlobalAction(
+                    AccessibilityService.GLOBAL_ACTION_BACK,
+                )
+                KeyEvent.KEYCODE_HOME -> accessibilityService.doGlobalAction(
+                    AccessibilityService.GLOBAL_ACTION_HOME,
+                )
                 KeyEvent.KEYCODE_APP_SWITCH -> accessibilityService.doGlobalAction(
                     AccessibilityService.GLOBAL_ACTION_POWER_DIALOG,
                 )
@@ -217,10 +230,14 @@ class DetectKeyMapsUseCaseImpl @AssistedInject constructor(
 
     override fun imitateEvdevEvent(devicePath: String, type: Int, code: Int, value: Int) {
         if (inputEventHub.isSystemBridgeConnected()) {
-            Timber.d("Imitate evdev event, device path: $devicePath, type: $type, code: $code, value: $value")
+            Timber.d(
+                "Imitate evdev event, device path: $devicePath, type: $type, code: $code, value: $value",
+            )
             inputEventHub.injectEvdevEvent(devicePath, type, code, value)
         } else {
-            Timber.w("Cannot imitate evdev event without system bridge connected. Device path: $devicePath, type: $type, code: $code, value: $value")
+            Timber.w(
+                "Cannot imitate evdev event without system bridge connected. Device path: $devicePath, type: $type, code: $code, value: $value",
+            )
         }
     }
 }
@@ -251,10 +268,5 @@ interface DetectKeyMapsUseCase {
         source: Int = InputDevice.SOURCE_UNKNOWN,
     )
 
-    fun imitateEvdevEvent(
-        devicePath: String,
-        type: Int,
-        code: Int,
-        value: Int,
-    )
+    fun imitateEvdevEvent(devicePath: String, type: Int, code: Int, value: Int)
 }

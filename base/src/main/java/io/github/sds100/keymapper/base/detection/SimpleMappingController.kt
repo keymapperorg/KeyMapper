@@ -81,7 +81,9 @@ abstract class SimpleMappingController(
 
                     for (job in this@SimpleMappingController.repeatJobs[keyMap.uid]
                         ?: emptyList()) {
-                        if (job.actionUid == action.uid && action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN) {
+                        if (job.actionUid == action.uid &&
+                            action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN
+                        ) {
                             alreadyRepeating = true
                             job.cancel()
                             break

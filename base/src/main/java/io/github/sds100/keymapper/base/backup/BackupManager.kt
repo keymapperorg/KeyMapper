@@ -59,6 +59,12 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.data.repositories.RepositoryUtils
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.IFile
+import java.io.IOException
+import java.io.InputStream
+import java.util.LinkedList
+import java.util.UUID
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -70,12 +76,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.io.IOException
-import java.io.InputStream
-import java.util.LinkedList
-import java.util.UUID
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class BackupManagerImpl @Inject constructor(
@@ -210,7 +210,9 @@ class BackupManagerImpl @Inject constructor(
                 val backupDbVersion = rootElement.get(BackupContent.NAME_DB_VERSION).nullInt ?: 9
                 val backupAppVersion = rootElement.get(BackupContent.NAME_APP_VERSION).nullInt
 
-                if (backupAppVersion != null && backupAppVersion > buildConfigProvider.versionCode) {
+                if (backupAppVersion != null &&
+                    backupAppVersion > buildConfigProvider.versionCode
+                ) {
                     return@withContext KMError.BackupVersionTooNew
                 }
 
@@ -218,7 +220,9 @@ class BackupManagerImpl @Inject constructor(
                     return@withContext KMError.BackupVersionTooNew
                 }
 
-                val keyMapListJsonArray by rootElement.byNullableArray(BackupContent.NAME_KEYMAP_LIST)
+                val keyMapListJsonArray by rootElement.byNullableArray(
+                    BackupContent.NAME_KEYMAP_LIST,
+                )
 
                 val deviceInfoList by rootElement.byNullableArray(BackupContent.NAME_DEVICE_INFO)
 
@@ -281,8 +285,12 @@ class BackupManagerImpl @Inject constructor(
                     JsonMigration(12, 13) { json -> json },
                 )
 
-                if (rootElement.contains(BackupContent.NAME_FINGERPRINT_MAP_LIST) && backupDbVersion >= 12) {
-                    rootElement.get(BackupContent.NAME_FINGERPRINT_MAP_LIST).asJsonArray.forEach { fingerprintMap ->
+                if (rootElement.contains(BackupContent.NAME_FINGERPRINT_MAP_LIST) &&
+                    backupDbVersion >= 12
+                ) {
+                    rootElement.get(
+                        BackupContent.NAME_FINGERPRINT_MAP_LIST,
+                    ).asJsonArray.forEach { fingerprintMap ->
                         val migratedFingerprintMapJson = MigrationUtils.migrate(
                             newFingerprintMapMigrations,
                             inputVersion = backupDbVersion,
@@ -351,18 +359,34 @@ class BackupManagerImpl @Inject constructor(
                     FingerprintToKeyMapMigration.migrate(entity)?.let { migratedKeyMapList.add(it) }
                 }
 
-                val defaultLongPressDelay by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_LONG_PRESS_DELAY)
-                val defaultDoublePressDelay by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_DOUBLE_PRESS_DELAY)
-                val defaultVibrationDuration by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_VIBRATION_DURATION)
-                val defaultRepeatDelay by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_REPEAT_DELAY)
-                val defaultRepeatRate by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_REPEAT_RATE)
-                val defaultSequenceTriggerTimeout by rootElement.byNullableInt(BackupContent.NAME_DEFAULT_SEQUENCE_TRIGGER_TIMEOUT)
+                val defaultLongPressDelay by rootElement.byNullableInt(
+                    BackupContent.NAME_DEFAULT_LONG_PRESS_DELAY,
+                )
+                val defaultDoublePressDelay by rootElement.byNullableInt(
+                    BackupContent.NAME_DEFAULT_DOUBLE_PRESS_DELAY,
+                )
+                val defaultVibrationDuration by rootElement.byNullableInt(
+                    BackupContent.NAME_DEFAULT_VIBRATION_DURATION,
+                )
+                val defaultRepeatDelay by rootElement.byNullableInt(
+                    BackupContent.NAME_DEFAULT_REPEAT_DELAY,
+                )
+                val defaultRepeatRate by rootElement.byNullableInt(
+                    BackupContent.NAME_DEFAULT_REPEAT_RATE,
+                )
+                val defaultSequenceTriggerTimeout by rootElement.byNullableInt(
+                    BackupContent.NAME_DEFAULT_SEQUENCE_TRIGGER_TIMEOUT,
+                )
 
-                val floatingLayoutsJson by rootElement.byNullableArray(BackupContent.NAME_FLOATING_LAYOUTS)
+                val floatingLayoutsJson by rootElement.byNullableArray(
+                    BackupContent.NAME_FLOATING_LAYOUTS,
+                )
                 val floatingLayouts: List<FloatingLayoutEntity>? =
                     floatingLayoutsJson?.map { json -> gson.fromJson(json) }
 
-                val floatingButtonsJson by rootElement.byNullableArray(BackupContent.NAME_FLOATING_BUTTONS)
+                val floatingButtonsJson by rootElement.byNullableArray(
+                    BackupContent.NAME_FLOATING_BUTTONS,
+                )
                 val floatingButtons: List<FloatingButtonEntity>? =
                     floatingButtonsJson?.map { json -> gson.fromJson(json) }
 
@@ -596,7 +620,11 @@ class BackupManagerImpl @Inject constructor(
             modifiedGroup,
             saveBlock = { renamedGroup ->
                 // Do not rename the group with a (1) if it is the same UID. Just overwrite the name.
-                if (siblings.any { sibling -> sibling.uid != renamedGroup.uid && sibling.name == renamedGroup.name }) {
+                if (siblings.any { sibling ->
+                        sibling.uid != renamedGroup.uid &&
+                            sibling.name == renamedGroup.name
+                    }
+                ) {
                     throw IllegalStateException("Non unique group name")
                 }
             },
@@ -755,7 +783,12 @@ class BackupManagerImpl @Inject constructor(
 
         return soundActions
             // Sound actions that are file-based rather than system ringtones will contain this Extra.
-            .filter { action -> action.extras.any { it.id == ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION } }
+            .filter { action ->
+                action.extras.any {
+                    it.id ==
+                        ActionEntity.EXTRA_SOUND_FILE_DESCRIPTION
+                }
+            }
             // The action data is the sound UID
             .map { it.data }
             .toSet()

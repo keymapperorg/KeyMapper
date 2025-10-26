@@ -162,7 +162,9 @@ class DragDropState internal constructor(
                 null
             }
 
-            if (draggingItem.index < itemCount - ignoreLastItems && targetItem.index < itemCount - ignoreLastItems) {
+            if (draggingItem.index < itemCount - ignoreLastItems &&
+                targetItem.index < itemCount - ignoreLastItems
+            ) {
                 if (scrollToIndex != null) {
                     scope.launch {
                         // this is needed to neutralize automatic keeping the first item first.
@@ -196,14 +198,15 @@ class DragDropState internal constructor(
         get() = this.offset + this.size
 }
 
-fun Modifier.dragContainer(dragDropState: DragDropState): Modifier = this.pointerInput(dragDropState) {
-    detectDragGesturesAfterLongPress(
-        onDrag = { change, offset ->
-            change.consume()
-            dragDropState.onDrag(offset = offset)
-        },
-        onDragStart = { offset -> dragDropState.onDragStart(offset) },
-        onDragEnd = { dragDropState.onDragInterrupted() },
-        onDragCancel = { dragDropState.onDragInterrupted() },
-    )
-}
+fun Modifier.dragContainer(dragDropState: DragDropState): Modifier =
+    this.pointerInput(dragDropState) {
+        detectDragGesturesAfterLongPress(
+            onDrag = { change, offset ->
+                change.consume()
+                dragDropState.onDrag(offset = offset)
+            },
+            onDragStart = { offset -> dragDropState.onDragStart(offset) },
+            onDragEnd = { dragDropState.onDragInterrupted() },
+            onDragCancel = { dragDropState.onDragInterrupted() },
+        )
+    }

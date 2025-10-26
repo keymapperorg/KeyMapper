@@ -23,6 +23,8 @@ import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.notifications.NotificationChannelModel
 import io.github.sds100.keymapper.system.notifications.NotificationModel
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -33,8 +35,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class NotificationController @Inject constructor(
@@ -266,8 +266,10 @@ class NotificationController @Inject constructor(
             onGoing = true,
             priority = NotificationCompat.PRIORITY_MIN,
             actions = listOf(
-                KMNotificationAction.Broadcast.ResumeKeyMaps to getString(R.string.notification_action_resume),
-                KMNotificationAction.Broadcast.DismissToggleKeyMapsNotification to getString(R.string.notification_action_dismiss),
+                KMNotificationAction.Broadcast.ResumeKeyMaps to
+                    getString(R.string.notification_action_resume),
+                KMNotificationAction.Broadcast.DismissToggleKeyMapsNotification to
+                    getString(R.string.notification_action_dismiss),
                 stopServiceAction to getString(R.string.notification_action_stop_acc_service),
             ),
         )
@@ -294,8 +296,10 @@ class NotificationController @Inject constructor(
             onGoing = true,
             priority = NotificationCompat.PRIORITY_MIN,
             actions = listOf(
-                KMNotificationAction.Broadcast.PauseKeyMaps to getString(R.string.notification_action_pause),
-                KMNotificationAction.Broadcast.DismissToggleKeyMapsNotification to getString(R.string.notification_action_dismiss),
+                KMNotificationAction.Broadcast.PauseKeyMaps to
+                    getString(R.string.notification_action_pause),
+                KMNotificationAction.Broadcast.DismissToggleKeyMapsNotification to
+                    getString(R.string.notification_action_dismiss),
                 stopServiceAction to getString(R.string.notification_action_stop_acc_service),
             ),
         )
@@ -322,7 +326,8 @@ class NotificationController @Inject constructor(
             onGoing = true,
             priority = NotificationCompat.PRIORITY_MIN,
             actions = listOf(
-                KMNotificationAction.Broadcast.DismissToggleKeyMapsNotification to getString(R.string.notification_action_dismiss),
+                KMNotificationAction.Broadcast.DismissToggleKeyMapsNotification to
+                    getString(R.string.notification_action_dismiss),
 
             ),
         )
@@ -350,7 +355,8 @@ class NotificationController @Inject constructor(
             priority = NotificationCompat.PRIORITY_MIN,
             bigTextStyle = true,
             actions = listOf(
-                restartServiceAction to getString(R.string.notification_action_restart_accessibility_service),
+                restartServiceAction to
+                    getString(R.string.notification_action_restart_accessibility_service),
             ),
         )
     }
@@ -365,7 +371,8 @@ class NotificationController @Inject constructor(
         onGoing = true,
         priority = NotificationCompat.PRIORITY_MIN,
         actions = listOf(
-            KMNotificationAction.Broadcast.TogglerKeyMapperIme to getString(R.string.notification_toggle_keyboard_action),
+            KMNotificationAction.Broadcast.TogglerKeyMapperIme to
+                getString(R.string.notification_toggle_keyboard_action),
         ),
     )
 
@@ -387,7 +394,9 @@ class NotificationController @Inject constructor(
         title = getString(R.string.notification_floating_buttons_feature_title),
         text = getString(R.string.notification_floating_buttons_feature_text),
         icon = R.drawable.outline_bubble_chart_24,
-        onClickAction = KMNotificationAction.Activity.MainActivity(BaseMainActivity.ACTION_USE_FLOATING_BUTTONS),
+        onClickAction = KMNotificationAction.Activity.MainActivity(
+            BaseMainActivity.ACTION_USE_FLOATING_BUTTONS,
+        ),
         priority = NotificationCompat.PRIORITY_LOW,
         autoCancel = true,
         onGoing = false,

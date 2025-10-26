@@ -5,9 +5,9 @@ import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.system.files.FileAdapter
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import timber.log.Timber
-import javax.inject.Inject
 
 class BackupRestoreMappingsUseCaseImpl @Inject constructor(
     private val fileAdapter: FileAdapter,

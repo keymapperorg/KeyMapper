@@ -14,8 +14,8 @@ import io.github.sds100.keymapper.base.trigger.TriggerEntityMapper
 import io.github.sds100.keymapper.base.trigger.TriggerKey
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
-import kotlinx.serialization.Serializable
 import java.util.UUID
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class KeyMap(
@@ -39,20 +39,26 @@ data class KeyMap(
 
     fun isRepeatingActionsAllowed(): Boolean = KeyMapAlgorithm.performActionOnDown(trigger)
 
-    fun isChangingActionRepeatRateAllowed(action: Action): Boolean = action.repeat && isRepeatingActionsAllowed()
+    fun isChangingActionRepeatRateAllowed(action: Action): Boolean =
+        action.repeat && isRepeatingActionsAllowed()
 
-    fun isChangingActionRepeatDelayAllowed(action: Action): Boolean = action.repeat && isRepeatingActionsAllowed()
+    fun isChangingActionRepeatDelayAllowed(action: Action): Boolean =
+        action.repeat && isRepeatingActionsAllowed()
 
     fun isHoldingDownActionAllowed(action: Action): Boolean =
         KeyMapAlgorithm.performActionOnDown(trigger) && action.data.canBeHeldDown()
 
-    fun isHoldingDownActionBeforeRepeatingAllowed(action: Action): Boolean = action.repeat && action.holdDown
+    fun isHoldingDownActionBeforeRepeatingAllowed(action: Action): Boolean =
+        action.repeat && action.holdDown
 
-    fun isChangingRepeatModeAllowed(action: Action): Boolean = action.repeat && isRepeatingActionsAllowed()
+    fun isChangingRepeatModeAllowed(action: Action): Boolean =
+        action.repeat && isRepeatingActionsAllowed()
 
-    fun isChangingRepeatLimitAllowed(action: Action): Boolean = action.repeat && isRepeatingActionsAllowed()
+    fun isChangingRepeatLimitAllowed(action: Action): Boolean =
+        action.repeat && isRepeatingActionsAllowed()
 
-    fun isStopHoldingDownActionWhenTriggerPressedAgainAllowed(action: Action): Boolean = action.holdDown && !action.repeat
+    fun isStopHoldingDownActionWhenTriggerPressedAgainAllowed(action: Action): Boolean =
+        action.holdDown && !action.repeat
 
     fun isDelayBeforeNextActionAllowed(): Boolean = actionList.isNotEmpty()
 }

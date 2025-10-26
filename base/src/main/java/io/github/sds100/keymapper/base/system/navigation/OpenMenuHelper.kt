@@ -41,7 +41,10 @@ class OpenMenuHelper(
             }
 
             else -> {
-                accessibilityService.performActionOnNode({ it.contentDescription == OVERFLOW_MENU_CONTENT_DESCRIPTION }) {
+                accessibilityService.performActionOnNode({
+                    it.contentDescription ==
+                        OVERFLOW_MENU_CONTENT_DESCRIPTION
+                }) {
                     AccessibilityNodeAction(
                         AccessibilityNodeInfoCompat.ACTION_CLICK,
                     )

@@ -155,7 +155,9 @@ class ConstraintSnapshotTest {
         val state2 =
             ConstraintState(
                 constraints =
-                setOf(Constraint(data = ConstraintData.AppInForeground(packageName = "key_mapper"))),
+                setOf(
+                    Constraint(data = ConstraintData.AppInForeground(packageName = "key_mapper")),
+                ),
             )
 
         assertThat(snapshot.isSatisfied(state1, state2), `is`(false))

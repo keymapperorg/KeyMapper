@@ -7,7 +7,9 @@ fun String.getWordBoundaries(cursorPosition: Int): Pair<Int, Int>? {
 
     // return null if there is just whitespace around the position
 
-    if (getOrNull(cursorPosition - 1)?.isWhitespace() == true && getOrNull(cursorPosition)?.isWhitespace() == true) {
+    if (getOrNull(cursorPosition - 1)?.isWhitespace() == true &&
+        getOrNull(cursorPosition)?.isWhitespace() == true
+    ) {
         return null
     }
 

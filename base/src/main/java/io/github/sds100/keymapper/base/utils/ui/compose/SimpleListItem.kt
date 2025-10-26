@@ -36,10 +36,7 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.drawable
 
 @Composable
-fun SimpleListItemHeader(
-    modifier: Modifier = Modifier,
-    text: String,
-) {
+fun SimpleListItemHeader(modifier: Modifier = Modifier, text: String) {
     Surface {
         Text(
             modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -198,7 +195,9 @@ private fun PreviewDrawable() {
                 model = SimpleListItemModel(
                     "app",
                     title = "Key Mapper",
-                    icon = ComposeIconInfo.Drawable(LocalContext.current.drawable(R.mipmap.ic_launcher_round)),
+                    icon = ComposeIconInfo.Drawable(
+                        LocalContext.current.drawable(R.mipmap.ic_launcher_round),
+                    ),
                     subtitle = null,
                     isSubtitleError = true,
                 ),

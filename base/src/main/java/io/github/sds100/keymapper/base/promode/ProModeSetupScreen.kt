@@ -61,9 +61,7 @@ import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupStep
 
 @Composable
-fun ProModeSetupScreen(
-    viewModel: ProModeSetupViewModel,
-) {
+fun ProModeSetupScreen(viewModel: ProModeSetupViewModel) {
     val state by viewModel.setupState.collectAsStateWithLifecycle()
 
     ProModeSetupScreen(
@@ -301,7 +299,9 @@ private fun AssistantCheckBoxRow(
                     val text = if (isEnabled) {
                         stringResource(R.string.pro_mode_setup_wizard_use_assistant_description)
                     } else {
-                        stringResource(R.string.pro_mode_setup_wizard_use_assistant_enable_accessibility_service)
+                        stringResource(
+                            R.string.pro_mode_setup_wizard_use_assistant_enable_accessibility_service,
+                        )
                     }
 
                     Text(
@@ -318,22 +318,36 @@ private fun AssistantCheckBoxRow(
 private fun getStepContent(step: SystemBridgeSetupStep): StepContent {
     return when (step) {
         SystemBridgeSetupStep.ACCESSIBILITY_SERVICE -> StepContent(
-            title = stringResource(R.string.pro_mode_setup_wizard_enable_accessibility_service_title),
-            message = stringResource(R.string.pro_mode_setup_wizard_enable_accessibility_service_description),
+            title = stringResource(
+                R.string.pro_mode_setup_wizard_enable_accessibility_service_title,
+            ),
+            message = stringResource(
+                R.string.pro_mode_setup_wizard_enable_accessibility_service_description,
+            ),
             icon = Icons.Rounded.Accessibility,
-            buttonText = stringResource(R.string.pro_mode_setup_wizard_enable_accessibility_service_button),
+            buttonText = stringResource(
+                R.string.pro_mode_setup_wizard_enable_accessibility_service_button,
+            ),
         )
 
         SystemBridgeSetupStep.NOTIFICATION_PERMISSION -> StepContent(
-            title = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_title),
-            message = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_description),
+            title = stringResource(
+                R.string.pro_mode_setup_wizard_enable_notification_permission_title,
+            ),
+            message = stringResource(
+                R.string.pro_mode_setup_wizard_enable_notification_permission_description,
+            ),
             icon = Icons.Rounded.Notifications,
-            buttonText = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_button),
+            buttonText = stringResource(
+                R.string.pro_mode_setup_wizard_enable_notification_permission_button,
+            ),
         )
 
         SystemBridgeSetupStep.DEVELOPER_OPTIONS -> StepContent(
             title = stringResource(R.string.pro_mode_setup_wizard_enable_developer_options_title),
-            message = stringResource(R.string.pro_mode_setup_wizard_enable_developer_options_description),
+            message = stringResource(
+                R.string.pro_mode_setup_wizard_enable_developer_options_description,
+            ),
             icon = Icons.Rounded.Build,
             buttonText = stringResource(R.string.pro_mode_setup_wizard_go_to_settings_button),
         )
@@ -347,14 +361,18 @@ private fun getStepContent(step: SystemBridgeSetupStep): StepContent {
 
         SystemBridgeSetupStep.WIRELESS_DEBUGGING -> StepContent(
             title = stringResource(R.string.pro_mode_setup_wizard_enable_wireless_debugging_title),
-            message = stringResource(R.string.pro_mode_setup_wizard_enable_wireless_debugging_description),
+            message = stringResource(
+                R.string.pro_mode_setup_wizard_enable_wireless_debugging_description,
+            ),
             icon = Icons.Rounded.BugReport,
             buttonText = stringResource(R.string.pro_mode_setup_wizard_go_to_settings_button),
         )
 
         SystemBridgeSetupStep.ADB_PAIRING -> StepContent(
             title = stringResource(R.string.pro_mode_setup_wizard_pair_wireless_debugging_title),
-            message = stringResource(R.string.pro_mode_setup_wizard_pair_wireless_debugging_description),
+            message = stringResource(
+                R.string.pro_mode_setup_wizard_pair_wireless_debugging_description,
+            ),
             icon = Icons.Rounded.Link,
             buttonText = stringResource(R.string.pro_mode_setup_wizard_go_to_settings_button),
         )

@@ -2,11 +2,11 @@ package io.github.sds100.keymapper.base.utils
 
 import io.github.sds100.keymapper.base.utils.ui.ISearchable
 import io.github.sds100.keymapper.common.utils.State
+import java.util.Locale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
-import java.util.Locale
 
 fun <T : ISearchable> List<T>.filterByQuery(query: String?): Flow<State<List<T>>> = flow {
     if (query.isNullOrBlank()) {

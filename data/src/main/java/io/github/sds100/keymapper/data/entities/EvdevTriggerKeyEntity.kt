@@ -2,8 +2,8 @@ package io.github.sds100.keymapper.data.entities
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
-import kotlinx.parcelize.Parcelize
 import java.util.UUID
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class EvdevTriggerKeyEntity(

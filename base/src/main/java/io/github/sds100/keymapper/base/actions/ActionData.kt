@@ -20,9 +20,7 @@ sealed class ActionData : Comparable<ActionData> {
     override fun compareTo(other: ActionData) = id.compareTo(other.id)
 
     @Serializable
-    data class App(
-        val packageName: String,
-    ) : ActionData() {
+    data class App(val packageName: String) : ActionData() {
         override val id: ActionId = ActionId.APP
 
         override fun compareTo(other: ActionData) = when (other) {
@@ -32,11 +30,8 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
-    data class AppShortcut(
-        val packageName: String?,
-        val shortcutTitle: String,
-        val uri: String,
-    ) : ActionData() {
+    data class AppShortcut(val packageName: String?, val shortcutTitle: String, val uri: String) :
+        ActionData() {
         override val id: ActionId = ActionId.APP_SHORTCUT
 
         override fun compareTo(other: ActionData) = when (other) {
@@ -55,10 +50,7 @@ sealed class ActionData : Comparable<ActionData> {
         override val id: ActionId = ActionId.KEY_EVENT
 
         @Serializable
-        data class Device(
-            val descriptor: String,
-            val name: String,
-        )
+        data class Device(val descriptor: String, val name: String)
 
         override fun compareTo(other: ActionData) = when (other) {
             is InputKeyEvent -> keyCode.compareTo(other.keyCode)
@@ -71,10 +63,7 @@ sealed class ActionData : Comparable<ActionData> {
         override val id = ActionId.SOUND
 
         @Serializable
-        data class SoundFile(
-            val soundUid: String,
-            val soundDescription: String,
-        ) : Sound() {
+        data class SoundFile(val soundUid: String, val soundDescription: String) : Sound() {
             override fun compareTo(other: ActionData): Int {
                 return when (other) {
                     is SoundFile -> soundUid.compareTo(other.soundUid)
@@ -84,9 +73,7 @@ sealed class ActionData : Comparable<ActionData> {
         }
 
         @Serializable
-        data class Ringtone(
-            val uri: String,
-        ) : Sound() {
+        data class Ringtone(val uri: String) : Sound() {
             override fun compareTo(other: ActionData): Int {
                 return when (other) {
                     is Ringtone -> uri.compareTo(other.uri)
@@ -99,10 +86,8 @@ sealed class ActionData : Comparable<ActionData> {
     @Serializable
     sealed class Volume : ActionData() {
         @Serializable
-        data class Up(
-            val showVolumeUi: Boolean,
-            val volumeStream: VolumeStream? = null,
-        ) : Volume() {
+        data class Up(val showVolumeUi: Boolean, val volumeStream: VolumeStream? = null) :
+            Volume() {
             override val id = ActionId.VOLUME_UP
 
             override fun compareTo(other: ActionData) = when (other) {
@@ -117,10 +102,8 @@ sealed class ActionData : Comparable<ActionData> {
         }
 
         @Serializable
-        data class Down(
-            val showVolumeUi: Boolean,
-            val volumeStream: VolumeStream? = null,
-        ) : Volume() {
+        data class Down(val showVolumeUi: Boolean, val volumeStream: VolumeStream? = null) :
+            Volume() {
             override val id = ActionId.VOLUME_DOWN
 
             override fun compareTo(other: ActionData) = when (other) {
@@ -150,9 +133,7 @@ sealed class ActionData : Comparable<ActionData> {
         }
 
         @Serializable
-        data class SetRingerMode(
-            val ringerMode: RingerMode,
-        ) : Volume() {
+        data class SetRingerMode(val ringerMode: RingerMode) : Volume() {
             override val id: ActionId = ActionId.CHANGE_RINGER_MODE
 
             override fun compareTo(other: ActionData) = when (other) {
@@ -254,10 +235,7 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
-    data class SwitchKeyboard(
-        val imeId: String,
-        val savedImeName: String,
-    ) : ActionData() {
+    data class SwitchKeyboard(val imeId: String, val savedImeName: String) : ActionData() {
         override val id = ActionId.SWITCH_KEYBOARD
 
         override fun compareTo(other: ActionData) = when (other) {
@@ -328,9 +306,7 @@ sealed class ActionData : Comparable<ActionData> {
         }
 
         @Serializable
-        data class CycleRotations(
-            val orientations: List<Orientation>,
-        ) : Rotation() {
+        data class CycleRotations(val orientations: List<Orientation>) : Rotation() {
             override val id = ActionId.CYCLE_ROTATIONS
 
             override fun compareTo(other: ActionData) = when (other) {
@@ -480,11 +456,7 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
-    data class TapScreen(
-        val x: Int,
-        val y: Int,
-        val description: String?,
-    ) : ActionData() {
+    data class TapScreen(val x: Int, val y: Int, val description: String?) : ActionData() {
         override val id = ActionId.TAP_SCREEN
 
         override fun compareTo(other: ActionData) = when (other) {
@@ -559,9 +531,7 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
-    data class PhoneCall(
-        val number: String,
-    ) : ActionData() {
+    data class PhoneCall(val number: String) : ActionData() {
         override val id = ActionId.PHONE_CALL
 
         override fun compareTo(other: ActionData) = when (other) {
@@ -571,10 +541,7 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
-    data class SendSms(
-        val number: String,
-        val message: String,
-    ) : ActionData() {
+    data class SendSms(val number: String, val message: String) : ActionData() {
         override val id = ActionId.SEND_SMS
 
         override fun compareTo(other: ActionData) = when (other) {
@@ -584,10 +551,7 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
-    data class ComposeSms(
-        val number: String,
-        val message: String,
-    ) : ActionData() {
+    data class ComposeSms(val number: String, val message: String) : ActionData() {
         override val id = ActionId.COMPOSE_SMS
 
         override fun compareTo(other: ActionData) = when (other) {
@@ -597,9 +561,7 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
-    data class Url(
-        val url: String,
-    ) : ActionData() {
+    data class Url(val url: String) : ActionData() {
         override val id = ActionId.URL
 
         override fun compareTo(other: ActionData) = when (other) {
@@ -609,9 +571,7 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
-    data class Text(
-        val text: String,
-    ) : ActionData() {
+    data class Text(val text: String) : ActionData() {
         override val id = ActionId.TEXT
 
         override fun compareTo(other: ActionData) = when (other) {

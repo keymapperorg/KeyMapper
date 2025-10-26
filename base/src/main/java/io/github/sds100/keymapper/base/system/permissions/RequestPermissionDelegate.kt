@@ -63,14 +63,22 @@ class RequestPermissionDelegate(
             Permission.WRITE_SETTINGS -> requestWriteSettings()
             Permission.CAMERA -> requestPermissionLauncher.launch(Manifest.permission.CAMERA)
             Permission.DEVICE_ADMIN -> requestDeviceAdmin()
-            Permission.READ_PHONE_STATE -> requestPermissionLauncher.launch(Manifest.permission.READ_PHONE_STATE)
+            Permission.READ_PHONE_STATE -> requestPermissionLauncher.launch(
+                Manifest.permission.READ_PHONE_STATE,
+            )
             Permission.ACCESS_NOTIFICATION_POLICY -> requestAccessNotificationPolicy()
             Permission.WRITE_SECURE_SETTINGS -> requestWriteSecureSettings()
             Permission.NOTIFICATION_LISTENER -> notificationReceiverAdapter.start()
-            Permission.CALL_PHONE -> requestPermissionLauncher.launch(Manifest.permission.CALL_PHONE)
+            Permission.CALL_PHONE -> requestPermissionLauncher.launch(
+                Manifest.permission.CALL_PHONE,
+            )
             Permission.SEND_SMS -> requestPermissionLauncher.launch(Manifest.permission.SEND_SMS)
-            Permission.ANSWER_PHONE_CALL -> requestPermissionLauncher.launch(Manifest.permission.ANSWER_PHONE_CALLS)
-            Permission.FIND_NEARBY_DEVICES -> requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
+            Permission.ANSWER_PHONE_CALL -> requestPermissionLauncher.launch(
+                Manifest.permission.ANSWER_PHONE_CALLS,
+            )
+            Permission.FIND_NEARBY_DEVICES -> requestPermissionLauncher.launch(
+                Manifest.permission.BLUETOOTH_CONNECT,
+            )
             Permission.ROOT -> requestRootPermission()
 
             Permission.IGNORE_BATTERY_OPTIMISATION ->
@@ -81,7 +89,9 @@ class RequestPermissionDelegate(
             Permission.ACCESS_FINE_LOCATION ->
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
 
-            Permission.POST_NOTIFICATIONS -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Permission.POST_NOTIFICATIONS -> if (Build.VERSION.SDK_INT >=
+                Build.VERSION_CODES.TIRAMISU
+            ) {
                 val showRationale = ActivityCompat.shouldShowRequestPermissionRationale(
                     activity,
                     Manifest.permission.POST_NOTIFICATIONS,

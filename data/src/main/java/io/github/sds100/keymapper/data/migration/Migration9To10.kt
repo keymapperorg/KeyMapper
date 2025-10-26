@@ -54,7 +54,9 @@ object Migration9To10 {
                 val newTriggerJson = gson.toJson(newTrigger)
                 val newActionListJson = gson.toJson(newActionList)
 
-                execSQL("UPDATE keymaps SET trigger='$newTriggerJson', action_list='$newActionListJson' WHERE id=$id")
+                execSQL(
+                    "UPDATE keymaps SET trigger='$newTriggerJson', action_list='$newActionListJson' WHERE id=$id",
+                )
             }
 
             close()
@@ -73,10 +75,7 @@ object Migration9To10 {
         return keyMap
     }
 
-    private fun migrate(
-        trigger: JsonElement,
-        actionList: JsonArray,
-    ): MigrateModel {
+    private fun migrate(trigger: JsonElement, actionList: JsonArray): MigrateModel {
         var showToast = false
 
         actionList.forEach {
