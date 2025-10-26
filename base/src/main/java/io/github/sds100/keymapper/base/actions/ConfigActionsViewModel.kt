@@ -184,6 +184,9 @@ class ConfigActionsViewModel @Inject constructor(
     override fun onEditClick() {
         val actionUid = actionOptionsUid.value ?: return
         viewModelScope.launch {
+            // Clear the bottom sheet so navigating back with predicted-back works
+            actionOptionsUid.update { null }
+
             val keyMap = config.keyMap.first().dataOrNull() ?: return@launch
 
             val oldAction = keyMap.actionList.find { it.uid == actionUid } ?: return@launch
@@ -194,6 +197,7 @@ class ConfigActionsViewModel @Inject constructor(
     override fun onReplaceClick() {
         val actionUid = actionOptionsUid.value ?: return
         viewModelScope.launch {
+            // Clear the bottom sheet so navigating back with predicted-back works
             actionOptionsUid.update { null }
 
             val newActionData =
