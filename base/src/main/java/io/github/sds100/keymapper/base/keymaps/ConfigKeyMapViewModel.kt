@@ -57,13 +57,8 @@ class ConfigKeyMapViewModel @Inject constructor(
         }
     }
 
-    fun loadNewKeyMap(floatingButtonUid: String? = null, groupUid: String?) {
+    fun loadNewKeyMap(groupUid: String?) {
         configKeyMapState.loadNewKeyMap(groupUid)
-        if (floatingButtonUid != null) {
-            viewModelScope.launch {
-                configTrigger.addFloatingButtonTriggerKey(floatingButtonUid)
-            }
-        }
     }
 
     fun loadKeyMap(uid: String) {

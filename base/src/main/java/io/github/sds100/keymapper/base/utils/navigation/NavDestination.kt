@@ -152,7 +152,6 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     @Serializable
     data class NewKeyMap(
         val groupUid: String?,
-        val floatingButtonToUse: String? = null,
         /**
          * The trigger shortcut to immediately launch
          * when navigating to the screen to create a key map.
