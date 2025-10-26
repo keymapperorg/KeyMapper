@@ -261,9 +261,8 @@ class ConfigActionsViewModel @Inject constructor(
                 )
 
                 RepeatMode.LIMIT_REACHED -> config.setActionStopRepeatingWhenLimitReached(uid)
-                RepeatMode.TRIGGER_PRESSED_AGAIN -> config.setActionStopRepeatingWhenTriggerPressedAgain(
-                    uid,
-                )
+                RepeatMode.TRIGGER_PRESSED_AGAIN ->
+                    config.setActionStopRepeatingWhenTriggerPressedAgain(uid)
             }
         }
     }

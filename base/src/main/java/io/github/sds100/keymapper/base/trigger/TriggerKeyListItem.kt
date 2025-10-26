@@ -341,11 +341,7 @@ private fun TextColumn(
 }
 
 @Composable
-private fun ErrorTextColumn(
-    modifier: Modifier = Modifier,
-    primaryText: String,
-    errorText: String,
-) {
+private fun ErrorTextColumn(modifier: Modifier = Modifier, primaryText: String, errorText: String) {
     Column(
         modifier = modifier,
     ) {

@@ -122,7 +122,11 @@ fun SimpleListItem(
                     if (model.subtitle != null) {
                         Text(
                             text = model.subtitle,
-                            color = if (model.isSubtitleError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+                            color = if (model.isSubtitleError) {
+                                MaterialTheme.colorScheme.error
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            },
                             style = MaterialTheme.typography.bodySmall,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,

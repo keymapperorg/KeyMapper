@@ -165,8 +165,8 @@ abstract class SimpleMappingController(
             repeatCount++
 
             if (action.repeatLimit != null) {
-                continueRepeating =
-                    repeatCount < action.repeatLimit + 1 // this value is how many times it should REPEAT. The first repeat happens after the first time it is performed
+                // this value is how many times it should REPEAT. The first repeat happens after the first time it is performed
+                continueRepeating = repeatCount < action.repeatLimit + 1
             }
 
             delay(repeatRate)

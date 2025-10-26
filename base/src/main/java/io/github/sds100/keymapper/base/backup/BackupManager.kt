@@ -130,12 +130,13 @@ class BackupManagerImpl @Inject constructor(
 
     init {
         coroutineScope.launch {
+            val layouts = floatingLayoutRepository.layouts
             combine(
                 backupAutomatically,
                 preferenceRepository.get(Keys.automaticBackupLocation),
                 keyMapRepository.keyMapList.filterIsInstance<State.Data<List<KeyMapEntity>>>(),
                 groupRepository.getAllGroups(),
-                floatingLayoutRepository.layouts.filterIsInstance<State.Data<List<FloatingLayoutEntityWithButtons>>>(),
+                layouts.filterIsInstance<State.Data<List<FloatingLayoutEntityWithButtons>>>(),
             ) { backupAutomatically, location, keyMaps, groups, floatingLayouts ->
                 if (!backupAutomatically) {
                     return@combine

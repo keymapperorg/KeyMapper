@@ -131,14 +131,14 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
         showDpadImeSetupError,
         systemBridgeConnectionState,
         evdevDevices,
-    ) { _, purchases, showDpadImeSetupError, systemBridgeConnectionState, evdevDevices ->
+    ) { _, purchases, showDpadImeSetupError, sysBridgeState, evdevDevices ->
         TriggerErrorSnapshot(
             isKeyMapperImeChosen = keyMapperImeHelper.isCompatibleImeChosen(),
             isDndAccessGranted = permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY),
             isRootGranted = permissionAdapter.isGranted(Permission.ROOT),
             purchases = purchases.dataOrNull() ?: Success(emptySet()),
             showDpadImeSetupError = showDpadImeSetupError,
-            isSystemBridgeConnected = systemBridgeConnectionState is SystemBridgeConnectionState.Connected,
+            isSystemBridgeConnected = sysBridgeState is SystemBridgeConnectionState.Connected,
             evdevDevices = evdevDevices,
         )
     }
@@ -178,8 +178,10 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
 
             TriggerError.PURCHASE_VERIFICATION_FAILED -> purchasingManager.refresh()
             TriggerError.SYSTEM_BRIDGE_DISCONNECTED -> fixError(SystemBridgeError.Disconnected)
-            TriggerError.EVDEV_DEVICE_NOT_FOUND, TriggerError.FLOATING_BUTTON_DELETED, TriggerError.SYSTEM_BRIDGE_UNSUPPORTED -> {
-            }
+            TriggerError.EVDEV_DEVICE_NOT_FOUND,
+            TriggerError.FLOATING_BUTTON_DELETED,
+            TriggerError.SYSTEM_BRIDGE_UNSUPPORTED,
+                -> {}
         }
     }
 
@@ -190,7 +192,9 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
         packageManagerAdapter.getAppIcon(packageName)
 
     override fun getInputMethodLabel(imeId: String): KMResult<String> =
-        inputMethodAdapter.getInfoById(imeId).then { Success(it.label) }
+        inputMethodAdapter.getInfoById(imeId).then {
+            Success(it.label)
+        }
 
     override suspend fun fixError(error: KMError) {
         when (error) {

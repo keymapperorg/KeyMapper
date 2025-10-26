@@ -64,7 +64,10 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
                         when (key) {
                             is EvdevTriggerKeyEntity -> EvdevTriggerKey.fromEntity(key)
                             is KeyEventTriggerKeyEntity -> KeyEventTriggerKey.fromEntity(key)
-                            is AssistantTriggerKeyEntity, is FingerprintTriggerKeyEntity, is FloatingButtonKeyEntity -> null
+                            is AssistantTriggerKeyEntity,
+                            is FingerprintTriggerKeyEntity,
+                            is FloatingButtonKeyEntity,
+                                -> null
                         }
                     }.filterIsInstance<KeyCodeTriggerKey>()
             }.firstBlocking()

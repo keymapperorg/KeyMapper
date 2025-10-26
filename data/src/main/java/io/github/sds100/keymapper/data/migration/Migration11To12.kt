@@ -157,10 +157,7 @@ object Migration11To12 {
         return keyMap
     }
 
-    private fun migrateKeyMapTrigger(
-        trigger: JsonElement,
-        deviceInfoList: JsonArray,
-    ): JsonElement {
+    private fun migrateKeyMapTrigger(trigger: JsonElement, deviceInfoList: JsonArray): JsonElement {
         val oldTriggerKeys = trigger["keys"].asJsonArray
 
         val newTriggerKeys = oldTriggerKeys.map { triggerKey ->

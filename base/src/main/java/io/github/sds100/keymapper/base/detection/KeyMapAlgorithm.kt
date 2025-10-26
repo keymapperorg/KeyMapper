@@ -850,7 +850,10 @@ class KeyMapAlgorithm(
             val trigger = triggers[triggerIndex]
             val lastMatchedIndex = lastMatchedEventIndices[triggerIndex]
 
-            for (overlappingTriggerIndex in sequenceTriggersOverlappingParallelTriggers[triggerIndex]) {
+            for (
+            overlappingTriggerIndex in
+            sequenceTriggersOverlappingParallelTriggers[triggerIndex]
+            ) {
                 if (lastMatchedEventIndices[overlappingTriggerIndex] ==
                     triggers[overlappingTriggerIndex].keys.lastIndex
                 ) {
@@ -858,7 +861,10 @@ class KeyMapAlgorithm(
                 }
             }
 
-            for (overlappingTriggerIndex in parallelTriggersOverlappingParallelTriggers[triggerIndex]) {
+            for (
+            overlappingTriggerIndex in
+            parallelTriggersOverlappingParallelTriggers[triggerIndex]
+            ) {
                 if (lastMatchedEventIndices[overlappingTriggerIndex] ==
                     triggers[overlappingTriggerIndex].keys.lastIndex
                 ) {
@@ -1203,7 +1209,10 @@ class KeyMapAlgorithm(
                 else -> event.withShortPress
             }
 
-            for (overlappingTriggerIndex in sequenceTriggersOverlappingSequenceTriggers[triggerIndex]) {
+            for (
+            overlappingTriggerIndex in
+            sequenceTriggersOverlappingSequenceTriggers[triggerIndex]
+            ) {
                 if (lastMatchedEventIndices[overlappingTriggerIndex] != -1) {
                     continue@triggerLoop
                 }
@@ -1664,8 +1673,9 @@ class KeyMapAlgorithm(
         return detectedTriggerIndexes.isNotEmpty()
     }
 
-    private fun encodeActionList(actions: List<Action>): IntArray =
-        actions.map { getActionKey(it) }.toIntArray()
+    private fun encodeActionList(actions: List<Action>): IntArray = actions.map {
+        getActionKey(it)
+    }.toIntArray()
 
     /**
      * @return the key for the action in [actionMap]. Returns -1 if the [action] can't be found.

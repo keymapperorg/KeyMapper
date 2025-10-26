@@ -260,6 +260,11 @@ private fun LoadedContent(
 
         // Show notification permission warning if permission not granted
         if (state is ProModeState.Stopped && !state.isNotificationPermissionGranted) {
+            val text =
+                stringResource(
+                    R.string.pro_mode_setup_wizard_enable_notification_permission_description,
+                )
+
             SetupCard(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -277,9 +282,7 @@ private fun LoadedContent(
                 ),
                 content = {
                     Text(
-                        text = stringResource(
-                            R.string.pro_mode_setup_wizard_enable_notification_permission_description,
-                        ),
+                        text = text,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 },

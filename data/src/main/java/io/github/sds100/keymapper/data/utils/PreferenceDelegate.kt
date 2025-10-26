@@ -10,7 +10,10 @@ import kotlinx.coroutines.flow.map
 class FlowPrefDelegate<T>(private val key: Preferences.Key<T>, private val defaultValue: T) {
 
     operator fun getValue(thisRef: PreferenceRepository, prop: KProperty<*>?): Flow<T> =
-        thisRef.get(key).map { it ?: defaultValue }
+        thisRef.get(key).map {
+            it
+                ?: defaultValue
+        }
 }
 
 class PrefDelegate<T>(private val key: Preferences.Key<T>, private val defaultValue: T) {

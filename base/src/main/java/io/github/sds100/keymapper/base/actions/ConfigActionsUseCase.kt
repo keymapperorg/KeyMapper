@@ -137,8 +137,9 @@ class ConfigActionsUseCaseImpl @Inject constructor(
         }
     }
 
-    override fun setActionHoldDownEnabled(uid: String, holdDown: Boolean) =
-        setActionOption(uid) { it.copy(holdDown = holdDown) }
+    override fun setActionHoldDownEnabled(uid: String, holdDown: Boolean) = setActionOption(uid) {
+        it.copy(holdDown = holdDown)
+    }
 
     override fun setActionHoldDownDuration(uid: String, holdDownDuration: Int) {
         setActionOption(uid) { action ->

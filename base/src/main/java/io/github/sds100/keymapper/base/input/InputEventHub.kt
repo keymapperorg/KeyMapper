@@ -20,6 +20,7 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.IEvdevCallback
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
+import io.github.sds100.keymapper.sysbridge.manager.isConnected
 import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
@@ -118,7 +119,7 @@ class InputEventHubImpl @Inject constructor(
 
     @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     override fun isSystemBridgeConnected(): Boolean {
-        return systemBridgeConnManager.connectionState.firstBlocking() is SystemBridgeConnectionState.Connected
+        return systemBridgeConnManager.isConnected()
     }
 
     override fun onEvdevEventLoopStarted() {

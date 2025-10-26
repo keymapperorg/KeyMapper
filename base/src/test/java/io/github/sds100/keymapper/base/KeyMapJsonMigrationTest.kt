@@ -122,7 +122,12 @@ class KeyMapJsonMigrationTest {
 
             val expectedKeyMap = expectedData[index]
 
-            JsonTestUtils.compareBothWays(expectedKeyMap, "expected", migratedKeyMap, "migrated")
+            JsonTestUtils.compareBothWays(
+                expectedKeyMap,
+                "expected",
+                migratedKeyMap,
+                "migrated",
+            )
         }
     }
 

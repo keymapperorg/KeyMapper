@@ -4746,27 +4746,24 @@ class KeyMapAlgorithmTest {
         ),
     )
 
-    private fun inputDownEvdevEvent(
-        keyCode: Int,
-        scanCode: Int,
-        device: EvdevDeviceInfo,
-    ): Boolean = controller.onInputEvent(
-        KMEvdevEvent(
-            type = KMEvdevEvent.TYPE_KEY_EVENT,
-            device = EvdevDeviceHandle(
-                path = "/dev/input${device.name}",
-                name = device.name,
-                bus = device.bus,
-                vendor = device.vendor,
-                product = device.product,
+    private fun inputDownEvdevEvent(keyCode: Int, scanCode: Int, device: EvdevDeviceInfo): Boolean =
+        controller.onInputEvent(
+            KMEvdevEvent(
+                type = KMEvdevEvent.TYPE_KEY_EVENT,
+                device = EvdevDeviceHandle(
+                    path = "/dev/input${device.name}",
+                    name = device.name,
+                    bus = device.bus,
+                    vendor = device.vendor,
+                    product = device.product,
+                ),
+                code = scanCode,
+                androidCode = keyCode,
+                value = KMEvdevEvent.VALUE_DOWN,
+                timeSec = testScope.currentTime,
+                timeUsec = 0,
             ),
-            code = scanCode,
-            androidCode = keyCode,
-            value = KMEvdevEvent.VALUE_DOWN,
-            timeSec = testScope.currentTime,
-            timeUsec = 0,
-        ),
-    )
+        )
 
     private fun inputUpEvdevEvent(keyCode: Int, scanCode: Int, device: EvdevDeviceInfo): Boolean =
         controller.onInputEvent(
@@ -4833,7 +4830,11 @@ class KeyMapAlgorithmTest {
             isExternal = false,
             id = deviceId,
             isGameController = isGameController,
-            sources = if (isGameController) InputDevice.SOURCE_GAMEPAD else InputDevice.SOURCE_KEYBOARD,
+            sources = if (isGameController) {
+                InputDevice.SOURCE_GAMEPAD
+            } else {
+                InputDevice.SOURCE_KEYBOARD
+            },
         )
 
         is KeyEventTriggerDevice.External -> InputDeviceInfo(
@@ -4842,7 +4843,11 @@ class KeyMapAlgorithmTest {
             isExternal = true,
             id = deviceId,
             isGameController = isGameController,
-            sources = if (isGameController) InputDevice.SOURCE_GAMEPAD else InputDevice.SOURCE_KEYBOARD,
+            sources = if (isGameController) {
+                InputDevice.SOURCE_GAMEPAD
+            } else {
+                InputDevice.SOURCE_KEYBOARD
+            },
         )
 
         KeyEventTriggerDevice.Internal -> InputDeviceInfo(
@@ -4851,7 +4856,11 @@ class KeyMapAlgorithmTest {
             isExternal = false,
             id = deviceId,
             isGameController = isGameController,
-            sources = if (isGameController) InputDevice.SOURCE_GAMEPAD else InputDevice.SOURCE_KEYBOARD,
+            sources = if (isGameController) {
+                InputDevice.SOURCE_GAMEPAD
+            } else {
+                InputDevice.SOURCE_KEYBOARD
+            },
         )
     }
 }

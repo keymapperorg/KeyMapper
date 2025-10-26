@@ -41,11 +41,8 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
-    data class InputKeyEvent(
-        val keyCode: Int,
-        val metaState: Int = 0,
-        val device: Device? = null,
-    ) : ActionData() {
+    data class InputKeyEvent(val keyCode: Int, val metaState: Int = 0, val device: Device? = null) :
+        ActionData() {
 
         override val id: ActionId = ActionId.KEY_EVENT
 
@@ -916,7 +913,10 @@ sealed class ActionData : Comparable<ActionData> {
 
         override fun toString(): String {
             // Do not leak sensitive command info to logs.
-            return "ShellCommand(description=$description, executionMode=$executionMode, timeoutMs=$timeoutMillis)"
+            return """
+                ShellCommand(description=$description, executionMode=$executionMode, 
+                timeoutMs=$timeoutMillis)
+            """.trimIndent()
         }
     }
 

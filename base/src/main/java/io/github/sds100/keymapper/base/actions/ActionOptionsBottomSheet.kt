@@ -69,6 +69,7 @@ fun ActionOptionsBottomSheet(
         val helpUrl = stringResource(R.string.url_keymap_action_options_guide)
         val scope = rememberCoroutineScope()
 
+        @Suppress("ktlint:standard:max-line-length")
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
             Spacer(modifier = Modifier.height(12.dp))
             Box(modifier = Modifier.fillMaxWidth()) {

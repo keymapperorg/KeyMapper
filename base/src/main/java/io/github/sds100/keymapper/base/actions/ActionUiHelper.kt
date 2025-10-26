@@ -207,32 +207,52 @@ class ActionUiHelper(
             getAppName(action.packageName).handle(
                 onSuccess = { appName ->
                     val resId = when (action) {
-                        is ActionData.ControlMediaForApp.Play -> R.string.action_play_media_package_formatted
-                        is ActionData.ControlMediaForApp.FastForward -> R.string.action_fast_forward_package_formatted
-                        is ActionData.ControlMediaForApp.NextTrack -> R.string.action_next_track_package_formatted
-                        is ActionData.ControlMediaForApp.Pause -> R.string.action_pause_media_package_formatted
-                        is ActionData.ControlMediaForApp.PlayPause -> R.string.action_play_pause_media_package_formatted
-                        is ActionData.ControlMediaForApp.PreviousTrack -> R.string.action_previous_track_package_formatted
-                        is ActionData.ControlMediaForApp.Rewind -> R.string.action_rewind_package_formatted
-                        is ActionData.ControlMediaForApp.Stop -> R.string.action_stop_media_package_formatted
-                        is ActionData.ControlMediaForApp.StepForward -> R.string.action_step_forward_media_package_formatted
-                        is ActionData.ControlMediaForApp.StepBackward -> R.string.action_step_backward_media_package_formatted
+                        is ActionData.ControlMediaForApp.Play ->
+                            R.string.action_play_media_package_formatted
+                        is ActionData.ControlMediaForApp.FastForward ->
+                            R.string.action_fast_forward_package_formatted
+                        is ActionData.ControlMediaForApp.NextTrack ->
+                            R.string.action_next_track_package_formatted
+                        is ActionData.ControlMediaForApp.Pause ->
+                            R.string.action_pause_media_package_formatted
+                        is ActionData.ControlMediaForApp.PlayPause ->
+                            R.string.action_play_pause_media_package_formatted
+                        is ActionData.ControlMediaForApp.PreviousTrack ->
+                            R.string.action_previous_track_package_formatted
+                        is ActionData.ControlMediaForApp.Rewind ->
+                            R.string.action_rewind_package_formatted
+                        is ActionData.ControlMediaForApp.Stop ->
+                            R.string.action_stop_media_package_formatted
+                        is ActionData.ControlMediaForApp.StepForward ->
+                            R.string.action_step_forward_media_package_formatted
+                        is ActionData.ControlMediaForApp.StepBackward ->
+                            R.string.action_step_backward_media_package_formatted
                     }
 
                     getString(resId, appName)
                 },
                 onError = {
                     val resId = when (action) {
-                        is ActionData.ControlMediaForApp.Play -> R.string.action_play_media_package
-                        is ActionData.ControlMediaForApp.FastForward -> R.string.action_fast_forward_package
-                        is ActionData.ControlMediaForApp.NextTrack -> R.string.action_next_track_package
-                        is ActionData.ControlMediaForApp.Pause -> R.string.action_pause_media_package
-                        is ActionData.ControlMediaForApp.PlayPause -> R.string.action_play_pause_media_package
-                        is ActionData.ControlMediaForApp.PreviousTrack -> R.string.action_previous_track_package
-                        is ActionData.ControlMediaForApp.Rewind -> R.string.action_rewind_package
-                        is ActionData.ControlMediaForApp.Stop -> R.string.action_stop_media_package
-                        is ActionData.ControlMediaForApp.StepForward -> R.string.action_step_forward_media_package
-                        is ActionData.ControlMediaForApp.StepBackward -> R.string.action_step_backward_media_package
+                        is ActionData.ControlMediaForApp.Play ->
+                            R.string.action_play_media_package
+                        is ActionData.ControlMediaForApp.FastForward ->
+                            R.string.action_fast_forward_package
+                        is ActionData.ControlMediaForApp.NextTrack ->
+                            R.string.action_next_track_package
+                        is ActionData.ControlMediaForApp.Pause ->
+                            R.string.action_pause_media_package
+                        is ActionData.ControlMediaForApp.PlayPause ->
+                            R.string.action_play_pause_media_package
+                        is ActionData.ControlMediaForApp.PreviousTrack ->
+                            R.string.action_previous_track_package
+                        is ActionData.ControlMediaForApp.Rewind ->
+                            R.string.action_rewind_package
+                        is ActionData.ControlMediaForApp.Stop ->
+                            R.string.action_stop_media_package
+                        is ActionData.ControlMediaForApp.StepForward ->
+                            R.string.action_step_forward_media_package
+                        is ActionData.ControlMediaForApp.StepBackward ->
+                            R.string.action_step_backward_media_package
                     }
 
                     getString(resId)

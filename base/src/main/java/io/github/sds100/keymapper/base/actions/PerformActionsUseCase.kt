@@ -41,7 +41,7 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
-import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
+import io.github.sds100.keymapper.sysbridge.manager.isConnected
 import io.github.sds100.keymapper.system.airplanemode.AirplaneModeAdapter
 import io.github.sds100.keymapper.system.apps.AppShortcutAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
@@ -698,16 +698,23 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             is ActionData.MoveCursor -> {
                 result = service.performActionOnNode({ it.isFocused }) {
                     val actionType = when (action.direction) {
-                        ActionData.MoveCursor.Direction.START -> AccessibilityNodeInfo.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY
-                        ActionData.MoveCursor.Direction.END -> AccessibilityNodeInfo.ACTION_NEXT_AT_MOVEMENT_GRANULARITY
+                        ActionData.MoveCursor.Direction.START ->
+                            AccessibilityNodeInfo.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY
+                        ActionData.MoveCursor.Direction.END ->
+                            AccessibilityNodeInfo.ACTION_NEXT_AT_MOVEMENT_GRANULARITY
                     }
 
                     val granularity = when (action.moveType) {
-                        ActionData.MoveCursor.Type.CHAR -> AccessibilityNodeInfo.MOVEMENT_GRANULARITY_CHARACTER
-                        ActionData.MoveCursor.Type.WORD -> AccessibilityNodeInfo.MOVEMENT_GRANULARITY_WORD
-                        ActionData.MoveCursor.Type.LINE -> AccessibilityNodeInfo.MOVEMENT_GRANULARITY_LINE
-                        ActionData.MoveCursor.Type.PARAGRAPH -> AccessibilityNodeInfo.MOVEMENT_GRANULARITY_PARAGRAPH
-                        ActionData.MoveCursor.Type.PAGE -> AccessibilityNodeInfo.MOVEMENT_GRANULARITY_PAGE
+                        ActionData.MoveCursor.Type.CHAR ->
+                            AccessibilityNodeInfo.MOVEMENT_GRANULARITY_CHARACTER
+                        ActionData.MoveCursor.Type.WORD ->
+                            AccessibilityNodeInfo.MOVEMENT_GRANULARITY_WORD
+                        ActionData.MoveCursor.Type.LINE ->
+                            AccessibilityNodeInfo.MOVEMENT_GRANULARITY_LINE
+                        ActionData.MoveCursor.Type.PARAGRAPH ->
+                            AccessibilityNodeInfo.MOVEMENT_GRANULARITY_PARAGRAPH
+                        ActionData.MoveCursor.Type.PAGE ->
+                            AccessibilityNodeInfo.MOVEMENT_GRANULARITY_PAGE
                     }
 
                     AccessibilityNodeAction(
@@ -861,7 +868,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
             is ActionData.ScreenOnOff -> {
                 if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API &&
-                    systemBridgeConnectionManager.connectionState.value is SystemBridgeConnectionState.Connected
+                    systemBridgeConnectionManager.isConnected()
                 ) {
                     val model = InjectKeyEventModel(
                         keyCode = KeyEvent.KEYCODE_POWER,
@@ -932,6 +939,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             ActionData.DeviceControls -> {
+                @Suppress("ktlint:standard:max-line-length")
                 result = intentAdapter.send(
                     IntentTarget.ACTIVITY,
                     uri = "#Intent;action=android.intent.action.MAIN;package=com.android.systemui;component=com.android.systemui/.controls.ui.ControlsActivity;end",
