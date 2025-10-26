@@ -3,9 +3,7 @@ package io.github.sds100.keymapper.base.onboarding
 import androidx.datastore.preferences.core.Preferences
 import io.github.sds100.keymapper.base.utils.VersionHelper
 import io.github.sds100.keymapper.common.BuildConfigProvider
-import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.data.Keys
-import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.repositories.KeyMapRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.data.utils.PrefDelegate
@@ -16,7 +14,6 @@ import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -94,13 +91,7 @@ class OnboardingUseCaseImpl @Inject constructor(
     override fun showTapTarget(tapTarget: OnboardingTapTarget): Flow<Boolean> {
         val shownKey = getTapTargetKey(tapTarget)
 
-        return combine(
-            settingsRepository.get(shownKey).map { it ?: false },
-            settingsRepository.get(Keys.skipTapTargetTutorial).map { it ?: false },
-            keyMapRepository.keyMapList.filterIsInstance<State.Data<List<KeyMapEntity>>>(),
-        ) { isShown, skipTapTarget, keyMapList ->
-            showTutorialTapTarget(tapTarget, isShown, skipTapTarget, keyMapList.data)
-        }
+        return settingsRepository.get(shownKey).map { isShown -> !(isShown ?: false) }
     }
 
     override fun completedTapTarget(tapTarget: OnboardingTapTarget) {
@@ -109,39 +100,9 @@ class OnboardingUseCaseImpl @Inject constructor(
     }
 
     private fun getTapTargetKey(tapTarget: OnboardingTapTarget): Preferences.Key<Boolean> {
-        val key = when (tapTarget) {
+        return when (tapTarget) {
             OnboardingTapTarget.CHOOSE_ACTION -> Keys.shownTapTargetChooseAction
         }
-        return key
-    }
-
-    /**
-     * Whether to show a tutorial tap target. This will try to determine whether the user
-     * has interacted with each feature before by checking the key maps they've created (if any).
-     * E.g if they have no key maps with actions then show a tap target highlighting the action tab
-     * when they create a key map.
-     */
-    private fun showTutorialTapTarget(
-        tapTarget: OnboardingTapTarget,
-        isShown: Boolean,
-        skipTutorial: Boolean,
-        keyMapList: List<KeyMapEntity>,
-    ): Boolean {
-        if (isShown) {
-            return false
-        }
-
-        if (skipTutorial) {
-            return false
-        }
-
-        return when (tapTarget) {
-            OnboardingTapTarget.CHOOSE_ACTION -> keyMapList.all { it.actionList.isEmpty() }
-        }
-    }
-
-    override fun skipTapTargetOnboarding() {
-        settingsRepository.set(Keys.skipTapTargetTutorial, true)
     }
 }
 
@@ -167,5 +128,4 @@ interface OnboardingUseCase {
 
     fun showTapTarget(tapTarget: OnboardingTapTarget): Flow<Boolean>
     fun completedTapTarget(tapTarget: OnboardingTapTarget)
-    fun skipTapTargetOnboarding()
 }

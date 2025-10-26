@@ -7,7 +7,9 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionDelegate
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
+import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegate
+import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.isFixable
@@ -47,6 +49,7 @@ class ConfigActionsViewModel @Inject constructor(
     private val createAction: CreateActionUseCase,
     private val testAction: TestActionUseCase,
     private val config: ConfigActionsUseCase,
+    private val onboardingUseCase: OnboardingUseCase,
     setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
     fixKeyEventActionDelegate: FixKeyEventActionDelegate,
     onboardingTipDelegate: OnboardingTipDelegate,
@@ -153,6 +156,9 @@ class ConfigActionsViewModel @Inject constructor(
             val actionData = navigate("add_action", NavDestination.ChooseAction) ?: return@launch
 
             config.addAction(actionData)
+
+            // Never show the tap target to add an action again.
+            onboardingUseCase.completedTapTarget(OnboardingTapTarget.CHOOSE_ACTION)
         }
     }
 

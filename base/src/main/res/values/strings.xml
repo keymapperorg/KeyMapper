@@ -1212,12 +1212,6 @@
     <string name="intent_flags_example">The flags for an Intent are stored as bit flags. These flags alter how the Intent is handled. If this is blank for an Activity Intent then Key Mapper will use FLAG_ACTIVITY_NEW_TASK by default. For much more information tap \'docs\' to see the Android developers documentation.</string>
     <!--  Intent action type strings  -->
 
-    <!--  Tap targets  -->
-    <string name="tap_target_skip_tutorial_button">Skip tutorial</string>
-    <string name="tap_target_choose_action_title">Choose an action</string>
-    <string name="tap_target_choose_action_message">An action is what should happen when you press the trigger.</string>
-    <!--  Tap targets  -->
-
     <!--  About  -->
     <string name="about_link_github">GitHub</string>
     <string name="about_link_website">Website</string>

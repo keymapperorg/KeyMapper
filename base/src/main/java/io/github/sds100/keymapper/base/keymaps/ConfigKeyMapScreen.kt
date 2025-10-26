@@ -21,7 +21,7 @@ fun ConfigKeyMapScreen(
     optionsScreen: @Composable () -> Unit,
 ) {
     val isKeyMapEnabled by keyMapViewModel.isEnabled.collectAsStateWithLifecycle()
-    val showActionTapTarget by keyMapViewModel.showActionsTapTarget.collectAsStateWithLifecycle()
+    val showActionPulse by keyMapViewModel.showActionsTapTarget.collectAsStateWithLifecycle()
     var showBackDialog by rememberSaveable { mutableStateOf(false) }
 
     if (showBackDialog) {
@@ -51,8 +51,6 @@ fun ConfigKeyMapScreen(
         },
         onDoneClick = keyMapViewModel::onDoneClick,
         snackbarHostState = snackbarHostState,
-        showActionTapTarget = showActionTapTarget,
-        onActionTapTargetCompleted = keyMapViewModel::onActionTapTargetCompleted,
-        onSkipTutorialClick = keyMapViewModel::onSkipTutorialClick,
+        showActionPulse = showActionPulse,
     )
 }
