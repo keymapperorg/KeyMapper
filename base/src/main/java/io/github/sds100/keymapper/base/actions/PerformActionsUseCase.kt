@@ -203,7 +203,8 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                         }
                 } else {
                     result = inputEventHub.injectKeyEvent(
-                        model, useSystemBridgeIfAvailable = injectKeyEventsWithSystemBridge.value,
+                        model,
+                        useSystemBridgeIfAvailable = injectKeyEventsWithSystemBridge.value,
                     )
                 }
             }

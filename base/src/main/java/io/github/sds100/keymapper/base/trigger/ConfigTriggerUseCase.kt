@@ -41,7 +41,8 @@ class ConfigTriggerUseCaseImpl @Inject constructor(
     private val floatingLayoutRepository: FloatingLayoutRepository,
     private val getDefaultKeyMapOptionsUseCase: GetDefaultKeyMapOptionsUseCase,
     private val keyMapRepository: KeyMapRepository,
-) : ConfigTriggerUseCase, GetDefaultKeyMapOptionsUseCase by getDefaultKeyMapOptionsUseCase {
+) : ConfigTriggerUseCase,
+    GetDefaultKeyMapOptionsUseCase by getDefaultKeyMapOptionsUseCase {
     override val keyMap: StateFlow<State<KeyMap>> = state.keyMap
 
     override val floatingButtonToUse: MutableStateFlow<String?> = state.floatingButtonToUse

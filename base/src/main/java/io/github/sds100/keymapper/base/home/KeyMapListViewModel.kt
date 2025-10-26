@@ -121,7 +121,7 @@ class KeyMapListViewModel(
                 isPaused = false,
             ),
             listItems = State.Loading,
-            showCreateKeyMapTapTarget = false
+            showCreateKeyMapTapTarget = false,
         )
     private val _state: MutableStateFlow<KeyMapListState> = MutableStateFlow(initialState)
     val state = _state.asStateFlow()
@@ -325,7 +325,7 @@ class KeyMapListViewModel(
             combine(
                 listItemStateFlow,
                 appBarStateFlow,
-                showCreateKeyMapTapTarget
+                showCreateKeyMapTapTarget,
             ) { listState, appBarState, showCreateKeyMapTapTarget ->
                 Triple(listState, appBarState, showCreateKeyMapTapTarget)
             }.collectLatest { (listState, appBarState, showCreateKeyMapTapTarget) ->
@@ -339,7 +339,7 @@ class KeyMapListViewModel(
                     KeyMapListState(
                         appBarState,
                         listState,
-                        showCreateKeyMapTapTarget
+                        showCreateKeyMapTapTarget,
                     )
             }
         }

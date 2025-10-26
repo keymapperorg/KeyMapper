@@ -377,7 +377,7 @@ private fun PreviewRootGroup() {
                     isPaused = true,
                 ),
                 listItems = State.Data(keyMapSampleList()),
-                showCreateKeyMapTapTarget = false
+                showCreateKeyMapTapTarget = false,
             ),
             showShortcutNameDialog = null,
         )
@@ -402,7 +402,7 @@ private fun PreviewChildGroup() {
                     keyMapsEnabled = null,
                 ),
                 listItems = State.Data(keyMapSampleList()),
-                showCreateKeyMapTapTarget = false
+                showCreateKeyMapTapTarget = false,
             ),
             showShortcutNameDialog = null,
         )
@@ -421,7 +421,7 @@ private fun PreviewEmpty() {
                     isPaused = true,
                 ),
                 listItems = State.Data(emptyList()),
-                showCreateKeyMapTapTarget = false
+                showCreateKeyMapTapTarget = false,
             ),
             showShortcutNameDialog = null,
         )

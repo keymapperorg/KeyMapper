@@ -366,13 +366,14 @@ private fun ShellCommandConfigurationContent(
                 keyboardController?.hide()
                 onTestClick()
             },
-            enabled = !state.isRunning && (
-                state.executionMode != ShellExecutionMode.ADB ||
-                    (
-                        state.executionMode == ShellExecutionMode.ADB &&
-                            state.proModeStatus == ProModeStatus.ENABLED
-                        )
-                ),
+            enabled = !state.isRunning &&
+                (
+                    state.executionMode != ShellExecutionMode.ADB ||
+                        (
+                            state.executionMode == ShellExecutionMode.ADB &&
+                                state.proModeStatus == ProModeStatus.ENABLED
+                            )
+                    ),
         ) {
             Icon(Icons.Rounded.PlayArrow, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))

@@ -129,7 +129,6 @@ fun BaseConfigKeyMapScreen(
                     fun Tabs() {
                         for ((index, tab) in tabs.withIndex()) {
                             val tabModifier = if (tab == ConfigKeyMapTab.ACTIONS) {
-
                                 val defaultBackgroundColor = MaterialTheme.colorScheme.surface
                                 val pulseBackgroundColor =
                                     MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
@@ -155,12 +154,12 @@ fun BaseConfigKeyMapScreen(
 
                                         animatedBackgroundColor.animateTo(
                                             pulseBackgroundColor,
-                                            tween(700)
+                                            tween(700),
                                         )
 
                                         animatedBackgroundColor.animateTo(
                                             defaultBackgroundColor,
-                                            tween(700)
+                                            tween(700),
                                         )
                                     }
 
@@ -171,7 +170,7 @@ fun BaseConfigKeyMapScreen(
 
                                 Modifier.background(
                                     color = animatedBackgroundColor.value,
-                                    shape = RoundedCornerShape(8.dp)
+                                    shape = RoundedCornerShape(8.dp),
                                 )
                             } else {
                                 Modifier
@@ -192,7 +191,7 @@ fun BaseConfigKeyMapScreen(
                                             tabs.indexOf(tab),
                                         )
                                     }
-                                }
+                                },
                             )
                         }
                     }

@@ -155,10 +155,11 @@ class OnboardingTipDelegateImpl @Inject constructor(
 
     private fun onCollectTrigger(trigger: Trigger) {
         val showPowerButtonEmergencyTip = trigger.keys.any {
-            it is KeyCodeTriggerKey && KeyEventUtils.isPowerButtonKey(
-                it.keyCode,
-                it.scanCode ?: -1,
-            )
+            it is KeyCodeTriggerKey &&
+                KeyEventUtils.isPowerButtonKey(
+                    it.keyCode,
+                    it.scanCode ?: -1,
+                )
         }
 
         val hasCapsLockKey =

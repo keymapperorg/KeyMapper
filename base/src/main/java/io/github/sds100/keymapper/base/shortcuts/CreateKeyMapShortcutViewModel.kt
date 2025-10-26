@@ -62,7 +62,7 @@ class CreateKeyMapShortcutViewModel @Inject constructor(
             isPaused = false,
         ),
         listItems = State.Loading,
-        showCreateKeyMapTapTarget = false
+        showCreateKeyMapTapTarget = false,
     )
     private val _state: MutableStateFlow<KeyMapListState> = MutableStateFlow(initialState)
     val state = _state.asStateFlow()
