@@ -326,29 +326,21 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.Volume.Down -> {
-                result = audioAdapter.lowerVolume(showVolumeUi = action.showVolumeUi)
-            }
-
-            is ActionData.Volume.Up -> {
-                result = audioAdapter.raiseVolume(showVolumeUi = action.showVolumeUi)
-            }
-
-            is ActionData.Volume.Mute -> {
-                result = audioAdapter.muteVolume(showVolumeUi = action.showVolumeUi)
-            }
-
-            is ActionData.Volume.Stream.Decrease -> {
                 result = audioAdapter.lowerVolume(
                     stream = action.volumeStream,
                     showVolumeUi = action.showVolumeUi,
                 )
             }
 
-            is ActionData.Volume.Stream.Increase -> {
+            is ActionData.Volume.Up -> {
                 result = audioAdapter.raiseVolume(
                     stream = action.volumeStream,
                     showVolumeUi = action.showVolumeUi,
                 )
+            }
+
+            is ActionData.Volume.Mute -> {
+                result = audioAdapter.muteVolume(showVolumeUi = action.showVolumeUi)
             }
 
             is ActionData.Volume.ToggleMute -> {

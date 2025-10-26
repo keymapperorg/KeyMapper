@@ -98,46 +98,40 @@ sealed class ActionData : Comparable<ActionData> {
 
     @Serializable
     sealed class Volume : ActionData() {
-        sealed class Stream : Volume() {
-            abstract val volumeStream: VolumeStream
-            abstract val showVolumeUi: Boolean
+        @Serializable
+        data class Up(
+            val showVolumeUi: Boolean,
+            val volumeStream: VolumeStream? = null,
+        ) : Volume() {
+            override val id = ActionId.VOLUME_UP
 
             override fun compareTo(other: ActionData) = when (other) {
-                is Stream -> compareValuesBy(
+                is Up -> compareValuesBy(
                     this,
                     other,
-                    { it.id },
+                    { it.showVolumeUi },
                     { it.volumeStream },
                 )
-
                 else -> super.compareTo(other)
             }
-
-            @Serializable
-            data class Increase(
-                override val showVolumeUi: Boolean,
-                override val volumeStream: VolumeStream,
-            ) : Stream() {
-                override val id = ActionId.VOLUME_INCREASE_STREAM
-            }
-
-            @Serializable
-            data class Decrease(
-                override val showVolumeUi: Boolean,
-                override val volumeStream: VolumeStream,
-            ) : Stream() {
-                override val id = ActionId.VOLUME_DECREASE_STREAM
-            }
         }
 
         @Serializable
-        data class Up(val showVolumeUi: Boolean) : Volume() {
-            override val id = ActionId.VOLUME_UP
-        }
-
-        @Serializable
-        data class Down(val showVolumeUi: Boolean) : Volume() {
+        data class Down(
+            val showVolumeUi: Boolean,
+            val volumeStream: VolumeStream? = null,
+        ) : Volume() {
             override val id = ActionId.VOLUME_DOWN
+
+            override fun compareTo(other: ActionData) = when (other) {
+                is Down -> compareValuesBy(
+                    this,
+                    other,
+                    { it.showVolumeUi },
+                    { it.volumeStream },
+                )
+                else -> super.compareTo(other)
+            }
         }
 
         @Serializable

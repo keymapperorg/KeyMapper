@@ -1541,6 +1541,10 @@
     <string name="action_config_flashlight_brightness_unsupported">This device does not let you change the brightness.</string>
     <string name="action_config_flashlight_brightness_factor">Brightness change</string>
 
+    <string name="action_config_volume_stream">Volume stream</string>
+    <string name="action_config_volume_stream_default">Default (system controlled)</string>
+    <string name="action_config_volume_options">Options</string>
+
     <string name="choose_action_group_unsupported">Unsupported</string>
 
     <!--  Constraint screen  -->

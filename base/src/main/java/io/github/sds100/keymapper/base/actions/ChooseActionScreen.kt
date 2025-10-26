@@ -55,6 +55,7 @@ fun HandleActionBottomSheets(delegate: CreateActionDelegate) {
     ChangeFlashlightStrengthActionBottomSheet(delegate)
     HttpRequestBottomSheet(delegate)
     SmsActionBottomSheet(delegate)
+    VolumeActionBottomSheet(delegate)
 }
 
 @Composable
