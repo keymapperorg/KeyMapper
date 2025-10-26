@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.valueIfFailure
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
+import io.github.sds100.keymapper.sysbridge.manager.isConnected
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -77,6 +78,11 @@ class EvdevHandleCache @Inject constructor(
     }
 
     suspend fun invalidate() {
+        if (!systemBridgeConnectionManager.isConnected()) {
+            devicesByPath.value = emptyMap()
+            return
+        }
+
         // Do it on a separate thread in case there is deadlock
         val newDevices = withContext(Dispatchers.IO) {
             systemBridgeConnectionManager.run { bridge -> bridge.evdevInputDevices.associateBy { it.path } }
