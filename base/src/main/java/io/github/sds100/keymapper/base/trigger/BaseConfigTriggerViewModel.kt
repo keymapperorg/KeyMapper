@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.trigger
 
+import android.view.KeyEvent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -381,6 +382,10 @@ abstract class BaseConfigTriggerViewModel(
                 product = key.device.product,
             ),
         )
+
+        if (key.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || key.keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+            neverShowTipAgain(OnboardingTipDelegateImpl.VOLUME_BUTTONS_PRO_MODE_TIP_ID)
+        }
     }
 
     fun onParallelRadioButtonChecked() {
@@ -488,8 +493,14 @@ abstract class BaseConfigTriggerViewModel(
     }
 
     override fun onTipButtonClick(tipId: String) {
-        if (tipId == OnboardingTipDelegateImpl.CAPS_LOCK_PRO_MODE_COMPATIBILITY_TIP_ID) {
-            showTriggerSetup(TriggerSetupShortcut.KEYBOARD, forceProMode = true)
+        when (tipId) {
+            OnboardingTipDelegateImpl.CAPS_LOCK_PRO_MODE_COMPATIBILITY_TIP_ID -> {
+                showTriggerSetup(TriggerSetupShortcut.KEYBOARD, forceProMode = true)
+            }
+
+            OnboardingTipDelegateImpl.VOLUME_BUTTONS_PRO_MODE_TIP_ID -> {
+                showTriggerSetup(TriggerSetupShortcut.VOLUME, forceProMode = true)
+            }
         }
     }
 

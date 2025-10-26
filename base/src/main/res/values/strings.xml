@@ -1349,8 +1349,11 @@
     <string name="floating_button_text_key_map_list_item">Floating button %s (%s)</string>
     <string name="deleted_floating_button_text_key_map_list_item">Deleted floating button</string>
     <string name="tip_caps_lock_pro_mode_title">Better Caps Lock compatibility</string>
-    <string name="tip_caps_lock_pro_mode_text">PRO mode provides better compatibility for Caps Lock remapping. Please record the trigger again with PRO mode.</string>
-    <string name="tip_caps_lock_pro_mode_button">Record again</string>
+    <string name="tip_caps_lock_pro_mode_text">PRO mode provides better compatibility for Caps Lock remapping. Tap \'Use PRO mode\' and record it again.</string>
+    <string name="tip_caps_lock_pro_mode_button">Use PRO mode</string>
+    <string name="tip_volume_buttons_pro_mode_title">Screen off remapping?</string>
+    <string name="tip_volume_buttons_pro_mode_text">Use PRO mode if you want your trigger to work when the screen is off. Tap \'Use PRO mode\' and record it again.</string>
+    <string name="tip_volume_buttons_pro_mode_button">Use PRO mode</string>
     <string name="tip_screen_pinning_title">App pinning warning</string>
     <string name="tip_screen_pinning_text">Using the back button as a trigger may conflict with app pinning, causing a black screen on unlock. A reboot will fix it.</string>
     <string name="tip_ime_detection_title">Keyboard icon</string>
