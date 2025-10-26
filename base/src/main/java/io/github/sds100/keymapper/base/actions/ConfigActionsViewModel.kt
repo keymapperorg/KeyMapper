@@ -82,6 +82,8 @@ class ConfigActionsViewModel @Inject constructor(
         combine(config.keyMap, actionOptionsUid, transform = ::buildOptionsState)
             .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
+    private var editedActionUid: String? = null
+
     private val actionErrorSnapshot: StateFlow<ActionErrorSnapshot?> =
         displayAction.actionErrorSnapshot.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
@@ -99,7 +101,7 @@ class ConfigActionsViewModel @Inject constructor(
 
         viewModelScope.launch {
             createActionDelegate.actionResult.filterNotNull().collect { action ->
-                val actionUid = actionOptionsUid.value ?: return@collect
+                val actionUid = editedActionUid ?: return@collect
                 config.setActionData(actionUid, action)
                 actionOptionsUid.update { null }
             }
@@ -186,6 +188,7 @@ class ConfigActionsViewModel @Inject constructor(
         viewModelScope.launch {
             // Clear the bottom sheet so navigating back with predicted-back works
             actionOptionsUid.update { null }
+            editedActionUid = actionUid
 
             val keyMap = config.keyMap.first().dataOrNull() ?: return@launch
 

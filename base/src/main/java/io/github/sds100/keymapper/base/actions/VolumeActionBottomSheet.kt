@@ -1,7 +1,6 @@
 package io.github.sds100.keymapper.base.actions
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -44,6 +43,12 @@ import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import kotlinx.coroutines.launch
+
+data class VolumeActionBottomSheetState(
+    val actionId: ActionId,
+    val volumeStream: VolumeStream?,
+    val showVolumeUi: Boolean,
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -195,12 +200,6 @@ private fun VolumeActionBottomSheet(
         Spacer(Modifier.height(16.dp))
     }
 }
-
-data class VolumeActionBottomSheetState(
-    val actionId: ActionId,
-    val volumeStream: VolumeStream?,
-    val showVolumeUi: Boolean,
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
