@@ -274,7 +274,7 @@ object ActionDataEntityMapper {
 
             ActionId.VOLUME_INCREASE_STREAM,
             ActionId.VOLUME_DECREASE_STREAM,
-            -> {
+                -> {
                 val stream =
                     entity.extras.getData(ActionEntity.EXTRA_STREAM_TYPE).then {
                         VOLUME_STREAM_MAP.getKey(it)!!.success()
@@ -300,7 +300,7 @@ object ActionDataEntityMapper {
             ActionId.VOLUME_TOGGLE_MUTE,
             ActionId.VOLUME_UNMUTE,
             ActionId.VOLUME_MUTE,
-            -> {
+                -> {
                 val showVolumeUi =
                     entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI)
 
@@ -327,10 +327,14 @@ object ActionDataEntityMapper {
                 }
             }
 
+            ActionId.MUTE_MICROPHONE -> ActionData.Microphone.Mute
+            ActionId.UNMUTE_MICROPHONE -> ActionData.Microphone.Unmute
+            ActionId.TOGGLE_MUTE_MICROPHONE -> ActionData.Microphone.Toggle
+
             ActionId.TOGGLE_FLASHLIGHT,
             ActionId.ENABLE_FLASHLIGHT,
             ActionId.CHANGE_FLASHLIGHT_STRENGTH,
-            -> {
+                -> {
                 val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
                     LENS_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -356,7 +360,7 @@ object ActionDataEntityMapper {
             }
 
             ActionId.DISABLE_FLASHLIGHT,
-            -> {
+                -> {
                 val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
                     LENS_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -365,7 +369,7 @@ object ActionDataEntityMapper {
 
             ActionId.TOGGLE_DND_MODE,
             ActionId.ENABLE_DND_MODE,
-            -> {
+                -> {
                 val dndMode = entity.extras.getData(ActionEntity.EXTRA_DND_MODE).then {
                     DND_MODE_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -395,7 +399,7 @@ object ActionDataEntityMapper {
             ActionId.STOP_MEDIA_PACKAGE,
             ActionId.STEP_FORWARD_PACKAGE,
             ActionId.STEP_BACKWARD_PACKAGE,
-            -> {
+                -> {
                 val packageName =
                     entity.extras.getData(ActionEntity.EXTRA_PACKAGE_NAME).valueOrNull()
                         ?: return null
@@ -1167,6 +1171,9 @@ object ActionDataEntityMapper {
         ActionId.VOLUME_UNMUTE to "volume_unmute",
         ActionId.VOLUME_MUTE to "volume_mute",
         ActionId.VOLUME_TOGGLE_MUTE to "volume_toggle_mute",
+        ActionId.MUTE_MICROPHONE to "mute_microphone",
+        ActionId.UNMUTE_MICROPHONE to "unmute_microphone",
+        ActionId.TOGGLE_MUTE_MICROPHONE to "toggle_mute_microphone",
 
         ActionId.EXPAND_NOTIFICATION_DRAWER to "expand_notification_drawer",
         ActionId.TOGGLE_NOTIFICATION_DRAWER to "toggle_notification_drawer",

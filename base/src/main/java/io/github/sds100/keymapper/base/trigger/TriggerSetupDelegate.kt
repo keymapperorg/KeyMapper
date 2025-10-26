@@ -58,6 +58,9 @@ class TriggerSetupDelegateImpl @Inject constructor(
         MutableStateFlow(null)
 
     private val isScreenOffChecked: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val isProModeLocked: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val forceProMode: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
     private val selectedFingerprintGestureType: MutableStateFlow<FingerprintGestureType> =
         MutableStateFlow(FingerprintGestureType.SWIPE_DOWN)
 
@@ -96,7 +99,13 @@ class TriggerSetupDelegateImpl @Inject constructor(
             }
         }.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-    override fun showTriggerSetup(shortcut: TriggerSetupShortcut) {
+    override fun showTriggerSetup(shortcut: TriggerSetupShortcut, forceProMode: Boolean) {
+        isProModeLocked.value = true
+        this.forceProMode.value = forceProMode
+        // If force pro mode is enabled, automatically check the screen off option
+        if (forceProMode) {
+            isScreenOffChecked.value = true
+        }
         currentSetupShortcut.value = shortcut
     }
 
@@ -106,7 +115,8 @@ class TriggerSetupDelegateImpl @Inject constructor(
             isScreenOffChecked,
             recordTriggerController.state,
             proModeStatus,
-        ) { serviceState, isScreenOffChecked, recordTriggerState, proModeStatus ->
+            forceProMode,
+        ) { serviceState, isScreenOffChecked, recordTriggerState, proModeStatus, forceProMode ->
             val areRequirementsMet = if (isScreenOffChecked) {
                 serviceState == AccessibilityServiceState.ENABLED && proModeStatus == ProModeStatus.ENABLED
             } else {
@@ -115,10 +125,11 @@ class TriggerSetupDelegateImpl @Inject constructor(
 
             TriggerSetupState.Volume(
                 isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
-                isScreenOffChecked = isScreenOffChecked,
+                isUseProModeChecked = isScreenOffChecked,
                 proModeStatus = proModeStatus,
                 areRequirementsMet = areRequirementsMet,
                 recordTriggerState = recordTriggerState,
+                forceProMode = forceProMode,
             )
         }
     }
@@ -153,7 +164,8 @@ class TriggerSetupDelegateImpl @Inject constructor(
                         isScreenOffChecked,
                         recordTriggerController.state,
                         proModeStatus,
-                    ) { serviceState, isScreenOffChecked, recordTriggerState, proModeStatus ->
+                        forceProMode,
+                    ) { serviceState, isScreenOffChecked, recordTriggerState, proModeStatus, forceProMode ->
                         val areRequirementsMet = if (isScreenOffChecked) {
                             serviceState == AccessibilityServiceState.ENABLED && proModeStatus == ProModeStatus.ENABLED
                         } else {
@@ -162,10 +174,11 @@ class TriggerSetupDelegateImpl @Inject constructor(
 
                         TriggerSetupState.Gamepad.SimpleButtons(
                             isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
-                            isScreenOffChecked = isScreenOffChecked,
+                            isUseProModeChecked = isScreenOffChecked,
                             proModeStatus = proModeStatus,
                             areRequirementsMet = areRequirementsMet,
                             recordTriggerState = recordTriggerState,
+                            forceProMode = forceProMode,
                         )
                     }
                 }
@@ -179,7 +192,8 @@ class TriggerSetupDelegateImpl @Inject constructor(
             isScreenOffChecked,
             recordTriggerController.state,
             proModeStatus,
-        ) { serviceState, isScreenOffChecked, recordTriggerState, proModeStatus ->
+            forceProMode,
+        ) { serviceState, isScreenOffChecked, recordTriggerState, proModeStatus, forceProMode ->
             val areRequirementsMet = if (isScreenOffChecked) {
                 serviceState == AccessibilityServiceState.ENABLED && proModeStatus == ProModeStatus.ENABLED
             } else {
@@ -188,10 +202,11 @@ class TriggerSetupDelegateImpl @Inject constructor(
 
             TriggerSetupState.Other(
                 isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
-                isScreenOffChecked = isScreenOffChecked,
+                isUseProModeChecked = isScreenOffChecked,
                 proModeStatus = proModeStatus,
                 areRequirementsMet = areRequirementsMet,
                 recordTriggerState = recordTriggerState,
+                forceProMode = forceProMode,
             )
         }
     }
@@ -220,7 +235,8 @@ class TriggerSetupDelegateImpl @Inject constructor(
             isScreenOffChecked,
             recordTriggerController.state,
             proModeStatus,
-        ) { serviceState, isScreenOffChecked, recordTriggerState, proModeStatus ->
+            forceProMode,
+        ) { serviceState, isScreenOffChecked, recordTriggerState, proModeStatus, forceProMode ->
             val areRequirementsMet = if (isScreenOffChecked) {
                 serviceState == AccessibilityServiceState.ENABLED && proModeStatus == ProModeStatus.ENABLED
             } else {
@@ -229,10 +245,11 @@ class TriggerSetupDelegateImpl @Inject constructor(
 
             TriggerSetupState.Keyboard(
                 isAccessibilityServiceEnabled = serviceState == AccessibilityServiceState.ENABLED,
-                isScreenOffChecked = isScreenOffChecked,
+                isUseProModeChecked = isScreenOffChecked,
                 proModeStatus = proModeStatus,
                 areRequirementsMet = areRequirementsMet,
                 recordTriggerState = recordTriggerState,
+                forceProMode = forceProMode,
             )
         }
     }
@@ -326,6 +343,10 @@ class TriggerSetupDelegateImpl @Inject constructor(
         isScreenOffChecked.value = isChecked
     }
 
+    override fun onUseProModeCheckedChange(isChecked: Boolean) {
+        isScreenOffChecked.value = isChecked
+    }
+
     override fun onDismissTriggerSetup() {
         currentSetupShortcut.value = null
     }
@@ -334,14 +355,14 @@ class TriggerSetupDelegateImpl @Inject constructor(
         val setupState = triggerSetupState.value ?: return
 
         val enableEvdevRecording = when (setupState) {
-            is TriggerSetupState.Volume -> setupState.isScreenOffChecked
-            is TriggerSetupState.Keyboard -> setupState.isScreenOffChecked
+            is TriggerSetupState.Volume -> setupState.isUseProModeChecked
+            is TriggerSetupState.Keyboard -> setupState.isUseProModeChecked
             is TriggerSetupState.Power -> true
             is TriggerSetupState.FingerprintGesture -> false
             is TriggerSetupState.Mouse -> true
-            is TriggerSetupState.Other -> setupState.isScreenOffChecked
+            is TriggerSetupState.Other -> setupState.isUseProModeChecked
             is TriggerSetupState.Gamepad.Dpad -> false
-            is TriggerSetupState.Gamepad.SimpleButtons -> setupState.isScreenOffChecked
+            is TriggerSetupState.Gamepad.SimpleButtons -> setupState.isUseProModeChecked
             // Always enable pro mode recording to increase the chances of detecting
             // the key
             is TriggerSetupState.NotDetected -> true
@@ -403,11 +424,12 @@ class TriggerSetupDelegateImpl @Inject constructor(
 
 interface TriggerSetupDelegate {
     val triggerSetupState: StateFlow<TriggerSetupState?>
-    fun showTriggerSetup(shortcut: TriggerSetupShortcut)
+    fun showTriggerSetup(shortcut: TriggerSetupShortcut, forceProMode: Boolean = false)
     fun onDismissTriggerSetup()
     fun onEnableAccessibilityServiceClick()
     fun onEnableProModeClick()
     fun onScreenOffTriggerSetupCheckedChange(isChecked: Boolean)
+    fun onUseProModeCheckedChange(isChecked: Boolean)
     fun onTriggerSetupRecordClick()
     fun onFingerprintGestureTypeSelected(type: FingerprintGestureType)
     fun onAddFingerprintGestureClick()

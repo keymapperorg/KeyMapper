@@ -60,10 +60,8 @@ class ActionUiHelper(
             }
 
             if (action.device != null) {
-                val name = if (action.device.name.isBlank()) {
+                val name = action.device.name.ifBlank {
                     getString(R.string.unknown_device_name)
-                } else {
-                    action.device.name
                 }
 
                 val nameToShow = if (showDeviceDescriptors) {
@@ -597,6 +595,10 @@ class ActionUiHelper(
             R.string.action_send_sms_description,
             arrayOf(action.message, action.number),
         )
+
+        ActionData.Microphone.Mute -> getString(R.string.action_mute_microphone)
+        ActionData.Microphone.Toggle -> getString(R.string.action_toggle_mute_microphone)
+        ActionData.Microphone.Unmute -> getString(R.string.action_unmute_microphone)
     }
 
     fun getIcon(action: ActionData): ComposeIconInfo = when (action) {

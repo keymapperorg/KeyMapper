@@ -93,7 +93,6 @@ dependencies {
     implementation(libs.google.flexbox)
     implementation(libs.squareup.okhttp)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
-    implementation(libs.canopas.introshowcaseview)
     implementation(libs.dagger.hilt.android)
     ksp(libs.dagger.hilt.android.compiler)
     implementation(libs.bundles.splitties)

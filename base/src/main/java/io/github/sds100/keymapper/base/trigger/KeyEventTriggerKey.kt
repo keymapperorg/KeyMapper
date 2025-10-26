@@ -22,7 +22,8 @@ data class KeyEventTriggerKey(
     val requiresIme: Boolean = false,
     override val scanCode: Int? = null,
     override val detectWithScanCodeUserSetting: Boolean = false,
-) : TriggerKey(), KeyCodeTriggerKey {
+) : TriggerKey(),
+    KeyCodeTriggerKey {
 
     override val allowedLongPress: Boolean = true
     override val allowedDoublePress: Boolean = true

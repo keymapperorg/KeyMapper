@@ -201,6 +201,8 @@
     <string name="toast_no_sound_files">You have saved no sound files!</string>
     <string name="toast_granted_itself_write_secure_settings_with_shizuku">Key Mapper has used Shizuku to grant itself WRITE_SECURE_SETTINGS permission</string>
     <string name="toast_granted_itself_write_secure_settings_with_root">Key Mapper has used Root to grant itself WRITE_SECURE_SETTINGS permission</string>
+    <string name="toast_microphone_muted">Microphone muted</string>
+    <string name="toast_microphone_unmuted">Microphone unmuted</string>
     <!--  Toasts  -->
 
     <!-- Extra labels -->
@@ -883,6 +885,9 @@
     <string name="action_volume_mute">Mute volume</string>
     <string name="action_toggle_mute">Toggle mute</string>
     <string name="action_volume_unmute">Unmute volume</string>
+    <string name="action_mute_microphone">Mute microphone</string>
+    <string name="action_unmute_microphone">Unmute microphone</string>
+    <string name="action_toggle_mute_microphone">Toggle mute microphone</string>
     <string name="action_volume_show_dialog">Show volume dialog</string>
     <string name="action_increase_stream">Increase stream</string>
     <string name="action_increase_stream_formatted">Increase %s stream</string>
@@ -1212,14 +1217,6 @@
     <string name="intent_flags_example">The flags for an Intent are stored as bit flags. These flags alter how the Intent is handled. If this is blank for an Activity Intent then Key Mapper will use FLAG_ACTIVITY_NEW_TASK by default. For much more information tap \'docs\' to see the Android developers documentation.</string>
     <!--  Intent action type strings  -->
 
-    <!--  Tap targets  -->
-    <string name="tap_target_skip_tutorial_button">Skip tutorial</string>
-    <string name="tap_target_create_key_map_title">Create your first key map!</string>
-    <string name="tap_target_create_key_map_message">A key map is a rule to tell your device what to do when a button is pressed.</string>
-    <string name="tap_target_choose_action_title">Choose an action</string>
-    <string name="tap_target_choose_action_message">An action is what should happen when you press the trigger.</string>
-    <!--  Tap targets  -->
-
     <!--  About  -->
     <string name="about_link_github">GitHub</string>
     <string name="about_link_website">Website</string>
@@ -1356,8 +1353,12 @@
     <string name="floating_buttons_product_description">Floating buttons display over the apps you want. They work just like real buttons, and you can place, style, and map them however you like.</string>
     <string name="floating_button_text_key_map_list_item">Floating button %s (%s)</string>
     <string name="deleted_floating_button_text_key_map_list_item">Deleted floating button</string>
-    <string name="tip_caps_lock_title">Caps lock remapping</string>
-    <string name="tip_caps_lock_text">To remap Caps Lock, change your physical keyboard layout in settings to \'Caps Lock to camera\', then re-record this trigger.</string>
+    <string name="tip_caps_lock_pro_mode_title">Better Caps Lock compatibility</string>
+    <string name="tip_caps_lock_pro_mode_text">PRO mode provides better compatibility for Caps Lock remapping. Tap \'Use PRO mode\' and record it again.</string>
+    <string name="tip_caps_lock_pro_mode_button">Use PRO mode</string>
+    <string name="tip_volume_buttons_pro_mode_title">Screen off remapping?</string>
+    <string name="tip_volume_buttons_pro_mode_text">Use PRO mode if you want your trigger to work when the screen is off. Tap \'Use PRO mode\' and record it again.</string>
+    <string name="tip_volume_buttons_pro_mode_button">Use PRO mode</string>
     <string name="tip_screen_pinning_title">App pinning warning</string>
     <string name="tip_screen_pinning_text">Using the back button as a trigger may conflict with app pinning, causing a black screen on unlock. A reboot will fix it.</string>
     <string name="tip_ime_detection_title">Keyboard icon</string>
@@ -1392,7 +1393,7 @@
     <string name="home_fab_new_key_map">New key map</string>
     <string name="home_fab_new_floating_layout">New layout</string>
     <string name="home_key_map_list_footer_text">Tap a key map to configure it.\nLong press for more options.</string>
-    <string name="home_key_map_list_empty">Create a key map!</string>
+    <string name="home_key_map_list_empty">Create a key map!\n\nA key map is a rule to tell your device what to do when a button is pressed.</string>
     <string name="home_floating_layouts_promo_title">Don’t have enough buttons?</string>
     <string name="home_floating_layouts_promo_subtitle">Make your own!</string>
     <string name="home_floating_layouts_promo_text">Floating buttons display over the apps you want. They work just like real buttons, and you can place, style, and map them however you like.</string>
@@ -1731,6 +1732,7 @@
     <string name="trigger_setup_status_remap_device_possible">You can remap this device</string>
     <string name="trigger_setup_status_feature_possible">You can use this feature</string>
     <string name="trigger_setup_screen_off_option">Remap when the screen is off</string>
+    <string name="trigger_setup_screen_off_option_keyboard">Remap when the screen is off</string>
     <string name="trigger_setup_options_title">Options</string>
     <string name="trigger_setup_requirements_title">Requirements</string>
     <string name="trigger_setup_not_detected_information">If your buttons still cannot be detected, please join our Discord server and let us know. We will do our best to help you remap your buttons.</string>
@@ -1778,5 +1780,10 @@
     <string name="warning_sms_charges">Sending SMS may incur carrier or roaming charges. Key Mapper developers are not liable for any costs.</string>
     <string name="hint_shell_command_description">Description</string>
     <string name="hint_shell_command_timeout">Timeout</string>
+
+    <!-- Floating buttons review card -->
+    <string name="floating_buttons_review_card_title">How are floating buttons?</string>
+    <string name="floating_buttons_review_card_message">We would love to know! Please consider leaving a review on Google Play to help others discover this feature. ❤️</string>
+    <string name="floating_buttons_review_card_dismiss">Dismiss</string>
 
 </resources>

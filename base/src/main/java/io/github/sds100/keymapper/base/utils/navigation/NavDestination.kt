@@ -144,15 +144,13 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data class OpenKeyMap(val keyMapUid: String) :
-        NavDestination<Unit>(isCompose = true) {
+    data class OpenKeyMap(val keyMapUid: String) : NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_CONFIG_KEY_MAP
     }
 
     @Serializable
     data class NewKeyMap(
         val groupUid: String?,
-        val floatingButtonToUse: String? = null,
         /**
          * The trigger shortcut to immediately launch
          * when navigating to the screen to create a key map.

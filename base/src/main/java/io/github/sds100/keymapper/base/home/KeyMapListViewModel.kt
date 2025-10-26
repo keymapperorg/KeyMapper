@@ -865,6 +865,8 @@ class KeyMapListViewModel(
     }
 
     fun onNewKeyMapClick() {
+        onboarding.completedTapTarget(OnboardingTapTarget.CREATE_KEY_MAP)
+
         coroutineScope.launch {
             val groupUid = listKeyMaps.keyMapGroup.first().group?.uid
 
@@ -899,13 +901,5 @@ class KeyMapListViewModel(
                 }
             }
         }
-    }
-
-    fun onTapTargetsCompleted() {
-        onboarding.completedTapTarget(OnboardingTapTarget.CREATE_KEY_MAP)
-    }
-
-    fun onSkipTapTargetClick() {
-        onboarding.skipTapTargetOnboarding()
     }
 }

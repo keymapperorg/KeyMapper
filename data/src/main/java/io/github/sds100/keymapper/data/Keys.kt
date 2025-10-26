@@ -55,8 +55,10 @@ object Keys {
         booleanPreferencesKey("key_shown_sequence_trigger_explanation_dialog")
     val shownTriggerConstraintsTip =
         booleanPreferencesKey("key_shown_trigger_constraints_tip")
-    val shownCapsLockTip =
-        booleanPreferencesKey("key_shown_caps_lock_tip")
+    val shownCapsLockProModeTip =
+        booleanPreferencesKey("key_shown_caps_lock_pro_mode_compatibility_tip")
+    val shownVolumeButtonsProModeTip =
+        booleanPreferencesKey("key_shown_volume_buttons_pro_mode_tip")
     val shownScreenPinningTip =
         booleanPreferencesKey("key_shown_screen_pinning_tip")
     val shownRingerModeTip =
@@ -112,8 +114,8 @@ object Keys {
 //    val shownTapTargetChooseConstraint =
 //        booleanPreferencesKey("key_shown_tap_target_choose_constraint")
 
-    val skipTapTargetTutorial =
-        booleanPreferencesKey("key_skip_tap_target_tutorial")
+//    val skipTapTargetTutorial =
+//        booleanPreferencesKey("key_skip_tap_target_tutorial")
 
     val isProModeWarningUnderstood =
         booleanPreferencesKey("key_is_pro_mode_warning_understood")

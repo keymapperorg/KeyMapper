@@ -51,13 +51,13 @@ class ConfigTriggerViewModel @Inject constructor(
 
     override fun onEditFloatingLayoutClick() {}
 
-    override fun showTriggerSetup(shortcut: TriggerSetupShortcut) {
+    override fun showTriggerSetup(shortcut: TriggerSetupShortcut, forceProMode: Boolean) {
         when (shortcut) {
             TriggerSetupShortcut.ASSISTANT -> viewModelScope.launch {
                 navigateToAdvancedTriggers("purchase_assistant_trigger")
             }
 
-            else -> super.showTriggerSetup(shortcut)
+            else -> super.showTriggerSetup(shortcut, forceProMode)
         }
     }
 }

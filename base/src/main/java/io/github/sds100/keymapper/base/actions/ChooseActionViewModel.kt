@@ -199,16 +199,16 @@ class ChooseActionViewModel @Inject constructor(
         val messageToShow: Int? = when (id) {
             ActionId.FAST_FORWARD_PACKAGE,
             ActionId.FAST_FORWARD,
-            -> R.string.action_fast_forward_message
+                -> R.string.action_fast_forward_message
 
             ActionId.REWIND_PACKAGE,
             ActionId.REWIND,
-            -> R.string.action_rewind_message
+                -> R.string.action_rewind_message
 
             ActionId.TOGGLE_KEYBOARD,
             ActionId.SHOW_KEYBOARD,
             ActionId.HIDE_KEYBOARD,
-            -> R.string.action_toggle_keyboard_message
+                -> R.string.action_toggle_keyboard_message
 
             ActionId.SECURE_LOCK_DEVICE -> R.string.action_secure_lock_device_message
 
