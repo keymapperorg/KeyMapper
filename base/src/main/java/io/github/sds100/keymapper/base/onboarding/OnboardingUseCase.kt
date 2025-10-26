@@ -102,6 +102,7 @@ class OnboardingUseCaseImpl @Inject constructor(
     private fun getTapTargetKey(tapTarget: OnboardingTapTarget): Preferences.Key<Boolean> {
         return when (tapTarget) {
             OnboardingTapTarget.CHOOSE_ACTION -> Keys.shownTapTargetChooseAction
+            OnboardingTapTarget.CREATE_KEY_MAP -> Keys.shownTapTargetCreateKeyMap
         }
     }
 }

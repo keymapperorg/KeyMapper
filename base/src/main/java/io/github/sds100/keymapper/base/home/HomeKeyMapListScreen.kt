@@ -152,10 +152,6 @@ fun HomeKeyMapListScreen(
 
     var keyMapListBottomPadding by remember { mutableStateOf(100.dp) }
 
-    // Check if the list is empty to trigger pulsing animation
-    val isListEmpty = state.listItems is State.Data &&
-        (state.listItems as State.Data<List<KeyMapListItemModel>>).data.isEmpty()
-
     HomeKeyMapListScreen(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarState = snackbarState,
@@ -169,7 +165,7 @@ fun HomeKeyMapListScreen(
                     modifier = Modifier
                         .padding(bottom = fabBottomPadding)
                         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.End)),
-                    pulse = isListEmpty,
+                    pulse = state.showCreateKeyMapTapTarget,
                     showFabText = viewModel.showFabText,
                     text = stringResource(R.string.home_fab_new_key_map),
                     onClick = viewModel::onNewKeyMapClick,

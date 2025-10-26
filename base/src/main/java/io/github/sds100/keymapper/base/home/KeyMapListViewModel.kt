@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.base.groups.GroupFamily
 import io.github.sds100.keymapper.base.groups.GroupListItemModel
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.PauseKeyMapsUseCase
+import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
 import io.github.sds100.keymapper.base.sorting.SortKeyMapsUseCase
@@ -120,6 +121,7 @@ class KeyMapListViewModel(
                 isPaused = false,
             ),
             listItems = State.Loading,
+            showCreateKeyMapTapTarget = false
         )
     private val _state: MutableStateFlow<KeyMapListState> = MutableStateFlow(initialState)
     val state = _state.asStateFlow()
@@ -311,13 +313,22 @@ class KeyMapListViewModel(
                 }
             }
 
+        val showCreateKeyMapTapTarget = combine(
+            onboarding.showTapTarget(OnboardingTapTarget.CREATE_KEY_MAP),
+            onboarding.showWhatsNew,
+        ) { showTapTarget, showWhatsNew ->
+            // Only show the tap target if whats new is not showing.
+            showTapTarget && !showWhatsNew
+        }
+
         coroutineScope.launch {
             combine(
                 listItemStateFlow,
                 appBarStateFlow,
-            ) { listState, appBarState ->
-                Pair(listState, appBarState)
-            }.collectLatest { (listState, appBarState) ->
+                showCreateKeyMapTapTarget
+            ) { listState, appBarState, showCreateKeyMapTapTarget ->
+                Triple(listState, appBarState, showCreateKeyMapTapTarget)
+            }.collectLatest { (listState, appBarState, showCreateKeyMapTapTarget) ->
                 listState.ifIsData { list ->
                     if (list.isNotEmpty()) {
                         showFabText = false
@@ -328,6 +339,7 @@ class KeyMapListViewModel(
                     KeyMapListState(
                         appBarState,
                         listState,
+                        showCreateKeyMapTapTarget
                     )
             }
         }
@@ -853,6 +865,8 @@ class KeyMapListViewModel(
     }
 
     fun onNewKeyMapClick() {
+        onboarding.completedTapTarget(OnboardingTapTarget.CREATE_KEY_MAP)
+
         coroutineScope.launch {
             val groupUid = listKeyMaps.keyMapGroup.first().group?.uid
 
