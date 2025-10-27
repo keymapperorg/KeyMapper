@@ -150,7 +150,13 @@ class KeyMapListViewModel(
         showAlertsUseCase.hideAlerts,
         showAlertsUseCase.isLoggingEnabled,
         showAlertsUseCase.showNotificationPermissionAlert,
-    ) { isBatteryOptimised, serviceState, isHidden, isLoggingEnabled, showNotificationPermissionAlert ->
+    ) {
+            isBatteryOptimised,
+            serviceState,
+            isHidden,
+            isLoggingEnabled,
+            showNotificationPermissionAlert,
+        ->
         if (isHidden) {
             return@combine emptyList()
         }
@@ -373,9 +379,7 @@ class KeyMapListViewModel(
         )
     }
 
-    private fun getKeyMapSelectedState(
-        keyMaps: List<KeyMap>,
-    ): SelectedKeyMapsEnabled? {
+    private fun getKeyMapSelectedState(keyMaps: List<KeyMap>): SelectedKeyMapsEnabled? {
         var selectedKeyMapsEnabled: SelectedKeyMapsEnabled? = null
 
         for (keyMap in keyMaps) {
@@ -434,7 +438,9 @@ class KeyMapListViewModel(
                     constraintErrorSnapshot,
                 ),
                 constraintMode = keyMapGroup.group.constraintState.mode,
-                parentConstraintCount = keyMapGroup.parents.sumOf { it.constraintState.constraints.size },
+                parentConstraintCount = keyMapGroup.parents.sumOf {
+                    it.constraintState.constraints.size
+                },
                 subGroups = subGroupListItems,
                 breadcrumbs = breadcrumbs,
                 isEditingGroupName = isEditingGroupName,
@@ -526,7 +532,9 @@ class KeyMapListViewModel(
                     )
                 }
 
-                TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED, TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> {
+                TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED,
+                TriggerError.FLOATING_BUTTONS_NOT_PURCHASED,
+                    -> {
                     val result = navigate(
                         "purchase_advanced_trigger",
                         NavDestination.AdvancedTriggers,
@@ -673,9 +681,14 @@ class KeyMapListViewModel(
                 ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM ->
                     showFixAccessibilityServiceDialog(AccessibilityServiceError.Crashed)
 
-                ID_BATTERY_OPTIMISATION_LIST_ITEM -> showAlertsUseCase.disableBatteryOptimisation()
-                ID_LOGGING_ENABLED_LIST_ITEM -> showAlertsUseCase.disableLogging()
-                ID_NOTIFICATION_PERMISSION_DENIED_LIST_ITEM -> showNotificationPermissionAlertDialog()
+                ID_BATTERY_OPTIMISATION_LIST_ITEM ->
+                    showAlertsUseCase.disableBatteryOptimisation()
+
+                ID_LOGGING_ENABLED_LIST_ITEM ->
+                    showAlertsUseCase.disableLogging()
+
+                ID_NOTIFICATION_PERMISSION_DENIED_LIST_ITEM ->
+                    showNotificationPermissionAlertDialog()
             }
         }
     }

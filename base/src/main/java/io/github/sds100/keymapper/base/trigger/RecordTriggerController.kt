@@ -15,6 +15,8 @@ import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import io.github.sds100.keymapper.system.inputevents.Scancode
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -27,8 +29,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class RecordTriggerControllerImpl @Inject constructor(
@@ -114,7 +114,11 @@ class RecordTriggerControllerImpl @Inject constructor(
                     downEvdevEvents.add(event)
                 } else if (event.isUpEvent) {
                     onRecordKey(createEvdevRecordedKey(event))
-                    Timber.d("Recorded evdev event ${event.code} ${KeyEvent.keyCodeToString(event.androidCode)}")
+                    Timber.d(
+                        "Recorded evdev event ${event.code} ${KeyEvent.keyCodeToString(
+                            event.androidCode,
+                        )}",
+                    )
                 }
 
                 return true
@@ -130,7 +134,9 @@ class RecordTriggerControllerImpl @Inject constructor(
                             detectionSource,
                         )
                         onRecordKey(recordedKey)
-                        Timber.d("Recorded motion event ${KeyEvent.keyCodeToString(keyEvent.keyCode)}")
+                        Timber.d(
+                            "Recorded motion event ${KeyEvent.keyCodeToString(keyEvent.keyCode)}",
+                        )
                     }
                 }
                 return true

@@ -130,7 +130,11 @@ fun GroupRow(
 
             for (group in groups) {
                 GroupButton(
-                    modifier = Modifier.widthIn(max = LocalDensity.current.run { maxChipWidth.toDp() }),
+                    modifier = Modifier.widthIn(
+                        max = LocalDensity.current.run {
+                            maxChipWidth.toDp()
+                        },
+                    ),
                     onClick = { onGroupClick(group.uid) },
                     text = group.name,
                     enabled = enabled,

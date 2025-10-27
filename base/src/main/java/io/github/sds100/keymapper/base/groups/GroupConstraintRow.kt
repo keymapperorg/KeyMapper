@@ -71,7 +71,9 @@ fun GroupConstraintRow(
             for ((index, constraint) in constraints.withIndex()) {
                 when (constraint) {
                     is ComposeChipModel.Normal ->
-                        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
+                        CompositionLocalProvider(
+                            LocalContentColor provides MaterialTheme.colorScheme.onSurface,
+                        ) {
                             ConstraintButton(
                                 modifier = Modifier.widthIn(max = maxChipWidth),
                                 text = constraint.text,
@@ -92,7 +94,9 @@ fun GroupConstraintRow(
                                             modifier = Modifier
                                                 .size(24.dp)
                                                 .padding(end = 8.dp),
-                                            painter = rememberDrawablePainter(constraint.icon.drawable),
+                                            painter = rememberDrawablePainter(
+                                                constraint.icon.drawable,
+                                            ),
                                             contentDescription = null,
                                             tint = Color.Unspecified,
                                         )
@@ -102,7 +106,9 @@ fun GroupConstraintRow(
                         }
 
                     is ComposeChipModel.Error ->
-                        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onErrorContainer) {
+                        CompositionLocalProvider(
+                            LocalContentColor provides MaterialTheme.colorScheme.onErrorContainer,
+                        ) {
                             ConstraintErrorButton(
                                 modifier = Modifier.widthIn(max = maxChipWidth),
                                 text = constraint.text,
@@ -232,7 +238,9 @@ private fun ConstraintButton(
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Close,
-                        contentDescription = stringResource(R.string.home_group_delete_constraint_button),
+                        contentDescription = stringResource(
+                            R.string.home_group_delete_constraint_button,
+                        ),
                     )
                 }
             }
@@ -289,7 +297,9 @@ private fun ConstraintErrorButton(
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Close,
-                        contentDescription = stringResource(R.string.home_group_delete_constraint_button),
+                        contentDescription = stringResource(
+                            R.string.home_group_delete_constraint_button,
+                        ),
                     )
                 }
             }

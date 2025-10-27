@@ -33,7 +33,9 @@ object Migration5To6 {
 
                 trigger["flags"] = keymapFlags
 
-                execSQL("UPDATE keymaps SET trigger='${gson.toJson(trigger)}', flags=0 WHERE id=$id")
+                execSQL(
+                    "UPDATE keymaps SET trigger='${gson.toJson(trigger)}', flags=0 WHERE id=$id",
+                )
             }
 
             close()

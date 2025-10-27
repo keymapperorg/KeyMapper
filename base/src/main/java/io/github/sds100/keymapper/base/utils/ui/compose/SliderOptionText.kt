@@ -96,7 +96,9 @@ fun SliderOptionText(
                 thumb = { state ->
                     KeyMapperSliderThumb(interactionSource)
                 },
-                steps = (((valueRange.endInclusive - valueRange.start) / stepSize.toFloat()).toInt()) - 1,
+                steps =
+                (((valueRange.endInclusive - valueRange.start) / stepSize.toFloat()).toInt()) -
+                    1,
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -115,7 +117,9 @@ fun SliderOptionText(
                 IconButton(onClick = { onValueChange(defaultValue) }) {
                     Icon(
                         Icons.Rounded.RestartAlt,
-                        contentDescription = stringResource(R.string.slider_reset_content_description),
+                        contentDescription = stringResource(
+                            R.string.slider_reset_content_description,
+                        ),
                     )
                 }
             }

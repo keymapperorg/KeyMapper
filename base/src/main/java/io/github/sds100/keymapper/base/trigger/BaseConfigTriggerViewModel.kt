@@ -216,7 +216,10 @@ abstract class BaseConfigTriggerViewModel(
                 clickTypeButtons.add(ClickType.DOUBLE_PRESS)
             }
 
-            if (trigger.keys.isNotEmpty() && trigger.mode !is TriggerMode.Sequence && trigger.keys.all { it.allowedLongPress }) {
+            if (trigger.keys.isNotEmpty() &&
+                trigger.mode !is TriggerMode.Sequence &&
+                trigger.keys.all { it.allowedLongPress }
+            ) {
                 clickTypeButtons.add(ClickType.SHORT_PRESS)
                 clickTypeButtons.add(ClickType.LONG_PRESS)
             }
@@ -383,7 +386,9 @@ abstract class BaseConfigTriggerViewModel(
             ),
         )
 
-        if (key.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || key.keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+        if (key.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ||
+            key.keyCode == KeyEvent.KEYCODE_VOLUME_UP
+        ) {
             neverShowTipAgain(OnboardingTipDelegateImpl.VOLUME_BUTTONS_PRO_MODE_TIP_ID)
         }
     }
@@ -511,7 +516,9 @@ abstract class BaseConfigTriggerViewModel(
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@BaseConfigTriggerViewModel,
                         dialogProvider = this@BaseConfigTriggerViewModel,
-                        neverShowDndTriggerErrorAgain = { displayKeyMap.neverShowDndTriggerError() },
+                        neverShowDndTriggerErrorAgain = {
+                            displayKeyMap.neverShowDndTriggerError()
+                        },
                         fixError = { displayKeyMap.fixTriggerError(error) },
                     )
 

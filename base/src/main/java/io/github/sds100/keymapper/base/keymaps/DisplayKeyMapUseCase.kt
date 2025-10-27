@@ -42,6 +42,7 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
+import javax.inject.Inject
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -53,7 +54,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.withTimeout
-import javax.inject.Inject
 
 @ViewModelScoped
 class DisplayKeyMapUseCaseImpl @Inject constructor(
@@ -131,14 +131,14 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
         showDpadImeSetupError,
         systemBridgeConnectionState,
         evdevDevices,
-    ) { _, purchases, showDpadImeSetupError, systemBridgeConnectionState, evdevDevices ->
+    ) { _, purchases, showDpadImeSetupError, sysBridgeState, evdevDevices ->
         TriggerErrorSnapshot(
             isKeyMapperImeChosen = keyMapperImeHelper.isCompatibleImeChosen(),
             isDndAccessGranted = permissionAdapter.isGranted(Permission.ACCESS_NOTIFICATION_POLICY),
             isRootGranted = permissionAdapter.isGranted(Permission.ROOT),
             purchases = purchases.dataOrNull() ?: Success(emptySet()),
             showDpadImeSetupError = showDpadImeSetupError,
-            isSystemBridgeConnected = systemBridgeConnectionState is SystemBridgeConnectionState.Connected,
+            isSystemBridgeConnected = sysBridgeState is SystemBridgeConnectionState.Connected,
             evdevDevices = evdevDevices,
         )
     }
@@ -156,9 +156,13 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
 
     override suspend fun fixTriggerError(error: TriggerError) {
         when (error) {
-            TriggerError.DND_ACCESS_DENIED -> fixError(PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY))
+            TriggerError.DND_ACCESS_DENIED -> fixError(
+                PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY),
+            )
 
-            TriggerError.CANT_DETECT_IN_PHONE_CALL -> fixError(KMError.CantDetectKeyEventsInPhoneCall)
+            TriggerError.CANT_DETECT_IN_PHONE_CALL -> fixError(
+                KMError.CantDetectKeyEventsInPhoneCall,
+            )
             TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> fixError(
                 ProductNotPurchased(
                     ProductId.ASSISTANT_TRIGGER,
@@ -174,7 +178,10 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
 
             TriggerError.PURCHASE_VERIFICATION_FAILED -> purchasingManager.refresh()
             TriggerError.SYSTEM_BRIDGE_DISCONNECTED -> fixError(SystemBridgeError.Disconnected)
-            TriggerError.EVDEV_DEVICE_NOT_FOUND, TriggerError.FLOATING_BUTTON_DELETED, TriggerError.SYSTEM_BRIDGE_UNSUPPORTED -> {}
+            TriggerError.EVDEV_DEVICE_NOT_FOUND,
+            TriggerError.FLOATING_BUTTON_DELETED,
+            TriggerError.SYSTEM_BRIDGE_UNSUPPORTED,
+                -> {}
         }
     }
 
@@ -185,7 +192,9 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
         packageManagerAdapter.getAppIcon(packageName)
 
     override fun getInputMethodLabel(imeId: String): KMResult<String> =
-        inputMethodAdapter.getInfoById(imeId).then { Success(it.label) }
+        inputMethodAdapter.getInfoById(imeId).then {
+            Success(it.label)
+        }
 
     override suspend fun fixError(error: KMError) {
         when (error) {
@@ -199,7 +208,9 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
             KMError.NoCompatibleImeEnabled -> keyMapperImeHelper.enableCompatibleInputMethods()
             is ImeDisabled -> switchImeInterface.enableIme(error.ime.id)
             is PermissionDenied -> permissionAdapter.request(error.permission)
-            is KMError.ShizukuNotStarted -> packageManagerAdapter.openApp(ShizukuUtils.SHIZUKU_PACKAGE)
+            is KMError.ShizukuNotStarted -> packageManagerAdapter.openApp(
+                ShizukuUtils.SHIZUKU_PACKAGE,
+            )
             is KMError.CantDetectKeyEventsInPhoneCall -> {
                 if (!keyMapperImeHelper.isCompatibleImeEnabled()) {
                     keyMapperImeHelper.enableCompatibleInputMethods()

@@ -380,7 +380,8 @@ class CreateActionDelegate(
 
                 volumeActionState = VolumeActionBottomSheetState(
                     actionId = newActionId,
-                    volumeStream = oldStream ?: VolumeStream.MUSIC, // Default to MUSIC for old stream actions
+                    // Default to MUSIC for old stream actions
+                    volumeStream = oldStream ?: VolumeStream.MUSIC,
                     showVolumeUi = oldShowVolumeUi,
                 )
                 return null
@@ -906,7 +907,11 @@ class CreateActionDelegate(
 
                 return navigate(
                     "config_shell_command_action",
-                    NavDestination.ConfigShellCommand(oldAction?.let { Json.encodeToString(oldAction) }),
+                    NavDestination.ConfigShellCommand(
+                        oldAction?.let {
+                            Json.encodeToString(oldAction)
+                        },
+                    ),
                 )
             }
 

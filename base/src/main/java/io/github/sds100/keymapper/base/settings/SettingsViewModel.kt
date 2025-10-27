@@ -22,6 +22,7 @@ import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -29,7 +30,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
@@ -123,7 +123,9 @@ class SettingsViewModel @Inject constructor(
 
             if (externalDevices.isEmpty()) {
                 val dialog = DialogModel.Alert(
-                    message = getString(R.string.dialog_message_settings_no_external_devices_connected),
+                    message = getString(
+                        R.string.dialog_message_settings_no_external_devices_connected,
+                    ),
                     positiveButtonText = getString(R.string.pos_ok),
                 )
 

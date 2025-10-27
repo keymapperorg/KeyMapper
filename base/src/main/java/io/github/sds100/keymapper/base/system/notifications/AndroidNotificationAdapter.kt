@@ -25,12 +25,12 @@ import io.github.sds100.keymapper.system.notifications.NotificationAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationChannelModel
 import io.github.sds100.keymapper.system.notifications.NotificationModel
 import io.github.sds100.keymapper.system.notifications.NotificationRemoteInput
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class AndroidNotificationAdapter @Inject constructor(
@@ -203,9 +203,7 @@ class AndroidNotificationAdapter @Inject constructor(
         }
     }
 
-    private fun createActionIntent(
-        notificationAction: KMNotificationAction,
-    ): PendingIntent {
+    private fun createActionIntent(notificationAction: KMNotificationAction): PendingIntent {
         return when (notificationAction) {
             KMNotificationAction.Activity.AccessibilitySettings -> createActivityPendingIntent(
                 Settings.ACTION_ACCESSIBILITY_SETTINGS,
@@ -215,8 +213,12 @@ class AndroidNotificationAdapter @Inject constructor(
                 notificationAction.action,
             )
 
-            is KMNotificationAction.Broadcast -> createBroadcastPendingIntent(notificationAction.intentAction.name)
-            is KMNotificationAction.RemoteInput -> createRemoteInputPendingIntent(notificationAction.intentAction.name)
+            is KMNotificationAction.Broadcast -> createBroadcastPendingIntent(
+                notificationAction.intentAction.name,
+            )
+            is KMNotificationAction.RemoteInput -> createRemoteInputPendingIntent(
+                notificationAction.intentAction.name,
+            )
         }
     }
 

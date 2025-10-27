@@ -11,7 +11,8 @@ import io.github.sds100.keymapper.base.trigger.TriggerDiscoverScreen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TriggerScreen(modifier: Modifier = Modifier, viewModel: ConfigTriggerViewModel) {
-    val showFingerprintGestures: Boolean by viewModel.showFingerprintGesturesShortcut.collectAsStateWithLifecycle()
+    val showFingerprintGestures: Boolean by
+        viewModel.showFingerprintGesturesShortcut.collectAsStateWithLifecycle()
 
     BaseTriggerScreen(modifier, viewModel, discoverScreenContent = {
         TriggerDiscoverScreen(

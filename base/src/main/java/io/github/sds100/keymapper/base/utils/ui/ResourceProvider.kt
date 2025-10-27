@@ -10,12 +10,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ResourceProviderImpl @Inject constructor(
-    @ApplicationContext context: Context,
-) : ResourceProvider {
+class ResourceProviderImpl @Inject constructor(@ApplicationContext context: Context) :
+    ResourceProvider {
     private val ctx = context.applicationContext
 
-    override fun getString(resId: Int, args: Array<Any>): String = ctx.str(resId, formatArgArray = args)
+    override fun getString(resId: Int, args: Array<Any>): String =
+        ctx.str(resId, formatArgArray = args)
 
     override fun getText(resId: Int): CharSequence = ctx.getText(resId)
 

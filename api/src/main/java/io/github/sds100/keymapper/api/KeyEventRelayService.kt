@@ -8,8 +8,8 @@ import android.os.IBinder
 import android.os.IBinder.DeathRecipient
 import android.view.KeyEvent
 import android.view.MotionEvent
-import timber.log.Timber
 import java.util.concurrent.ConcurrentHashMap
+import timber.log.Timber
 
 /**
  * This service is used as a relay between the accessibility service and input method service to pass
@@ -117,7 +117,9 @@ class KeyEventRelayService : Service() {
             val sourcePackageName = getCallerPackageName() ?: return
 
             if (client == null || !permittedPackages.contains(sourcePackageName)) {
-                Timber.d("An unrecognized package $sourcePackageName tried to register a key event relay callback.")
+                Timber.d(
+                    "An unrecognized package $sourcePackageName tried to register a key event relay callback.",
+                )
                 return
             }
 

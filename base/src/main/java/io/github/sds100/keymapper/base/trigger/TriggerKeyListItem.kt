@@ -130,9 +130,15 @@ fun TriggerKeyListItem(
 
                 val primaryText = when (model) {
                     is TriggerKeyListItemModel.Assistant -> when (model.assistantType) {
-                        AssistantTriggerType.ANY -> stringResource(R.string.assistant_any_trigger_name)
-                        AssistantTriggerType.VOICE -> stringResource(R.string.assistant_voice_trigger_name)
-                        AssistantTriggerType.DEVICE -> stringResource(R.string.assistant_device_trigger_name)
+                        AssistantTriggerType.ANY -> stringResource(
+                            R.string.assistant_any_trigger_name,
+                        )
+                        AssistantTriggerType.VOICE -> stringResource(
+                            R.string.assistant_voice_trigger_name,
+                        )
+                        AssistantTriggerType.DEVICE -> stringResource(
+                            R.string.assistant_device_trigger_name,
+                        )
                     }
 
                     is TriggerKeyListItemModel.FloatingButton -> stringResource(
@@ -143,13 +149,23 @@ fun TriggerKeyListItem(
                     is TriggerKeyListItemModel.KeyEvent -> model.keyName
                     is TriggerKeyListItemModel.EvdevEvent -> model.keyName
 
-                    is TriggerKeyListItemModel.FloatingButtonDeleted -> stringResource(R.string.trigger_error_floating_button_deleted_title)
+                    is TriggerKeyListItemModel.FloatingButtonDeleted -> stringResource(
+                        R.string.trigger_error_floating_button_deleted_title,
+                    )
 
                     is TriggerKeyListItemModel.FingerprintGesture -> when (model.gestureType) {
-                        FingerprintGestureType.SWIPE_UP -> stringResource(R.string.trigger_key_fingerprint_gesture_up)
-                        FingerprintGestureType.SWIPE_DOWN -> stringResource(R.string.trigger_key_fingerprint_gesture_down)
-                        FingerprintGestureType.SWIPE_LEFT -> stringResource(R.string.trigger_key_fingerprint_gesture_left)
-                        FingerprintGestureType.SWIPE_RIGHT -> stringResource(R.string.trigger_key_fingerprint_gesture_right)
+                        FingerprintGestureType.SWIPE_UP -> stringResource(
+                            R.string.trigger_key_fingerprint_gesture_up,
+                        )
+                        FingerprintGestureType.SWIPE_DOWN -> stringResource(
+                            R.string.trigger_key_fingerprint_gesture_down,
+                        )
+                        FingerprintGestureType.SWIPE_LEFT -> stringResource(
+                            R.string.trigger_key_fingerprint_gesture_left,
+                        )
+                        FingerprintGestureType.SWIPE_RIGHT -> stringResource(
+                            R.string.trigger_key_fingerprint_gesture_right,
+                        )
                     }
                 }
 
@@ -210,7 +226,9 @@ fun TriggerKeyListItem(
                         IconButton(onClick = onEditClick) {
                             Icon(
                                 imageVector = Icons.Outlined.Settings,
-                                contentDescription = stringResource(R.string.trigger_key_list_item_edit),
+                                contentDescription = stringResource(
+                                    R.string.trigger_key_list_item_edit,
+                                ),
                                 tint = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.size(24.dp),
                             )
@@ -220,7 +238,9 @@ fun TriggerKeyListItem(
                     IconButton(onClick = onRemoveClick) {
                         Icon(
                             imageVector = Icons.Rounded.Clear,
-                            contentDescription = stringResource(R.string.trigger_key_list_item_remove),
+                            contentDescription = stringResource(
+                                R.string.trigger_key_list_item_remove,
+                            ),
                             tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(24.dp),
                         )
@@ -258,15 +278,33 @@ fun TriggerKeyListItem(
 private fun getErrorMessage(error: TriggerError): String {
     return when (error) {
         TriggerError.DND_ACCESS_DENIED -> stringResource(R.string.trigger_error_dnd_access_denied)
-        TriggerError.CANT_DETECT_IN_PHONE_CALL -> stringResource(R.string.trigger_error_cant_detect_in_phone_call)
-        TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> stringResource(R.string.trigger_error_assistant_not_purchased)
-        TriggerError.DPAD_IME_NOT_SELECTED -> stringResource(R.string.trigger_error_dpad_ime_not_selected)
-        TriggerError.FLOATING_BUTTON_DELETED -> stringResource(R.string.trigger_error_floating_button_deleted)
-        TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> stringResource(R.string.trigger_error_floating_buttons_not_purchased)
-        TriggerError.PURCHASE_VERIFICATION_FAILED -> stringResource(R.string.trigger_error_product_verification_failed)
-        TriggerError.SYSTEM_BRIDGE_UNSUPPORTED -> stringResource(R.string.trigger_error_system_bridge_unsupported)
-        TriggerError.SYSTEM_BRIDGE_DISCONNECTED -> stringResource(R.string.trigger_error_system_bridge_disconnected)
-        TriggerError.EVDEV_DEVICE_NOT_FOUND -> stringResource(R.string.trigger_error_evdev_device_not_found)
+        TriggerError.CANT_DETECT_IN_PHONE_CALL -> stringResource(
+            R.string.trigger_error_cant_detect_in_phone_call,
+        )
+        TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED -> stringResource(
+            R.string.trigger_error_assistant_not_purchased,
+        )
+        TriggerError.DPAD_IME_NOT_SELECTED -> stringResource(
+            R.string.trigger_error_dpad_ime_not_selected,
+        )
+        TriggerError.FLOATING_BUTTON_DELETED -> stringResource(
+            R.string.trigger_error_floating_button_deleted,
+        )
+        TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> stringResource(
+            R.string.trigger_error_floating_buttons_not_purchased,
+        )
+        TriggerError.PURCHASE_VERIFICATION_FAILED -> stringResource(
+            R.string.trigger_error_product_verification_failed,
+        )
+        TriggerError.SYSTEM_BRIDGE_UNSUPPORTED -> stringResource(
+            R.string.trigger_error_system_bridge_unsupported,
+        )
+        TriggerError.SYSTEM_BRIDGE_DISCONNECTED -> stringResource(
+            R.string.trigger_error_system_bridge_disconnected,
+        )
+        TriggerError.EVDEV_DEVICE_NOT_FOUND -> stringResource(
+            R.string.trigger_error_evdev_device_not_found,
+        )
     }
 }
 
@@ -303,11 +341,7 @@ private fun TextColumn(
 }
 
 @Composable
-private fun ErrorTextColumn(
-    modifier: Modifier = Modifier,
-    primaryText: String,
-    errorText: String,
-) {
+private fun ErrorTextColumn(modifier: Modifier = Modifier, primaryText: String, errorText: String) {
     Column(
         modifier = modifier,
     ) {

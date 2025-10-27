@@ -10,12 +10,12 @@ import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.suspendThen
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
+import javax.inject.Inject
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeout
 import timber.log.Timber
-import javax.inject.Inject
 
 @ViewModelScoped
 class SetupInputMethodUseCaseImpl @Inject constructor(

@@ -3,8 +3,8 @@ package io.github.sds100.keymapper.base.utils.ui
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.snackbar.Snackbar
 import io.github.sds100.keymapper.base.R
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 object SnackBarUtils {
 

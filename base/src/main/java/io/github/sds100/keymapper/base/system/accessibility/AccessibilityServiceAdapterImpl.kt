@@ -18,6 +18,8 @@ import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -27,8 +29,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class AccessibilityServiceAdapterImpl @Inject constructor(
@@ -125,7 +125,9 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
                 }
 
                 val pong: AccessibilityServiceEvent.Pong? = withTimeoutOrNull(2000L) {
-                    eventReceiver.first { it == AccessibilityServiceEvent.Pong(key) } as AccessibilityServiceEvent.Pong?
+                    eventReceiver.first {
+                        it == AccessibilityServiceEvent.Pong(key)
+                    } as AccessibilityServiceEvent.Pong?
                 }
 
                 if (pong == null) {
@@ -235,7 +237,9 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
         }
 
         val pong: AccessibilityServiceEvent.Pong? = withTimeoutOrNull(2000L) {
-            eventReceiver.first { it == AccessibilityServiceEvent.Pong(key) } as AccessibilityServiceEvent.Pong?
+            eventReceiver.first {
+                it == AccessibilityServiceEvent.Pong(key)
+            } as AccessibilityServiceEvent.Pong?
         }
 
         pingJob.cancel()

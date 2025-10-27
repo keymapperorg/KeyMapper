@@ -7,7 +7,9 @@ import java.lang.reflect.Method
 
 object InputDeviceUtils {
     fun appendDeviceDescriptorToName(descriptor: String, name: String): String =
-        "$name ${descriptor.substring(0..4)}"
+        "$name ${descriptor.substring(
+            0..4,
+        )}"
 
     fun createInputDeviceInfo(inputDevice: InputDevice): InputDeviceInfo = InputDeviceInfo(
         inputDevice.descriptor,

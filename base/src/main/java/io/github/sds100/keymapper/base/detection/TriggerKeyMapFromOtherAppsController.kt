@@ -37,7 +37,9 @@ class TriggerKeyMapFromOtherAppsController(
 
             Timber.d("Triggered key map successfully from Intent, $keyMap")
         } else {
-            Timber.d("Failed to trigger key map from intent because key map doesn't exist, uid = $uid")
+            Timber.d(
+                "Failed to trigger key map from intent because key map doesn't exist, uid = $uid",
+            )
         }
     }
 }

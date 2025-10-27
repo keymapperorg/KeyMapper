@@ -29,6 +29,7 @@ import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -41,7 +42,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class ConfigActionsViewModel @Inject constructor(
@@ -130,7 +130,9 @@ class ConfigActionsViewModel @Inject constructor(
                         ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                             resourceProvider = this@ConfigActionsViewModel,
                             dialogProvider = this@ConfigActionsViewModel,
-                            neverShowDndTriggerErrorAgain = { displayAction.neverShowDndTriggerError() },
+                            neverShowDndTriggerErrorAgain = {
+                                displayAction.neverShowDndTriggerError()
+                            },
                             fixError = { displayAction.fixError(error) },
                         )
                     }
@@ -259,9 +261,8 @@ class ConfigActionsViewModel @Inject constructor(
                 )
 
                 RepeatMode.LIMIT_REACHED -> config.setActionStopRepeatingWhenLimitReached(uid)
-                RepeatMode.TRIGGER_PRESSED_AGAIN -> config.setActionStopRepeatingWhenTriggerPressedAgain(
-                    uid,
-                )
+                RepeatMode.TRIGGER_PRESSED_AGAIN ->
+                    config.setActionStopRepeatingWhenTriggerPressedAgain(uid)
             }
         }
     }
@@ -333,7 +334,9 @@ class ConfigActionsViewModel @Inject constructor(
                 }
 
                 action.delayBeforeNextAction.apply {
-                    if (keyMap.isDelayBeforeNextActionAllowed() && action.delayBeforeNextAction != null) {
+                    if (keyMap.isDelayBeforeNextActionAllowed() &&
+                        action.delayBeforeNextAction != null
+                    ) {
                         if (this@buildString.isNotBlank()) {
                             append(" $midDot ")
                         }
@@ -440,9 +443,8 @@ class ConfigActionsViewModel @Inject constructor(
 }
 
 sealed class ConfigActionsState {
-    data class Empty(
-        val shortcuts: Set<ShortcutModel<ActionData>> = emptySet(),
-    ) : ConfigActionsState()
+    data class Empty(val shortcuts: Set<ShortcutModel<ActionData>> = emptySet()) :
+        ConfigActionsState()
 
     data class Loaded(
         val actions: List<ActionListItemModel> = emptyList(),

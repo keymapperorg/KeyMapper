@@ -126,7 +126,9 @@ private fun ConstraintsScreen(
                                 modifier = Modifier
                                     .padding(32.dp)
                                     .fillMaxWidth(),
-                                text = stringResource(R.string.constraints_recyclerview_placeholder),
+                                text = stringResource(
+                                    R.string.constraints_recyclerview_placeholder,
+                                ),
                                 textAlign = TextAlign.Center,
                             )
 
@@ -336,7 +338,9 @@ private fun LoadedPreview() {
                         ),
                         ConstraintListItemModel(
                             id = "2",
-                            icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
+                            icon = ComposeIconInfo.Drawable(
+                                ctx.drawable(R.mipmap.ic_launcher_round),
+                            ),
                             constraintModeLink = null,
                             text = "Key Mapper in foreground",
                             error = null,

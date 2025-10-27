@@ -105,7 +105,11 @@ class MainFragment : Fragment() {
                         modifier = Modifier
                             .windowInsetsPadding(
                                 WindowInsets.systemBars.only(sides = WindowInsetsSides.Horizontal)
-                                    .add(WindowInsets.displayCutout.only(sides = WindowInsetsSides.Horizontal)),
+                                    .add(
+                                        WindowInsets.displayCutout.only(
+                                            sides = WindowInsetsSides.Horizontal,
+                                        ),
+                                    ),
                             ),
                         navController = navController,
                         setupAccessibilityServiceDelegate = setupAccessibilityServiceDelegate,

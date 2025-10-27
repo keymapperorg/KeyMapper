@@ -22,6 +22,7 @@ import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -34,7 +35,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class ConfigConstraintsViewModel @Inject constructor(
@@ -115,7 +115,9 @@ class ConfigConstraintsViewModel @Inject constructor(
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@ConfigConstraintsViewModel,
                         dialogProvider = this@ConfigConstraintsViewModel,
-                        neverShowDndTriggerErrorAgain = { displayConstraint.neverShowDndTriggerError() },
+                        neverShowDndTriggerErrorAgain = {
+                            displayConstraint.neverShowDndTriggerError()
+                        },
                         fixError = { displayConstraint.fixError(error) },
                     )
                 }
@@ -145,7 +147,9 @@ class ConfigConstraintsViewModel @Inject constructor(
         }
     }
 
-    private fun buildShortcutFromData(constraintData: ConstraintData): ShortcutModel<ConstraintData> {
+    private fun buildShortcutFromData(
+        constraintData: ConstraintData,
+    ): ShortcutModel<ConstraintData> {
         val constraint = Constraint(data = constraintData)
         return ShortcutModel(
             icon = uiHelper.getIcon(constraint),
@@ -171,7 +175,9 @@ class ConfigConstraintsViewModel @Inject constructor(
             ConstraintListItemModel(
                 id = constraint.uid,
                 icon = icon,
-                constraintModeLink = if (state.constraints.size > 1 && index < state.constraints.size - 1) {
+                constraintModeLink = if (state.constraints.size > 1 &&
+                    index < state.constraints.size - 1
+                ) {
                     state.mode
                 } else {
                     null
@@ -191,9 +197,8 @@ class ConfigConstraintsViewModel @Inject constructor(
 }
 
 sealed class ConfigConstraintsState {
-    data class Empty(
-        val shortcuts: Set<ShortcutModel<ConstraintData>> = emptySet(),
-    ) : ConfigConstraintsState()
+    data class Empty(val shortcuts: Set<ShortcutModel<ConstraintData>> = emptySet()) :
+        ConfigConstraintsState()
 
     data class Loaded(
         val constraintList: List<ConstraintListItemModel>,

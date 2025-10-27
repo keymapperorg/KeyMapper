@@ -27,9 +27,7 @@ sealed class DialogModel<R> {
         val autoCompleteEntries: List<String> = emptyList(),
     ) : DialogModel<String>()
 
-    data class SingleChoice<ID>(
-        val items: List<Pair<ID, String>>,
-    ) : DialogModel<ID>()
+    data class SingleChoice<ID>(val items: List<Pair<ID, String>>) : DialogModel<ID>()
 
     data class MultiChoice<ID>(val items: List<MultiChoiceItem<ID>>) : DialogModel<List<ID>>()
 

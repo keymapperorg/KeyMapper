@@ -7,39 +7,31 @@ import io.github.sds100.keymapper.data.entities.ConstraintEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData
 import io.github.sds100.keymapper.system.camera.CameraLens
-import kotlinx.serialization.Serializable
 import java.time.LocalTime
 import java.util.UUID
+import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class ConstraintData {
     abstract val id: ConstraintId
 
     @Serializable
-    data class AppInForeground(
-        val packageName: String,
-    ) : ConstraintData() {
+    data class AppInForeground(val packageName: String) : ConstraintData() {
         override val id: ConstraintId = ConstraintId.APP_IN_FOREGROUND
     }
 
     @Serializable
-    data class AppNotInForeground(
-        val packageName: String,
-    ) : ConstraintData() {
+    data class AppNotInForeground(val packageName: String) : ConstraintData() {
         override val id: ConstraintId = ConstraintId.APP_NOT_IN_FOREGROUND
     }
 
     @Serializable
-    data class AppPlayingMedia(
-        val packageName: String,
-    ) : ConstraintData() {
+    data class AppPlayingMedia(val packageName: String) : ConstraintData() {
         override val id: ConstraintId = ConstraintId.APP_PLAYING_MEDIA
     }
 
     @Serializable
-    data class AppNotPlayingMedia(
-        val packageName: String,
-    ) : ConstraintData() {
+    data class AppNotPlayingMedia(val packageName: String) : ConstraintData() {
         override val id: ConstraintId = ConstraintId.APP_NOT_PLAYING_MEDIA
     }
 
@@ -54,18 +46,14 @@ sealed class ConstraintData {
     }
 
     @Serializable
-    data class BtDeviceConnected(
-        val bluetoothAddress: String,
-        val deviceName: String,
-    ) : ConstraintData() {
+    data class BtDeviceConnected(val bluetoothAddress: String, val deviceName: String) :
+        ConstraintData() {
         override val id: ConstraintId = ConstraintId.BT_DEVICE_CONNECTED
     }
 
     @Serializable
-    data class BtDeviceDisconnected(
-        val bluetoothAddress: String,
-        val deviceName: String,
-    ) : ConstraintData() {
+    data class BtDeviceDisconnected(val bluetoothAddress: String, val deviceName: String) :
+        ConstraintData() {
         override val id: ConstraintId = ConstraintId.BT_DEVICE_DISCONNECTED
     }
 
@@ -90,9 +78,7 @@ sealed class ConstraintData {
     }
 
     @Serializable
-    data class OrientationCustom(
-        val orientation: Orientation,
-    ) : ConstraintData() {
+    data class OrientationCustom(val orientation: Orientation) : ConstraintData() {
         override val id: ConstraintId = when (orientation) {
             Orientation.ORIENTATION_0 -> ConstraintId.ORIENTATION_0
             Orientation.ORIENTATION_90 -> ConstraintId.ORIENTATION_90
@@ -102,16 +88,12 @@ sealed class ConstraintData {
     }
 
     @Serializable
-    data class FlashlightOn(
-        val lens: CameraLens,
-    ) : ConstraintData() {
+    data class FlashlightOn(val lens: CameraLens) : ConstraintData() {
         override val id: ConstraintId = ConstraintId.FLASHLIGHT_ON
     }
 
     @Serializable
-    data class FlashlightOff(
-        val lens: CameraLens,
-    ) : ConstraintData() {
+    data class FlashlightOff(val lens: CameraLens) : ConstraintData() {
         override val id: ConstraintId = ConstraintId.FLASHLIGHT_OFF
     }
 
@@ -126,32 +108,22 @@ sealed class ConstraintData {
     }
 
     @Serializable
-    data class WifiConnected(
-        val ssid: String?,
-    ) : ConstraintData() {
+    data class WifiConnected(val ssid: String?) : ConstraintData() {
         override val id: ConstraintId = ConstraintId.WIFI_CONNECTED
     }
 
     @Serializable
-    data class WifiDisconnected(
-        val ssid: String?,
-    ) : ConstraintData() {
+    data class WifiDisconnected(val ssid: String?) : ConstraintData() {
         override val id: ConstraintId = ConstraintId.WIFI_DISCONNECTED
     }
 
     @Serializable
-    data class ImeChosen(
-        val imeId: String,
-        val imeLabel: String,
-    ) : ConstraintData() {
+    data class ImeChosen(val imeId: String, val imeLabel: String) : ConstraintData() {
         override val id: ConstraintId = ConstraintId.IME_CHOSEN
     }
 
     @Serializable
-    data class ImeNotChosen(
-        val imeId: String,
-        val imeLabel: String,
-    ) : ConstraintData() {
+    data class ImeNotChosen(val imeId: String, val imeLabel: String) : ConstraintData() {
         override val id: ConstraintId = ConstraintId.IME_NOT_CHOSEN
     }
 
@@ -225,10 +197,7 @@ sealed class ConstraintData {
 }
 
 @Serializable
-data class Constraint(
-    val uid: String = UUID.randomUUID().toString(),
-    val data: ConstraintData,
-) {
+data class Constraint(val uid: String = UUID.randomUUID().toString(), val data: ConstraintData) {
     val id: ConstraintId get() = data.id
 }
 
@@ -253,11 +222,14 @@ object ConstraintEntityMapper {
     )
 
     fun fromEntity(entity: ConstraintEntity): Constraint {
-        fun getPackageName(): String = entity.extras.getData(ConstraintEntity.EXTRA_PACKAGE_NAME).valueOrNull()!!
+        fun getPackageName(): String =
+            entity.extras.getData(ConstraintEntity.EXTRA_PACKAGE_NAME).valueOrNull()!!
 
-        fun getBluetoothAddress(): String = entity.extras.getData(ConstraintEntity.EXTRA_BT_ADDRESS).valueOrNull()!!
+        fun getBluetoothAddress(): String =
+            entity.extras.getData(ConstraintEntity.EXTRA_BT_ADDRESS).valueOrNull()!!
 
-        fun getBluetoothDeviceName(): String = entity.extras.getData(ConstraintEntity.EXTRA_BT_NAME).valueOrNull()!!
+        fun getBluetoothDeviceName(): String =
+            entity.extras.getData(ConstraintEntity.EXTRA_BT_NAME).valueOrNull()!!
 
         fun getCameraLens(): CameraLens {
             val extraValue =
@@ -398,7 +370,9 @@ object ConstraintEntityMapper {
                 )
             }
 
-            else -> throw Exception("don't know how to convert constraint entity with type ${entity.type}")
+            else -> throw Exception(
+                "don't know how to convert constraint entity with type ${entity.type}",
+            )
         }
 
         return Constraint(

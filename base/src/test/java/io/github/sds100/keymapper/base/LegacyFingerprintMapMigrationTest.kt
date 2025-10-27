@@ -13,6 +13,7 @@ import io.github.sds100.keymapper.data.migration.JsonMigration
 import io.github.sds100.keymapper.data.migration.MigrationUtils
 import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration0To1
 import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintMapMigration1To2
+import java.io.InputStream
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -20,7 +21,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.io.InputStream
 
 @ExperimentalCoroutinesApi
 class LegacyFingerprintMapMigrationTest {
@@ -56,7 +56,9 @@ class LegacyFingerprintMapMigrationTest {
     fun `migrate 1 to 2`() {
         test(
             listOf(getLegacySwipeDownJsonFromFile("migration-10-11-test-data.json")).toJsonArray(),
-            listOf(getLegacySwipeDownJsonFromFile("migration-10-11-expected-data.json")).toJsonArray(),
+            listOf(
+                getLegacySwipeDownJsonFromFile("migration-10-11-expected-data.json"),
+            ).toJsonArray(),
             1,
             2,
         )
@@ -108,7 +110,12 @@ class LegacyFingerprintMapMigrationTest {
 
             val expectedElement = expectedData[index]
 
-            JsonTestUtils.compareBothWays(expectedElement, "expected", migratedFingerprintMap, "migrated")
+            JsonTestUtils.compareBothWays(
+                expectedElement,
+                "expected",
+                migratedFingerprintMap,
+                "migrated",
+            )
         }
     }
 }

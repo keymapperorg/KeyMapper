@@ -47,7 +47,11 @@ import io.github.sds100.keymapper.data.migration.Migration8To9
 import io.github.sds100.keymapper.data.migration.Migration9To10
 
 @Database(
-    entities = [KeyMapEntity::class, FingerprintMapEntity::class, LogEntryEntity::class, FloatingLayoutEntity::class, FloatingButtonEntity::class, GroupEntity::class, AccessibilityNodeEntity::class],
+    entities = [
+        KeyMapEntity::class, FingerprintMapEntity::class,
+        LogEntryEntity::class, FloatingLayoutEntity::class,
+        FloatingButtonEntity::class, GroupEntity::class, AccessibilityNodeEntity::class,
+    ],
     version = DATABASE_VERSION,
     exportSchema = true,
     autoMigrations = [
@@ -141,7 +145,9 @@ abstract class AppDatabase : RoomDatabase() {
 
         val MIGRATION_12_13 = object : Migration(12, 13) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("CREATE TABLE `log` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `time` INTEGER NOT NULL, `severity` INTEGER NOT NULL, `message` TEXT NOT NULL)")
+                database.execSQL(
+                    "CREATE TABLE `log` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `time` INTEGER NOT NULL, `severity` INTEGER NOT NULL, `message` TEXT NOT NULL)",
+                )
             }
         }
 
@@ -158,9 +164,8 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 
-    class RoomMigration11To12(
-        private val fingerprintMapDataStore: DataStore<Preferences>,
-    ) : Migration(11, 12) {
+    class RoomMigration11To12(private val fingerprintMapDataStore: DataStore<Preferences>) :
+        Migration(11, 12) {
         override fun migrate(database: SupportSQLiteDatabase) {
             Migration11To12.migrateDatabase(database, fingerprintMapDataStore)
         }

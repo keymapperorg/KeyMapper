@@ -91,10 +91,7 @@ object ComposeTheme {
 val LocalCustomColorsPalette = staticCompositionLocalOf { ComposeCustomColors() }
 
 @Composable
-fun KeyMapperTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit,
-) {
+fun KeyMapperTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
 //    val dynamicColor = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     val colorScheme = when {
 //        dynamicColor && darkTheme -> dynamicDarkColorScheme(LocalContext.current)

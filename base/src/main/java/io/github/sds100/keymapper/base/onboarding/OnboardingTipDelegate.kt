@@ -22,13 +22,13 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.data.utils.PrefDelegate
 import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
+import javax.inject.Inject
+import javax.inject.Named
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import javax.inject.Named
 
 @ViewModelScoped
 class OnboardingTipDelegateImpl @Inject constructor(
@@ -163,10 +163,15 @@ class OnboardingTipDelegateImpl @Inject constructor(
         }
 
         val hasCapsLockKey =
-            trigger.keys.any { it is KeyEventTriggerKey && it.keyCode == KeyEvent.KEYCODE_CAPS_LOCK }
+            trigger.keys.any {
+                it is KeyEventTriggerKey && it.keyCode == KeyEvent.KEYCODE_CAPS_LOCK
+            }
         trigger.keys.any {
             it is KeyEventTriggerKey &&
-                (it.keyCode == KeyEvent.KEYCODE_VOLUME_UP || it.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)
+                (
+                    it.keyCode == KeyEvent.KEYCODE_VOLUME_UP ||
+                        it.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
+                    )
         }
 
         val hasBackKey =
@@ -314,7 +319,10 @@ class OnboardingTipDelegateImpl @Inject constructor(
             }
         }
 
-        if (hasRingerModeAction && !shownRingerModeTip && Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
+        if (hasRingerModeAction &&
+            !shownRingerModeTip &&
+            Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API
+        ) {
             val tip = OnboardingTipModel(
                 id = RINGER_MODE_TIP_ID,
                 title = getString(R.string.tip_ringer_mode_title),

@@ -10,6 +10,8 @@ import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManage
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.sysbridge.manager.isConnected
 import io.github.sds100.keymapper.system.devices.DevicesAdapter
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,8 +24,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
 @Singleton
@@ -85,7 +85,9 @@ class EvdevHandleCache @Inject constructor(
 
         // Do it on a separate thread in case there is deadlock
         val newDevices = withContext(Dispatchers.IO) {
-            systemBridgeConnectionManager.run { bridge -> bridge.evdevInputDevices.associateBy { it.path } }
+            systemBridgeConnectionManager.run { bridge ->
+                bridge.evdevInputDevices.associateBy { it.path }
+            }
         }.onFailure { error ->
             Timber.e("Failed to get evdev input devices from system bridge $error")
         }.valueIfFailure { emptyMap() }

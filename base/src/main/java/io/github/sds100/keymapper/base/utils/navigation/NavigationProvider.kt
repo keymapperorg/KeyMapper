@@ -29,6 +29,8 @@ import io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutFragment
 import io.github.sds100.keymapper.base.system.bluetooth.ChooseBluetoothDeviceFragment
 import io.github.sds100.keymapper.base.system.intents.ConfigIntentFragment
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -47,8 +49,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * This class handles communication of navigation requests and results between view models,
@@ -177,10 +177,7 @@ suspend inline fun <reified R> NavigationProvider.navigate(
 }
 
 @Composable
-fun SetupNavigation(
-    navigationProvider: NavigationProviderImpl,
-    navController: NavHostController,
-) {
+fun SetupNavigation(navigationProvider: NavigationProviderImpl, navController: NavHostController) {
     @SuppressLint("StateFlowValueCalledInComposition")
     val navEvent: NavigateEvent? by navigationProvider.onNavigate
         .collectAsStateWithLifecycle(navigationProvider.onNavigate.value)
@@ -367,7 +364,9 @@ private fun getDirection(destination: NavDestination<*>, requestKey: String): Na
 
         NavDestination.About -> NavBaseAppDirections.actionGlobalAboutFragment()
 
-        else -> throw IllegalArgumentException("Can not find a direction for this destination: $destination")
+        else -> throw IllegalArgumentException(
+            "Can not find a direction for this destination: $destination",
+        )
     }
 }
 

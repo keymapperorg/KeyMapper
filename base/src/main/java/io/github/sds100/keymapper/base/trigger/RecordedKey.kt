@@ -13,9 +13,6 @@ sealed class RecordedKey {
         val detectionSource: InputEventDetectionSource,
     ) : RecordedKey()
 
-    data class EvdevEvent(
-        val keyCode: Int,
-        val scanCode: Int,
-        val device: EvdevDeviceHandle,
-    ) : RecordedKey()
+    data class EvdevEvent(val keyCode: Int, val scanCode: Int, val device: EvdevDeviceHandle) :
+        RecordedKey()
 }

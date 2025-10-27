@@ -19,10 +19,7 @@ class KeyMapConstraintsComparator(
      */
     private val reverse: Boolean = false,
 ) : Comparator<KeyMap> {
-    override fun compare(
-        keyMap: KeyMap?,
-        otherKeyMap: KeyMap?,
-    ): Int {
+    override fun compare(keyMap: KeyMap?, otherKeyMap: KeyMap?): Int {
         if (keyMap == null || otherKeyMap == null) {
             return 0
         }
@@ -55,10 +52,7 @@ class KeyMapConstraintsComparator(
         result
     }
 
-    private fun compareConstraints(
-        constraint: Constraint,
-        otherConstraint: Constraint,
-    ): Int {
+    private fun compareConstraints(constraint: Constraint, otherConstraint: Constraint): Int {
         // If constraints are different, compare their types so they are ordered
         // by their type.
         //
@@ -88,10 +82,18 @@ class KeyMapConstraintsComparator(
 
     private fun getSecondarySortField(constraint: Constraint): KMResult<String> {
         return when (constraint.data) {
-            is ConstraintData.AppInForeground -> displayConstraints.getAppName(constraint.data.packageName)
-            is ConstraintData.AppNotInForeground -> displayConstraints.getAppName(constraint.data.packageName)
-            is ConstraintData.AppNotPlayingMedia -> displayConstraints.getAppName(constraint.data.packageName)
-            is ConstraintData.AppPlayingMedia -> displayConstraints.getAppName(constraint.data.packageName)
+            is ConstraintData.AppInForeground -> displayConstraints.getAppName(
+                constraint.data.packageName,
+            )
+            is ConstraintData.AppNotInForeground -> displayConstraints.getAppName(
+                constraint.data.packageName,
+            )
+            is ConstraintData.AppNotPlayingMedia -> displayConstraints.getAppName(
+                constraint.data.packageName,
+            )
+            is ConstraintData.AppPlayingMedia -> displayConstraints.getAppName(
+                constraint.data.packageName,
+            )
             is ConstraintData.BtDeviceConnected -> Success(constraint.data.deviceName)
             is ConstraintData.BtDeviceDisconnected -> Success(constraint.data.deviceName)
             is ConstraintData.Charging -> Success("")

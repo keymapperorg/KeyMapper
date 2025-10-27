@@ -4,8 +4,8 @@ import android.content.Intent
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilityService
 import io.github.sds100.keymapper.base.system.accessibility.BaseAccessibilityServiceController
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MyAccessibilityService : BaseAccessibilityService() {

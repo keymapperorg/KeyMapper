@@ -22,9 +22,7 @@ import javax.inject.Singleton
 internal class AppDatabaseModule {
     @Singleton
     @Provides
-    fun provideAppDatabase(
-        @ApplicationContext ctx: Context,
-    ): AppDatabase {
+    fun provideAppDatabase(@ApplicationContext ctx: Context): AppDatabase {
         return createDatabase(ctx)
     }
 
@@ -84,5 +82,7 @@ internal class AppDatabaseModule {
         AppDatabase.MIGRATION_17_18,
     ).build()
 
-    private val Context.legacyFingerprintMapDataStore by preferencesDataStore("fingerprint_gestures")
+    private val Context.legacyFingerprintMapDataStore by preferencesDataStore(
+        "fingerprint_gestures",
+    )
 }

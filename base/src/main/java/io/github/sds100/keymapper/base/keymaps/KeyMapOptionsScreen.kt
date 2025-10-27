@@ -137,6 +137,8 @@ private fun Loaded(
         }
 
         if (state.showVibrateDuration) {
+            val vibrateDurationMin = SliderMinimums.VIBRATION_DURATION
+            val vibrateDurationMax = SliderMaximums.VIBRATION_DURATION
             SliderOptionText(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -146,7 +148,7 @@ private fun Loaded(
                 value = state.vibrateDuration.toFloat(),
                 valueText = { "${it.toInt()} ms" },
                 onValueChange = { callback.onVibrateDurationChanged(it.toInt()) },
-                valueRange = SliderMinimums.VIBRATION_DURATION.toFloat()..SliderMaximums.VIBRATION_DURATION.toFloat(),
+                valueRange = vibrateDurationMin.toFloat()..vibrateDurationMax.toFloat(),
                 stepSize = SliderStepSizes.VIBRATION_DURATION,
             )
             Spacer(Modifier.height(8.dp))
@@ -165,6 +167,8 @@ private fun Loaded(
         }
 
         if (state.showLongPressDelay) {
+            val longPressDelayMin = SliderMinimums.TRIGGER_LONG_PRESS_DELAY
+            val longPressDelayMax = SliderMaximums.TRIGGER_LONG_PRESS_DELAY
             SliderOptionText(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -174,13 +178,15 @@ private fun Loaded(
                 value = state.longPressDelay.toFloat(),
                 valueText = { "${it.toInt()} ms" },
                 onValueChange = { callback.onLongPressDelayChanged(it.toInt()) },
-                valueRange = SliderMinimums.TRIGGER_LONG_PRESS_DELAY.toFloat()..SliderMaximums.TRIGGER_LONG_PRESS_DELAY.toFloat(),
+                valueRange = longPressDelayMin.toFloat()..longPressDelayMax.toFloat(),
                 stepSize = SliderStepSizes.TRIGGER_LONG_PRESS_DELAY,
             )
             Spacer(Modifier.height(8.dp))
         }
 
         if (state.showDoublePressDelay) {
+            val doublePressDelayMin = SliderMinimums.TRIGGER_DOUBLE_PRESS_DELAY
+            val doublePressDelayMax = SliderMaximums.TRIGGER_DOUBLE_PRESS_DELAY
             SliderOptionText(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -190,13 +196,17 @@ private fun Loaded(
                 value = state.doublePressDelay.toFloat(),
                 valueText = { "${it.toInt()} ms" },
                 onValueChange = { callback.onDoublePressDelayChanged(it.toInt()) },
-                valueRange = SliderMinimums.TRIGGER_DOUBLE_PRESS_DELAY.toFloat()..SliderMaximums.TRIGGER_DOUBLE_PRESS_DELAY.toFloat(),
+                valueRange = doublePressDelayMin.toFloat()..doublePressDelayMax.toFloat(),
                 stepSize = SliderStepSizes.TRIGGER_DOUBLE_PRESS_DELAY,
             )
             Spacer(Modifier.height(8.dp))
         }
 
         if (state.showSequenceTriggerTimeout) {
+            val sequenceTriggerTimeoutMin =
+                SliderMinimums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT.toFloat()
+            val sequenceTriggerTimeoutMax =
+                SliderMaximums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT.toFloat()
             SliderOptionText(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -206,7 +216,7 @@ private fun Loaded(
                 value = state.sequenceTriggerTimeout.toFloat(),
                 valueText = { "${it.toInt()} ms" },
                 onValueChange = { callback.onSequenceTriggerTimeoutChanged(it.toInt()) },
-                valueRange = SliderMinimums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT.toFloat()..SliderMaximums.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT.toFloat(),
+                valueRange = sequenceTriggerTimeoutMin..sequenceTriggerTimeoutMax,
                 stepSize = SliderStepSizes.TRIGGER_SEQUENCE_TRIGGER_TIMEOUT,
             )
             Spacer(Modifier.height(8.dp))
@@ -291,7 +301,9 @@ private fun TriggerFromOtherAppsSection(
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.ContentCopy,
-                            contentDescription = stringResource(R.string.flag_trigger_from_other_apps_copy_uid),
+                            contentDescription = stringResource(
+                                R.string.flag_trigger_from_other_apps_copy_uid,
+                            ),
                         )
                     }
                 }
@@ -326,7 +338,11 @@ private fun TriggerFromOtherAppsSection(
                         uriHandler.openUriSafe(ctx, intentGuideUrl)
                     },
                 ) {
-                    Text(text = stringResource(R.string.button_open_trigger_keymap_from_intent_guide))
+                    Text(
+                        text = stringResource(
+                            R.string.button_open_trigger_keymap_from_intent_guide,
+                        ),
+                    )
                 }
             }
         }

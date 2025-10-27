@@ -50,7 +50,8 @@ object ShareUtils {
                                     ctx,
                                     1,
                                     broadcast,
-                                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_CANCEL_CURRENT,
+                                    PendingIntent.FLAG_IMMUTABLE or
+                                        PendingIntent.FLAG_CANCEL_CURRENT,
                                 ),
                             ).build(),
                         )

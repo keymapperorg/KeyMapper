@@ -4,9 +4,5 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class EvdevDeviceInfo(
-    val name: String,
-    val bus: Int,
-    val vendor: Int,
-    val product: Int,
-) : Parcelable
+data class EvdevDeviceInfo(val name: String, val bus: Int, val vendor: Int, val product: Int) :
+    Parcelable

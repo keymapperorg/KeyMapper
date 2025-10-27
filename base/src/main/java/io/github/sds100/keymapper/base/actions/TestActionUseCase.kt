@@ -7,7 +7,8 @@ import javax.inject.Inject
 class TestActionUseCaseImpl @Inject constructor(
     private val serviceAdapter: AccessibilityServiceAdapter,
 ) : TestActionUseCase {
-    override suspend fun invoke(action: ActionData): KMResult<*> = serviceAdapter.send(TestActionEvent(action))
+    override suspend fun invoke(action: ActionData): KMResult<*> =
+        serviceAdapter.send(TestActionEvent(action))
 }
 
 interface TestActionUseCase {

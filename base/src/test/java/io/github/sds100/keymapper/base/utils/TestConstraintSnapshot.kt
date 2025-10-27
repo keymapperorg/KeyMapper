@@ -7,8 +7,8 @@ import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.phone.CallState
-import timber.log.Timber
 import java.time.LocalTime
+import timber.log.Timber
 
 class TestConstraintSnapshot(
     val appInForeground: String? = null,
@@ -50,10 +50,12 @@ class TestConstraintSnapshot(
 
             is ConstraintData.OrientationCustom -> orientation == data.orientation
             is ConstraintData.OrientationLandscape ->
-                orientation == Orientation.ORIENTATION_90 || orientation == Orientation.ORIENTATION_270
+                orientation == Orientation.ORIENTATION_90 ||
+                    orientation == Orientation.ORIENTATION_270
 
             is ConstraintData.OrientationPortrait ->
-                orientation == Orientation.ORIENTATION_0 || orientation == Orientation.ORIENTATION_180
+                orientation == Orientation.ORIENTATION_0 ||
+                    orientation == Orientation.ORIENTATION_180
 
             is ConstraintData.ScreenOff -> !isScreenOn
             is ConstraintData.ScreenOn -> isScreenOn

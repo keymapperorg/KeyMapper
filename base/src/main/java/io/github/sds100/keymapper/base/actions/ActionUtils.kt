@@ -370,7 +370,8 @@ object ActionUtils {
         ActionId.INTENT -> R.string.action_send_intent
         ActionId.PHONE_CALL -> R.string.action_phone_call
         ActionId.SOUND -> R.string.action_play_sound
-        ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> R.string.action_dismiss_most_recent_notification
+        ActionId.DISMISS_MOST_RECENT_NOTIFICATION ->
+            R.string.action_dismiss_most_recent_notification
         ActionId.DISMISS_ALL_NOTIFICATIONS -> R.string.action_dismiss_all_notifications
         ActionId.ANSWER_PHONE_CALL -> R.string.action_answer_call
         ActionId.END_PHONE_CALL -> R.string.action_end_call
@@ -573,9 +574,9 @@ object ActionUtils {
         ActionId.TOGGLE_MOBILE_DATA,
         ActionId.ENABLE_MOBILE_DATA,
         ActionId.DISABLE_MOBILE_DATA,
-            // For some reason on API 34 emulator the system says it does not have
-            // FEATURE_TELEPHONY_SMS even tho SMS works. So to prevent false negatives
-            // check that the generic TELEPHONY feature exists.
+        // For some reason on API 34 emulator the system says it does not have
+        // FEATURE_TELEPHONY_SMS even tho SMS works. So to prevent false negatives
+        // check that the generic TELEPHONY feature exists.
             -> listOf(PackageManager.FEATURE_TELEPHONY)
 
         ActionId.SECURE_LOCK_DEVICE,
@@ -642,10 +643,10 @@ object ActionUtils {
             ActionId.ENABLE_MOBILE_DATA,
             ActionId.DISABLE_MOBILE_DATA,
                 -> return if (isSystemBridgeSupported) {
-                emptyList()
-            } else {
-                listOf(Permission.ROOT)
-            }
+                    emptyList()
+                } else {
+                    listOf(Permission.ROOT)
+                }
 
             ActionId.PLAY_PAUSE_MEDIA_PACKAGE,
             ActionId.PAUSE_MEDIA_PACKAGE,
@@ -701,10 +702,10 @@ object ActionUtils {
             ActionId.DISABLE_NFC,
             ActionId.TOGGLE_NFC,
                 -> return if (isSystemBridgeSupported) {
-                emptyList()
-            } else {
-                listOf(Permission.ROOT)
-            }
+                    emptyList()
+                } else {
+                    listOf(Permission.ROOT)
+                }
 
             ActionId.SHOW_KEYBOARD_PICKER ->
                 if (Build.VERSION.SDK_INT in Build.VERSION_CODES.O_MR1..Build.VERSION_CODES.P) {
@@ -719,10 +720,10 @@ object ActionUtils {
             ActionId.ENABLE_AIRPLANE_MODE,
             ActionId.DISABLE_AIRPLANE_MODE,
                 -> return if (isSystemBridgeSupported) {
-                emptyList()
-            } else {
-                listOf(Permission.ROOT)
-            }
+                    emptyList()
+                } else {
+                    listOf(Permission.ROOT)
+                }
 
             ActionId.SCREENSHOT -> if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
                 return listOf(Permission.ROOT)

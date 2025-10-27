@@ -71,10 +71,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
 import io.github.sds100.keymapper.common.utils.State
 
 @Composable
-fun ProModeScreen(
-    modifier: Modifier = Modifier,
-    viewModel: ProModeViewModel,
-) {
+fun ProModeScreen(modifier: Modifier = Modifier, viewModel: ProModeViewModel) {
     val proModeWarningState by viewModel.warningState.collectAsStateWithLifecycle()
     val proModeSetupState by viewModel.setupState.collectAsStateWithLifecycle()
     val autoStartBootEnabled by viewModel.autoStartBootEnabled.collectAsStateWithLifecycle()
@@ -125,7 +122,9 @@ private fun ProModeScreen(
                         IconButton(onClick = onHelpClick) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Rounded.HelpOutline,
-                                contentDescription = stringResource(R.string.pro_mode_info_card_show_content_description),
+                                contentDescription = stringResource(
+                                    R.string.pro_mode_info_card_show_content_description,
+                                ),
                             )
                         }
                     }
@@ -209,7 +208,9 @@ private fun Content(
         if (warningState is ProModeWarningState.Understood) {
             when (setupState) {
                 is State.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                    )
                 }
 
                 is State.Data -> {
@@ -259,6 +260,11 @@ private fun LoadedContent(
 
         // Show notification permission warning if permission not granted
         if (state is ProModeState.Stopped && !state.isNotificationPermissionGranted) {
+            val text =
+                stringResource(
+                    R.string.pro_mode_setup_wizard_enable_notification_permission_description,
+                )
+
             SetupCard(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -271,14 +277,18 @@ private fun LoadedContent(
                         tint = MaterialTheme.colorScheme.onSurface,
                     )
                 },
-                title = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_title),
+                title = stringResource(
+                    R.string.pro_mode_setup_wizard_enable_notification_permission_title,
+                ),
                 content = {
                     Text(
-                        text = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_description),
+                        text = text,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 },
-                buttonText = stringResource(R.string.pro_mode_setup_wizard_enable_notification_permission_button),
+                buttonText = stringResource(
+                    R.string.pro_mode_setup_wizard_enable_notification_permission_button,
+                ),
                 onButtonClick = onRequestNotificationPermissionClick,
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -315,7 +325,9 @@ private fun LoadedContent(
                                 style = MaterialTheme.typography.bodyMedium,
                             )
                         },
-                        buttonText = stringResource(R.string.pro_mode_root_detected_button_start_service),
+                        buttonText = stringResource(
+                            R.string.pro_mode_root_detected_button_start_service,
+                        ),
                         onButtonClick = onRootButtonClick,
                         enabled = state.isNotificationPermissionGranted,
                     )
@@ -324,9 +336,15 @@ private fun LoadedContent(
                 }
 
                 val shizukuButtonText: String? = when (state.shizukuSetupState) {
-                    ShizukuSetupState.INSTALLED -> stringResource(R.string.pro_mode_shizuku_detected_button_start)
-                    ShizukuSetupState.STARTED -> stringResource(R.string.pro_mode_shizuku_detected_button_request_permission)
-                    ShizukuSetupState.PERMISSION_GRANTED -> stringResource(R.string.pro_mode_shizuku_detected_button_start_service)
+                    ShizukuSetupState.INSTALLED -> stringResource(
+                        R.string.pro_mode_shizuku_detected_button_start,
+                    )
+                    ShizukuSetupState.STARTED -> stringResource(
+                        R.string.pro_mode_shizuku_detected_button_request_permission,
+                    )
+                    ShizukuSetupState.PERMISSION_GRANTED -> stringResource(
+                        R.string.pro_mode_shizuku_detected_button_start_service,
+                    )
                     ShizukuSetupState.NOT_FOUND -> null
                 }
 
@@ -358,7 +376,9 @@ private fun LoadedContent(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 val setupKeyMapperText: String = when {
-                    Build.VERSION.SDK_INT < Build.VERSION_CODES.R -> stringResource(R.string.pro_mode_set_up_with_key_mapper_button_incompatible)
+                    Build.VERSION.SDK_INT < Build.VERSION_CODES.R -> stringResource(
+                        R.string.pro_mode_set_up_with_key_mapper_button_incompatible,
+                    )
                     else -> stringResource(R.string.pro_mode_set_up_with_key_mapper_button)
                 }
 
@@ -378,7 +398,9 @@ private fun LoadedContent(
                     content = {},
                     buttonText = setupKeyMapperText,
                     onButtonClick = onSetupWithKeyMapperClick,
-                    enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && state.isNotificationPermissionGranted,
+                    enabled =
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+                        state.isNotificationPermissionGranted,
                 )
             }
         }
@@ -473,8 +495,12 @@ private fun WarningCard(
                     state.seconds,
                 )
 
-                ProModeWarningState.Idle -> stringResource(R.string.pro_mode_warning_understand_button_not_completed)
-                ProModeWarningState.Understood -> stringResource(R.string.pro_mode_warning_understand_button_completed)
+                ProModeWarningState.Idle -> stringResource(
+                    R.string.pro_mode_warning_understand_button_not_completed,
+                )
+                ProModeWarningState.Understood -> stringResource(
+                    R.string.pro_mode_warning_understand_button_completed,
+                )
             }
 
             Text(text)
@@ -485,10 +511,7 @@ private fun WarningCard(
 }
 
 @Composable
-private fun ProModeStartedCard(
-    modifier: Modifier = Modifier,
-    onStopClick: () -> Unit = {},
-) {
+private fun ProModeStartedCard(modifier: Modifier = Modifier, onStopClick: () -> Unit = {}) {
     OutlinedCard(modifier) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -515,7 +538,9 @@ private fun ProModeStartedCard(
 
             TextButton(
                 onClick = onStopClick,
-                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.error,
+                ),
             ) {
                 Text(stringResource(R.string.pro_mode_stop_service_button))
             }
@@ -582,10 +607,7 @@ private fun SetupCard(
 }
 
 @Composable
-private fun ProModeInfoCard(
-    modifier: Modifier = Modifier,
-    onDismiss: () -> Unit = {},
-) {
+private fun ProModeInfoCard(modifier: Modifier = Modifier, onDismiss: () -> Unit = {}) {
     OutlinedCard(
         modifier = modifier,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
@@ -630,7 +652,9 @@ private fun ProModeInfoCard(
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Close,
-                    contentDescription = stringResource(R.string.pro_mode_info_card_dismiss_content_description),
+                    contentDescription = stringResource(
+                        R.string.pro_mode_info_card_dismiss_content_description,
+                    ),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }

@@ -81,7 +81,9 @@ abstract class SimpleMappingController(
 
                     for (job in this@SimpleMappingController.repeatJobs[keyMap.uid]
                         ?: emptyList()) {
-                        if (job.actionUid == action.uid && action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN) {
+                        if (job.actionUid == action.uid &&
+                            action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN
+                        ) {
                             alreadyRepeating = true
                             job.cancel()
                             break
@@ -163,8 +165,8 @@ abstract class SimpleMappingController(
             repeatCount++
 
             if (action.repeatLimit != null) {
-                continueRepeating =
-                    repeatCount < action.repeatLimit + 1 // this value is how many times it should REPEAT. The first repeat happens after the first time it is performed
+                // this value is how many times it should REPEAT. The first repeat happens after the first time it is performed
+                continueRepeating = repeatCount < action.repeatLimit + 1
             }
 
             delay(repeatRate)

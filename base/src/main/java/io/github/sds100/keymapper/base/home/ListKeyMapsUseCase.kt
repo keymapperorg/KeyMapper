@@ -27,6 +27,8 @@ import io.github.sds100.keymapper.data.repositories.GroupRepository
 import io.github.sds100.keymapper.data.repositories.KeyMapRepository
 import io.github.sds100.keymapper.data.repositories.RepositoryUtils
 import io.github.sds100.keymapper.system.files.FileAdapter
+import java.util.LinkedList
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -40,8 +42,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
-import java.util.LinkedList
-import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ListKeyMapsUseCaseImpl @Inject constructor(
@@ -209,7 +209,11 @@ class ListKeyMapsUseCaseImpl @Inject constructor(
         return RepositoryUtils.saveUniqueName(
             entity = group,
             saveBlock = { renamedGroup ->
-                if (siblings.any { sibling -> sibling.uid != group.uid && sibling.name == renamedGroup.name }) {
+                if (siblings.any { sibling ->
+                        sibling.uid != group.uid &&
+                            sibling.name == renamedGroup.name
+                    }
+                ) {
                     throw IllegalStateException("Non unique group name")
                 }
             },

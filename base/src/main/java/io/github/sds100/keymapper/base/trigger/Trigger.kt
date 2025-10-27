@@ -33,14 +33,22 @@ data class Trigger(
 
     fun isChangingVibrationDurationAllowed(): Boolean = vibrate || longPressDoubleVibration
 
-    fun isChangingLongPressDelayAllowed(): Boolean = keys.any { key -> key.clickType == ClickType.LONG_PRESS }
+    fun isChangingLongPressDelayAllowed(): Boolean = keys.any { key ->
+        key.clickType ==
+            ClickType.LONG_PRESS
+    }
 
-    fun isChangingDoublePressDelayAllowed(): Boolean = keys.any { key -> key.clickType == ClickType.DOUBLE_PRESS }
+    fun isChangingDoublePressDelayAllowed(): Boolean = keys.any { key ->
+        key.clickType ==
+            ClickType.DOUBLE_PRESS
+    }
 
-    fun isLongPressDoubleVibrationAllowed(): Boolean = (keys.size == 1 || (mode is TriggerMode.Parallel)) &&
-        keys.getOrNull(0)?.clickType == ClickType.LONG_PRESS
+    fun isLongPressDoubleVibrationAllowed(): Boolean =
+        (keys.size == 1 || (mode is TriggerMode.Parallel)) &&
+            keys.getOrNull(0)?.clickType == ClickType.LONG_PRESS
 
-    fun isChangingSequenceTriggerTimeoutAllowed(): Boolean = keys.isNotEmpty() && keys.size > 1 && mode is TriggerMode.Sequence
+    fun isChangingSequenceTriggerTimeoutAllowed(): Boolean =
+        keys.isNotEmpty() && keys.size > 1 && mode is TriggerMode.Sequence
 
     fun updateFloatingButtonData(buttons: List<FloatingButtonEntityWithLayout>): Trigger {
         val newTriggerKeys = keys.map { key ->
@@ -88,7 +96,9 @@ object TriggerEntityMapper {
 
         val mode = when {
             entity.mode == TriggerEntity.SEQUENCE && keys.size > 1 -> TriggerMode.Sequence
-            entity.mode == TriggerEntity.PARALLEL && keys.size > 1 -> TriggerMode.Parallel(keys[0].clickType)
+            entity.mode == TriggerEntity.PARALLEL && keys.size > 1 -> TriggerMode.Parallel(
+                keys[0].clickType,
+            )
             else -> TriggerMode.Undefined
         }
 
@@ -110,7 +120,9 @@ object TriggerEntityMapper {
             vibrateDuration = entity.extras.getData(TriggerEntity.EXTRA_VIBRATION_DURATION)
                 .valueOrNull()?.toIntOrNull(),
 
-            sequenceTriggerTimeout = entity.extras.getData(TriggerEntity.EXTRA_SEQUENCE_TRIGGER_TIMEOUT)
+            sequenceTriggerTimeout = entity.extras.getData(
+                TriggerEntity.EXTRA_SEQUENCE_TRIGGER_TIMEOUT,
+            )
                 .valueOrNull()?.toIntOrNull(),
 
             triggerFromOtherApps = entity.flags.hasFlag(TriggerEntity.TRIGGER_FLAG_FROM_OTHER_APPS),
@@ -121,7 +133,9 @@ object TriggerEntityMapper {
     fun toEntity(trigger: Trigger): TriggerEntity {
         val extras = mutableListOf<EntityExtra>()
 
-        if (trigger.isChangingSequenceTriggerTimeoutAllowed() && trigger.sequenceTriggerTimeout != null) {
+        if (trigger.isChangingSequenceTriggerTimeoutAllowed() &&
+            trigger.sequenceTriggerTimeout != null
+        ) {
             extras.add(
                 EntityExtra(
                     TriggerEntity.EXTRA_SEQUENCE_TRIGGER_TIMEOUT,

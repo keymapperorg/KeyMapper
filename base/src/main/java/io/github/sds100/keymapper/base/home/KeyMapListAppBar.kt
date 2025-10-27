@@ -528,9 +528,15 @@ private fun ChildGroupAppBar(
                     Spacer(Modifier.width(16.dp))
 
                     val text = when (keyMapsEnabled) {
-                        SelectedKeyMapsEnabled.ALL -> stringResource(R.string.home_enabled_key_maps_enabled)
-                        SelectedKeyMapsEnabled.MIXED -> stringResource(R.string.home_enabled_key_maps_mixed)
-                        SelectedKeyMapsEnabled.NONE, null -> stringResource(R.string.home_enabled_key_maps_disabled)
+                        SelectedKeyMapsEnabled.ALL -> stringResource(
+                            R.string.home_enabled_key_maps_enabled,
+                        )
+                        SelectedKeyMapsEnabled.MIXED -> stringResource(
+                            R.string.home_enabled_key_maps_mixed,
+                        )
+                        SelectedKeyMapsEnabled.NONE, null -> stringResource(
+                            R.string.home_enabled_key_maps_disabled,
+                        )
                     }
 
                     Switch(
@@ -676,7 +682,9 @@ private fun GroupNameRow(
                     ),
                 value = value,
                 onValueChange = onValueChange,
-                textStyle = MaterialTheme.typography.titleLarge.copy(color = LocalContentColor.current),
+                textStyle = MaterialTheme.typography.titleLarge.copy(
+                    color = LocalContentColor.current,
+                ),
                 enabled = isEditing,
                 keyboardActions = KeyboardActions(onDone = { onRenameClick() }),
                 keyboardOptions = KeyboardOptions(
@@ -804,7 +812,8 @@ private fun AppBarStatus(
         }
 
         val transition =
-            slideInVertically { height -> -height } + fadeIn() togetherWith slideOutVertically { height -> height } + fadeOut()
+            slideInVertically { height -> -height } + fadeIn() togetherWith
+                slideOutVertically { height -> height } + fadeOut()
 
         AnimatedContent(targetState = buttonIcon, transitionSpec = { transition }) { icon ->
             Icon(icon, contentDescription = null)
@@ -843,10 +852,7 @@ private fun SelectedText(modifier: Modifier = Modifier, selectionCount: Int) {
     }
 }
 
-private fun selectedTextTransition(
-    targetState: Int,
-    initialState: Int,
-): ContentTransform {
+private fun selectedTextTransition(targetState: Int, initialState: Int): ContentTransform {
     return slideInVertically { height ->
         if (targetState > initialState) {
             -height

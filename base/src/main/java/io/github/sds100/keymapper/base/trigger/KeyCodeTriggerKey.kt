@@ -52,7 +52,9 @@ fun KeyCodeTriggerKey.getCodeLabel(resourceProvider: ResourceProvider): String {
         val codeLabel = ScancodeStrings.getScancodeLabel(scanCode!!)
             ?: resourceProvider.getString(R.string.trigger_key_unknown_scan_code, scanCode!!)
 
-        return "$codeLabel (${resourceProvider.getString(R.string.trigger_key_scan_code_detection_flag)})"
+        return "$codeLabel (${resourceProvider.getString(
+            R.string.trigger_key_scan_code_detection_flag,
+        )})"
     } else {
         return KeyCodeStrings.keyCodeToString(keyCode)
             ?: resourceProvider.getString(R.string.trigger_key_unknown_key_code, keyCode)

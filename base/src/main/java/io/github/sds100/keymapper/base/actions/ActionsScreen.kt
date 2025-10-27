@@ -358,7 +358,7 @@ private fun EmptyPreview() {
                         ),
                         ShortcutModel(
                             icon = ComposeIconInfo.Vector(Icons.Rounded.Pinch),
-                            text = "Pinch in with 2 finger(s) on coordinates 5/4 with a pinch distance of 8px in 200ms",
+                            text = "Pinch in with 2 finger(s) on coordinates 5/4",
                             data = ActionData.ConsumeKeyEvent,
                         ),
                     ),
@@ -405,7 +405,7 @@ private fun LoadedPreview() {
                         ),
                         ShortcutModel(
                             icon = ComposeIconInfo.Vector(Icons.Rounded.Pinch),
-                            text = "Pinch in with 2 finger(s) on coordinates 5/4 with a pinch distance of 8px in 200ms",
+                            text = "Pinch in with 2 finger(s) on coordinates 5/4",
                             data = ActionData.ConsumeKeyEvent,
                         ),
                     ),

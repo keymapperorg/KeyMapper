@@ -1,16 +1,16 @@
 package io.github.sds100.keymapper.base.actions
 
 import io.github.sds100.keymapper.base.keymaps.KeyMap
+import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.hasFlag
-import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.entities.ActionEntity
 import io.github.sds100.keymapper.data.entities.EntityExtra
 import io.github.sds100.keymapper.data.entities.getData
-import kotlinx.serialization.Serializable
 import java.util.UUID
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class Action(
@@ -37,7 +37,7 @@ object ActionEntityMapper {
 
         val stopHoldDownWhenTriggerPressedAgain: Boolean =
             entity.extras.getData(ActionEntity.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR).then {
-                (it == ActionEntity.STOP_HOLD_DOWN_BEHAVIOR_TRIGGER_PRESSED_AGAIN.toString()).success()
+                Success(it == ActionEntity.STOP_HOLD_DOWN_BEHAVIOR_TRIGGER_PRESSED_AGAIN.toString())
             }.valueOrNull() == true
 
         val repeatRate =
@@ -72,7 +72,8 @@ object ActionEntityMapper {
 
             when (repeatBehaviourExtra) {
                 ActionEntity.STOP_REPEAT_BEHAVIOUR_LIMIT_REACHED -> RepeatMode.LIMIT_REACHED
-                ActionEntity.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN -> RepeatMode.TRIGGER_PRESSED_AGAIN
+                ActionEntity.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN ->
+                    RepeatMode.TRIGGER_PRESSED_AGAIN
                 else -> RepeatMode.TRIGGER_RELEASED
             }
         } else {
@@ -117,7 +118,9 @@ object ActionEntityMapper {
                 add(EntityExtra(ActionEntity.EXTRA_MULTIPLIER, action.multiplier.toString()))
             }
 
-            if (keyMap.isHoldingDownActionBeforeRepeatingAllowed(action) && action.holdDownDuration != null) {
+            if (keyMap.isHoldingDownActionBeforeRepeatingAllowed(action) &&
+                action.holdDownDuration != null
+            ) {
                 add(
                     EntityExtra(
                         ActionEntity.EXTRA_HOLD_DOWN_DURATION,
@@ -138,7 +141,8 @@ object ActionEntityMapper {
                 add(EntityExtra(ActionEntity.EXTRA_REPEAT_LIMIT, action.repeatLimit.toString()))
             }
 
-            if (keyMap.isChangingRepeatModeAllowed(action) && action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN
+            if (keyMap.isChangingRepeatModeAllowed(action) &&
+                action.repeatMode == RepeatMode.TRIGGER_PRESSED_AGAIN
             ) {
                 add(
                     EntityExtra(
@@ -148,7 +152,9 @@ object ActionEntityMapper {
                 )
             }
 
-            if (keyMap.isChangingRepeatModeAllowed(action) && action.repeatMode == RepeatMode.LIMIT_REACHED) {
+            if (keyMap.isChangingRepeatModeAllowed(action) &&
+                action.repeatMode == RepeatMode.LIMIT_REACHED
+            ) {
                 add(
                     EntityExtra(
                         ActionEntity.EXTRA_CUSTOM_STOP_REPEAT_BEHAVIOUR,

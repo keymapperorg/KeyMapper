@@ -120,7 +120,8 @@ class ActionUiHelper(
                     }
 
                     string = if (action.volumeStream != null) {
-                        val streamString = getString(VolumeStreamStrings.getLabel(action.volumeStream))
+                        val streamString =
+                            getString(VolumeStreamStrings.getLabel(action.volumeStream))
                         getString(
                             R.string.action_decrease_stream_formatted,
                             streamString,
@@ -160,7 +161,8 @@ class ActionUiHelper(
                     }
 
                     string = if (action.volumeStream != null) {
-                        val streamString = getString(VolumeStreamStrings.getLabel(action.volumeStream))
+                        val streamString =
+                            getString(VolumeStreamStrings.getLabel(action.volumeStream))
                         getString(
                             R.string.action_increase_stream_formatted,
                             streamString,
@@ -205,32 +207,52 @@ class ActionUiHelper(
             getAppName(action.packageName).handle(
                 onSuccess = { appName ->
                     val resId = when (action) {
-                        is ActionData.ControlMediaForApp.Play -> R.string.action_play_media_package_formatted
-                        is ActionData.ControlMediaForApp.FastForward -> R.string.action_fast_forward_package_formatted
-                        is ActionData.ControlMediaForApp.NextTrack -> R.string.action_next_track_package_formatted
-                        is ActionData.ControlMediaForApp.Pause -> R.string.action_pause_media_package_formatted
-                        is ActionData.ControlMediaForApp.PlayPause -> R.string.action_play_pause_media_package_formatted
-                        is ActionData.ControlMediaForApp.PreviousTrack -> R.string.action_previous_track_package_formatted
-                        is ActionData.ControlMediaForApp.Rewind -> R.string.action_rewind_package_formatted
-                        is ActionData.ControlMediaForApp.Stop -> R.string.action_stop_media_package_formatted
-                        is ActionData.ControlMediaForApp.StepForward -> R.string.action_step_forward_media_package_formatted
-                        is ActionData.ControlMediaForApp.StepBackward -> R.string.action_step_backward_media_package_formatted
+                        is ActionData.ControlMediaForApp.Play ->
+                            R.string.action_play_media_package_formatted
+                        is ActionData.ControlMediaForApp.FastForward ->
+                            R.string.action_fast_forward_package_formatted
+                        is ActionData.ControlMediaForApp.NextTrack ->
+                            R.string.action_next_track_package_formatted
+                        is ActionData.ControlMediaForApp.Pause ->
+                            R.string.action_pause_media_package_formatted
+                        is ActionData.ControlMediaForApp.PlayPause ->
+                            R.string.action_play_pause_media_package_formatted
+                        is ActionData.ControlMediaForApp.PreviousTrack ->
+                            R.string.action_previous_track_package_formatted
+                        is ActionData.ControlMediaForApp.Rewind ->
+                            R.string.action_rewind_package_formatted
+                        is ActionData.ControlMediaForApp.Stop ->
+                            R.string.action_stop_media_package_formatted
+                        is ActionData.ControlMediaForApp.StepForward ->
+                            R.string.action_step_forward_media_package_formatted
+                        is ActionData.ControlMediaForApp.StepBackward ->
+                            R.string.action_step_backward_media_package_formatted
                     }
 
                     getString(resId, appName)
                 },
                 onError = {
                     val resId = when (action) {
-                        is ActionData.ControlMediaForApp.Play -> R.string.action_play_media_package
-                        is ActionData.ControlMediaForApp.FastForward -> R.string.action_fast_forward_package
-                        is ActionData.ControlMediaForApp.NextTrack -> R.string.action_next_track_package
-                        is ActionData.ControlMediaForApp.Pause -> R.string.action_pause_media_package
-                        is ActionData.ControlMediaForApp.PlayPause -> R.string.action_play_pause_media_package
-                        is ActionData.ControlMediaForApp.PreviousTrack -> R.string.action_previous_track_package
-                        is ActionData.ControlMediaForApp.Rewind -> R.string.action_rewind_package
-                        is ActionData.ControlMediaForApp.Stop -> R.string.action_stop_media_package
-                        is ActionData.ControlMediaForApp.StepForward -> R.string.action_step_forward_media_package
-                        is ActionData.ControlMediaForApp.StepBackward -> R.string.action_step_backward_media_package
+                        is ActionData.ControlMediaForApp.Play ->
+                            R.string.action_play_media_package
+                        is ActionData.ControlMediaForApp.FastForward ->
+                            R.string.action_fast_forward_package
+                        is ActionData.ControlMediaForApp.NextTrack ->
+                            R.string.action_next_track_package
+                        is ActionData.ControlMediaForApp.Pause ->
+                            R.string.action_pause_media_package
+                        is ActionData.ControlMediaForApp.PlayPause ->
+                            R.string.action_play_pause_media_package
+                        is ActionData.ControlMediaForApp.PreviousTrack ->
+                            R.string.action_previous_track_package
+                        is ActionData.ControlMediaForApp.Rewind ->
+                            R.string.action_rewind_package
+                        is ActionData.ControlMediaForApp.Stop ->
+                            R.string.action_stop_media_package
+                        is ActionData.ControlMediaForApp.StepForward ->
+                            R.string.action_step_forward_media_package
+                        is ActionData.ControlMediaForApp.StepBackward ->
+                            R.string.action_step_backward_media_package
                     }
 
                     getString(resId)
@@ -240,7 +262,9 @@ class ActionUiHelper(
         is ActionData.Flashlight -> {
             when (action) {
                 is ActionData.Flashlight.Toggle -> {
-                    if (action.strengthPercent == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                    if (action.strengthPercent == null ||
+                        Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+                    ) {
                         if (action.lens == CameraLens.FRONT) {
                             getString(R.string.action_toggle_front_flashlight_formatted)
                         } else {
@@ -262,7 +286,9 @@ class ActionUiHelper(
                 }
 
                 is ActionData.Flashlight.Enable -> {
-                    if (action.strengthPercent == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                    if (action.strengthPercent == null ||
+                        Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+                    ) {
                         if (action.lens == CameraLens.FRONT) {
                             getString(R.string.action_enable_front_flashlight_formatted)
                         } else {
@@ -485,21 +511,41 @@ class ActionUiHelper(
             when (action.direction) {
                 ActionData.MoveCursor.Direction.START -> {
                     when (action.moveType) {
-                        ActionData.MoveCursor.Type.CHAR -> getString(R.string.action_move_cursor_prev_character)
-                        ActionData.MoveCursor.Type.WORD -> getString(R.string.action_move_cursor_start_word)
-                        ActionData.MoveCursor.Type.LINE -> getString(R.string.action_move_cursor_start_line)
-                        ActionData.MoveCursor.Type.PARAGRAPH -> getString(R.string.action_move_cursor_start_paragraph)
-                        ActionData.MoveCursor.Type.PAGE -> getString(R.string.action_move_cursor_start_page)
+                        ActionData.MoveCursor.Type.CHAR -> getString(
+                            R.string.action_move_cursor_prev_character,
+                        )
+                        ActionData.MoveCursor.Type.WORD -> getString(
+                            R.string.action_move_cursor_start_word,
+                        )
+                        ActionData.MoveCursor.Type.LINE -> getString(
+                            R.string.action_move_cursor_start_line,
+                        )
+                        ActionData.MoveCursor.Type.PARAGRAPH -> getString(
+                            R.string.action_move_cursor_start_paragraph,
+                        )
+                        ActionData.MoveCursor.Type.PAGE -> getString(
+                            R.string.action_move_cursor_start_page,
+                        )
                     }
                 }
 
                 ActionData.MoveCursor.Direction.END -> {
                     when (action.moveType) {
-                        ActionData.MoveCursor.Type.CHAR -> getString(R.string.action_move_cursor_next_character)
-                        ActionData.MoveCursor.Type.WORD -> getString(R.string.action_move_cursor_end_word)
-                        ActionData.MoveCursor.Type.LINE -> getString(R.string.action_move_cursor_end_line)
-                        ActionData.MoveCursor.Type.PARAGRAPH -> getString(R.string.action_move_cursor_end_paragraph)
-                        ActionData.MoveCursor.Type.PAGE -> getString(R.string.action_move_cursor_end_page)
+                        ActionData.MoveCursor.Type.CHAR -> getString(
+                            R.string.action_move_cursor_next_character,
+                        )
+                        ActionData.MoveCursor.Type.WORD -> getString(
+                            R.string.action_move_cursor_end_word,
+                        )
+                        ActionData.MoveCursor.Type.LINE -> getString(
+                            R.string.action_move_cursor_end_line,
+                        )
+                        ActionData.MoveCursor.Type.PARAGRAPH -> getString(
+                            R.string.action_move_cursor_end_paragraph,
+                        )
+                        ActionData.MoveCursor.Type.PAGE -> getString(
+                            R.string.action_move_cursor_end_page,
+                        )
                     }
                 }
             }
@@ -544,9 +590,13 @@ class ActionUiHelper(
         ActionData.ShowPowerMenu -> getString(R.string.action_show_power_menu)
 
         ActionData.StatusBar.Collapse -> getString(R.string.action_collapse_status_bar)
-        ActionData.StatusBar.ExpandNotifications -> getString(R.string.action_expand_notification_drawer)
+        ActionData.StatusBar.ExpandNotifications -> getString(
+            R.string.action_expand_notification_drawer,
+        )
         ActionData.StatusBar.ExpandQuickSettings -> getString(R.string.action_expand_quick_settings)
-        ActionData.StatusBar.ToggleNotifications -> getString(R.string.action_toggle_notification_drawer)
+        ActionData.StatusBar.ToggleNotifications -> getString(
+            R.string.action_toggle_notification_drawer,
+        )
         ActionData.StatusBar.ToggleQuickSettings -> getString(R.string.action_toggle_quick_settings)
 
         ActionData.ToggleKeyboard -> getString(R.string.action_toggle_keyboard)
@@ -557,7 +607,9 @@ class ActionUiHelper(
         ActionData.Wifi.Enable -> getString(R.string.action_enable_wifi)
         ActionData.Wifi.Toggle -> getString(R.string.action_toggle_wifi)
         ActionData.DismissAllNotifications -> getString(R.string.action_dismiss_all_notifications)
-        ActionData.DismissLastNotification -> getString(R.string.action_dismiss_most_recent_notification)
+        ActionData.DismissLastNotification -> getString(
+            R.string.action_dismiss_most_recent_notification,
+        )
 
         ActionData.AnswerCall -> getString(R.string.action_answer_call)
         ActionData.EndCall -> getString(R.string.action_end_call)
@@ -714,7 +766,9 @@ class ActionUiHelper(
                     }
 
                     RepeatMode.TRIGGER_PRESSED_AGAIN -> {
-                        append(getString(R.string.flag_repeat_build_description_until_pressed_again))
+                        append(
+                            getString(R.string.flag_repeat_build_description_until_pressed_again),
+                        )
                     }
 
                     else -> Unit

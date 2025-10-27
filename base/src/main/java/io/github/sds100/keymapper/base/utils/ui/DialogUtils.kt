@@ -15,6 +15,7 @@ import com.google.android.material.textfield.TextInputLayout
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.databinding.DialogEdittextStringBinding
 import io.github.sds100.keymapper.common.utils.resumeIfNotCompleted
+import kotlin.coroutines.resume
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -24,39 +25,36 @@ import splitties.alertdialog.appcompat.negativeButton
 import splitties.alertdialog.appcompat.okButton
 import splitties.alertdialog.appcompat.title
 import splitties.alertdialog.material.materialAlertDialog
-import kotlin.coroutines.resume
 
-suspend fun Context.materialAlertDialog(
-    lifecycleOwner: LifecycleOwner,
-    model: DialogModel.Alert,
-) = suspendCancellableCoroutine<DialogResponse?> { continuation ->
+suspend fun Context.materialAlertDialog(lifecycleOwner: LifecycleOwner, model: DialogModel.Alert) =
+    suspendCancellableCoroutine<DialogResponse?> { continuation ->
 
-    materialAlertDialog {
-        title = model.title
-        setMessage(model.message)
+        materialAlertDialog {
+            title = model.title
+            setMessage(model.message)
 
-        setPositiveButton(model.positiveButtonText) { _, _ ->
-            continuation.resumeIfNotCompleted(DialogResponse.POSITIVE)
-        }
+            setPositiveButton(model.positiveButtonText) { _, _ ->
+                continuation.resumeIfNotCompleted(DialogResponse.POSITIVE)
+            }
 
-        setNeutralButton(model.neutralButtonText) { _, _ ->
-            continuation.resumeIfNotCompleted(DialogResponse.NEUTRAL)
-        }
+            setNeutralButton(model.neutralButtonText) { _, _ ->
+                continuation.resumeIfNotCompleted(DialogResponse.NEUTRAL)
+            }
 
-        setNegativeButton(model.negativeButtonText) { _, _ ->
-            continuation.resumeIfNotCompleted(DialogResponse.NEGATIVE)
-        }
+            setNegativeButton(model.negativeButtonText) { _, _ ->
+                continuation.resumeIfNotCompleted(DialogResponse.NEGATIVE)
+            }
 
-        show().apply {
-            resumeNullOnDismiss(continuation)
-            dismissOnDestroy(lifecycleOwner)
+            show().apply {
+                resumeNullOnDismiss(continuation)
+                dismissOnDestroy(lifecycleOwner)
 
-            continuation.invokeOnCancellation {
-                dismiss()
+                continuation.invokeOnCancellation {
+                    dismiss()
+                }
             }
         }
     }
-}
 
 suspend fun Context.materialAlertDialogCustomView(
     lifecycleOwner: LifecycleOwner,

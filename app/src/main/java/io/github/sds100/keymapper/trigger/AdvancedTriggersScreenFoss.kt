@@ -38,10 +38,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.openUriSafe
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdvancedTriggersScreenFoss(
-    modifier: Modifier = Modifier,
-    onBack: () -> Unit,
-) {
+fun AdvancedTriggersScreenFoss(modifier: Modifier = Modifier, onBack: () -> Unit) {
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -56,7 +53,9 @@ fun AdvancedTriggersScreenFoss(
                     IconButton(onClick = onBack) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.bottom_app_bar_back_content_description),
+                            contentDescription = stringResource(
+                                R.string.bottom_app_bar_back_content_description,
+                            ),
                         )
                     }
                 },

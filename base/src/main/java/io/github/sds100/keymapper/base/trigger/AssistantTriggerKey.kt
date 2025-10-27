@@ -3,9 +3,9 @@ package io.github.sds100.keymapper.base.trigger
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.data.entities.AssistantTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
+import java.util.UUID
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.util.UUID
 
 @Serializable
 data class AssistantTriggerKey(
@@ -33,9 +33,7 @@ data class AssistantTriggerKey(
     }
 
     companion object {
-        fun fromEntity(
-            entity: AssistantTriggerKeyEntity,
-        ): TriggerKey {
+        fun fromEntity(entity: AssistantTriggerKeyEntity): TriggerKey {
             val type: AssistantTriggerType = when (entity.type) {
                 AssistantTriggerKeyEntity.ASSISTANT_TYPE_VOICE -> AssistantTriggerType.VOICE
                 AssistantTriggerKeyEntity.ASSISTANT_TYPE_DEVICE -> AssistantTriggerType.DEVICE

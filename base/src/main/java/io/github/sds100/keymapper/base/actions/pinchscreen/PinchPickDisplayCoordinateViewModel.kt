@@ -15,6 +15,8 @@ import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.PinchScreenType
+import javax.inject.Inject
+import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,8 +27,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import kotlin.math.roundToInt
 
 @HiltViewModel
 class PinchPickDisplayCoordinateViewModel @Inject constructor(
@@ -98,7 +98,9 @@ class PinchPickDisplayCoordinateViewModel @Inject constructor(
         }
 
         if (count < 2) {
-            return@map resourceProvider.getString(R.string.error_pinch_screen_must_be_two_or_more_fingers)
+            return@map resourceProvider.getString(
+                R.string.error_pinch_screen_must_be_two_or_more_fingers,
+            )
         }
 
         var maxFingerCount = 10
@@ -129,7 +131,9 @@ class PinchPickDisplayCoordinateViewModel @Inject constructor(
         }
 
         if (d <= 0) {
-            return@map resourceProvider.getString(R.string.error_pinch_screen_duration_must_be_more_than_zero)
+            return@map resourceProvider.getString(
+                R.string.error_pinch_screen_duration_must_be_more_than_zero,
+            )
         }
 
         null
@@ -145,7 +149,10 @@ class PinchPickDisplayCoordinateViewModel @Inject constructor(
             distance ?: return@combine false
             pinchType ?: return@combine false
 
-            x >= 0 && y >= 0 && distance > 0 && (pinchType == PinchScreenType.PINCH_IN || pinchType == PinchScreenType.PINCH_OUT)
+            x >= 0 &&
+                y >= 0 &&
+                distance > 0 &&
+                (pinchType == PinchScreenType.PINCH_IN || pinchType == PinchScreenType.PINCH_OUT)
         }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     val isDoneButtonEnabled: StateFlow<Boolean> =

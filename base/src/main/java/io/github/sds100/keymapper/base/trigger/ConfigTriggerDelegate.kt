@@ -177,10 +177,7 @@ class ConfigTriggerDelegate {
         return addTriggerKey(trigger.copy(mode = newMode, keys = newKeys), triggerKey)
     }
 
-    private fun addTriggerKey(
-        trigger: Trigger,
-        key: TriggerKey,
-    ): Trigger {
+    private fun addTriggerKey(trigger: Trigger, key: TriggerKey): Trigger {
         // Check whether the trigger already contains the key because if so
         // then it must be converted to a sequence trigger.
         val containsKey = trigger.keys.any { otherKey -> key.isLogicallyEqual(otherKey) }
@@ -349,7 +346,9 @@ class ConfigTriggerDelegate {
         val newKeys = trigger.keys.map { key ->
             if (key.uid == keyUid) {
                 if (key !is KeyEventTriggerKey) {
-                    throw IllegalArgumentException("You can not set the device for non KeyEventTriggerKeys.")
+                    throw IllegalArgumentException(
+                        "You can not set the device for non KeyEventTriggerKeys.",
+                    )
                 }
 
                 key.copy(device = device)
@@ -487,7 +486,10 @@ class ConfigTriggerDelegate {
 
     fun setScanCodeDetectionEnabled(trigger: Trigger, keyUid: String, enabled: Boolean): Trigger {
         val newKeys = trigger.keys.map { otherKey ->
-            if (otherKey.uid == keyUid && otherKey is KeyCodeTriggerKey && otherKey.isScanCodeDetectionUserConfigurable()) {
+            if (otherKey.uid == keyUid &&
+                otherKey is KeyCodeTriggerKey &&
+                otherKey.isScanCodeDetectionUserConfigurable()
+            ) {
                 when (otherKey) {
                     is KeyEventTriggerKey -> {
                         otherKey.copy(detectWithScanCodeUserSetting = enabled)

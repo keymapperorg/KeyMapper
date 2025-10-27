@@ -64,11 +64,7 @@ fun RecordTriggerButtonRow(
 }
 
 @Composable
-fun RecordTriggerButton(
-    modifier: Modifier,
-    state: RecordTriggerState,
-    onClick: () -> Unit,
-) {
+fun RecordTriggerButton(modifier: Modifier, state: RecordTriggerState, onClick: () -> Unit) {
     val colors = ButtonDefaults.filledTonalButtonColors().copy(
         containerColor = LocalCustomColorsPalette.current.red,
         contentColor = LocalCustomColorsPalette.current.onRed,
@@ -132,10 +128,7 @@ fun RecordTriggerButton(
 }
 
 @Composable
-private fun AdvancedTriggersButton(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit,
-) {
+private fun AdvancedTriggersButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
     IconButton(
         modifier = modifier,
         onClick = onClick,

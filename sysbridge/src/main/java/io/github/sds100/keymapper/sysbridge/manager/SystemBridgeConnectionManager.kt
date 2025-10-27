@@ -26,6 +26,8 @@ import io.github.sds100.keymapper.sysbridge.ISystemBridge
 import io.github.sds100.keymapper.sysbridge.ktx.TAG
 import io.github.sds100.keymapper.sysbridge.starter.SystemBridgeStarter
 import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -34,8 +36,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * This class handles starting, stopping and (dis)connecting to the system bridge.
@@ -54,8 +54,9 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
     override val connectionState: MutableStateFlow<SystemBridgeConnectionState> =
         MutableStateFlow<SystemBridgeConnectionState>(
             SystemBridgeConnectionState.Disconnected(
-                time = SystemClock.elapsedRealtime(), isExpected = true
-            )
+                time = SystemClock.elapsedRealtime(),
+                isExpected = true,
+            ),
         )
     private var isExpectedDeath: Boolean = false
 
@@ -68,7 +69,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
             connectionState.update {
                 SystemBridgeConnectionState.Disconnected(
                     time = SystemClock.elapsedRealtime(),
-                    isExpected = isExpectedDeath
+                    isExpected = isExpectedDeath,
                 )
             }
 
@@ -117,7 +118,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
                     // calls this message.
                     Log.w(
                         TAG,
-                        "System Bridge version mismatch! Restarting it. App: ${buildConfigProvider.versionCode}, System Bridge: ${systemBridge.versionCode}"
+                        "System Bridge version mismatch! Restarting it. App: ${buildConfigProvider.versionCode}, System Bridge: ${systemBridge.versionCode}",
                     )
 
                     restartSystemBridge(systemBridge)
@@ -134,7 +135,11 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
                 if (result.isSuccess()) {
                     Success(result.stdout)
                 } else {
-                    KMError.Exception(Exception("Command failed with exit code ${result.exitCode}: ${result.stdout}"))
+                    KMError.Exception(
+                        Exception(
+                            "Command failed with exit code ${result.exitCode}: ${result.stdout}",
+                        ),
+                    )
                 }
             } catch (_: DeadObjectException) {
                 // This exception is expected since it is killing the system bridge
@@ -196,14 +201,14 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
 
         if (ContextCompat.checkSelfPermission(
                 ctx,
-                Manifest.permission.WRITE_SECURE_SETTINGS
+                Manifest.permission.WRITE_SECURE_SETTINGS,
             ) == PERMISSION_GRANTED
         ) {
             // Disable automatic revoking of ADB pairings
             SettingsUtils.putGlobalSetting(
                 ctx,
                 "adb_allowed_connection_time",
-                0
+                0,
             )
 
             // Enable USB debugging so the Shell user can keep running in the background
@@ -211,7 +216,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
             SettingsUtils.putGlobalSetting(
                 ctx,
                 "adb_enabled",
-                1
+                1,
             )
         }
     }

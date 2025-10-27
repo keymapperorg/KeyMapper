@@ -4,19 +4,18 @@ import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
+import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Locale
-import javax.inject.Inject
 
 @HiltViewModel
-class LogViewModel @Inject constructor(
-    private val displayLogUseCase: DisplayLogUseCase,
-) : ViewModel() {
+class LogViewModel @Inject constructor(private val displayLogUseCase: DisplayLogUseCase) :
+    ViewModel() {
     @SuppressLint("ConstantLocale")
     private val dateFormat = SimpleDateFormat("MM/dd HH:mm:ss.SSS", Locale.getDefault())
 

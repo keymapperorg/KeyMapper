@@ -19,6 +19,7 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -28,7 +29,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
 @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
 @ViewModelScoped
@@ -51,7 +51,9 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
                 permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS),
                 networkAdapter.isWifiConnected,
             ) { isWriteSecureSettingsGranted, isWifiConnected ->
-                isWriteSecureSettingsGranted && isWifiConnected && systemBridgeSetupController.isAdbPaired()
+                isWriteSecureSettingsGranted &&
+                    isWifiConnected &&
+                    systemBridgeSetupController.isAdbPaired()
             }.flowOn(Dispatchers.IO)
         } else {
             flowOf(false)
@@ -205,7 +207,8 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         isWirelessDebuggingEnabled: Boolean,
     ): SystemBridgeSetupStep {
         return when {
-            accessibilityServiceState != AccessibilityServiceState.ENABLED -> SystemBridgeSetupStep.ACCESSIBILITY_SERVICE
+            accessibilityServiceState != AccessibilityServiceState.ENABLED ->
+                SystemBridgeSetupStep.ACCESSIBILITY_SERVICE
             !isNotificationPermissionGranted -> SystemBridgeSetupStep.NOTIFICATION_PERMISSION
             !isDeveloperOptionsEnabled -> SystemBridgeSetupStep.DEVELOPER_OPTIONS
             !isWifiConnected -> SystemBridgeSetupStep.WIFI_NETWORK

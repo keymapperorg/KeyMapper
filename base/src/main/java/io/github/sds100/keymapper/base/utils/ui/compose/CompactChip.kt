@@ -58,11 +58,7 @@ fun CompactChip(
 }
 
 @Composable
-fun ErrorCompactChip(
-    onClick: () -> Unit,
-    text: String,
-    enabled: Boolean,
-) {
+fun ErrorCompactChip(onClick: () -> Unit, text: String, enabled: Boolean) {
     CompactChip(
         text = text,
         icon = {
@@ -80,11 +76,7 @@ fun ErrorCompactChip(
 }
 
 @Composable
-private fun CompactChipContent(
-    icon: @Composable (() -> Unit)?,
-    text: String,
-    contentColor: Color,
-) {
+private fun CompactChipContent(icon: @Composable (() -> Unit)?, text: String, contentColor: Color) {
     Row(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,

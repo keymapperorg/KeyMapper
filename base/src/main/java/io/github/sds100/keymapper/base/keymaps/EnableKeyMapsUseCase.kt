@@ -5,9 +5,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class EnableKeyMapsUseCaseImpl @Inject constructor(
-    private val keyMapRepository: KeyMapRepository,
-) : EnableKeyMapsUseCase {
+class EnableKeyMapsUseCaseImpl @Inject constructor(private val keyMapRepository: KeyMapRepository) :
+    EnableKeyMapsUseCase {
 
     override fun enable(uid: String) {
         keyMapRepository.enableById(uid)

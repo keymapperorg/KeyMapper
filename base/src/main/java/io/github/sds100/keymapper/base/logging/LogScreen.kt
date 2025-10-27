@@ -126,10 +126,7 @@ private fun LogScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun Content(
-    modifier: Modifier = Modifier,
-    logListItems: List<LogListItem>,
-) {
+private fun Content(modifier: Modifier = Modifier, logListItems: List<LogListItem>) {
     val listState = rememberLazyListState()
 
     // Scroll to the bottom when a new item is added

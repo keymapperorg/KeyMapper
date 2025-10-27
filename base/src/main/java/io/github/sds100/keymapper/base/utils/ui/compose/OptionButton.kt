@@ -16,12 +16,7 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 
 @Composable
-fun OptionButton(
-    modifier: Modifier = Modifier,
-    title: String,
-    text: String,
-    onClick: () -> Unit,
-) {
+fun OptionButton(modifier: Modifier = Modifier, title: String, text: String, onClick: () -> Unit) {
     Surface(modifier = modifier, onClick = onClick, shape = MaterialTheme.shapes.medium) {
         Row(
             Modifier

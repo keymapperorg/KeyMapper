@@ -12,6 +12,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.system.url.UrlUtils
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -22,8 +24,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class DialogProviderImpl @Inject constructor() : DialogProvider {
@@ -58,10 +58,7 @@ fun DialogProvider.onUserResponse(key: String, response: Any?) {
     onUserResponse(OnDialogResponseEvent(key, response))
 }
 
-suspend inline fun <reified R> DialogProvider.showDialog(
-    key: String,
-    ui: DialogModel<R>,
-): R? {
+suspend inline fun <reified R> DialogProvider.showDialog(key: String, ui: DialogModel<R>): R? {
     showDialog(ShowDialogEvent(key, ui))
 
     /*
@@ -74,32 +71,19 @@ suspend inline fun <reified R> DialogProvider.showDialog(
     ).first() as R?
 }
 
-fun DialogProvider.showDialogs(
-    fragment: Fragment,
-    binding: ViewDataBinding,
-) {
+fun DialogProvider.showDialogs(fragment: Fragment, binding: ViewDataBinding) {
     showDialogs(fragment.requireContext(), fragment.viewLifecycleOwner, binding.root)
 }
 
-fun DialogProvider.showDialogs(
-    fragment: Fragment,
-    rootView: View,
-) {
+fun DialogProvider.showDialogs(fragment: Fragment, rootView: View) {
     showDialogs(fragment.requireContext(), fragment.viewLifecycleOwner, rootView)
 }
 
-fun DialogProvider.showDialogs(
-    activity: FragmentActivity,
-    rootView: View,
-) {
+fun DialogProvider.showDialogs(activity: FragmentActivity, rootView: View) {
     showDialogs(activity, activity, rootView)
 }
 
-fun DialogProvider.showDialogs(
-    ctx: Context,
-    lifecycleOwner: LifecycleOwner,
-    rootView: View,
-) {
+fun DialogProvider.showDialogs(ctx: Context, lifecycleOwner: LifecycleOwner, rootView: View) {
     // must be onCreate because dismissing in onDestroy
     lifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.CREATED) {
         showDialog.onEach { event ->

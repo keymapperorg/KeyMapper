@@ -100,29 +100,30 @@ class TriggerKeyMapFromOtherAppsControllerTest {
      * #707
      */
     @Test
-    fun `Key map with repeat option, don't repeat when triggered if repeat until released`() = runTest(testDispatcher) {
-        // GIVEN
-        val action =
-            Action(
-                data = ActionData.InputKeyEvent(keyCode = 1),
-                repeat = true,
-                repeatMode = RepeatMode.TRIGGER_RELEASED,
+    fun `Key map with repeat option, don't repeat when triggered if repeat until released`() =
+        runTest(testDispatcher) {
+            // GIVEN
+            val action =
+                Action(
+                    data = ActionData.InputKeyEvent(keyCode = 1),
+                    repeat = true,
+                    repeatMode = RepeatMode.TRIGGER_RELEASED,
+                )
+            val keyMap = KeyMap(
+                actionList = listOf(action),
+                trigger = Trigger(triggerFromOtherApps = true),
             )
-        val keyMap = KeyMap(
-            actionList = listOf(action),
-            trigger = Trigger(triggerFromOtherApps = true),
-        )
-        keyMapListFlow.value = listOf(keyMap)
+            keyMapListFlow.value = listOf(keyMap)
 
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        // WHEN
-        controller.onDetected(keyMap.uid)
-        delay(500)
-        controller.reset() // stop any repeating that might be happening
-        advanceUntilIdle()
+            // WHEN
+            controller.onDetected(keyMap.uid)
+            delay(500)
+            controller.reset() // stop any repeating that might be happening
+            advanceUntilIdle()
 
-        // THEN
-        verify(performActionsUseCase, times(1)).perform(action.data)
-    }
+            // THEN
+            verify(performActionsUseCase, times(1)).perform(action.data)
+        }
 }

@@ -116,7 +116,9 @@ fun ConstraintListItem(
                     IconButton(onClick = onRemoveClick) {
                         Icon(
                             imageVector = Icons.Rounded.Clear,
-                            contentDescription = stringResource(R.string.constraint_list_item_remove),
+                            contentDescription = stringResource(
+                                R.string.constraint_list_item_remove,
+                            ),
                             tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(24.dp),
                         )

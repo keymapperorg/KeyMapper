@@ -29,6 +29,7 @@ import io.github.sds100.keymapper.data.repositories.GroupRepository
 import io.github.sds100.keymapper.data.repositories.KeyMapRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.files.IFile
+import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -60,7 +61,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import timber.log.Timber
-import java.io.File
 
 @Suppress("BlockingMethodInNonBlockingContext")
 @ExperimentalCoroutinesApi
@@ -97,7 +97,9 @@ class BackupManagerTest {
         mockKeyMapRepository = mock()
         mockGroupRepository = mock<GroupRepository> {
             on { getAllGroups() } doReturn MutableStateFlow(emptyList())
-            on { getGroupsByParent(ArgumentMatchers.any()) }.thenReturn(MutableStateFlow(emptyList()))
+            on {
+                getGroupsByParent(ArgumentMatchers.any())
+            }.thenReturn(MutableStateFlow(emptyList()))
         }
 
         fakeFileAdapter = FakeFileAdapter(temporaryFolder)
@@ -657,7 +659,9 @@ class BackupManagerTest {
 
             val keyMapList = listOf(KeyMapEntity(0), KeyMapEntity(1))
 
-            whenever(mockKeyMapRepository.keyMapList).then { MutableStateFlow(State.Data(keyMapList)) }
+            whenever(mockKeyMapRepository.keyMapList).then {
+                MutableStateFlow(State.Data(keyMapList))
+            }
 
             val backupZip = File(temporaryFolder.root, "backup.zip")
             backupZip.mkdirs()

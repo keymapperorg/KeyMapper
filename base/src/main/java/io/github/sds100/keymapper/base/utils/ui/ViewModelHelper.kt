@@ -17,8 +17,12 @@ object ViewModelHelper {
         val dialog = DialogModel.Alert(
             title = resourceProvider.getString(R.string.dialog_title_key_mapper_crashed),
             message = resourceProvider.getText(R.string.dialog_message_key_mapper_crashed),
-            positiveButtonText = resourceProvider.getString(R.string.dialog_button_read_dont_kill_my_app_yes),
-            negativeButtonText = resourceProvider.getString(R.string.dialog_button_read_dont_kill_my_app_no),
+            positiveButtonText = resourceProvider.getString(
+                R.string.dialog_button_read_dont_kill_my_app_yes,
+            ),
+            negativeButtonText = resourceProvider.getString(
+                R.string.dialog_button_read_dont_kill_my_app_no,
+            ),
             neutralButtonText = resourceProvider.getString(R.string.pos_restart),
         )
 
@@ -42,8 +46,12 @@ object ViewModelHelper {
         dialogProvider: DialogProvider,
     ): DialogResponse {
         val dialog = DialogModel.Alert(
-            title = resourceProvider.getString(R.string.dialog_title_accessibility_service_explanation),
-            message = resourceProvider.getString(R.string.dialog_message_accessibility_service_explanation),
+            title = resourceProvider.getString(
+                R.string.dialog_title_accessibility_service_explanation,
+            ),
+            message = resourceProvider.getString(
+                R.string.dialog_message_accessibility_service_explanation,
+            ),
             positiveButtonText = resourceProvider.getString(R.string.enable),
             negativeButtonText = resourceProvider.getString(R.string.neg_cancel),
         )
@@ -60,9 +68,15 @@ object ViewModelHelper {
         dialogProvider: DialogProvider,
     ) {
         val dialog = DialogModel.Alert(
-            title = resourceProvider.getString(R.string.dialog_title_cant_find_accessibility_settings_page),
-            message = resourceProvider.getText(R.string.dialog_message_cant_find_accessibility_settings_page),
-            positiveButtonText = resourceProvider.getString(R.string.pos_start_service_with_adb_guide),
+            title = resourceProvider.getString(
+                R.string.dialog_title_cant_find_accessibility_settings_page,
+            ),
+            message = resourceProvider.getText(
+                R.string.dialog_message_cant_find_accessibility_settings_page,
+            ),
+            positiveButtonText = resourceProvider.getString(
+                R.string.pos_start_service_with_adb_guide,
+            ),
             negativeButtonText = resourceProvider.getString(R.string.neg_cancel),
         )
 
@@ -101,8 +115,12 @@ object ViewModelHelper {
         restartService: () -> Boolean,
     ) {
         val dialog = DialogModel.Alert(
-            title = resourceProvider.getString(R.string.dialog_title_accessibility_service_explanation),
-            message = resourceProvider.getString(R.string.dialog_message_restart_accessibility_service),
+            title = resourceProvider.getString(
+                R.string.dialog_title_accessibility_service_explanation,
+            ),
+            message = resourceProvider.getString(
+                R.string.dialog_message_restart_accessibility_service,
+            ),
             positiveButtonText = resourceProvider.getString(R.string.pos_restart),
             negativeButtonText = resourceProvider.getString(R.string.neg_cancel),
         )

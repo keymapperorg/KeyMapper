@@ -54,13 +54,19 @@ class RestoreKeyMapsActivity : ComponentActivity() {
                     )
 
                     is ImportExportState.Error -> stringResource(R.string.import_dialog_title_error)
-                    ImportExportState.FinishedImport -> stringResource(R.string.import_dialog_title_success)
-                    ImportExportState.Importing -> stringResource(R.string.import_dialog_title_importing)
+                    ImportExportState.FinishedImport -> stringResource(
+                        R.string.import_dialog_title_success,
+                    )
+                    ImportExportState.Importing -> stringResource(
+                        R.string.import_dialog_title_importing,
+                    )
                     else -> ""
                 }
 
                 val text = when (state) {
-                    is ImportExportState.ConfirmImport -> stringResource(R.string.home_importing_dialog_text)
+                    is ImportExportState.ConfirmImport -> stringResource(
+                        R.string.home_importing_dialog_text,
+                    )
                     else -> null
                 }
 
@@ -79,9 +85,13 @@ class RestoreKeyMapsActivity : ComponentActivity() {
                                     startActivity(this)
                                 }
                             }) {
-                                Text(stringResource(R.string.import_dialog_button_launch_key_mapper))
+                                Text(
+                                    stringResource(R.string.import_dialog_button_launch_key_mapper),
+                                )
                             }
-                        } else if (state !is ImportExportState.Idle && state !is ImportExportState.ConfirmImport) {
+                        } else if (state !is ImportExportState.Idle &&
+                            state !is ImportExportState.ConfirmImport
+                        ) {
                             TextButton(onClick = { finish() }) {
                                 Text(stringResource(R.string.pos_done))
                             }
@@ -99,7 +109,9 @@ class RestoreKeyMapsActivity : ComponentActivity() {
                             TextButton(onClick = { finish() }) {
                                 Text(stringResource(R.string.home_importing_dialog_dismiss))
                             }
-                        } else if (state is ImportExportState.Idle || state is ImportExportState.ConfirmImport) {
+                        } else if (state is ImportExportState.Idle ||
+                            state is ImportExportState.ConfirmImport
+                        ) {
                             TextButton(onClick = { finish() }) {
                                 Text(stringResource(R.string.home_importing_dialog_cancel))
                             }

@@ -63,7 +63,11 @@ fun GroupBreadcrumbRow(
                 )
 
                 Breadcrumb(
-                    modifier = Modifier.widthIn(max = LocalDensity.current.run { maxCrumbWidth.toDp() }),
+                    modifier = Modifier.widthIn(
+                        max = LocalDensity.current.run {
+                            maxCrumbWidth.toDp()
+                        },
+                    ),
                     text = group.name,
                     onClick = { onGroupClick(group.uid) },
                     color = if (index == groups.lastIndex) {

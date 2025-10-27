@@ -76,7 +76,9 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
         private val PAIRING_CODE_REGEX = Regex("^\\d{6}$")
         private val IPV4_REGEX =
-            Regex("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
+            Regex(
+                "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+            )
     }
 
     private enum class InteractionStep {
@@ -124,7 +126,10 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             coroutineScope.launch {
                 manageNotifications.onNotificationTextInput
-                    .filter { it.intentAction == KMNotificationAction.IntentAction.PAIRING_CODE_REPLY }
+                    .filter {
+                        it.intentAction ==
+                            KMNotificationAction.IntentAction.PAIRING_CODE_REPLY
+                    }
                     .collect { textInput ->
                         Timber.i("Receive pairing code text input: $textInput")
 
@@ -216,7 +221,10 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
             showNotification(
                 getString(R.string.pro_mode_setup_notification_invalid_pairing_code_title),
                 getString(R.string.pro_mode_setup_notification_invalid_pairing_code_text),
-                actions = listOf(KMNotificationAction.RemoteInput.PairingCode to getString(R.string.pro_mode_setup_notification_action_input_pairing_code)),
+                actions = listOf(
+                    KMNotificationAction.RemoteInput.PairingCode to
+                        getString(R.string.pro_mode_setup_notification_action_input_pairing_code),
+                ),
             )
         }
     }
@@ -245,7 +253,9 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
             showNotification(
                 getString(R.string.pro_mode_setup_notification_start_system_bridge_failed_title),
                 getString(R.string.pro_mode_setup_notification_start_system_bridge_failed_text),
-                onClickAction = KMNotificationAction.Activity.MainActivity(BaseMainActivity.ACTION_START_SYSTEM_BRIDGE),
+                onClickAction = KMNotificationAction.Activity.MainActivity(
+                    BaseMainActivity.ACTION_START_SYSTEM_BRIDGE,
+                ),
             )
         }
     }
@@ -340,9 +350,18 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
                 Timber.i("Interaction timed out. Asking user to input pairing code manually.")
 
                 showNotification(
-                    title = getString(R.string.pro_mode_setup_notification_pairing_button_not_found_title),
-                    text = getString(R.string.pro_mode_setup_notification_pairing_button_not_found_text),
-                    actions = listOf(KMNotificationAction.RemoteInput.PairingCode to getString(R.string.pro_mode_setup_notification_action_input_pairing_code)),
+                    title = getString(
+                        R.string.pro_mode_setup_notification_pairing_button_not_found_title,
+                    ),
+                    text = getString(
+                        R.string.pro_mode_setup_notification_pairing_button_not_found_text,
+                    ),
+                    actions = listOf(
+                        KMNotificationAction.RemoteInput.PairingCode to
+                            getString(
+                                R.string.pro_mode_setup_notification_action_input_pairing_code,
+                            ),
+                    ),
                 )
 
                 // Give the user 30 seconds to input the pairing code and then dismiss the notification.
@@ -363,7 +382,10 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
     private fun getKeyMapperAppTask(): ActivityManager.AppTask? {
         val task = activityManager.appTasks
-            .firstOrNull { it.taskInfo.topActivity?.className == keyMapperClassProvider.getMainActivity().name }
+            .firstOrNull {
+                it.taskInfo.topActivity?.className ==
+                    keyMapperClassProvider.getMainActivity().name
+            }
 
         return task
     }

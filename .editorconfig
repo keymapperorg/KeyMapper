@@ -1,9 +1,10 @@
 [*.{kt,kts}]
-ktlint_standard_function-expression-body = disabled
 ktlint_function_naming_ignore_when_annotated_with = Composable
 ktlint_ignore_back_ticked_identifier = true
-ktlint_code_style = intellij_idea # Use IntelliJ style because it has trailing commas
+ktlint_code_style = android_studio
 ij_kotlin_indent_before_arrow_on_new_line = true
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true
 
 [base/src/main/java/io/github/sds100/keymapper/base/utils/ui/compose/icons/*.{kt,kts}]
 ktlint_standard_property-naming = disabled

@@ -26,9 +26,7 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.openUriSafe
 
 @Composable
-fun HandleAccessibilityServiceDialogs(
-    delegate: SetupAccessibilityServiceDelegateImpl,
-) {
+fun HandleAccessibilityServiceDialogs(delegate: SetupAccessibilityServiceDelegateImpl) {
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
 
