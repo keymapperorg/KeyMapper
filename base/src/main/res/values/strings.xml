@@ -1786,7 +1786,7 @@
     <string name="hint_shell_command_timeout">Timeout</string>
 
     <!-- Floating buttons review card -->
-    <string name="floating_buttons_review_card_title">How are floating buttons?</string>
+    <string name="floating_buttons_review_card_title">Are you enjoying floating buttons?</string>
     <string name="floating_buttons_review_card_message">We would love to know! Please consider leaving a review on Google Play to help others discover this feature. ❤️</string>
     <string name="floating_buttons_review_card_dismiss">Dismiss</string>
 
