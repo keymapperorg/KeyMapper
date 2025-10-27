@@ -59,8 +59,8 @@ abstract class BaseAccessibilityService :
     override val savedStateRegistry: SavedStateRegistry
         get() = savedStateRegistryController!!.savedStateRegistry
 
-    private var fingerprintGestureCallback: FingerprintGestureController.FingerprintGestureCallback? =
-        null
+    private var fingerprintGestureCallback:
+        FingerprintGestureController.FingerprintGestureCallback? = null
 
     override val rootNode: AccessibilityNodeModel?
         get() {

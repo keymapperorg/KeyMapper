@@ -207,7 +207,8 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         isWirelessDebuggingEnabled: Boolean,
     ): SystemBridgeSetupStep {
         return when {
-            accessibilityServiceState != AccessibilityServiceState.ENABLED -> SystemBridgeSetupStep.ACCESSIBILITY_SERVICE
+            accessibilityServiceState != AccessibilityServiceState.ENABLED ->
+                SystemBridgeSetupStep.ACCESSIBILITY_SERVICE
             !isNotificationPermissionGranted -> SystemBridgeSetupStep.NOTIFICATION_PERMISSION
             !isDeveloperOptionsEnabled -> SystemBridgeSetupStep.DEVELOPER_OPTIONS
             !isWifiConnected -> SystemBridgeSetupStep.WIFI_NETWORK

@@ -795,6 +795,7 @@ object ActionDataEntityMapper {
         return flags
     }
 
+    @Suppress("ktlint:standard:max-line-length")
     private fun getDataString(data: ActionData): String = when (data) {
         is ActionData.Intent -> data.uri
         is ActionData.InputKeyEvent -> data.keyCode.toString()

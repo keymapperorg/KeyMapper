@@ -532,7 +532,9 @@ class KeyMapListViewModel(
                     )
                 }
 
-                TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED, TriggerError.FLOATING_BUTTONS_NOT_PURCHASED -> {
+                TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED,
+                TriggerError.FLOATING_BUTTONS_NOT_PURCHASED,
+                    -> {
                     val result = navigate(
                         "purchase_advanced_trigger",
                         NavDestination.AdvancedTriggers,
@@ -679,9 +681,14 @@ class KeyMapListViewModel(
                 ID_ACCESSIBILITY_SERVICE_CRASHED_LIST_ITEM ->
                     showFixAccessibilityServiceDialog(AccessibilityServiceError.Crashed)
 
-                ID_BATTERY_OPTIMISATION_LIST_ITEM -> showAlertsUseCase.disableBatteryOptimisation()
-                ID_LOGGING_ENABLED_LIST_ITEM -> showAlertsUseCase.disableLogging()
-                ID_NOTIFICATION_PERMISSION_DENIED_LIST_ITEM -> showNotificationPermissionAlertDialog()
+                ID_BATTERY_OPTIMISATION_LIST_ITEM ->
+                    showAlertsUseCase.disableBatteryOptimisation()
+
+                ID_LOGGING_ENABLED_LIST_ITEM ->
+                    showAlertsUseCase.disableLogging()
+
+                ID_NOTIFICATION_PERMISSION_DENIED_LIST_ITEM ->
+                    showNotificationPermissionAlertDialog()
             }
         }
     }

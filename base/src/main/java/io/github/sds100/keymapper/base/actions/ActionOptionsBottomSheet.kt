@@ -255,6 +255,8 @@ fun ActionOptionsBottomSheet(
             if (state.showHoldDownDuration) {
                 Spacer(Modifier.height(8.dp))
 
+                val holdDownDurationMin = SliderMinimums.ACTION_HOLD_DOWN_DURATION.toFloat()
+                val holdDownDurationMax = SliderMaximums.ACTION_HOLD_DOWN_DURATION.toFloat()
                 SliderOptionText(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -264,8 +266,7 @@ fun ActionOptionsBottomSheet(
                     value = state.holdDownDuration.toFloat(),
                     valueText = { "${it.toInt()} ms" },
                     onValueChange = { callback.onHoldDownDurationChanged(it.toInt()) },
-                    valueRange =
-                    SliderMinimums.ACTION_HOLD_DOWN_DURATION.toFloat()..SliderMaximums.ACTION_HOLD_DOWN_DURATION.toFloat(),
+                    valueRange = holdDownDurationMin..holdDownDurationMax,
                     stepSize = SliderStepSizes.ACTION_HOLD_DOWN_DURATION,
                 )
             }
@@ -313,6 +314,10 @@ fun ActionOptionsBottomSheet(
             if (state.showDelayBeforeNextAction) {
                 Spacer(Modifier.height(8.dp))
 
+                val delayBeforeNextActionMin =
+                    SliderMinimums.DELAY_BEFORE_NEXT_ACTION.toFloat()
+                val delayBeforeNextActionMax =
+                    SliderMaximums.DELAY_BEFORE_NEXT_ACTION.toFloat()
                 SliderOptionText(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -322,14 +327,15 @@ fun ActionOptionsBottomSheet(
                     value = state.delayBeforeNextAction.toFloat(),
                     valueText = { "${it.toInt()} ms" },
                     onValueChange = { callback.onDelayBeforeNextActionChanged(it.toInt()) },
-                    valueRange =
-                    SliderMinimums.DELAY_BEFORE_NEXT_ACTION.toFloat()..SliderMaximums.DELAY_BEFORE_NEXT_ACTION.toFloat(),
+                    valueRange = delayBeforeNextActionMin..delayBeforeNextActionMax,
                     stepSize = SliderStepSizes.DELAY_BEFORE_NEXT_ACTION,
                 )
             }
 
             Spacer(Modifier.height(8.dp))
 
+            val actionMultiplierMin = SliderMinimums.ACTION_MULTIPLIER.toFloat()
+            val actionMultiplierMax = SliderMaximums.ACTION_MULTIPLIER.toFloat()
             SliderOptionText(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -343,8 +349,7 @@ fun ActionOptionsBottomSheet(
                 value = state.multiplier.toFloat(),
                 valueText = { "${it.toInt()}x" },
                 onValueChange = { callback.onMultiplierChanged(it.toInt()) },
-                valueRange =
-                SliderMinimums.ACTION_MULTIPLIER.toFloat()..SliderMaximums.ACTION_MULTIPLIER.toFloat(),
+                valueRange = actionMultiplierMin..actionMultiplierMax,
                 stepSize = SliderStepSizes.ACTION_MULTIPLIER,
             )
 

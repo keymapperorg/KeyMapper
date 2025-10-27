@@ -15,7 +15,7 @@ import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
-import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
+import io.github.sds100.keymapper.sysbridge.manager.isConnected
 import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
@@ -67,8 +67,7 @@ class LazyActionErrorSnapshot(
 
     private val isSystemBridgeConnected: Boolean by lazy {
         if (buildConfigProvider.sdkInt >= Constants.SYSTEM_BRIDGE_MIN_API) {
-            @SuppressLint("NewApi")
-            systemBridgeConnectionManager.connectionState.value is SystemBridgeConnectionState.Connected
+            systemBridgeConnectionManager.isConnected()
         } else {
             false
         }

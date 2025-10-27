@@ -381,7 +381,8 @@ abstract class BaseAccessibilityServiceController(
 
     fun onKeyEvent(
         event: KMKeyEvent,
-        detectionSource: InputEventDetectionSource = InputEventDetectionSource.ACCESSIBILITY_SERVICE,
+        detectionSource: InputEventDetectionSource =
+            InputEventDetectionSource.ACCESSIBILITY_SERVICE,
     ): Boolean {
         return inputEventHub.onInputEvent(event, detectionSource)
     }

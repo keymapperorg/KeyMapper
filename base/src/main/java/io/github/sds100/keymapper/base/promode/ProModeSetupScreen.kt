@@ -290,19 +290,20 @@ private fun AssistantCheckBoxRow(
                     checked = isChecked,
                     onCheckedChange = { onAssistantClick() },
                 )
+
+                val text = if (isEnabled) {
+                    stringResource(R.string.pro_mode_setup_wizard_use_assistant_description)
+                } else {
+                    stringResource(
+                        R.string.pro_mode_setup_wizard_use_assistant_enable_accessibility_service,
+                    )
+                }
+
                 Column {
                     Text(
                         text = stringResource(R.string.pro_mode_setup_wizard_use_assistant),
                         style = MaterialTheme.typography.titleMedium,
                     )
-
-                    val text = if (isEnabled) {
-                        stringResource(R.string.pro_mode_setup_wizard_use_assistant_description)
-                    } else {
-                        stringResource(
-                            R.string.pro_mode_setup_wizard_use_assistant_enable_accessibility_service,
-                        )
-                    }
 
                     Text(
                         text = text,

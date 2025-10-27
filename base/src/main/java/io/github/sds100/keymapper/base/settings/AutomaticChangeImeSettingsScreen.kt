@@ -54,12 +54,15 @@ fun AutomaticChangeImeSettingsScreen(modifier: Modifier = Modifier, viewModel: S
     ) {
         Content(
             state = state,
-            onShowToastWhenAutoChangingImeToggled = viewModel::onShowToastWhenAutoChangingImeToggled,
+            onShowToastWhenAutoChangingImeToggled =
+            viewModel::onShowToastWhenAutoChangingImeToggled,
             onChangeImeOnInputFocusToggled = viewModel::onChangeImeOnInputFocusToggled,
             onChangeImeOnDeviceConnectToggled = viewModel::onChangeImeOnDeviceConnectToggled,
             onDevicesThatChangeImeClick = viewModel::onDevicesThatChangeImeClick,
-            onToggleKeyboardOnToggleKeymapsToggled = viewModel::onToggleKeyboardOnToggleKeymapsToggled,
-            onShowToggleKeyboardNotificationClick = viewModel::onShowToggleKeyboardNotificationClick,
+            onToggleKeyboardOnToggleKeymapsToggled =
+            viewModel::onToggleKeyboardOnToggleKeymapsToggled,
+            onShowToggleKeyboardNotificationClick =
+            viewModel::onShowToggleKeyboardNotificationClick,
         )
     }
 }

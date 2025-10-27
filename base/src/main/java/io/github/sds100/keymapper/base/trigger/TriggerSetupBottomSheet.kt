@@ -72,7 +72,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun HandleTriggerSetupBottomSheet(delegate: TriggerSetupDelegate) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val triggerSetupState: TriggerSetupState? by delegate.triggerSetupState.collectAsStateWithLifecycle()
+    val triggerSetupState: TriggerSetupState? by
+        delegate.triggerSetupState.collectAsStateWithLifecycle()
 
     when (triggerSetupState) {
         is TriggerSetupState.Volume -> VolumeTriggerSetupBottomSheet(
@@ -209,7 +210,8 @@ private fun GamepadTriggerSetupBottomSheet(
 
         val selectedState = when (state) {
             is TriggerSetupState.Gamepad.Dpad -> TriggerSetupState.Gamepad.Type.DPAD
-            is TriggerSetupState.Gamepad.SimpleButtons -> TriggerSetupState.Gamepad.Type.SIMPLE_BUTTONS
+            is TriggerSetupState.Gamepad.SimpleButtons ->
+                TriggerSetupState.Gamepad.Type.SIMPLE_BUTTONS
         }
 
         KeyMapperSegmentedButtonRow(

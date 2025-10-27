@@ -119,7 +119,10 @@ private fun TipCardPreview() {
     KeyMapperTheme {
         TipCard(
             title = "Tip Title",
-            message = "This is a helpful tip message that explains something important to the user. It can be multiple lines long and provides useful information.",
+            message = """
+                This is a helpful tip message that explains something important to the user. 
+                It can be multiple lines long and provides useful information.
+            """.trimIndent(),
             buttonText = "Button",
         )
     }

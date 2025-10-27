@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.base.actions
 
 import io.github.sds100.keymapper.base.keymaps.KeyMap
+import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.hasFlag
-import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.common.utils.withFlag
@@ -37,7 +37,7 @@ object ActionEntityMapper {
 
         val stopHoldDownWhenTriggerPressedAgain: Boolean =
             entity.extras.getData(ActionEntity.EXTRA_CUSTOM_HOLD_DOWN_BEHAVIOUR).then {
-                (it == ActionEntity.STOP_HOLD_DOWN_BEHAVIOR_TRIGGER_PRESSED_AGAIN.toString()).success()
+                Success(it == ActionEntity.STOP_HOLD_DOWN_BEHAVIOR_TRIGGER_PRESSED_AGAIN.toString())
             }.valueOrNull() == true
 
         val repeatRate =
@@ -72,7 +72,8 @@ object ActionEntityMapper {
 
             when (repeatBehaviourExtra) {
                 ActionEntity.STOP_REPEAT_BEHAVIOUR_LIMIT_REACHED -> RepeatMode.LIMIT_REACHED
-                ActionEntity.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN -> RepeatMode.TRIGGER_PRESSED_AGAIN
+                ActionEntity.STOP_REPEAT_BEHAVIOUR_TRIGGER_PRESSED_AGAIN ->
+                    RepeatMode.TRIGGER_PRESSED_AGAIN
                 else -> RepeatMode.TRIGGER_RELEASED
             }
         } else {

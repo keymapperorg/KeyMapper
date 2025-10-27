@@ -169,7 +169,8 @@ fun FixKeyEventActionBottomSheet(
                                     Placeholder(
                                         width = MaterialTheme.typography.bodyLarge.fontSize,
                                         height = MaterialTheme.typography.bodyLarge.fontSize,
-                                        placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
+                                        placeholderVerticalAlign =
+                                        PlaceholderVerticalAlign.TextCenter,
                                     ),
                                 ) {
                                     Icon(

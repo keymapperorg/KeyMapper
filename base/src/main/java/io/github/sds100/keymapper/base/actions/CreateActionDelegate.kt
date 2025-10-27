@@ -380,7 +380,8 @@ class CreateActionDelegate(
 
                 volumeActionState = VolumeActionBottomSheetState(
                     actionId = newActionId,
-                    volumeStream = oldStream ?: VolumeStream.MUSIC, // Default to MUSIC for old stream actions
+                    // Default to MUSIC for old stream actions
+                    volumeStream = oldStream ?: VolumeStream.MUSIC,
                     showVolumeUi = oldShowVolumeUi,
                 )
                 return null

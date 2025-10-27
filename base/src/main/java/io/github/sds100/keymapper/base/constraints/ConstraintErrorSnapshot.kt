@@ -120,7 +120,10 @@ class LazyConstraintErrorSnapshot(
                 }
             }
 
-            is ConstraintData.InPhoneCall, is ConstraintData.PhoneRinging, is ConstraintData.NotInPhoneCall -> {
+            is ConstraintData.InPhoneCall,
+            is ConstraintData.PhoneRinging,
+            is ConstraintData.NotInPhoneCall,
+                -> {
                 if (!isPermissionGranted(Permission.READ_PHONE_STATE)) {
                     return SystemError.PermissionDenied(Permission.READ_PHONE_STATE)
                 }

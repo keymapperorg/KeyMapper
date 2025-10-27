@@ -370,7 +370,8 @@ object ActionUtils {
         ActionId.INTENT -> R.string.action_send_intent
         ActionId.PHONE_CALL -> R.string.action_phone_call
         ActionId.SOUND -> R.string.action_play_sound
-        ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> R.string.action_dismiss_most_recent_notification
+        ActionId.DISMISS_MOST_RECENT_NOTIFICATION ->
+            R.string.action_dismiss_most_recent_notification
         ActionId.DISMISS_ALL_NOTIFICATIONS -> R.string.action_dismiss_all_notifications
         ActionId.ANSWER_PHONE_CALL -> R.string.action_answer_call
         ActionId.END_PHONE_CALL -> R.string.action_end_call

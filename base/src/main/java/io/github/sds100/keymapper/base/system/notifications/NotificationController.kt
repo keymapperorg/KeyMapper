@@ -158,19 +158,22 @@ class NotificationController @Inject constructor(
             when (actionId) {
                 KMNotificationAction.IntentAction.RESUME_KEY_MAPS -> pauseMappings.resume()
                 KMNotificationAction.IntentAction.PAUSE_KEY_MAPS -> pauseMappings.pause()
-                KMNotificationAction.IntentAction.DISMISS_TOGGLE_KEY_MAPS_NOTIFICATION -> manageNotifications.dismiss(
-                    ID_TOGGLE_MAPPINGS,
-                )
+                KMNotificationAction.IntentAction.DISMISS_TOGGLE_KEY_MAPS_NOTIFICATION ->
+                    manageNotifications.dismiss(ID_TOGGLE_MAPPINGS)
 
-                KMNotificationAction.IntentAction.STOP_ACCESSIBILITY_SERVICE -> controlAccessibilityService.stopService()
-                KMNotificationAction.IntentAction.START_ACCESSIBILITY_SERVICE -> attemptStartAccessibilityService()
-                KMNotificationAction.IntentAction.RESTART_ACCESSIBILITY_SERVICE -> attemptRestartAccessibilityService()
-                KMNotificationAction.IntentAction.TOGGLE_KEY_MAPPER_IME -> toggleCompatibleIme.toggle()
-                    .onSuccess {
-                        _showToast.emit(getString(R.string.toast_chose_keyboard, it.label))
-                    }.onFailure {
-                        _showToast.emit(it.getFullMessage(this))
-                    }
+                KMNotificationAction.IntentAction.STOP_ACCESSIBILITY_SERVICE ->
+                    controlAccessibilityService.stopService()
+                KMNotificationAction.IntentAction.START_ACCESSIBILITY_SERVICE ->
+                    attemptStartAccessibilityService()
+                KMNotificationAction.IntentAction.RESTART_ACCESSIBILITY_SERVICE ->
+                    attemptRestartAccessibilityService()
+                KMNotificationAction.IntentAction.TOGGLE_KEY_MAPPER_IME ->
+                    toggleCompatibleIme.toggle()
+                        .onSuccess {
+                            _showToast.emit(getString(R.string.toast_chose_keyboard, it.label))
+                        }.onFailure {
+                            _showToast.emit(it.getFullMessage(this))
+                        }
 
                 KMNotificationAction.IntentAction.SHOW_KEYBOARD -> hideInputMethod.show()
                 else -> Unit // Ignore other notification actions

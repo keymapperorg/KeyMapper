@@ -64,21 +64,18 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
                     mediaAdapter.getActiveAudioVolumeStreamsFlow(),
                 ).map { dependency }
 
-            ConstraintDependency.CONNECTED_BT_DEVICES -> devicesAdapter.connectedBluetoothDevices.map {
-                dependency
-            }
+            ConstraintDependency.CONNECTED_BT_DEVICES ->
+                devicesAdapter.connectedBluetoothDevices.map { dependency }
             ConstraintDependency.SCREEN_STATE -> displayAdapter.isScreenOn.map { dependency }
-            ConstraintDependency.DISPLAY_ORIENTATION -> displayAdapter.orientation.map {
-                dependency
-            }
+            ConstraintDependency.DISPLAY_ORIENTATION ->
+                displayAdapter.orientation.map { dependency }
             ConstraintDependency.FLASHLIGHT_STATE -> merge(
                 cameraAdapter.isFlashlightOnFlow(CameraLens.FRONT),
                 cameraAdapter.isFlashlightOnFlow(CameraLens.BACK),
             ).map { dependency }
 
-            ConstraintDependency.WIFI_SSID -> networkAdapter.connectedWifiSSIDFlow.map {
-                dependency
-            }
+            ConstraintDependency.WIFI_SSID ->
+                networkAdapter.connectedWifiSSIDFlow.map { dependency }
             ConstraintDependency.WIFI_STATE -> networkAdapter.isWifiEnabledFlow().map { dependency }
             ConstraintDependency.CHOSEN_IME -> inputMethodAdapter.chosenIme.map { dependency }
             ConstraintDependency.DEVICE_LOCKED_STATE ->

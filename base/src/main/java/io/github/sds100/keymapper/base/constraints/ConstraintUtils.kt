@@ -106,7 +106,8 @@ object ConstraintUtils {
         ConstraintId.MEDIA_NOT_PLAYING -> R.string.constraint_choose_media_not_playing
         ConstraintId.MEDIA_PLAYING -> R.string.constraint_choose_media_playing
         ConstraintId.BT_DEVICE_CONNECTED -> R.string.constraint_choose_bluetooth_device_connected
-        ConstraintId.BT_DEVICE_DISCONNECTED -> R.string.constraint_choose_bluetooth_device_disconnected
+        ConstraintId.BT_DEVICE_DISCONNECTED ->
+            R.string.constraint_choose_bluetooth_device_disconnected
         ConstraintId.SCREEN_ON -> R.string.constraint_choose_screen_on_description
         ConstraintId.SCREEN_OFF -> R.string.constraint_choose_screen_off_description
         ConstraintId.ORIENTATION_PORTRAIT -> R.string.constraint_choose_orientation_portrait
