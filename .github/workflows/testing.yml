@@ -136,7 +136,7 @@ jobs:
         with:
           title: "Build apk"
           webhook: ${{ secrets.DISCORD_BUILD_STATUS_WEBHOOK }}
-          
+
   synchronize-with-crowdin:
     runs-on: ubuntu-latest
 
