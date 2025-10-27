@@ -22,6 +22,9 @@ sealed class HingeState {
     data class Available(val angle: Float) : HingeState()
 }
 
+fun HingeState.Available.isOpen(): Boolean = angle >= 150
+fun HingeState.Available.isClosed(): Boolean = angle < 30
+
 @RequiresApi(Build.VERSION_CODES.R)
 interface FoldableAdapter {
     /**

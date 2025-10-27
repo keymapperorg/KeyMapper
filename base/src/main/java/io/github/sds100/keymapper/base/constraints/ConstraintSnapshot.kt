@@ -11,6 +11,8 @@ import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.foldable.FoldableAdapter
 import io.github.sds100.keymapper.system.foldable.HingeState
+import io.github.sds100.keymapper.system.foldable.isClosed
+import io.github.sds100.keymapper.system.foldable.isOpen
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
@@ -157,7 +159,7 @@ class LazyConstraintSnapshot(
             is ConstraintData.HingeClosed -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     when (val state = foldableAdapter.hingeState.value) {
-                        is HingeState.Available -> state.angle < 30f
+                        is HingeState.Available -> state.isClosed()
                         is HingeState.Unavailable -> false
                     }
                 } else {
@@ -168,7 +170,7 @@ class LazyConstraintSnapshot(
             is ConstraintData.HingeOpen -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     when (val state = foldableAdapter.hingeState.value) {
-                        is HingeState.Available -> state.angle >= 150f
+                        is HingeState.Available -> state.isOpen()
                         is HingeState.Unavailable -> false
                     }
                 } else {
