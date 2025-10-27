@@ -315,7 +315,7 @@
     <!-- URLs -->
     <string name="url_play_store_listing" translatable="false">https://play.google.com/store/apps/details?id=io.github.sds100.keymapper</string>
     <string name="url_license" translatable="false">https://github.com/keymapperorg/KeyMapper/blob/master/LICENSE.md</string>
-    <string name="url_changelog" translatable="false">https://github.com/keymapperorg/KeyMapper/blob/master/CHANGELOG.md</string>
+    <string name="url_changelog" translatable="false">https://github.com/keymapperorg/KeyMapper/blob/develop/CHANGELOG.md</string>
     <string name="url_translate" translatable="false">https://docs.keymapper.club/contributing/#translating?utm_source=in_app</string>
     <string name="url_privacy_policy" translatable="false">https://github.com/keymapperorg/KeyMapper/blob/master/PRIVACY_POLICY.md</string>
     <string name="url_discord_server_invite" translatable="false">https://discord.gg/Suj6nyw</string>
