@@ -34,7 +34,6 @@ import io.github.sds100.keymapper.system.devices.AndroidDevicesAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapperImpl
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
-import io.github.sds100.keymapper.system.root.SuAdapterImpl
 import java.util.Calendar
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -68,9 +67,6 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
 
     @Inject
     lateinit var accessibilityServiceAdapter: AccessibilityServiceAdapterImpl
-
-    @Inject
-    lateinit var suAdapter: SuAdapterImpl
 
     @Inject
     lateinit var autoGrantPermissionController: AutoGrantPermissionController

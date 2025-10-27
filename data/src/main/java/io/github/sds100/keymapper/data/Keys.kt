@@ -143,4 +143,10 @@ object Keys {
         booleanPreferencesKey("key_key_event_actions_use_system_bridge")
 
     val shellCommandScriptText = stringPreferencesKey("key_shell_command_script_text")
+
+    /**
+     * This is stored as true when PRO Mode has been auto started after upgrading
+     * to 4.0 on a rooted device.
+     */
+    val handledRootToProModeUpgrade = booleanPreferencesKey("key_handled_root_to_pro_mode_upgrade")
 }

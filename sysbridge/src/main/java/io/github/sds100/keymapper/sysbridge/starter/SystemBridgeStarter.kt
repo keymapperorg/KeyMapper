@@ -25,13 +25,6 @@ import io.github.sds100.keymapper.sysbridge.R
 import io.github.sds100.keymapper.sysbridge.adb.AdbManager
 import io.github.sds100.keymapper.sysbridge.ktx.loge
 import io.github.sds100.keymapper.sysbridge.shizuku.ShizukuStarterService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
-import rikka.shizuku.Shizuku
-import timber.log.Timber
 import java.io.BufferedReader
 import java.io.DataInputStream
 import java.io.File
@@ -44,12 +37,19 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import rikka.shizuku.Shizuku
+import timber.log.Timber
 
 @Singleton
 class SystemBridgeStarter @Inject constructor(
     @ApplicationContext private val ctx: Context,
     private val adbManager: AdbManager,
-    private val buildConfigProvider: BuildConfigProvider
+    private val buildConfigProvider: BuildConfigProvider,
 ) {
     private val userManager by lazy { ctx.getSystemService(UserManager::class.java)!! }
 
@@ -60,10 +60,7 @@ class SystemBridgeStarter @Inject constructor(
     private val startMutex: Mutex = Mutex()
 
     private val shizukuStarterConnection: ServiceConnection = object : ServiceConnection {
-        override fun onServiceConnected(
-            name: ComponentName?,
-            binder: IBinder?
-        ) {
+        override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
             Timber.i("Shizuku starter service connected")
 
             val service = IShizukuStarterService.Stub.asInterface(binder)
@@ -81,7 +78,6 @@ class SystemBridgeStarter @Inject constructor(
                         }
                     })
                 }
-
             } catch (e: RemoteException) {
                 Timber.e("Exception starting with Shizuku starter service: $e")
             } finally {
@@ -119,7 +115,7 @@ class SystemBridgeStarter @Inject constructor(
         try {
             Shizuku.bindUserService(
                 args,
-                shizukuStarterConnection
+                shizukuStarterConnection,
             )
         } catch (e: Exception) {
             Timber.e("Exception when starting System Bridge with Shizuku. $e")
@@ -158,7 +154,9 @@ class SystemBridgeStarter @Inject constructor(
         })
     }
 
-    suspend fun startSystemBridge(executeCommand: suspend (String) -> KMResult<String>): KMResult<String> {
+    suspend fun startSystemBridge(
+        executeCommand: suspend (String) -> KMResult<String>,
+    ): KMResult<String> {
         startMutex.withLock {
             val externalFilesParent = try {
                 ctx.getExternalFilesDir(null)?.parentFile
@@ -176,7 +174,7 @@ class SystemBridgeStarter @Inject constructor(
                     // Create the start.sh shell script
                     writeStarterScript(
                         outputStarterScript,
-                        outputStarterBinary.absolutePath
+                        outputStarterBinary.absolutePath,
                     )
                     Success(Unit)
                 }
@@ -189,9 +187,12 @@ class SystemBridgeStarter @Inject constructor(
                 .then { executeCommand(startCommand) }
                 .then { output ->
                     // Adb on Android 11 has no permission to access Android/data so use /data/user_de.
-                    if (output.contains("/Android/data/${ctx.packageName}/start.sh: Permission denied")) {
+                    if (output.contains(
+                            "/Android/data/${ctx.packageName}/start.sh: Permission denied",
+                        )
+                    ) {
                         Timber.w(
-                            "ADB has no permission to access Android/data/${ctx.packageName}/start.sh. Trying to use /data/user_de instead..."
+                            "ADB has no permission to access Android/data/${ctx.packageName}/start.sh. Trying to use /data/user_de instead...",
                         )
 
                         startSystemBridgeFromProtectedStorage(executeCommand)
@@ -203,7 +204,7 @@ class SystemBridgeStarter @Inject constructor(
     }
 
     private suspend fun startSystemBridgeFromProtectedStorage(
-        executeCommand: suspend (String) -> KMResult<String>
+        executeCommand: suspend (String) -> KMResult<String>,
     ): KMResult<String> {
         val protectedStorageDir =
             ctx.createDeviceProtectedStorageContext().filesDir.parentFile!!
@@ -211,7 +212,7 @@ class SystemBridgeStarter @Inject constructor(
         Timber.i("Protected storage dir: ${protectedStorageDir.absolutePath}")
 
         try {
-            Os.chmod(protectedStorageDir.absolutePath, 457 /* 0711 */)
+            Os.chmod(protectedStorageDir.absolutePath, 457) /* 0711 */
         } catch (e: ErrnoException) {
             e.printStackTrace()
         }
@@ -227,7 +228,7 @@ class SystemBridgeStarter @Inject constructor(
 
                 writeStarterScript(
                     outputStarterScript,
-                    outputStarterBinary.absolutePath
+                    outputStarterBinary.absolutePath,
                 )
             }
 
@@ -236,20 +237,19 @@ class SystemBridgeStarter @Inject constructor(
 
             // Make starter binary executable
             try {
-                Os.chmod(outputStarterBinary.absolutePath, 420 /* 0644 */)
+                Os.chmod(outputStarterBinary.absolutePath, 420) /* 0644 */
             } catch (e: ErrnoException) {
                 e.printStackTrace()
             }
 
             // Make starter script executable
             try {
-                Os.chmod(outputStarterScript.absolutePath, 420 /* 0644 */)
+                Os.chmod(outputStarterScript.absolutePath, 420) /* 0644 */
             } catch (e: ErrnoException) {
                 e.printStackTrace()
             }
 
             return executeCommand(startCommand)
-
         } catch (e: IOException) {
             loge("write files", e)
             return KMError.UnknownIOError
@@ -271,9 +271,8 @@ class SystemBridgeStarter @Inject constructor(
 
             File("$libPath/$libraryName").copyTo(out)
             return Success(Unit)
-
         } catch (e: Exception) {
-            Timber.w("Native library not found. Extracting from APKs. Exception: ${e.toString()}")
+            Timber.w("Native library not found. Extracting from APKs. Exception: $e")
 
             val apkPaths: Array<String> = arrayOf(baseApkPath, *splitApkPaths)
 
@@ -281,7 +280,6 @@ class SystemBridgeStarter @Inject constructor(
 
             for (apk in apkPaths) {
                 with(ZipFile(apk)) {
-
                     for (abi in Build.SUPPORTED_ABIS) {
                         val expectedLibraryPath = "lib/$abi/$libraryName"
 

@@ -3,21 +3,18 @@ package io.github.sds100.keymapper.system.root
 import com.topjohnwu.superuser.Shell
 import io.github.sds100.keymapper.system.shell.BaseShellAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
-class SuAdapterImpl @Inject constructor() : BaseShellAdapter(), SuAdapter {
-    override val isRootGranted: MutableStateFlow<Boolean> = MutableStateFlow(false)
-
-    init {
-        Shell.getShell()
-        invalidateIsRooted()
-    }
+class SuAdapterImpl @Inject constructor() :
+    BaseShellAdapter(),
+    SuAdapter {
+    override val isRootGranted: MutableStateFlow<Boolean> = MutableStateFlow(getIsRooted())
 
     override fun requestPermission() {
         invalidateIsRooted()
@@ -31,8 +28,7 @@ class SuAdapterImpl @Inject constructor() : BaseShellAdapter(), SuAdapter {
     fun invalidateIsRooted() {
         try {
             // Close the shell so a new one is started without root permission.
-            Shell.getShell().waitAndClose()
-            val isRooted = Shell.isAppGrantedRoot() ?: false
+            val isRooted = getIsRooted()
             isRootGranted.update { isRooted }
 
             if (isRooted) {
@@ -43,6 +39,12 @@ class SuAdapterImpl @Inject constructor() : BaseShellAdapter(), SuAdapter {
         } catch (e: Exception) {
             Timber.e("Exception invalidating root detection: $e")
         }
+    }
+
+    private fun getIsRooted(): Boolean {
+        Shell.getShell().waitAndClose()
+        val isRooted = Shell.isAppGrantedRoot() ?: false
+        return isRooted
     }
 }
 

@@ -79,14 +79,16 @@ class SystemBridgeAutoStarter @Inject constructor(
                     if (isShizukuStarted) {
                         flowOf(AutoStartType.SHIZUKU)
                     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        combine(
+                        val isAdbAutoStartAllowed = combine(
                             permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS),
                             networkAdapter.isWifiConnected,
                         ) { isWriteSecureSettingsGranted, isWifiConnected ->
                             isWriteSecureSettingsGranted &&
                                 isWifiConnected &&
                                 setupController.isAdbPaired()
-                        }.distinctUntilChanged()
+                        }
+
+                        isAdbAutoStartAllowed.distinctUntilChanged()
                             .map { isAdbAutoStartAllowed ->
                                 if (isAdbAutoStartAllowed) AutoStartType.ADB else null
                             }.filterNotNull()
@@ -140,37 +142,10 @@ class SystemBridgeAutoStarter @Inject constructor(
             // it should be auto started.
             val isBoot = SystemClock.uptimeMillis() < 60000
 
-            // Do not autostart if the device was force rebooted. This may be a sign that PRO mode
-            // was broken and the user was trying to reset it.
-            val isCleanShutdown = preferences.get(Keys.isCleanShutdown).map { it ?: false }.first()
-
-            Timber.i(
-                "SystemBridgeAutoStarter init: isBoot=$isBoot, isCleanShutdown=$isCleanShutdown",
-            )
-
-            // Reset the value after reading it.
-            preferences.set(Keys.isCleanShutdown, false)
-
-            val isBootAutoStartEnabled = preferences.get(Keys.isProModeAutoStartBootEnabled)
-                .map { it ?: PreferenceDefaults.PRO_MODE_AUTOSTART_BOOT }
-                .first()
-
-            // Wait 5 seconds for the system bridge to potentially connect itself to Key Mapper
-            // before starting it.
-            delay(5000)
-
-            val connectionState = connectionManager.connectionState.value
-
-            if (isBoot &&
-                isCleanShutdown &&
-                isBootAutoStartEnabled &&
-                connectionState !is SystemBridgeConnectionState.Connected
-            ) {
-                val autoStartType = autoStartTypeFlow.first()
-
-                if (autoStartType != null) {
-                    autoStart(autoStartType)
-                }
+            if (isBoot) {
+                handleAutoStartOnBoot()
+            } else {
+                handleAutoStartFromPreVersion4()
             }
 
             // Only start collecting the restart flow after potentially auto starting it for the first time.
@@ -180,6 +155,53 @@ class SystemBridgeAutoStarter @Inject constructor(
                 .collectLatest { type ->
                     autoStart(type)
                 }
+        }
+    }
+
+    private suspend fun handleAutoStartOnBoot() {
+        // Do not autostart if the device was force rebooted. This may be a sign that PRO mode
+        // was broken and the user was trying to reset it.
+        val isCleanShutdown = preferences.get(Keys.isCleanShutdown).map { it ?: false }.first()
+
+        Timber.i(
+            "SystemBridgeAutoStarter init: isBoot=true, isCleanShutdown=$isCleanShutdown",
+        )
+
+        // Reset the value after reading it.
+        preferences.set(Keys.isCleanShutdown, false)
+
+        val isBootAutoStartEnabled = preferences.get(Keys.isProModeAutoStartBootEnabled)
+            .map { it ?: PreferenceDefaults.PRO_MODE_AUTOSTART_BOOT }
+            .first()
+
+        // Wait 5 seconds for the system bridge to potentially connect itself to Key Mapper
+        // before starting it.
+        delay(5000)
+
+        val connectionState = connectionManager.connectionState.value
+
+        if (isCleanShutdown &&
+            isBootAutoStartEnabled &&
+            connectionState !is SystemBridgeConnectionState.Connected
+        ) {
+            val autoStartType = autoStartTypeFlow.first()
+
+            if (autoStartType != null) {
+                autoStart(autoStartType)
+            }
+        }
+    }
+
+    private suspend fun handleAutoStartFromPreVersion4() {
+        val isFirstTime = preferences.get(Keys.handledRootToProModeUpgrade).first() == null
+
+        if (isFirstTime && suAdapter.isRootGranted.value) {
+            Timber.i(
+                "Auto starting system bridge because upgraded from pre version 4.0 and was rooted",
+            )
+
+            autoStart(AutoStartType.ROOT)
+            preferences.set(Keys.handledRootToProModeUpgrade, true)
         }
     }
 
