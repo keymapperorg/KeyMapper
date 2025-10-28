@@ -10,20 +10,18 @@ import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.common.utils.then
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
-
 
 @RequiresApi(Build.VERSION_CODES.R)
 @Singleton
-class AdbManagerImpl @Inject constructor(
-    @ApplicationContext private val ctx: Context,
-) : AdbManager {
+class AdbManagerImpl @Inject constructor(@ApplicationContext private val ctx: Context) :
+    AdbManager {
     companion object {
         private const val LOCALHOST = "127.0.0.1"
     }
@@ -92,11 +90,15 @@ class AdbManagerImpl @Inject constructor(
                         withContext(Dispatchers.IO) {
                             start()
                         }
-                        Timber.i("Successfully paired with wireless ADB on port $port with code $code")
+                        Timber.i(
+                            "Successfully paired with wireless ADB on port $port with code $code",
+                        )
                         Success(Unit)
                     } catch (e: Exception) {
                         e.printStackTrace()
-                        Timber.e("Failed to pair with wireless ADB on port $port with code $code: $e")
+                        Timber.e(
+                            "Failed to pair with wireless ADB on port $port with code $code: $e",
+                        )
                         AdbError.PairingError
                     }
                 }

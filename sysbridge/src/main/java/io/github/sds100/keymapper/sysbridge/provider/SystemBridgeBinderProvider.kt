@@ -31,7 +31,7 @@ internal class SystemBridgeBinderProvider : ContentProvider() {
         val hiltEntryPoint =
             EntryPointAccessors.fromApplication(
                 appContext,
-                SystemBridgeProviderEntryPoint::class.java
+                SystemBridgeProviderEntryPoint::class.java,
             )
 
         hiltEntryPoint.systemBridgeManager()
@@ -65,8 +65,9 @@ internal class SystemBridgeBinderProvider : ContentProvider() {
         }
 
         val container: BinderContainer? = BundleCompat.getParcelable(
-            extras, EXTRA_BINDER,
-            BinderContainer::class.java
+            extras,
+            EXTRA_BINDER,
+            BinderContainer::class.java,
         )
 
         if (container != null && container.binder != null) {
@@ -80,7 +81,7 @@ internal class SystemBridgeBinderProvider : ContentProvider() {
         projection: Array<String?>?,
         selection: String?,
         selectionArgs: Array<String?>?,
-        sortOrder: String?
+        sortOrder: String?,
     ): Cursor? {
         return null
     }
@@ -101,7 +102,7 @@ internal class SystemBridgeBinderProvider : ContentProvider() {
         uri: Uri,
         values: ContentValues?,
         selection: String?,
-        selectionArgs: Array<String?>?
+        selectionArgs: Array<String?>?,
     ): Int {
         return 0
     }

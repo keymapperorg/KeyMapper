@@ -14,8 +14,6 @@ import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.A_STLS
 import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.A_STLS_VERSION
 import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.A_VERSION
 import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.A_WRTE
-import kotlinx.coroutines.delay
-import timber.log.Timber
 import java.io.Closeable
 import java.io.DataInputStream
 import java.io.DataOutputStream
@@ -26,6 +24,8 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import javax.net.ssl.SSLProtocolException
 import javax.net.ssl.SSLSocket
+import kotlinx.coroutines.delay
+import timber.log.Timber
 
 private const val TAG = "AdbClient"
 
@@ -147,7 +147,7 @@ internal class AdbClient(private val host: String, private val port: Int, privat
     }
 
     private fun write(command: Int, arg0: Int, arg1: Int, data: ByteArray? = null) = write(
-        AdbMessage(command, arg0, arg1, data)
+        AdbMessage(command, arg0, arg1, data),
     )
 
     private fun write(command: Int, arg0: Int, arg1: Int, data: String) = write(
@@ -155,8 +155,8 @@ internal class AdbClient(private val host: String, private val port: Int, privat
             command,
             arg0,
             arg1,
-            data
-        )
+            data,
+        ),
     )
 
     private fun write(message: AdbMessage) {

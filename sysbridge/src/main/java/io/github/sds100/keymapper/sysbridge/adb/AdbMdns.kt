@@ -6,6 +6,10 @@ import android.net.nsd.NsdServiceInfo
 import android.os.Build
 import android.os.ext.SdkExtensions
 import androidx.annotation.RequiresApi
+import java.io.IOException
+import java.net.InetSocketAddress
+import java.net.NetworkInterface
+import java.net.ServerSocket
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -18,19 +22,12 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import timber.log.Timber
-import java.io.IOException
-import java.net.InetSocketAddress
-import java.net.NetworkInterface
-import java.net.ServerSocket
 
 /**
  * This uses mDNS to scan for the ADB pairing and connection ports.
  */
 @RequiresApi(Build.VERSION_CODES.R)
-internal class AdbMdns(
-    ctx: Context,
-    private val serviceType: AdbServiceType,
-) {
+internal class AdbMdns(ctx: Context, private val serviceType: AdbServiceType) {
 
     private val nsdManager: NsdManager = ctx.getSystemService(NsdManager::class.java)
 
@@ -52,7 +49,9 @@ internal class AdbMdns(
         }
 
         override fun onServiceResolved(nsdServiceInfo: NsdServiceInfo) {
-            Timber.d("onServiceResolved: ${nsdServiceInfo.serviceName} ${nsdServiceInfo.host} ${nsdServiceInfo.port} ${nsdServiceInfo.serviceType}")
+            Timber.d(
+                "onServiceResolved: ${nsdServiceInfo.serviceName} ${nsdServiceInfo.host} ${nsdServiceInfo.port} ${nsdServiceInfo.serviceType}",
+            )
             serviceResolvedChannel?.trySendBlocking(nsdServiceInfo)
         }
 
@@ -92,7 +91,9 @@ internal class AdbMdns(
             }
 
             override fun onServiceFound(serviceInfo: NsdServiceInfo) {
-                Timber.d("onServiceFound: ${serviceInfo.serviceName} ${serviceInfo.host} ${serviceInfo.port} ${serviceInfo.serviceType}")
+                Timber.d(
+                    "onServiceFound: ${serviceInfo.serviceName} ${serviceInfo.host} ${serviceInfo.port} ${serviceInfo.serviceType}",
+                )
 
                 // You can only resolve one service at a time and they can take some time to resolve.
                 serviceDiscoveredChannel?.trySend(serviceInfo)
@@ -135,7 +136,7 @@ internal class AdbMdns(
         nsdManager.discoverServices(
             serviceType.id,
             NsdManager.PROTOCOL_DNS_SD,
-            discoveryListener
+            discoveryListener,
         )
 
         try {
@@ -164,7 +165,6 @@ internal class AdbMdns(
                     }
                 }
             }
-
         } catch (e: Exception) {
             Timber.e(e, "Failed to discover ADB port")
         } finally {

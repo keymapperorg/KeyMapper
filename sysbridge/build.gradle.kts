@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.jlleitschuh.gradle.ktlint)
 }
 
 android {
@@ -29,7 +30,7 @@ android {
                     "-DANDROID_STL=c++_static",
                     "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
                     "-DANDROID_WEAK_API_DEFS=ON",
-                    "-Daidl_src_dir=${aidlSrcDir.absolutePath}"
+                    "-Daidl_src_dir=${aidlSrcDir.absolutePath}",
                 )
             }
         }
@@ -39,7 +40,7 @@ android {
         release {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -127,7 +128,9 @@ val generateLibEvDevEventNames by tasks.registering(Exec::class) {
         ?: throw GradleException("No prebuilt toolchain directories found in $prebuiltDir")
 
     if (hostDirs.size != 1) {
-        throw GradleException("Expected exactly one prebuilt toolchain directory in $prebuiltDir, found ${hostDirs.size}")
+        throw GradleException(
+            "Expected exactly one prebuilt toolchain directory in $prebuiltDir, found ${hostDirs.size}",
+        )
     }
     val toolchainDir = hostDirs[0].absolutePath
 
@@ -196,9 +199,11 @@ val compileAidlNdk by tasks.registering(Exec::class) {
             "-o", cppOutDir.absolutePath,
             "-h", cppHeaderOutDir.absolutePath,
             "-I", importSearchPath,
-            aidlFile.absolutePath
+            aidlFile.absolutePath,
         )
     }
 
-    logger.lifecycle("AIDL NDK compilation finished. Check outputs in $cppOutDir and $cppHeaderOutDir")
+    logger.lifecycle(
+        "AIDL NDK compilation finished. Check outputs in $cppOutDir and $cppHeaderOutDir",
+    )
 }

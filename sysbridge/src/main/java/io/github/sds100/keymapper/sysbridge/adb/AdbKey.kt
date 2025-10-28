@@ -8,12 +8,6 @@ import android.security.keystore.KeyProperties
 import android.util.Base64
 import androidx.annotation.RequiresApi
 import androidx.core.content.edit
-import org.bouncycastle.asn1.x500.X500Name
-import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo
-import org.bouncycastle.cert.X509v3CertificateBuilder
-import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder
-import org.conscrypt.Conscrypt
-import rikka.core.ktx.unsafeLazy
 import java.io.ByteArrayInputStream
 import java.math.BigInteger
 import java.net.Socket
@@ -42,6 +36,12 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLEngine
 import javax.net.ssl.X509ExtendedKeyManager
 import javax.net.ssl.X509ExtendedTrustManager
+import org.bouncycastle.asn1.x500.X500Name
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo
+import org.bouncycastle.cert.X509v3CertificateBuilder
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder
+import org.conscrypt.Conscrypt
+import rikka.core.ktx.unsafeLazy
 
 private const val TAG = "AdbKey"
 
@@ -344,7 +344,7 @@ class PreferenceAdbKeyStore(private val preference: SharedPreferences) : AdbKeyS
 
 const val ANDROID_PUBKEY_MODULUS_SIZE = 2048 / 8
 const val ANDROID_PUBKEY_MODULUS_SIZE_WORDS = ANDROID_PUBKEY_MODULUS_SIZE / 4
-const val RSAPublicKey_Size = 524
+const val RSA_PUBLIC_KEY_SIZE = 524
 
 private fun BigInteger.toAdbEncoded(): IntArray {
     // little-endian integer with padding zeros in the end
@@ -379,7 +379,7 @@ private fun RSAPublicKey.adbEncoded(name: String): ByteArray {
     val r = BigInteger.ZERO.setBit(ANDROID_PUBKEY_MODULUS_SIZE * 8)
     val rr = r.modPow(BigInteger.valueOf(2), modulus)
 
-    val buffer = ByteBuffer.allocate(RSAPublicKey_Size).order(ByteOrder.LITTLE_ENDIAN)
+    val buffer = ByteBuffer.allocate(RSA_PUBLIC_KEY_SIZE).order(ByteOrder.LITTLE_ENDIAN)
     buffer.putInt(ANDROID_PUBKEY_MODULUS_SIZE_WORDS)
     buffer.putInt(n0inv.toInt())
     modulus.toAdbEncoded().forEach { buffer.putInt(it) }

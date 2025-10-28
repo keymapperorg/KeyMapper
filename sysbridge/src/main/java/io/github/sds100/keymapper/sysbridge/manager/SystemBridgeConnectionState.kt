@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.sysbridge.manager
 
-sealed class SystemBridgeConnectionState() {
+sealed class SystemBridgeConnectionState {
     /**
      * The time that this connection state was created. This uses SystemClock.elapsedRealtime()
      */
@@ -14,6 +14,6 @@ sealed class SystemBridgeConnectionState() {
          * Whether the disconnection was expected. E.g the user stopped it or the app is
          * opening for the first time
          */
-        val isExpected: Boolean
+        val isExpected: Boolean,
     ) : SystemBridgeConnectionState()
 }

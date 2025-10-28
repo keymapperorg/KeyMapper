@@ -25,6 +25,8 @@ import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.sysbridge.adb.AdbManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.TimeoutCancellationException
@@ -41,8 +43,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class SystemBridgeSetupControllerImpl @Inject constructor(
@@ -86,7 +86,9 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
                 // Only go back if the user is currently setting up the wireless debugging step.
                 // This stops Key Mapper going back if they are turning on wireless debugging
                 // for another reason.
-                if (isWirelessDebuggingEnabled.value && setupAssistantStepState.value == SystemBridgeSetupStep.WIRELESS_DEBUGGING) {
+                if (isWirelessDebuggingEnabled.value &&
+                    setupAssistantStepState.value == SystemBridgeSetupStep.WIRELESS_DEBUGGING
+                ) {
                     getKeyMapperAppTask()?.moveToFront()
                 }
             }
@@ -97,7 +99,9 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
             SettingsUtils.settingsCallbackFlow(ctx, uri).collect {
                 isDeveloperOptionsEnabled.update { getDeveloperOptionsEnabled() }
 
-                if (isDeveloperOptionsEnabled.value && setupAssistantStepState.value == SystemBridgeSetupStep.DEVELOPER_OPTIONS) {
+                if (isDeveloperOptionsEnabled.value &&
+                    setupAssistantStepState.value == SystemBridgeSetupStep.DEVELOPER_OPTIONS
+                ) {
                     getKeyMapperAppTask()?.moveToFront()
                 }
             }
@@ -128,7 +132,9 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
                 return@launch
             }
 
-            if (connectionManager.connectionState.value !is SystemBridgeConnectionState.Disconnected) {
+            if (connectionManager.connectionState.value
+                    !is SystemBridgeConnectionState.Disconnected
+            ) {
                 Timber.w("Not auto starting. System Bridge is already connected.")
                 return@launch
             }
@@ -203,7 +209,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
             SettingsUtils.launchSettingsScreen(
                 ctx,
                 Settings.ACTION_DEVICE_INFO_SETTINGS,
-                "build_number"
+                "build_number",
             )
 
             coroutineScope.launch {
@@ -263,15 +269,15 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
                 Intent.EXTRA_COMPONENT_NAME,
                 ComponentName(
                     packageName,
-                    "com.android.settings.development.qstile.DevelopmentTiles\$WirelessDebugging"
-                )
+                    "com.android.settings.development.qstile.DevelopmentTiles\$WirelessDebugging",
+                ),
             )
 
             addFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK or
                     Intent.FLAG_ACTIVITY_NO_HISTORY or
                     Intent.FLAG_ACTIVITY_CLEAR_TASK or
-                    Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                    Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS,
             )
         }
 
@@ -282,7 +288,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
             SettingsUtils.launchSettingsScreen(
                 ctx,
                 Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS,
-                "toggle_adb_wireless"
+                "toggle_adb_wireless",
             )
 
             return false
@@ -312,14 +318,17 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
     private fun getKeyMapperAppTask(): ActivityManager.AppTask? {
         val task = activityManager.appTasks
-            .firstOrNull { it.taskInfo.topActivity?.className == keyMapperClassProvider.getMainActivity().name }
+            .firstOrNull {
+                it.taskInfo.topActivity?.className ==
+                    keyMapperClassProvider.getMainActivity().name
+            }
         return task
     }
 
     private fun canWriteGlobalSettings(): Boolean {
         return ContextCompat.checkSelfPermission(
             ctx,
-            Manifest.permission.WRITE_SECURE_SETTINGS
+            Manifest.permission.WRITE_SECURE_SETTINGS,
         ) == PackageManager.PERMISSION_GRANTED
     }
 }

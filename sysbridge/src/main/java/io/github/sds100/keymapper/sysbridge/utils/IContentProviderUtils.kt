@@ -14,7 +14,7 @@ internal object IContentProviderUtils {
         authority: String?,
         method: String?,
         arg: String?,
-        extras: Bundle?
+        extras: Bundle?,
     ): Bundle? {
         val result: Bundle?
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -25,7 +25,7 @@ internal object IContentProviderUtils {
                 authority,
                 method,
                 arg,
-                extras
+                extras,
             )
         } else if (Build.VERSION.SDK_INT >= 30) {
             result =

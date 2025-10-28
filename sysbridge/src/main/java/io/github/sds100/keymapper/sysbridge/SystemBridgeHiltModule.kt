@@ -18,11 +18,15 @@ abstract class SystemBridgeHiltModule {
 
     @Singleton
     @Binds
-    abstract fun bindSystemBridgeSetupController(impl: SystemBridgeSetupControllerImpl): SystemBridgeSetupController
+    abstract fun bindSystemBridgeSetupController(
+        impl: SystemBridgeSetupControllerImpl,
+    ): SystemBridgeSetupController
 
     @Singleton
     @Binds
-    abstract fun bindSystemBridgeManager(impl: SystemBridgeConnectionManagerImpl): SystemBridgeConnectionManager
+    abstract fun bindSystemBridgeManager(
+        impl: SystemBridgeConnectionManagerImpl,
+    ): SystemBridgeConnectionManager
 
     @Singleton
     @Binds
