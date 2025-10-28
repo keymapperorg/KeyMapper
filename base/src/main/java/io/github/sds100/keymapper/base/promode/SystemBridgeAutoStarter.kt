@@ -14,6 +14,7 @@ import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.sysbridge.BuildConfig
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
@@ -144,6 +145,9 @@ class SystemBridgeAutoStarter @Inject constructor(
 
             if (isBoot) {
                 handleAutoStartOnBoot()
+            } else if (BuildConfig.DEBUG) {
+                Timber.i("Auto starting system bridge because debug build")
+                autoStartTypeFlow.first()?.let { autoStart(it) }
             } else {
                 handleAutoStartFromPreVersion4()
             }
