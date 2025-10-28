@@ -77,7 +77,7 @@ espresso-core = "3.6.1"
 ui-tooling = "1.8.1" # android.arch.persistence.room:testing
 
 libsu-core = "6.0.0"
-rikka-hidden = "4.3.3"
+rikka-hidden = "4.4.0"
 
 [libraries]
 # Kotlin
