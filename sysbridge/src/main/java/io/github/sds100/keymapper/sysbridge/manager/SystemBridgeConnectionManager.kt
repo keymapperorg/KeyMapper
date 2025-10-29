@@ -197,7 +197,8 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
             }
 
         systemBridge.grantPermission(Manifest.permission.WRITE_SECURE_SETTINGS, deviceId)
-        Timber.i("Granted WRITE_SECURE_SETTINGS permission with System Bridge")
+        systemBridge.grantPermission(Manifest.permission.READ_LOGS, deviceId)
+        Timber.i("Granted WRITE_SECURE_SETTINGS and READ_LOGS permission with System Bridge")
 
         if (ContextCompat.checkSelfPermission(
                 ctx,
