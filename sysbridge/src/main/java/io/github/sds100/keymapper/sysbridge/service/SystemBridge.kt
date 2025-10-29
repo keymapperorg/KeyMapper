@@ -444,7 +444,8 @@ internal class SystemBridge : ISystemBridge.Stub() {
                 systemBridgePackageName,
                 30 * 1000,
                 userId,
-                316, /* PowerExemptionManager#REASON_SHELL */
+                // PowerExemptionManager#REASON_SHELL
+                316,
                 "shell",
             )
         } catch (tr: Throwable) {

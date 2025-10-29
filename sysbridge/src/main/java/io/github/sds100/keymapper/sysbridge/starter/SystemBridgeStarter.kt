@@ -212,7 +212,8 @@ class SystemBridgeStarter @Inject constructor(
         Timber.i("Protected storage dir: ${protectedStorageDir.absolutePath}")
 
         try {
-            Os.chmod(protectedStorageDir.absolutePath, 457) /* 0711 */
+            // 0711
+            Os.chmod(protectedStorageDir.absolutePath, 457)
         } catch (e: ErrnoException) {
             e.printStackTrace()
         }
@@ -237,14 +238,16 @@ class SystemBridgeStarter @Inject constructor(
 
             // Make starter binary executable
             try {
-                Os.chmod(outputStarterBinary.absolutePath, 420) /* 0644 */
+                // 0644
+                Os.chmod(outputStarterBinary.absolutePath, 420)
             } catch (e: ErrnoException) {
                 e.printStackTrace()
             }
 
             // Make starter script executable
             try {
-                Os.chmod(outputStarterScript.absolutePath, 420) /* 0644 */
+                // 0644
+                Os.chmod(outputStarterScript.absolutePath, 420)
             } catch (e: ErrnoException) {
                 e.printStackTrace()
             }
