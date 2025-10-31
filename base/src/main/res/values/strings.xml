@@ -1079,6 +1079,10 @@
     <string name="action_send_sms_description">Send SMS: "%s"" to %s</string>
     <string name="action_compose_sms">Compose SMS</string>
     <string name="action_compose_sms_description">Compose SMS: "%s" to %s</string>
+    <string name="modify_setting_description">Set %3$s: %1$s = %2$s</string>
+    <string name="modify_setting_type_system">System Setting</string>
+    <string name="modify_setting_type_secure">Secure Setting</string>
+    <string name="modify_setting_type_global">Global Setting</string>
     <string name="action_play_sound">Play sound</string>
     <string name="action_dismiss_most_recent_notification">Dismiss most recent notification</string>
     <string name="action_dismiss_all_notifications">Dismiss all notifications</string>

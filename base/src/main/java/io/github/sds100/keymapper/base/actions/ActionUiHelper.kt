@@ -651,6 +651,21 @@ class ActionUiHelper(
         ActionData.Microphone.Mute -> getString(R.string.action_mute_microphone)
         ActionData.Microphone.Toggle -> getString(R.string.action_toggle_mute_microphone)
         ActionData.Microphone.Unmute -> getString(R.string.action_unmute_microphone)
+
+        is ActionData.ModifySetting.System -> getString(
+            R.string.modify_setting_description,
+            arrayOf(action.settingKey, action.value, getString(R.string.modify_setting_type_system)),
+        )
+
+        is ActionData.ModifySetting.Secure -> getString(
+            R.string.modify_setting_description,
+            arrayOf(action.settingKey, action.value, getString(R.string.modify_setting_type_secure)),
+        )
+
+        is ActionData.ModifySetting.Global -> getString(
+            R.string.modify_setting_description,
+            arrayOf(action.settingKey, action.value, getString(R.string.modify_setting_type_global)),
+        )
     }
 
     fun getIcon(action: ActionData): ComposeIconInfo = when (action) {
