@@ -54,6 +54,7 @@ class CreateActionDelegate(
     var httpRequestBottomSheetState: ActionData.HttpRequest? by mutableStateOf(null)
     var smsActionBottomSheetState: SmsActionBottomSheetState? by mutableStateOf(null)
     var volumeActionState: VolumeActionBottomSheetState? by mutableStateOf(null)
+    var modifySettingActionBottomSheetState: ModifySettingActionBottomSheetState? by mutableStateOf(null)
 
     init {
         coroutineScope.launch {
@@ -194,6 +195,11 @@ class CreateActionDelegate(
                 }
             }
         }
+    }
+
+    fun onDoneModifySettingClick(action: ActionData.ModifySetting) {
+        modifySettingActionBottomSheetState = null
+        actionResult.update { action }
     }
 
     suspend fun editAction(oldData: ActionData) {
@@ -927,6 +933,63 @@ class CreateActionDelegate(
             ActionId.MOVE_CURSOR -> return createMoverCursorAction()
             ActionId.FORCE_STOP_APP -> return ActionData.ForceStopApp
             ActionId.CLEAR_RECENT_APP -> return ActionData.ClearRecentApp
+
+            ActionId.MODIFY_SYSTEM_SETTING -> {
+                val settingKey = when (oldData) {
+                    is ActionData.ModifySetting.System -> oldData.settingKey
+                    else -> ""
+                }
+
+                val value = when (oldData) {
+                    is ActionData.ModifySetting.System -> oldData.value
+                    else -> ""
+                }
+
+                modifySettingActionBottomSheetState = ModifySettingActionBottomSheetState.System(
+                    settingKey = settingKey,
+                    value = value,
+                )
+
+                return null
+            }
+
+            ActionId.MODIFY_SECURE_SETTING -> {
+                val settingKey = when (oldData) {
+                    is ActionData.ModifySetting.Secure -> oldData.settingKey
+                    else -> ""
+                }
+
+                val value = when (oldData) {
+                    is ActionData.ModifySetting.Secure -> oldData.value
+                    else -> ""
+                }
+
+                modifySettingActionBottomSheetState = ModifySettingActionBottomSheetState.Secure(
+                    settingKey = settingKey,
+                    value = value,
+                )
+
+                return null
+            }
+
+            ActionId.MODIFY_GLOBAL_SETTING -> {
+                val settingKey = when (oldData) {
+                    is ActionData.ModifySetting.Global -> oldData.settingKey
+                    else -> ""
+                }
+
+                val value = when (oldData) {
+                    is ActionData.ModifySetting.Global -> oldData.value
+                    else -> ""
+                }
+
+                modifySettingActionBottomSheetState = ModifySettingActionBottomSheetState.Global(
+                    settingKey = settingKey,
+                    value = value,
+                )
+
+                return null
+            }
         }
     }
 
