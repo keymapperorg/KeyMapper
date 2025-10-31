@@ -3,29 +3,19 @@ package io.github.sds100.keymapper.base.actions
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -41,8 +31,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperDropdownMenu
 import io.github.sds100.keymapper.base.utils.ui.compose.SearchAppBarActions
 import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.system.settings.SettingType
 import kotlinx.coroutines.flow.update
 
 @Composable
@@ -70,10 +62,10 @@ private fun ChooseSettingScreen(
     modifier: Modifier = Modifier,
     state: State<List<SettingItem>>,
     query: String? = null,
-    settingType: io.github.sds100.keymapper.system.settings.SettingType,
+    settingType: SettingType,
     onQueryChange: (String) -> Unit = {},
     onCloseSearch: () -> Unit = {},
-    onSettingTypeChange: (io.github.sds100.keymapper.system.settings.SettingType) -> Unit = {},
+    onSettingTypeChange: (SettingType) -> Unit = {},
     onClickSetting: (String, String?) -> Unit = { _, _ -> },
     onNavigateBack: () -> Unit = {},
 ) {
@@ -108,56 +100,21 @@ private fun ChooseSettingScreen(
                 // Setting type dropdown
                 var expanded by remember { mutableStateOf(false) }
                 
-                ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = it },
+                KeyMapperDropdownMenu(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                ) {
-                    OutlinedTextField(
-                        value = when (settingType) {
-                            io.github.sds100.keymapper.system.settings.SettingType.SYSTEM ->
-                                stringResource(R.string.modify_setting_type_system)
-                            io.github.sds100.keymapper.system.settings.SettingType.SECURE ->
-                                stringResource(R.string.modify_setting_type_secure)
-                            io.github.sds100.keymapper.system.settings.SettingType.GLOBAL ->
-                                stringResource(R.string.modify_setting_type_global)
-                        },
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text(stringResource(R.string.modify_setting_type_label)) },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                        modifier = Modifier.fillMaxWidth().menuAnchor(),
-                        singleLine = true,
-                    )
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.modify_setting_type_system)) },
-                            onClick = {
-                                onSettingTypeChange(io.github.sds100.keymapper.system.settings.SettingType.SYSTEM)
-                                expanded = false
-                            },
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.modify_setting_type_secure)) },
-                            onClick = {
-                                onSettingTypeChange(io.github.sds100.keymapper.system.settings.SettingType.SECURE)
-                                expanded = false
-                            },
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.modify_setting_type_global)) },
-                            onClick = {
-                                onSettingTypeChange(io.github.sds100.keymapper.system.settings.SettingType.GLOBAL)
-                                expanded = false
-                            },
-                        )
-                    }
-                }
+                    expanded = expanded,
+                    onExpandedChange = { expanded = it },
+                    label = { Text(stringResource(R.string.modify_setting_type_label)) },
+                    selectedValue = settingType,
+                    values = listOf(
+                        SettingType.SYSTEM to stringResource(R.string.modify_setting_type_system),
+                        SettingType.SECURE to stringResource(R.string.modify_setting_type_secure),
+                        SettingType.GLOBAL to stringResource(R.string.modify_setting_type_global),
+                    ),
+                    onValueChanged = onSettingTypeChange,
+                )
 
                 HorizontalDivider()
 

@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.settings.SettingsAdapter
+import io.github.sds100.keymapper.system.settings.SettingType
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
 data class SettingItem(
     val key: String,
@@ -35,16 +38,16 @@ class ChooseSettingViewModel @Inject constructor(
     NavigationProvider by navigationProvider {
 
     val searchQuery = MutableStateFlow<String?>(null)
-    val selectedSettingType = MutableStateFlow(io.github.sds100.keymapper.system.settings.SettingType.SYSTEM)
+    val selectedSettingType = MutableStateFlow(SettingType.SYSTEM)
 
     val settings: StateFlow<State<List<SettingItem>>> =
         combine(selectedSettingType, searchQuery) { type, query ->
             val keys = when (type) {
-                io.github.sds100.keymapper.system.settings.SettingType.SYSTEM ->
+                SettingType.SYSTEM ->
                     settingsAdapter.getSystemSettingKeys()
-                io.github.sds100.keymapper.system.settings.SettingType.SECURE ->
+                SettingType.SECURE ->
                     settingsAdapter.getSecureSettingKeys()
-                io.github.sds100.keymapper.system.settings.SettingType.GLOBAL ->
+                SettingType.GLOBAL ->
                     settingsAdapter.getGlobalSettingKeys()
             }
 
@@ -52,11 +55,11 @@ class ChooseSettingViewModel @Inject constructor(
                 .filter { query == null || it.contains(query, ignoreCase = true) }
                 .map { key ->
                     val value = when (type) {
-                        io.github.sds100.keymapper.system.settings.SettingType.SYSTEM ->
+                        SettingType.SYSTEM ->
                             settingsAdapter.getSystemSettingValue(key)
-                        io.github.sds100.keymapper.system.settings.SettingType.SECURE ->
+                        SettingType.SECURE ->
                             settingsAdapter.getSecureSettingValue(key)
-                        io.github.sds100.keymapper.system.settings.SettingType.GLOBAL ->
+                        SettingType.GLOBAL ->
                             settingsAdapter.getGlobalSettingValue(key)
                     }
                     SettingItem(key, value)
@@ -75,7 +78,7 @@ class ChooseSettingViewModel @Inject constructor(
     fun onSettingClick(key: String, currentValue: String?) {
         viewModelScope.launch {
             popBackStackWithResult(
-                kotlinx.serialization.json.Json.encodeToString(
+                Json.encodeToString(
                     ChooseSettingResult.serializer(),
                     ChooseSettingResult(
                         settingType = selectedSettingType.value,
@@ -88,9 +91,9 @@ class ChooseSettingViewModel @Inject constructor(
     }
 }
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class ChooseSettingResult(
-    val settingType: io.github.sds100.keymapper.system.settings.SettingType,
+    val settingType: SettingType,
     val key: String,
     val currentValue: String?,
 )
