@@ -652,20 +652,20 @@ class ActionUiHelper(
         ActionData.Microphone.Toggle -> getString(R.string.action_toggle_mute_microphone)
         ActionData.Microphone.Unmute -> getString(R.string.action_unmute_microphone)
 
-        is ActionData.ModifySetting.System -> getString(
-            R.string.modify_setting_description,
-            arrayOf(action.settingKey, action.value, getString(R.string.modify_setting_type_system)),
-        )
-
-        is ActionData.ModifySetting.Secure -> getString(
-            R.string.modify_setting_description,
-            arrayOf(action.settingKey, action.value, getString(R.string.modify_setting_type_secure)),
-        )
-
-        is ActionData.ModifySetting.Global -> getString(
-            R.string.modify_setting_description,
-            arrayOf(action.settingKey, action.value, getString(R.string.modify_setting_type_global)),
-        )
+        is ActionData.ModifySetting -> {
+            val typeString = when (action.settingType) {
+                io.github.sds100.keymapper.system.settings.SettingType.SYSTEM ->
+                    getString(R.string.modify_setting_type_system)
+                io.github.sds100.keymapper.system.settings.SettingType.SECURE ->
+                    getString(R.string.modify_setting_type_secure)
+                io.github.sds100.keymapper.system.settings.SettingType.GLOBAL ->
+                    getString(R.string.modify_setting_type_global)
+            }
+            getString(
+                R.string.modify_setting_description,
+                arrayOf(action.settingKey, action.value, typeString),
+            )
+        }
     }
 
     fun getIcon(action: ActionData): ComposeIconInfo = when (action) {

@@ -141,6 +141,7 @@ data class ActionEntity(
         const val EXTRA_HOLD_DOWN_DURATION = "extra_hold_down_duration"
         const val EXTRA_REPEAT_LIMIT = "extra_repeat_limit"
         const val EXTRA_SETTING_VALUE = "extra_setting_value"
+        const val EXTRA_SETTING_TYPE = "extra_setting_type"
 
         val DESERIALIZER = jsonDeserializer {
             val typeString by it.json.byString(NAME_ACTION_TYPE)

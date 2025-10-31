@@ -1017,16 +1017,15 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 }
             }
 
-            is ActionData.ModifySetting.System -> {
-                result = displayAdapter.modifySystemSetting(action.settingKey, action.value)
-            }
-
-            is ActionData.ModifySetting.Secure -> {
-                result = displayAdapter.modifySecureSetting(action.settingKey, action.value)
-            }
-
-            is ActionData.ModifySetting.Global -> {
-                result = displayAdapter.modifyGlobalSetting(action.settingKey, action.value)
+            is ActionData.ModifySetting -> {
+                result = when (action.settingType) {
+                    io.github.sds100.keymapper.system.settings.SettingType.SYSTEM ->
+                        displayAdapter.modifySystemSetting(action.settingKey, action.value)
+                    io.github.sds100.keymapper.system.settings.SettingType.SECURE ->
+                        displayAdapter.modifySecureSetting(action.settingKey, action.value)
+                    io.github.sds100.keymapper.system.settings.SettingType.GLOBAL ->
+                        displayAdapter.modifyGlobalSetting(action.settingKey, action.value)
+                }
             }
         }
 

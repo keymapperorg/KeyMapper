@@ -951,47 +951,22 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
-    sealed class ModifySetting : ActionData() {
-        abstract val settingKey: String
-        abstract val value: String
+    data class ModifySetting(
+        val settingType: io.github.sds100.keymapper.system.settings.SettingType,
+        val settingKey: String,
+        val value: String,
+    ) : ActionData() {
+        override val id: ActionId = ActionId.MODIFY_SETTING
 
-        @Serializable
-        data class System(
-            override val settingKey: String,
-            override val value: String,
-        ) : ModifySetting() {
-            override val id: ActionId = ActionId.MODIFY_SYSTEM_SETTING
-
-            override fun compareTo(other: ActionData) = when (other) {
-                is System -> compareValuesBy(this, other, { it.settingKey }, { it.value })
-                else -> super.compareTo(other)
-            }
-        }
-
-        @Serializable
-        data class Secure(
-            override val settingKey: String,
-            override val value: String,
-        ) : ModifySetting() {
-            override val id: ActionId = ActionId.MODIFY_SECURE_SETTING
-
-            override fun compareTo(other: ActionData) = when (other) {
-                is Secure -> compareValuesBy(this, other, { it.settingKey }, { it.value })
-                else -> super.compareTo(other)
-            }
-        }
-
-        @Serializable
-        data class Global(
-            override val settingKey: String,
-            override val value: String,
-        ) : ModifySetting() {
-            override val id: ActionId = ActionId.MODIFY_GLOBAL_SETTING
-
-            override fun compareTo(other: ActionData) = when (other) {
-                is Global -> compareValuesBy(this, other, { it.settingKey }, { it.value })
-                else -> super.compareTo(other)
-            }
+        override fun compareTo(other: ActionData) = when (other) {
+            is ModifySetting -> compareValuesBy(
+                this,
+                other,
+                { it.settingType },
+                { it.settingKey },
+                { it.value },
+            )
+            else -> super.compareTo(other)
         }
     }
 }

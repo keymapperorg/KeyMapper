@@ -934,56 +934,24 @@ class CreateActionDelegate(
             ActionId.FORCE_STOP_APP -> return ActionData.ForceStopApp
             ActionId.CLEAR_RECENT_APP -> return ActionData.ClearRecentApp
 
-            ActionId.MODIFY_SYSTEM_SETTING -> {
+            ActionId.MODIFY_SETTING -> {
+                val settingType = when (oldData) {
+                    is ActionData.ModifySetting -> oldData.settingType
+                    else -> io.github.sds100.keymapper.system.settings.SettingType.SYSTEM // Default to SYSTEM
+                }
+
                 val settingKey = when (oldData) {
-                    is ActionData.ModifySetting.System -> oldData.settingKey
+                    is ActionData.ModifySetting -> oldData.settingKey
                     else -> ""
                 }
 
                 val value = when (oldData) {
-                    is ActionData.ModifySetting.System -> oldData.value
+                    is ActionData.ModifySetting -> oldData.value
                     else -> ""
                 }
 
-                modifySettingActionBottomSheetState = ModifySettingActionBottomSheetState.System(
-                    settingKey = settingKey,
-                    value = value,
-                )
-
-                return null
-            }
-
-            ActionId.MODIFY_SECURE_SETTING -> {
-                val settingKey = when (oldData) {
-                    is ActionData.ModifySetting.Secure -> oldData.settingKey
-                    else -> ""
-                }
-
-                val value = when (oldData) {
-                    is ActionData.ModifySetting.Secure -> oldData.value
-                    else -> ""
-                }
-
-                modifySettingActionBottomSheetState = ModifySettingActionBottomSheetState.Secure(
-                    settingKey = settingKey,
-                    value = value,
-                )
-
-                return null
-            }
-
-            ActionId.MODIFY_GLOBAL_SETTING -> {
-                val settingKey = when (oldData) {
-                    is ActionData.ModifySetting.Global -> oldData.settingKey
-                    else -> ""
-                }
-
-                val value = when (oldData) {
-                    is ActionData.ModifySetting.Global -> oldData.value
-                    else -> ""
-                }
-
-                modifySettingActionBottomSheetState = ModifySettingActionBottomSheetState.Global(
+                modifySettingActionBottomSheetState = ModifySettingActionBottomSheetState(
+                    settingType = settingType,
                     settingKey = settingKey,
                     value = value,
                 )

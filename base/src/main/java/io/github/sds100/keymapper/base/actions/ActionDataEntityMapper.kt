@@ -724,31 +724,21 @@ object ActionDataEntityMapper {
             ActionId.FORCE_STOP_APP -> ActionData.ForceStopApp
             ActionId.CLEAR_RECENT_APP -> ActionData.ClearRecentApp
 
-            ActionId.MODIFY_SYSTEM_SETTING -> {
+            ActionId.MODIFY_SETTING -> {
                 val value = entity.extras.getData(ActionEntity.EXTRA_SETTING_VALUE)
                     .valueOrNull() ?: return null
 
-                ActionData.ModifySetting.System(
-                    settingKey = entity.data,
-                    value = value,
-                )
-            }
+                val settingTypeString = entity.extras.getData(ActionEntity.EXTRA_SETTING_TYPE)
+                    .valueOrNull() ?: "SYSTEM" // Default to SYSTEM for backward compatibility
 
-            ActionId.MODIFY_SECURE_SETTING -> {
-                val value = entity.extras.getData(ActionEntity.EXTRA_SETTING_VALUE)
-                    .valueOrNull() ?: return null
+                val settingType = try {
+                    io.github.sds100.keymapper.system.settings.SettingType.valueOf(settingTypeString)
+                } catch (e: IllegalArgumentException) {
+                    io.github.sds100.keymapper.system.settings.SettingType.SYSTEM
+                }
 
-                ActionData.ModifySetting.Secure(
-                    settingKey = entity.data,
-                    value = value,
-                )
-            }
-
-            ActionId.MODIFY_GLOBAL_SETTING -> {
-                val value = entity.extras.getData(ActionEntity.EXTRA_SETTING_VALUE)
-                    .valueOrNull() ?: return null
-
-                ActionData.ModifySetting.Global(
+                ActionData.ModifySetting(
+                    settingType = settingType,
                     settingKey = entity.data,
                     value = value,
                 )
@@ -1138,6 +1128,7 @@ object ActionDataEntityMapper {
 
         is ActionData.ModifySetting -> listOf(
             EntityExtra(ActionEntity.EXTRA_SETTING_VALUE, data.value),
+            EntityExtra(ActionEntity.EXTRA_SETTING_TYPE, data.settingType.name),
         )
 
         else -> emptyList()
@@ -1315,8 +1306,6 @@ object ActionDataEntityMapper {
         ActionId.FORCE_STOP_APP to "force_stop_app",
         ActionId.CLEAR_RECENT_APP to "clear_recent_app",
 
-        ActionId.MODIFY_SYSTEM_SETTING to "modify_system_setting",
-        ActionId.MODIFY_SECURE_SETTING to "modify_secure_setting",
-        ActionId.MODIFY_GLOBAL_SETTING to "modify_global_setting",
+        ActionId.MODIFY_SETTING to "modify_setting",
     )
 }
