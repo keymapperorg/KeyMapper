@@ -5,10 +5,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -25,10 +23,12 @@ import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.ui.compose.BottomSheet
 import io.github.sds100.keymapper.base.utils.ui.compose.BottomSheetDefaults
+import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperDropdownMenu
+import io.github.sds100.keymapper.system.settings.SettingType
 import kotlinx.coroutines.launch
 
 data class ModifySettingActionBottomSheetState(
-    val settingType: io.github.sds100.keymapper.system.settings.SettingType,
+    val settingType: SettingType,
     val settingKey: String,
     val value: String,
 )
@@ -59,6 +59,9 @@ fun ModifySettingActionBottomSheet(delegate: CreateActionDelegate) {
                         delegate.modifySettingActionBottomSheetState = null
                     }
                 },
+                onChooseSetting = { settingType ->
+                    delegate.onChooseSettingClick(settingType)
+                },
                 onComplete = { action ->
                     scope.launch {
                         sheetState.hide()
@@ -75,6 +78,7 @@ fun ModifySettingActionBottomSheet(delegate: CreateActionDelegate) {
 private fun ModifySettingActionBottomSheetContent(
     state: ModifySettingActionBottomSheetState,
     onDismiss: () -> Unit,
+    onChooseSetting: (SettingType) -> Unit,
     onComplete: (ActionData.ModifySetting) -> Unit,
 ) {
     var settingType by remember(state) { mutableStateOf(state.settingType) }
@@ -82,13 +86,6 @@ private fun ModifySettingActionBottomSheetContent(
     var value by remember(state) { mutableStateOf(state.value) }
     
     var settingTypeExpanded by remember { mutableStateOf(false) }
-    var settingKeyExpanded by remember { mutableStateOf(false) }
-
-    // Available setting keys based on selected type - placeholder, would need SettingsAdapter
-    val availableKeys = remember(settingType) {
-        // For now, return empty list. This will be populated via dependency injection
-        emptyList<String>()
-    }
 
     BottomSheet(
         title = stringResource(R.string.action_modify_setting),
@@ -111,57 +108,33 @@ private fun ModifySettingActionBottomSheetContent(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Setting Type Dropdown
-            ExposedDropdownMenuBox(
+            KeyMapperDropdownMenu(
+                modifier = Modifier.fillMaxWidth(),
                 expanded = settingTypeExpanded,
                 onExpandedChange = { settingTypeExpanded = it },
+                label = { Text(stringResource(R.string.modify_setting_type_label)) },
+                selectedValue = settingType,
+                values = listOf(
+                    SettingType.SYSTEM to stringResource(R.string.modify_setting_type_system),
+                    SettingType.SECURE to stringResource(R.string.modify_setting_type_secure),
+                    SettingType.GLOBAL to stringResource(R.string.modify_setting_type_global),
+                ),
+                onValueChanged = { settingType = it },
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Button to choose an existing setting
+            Button(
+                onClick = { onChooseSetting(settingType) },
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                OutlinedTextField(
-                    value = when (settingType) {
-                        io.github.sds100.keymapper.system.settings.SettingType.SYSTEM ->
-                            stringResource(R.string.modify_setting_type_system)
-                        io.github.sds100.keymapper.system.settings.SettingType.SECURE ->
-                            stringResource(R.string.modify_setting_type_secure)
-                        io.github.sds100.keymapper.system.settings.SettingType.GLOBAL ->
-                            stringResource(R.string.modify_setting_type_global)
-                    },
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text(stringResource(R.string.modify_setting_type_label)) },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = settingTypeExpanded) },
-                    modifier = Modifier.fillMaxWidth().menuAnchor(),
-                    singleLine = true,
-                )
-                ExposedDropdownMenu(
-                    expanded = settingTypeExpanded,
-                    onDismissRequest = { settingTypeExpanded = false },
-                ) {
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.modify_setting_type_system)) },
-                        onClick = {
-                            settingType = io.github.sds100.keymapper.system.settings.SettingType.SYSTEM
-                            settingTypeExpanded = false
-                        },
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.modify_setting_type_secure)) },
-                        onClick = {
-                            settingType = io.github.sds100.keymapper.system.settings.SettingType.SECURE
-                            settingTypeExpanded = false
-                        },
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.modify_setting_type_global)) },
-                        onClick = {
-                            settingType = io.github.sds100.keymapper.system.settings.SettingType.GLOBAL
-                            settingTypeExpanded = false
-                        },
-                    )
-                }
+                Text(stringResource(R.string.choose_existing_setting))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Setting Key - allow both dropdown selection and manual entry
+            // Setting Key - manual entry
             OutlinedTextField(
                 value = settingKey,
                 onValueChange = { settingKey = it },
@@ -183,11 +156,11 @@ private fun ModifySettingActionBottomSheetContent(
             Spacer(modifier = Modifier.height(16.dp))
 
             val exampleText = when (settingType) {
-                io.github.sds100.keymapper.system.settings.SettingType.SYSTEM ->
+                SettingType.SYSTEM ->
                     stringResource(R.string.modify_setting_example_system)
-                io.github.sds100.keymapper.system.settings.SettingType.SECURE ->
+                SettingType.SECURE ->
                     stringResource(R.string.modify_setting_example_secure)
-                io.github.sds100.keymapper.system.settings.SettingType.GLOBAL ->
+                SettingType.GLOBAL ->
                     stringResource(R.string.modify_setting_example_global)
             }
 

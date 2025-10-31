@@ -1019,14 +1019,11 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.ModifySetting -> {
-                result = when (action.settingType) {
-                    io.github.sds100.keymapper.system.settings.SettingType.SYSTEM ->
-                        settingsAdapter.modifySystemSetting(action.settingKey, action.value)
-                    io.github.sds100.keymapper.system.settings.SettingType.SECURE ->
-                        settingsAdapter.modifySecureSetting(action.settingKey, action.value)
-                    io.github.sds100.keymapper.system.settings.SettingType.GLOBAL ->
-                        settingsAdapter.modifyGlobalSetting(action.settingKey, action.value)
-                }
+                result = settingsAdapter.modifySetting(
+                    action.settingType,
+                    action.settingKey,
+                    action.value,
+                )
             }
         }
 

@@ -202,6 +202,15 @@ class CreateActionDelegate(
         actionResult.update { action }
     }
 
+    fun onChooseSettingClick(settingType: io.github.sds100.keymapper.system.settings.SettingType) {
+        coroutineScope.launch {
+            navigate(
+                "choose_setting",
+                NavDestination.ChooseSetting(currentSettingType = settingType),
+            )
+        }
+    }
+
     suspend fun editAction(oldData: ActionData) {
         if (!oldData.isEditable()) {
             throw IllegalArgumentException("This action ${oldData.javaClass.name} can't be edited!")

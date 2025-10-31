@@ -42,43 +42,26 @@ class AndroidSettingsAdapter @Inject constructor(
         return SettingsUtils.getGlobalSetting<String>(ctx, key)
     }
 
-    override fun modifySystemSetting(key: String, value: String): KMResult<*> {
-        // Try to parse value as different types and use the appropriate method
-        val success = when {
-            value.toIntOrNull() != null -> SettingsUtils.putSystemSetting(ctx, key, value.toInt())
-            value.toLongOrNull() != null -> SettingsUtils.putSystemSetting(ctx, key, value.toLong())
-            value.toFloatOrNull() != null -> SettingsUtils.putSystemSetting(ctx, key, value.toFloat())
-            else -> SettingsUtils.putSystemSetting(ctx, key, value)
-        }
-
-        return if (success) {
-            Success(Unit)
-        } else {
-            KMError.FailedToModifySystemSetting(key)
-        }
-    }
-
-    override fun modifySecureSetting(key: String, value: String): KMResult<*> {
-        val success = when {
-            value.toIntOrNull() != null -> SettingsUtils.putSecureSetting(ctx, key, value.toInt())
-            value.toLongOrNull() != null -> SettingsUtils.putSecureSetting(ctx, key, value.toLong())
-            value.toFloatOrNull() != null -> SettingsUtils.putSecureSetting(ctx, key, value.toFloat())
-            else -> SettingsUtils.putSecureSetting(ctx, key, value)
-        }
-
-        return if (success) {
-            Success(Unit)
-        } else {
-            KMError.FailedToModifySystemSetting(key)
-        }
-    }
-
-    override fun modifyGlobalSetting(key: String, value: String): KMResult<*> {
-        val success = when {
-            value.toIntOrNull() != null -> SettingsUtils.putGlobalSetting(ctx, key, value.toInt())
-            value.toLongOrNull() != null -> SettingsUtils.putGlobalSetting(ctx, key, value.toLong())
-            value.toFloatOrNull() != null -> SettingsUtils.putGlobalSetting(ctx, key, value.toFloat())
-            else -> SettingsUtils.putGlobalSetting(ctx, key, value)
+    override fun modifySetting(settingType: SettingType, key: String, value: String): KMResult<*> {
+        val success = when (settingType) {
+            SettingType.SYSTEM -> when {
+                value.toIntOrNull() != null -> SettingsUtils.putSystemSetting(ctx, key, value.toInt())
+                value.toLongOrNull() != null -> SettingsUtils.putSystemSetting(ctx, key, value.toLong())
+                value.toFloatOrNull() != null -> SettingsUtils.putSystemSetting(ctx, key, value.toFloat())
+                else -> SettingsUtils.putSystemSetting(ctx, key, value)
+            }
+            SettingType.SECURE -> when {
+                value.toIntOrNull() != null -> SettingsUtils.putSecureSetting(ctx, key, value.toInt())
+                value.toLongOrNull() != null -> SettingsUtils.putSecureSetting(ctx, key, value.toLong())
+                value.toFloatOrNull() != null -> SettingsUtils.putSecureSetting(ctx, key, value.toFloat())
+                else -> SettingsUtils.putSecureSetting(ctx, key, value)
+            }
+            SettingType.GLOBAL -> when {
+                value.toIntOrNull() != null -> SettingsUtils.putGlobalSetting(ctx, key, value.toInt())
+                value.toLongOrNull() != null -> SettingsUtils.putGlobalSetting(ctx, key, value.toLong())
+                value.toFloatOrNull() != null -> SettingsUtils.putGlobalSetting(ctx, key, value.toFloat())
+                else -> SettingsUtils.putGlobalSetting(ctx, key, value)
+            }
         }
 
         return if (success) {
@@ -127,7 +110,5 @@ interface SettingsAdapter {
     fun getSecureSettingValue(key: String): String?
     fun getGlobalSettingValue(key: String): String?
     
-    fun modifySystemSetting(key: String, value: String): KMResult<*>
-    fun modifySecureSetting(key: String, value: String): KMResult<*>
-    fun modifyGlobalSetting(key: String, value: String): KMResult<*>
+    fun modifySetting(settingType: SettingType, key: String, value: String): KMResult<*>
 }
