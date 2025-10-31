@@ -26,6 +26,7 @@ import android.os.Process
 import android.os.ServiceManager
 import android.permission.IPermissionManager
 import android.permission.PermissionManagerApis
+import android.provider.Settings
 import android.util.Log
 import android.view.InputEvent
 import com.android.internal.telephony.ITelephony
@@ -674,8 +675,13 @@ internal class SystemBridge : ISystemBridge.Stub() {
         }
 
         return try {
+            // SystemBridge runs as shell/root user, so we can directly access Settings
+            // We need to use the system context's content resolver
+            val contentResolver = android.app.ActivityThread.systemMain()
+                .getSystemContext().contentResolver
             Settings.System.putString(contentResolver, key, value)
         } catch (e: Exception) {
+            Log.e(TAG, "Failed to put system setting: $key=$value", e)
             false
         }
     }
@@ -686,8 +692,11 @@ internal class SystemBridge : ISystemBridge.Stub() {
         }
 
         return try {
+            val contentResolver = android.app.ActivityThread.systemMain()
+                .getSystemContext().contentResolver
             Settings.Secure.putString(contentResolver, key, value)
         } catch (e: Exception) {
+            Log.e(TAG, "Failed to put secure setting: $key=$value", e)
             false
         }
     }
@@ -698,8 +707,11 @@ internal class SystemBridge : ISystemBridge.Stub() {
         }
 
         return try {
+            val contentResolver = android.app.ActivityThread.systemMain()
+                .getSystemContext().contentResolver
             Settings.Global.putString(contentResolver, key, value)
         } catch (e: Exception) {
+            Log.e(TAG, "Failed to put global setting: $key=$value", e)
             false
         }
     }
