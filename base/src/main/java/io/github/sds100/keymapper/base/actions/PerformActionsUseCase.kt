@@ -1016,6 +1016,18 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                     result = SdkVersionTooLow(minSdk = Constants.SYSTEM_BRIDGE_MIN_API)
                 }
             }
+
+            is ActionData.ModifySetting.System -> {
+                result = displayAdapter.modifySystemSetting(action.settingKey, action.value)
+            }
+
+            is ActionData.ModifySetting.Secure -> {
+                result = displayAdapter.modifySecureSetting(action.settingKey, action.value)
+            }
+
+            is ActionData.ModifySetting.Global -> {
+                result = displayAdapter.modifyGlobalSetting(action.settingKey, action.value)
+            }
         }
 
         when (result) {

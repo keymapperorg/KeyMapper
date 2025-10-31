@@ -723,6 +723,36 @@ object ActionDataEntityMapper {
 
             ActionId.FORCE_STOP_APP -> ActionData.ForceStopApp
             ActionId.CLEAR_RECENT_APP -> ActionData.ClearRecentApp
+
+            ActionId.MODIFY_SYSTEM_SETTING -> {
+                val value = entity.extras.getData(ActionEntity.EXTRA_SETTING_VALUE)
+                    .valueOrNull() ?: return null
+
+                ActionData.ModifySetting.System(
+                    settingKey = entity.data,
+                    value = value,
+                )
+            }
+
+            ActionId.MODIFY_SECURE_SETTING -> {
+                val value = entity.extras.getData(ActionEntity.EXTRA_SETTING_VALUE)
+                    .valueOrNull() ?: return null
+
+                ActionData.ModifySetting.Secure(
+                    settingKey = entity.data,
+                    value = value,
+                )
+            }
+
+            ActionId.MODIFY_GLOBAL_SETTING -> {
+                val value = entity.extras.getData(ActionEntity.EXTRA_SETTING_VALUE)
+                    .valueOrNull() ?: return null
+
+                ActionData.ModifySetting.Global(
+                    settingKey = entity.data,
+                    value = value,
+                )
+            }
         }
     }
 
@@ -825,6 +855,7 @@ object ActionDataEntityMapper {
         is ActionData.ControlMedia.Rewind -> SYSTEM_ACTION_ID_MAP[data.id]!!
         is ActionData.ControlMedia.Stop -> SYSTEM_ACTION_ID_MAP[data.id]!!
         is ActionData.GoBack -> SYSTEM_ACTION_ID_MAP[data.id]!!
+        is ActionData.ModifySetting -> data.settingKey
         else -> SYSTEM_ACTION_ID_MAP[data.id]!!
     }
 
@@ -1105,6 +1136,10 @@ object ActionDataEntityMapper {
             EntityExtra(ActionEntity.EXTRA_SHELL_COMMAND_TIMEOUT, data.timeoutMillis.toString()),
         )
 
+        is ActionData.ModifySetting -> listOf(
+            EntityExtra(ActionEntity.EXTRA_SETTING_VALUE, data.value),
+        )
+
         else -> emptyList()
     }
 
@@ -1279,5 +1314,9 @@ object ActionDataEntityMapper {
         ActionId.HTTP_REQUEST to "http_request",
         ActionId.FORCE_STOP_APP to "force_stop_app",
         ActionId.CLEAR_RECENT_APP to "clear_recent_app",
+
+        ActionId.MODIFY_SYSTEM_SETTING to "modify_system_setting",
+        ActionId.MODIFY_SECURE_SETTING to "modify_secure_setting",
+        ActionId.MODIFY_GLOBAL_SETTING to "modify_global_setting",
     )
 }

@@ -667,4 +667,40 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
         audioService.setRingerModeInternal(ringerMode, processPackageName)
     }
+
+    override fun putSystemSetting(key: String?, value: String?): Boolean {
+        if (key == null || value == null) {
+            return false
+        }
+
+        return try {
+            Settings.System.putString(contentResolver, key, value)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    override fun putSecureSetting(key: String?, value: String?): Boolean {
+        if (key == null || value == null) {
+            return false
+        }
+
+        return try {
+            Settings.Secure.putString(contentResolver, key, value)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    override fun putGlobalSetting(key: String?, value: String?): Boolean {
+        if (key == null || value == null) {
+            return false
+        }
+
+        return try {
+            Settings.Global.putString(contentResolver, key, value)
+        } catch (e: Exception) {
+            false
+        }
+    }
 }

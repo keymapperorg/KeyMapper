@@ -1160,6 +1160,9 @@
 
     <string name="action_force_stop_app">Force stop app</string>
     <string name="action_clear_recent_app">Close and clear app from recents</string>
+    <string name="action_modify_system_setting">Modify system setting</string>
+    <string name="action_modify_secure_setting">Modify secure setting</string>
+    <string name="action_modify_global_setting">Modify global setting</string>
     <!-- action labels -->
 
     <!-- action category labels -->

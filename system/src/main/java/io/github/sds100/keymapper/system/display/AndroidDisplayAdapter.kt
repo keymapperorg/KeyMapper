@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.SizeKM
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.getRealDisplaySize
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -32,6 +33,7 @@ import javax.inject.Singleton
 class AndroidDisplayAdapter @Inject constructor(
     @ApplicationContext private val context: Context,
     private val coroutineScope: CoroutineScope,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
 ) : DisplayAdapter {
     companion object {
 
@@ -252,5 +254,55 @@ class AndroidDisplayAdapter @Inject constructor(
 
     private fun isAodEnabled(): Boolean {
         return SettingsUtils.getSecureSetting<Int>(ctx, "doze_always_on") == 1
+    }
+
+    override fun modifySystemSetting(key: String, value: String): KMResult<*> {
+        // Try to parse value as different types and use the appropriate method
+        val success = when {
+            value.toIntOrNull() != null -> SettingsUtils.putSystemSetting(ctx, key, value.toInt())
+            value.toLongOrNull() != null -> SettingsUtils.putSystemSetting(ctx, key, value.toLong())
+            value.toFloatOrNull() != null -> SettingsUtils.putSystemSetting(ctx, key, value.toFloat())
+            else -> SettingsUtils.putSystemSetting(ctx, key, value)
+        }
+
+        return if (success) {
+            Success(Unit)
+        } else {
+            KMError.FailedToModifySystemSetting(key)
+        }
+    }
+
+    override fun modifySecureSetting(key: String, value: String): KMResult<*> {
+        return systemBridgeConnectionManager.run { bridge ->
+            val success = when {
+                value.toIntOrNull() != null -> bridge.putSecureSetting(key, value)
+                value.toLongOrNull() != null -> bridge.putSecureSetting(key, value)
+                value.toFloatOrNull() != null -> bridge.putSecureSetting(key, value)
+                else -> bridge.putSecureSetting(key, value)
+            }
+
+            if (success) {
+                Success(Unit)
+            } else {
+                KMError.FailedToModifySystemSetting(key)
+            }
+        }
+    }
+
+    override fun modifyGlobalSetting(key: String, value: String): KMResult<*> {
+        return systemBridgeConnectionManager.run { bridge ->
+            val success = when {
+                value.toIntOrNull() != null -> bridge.putGlobalSetting(key, value)
+                value.toLongOrNull() != null -> bridge.putGlobalSetting(key, value)
+                value.toFloatOrNull() != null -> bridge.putGlobalSetting(key, value)
+                else -> bridge.putGlobalSetting(key, value)
+            }
+
+            if (success) {
+                Success(Unit)
+            } else {
+                KMError.FailedToModifySystemSetting(key)
+            }
+        }
     }
 }

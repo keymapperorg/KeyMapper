@@ -949,4 +949,49 @@ sealed class ActionData : Comparable<ActionData> {
     data object ClearRecentApp : ActionData() {
         override val id: ActionId = ActionId.CLEAR_RECENT_APP
     }
+
+    @Serializable
+    sealed class ModifySetting : ActionData() {
+        abstract val settingKey: String
+        abstract val value: String
+
+        @Serializable
+        data class System(
+            override val settingKey: String,
+            override val value: String,
+        ) : ModifySetting() {
+            override val id: ActionId = ActionId.MODIFY_SYSTEM_SETTING
+
+            override fun compareTo(other: ActionData) = when (other) {
+                is System -> compareValuesBy(this, other, { it.settingKey }, { it.value })
+                else -> super.compareTo(other)
+            }
+        }
+
+        @Serializable
+        data class Secure(
+            override val settingKey: String,
+            override val value: String,
+        ) : ModifySetting() {
+            override val id: ActionId = ActionId.MODIFY_SECURE_SETTING
+
+            override fun compareTo(other: ActionData) = when (other) {
+                is Secure -> compareValuesBy(this, other, { it.settingKey }, { it.value })
+                else -> super.compareTo(other)
+            }
+        }
+
+        @Serializable
+        data class Global(
+            override val settingKey: String,
+            override val value: String,
+        ) : ModifySetting() {
+            override val id: ActionId = ActionId.MODIFY_GLOBAL_SETTING
+
+            override fun compareTo(other: ActionData) = when (other) {
+                is Global -> compareValuesBy(this, other, { it.settingKey }, { it.value })
+                else -> super.compareTo(other)
+            }
+        }
+    }
 }

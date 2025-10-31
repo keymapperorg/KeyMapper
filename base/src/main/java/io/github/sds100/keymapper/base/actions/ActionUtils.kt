@@ -254,6 +254,10 @@ object ActionUtils {
         ActionId.FORCE_STOP_APP -> ActionCategory.APPS
         ActionId.CLEAR_RECENT_APP -> ActionCategory.APPS
 
+        ActionId.MODIFY_SYSTEM_SETTING -> ActionCategory.DISPLAY
+        ActionId.MODIFY_SECURE_SETTING -> ActionCategory.DISPLAY
+        ActionId.MODIFY_GLOBAL_SETTING -> ActionCategory.DISPLAY
+
         ActionId.CONSUME_KEY_EVENT -> ActionCategory.SPECIAL
     }
 
@@ -383,6 +387,10 @@ object ActionUtils {
         ActionId.INTERACT_UI_ELEMENT -> R.string.action_interact_ui_element_title
         ActionId.FORCE_STOP_APP -> R.string.action_force_stop_app
         ActionId.CLEAR_RECENT_APP -> R.string.action_clear_recent_app
+
+        ActionId.MODIFY_SYSTEM_SETTING -> R.string.action_modify_system_setting
+        ActionId.MODIFY_SECURE_SETTING -> R.string.action_modify_secure_setting
+        ActionId.MODIFY_GLOBAL_SETTING -> R.string.action_modify_global_setting
     }
 
     @DrawableRes
@@ -760,6 +768,12 @@ object ActionUtils {
                     return listOf(Permission.FIND_NEARBY_DEVICES)
                 }
 
+            ActionId.MODIFY_SYSTEM_SETTING -> return listOf(Permission.WRITE_SETTINGS)
+
+            ActionId.MODIFY_SECURE_SETTING,
+            ActionId.MODIFY_GLOBAL_SETTING,
+                -> return emptyList() // System bridge is required for these
+
             else -> return emptyList()
         }
 
@@ -890,6 +904,10 @@ object ActionUtils {
         ActionId.INTERACT_UI_ELEMENT -> KeyMapperIcons.JumpToElement
         ActionId.FORCE_STOP_APP -> Icons.Outlined.Dangerous
         ActionId.CLEAR_RECENT_APP -> Icons.Outlined.VerticalSplit
+
+        ActionId.MODIFY_SYSTEM_SETTING -> Icons.Outlined.Settings
+        ActionId.MODIFY_SECURE_SETTING -> Icons.Outlined.Settings
+        ActionId.MODIFY_GLOBAL_SETTING -> Icons.Outlined.Settings
     }
 }
 
