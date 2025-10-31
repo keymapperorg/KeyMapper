@@ -120,6 +120,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val settingsRepository: PreferenceRepository,
     private val inputEventHub: InputEventHub,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
+    private val settingsAdapter: io.github.sds100.keymapper.system.settings.SettingsAdapter,
 ) : PerformActionsUseCase {
 
     @AssistedFactory
@@ -1020,11 +1021,11 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             is ActionData.ModifySetting -> {
                 result = when (action.settingType) {
                     io.github.sds100.keymapper.system.settings.SettingType.SYSTEM ->
-                        displayAdapter.modifySystemSetting(action.settingKey, action.value)
+                        settingsAdapter.modifySystemSetting(action.settingKey, action.value)
                     io.github.sds100.keymapper.system.settings.SettingType.SECURE ->
-                        displayAdapter.modifySecureSetting(action.settingKey, action.value)
+                        settingsAdapter.modifySecureSetting(action.settingKey, action.value)
                     io.github.sds100.keymapper.system.settings.SettingType.GLOBAL ->
-                        displayAdapter.modifyGlobalSetting(action.settingKey, action.value)
+                        settingsAdapter.modifyGlobalSetting(action.settingKey, action.value)
                 }
             }
         }

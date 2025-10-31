@@ -253,8 +253,7 @@ object ActionUtils {
         ActionId.INTERACT_UI_ELEMENT -> ActionCategory.APPS
         ActionId.FORCE_STOP_APP -> ActionCategory.APPS
         ActionId.CLEAR_RECENT_APP -> ActionCategory.APPS
-
-        ActionId.MODIFY_SETTING -> ActionCategory.DISPLAY
+        ActionId.MODIFY_SETTING -> ActionCategory.APPS
 
         ActionId.CONSUME_KEY_EVENT -> ActionCategory.SPECIAL
     }

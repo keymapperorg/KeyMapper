@@ -231,6 +231,26 @@ class LazyActionErrorSnapshot(
                 }
             }
 
+            is ActionData.ModifySetting -> {
+                return when (action.settingType) {
+                    io.github.sds100.keymapper.system.settings.SettingType.SYSTEM -> {
+                        if (!isPermissionGranted(Permission.WRITE_SETTINGS)) {
+                            SystemError.PermissionDenied(Permission.WRITE_SETTINGS)
+                        } else {
+                            null
+                        }
+                    }
+                    io.github.sds100.keymapper.system.settings.SettingType.SECURE,
+                    io.github.sds100.keymapper.system.settings.SettingType.GLOBAL -> {
+                        if (!isPermissionGranted(Permission.WRITE_SECURE_SETTINGS)) {
+                            SystemError.PermissionDenied(Permission.WRITE_SECURE_SETTINGS)
+                        } else {
+                            null
+                        }
+                    }
+                }
+            }
+
             else -> {}
         }
 

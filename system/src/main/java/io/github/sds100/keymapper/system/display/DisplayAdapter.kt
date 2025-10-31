@@ -27,8 +27,4 @@ interface DisplayAdapter {
     fun decreaseBrightness(): KMResult<*>
     fun enableAutoBrightness(): KMResult<*>
     fun disableAutoBrightness(): KMResult<*>
-
-    fun modifySystemSetting(key: String, value: String): KMResult<*>
-    fun modifySecureSetting(key: String, value: String): KMResult<*>
-    fun modifyGlobalSetting(key: String, value: String): KMResult<*>
 }

@@ -42,8 +42,4 @@ interface ISystemBridge {
    void removeTasks(String packageName) = 17;
 
    void setRingerMode(int ringerMode) = 18;
-
-   boolean putSystemSetting(String key, String value) = 19;
-   boolean putSecureSetting(String key, String value) = 20;
-   boolean putGlobalSetting(String key, String value) = 21;
 }
