@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.system.permissions
 
-
 enum class Permission {
     WRITE_SETTINGS,
     CAMERA,
