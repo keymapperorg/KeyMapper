@@ -1,24 +1,27 @@
 package io.github.sds100.keymapper.base.actions
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCase
+import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionDelegate
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
+import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
+import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegate
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
+import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.isFixable
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
-import io.github.sds100.keymapper.base.utils.ui.ChooseAppStoreModel
-import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
-import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.utils.ui.showDialog
+import io.github.sds100.keymapper.common.utils.AccessibilityServiceError
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
@@ -26,7 +29,7 @@ import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
-import kotlinx.coroutines.CoroutineScope
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -40,23 +43,30 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ConfigActionsViewModel(
-    private val coroutineScope: CoroutineScope,
+@HiltViewModel
+class ConfigActionsViewModel @Inject constructor(
     private val displayAction: DisplayActionUseCase,
     private val createAction: CreateActionUseCase,
     private val testAction: TestActionUseCase,
-    private val config: ConfigKeyMapUseCase,
-    private val onboarding: OnboardingUseCase,
+    private val config: ConfigActionsUseCase,
+    private val onboardingUseCase: OnboardingUseCase,
+    setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
+    fixKeyEventActionDelegate: FixKeyEventActionDelegate,
+    onboardingTipDelegate: OnboardingTipDelegate,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
-) : ActionOptionsBottomSheetCallback,
+) : ViewModel(),
+    ActionOptionsBottomSheetCallback,
+    SetupAccessibilityServiceDelegate by setupAccessibilityServiceDelegate,
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
-    NavigationProvider by navigationProvider {
+    NavigationProvider by navigationProvider,
+    FixKeyEventActionDelegate by fixKeyEventActionDelegate,
+    OnboardingTipDelegate by onboardingTipDelegate {
 
     val createActionDelegate =
-        CreateActionDelegate(coroutineScope, createAction, this, this, this)
+        CreateActionDelegate(viewModelScope, createAction, this, this, this)
     private val uiHelper = ActionUiHelper(displayAction, resourceProvider)
 
     private val _state = MutableStateFlow<State<ConfigActionsState>>(State.Loading)
@@ -65,15 +75,17 @@ class ConfigActionsViewModel(
     private val shortcuts: StateFlow<Set<ShortcutModel<ActionData>>> =
         config.recentlyUsedActions.map { actions ->
             actions.map(::buildShortcut).toSet()
-        }.stateIn(coroutineScope, SharingStarted.Lazily, emptySet())
+        }.stateIn(viewModelScope, SharingStarted.Lazily, emptySet())
 
     val actionOptionsUid = MutableStateFlow<String?>(null)
     val actionOptionsState: StateFlow<ActionOptionsState?> =
         combine(config.keyMap, actionOptionsUid, transform = ::buildOptionsState)
-            .stateIn(coroutineScope, SharingStarted.Lazily, null)
+            .stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+    private var editedActionUid: String? = null
 
     private val actionErrorSnapshot: StateFlow<ActionErrorSnapshot?> =
-        displayAction.actionErrorSnapshot.stateIn(coroutineScope, SharingStarted.Lazily, null)
+        displayAction.actionErrorSnapshot.stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     init {
         combine(
@@ -85,11 +97,11 @@ class ConfigActionsViewModel(
             _state.value = keyMapState.mapData { keyMap ->
                 buildState(keyMap, shortcuts, errorSnapshot, showDeviceDescriptors)
             }
-        }.launchIn(coroutineScope)
+        }.launchIn(viewModelScope)
 
-        coroutineScope.launch {
+        viewModelScope.launch {
             createActionDelegate.actionResult.filterNotNull().collect { action ->
-                val actionUid = actionOptionsUid.value ?: return@collect
+                val actionUid = editedActionUid ?: return@collect
                 config.setActionData(actionUid, action)
                 actionOptionsUid.update { null }
             }
@@ -101,54 +113,56 @@ class ConfigActionsViewModel(
     }
 
     fun onClickShortcut(action: ActionData) {
-        coroutineScope.launch {
+        viewModelScope.launch {
             config.addAction(action)
         }
     }
 
     fun onFixError(actionUid: String) {
-        coroutineScope.launch {
+        viewModelScope.launch {
             val actionData = getActionData(actionUid) ?: return@launch
             val error =
                 actionErrorSnapshot.filterNotNull().first().getError(actionData) ?: return@launch
 
-            if (error == SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
-                coroutineScope.launch {
-                    ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+            when (error) {
+                SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY) -> {
+                    viewModelScope.launch {
+                        ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
+                            resourceProvider = this@ConfigActionsViewModel,
+                            dialogProvider = this@ConfigActionsViewModel,
+                            neverShowDndTriggerErrorAgain = {
+                                displayAction.neverShowDndTriggerError()
+                            },
+                            fixError = { displayAction.fixError(error) },
+                        )
+                    }
+                }
+
+                is KMError.KeyEventActionError -> {
+                    showFixKeyEventActionBottomSheet()
+                }
+
+                else -> {
+                    ViewModelHelper.showFixErrorDialog(
                         resourceProvider = this@ConfigActionsViewModel,
                         dialogProvider = this@ConfigActionsViewModel,
-                        neverShowDndTriggerErrorAgain = { displayAction.neverShowDndTriggerError() },
-                        fixError = { displayAction.fixError(error) },
-                    )
-                }
-            } else {
-                ViewModelHelper.showFixErrorDialog(
-                    resourceProvider = this@ConfigActionsViewModel,
-                    dialogProvider = this@ConfigActionsViewModel,
-                    error,
-                ) {
-                    displayAction.fixError(error)
+                        error,
+                    ) {
+                        displayAction.fixError(error)
+                    }
                 }
             }
         }
     }
 
     fun onAddActionClick() {
-        coroutineScope.launch {
+        viewModelScope.launch {
             val actionData = navigate("add_action", NavDestination.ChooseAction) ?: return@launch
 
-            val showInstallShizukuPrompt = onboarding.showInstallShizukuPrompt(actionData)
-            val showInstallGuiKeyboardPrompt =
-                onboarding.showInstallGuiKeyboardPrompt(actionData)
-
-            when {
-                showInstallShizukuPrompt && showInstallGuiKeyboardPrompt ->
-                    promptToInstallShizukuOrGuiKeyboard()
-
-                showInstallGuiKeyboardPrompt -> promptToInstallGuiKeyboard()
-            }
-
             config.addAction(actionData)
+
+            // Never show the tap target to add an action again.
+            onboardingUseCase.completedTapTarget(OnboardingTapTarget.CHOOSE_ACTION)
         }
     }
 
@@ -165,7 +179,7 @@ class ConfigActionsViewModel(
     }
 
     fun onTestClick(actionUid: String) {
-        coroutineScope.launch {
+        viewModelScope.launch {
             val actionData = getActionData(actionUid) ?: return@launch
             attemptTestAction(actionData)
         }
@@ -173,7 +187,11 @@ class ConfigActionsViewModel(
 
     override fun onEditClick() {
         val actionUid = actionOptionsUid.value ?: return
-        coroutineScope.launch {
+        viewModelScope.launch {
+            // Clear the bottom sheet so navigating back with predicted-back works
+            actionOptionsUid.update { null }
+            editedActionUid = actionUid
+
             val keyMap = config.keyMap.first().dataOrNull() ?: return@launch
 
             val oldAction = keyMap.actionList.find { it.uid == actionUid } ?: return@launch
@@ -183,11 +201,13 @@ class ConfigActionsViewModel(
 
     override fun onReplaceClick() {
         val actionUid = actionOptionsUid.value ?: return
-        coroutineScope.launch {
+        viewModelScope.launch {
+            // Clear the bottom sheet so navigating back with predicted-back works
+            actionOptionsUid.update { null }
+
             val newActionData =
                 navigate("replace_action", NavDestination.ChooseAction) ?: return@launch
 
-            actionOptionsUid.update { null }
             config.setActionData(actionUid, newActionData)
         }
     }
@@ -241,168 +261,16 @@ class ConfigActionsViewModel(
                 )
 
                 RepeatMode.LIMIT_REACHED -> config.setActionStopRepeatingWhenLimitReached(uid)
-                RepeatMode.TRIGGER_PRESSED_AGAIN -> config.setActionStopRepeatingWhenTriggerPressedAgain(
-                    uid,
-                )
+                RepeatMode.TRIGGER_PRESSED_AGAIN ->
+                    config.setActionStopRepeatingWhenTriggerPressedAgain(uid)
             }
         }
     }
 
     private suspend fun attemptTestAction(actionData: ActionData) {
         testAction.invoke(actionData).onFailure { error ->
-
-            if (error is KMError.AccessibilityServiceDisabled) {
-                ViewModelHelper.handleAccessibilityServiceStoppedDialog(
-                    resourceProvider = this,
-                    dialogProvider = this,
-                    startService = displayAction::startAccessibilityService,
-                )
-            }
-
-            if (error is KMError.AccessibilityServiceCrashed) {
-                ViewModelHelper.handleAccessibilityServiceCrashedDialog(
-                    resourceProvider = this,
-                    dialogProvider = this,
-                    restartService = displayAction::restartAccessibilityService,
-                )
-            }
-        }
-    }
-
-    private suspend fun promptToInstallGuiKeyboard() {
-        if (onboarding.isTvDevice()) {
-            val appStoreModel = ChooseAppStoreModel(
-                githubLink = getString(R.string.url_github_keymapper_leanback_keyboard),
-            )
-
-            val dialog = DialogModel.ChooseAppStore(
-                title = getString(R.string.dialog_title_install_leanback_keyboard),
-                message = getString(R.string.dialog_message_install_leanback_keyboard),
-                appStoreModel,
-                positiveButtonText = getString(R.string.pos_never_show_again),
-                negativeButtonText = getString(R.string.neg_cancel),
-            )
-
-            val response = showDialog("download_leanback_ime", dialog) ?: return
-
-            if (response == DialogResponse.POSITIVE) {
-                onboarding.neverShowGuiKeyboardPromptsAgain()
-            }
-        } else {
-            val appStoreModel = ChooseAppStoreModel(
-                playStoreLink = getString(R.string.url_play_store_keymapper_gui_keyboard),
-                fdroidLink = getString(R.string.url_fdroid_keymapper_gui_keyboard),
-                githubLink = getString(R.string.url_github_keymapper_gui_keyboard),
-            )
-
-            val dialog = DialogModel.ChooseAppStore(
-                title = getString(R.string.dialog_title_install_gui_keyboard),
-                message = getString(R.string.dialog_message_install_gui_keyboard),
-                appStoreModel,
-                positiveButtonText = getString(R.string.pos_never_show_again),
-                negativeButtonText = getString(R.string.neg_cancel),
-            )
-
-            val response = showDialog("download_gui_keyboard", dialog) ?: return
-
-            if (response == DialogResponse.POSITIVE) {
-                onboarding.neverShowGuiKeyboardPromptsAgain()
-            }
-        }
-    }
-
-    private suspend fun promptToInstallShizukuOrGuiKeyboard() {
-        if (onboarding.isTvDevice()) {
-            val chooseSolutionDialog = DialogModel.Alert(
-                title = getText(R.string.dialog_title_install_shizuku_or_leanback_keyboard),
-                message = getText(R.string.dialog_message_install_shizuku_or_leanback_keyboard),
-                positiveButtonText = getString(R.string.dialog_button_install_shizuku),
-                negativeButtonText = getString(R.string.dialog_button_install_leanback_keyboard),
-                neutralButtonText = getString(R.string.dialog_button_install_nothing),
-            )
-
-            val chooseSolutionResponse =
-                showDialog("choose_solution", chooseSolutionDialog) ?: return
-
-            when (chooseSolutionResponse) {
-                // install shizuku
-                DialogResponse.POSITIVE -> {
-                    navigate("shizuku", NavDestination.ShizukuSettings)
-                    onboarding.neverShowGuiKeyboardPromptsAgain()
-
-                    return
-                }
-                // do nothing
-                DialogResponse.NEUTRAL -> {
-                    onboarding.neverShowGuiKeyboardPromptsAgain()
-                    return
-                }
-
-                // download leanback keyboard
-                DialogResponse.NEGATIVE -> {
-                    val chooseAppStoreDialog = DialogModel.ChooseAppStore(
-                        title = getString(R.string.dialog_title_choose_download_leanback_keyboard),
-                        message = getString(R.string.dialog_message_choose_download_leanback_keyboard),
-                        model = ChooseAppStoreModel(
-                            githubLink = getString(R.string.url_github_keymapper_leanback_keyboard),
-                        ),
-                        positiveButtonText = getString(R.string.pos_never_show_again),
-                        negativeButtonText = getString(R.string.neg_cancel),
-                    )
-
-                    val response = showDialog("install_leanback_keyboard", chooseAppStoreDialog)
-
-                    if (response == DialogResponse.POSITIVE) {
-                        onboarding.neverShowGuiKeyboardPromptsAgain()
-                    }
-                }
-            }
-        } else {
-            val chooseSolutionDialog = DialogModel.Alert(
-                title = getText(R.string.dialog_title_install_shizuku_or_gui_keyboard),
-                message = getText(R.string.dialog_message_install_shizuku_or_gui_keyboard),
-                positiveButtonText = getString(R.string.dialog_button_install_shizuku),
-                negativeButtonText = getString(R.string.dialog_button_install_gui_keyboard),
-                neutralButtonText = getString(R.string.dialog_button_install_nothing),
-            )
-
-            val chooseSolutionResponse =
-                showDialog("choose_solution", chooseSolutionDialog) ?: return
-
-            when (chooseSolutionResponse) {
-                // install shizuku
-                DialogResponse.POSITIVE -> {
-                    navigate("shizuku_error", NavDestination.ShizukuSettings)
-                    onboarding.neverShowGuiKeyboardPromptsAgain()
-
-                    return
-                }
-                // do nothing
-                DialogResponse.NEUTRAL -> {
-                    onboarding.neverShowGuiKeyboardPromptsAgain()
-                    return
-                }
-
-                // download gui keyboard
-                DialogResponse.NEGATIVE -> {
-                    val chooseAppStoreDialog = DialogModel.ChooseAppStore(
-                        title = getString(R.string.dialog_title_choose_download_gui_keyboard),
-                        message = getString(R.string.dialog_message_choose_download_gui_keyboard),
-                        model = ChooseAppStoreModel(
-                            playStoreLink = getString(R.string.url_play_store_keymapper_gui_keyboard),
-                            fdroidLink = getString(R.string.url_fdroid_keymapper_gui_keyboard),
-                            githubLink = getString(R.string.url_github_keymapper_gui_keyboard),
-                        ),
-                        positiveButtonText = getString(R.string.pos_never_show_again),
-                        negativeButtonText = getString(R.string.neg_cancel),
-                    )
-
-                    val response = showDialog("install_gui_keyboard", chooseAppStoreDialog)
-
-                    if (response == DialogResponse.POSITIVE) {
-                        onboarding.neverShowGuiKeyboardPromptsAgain()
-                    }
-                }
+            if (error is AccessibilityServiceError) {
+                showFixAccessibilityServiceDialog(error)
             }
         }
     }
@@ -466,7 +334,9 @@ class ConfigActionsViewModel(
                 }
 
                 action.delayBeforeNextAction.apply {
-                    if (keyMap.isDelayBeforeNextActionAllowed() && action.delayBeforeNextAction != null) {
+                    if (keyMap.isDelayBeforeNextActionAllowed() &&
+                        action.delayBeforeNextAction != null
+                    ) {
                         if (this@buildString.isNotBlank()) {
                             append(" $midDot ")
                         }
@@ -573,9 +443,8 @@ class ConfigActionsViewModel(
 }
 
 sealed class ConfigActionsState {
-    data class Empty(
-        val shortcuts: Set<ShortcutModel<ActionData>> = emptySet(),
-    ) : ConfigActionsState()
+    data class Empty(val shortcuts: Set<ShortcutModel<ActionData>> = emptySet()) :
+        ConfigActionsState()
 
     data class Loaded(
         val actions: List<ActionListItemModel> = emptyList(),

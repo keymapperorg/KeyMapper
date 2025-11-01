@@ -1,92 +1,55 @@
 package io.github.sds100.keymapper.system.root
 
-import io.github.sds100.keymapper.common.utils.KMError
-import io.github.sds100.keymapper.common.utils.KMResult
-import io.github.sds100.keymapper.common.utils.Success
-import io.github.sds100.keymapper.common.utils.firstBlocking
-import io.github.sds100.keymapper.data.Keys
-import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.system.SystemError
-import io.github.sds100.keymapper.system.permissions.Permission
+import com.topjohnwu.superuser.Shell
+import io.github.sds100.keymapper.system.shell.BaseShellAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
-import java.io.IOException
-import java.io.InputStream
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import timber.log.Timber
 
 @Singleton
-class SuAdapterImpl @Inject constructor(
-    coroutineScope: CoroutineScope,
-    private val shell: ShellAdapter,
-    private val preferenceRepository: PreferenceRepository,
-) : SuAdapter {
-    private var process: Process? = null
+class SuAdapterImpl @Inject constructor() :
+    BaseShellAdapter(),
+    SuAdapter {
+    override val isRootGranted: MutableStateFlow<Boolean> = MutableStateFlow(getIsRooted())
 
-    override val isGranted: StateFlow<Boolean> = preferenceRepository.get(Keys.hasRootPermission)
-        .map { it ?: false }
-        .stateIn(coroutineScope, SharingStarted.Eagerly, false)
-
-    override fun requestPermission(): Boolean {
-        preferenceRepository.set(Keys.hasRootPermission, true)
-
-        // show the su prompt
-        shell.run("su")
-
-        return true
+    override fun requestPermission() {
+        invalidateIsRooted()
     }
 
-    override fun execute(command: String, block: Boolean): KMResult<*> {
-        if (!isGranted.firstBlocking()) {
-            return SystemError.PermissionDenied(Permission.ROOT)
-        }
+    override fun prepareCommand(command: String): Array<String> {
+        // Execute through su -c to properly handle multi-line commands and shell syntax
+        return arrayOf("su", "-c", command)
+    }
 
+    fun invalidateIsRooted() {
         try {
-            if (block) {
-                // Don't use the long running su process because that will block the thread indefinitely
-                shell.run("su", "-c", command, waitFor = true)
+            // Close the shell so a new one is started without root permission.
+            val isRooted = getIsRooted()
+            isRootGranted.update { isRooted }
+
+            if (isRooted) {
+                Timber.i("Root access granted")
             } else {
-                if (process == null) {
-                    process = ProcessBuilder("su").start()
-                }
-
-                with(process!!.outputStream.bufferedWriter()) {
-                    write("$command\n")
-                    flush()
-                }
+                Timber.i("Root access denied")
             }
-
-            return Success(Unit)
         } catch (e: Exception) {
-            return KMError.Exception(e)
+            Timber.e("Exception invalidating root detection: $e")
         }
     }
 
-    override fun getCommandOutput(command: String): KMResult<InputStream> {
-        if (!isGranted.firstBlocking()) {
-            return SystemError.PermissionDenied(Permission.ROOT)
-        }
-
-        try {
-            val inputStream = shell.getShellCommandStdOut("su", "-c", command)
-            return Success(inputStream)
-        } catch (e: IOException) {
-            return KMError.UnknownIOError
-        }
+    private fun getIsRooted(): Boolean {
+        Shell.getShell().waitAndClose()
+        val isRooted = Shell.isAppGrantedRoot() ?: false
+        return isRooted
     }
 }
 
-interface SuAdapter {
-    val isGranted: StateFlow<Boolean>
+interface SuAdapter : ShellAdapter {
+    val isRootGranted: StateFlow<Boolean>
 
-    /**
-     * @return whether root permission was granted successfully
-     */
-    fun requestPermission(): Boolean
-    fun execute(command: String, block: Boolean = false): KMResult<*>
-    fun getCommandOutput(command: String): KMResult<InputStream>
+    fun requestPermission()
 }

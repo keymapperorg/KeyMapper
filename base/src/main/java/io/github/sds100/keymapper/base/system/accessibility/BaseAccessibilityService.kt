@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.FingerprintGestureController
 import android.accessibilityservice.GestureDescription
 import android.accessibilityservice.GestureDescription.StrokeDescription
+import android.accessibilityservice.InputMethod
 import android.app.ActivityManager
 import android.content.Intent
 import android.content.res.Configuration
@@ -11,8 +12,9 @@ import android.graphics.Path
 import android.graphics.Point
 import android.os.Build
 import android.view.KeyEvent
-import android.view.MotionEvent
 import android.view.accessibility.AccessibilityEvent
+import android.view.inputmethod.EditorInfo
+import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
@@ -22,26 +24,21 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjectorImpl
-import io.github.sds100.keymapper.base.trigger.KeyEventDetectionSource
-import io.github.sds100.keymapper.common.utils.InputEventType
+import io.github.sds100.keymapper.base.input.InputEventDetectionSource
+import io.github.sds100.keymapper.common.utils.InputEventAction
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.MathUtils
 import io.github.sds100.keymapper.common.utils.PinchScreenType
 import io.github.sds100.keymapper.common.utils.Success
-import io.github.sds100.keymapper.system.devices.InputDeviceUtils
-import io.github.sds100.keymapper.system.inputevents.MyKeyEvent
-import io.github.sds100.keymapper.system.inputevents.MyMotionEvent
+import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
-import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapperImpl
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import timber.log.Timber
-import javax.inject.Inject
 
 @AndroidEntryPoint
 abstract class BaseAccessibilityService :
@@ -49,11 +46,6 @@ abstract class BaseAccessibilityService :
     LifecycleOwner,
     IAccessibilityService,
     SavedStateRegistryOwner {
-
-    companion object {
-
-        private const val CALLBACK_ID_ACCESSIBILITY_SERVICE = "accessibility_service"
-    }
 
     @Inject
     lateinit var accessibilityServiceAdapter: AccessibilityServiceAdapterImpl
@@ -67,40 +59,52 @@ abstract class BaseAccessibilityService :
     override val savedStateRegistry: SavedStateRegistry
         get() = savedStateRegistryController!!.savedStateRegistry
 
-    private var fingerprintGestureCallback: FingerprintGestureController.FingerprintGestureCallback? =
-        null
+    private var fingerprintGestureCallback:
+        FingerprintGestureController.FingerprintGestureCallback? = null
 
     override val rootNode: AccessibilityNodeModel?
         get() {
             return rootInActiveWindow?.toModel()
         }
 
+    override val activeWindowPackageNames: List<String>
+        get() = windows
+            ?.filter { it.isActive }
+            ?.mapNotNull { it.root?.packageName?.toString() }
+            ?.toList() ?: emptyList()
+
     private val _activeWindowPackage: MutableStateFlow<String?> = MutableStateFlow(null)
     override val activeWindowPackage: Flow<String?> = _activeWindowPackage
 
     override val isFingerprintGestureDetectionAvailable: Boolean
-        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        get() =
             fingerprintGestureController.isGestureDetectionAvailable
+
+    private val accessibilityInputMethod: InputMethod? =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            object : InputMethod(this) {
+                override fun onStartInput(attribute: EditorInfo, restarting: Boolean) {
+                    super.onStartInput(attribute, restarting)
+
+                    getController()?.onStartInput(attribute, restarting = restarting)
+                }
+
+                override fun onFinishInput() {
+                    super.onFinishInput()
+
+                    getController()?.onFinishInput()
+                }
+            }
         } else {
-            false
+            null
         }
 
     private val _isKeyboardHidden by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            MutableStateFlow(softKeyboardController.showMode == SHOW_MODE_HIDDEN)
-        } else {
-            MutableStateFlow(false)
-        }
+        MutableStateFlow(softKeyboardController.showMode == SHOW_MODE_HIDDEN)
     }
 
     override val isKeyboardHidden: Flow<Boolean>
         get() = _isKeyboardHidden
-
-    override fun switchIme(imeId: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            softKeyboardController.switchToInputMethod(imeId)
-        }
-    }
 
     override var serviceFlags: Int?
         get() = serviceInfo?.flags
@@ -142,53 +146,6 @@ abstract class BaseAccessibilityService :
             }
         }
 
-    private val relayServiceCallback: IKeyEventRelayServiceCallback =
-        object : IKeyEventRelayServiceCallback.Stub() {
-            override fun onKeyEvent(event: KeyEvent?): Boolean {
-                event ?: return false
-
-                val device = event.device?.let { InputDeviceUtils.createInputDeviceInfo(it) }
-
-                return getController()
-                    ?.onKeyEventFromIme(
-                        MyKeyEvent(
-                            keyCode = event.keyCode,
-                            action = event.action,
-                            metaState = event.metaState,
-                            scanCode = event.scanCode,
-                            device = device,
-                            repeatCount = event.repeatCount,
-                            source = event.source,
-                        ),
-                    ) ?: false
-            }
-
-            override fun onMotionEvent(event: MotionEvent?): Boolean {
-                event ?: return false
-
-                return getController()
-                    ?.onMotionEventFromIme(MyMotionEvent.fromMotionEvent(event))
-                    ?: return false
-            }
-        }
-
-    val keyEventRelayServiceWrapper: KeyEventRelayServiceWrapperImpl by lazy {
-        KeyEventRelayServiceWrapperImpl(
-            ctx = this,
-            id = CALLBACK_ID_ACCESSIBILITY_SERVICE,
-            servicePackageName = packageName,
-            callback = relayServiceCallback,
-        )
-    }
-
-    val imeInputEventInjector by lazy {
-        ImeInputEventInjectorImpl(
-            this,
-            keyEventRelayService = keyEventRelayServiceWrapper,
-            inputMethodAdapter = inputMethodAdapter,
-        )
-    }
-
     override val lifecycle: Lifecycle
         get() = lifecycleRegistry
 
@@ -203,16 +160,12 @@ abstract class BaseAccessibilityService :
 
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            softKeyboardController.addOnShowModeChangedListener { _, showMode ->
-                when (showMode) {
-                    SHOW_MODE_AUTO -> _isKeyboardHidden.value = false
-                    SHOW_MODE_HIDDEN -> _isKeyboardHidden.value = true
-                }
+        softKeyboardController.addOnShowModeChangedListener { _, showMode ->
+            when (showMode) {
+                SHOW_MODE_AUTO -> _isKeyboardHidden.value = false
+                SHOW_MODE_HIDDEN -> _isKeyboardHidden.value = true
             }
         }
-
-        keyEventRelayServiceWrapper.onCreate()
     }
 
     override fun onServiceConnected() {
@@ -225,34 +178,32 @@ abstract class BaseAccessibilityService :
 
         _activeWindowPackage.update { rootInActiveWindow?.packageName?.toString() }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            fingerprintGestureCallback =
-                object : FingerprintGestureController.FingerprintGestureCallback() {
-                    override fun onGestureDetected(gesture: Int) {
-                        super.onGestureDetected(gesture)
+        fingerprintGestureCallback =
+            object : FingerprintGestureController.FingerprintGestureCallback() {
+                override fun onGestureDetected(gesture: Int) {
+                    super.onGestureDetected(gesture)
 
-                        val id: FingerprintGestureType = when (gesture) {
-                            FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_DOWN ->
-                                FingerprintGestureType.SWIPE_DOWN
+                    val id: FingerprintGestureType = when (gesture) {
+                        FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_DOWN ->
+                            FingerprintGestureType.SWIPE_DOWN
 
-                            FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_UP ->
-                                FingerprintGestureType.SWIPE_UP
+                        FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_UP ->
+                            FingerprintGestureType.SWIPE_UP
 
-                            FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_LEFT ->
-                                FingerprintGestureType.SWIPE_LEFT
+                        FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_LEFT ->
+                            FingerprintGestureType.SWIPE_LEFT
 
-                            FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_RIGHT ->
-                                FingerprintGestureType.SWIPE_RIGHT
+                        FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_RIGHT ->
+                            FingerprintGestureType.SWIPE_RIGHT
 
-                            else -> return
-                        }
-                        getController()?.onFingerprintGesture(id)
+                        else -> return
                     }
+                    getController()?.onFingerprintGesture(id)
                 }
-
-            fingerprintGestureCallback?.let {
-                fingerprintGestureController.registerFingerprintGestureCallback(it, null)
             }
+
+        fingerprintGestureCallback?.let {
+            fingerprintGestureController.registerFingerprintGestureCallback(it, null)
         }
     }
 
@@ -266,12 +217,8 @@ abstract class BaseAccessibilityService :
     override fun onDestroy() {
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            fingerprintGestureController
-                .unregisterFingerprintGestureCallback(fingerprintGestureCallback)
-        }
-
-        keyEventRelayServiceWrapper.onDestroy()
+        fingerprintGestureController
+            .unregisterFingerprintGestureCallback(fingerprintGestureCallback)
 
         Timber.i("Accessibility service: onDestroy")
 
@@ -288,7 +235,9 @@ abstract class BaseAccessibilityService :
         val memoryInfo = ActivityManager.MemoryInfo()
         getSystemService<ActivityManager>()?.getMemoryInfo(memoryInfo)
 
-        Timber.i("Accessibility service: onLowMemory, total: ${memoryInfo.totalMem}, available: ${memoryInfo.availMem}, is low memory: ${memoryInfo.lowMemory}, threshold: ${memoryInfo.threshold}")
+        Timber.i(
+            "Accessibility service: onLowMemory, total: ${memoryInfo.totalMem}, available: ${memoryInfo.availMem}, is low memory: ${memoryInfo.lowMemory}, threshold: ${memoryInfo.threshold}",
+        )
 
         super.onTrimMemory(level)
     }
@@ -306,23 +255,11 @@ abstract class BaseAccessibilityService :
     override fun onKeyEvent(event: KeyEvent?): Boolean {
         event ?: return super.onKeyEvent(event)
 
-        val device = if (event.device == null) {
-            null
-        } else {
-            InputDeviceUtils.createInputDeviceInfo(event.device)
-        }
+        val kmKeyEvent = KMKeyEvent.fromAndroidKeyEvent(event) ?: return false
 
         return getController()?.onKeyEvent(
-            MyKeyEvent(
-                keyCode = event.keyCode,
-                action = event.action,
-                metaState = event.metaState,
-                scanCode = event.scanCode,
-                device = device,
-                repeatCount = event.repeatCount,
-                source = event.source,
-            ),
-            KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
+            kmKeyEvent,
+            InputEventDetectionSource.ACCESSIBILITY_SERVICE,
         ) ?: false
     }
 
@@ -330,25 +267,39 @@ abstract class BaseAccessibilityService :
         return findFocus(focus)?.toModel()
     }
 
-    override fun setInputMethodEnabled(imeId: String, enabled: Boolean) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            softKeyboardController.setInputMethodEnabled(imeId, enabled)
-        }
+    override fun onCreateInputMethod(): InputMethod {
+        return accessibilityInputMethod ?: super.onCreateInputMethod()
     }
 
     override fun hideKeyboard() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            softKeyboardController.showMode = SHOW_MODE_HIDDEN
-        }
+        softKeyboardController.showMode = SHOW_MODE_HIDDEN
     }
 
     override fun showKeyboard() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            softKeyboardController.showMode = SHOW_MODE_AUTO
+        softKeyboardController.showMode = SHOW_MODE_AUTO
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun switchIme(imeId: String): KMResult<Unit> {
+        if (softKeyboardController.switchToInputMethod(imeId)) {
+            return Success(Unit)
+        } else {
+            return KMError.SwitchImeFailed
         }
     }
 
-    override fun doGlobalAction(action: Int): KMResult<*> {
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    override fun enableIme(imeId: String): KMResult<Unit> {
+        val statusCode = softKeyboardController.setInputMethodEnabled(imeId, true)
+
+        if (statusCode == SoftKeyboardController.ENABLE_IME_SUCCESS) {
+            return Success(Unit)
+        } else {
+            return KMError.EnableImeFailed
+        }
+    }
+
+    override fun doGlobalAction(action: Int): KMResult<Unit> {
         val success = performGlobalAction(action)
 
         if (success) {
@@ -358,51 +309,44 @@ abstract class BaseAccessibilityService :
         }
     }
 
-    override fun tapScreen(x: Int, y: Int, inputEventType: InputEventType): KMResult<*> {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            val duration = 1L // ms
+    override fun tapScreen(x: Int, y: Int, inputEventAction: InputEventAction): KMResult<*> {
+        val duration = 1L // ms
 
-            val path = Path().apply {
-                moveTo(x.toFloat(), y.toFloat())
-            }
-
-            val strokeDescription =
-                when {
-                    inputEventType == InputEventType.DOWN && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
-                        StrokeDescription(
-                            path,
-                            0,
-                            duration,
-                            true,
-                        )
-
-                    inputEventType == InputEventType.UP && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
-                        StrokeDescription(
-                            path,
-                            59999,
-                            duration,
-                            false,
-                        )
-
-                    else -> StrokeDescription(path, 0, duration)
-                }
-
-            strokeDescription.let {
-                val gestureDescription = GestureDescription.Builder().apply {
-                    addStroke(it)
-                }.build()
-
-                val success = dispatchGesture(gestureDescription, null, null)
-
-                return if (success) {
-                    Success(Unit)
-                } else {
-                    KMError.FailedToDispatchGesture
-                }
-            }
+        val path = Path().apply {
+            moveTo(x.toFloat(), y.toFloat())
         }
 
-        return KMError.SdkVersionTooLow(Build.VERSION_CODES.N)
+        val strokeDescription = when (inputEventAction) {
+            InputEventAction.DOWN -> StrokeDescription(
+                path,
+                0,
+                duration,
+                true,
+            )
+
+            InputEventAction.UP -> StrokeDescription(
+                path,
+                59999,
+                duration,
+                false,
+            )
+
+            else -> StrokeDescription(path, 0, duration)
+        }
+
+        strokeDescription.let {
+            val gestureDescription = GestureDescription.Builder().apply {
+                addStroke(it)
+            }.build()
+
+            val success = dispatchGesture(gestureDescription, null, null)
+
+            return if (success) {
+                Success(Unit)
+            } else {
+                KMError.FailedToDispatchGesture
+            }
+        }
     }
 
     override fun swipeScreen(
@@ -412,99 +356,95 @@ abstract class BaseAccessibilityService :
         yEnd: Int,
         fingerCount: Int,
         duration: Int,
-        inputEventType: InputEventType,
+        inputEventAction: InputEventAction,
     ): KMResult<*> {
         // virtual distance between fingers on multitouch gestures
         val fingerGestureDistance = 10L
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            if (fingerCount >= GestureDescription.getMaxStrokeCount()) {
-                return KMError.GestureStrokeCountTooHigh
-            }
-            if (duration >= GestureDescription.getMaxGestureDuration()) {
-                return KMError.GestureDurationTooHigh
-            }
+        if (fingerCount >= GestureDescription.getMaxStrokeCount()) {
+            return KMError.GestureStrokeCountTooHigh
+        }
+        if (duration >= GestureDescription.getMaxGestureDuration()) {
+            return KMError.GestureDurationTooHigh
+        }
 
-            val pStart = Point(xStart, yStart)
-            val pEnd = Point(xEnd, yEnd)
+        val pStart = Point(xStart, yStart)
+        val pEnd = Point(xEnd, yEnd)
 
-            val gestureBuilder = GestureDescription.Builder()
+        val gestureBuilder = GestureDescription.Builder()
 
-            if (fingerCount == 1) {
+        if (fingerCount == 1) {
+            val p = Path()
+            p.moveTo(pStart.x.toFloat(), pStart.y.toFloat())
+            p.lineTo(pEnd.x.toFloat(), pEnd.y.toFloat())
+            gestureBuilder.addStroke(StrokeDescription(p, 0, duration.toLong()))
+        } else {
+            // segments between fingers
+            val segmentCount = fingerCount - 1
+            // the line of the perpendicular line which will be created to place the virtual fingers on it
+            val perpendicularLineLength = (fingerGestureDistance * fingerCount).toInt()
+
+            // the length of each segment between fingers
+            val segmentLength = perpendicularLineLength / segmentCount
+            // perpendicular line of the start swipe point
+            val perpendicularLineStart = MathUtils.getPerpendicularOfLine(
+                pStart,
+                pEnd,
+                perpendicularLineLength,
+            )
+            // perpendicular line of the end swipe point
+            val perpendicularLineEnd = MathUtils.getPerpendicularOfLine(
+                pEnd,
+                pStart,
+                perpendicularLineLength,
+                true,
+            )
+
+            // this is the angle between start and end point to rotate all virtual fingers on the perpendicular lines in the same direction
+            val angle =
+                MathUtils.angleBetweenPoints(Point(xStart, yStart), Point(xEnd, yEnd)) - 90
+
+            // create the virtual fingers
+            for (index in 0..segmentCount) {
+                // offset of each finger
+                val fingerOffsetLength = index * segmentLength * 2
+                // move the coordinates of the current virtual finger on the perpendicular line for the start coordinates
+                val startFingerCoordinateWithOffset =
+                    MathUtils.movePointByDistanceAndAngle(
+                        perpendicularLineStart.start,
+                        fingerOffsetLength,
+                        angle,
+                    )
+                // move the coordinates of the current virtual finger on the perpendicular line for the end coordinates
+                val endFingerCoordinateWithOffset =
+                    MathUtils.movePointByDistanceAndAngle(
+                        perpendicularLineEnd.start,
+                        fingerOffsetLength,
+                        angle,
+                    )
+
+                // create a path for each finger, move the the coordinates on the perpendicular line and draw it to the end coordinates of the perpendicular line of the end swipe point
                 val p = Path()
-                p.moveTo(pStart.x.toFloat(), pStart.y.toFloat())
-                p.lineTo(pEnd.x.toFloat(), pEnd.y.toFloat())
+                p.moveTo(
+                    startFingerCoordinateWithOffset.x.toFloat(),
+                    startFingerCoordinateWithOffset.y.toFloat(),
+                )
+                p.lineTo(
+                    endFingerCoordinateWithOffset.x.toFloat(),
+                    endFingerCoordinateWithOffset.y.toFloat(),
+                )
+
                 gestureBuilder.addStroke(StrokeDescription(p, 0, duration.toLong()))
-            } else {
-                // segments between fingers
-                val segmentCount = fingerCount - 1
-                // the line of the perpendicular line which will be created to place the virtual fingers on it
-                val perpendicularLineLength = (fingerGestureDistance * fingerCount).toInt()
-
-                // the length of each segment between fingers
-                val segmentLength = perpendicularLineLength / segmentCount
-                // perpendicular line of the start swipe point
-                val perpendicularLineStart = MathUtils.getPerpendicularOfLine(
-                    pStart,
-                    pEnd,
-                    perpendicularLineLength,
-                )
-                // perpendicular line of the end swipe point
-                val perpendicularLineEnd = MathUtils.getPerpendicularOfLine(
-                    pEnd,
-                    pStart,
-                    perpendicularLineLength,
-                    true,
-                )
-
-                // this is the angle between start and end point to rotate all virtual fingers on the perpendicular lines in the same direction
-                val angle =
-                    MathUtils.angleBetweenPoints(Point(xStart, yStart), Point(xEnd, yEnd)) - 90
-
-                // create the virtual fingers
-                for (index in 0..segmentCount) {
-                    // offset of each finger
-                    val fingerOffsetLength = index * segmentLength * 2
-                    // move the coordinates of the current virtual finger on the perpendicular line for the start coordinates
-                    val startFingerCoordinateWithOffset =
-                        MathUtils.movePointByDistanceAndAngle(
-                            perpendicularLineStart.start,
-                            fingerOffsetLength,
-                            angle,
-                        )
-                    // move the coordinates of the current virtual finger on the perpendicular line for the end coordinates
-                    val endFingerCoordinateWithOffset =
-                        MathUtils.movePointByDistanceAndAngle(
-                            perpendicularLineEnd.start,
-                            fingerOffsetLength,
-                            angle,
-                        )
-
-                    // create a path for each finger, move the the coordinates on the perpendicular line and draw it to the end coordinates of the perpendicular line of the end swipe point
-                    val p = Path()
-                    p.moveTo(
-                        startFingerCoordinateWithOffset.x.toFloat(),
-                        startFingerCoordinateWithOffset.y.toFloat(),
-                    )
-                    p.lineTo(
-                        endFingerCoordinateWithOffset.x.toFloat(),
-                        endFingerCoordinateWithOffset.y.toFloat(),
-                    )
-
-                    gestureBuilder.addStroke(StrokeDescription(p, 0, duration.toLong()))
-                }
-            }
-
-            val success = dispatchGesture(gestureBuilder.build(), null, null)
-
-            return if (success) {
-                Success(Unit)
-            } else {
-                KMError.FailedToDispatchGesture
             }
         }
 
-        return KMError.SdkVersionTooLow(Build.VERSION_CODES.N)
+        val success = dispatchGesture(gestureBuilder.build(), null, null)
+
+        return if (success) {
+            Success(Unit)
+        } else {
+            KMError.FailedToDispatchGesture
+        }
     }
 
     override fun pinchScreen(
@@ -514,7 +454,7 @@ abstract class BaseAccessibilityService :
         pinchType: PinchScreenType,
         fingerCount: Int,
         duration: Int,
-        inputEventType: InputEventType,
+        inputEventAction: InputEventAction,
     ): KMResult<*> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (fingerCount >= GestureDescription.getMaxStrokeCount()) {

@@ -20,6 +20,7 @@ import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.camera.CameraLens
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +32,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
 
 @HiltViewModel
 class ChooseConstraintViewModel @Inject constructor(
@@ -89,11 +89,14 @@ class ChooseConstraintViewModel @Inject constructor(
             ConstraintId.CHARGING,
             ConstraintId.DISCHARGING,
 
+            ConstraintId.HINGE_CLOSED,
+            ConstraintId.HINGE_OPEN,
+
             ConstraintId.TIME,
         )
     }
 
-    private val returnResult = MutableSharedFlow<Constraint>()
+    private val returnResult = MutableSharedFlow<ConstraintData>()
 
     private val allListItems: List<SimpleListItemModel> by lazy { buildListItems() }
 
@@ -105,20 +108,20 @@ class ChooseConstraintViewModel @Inject constructor(
             State.Data(filteredItems)
         }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
 
-    var timeConstraintState: Constraint.Time? by mutableStateOf(null)
+    var timeConstraintState: ConstraintData.Time? by mutableStateOf(null)
 
     init {
         viewModelScope.launch {
-            returnResult.collect { constraint ->
-                popBackStackWithResult(Json.encodeToString(constraint))
+            returnResult.collect { constraintData ->
+                popBackStackWithResult(Json.encodeToString(constraintData))
             }
         }
     }
 
     fun onDoneConfigTimeConstraintClick() {
-        timeConstraintState?.let { constraint ->
+        timeConstraintState?.let { constraintData ->
             viewModelScope.launch {
-                returnResult.emit(constraint)
+                returnResult.emit(constraintData)
                 timeConstraintState = null
             }
         }
@@ -137,90 +140,105 @@ class ChooseConstraintViewModel @Inject constructor(
                 ConstraintId.APP_NOT_IN_FOREGROUND,
                 ConstraintId.APP_PLAYING_MEDIA,
                 ConstraintId.APP_NOT_PLAYING_MEDIA,
-                -> onSelectAppConstraint(constraintType)
+                    -> onSelectAppConstraint(constraintType)
 
-                ConstraintId.MEDIA_PLAYING -> returnResult.emit(Constraint.MediaPlaying())
-                ConstraintId.MEDIA_NOT_PLAYING -> returnResult.emit(Constraint.NoMediaPlaying())
+                ConstraintId.MEDIA_PLAYING -> returnResult.emit(ConstraintData.MediaPlaying)
+                ConstraintId.MEDIA_NOT_PLAYING -> returnResult.emit(ConstraintData.NoMediaPlaying)
 
                 ConstraintId.BT_DEVICE_CONNECTED,
                 ConstraintId.BT_DEVICE_DISCONNECTED,
-                -> onSelectBluetoothConstraint(
-                    constraintType,
-                )
+                    -> onSelectBluetoothConstraint(
+                        constraintType,
+                    )
 
-                ConstraintId.SCREEN_ON -> onSelectScreenOnConstraint()
-                ConstraintId.SCREEN_OFF -> onSelectScreenOffConstraint()
+                ConstraintId.SCREEN_ON -> returnResult.emit(ConstraintData.ScreenOn)
+
+                ConstraintId.SCREEN_OFF -> returnResult.emit(ConstraintData.ScreenOff)
 
                 ConstraintId.ORIENTATION_PORTRAIT ->
-                    returnResult.emit(Constraint.OrientationPortrait())
+                    returnResult.emit(ConstraintData.OrientationPortrait)
 
                 ConstraintId.ORIENTATION_LANDSCAPE ->
-                    returnResult.emit(Constraint.OrientationLandscape())
+                    returnResult.emit(ConstraintData.OrientationLandscape)
 
                 ConstraintId.ORIENTATION_0 ->
-                    returnResult.emit(Constraint.OrientationCustom(orientation = Orientation.ORIENTATION_0))
+                    returnResult.emit(
+                        ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_0),
+                    )
 
                 ConstraintId.ORIENTATION_90 ->
-                    returnResult.emit(Constraint.OrientationCustom(orientation = Orientation.ORIENTATION_90))
+                    returnResult.emit(
+                        ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_90),
+                    )
 
                 ConstraintId.ORIENTATION_180 ->
-                    returnResult.emit(Constraint.OrientationCustom(orientation = Orientation.ORIENTATION_180))
+                    returnResult.emit(
+                        ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_180),
+                    )
 
                 ConstraintId.ORIENTATION_270 ->
-                    returnResult.emit(Constraint.OrientationCustom(orientation = Orientation.ORIENTATION_270))
+                    returnResult.emit(
+                        ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_270),
+                    )
 
                 ConstraintId.FLASHLIGHT_ON -> {
                     val lens = chooseFlashlightLens() ?: return@launch
-                    returnResult.emit(Constraint.FlashlightOn(lens = lens))
+                    returnResult.emit(ConstraintData.FlashlightOn(lens = lens))
                 }
 
                 ConstraintId.FLASHLIGHT_OFF -> {
                     val lens = chooseFlashlightLens() ?: return@launch
-                    returnResult.emit(Constraint.FlashlightOff(lens = lens))
+                    returnResult.emit(ConstraintData.FlashlightOff(lens = lens))
                 }
 
-                ConstraintId.WIFI_ON -> returnResult.emit(Constraint.WifiOn())
-                ConstraintId.WIFI_OFF -> returnResult.emit(Constraint.WifiOff())
+                ConstraintId.WIFI_ON -> returnResult.emit(ConstraintData.WifiOn)
+                ConstraintId.WIFI_OFF -> returnResult.emit(ConstraintData.WifiOff)
 
                 ConstraintId.WIFI_CONNECTED,
                 ConstraintId.WIFI_DISCONNECTED,
-                -> onSelectWifiConnectedConstraint(
-                    constraintType,
-                )
+                    -> onSelectWifiConnectedConstraint(
+                        constraintType,
+                    )
 
                 ConstraintId.IME_CHOSEN,
                 ConstraintId.IME_NOT_CHOSEN,
-                -> onSelectImeChosenConstraint(constraintType)
+                    -> onSelectImeChosenConstraint(constraintType)
 
                 ConstraintId.DEVICE_IS_LOCKED ->
-                    returnResult.emit(Constraint.DeviceIsLocked())
+                    returnResult.emit(ConstraintData.DeviceIsLocked)
 
                 ConstraintId.DEVICE_IS_UNLOCKED ->
-                    returnResult.emit(Constraint.DeviceIsUnlocked())
+                    returnResult.emit(ConstraintData.DeviceIsUnlocked)
 
                 ConstraintId.IN_PHONE_CALL ->
-                    returnResult.emit(Constraint.InPhoneCall())
+                    returnResult.emit(ConstraintData.InPhoneCall)
 
                 ConstraintId.NOT_IN_PHONE_CALL ->
-                    returnResult.emit(Constraint.NotInPhoneCall())
+                    returnResult.emit(ConstraintData.NotInPhoneCall)
 
                 ConstraintId.PHONE_RINGING ->
-                    returnResult.emit(Constraint.PhoneRinging())
+                    returnResult.emit(ConstraintData.PhoneRinging)
 
                 ConstraintId.CHARGING ->
-                    returnResult.emit(Constraint.Charging())
+                    returnResult.emit(ConstraintData.Charging)
 
                 ConstraintId.DISCHARGING ->
-                    returnResult.emit(Constraint.Discharging())
+                    returnResult.emit(ConstraintData.Discharging)
+
+                ConstraintId.HINGE_CLOSED ->
+                    returnResult.emit(ConstraintData.HingeClosed)
+
+                ConstraintId.HINGE_OPEN ->
+                    returnResult.emit(ConstraintData.HingeOpen)
 
                 ConstraintId.LOCK_SCREEN_SHOWING ->
-                    returnResult.emit(Constraint.LockScreenShowing())
+                    returnResult.emit(ConstraintData.LockScreenShowing)
 
                 ConstraintId.LOCK_SCREEN_NOT_SHOWING ->
-                    returnResult.emit(Constraint.LockScreenNotShowing())
+                    returnResult.emit(ConstraintData.LockScreenNotShowing)
 
                 ConstraintId.TIME -> {
-                    timeConstraintState = Constraint.Time(
+                    timeConstraintState = ConstraintData.Time(
                         startHour = 0,
                         startMinute = 0,
                         endHour = 0,
@@ -271,53 +289,40 @@ class ChooseConstraintViewModel @Inject constructor(
     }
 
     private suspend fun onSelectWifiConnectedConstraint(type: ConstraintId) {
-        val knownSSIDs = useCase.getKnownWiFiSSIDs()
+        val knownSSIDs: List<String> = useCase.getKnownWiFiSSIDs()
 
         val chosenSSID: String?
 
-        if (knownSSIDs == null) {
-            val savedWifiSSIDs = useCase.getSavedWifiSSIDs().first()
+        val savedWifiSSIDs: List<String> = useCase.getSavedWifiSSIDs().first()
 
-            val dialog = DialogModel.Text(
-                hint = getString(R.string.hint_wifi_ssid),
-                allowEmpty = true,
-                message = getString(R.string.constraint_wifi_message_cant_list_networks),
-                autoCompleteEntries = savedWifiSSIDs,
-            )
+        val ssidEntries = buildList {
+            addAll(savedWifiSSIDs)
+            addAll(knownSSIDs)
+        }.distinct()
 
-            val ssidText = showDialog("type_ssid", dialog) ?: return
+        val dialog = DialogModel.Text(
+            hint = getString(R.string.hint_wifi_ssid),
+            allowEmpty = true,
+            message = getString(R.string.constraint_wifi_message_cant_list_networks),
+            autoCompleteEntries = ssidEntries,
+        )
 
-            if (ssidText.isBlank()) {
-                chosenSSID = null
-            } else {
-                chosenSSID = ssidText
+        val ssidText = showDialog("type_ssid", dialog) ?: return
 
-                useCase.saveWifiSSID(chosenSSID)
-            }
+        if (ssidText.isBlank()) {
+            chosenSSID = null
         } else {
-            val anySSIDItem =
-                "any" to getString(R.string.constraint_wifi_pick_network_any)
+            chosenSSID = ssidText
 
-            val ssidItems = knownSSIDs.map { "ssid_$it" to it }
-
-            val items = listOf(anySSIDItem).plus(ssidItems)
-
-            val chosenItem =
-                showDialog("choose_ssid", DialogModel.SingleChoice(items)) ?: return
-
-            if (chosenItem == anySSIDItem.first) {
-                chosenSSID = null
-            } else {
-                chosenSSID = items.single { it.first == chosenItem }.second
-            }
+            useCase.saveWifiSSID(chosenSSID)
         }
 
         when (type) {
             ConstraintId.WIFI_CONNECTED ->
-                returnResult.emit(Constraint.WifiConnected(ssid = chosenSSID))
+                returnResult.emit(ConstraintData.WifiConnected(ssid = chosenSSID))
 
             ConstraintId.WIFI_DISCONNECTED ->
-                returnResult.emit(Constraint.WifiDisconnected(ssid = chosenSSID))
+                returnResult.emit(ConstraintData.WifiDisconnected(ssid = chosenSSID))
 
             else -> Unit
         }
@@ -335,7 +340,7 @@ class ChooseConstraintViewModel @Inject constructor(
         when (type) {
             ConstraintId.IME_CHOSEN ->
                 returnResult.emit(
-                    Constraint.ImeChosen(
+                    ConstraintData.ImeChosen(
                         imeId = imeInfo.id,
                         imeLabel = imeInfo.label,
                     ),
@@ -343,7 +348,7 @@ class ChooseConstraintViewModel @Inject constructor(
 
             ConstraintId.IME_NOT_CHOSEN ->
                 returnResult.emit(
-                    Constraint.ImeNotChosen(
+                    ConstraintData.ImeNotChosen(
                         imeId = imeInfo.id,
                         imeLabel = imeInfo.label,
                     ),
@@ -351,28 +356,6 @@ class ChooseConstraintViewModel @Inject constructor(
 
             else -> Unit
         }
-    }
-
-    private suspend fun onSelectScreenOnConstraint() {
-        val response = showDialog(
-            "screen_on_constraint_limitation",
-            DialogModel.Ok(getString(R.string.dialog_message_screen_constraints_limitation)),
-        )
-
-        response ?: return
-
-        returnResult.emit(Constraint.ScreenOn())
-    }
-
-    private suspend fun onSelectScreenOffConstraint() {
-        val response = showDialog(
-            "screen_on_constraint_limitation",
-            DialogModel.Ok(getString(R.string.dialog_message_screen_constraints_limitation)),
-        )
-
-        response ?: return
-
-        returnResult.emit(Constraint.ScreenOff())
     }
 
     private suspend fun onSelectBluetoothConstraint(type: ConstraintId) {
@@ -388,21 +371,23 @@ class ChooseConstraintViewModel @Inject constructor(
             NavDestination.ChooseBluetoothDevice,
         ) ?: return
 
-        val constraint = when (type) {
-            ConstraintId.BT_DEVICE_CONNECTED -> Constraint.BtDeviceConnected(
+        val constraintData = when (type) {
+            ConstraintId.BT_DEVICE_CONNECTED -> ConstraintData.BtDeviceConnected(
                 bluetoothAddress = device.address,
                 deviceName = device.name,
             )
 
-            ConstraintId.BT_DEVICE_DISCONNECTED -> Constraint.BtDeviceDisconnected(
+            ConstraintId.BT_DEVICE_DISCONNECTED -> ConstraintData.BtDeviceDisconnected(
                 bluetoothAddress = device.address,
                 deviceName = device.name,
             )
 
-            else -> throw IllegalArgumentException("Don't know how to create $type constraint after choosing app")
+            else -> throw IllegalArgumentException(
+                "Don't know how to create $type constraint after choosing app",
+            )
         }
 
-        returnResult.emit(constraint)
+        returnResult.emit(constraintData)
     }
 
     private suspend fun onSelectAppConstraint(type: ConstraintId) {
@@ -413,26 +398,28 @@ class ChooseConstraintViewModel @Inject constructor(
             )
                 ?: return
 
-        val constraint = when (type) {
-            ConstraintId.APP_IN_FOREGROUND -> Constraint.AppInForeground(
+        val constraintData = when (type) {
+            ConstraintId.APP_IN_FOREGROUND -> ConstraintData.AppInForeground(
                 packageName = packageName,
             )
 
-            ConstraintId.APP_NOT_IN_FOREGROUND -> Constraint.AppNotInForeground(
+            ConstraintId.APP_NOT_IN_FOREGROUND -> ConstraintData.AppNotInForeground(
                 packageName = packageName,
             )
 
-            ConstraintId.APP_PLAYING_MEDIA -> Constraint.AppPlayingMedia(
+            ConstraintId.APP_PLAYING_MEDIA -> ConstraintData.AppPlayingMedia(
                 packageName = packageName,
             )
 
-            ConstraintId.APP_NOT_PLAYING_MEDIA -> Constraint.AppNotPlayingMedia(
+            ConstraintId.APP_NOT_PLAYING_MEDIA -> ConstraintData.AppNotPlayingMedia(
                 packageName = packageName,
             )
 
-            else -> throw IllegalArgumentException("Don't know how to create $type constraint after choosing app")
+            else -> throw IllegalArgumentException(
+                "Don't know how to create $type constraint after choosing app",
+            )
         }
 
-        returnResult.emit(constraint)
+        returnResult.emit(constraintData)
     }
 }

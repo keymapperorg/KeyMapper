@@ -1,17 +1,21 @@
 package io.github.sds100.keymapper.base.actions
 
 import android.view.KeyEvent
+import io.github.sds100.keymapper.base.repositories.FakePreferenceRepository
 import io.github.sds100.keymapper.base.system.inputmethod.FakeInputMethodAdapter
 import io.github.sds100.keymapper.base.utils.TestBuildConfigProvider
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
+import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
-import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -52,34 +56,54 @@ class GetActionErrorUseCaseTest {
 
     private lateinit var useCase: GetActionErrorUseCaseImpl
 
-    private lateinit var mockShizukuAdapter: ShizukuAdapter
     private lateinit var fakeInputMethodAdapter: FakeInputMethodAdapter
     private lateinit var mockPermissionAdapter: PermissionAdapter
+    private lateinit var fakePreferenceRepository: FakePreferenceRepository
+    private lateinit var mockSystemBridgeConnectionManager: SystemBridgeConnectionManager
 
     @Before
     fun init() {
-        mockShizukuAdapter = mock()
         fakeInputMethodAdapter = FakeInputMethodAdapter()
         mockPermissionAdapter = mock()
+        fakePreferenceRepository = FakePreferenceRepository()
+        mockSystemBridgeConnectionManager = mock()
 
         useCase = GetActionErrorUseCaseImpl(
             packageManagerAdapter = mock(),
             inputMethodAdapter = fakeInputMethodAdapter,
+            switchImeInterface = mock(),
             permissionAdapter = mockPermissionAdapter,
             systemFeatureAdapter = mock(),
             cameraAdapter = mock(),
             soundsManager = mock(),
-            shizukuAdapter = mockShizukuAdapter,
             ringtoneAdapter = mock(),
-            buildConfigProvider = TestBuildConfigProvider(),
+            buildConfigProvider = TestBuildConfigProvider(sdkInt = Constants.SYSTEM_BRIDGE_MIN_API),
+            systemBridgeConnectionManager = mockSystemBridgeConnectionManager,
+            preferenceRepository = fakePreferenceRepository,
         )
     }
 
-    private fun setupKeyEventActionTest(chosenIme: ImeInfo) {
-        whenever(mockShizukuAdapter.isInstalled).then { MutableStateFlow(false) }
+    private fun setupKeyEventActionTest(
+        chosenIme: ImeInfo,
+        isSystemBridgeUsed: Boolean = false,
+        isSystemBridgeConnected: Boolean = false,
+    ) {
         whenever(mockPermissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)).then { true }
         fakeInputMethodAdapter.chosenIme.value = chosenIme
         fakeInputMethodAdapter.inputMethods.value = listOf(GBOARD_IME_INFO, GUI_KEYBOARD_IME_INFO)
+        fakePreferenceRepository.set(Keys.keyEventActionsUseSystemBridge, isSystemBridgeUsed)
+
+        val connectionState = if (isSystemBridgeConnected) {
+            SystemBridgeConnectionState.Connected(time = 0L)
+        } else {
+            SystemBridgeConnectionState.Disconnected(time = 0L, isExpected = true)
+        }
+
+        whenever(mockSystemBridgeConnectionManager.connectionState).then {
+            MutableStateFlow(
+                connectionState,
+            )
+        }
     }
 
     /**
@@ -165,7 +189,10 @@ class GetActionErrorUseCaseTest {
             val action = ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)
 
             val errors = useCase.actionErrorSnapshot.first().getErrors(listOf(action))
-            assertThat(errors[action], `is`(KMError.NoCompatibleImeChosen))
+            assertThat(
+                errors[action],
+                `is`(KMError.KeyEventActionError(KMError.NoCompatibleImeChosen)),
+            )
         }
 
     @Test
@@ -181,7 +208,7 @@ class GetActionErrorUseCaseTest {
             val errors = useCase.actionErrorSnapshot.first().getErrors(actions).values.toList()
 
             assertThat(errors[0], nullValue())
-            assertThat(errors[1], `is`(KMError.NoCompatibleImeChosen))
+            assertThat(errors[1], `is`(KMError.KeyEventActionError(KMError.NoCompatibleImeChosen)))
         }
 
     @Test
@@ -197,7 +224,7 @@ class GetActionErrorUseCaseTest {
             val errors = useCase.actionErrorSnapshot.first().getErrors(actions).values.toList()
 
             assertThat(errors[0], nullValue())
-            assertThat(errors[1], `is`(KMError.NoCompatibleImeChosen))
+            assertThat(errors[1], `is`(KMError.KeyEventActionError(KMError.NoCompatibleImeChosen)))
         }
 
     @Test
@@ -218,44 +245,60 @@ class GetActionErrorUseCaseTest {
 
             assertThat(errors[0], nullValue())
             assertThat(errors[1], nullValue())
-            assertThat(errors[2], `is`(KMError.NoCompatibleImeChosen))
+            assertThat(errors[2], `is`(KMError.KeyEventActionError(KMError.NoCompatibleImeChosen)))
         }
 
-    /**
-     * #776
-     */
     @Test
-    fun `don't show Shizuku errors if a compatible ime is selected`() = testScope.runTest {
-        // GIVEN
-        whenever(mockShizukuAdapter.isInstalled).then { MutableStateFlow(true) }
-        fakeInputMethodAdapter.chosenIme.update { GUI_KEYBOARD_IME_INFO }
-
-        val action = ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)
-
-        // WHEN
-        val errorMap = useCase.actionErrorSnapshot.first().getErrors(listOf(action))
-
-        // THEN
-        assertThat(errorMap[action], nullValue())
-    }
-
-    /**
-     * #776
-     */
-    @Test
-    fun `show Shizuku errors if a compatible ime is not selected and Shizuku is installed`() =
+    fun `do not show an error for a key event action if system bridge is connected, pro mode is selected for key event actions, and no key mapper input method is chosen`() =
         testScope.runTest {
-            // GIVEN
-            whenever(mockShizukuAdapter.isInstalled).then { MutableStateFlow(true) }
-            whenever(mockShizukuAdapter.isStarted).then { MutableStateFlow(false) }
-            fakeInputMethodAdapter.chosenIme.update { GBOARD_IME_INFO }
+            setupKeyEventActionTest(
+                chosenIme = GBOARD_IME_INFO,
+                isSystemBridgeUsed = true,
+                isSystemBridgeConnected = true,
+            )
 
-            val action = ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN)
+            val actions = listOf(
+                ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),
+            )
 
-            // WHEN
-            val errorMap = useCase.actionErrorSnapshot.first().getErrors(listOf(action))
+            val errors = useCase.actionErrorSnapshot.first().getErrors(actions).values.toList()
 
-            // THEN
-            assertThat(errorMap[action], `is`(KMError.ShizukuNotStarted))
+            assertThat(errors[0], nullValue())
+        }
+
+    @Test
+    fun `show an error for a key event action if system bridge is disconnected, pro mode is selected for key event actions, and a key mapper input method is chosen`() =
+        testScope.runTest {
+            setupKeyEventActionTest(
+                chosenIme = GUI_KEYBOARD_IME_INFO,
+                isSystemBridgeUsed = true,
+                isSystemBridgeConnected = false,
+            )
+
+            val actions = listOf(
+                ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),
+            )
+
+            val errors = useCase.actionErrorSnapshot.first().getErrors(actions).values.toList()
+
+            assertThat(errors[0], `is`(KMError.KeyEventActionError(SystemBridgeError.Disconnected)))
+        }
+
+    @Test
+    fun `show an error for a key event action if system bridge is disconnected, pro mode is selected for key event actions, and a key mapper input method is not chosen`() =
+        testScope.runTest {
+            setupKeyEventActionTest(
+                chosenIme = GBOARD_IME_INFO,
+                isSystemBridgeUsed = true,
+                isSystemBridgeConnected = false,
+            )
+
+            val actions = listOf(
+                ActionData.InputKeyEvent(keyCode = KeyEvent.KEYCODE_VOLUME_DOWN),
+            )
+
+            val errors = useCase.actionErrorSnapshot.first().getErrors(actions).values.toList()
+
+            assertThat(errors[0], `is`(KMError.KeyEventActionError(SystemBridgeError.Disconnected)))
         }
 }

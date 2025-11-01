@@ -8,8 +8,8 @@ import android.os.IBinder
 import android.os.IBinder.DeathRecipient
 import android.view.KeyEvent
 import android.view.MotionEvent
-import timber.log.Timber
 import java.util.concurrent.ConcurrentHashMap
+import timber.log.Timber
 
 /**
  * This service is used as a relay between the accessibility service and input method service to pass
@@ -21,7 +21,10 @@ import java.util.concurrent.ConcurrentHashMap
  *
  * This was originally implemented in issue #850 for the action to answer phone calls
  * because Android doesn't pass volume down key events to the accessibility service
- * when the phone is ringing or it is in a phone call.
+ * when the phone is ringing or it is in a phone call. Later, in Android 14 this relay must be
+ * used because they also introduced a 1-second delay to context-registered broadcast receivers.
+ * And who knows what other restrictions will be added in the future :)
+ *
  * The accessibility service registers a callback and the input method service
  * sends the key events.
  */
@@ -114,7 +117,9 @@ class KeyEventRelayService : Service() {
             val sourcePackageName = getCallerPackageName() ?: return
 
             if (client == null || !permittedPackages.contains(sourcePackageName)) {
-                Timber.d("An unrecognized package $sourcePackageName tried to register a key event relay callback.")
+                Timber.d(
+                    "An unrecognized package $sourcePackageName tried to register a key event relay callback.",
+                )
                 return
             }
 

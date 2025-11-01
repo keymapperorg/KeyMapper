@@ -37,9 +37,6 @@ abstract class KMError : KMResult<Nothing>() {
     data object NoCompatibleImeEnabled : KMError()
     data object NoCompatibleImeChosen : KMError()
 
-    data object AccessibilityServiceDisabled : KMError()
-    data object AccessibilityServiceCrashed : KMError()
-
     data object CantShowImePickerInBackground : KMError()
     data object CantFindImeSettings : KMError()
     data object GestureStrokeCountTooHigh : KMError()
@@ -57,9 +54,13 @@ abstract class KMError : KMResult<Nothing>() {
     data object CameraVariableFlashlightStrengthUnsupported : KMError()
 
     data class FailedToModifySystemSetting(val setting: String) : KMError()
-    data object FailedToChangeIme : KMError()
+    data object SwitchImeFailed : KMError()
+    data object EnableImeFailed : KMError()
     data object NoAppToOpenUrl : KMError()
     data object NoAppToPhoneCall : KMError()
+    data object NoAppToSendSms : KMError()
+    data class SendSmsError(val resultCode: Int) : KMError()
+    data object KeyMapperSmsRateLimit : KMError()
 
     data class NotAFile(val uri: String) : KMError()
     data class NotADirectory(val uri: String) : KMError()
@@ -89,6 +90,8 @@ abstract class KMError : KMResult<Nothing>() {
     data object MalformedUrl : KMError()
 
     data object UiElementNotFound : KMError()
+    data class KeyEventActionError(val baseError: KMError) : KMError()
+    data class ShellCommandTimeout(val timeoutMillis: Long, val stdout: String? = null) : KMError()
 }
 
 inline fun <T> KMResult<T>.onSuccess(f: (T) -> Unit): KMResult<T> {
@@ -159,9 +162,10 @@ val <T> KMResult<T>.isError: Boolean
 val <T> KMResult<T>.isSuccess: Boolean
     get() = this is Success
 
-fun <T, U> KMResult<T>.handle(onSuccess: (value: T) -> U, onError: (error: KMError) -> U): U = when (this) {
-    is Success -> onSuccess(value)
-    is KMError -> onError(this)
-}
+fun <T, U> KMResult<T>.handle(onSuccess: (value: T) -> U, onError: (error: KMError) -> U): U =
+    when (this) {
+        is Success -> onSuccess(value)
+        is KMError -> onError(this)
+    }
 
 fun <T> T.success() = Success(this)

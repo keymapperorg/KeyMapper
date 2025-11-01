@@ -1,3 +1,53 @@
+## [4.0.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.01)
+
+#### TO BE RELEASED
+
+## Added
+
+- #761 Detect keys with scancodes. Key Mapper will do this automatically if the key code is unknown
+  or you record different physical keys from the same device with the same key code.
+- Redesign the Settings screen.
+- Shortcuts on the trigger screen that guide you how to set up different types of buttons.
+- #1788 dismiss lockscreen when launching app action from lockscreen
+- Show tips for parallel and sequence triggers, and constraints in the trigger screen
+- #397 enable/disable all key maps in a group
+- #1773 Option to show floating buttons on top of keyboard or notification panel.
+- #1335 Intent API to enable/disable/toggle a key map.
+- #114 action to force stop app, and an action to clear an app from recents
+- #727 Actions to send SMS messages: "Send SMS" and "Compose SMS"
+- #1819 Explain how to enable the accessibility service restricted setting
+- #661 Action to execute shell commands.
+- #991 Consolidated volume and stream actions.
+- #1066 Action to mute/unmute microphone.
+- #985 Constraints for foldable hinge being open/closed.
+
+## Removed
+
+- The key event relay service is now also used on all Android versions below Android 14. The
+  broadcast receiver method is no longer used.
+- Minimum supported Android version is now 8.0. Less than 1% of users are on older versions than
+  this and dropping support simplifies the codebase and maintenance.
+- Dropped support for showing a keyboard picker notification and automatically showing it when a
+  device connects. This is only supported on Android 8.1 and is extra work to maintain it.
+- Dropped support for rerouting key events on Android 11. This was a workaround for a specific bug
+  in Android 11 which fewer than 10% of users are using and less are probably using that feature.
+
+## Fixed
+
+- Restoring subgroups works and does not freeze Key Mapper.
+- Do not show duplicate constraint shortcuts.
+- Make WiFi connected constraints more reliable
+- #1818 auto switching of the Key Mapper keyboard when typing is more reliable and quicker on
+  Android 13+
+- #1818 auto switching of the Key Mapper keyboard now requires Android 11+. On older versions it was
+  only possible with WRITE_SECURE_SETTINGS but very few users are on these old Android versions so
+  it is not worth the extra maintenance effort.
+- #1818 the Key Mapper GUI Keyboard is no longer mentioned in the app. It still works but PRO mode
+  and the auto switching feature are the preferred way to work around the limitations of the Key
+  Mapper keyboard.
+- Allow selecting notification and alarm sound and not just ringtones for Sound action.
+- #1064 wait for switch keyboard action to complete before doing next action.
+
 ## [3.2.1](https://github.com/sds100/KeyMapper/releases/tag/v3.2.1)
 
 #### 03 Sept 2025
@@ -1332,26 +1382,26 @@ This summarises the changes since 2.0.2.
 - Dark mode! 🕶
 - A keymap can have multiple actions.
 - Triggers
-  - 2 modes. The keys can all be pressed at the same time or one after another in a sequence.
-  - Keys can be limited to a specific external device, any device or the device the app is
-    installed on.
-  - Double press support.
+    - 2 modes. The keys can all be pressed at the same time or one after another in a sequence.
+    - Keys can be limited to a specific external device, any device or the device the app is
+      installed on.
+    - Double press support.
 - Constraints. Keymaps can be restricted to only work in certain situations. Constraints can be
   mixed in OR mode or AND mode.
-  - App in foreground
-  - App not in foreground
-  - Bluetooth device connected
-  - Bluetooth device not connected
-  - Screen on/off (ROOT only).
+    - App in foreground
+    - App not in foreground
+    - Bluetooth device connected
+    - Bluetooth device not connected
+    - Screen on/off (ROOT only).
 
 - Actions
-  - Toggle/enable/disable a Do Not Disturb mode (Android 6.0+).
-  - Toggle/enable/disable airplane mode (ROOT only).
-  - Switch between vibrate and ring.
-  - Launch the device assistant rather than the voice assistant.
-  - Take screenshots on rooted devices older than Pie.
-  - Can now have unique repeat options and any action is allowed to be repeated now.
-  - Show the keycode number when picking a Keycode action.
+    - Toggle/enable/disable a Do Not Disturb mode (Android 6.0+).
+    - Toggle/enable/disable airplane mode (ROOT only).
+    - Switch between vibrate and ring.
+    - Launch the device assistant rather than the voice assistant.
+    - Take screenshots on rooted devices older than Pie.
+    - Can now have unique repeat options and any action is allowed to be repeated now.
+    - Show the keycode number when picking a Keycode action.
 
 - Renamed "Repeat Delay" to "Repeat Rate".
 - Renamed "Hold Down Delay" to "Repeat Delay"
@@ -1482,16 +1532,16 @@ Significantly improved the input latency.
 
 - A keymap can have multiple actions.
 - Triggers
-  - 2 modes. The keys can all be pressed at the same time or one after another in a sequence.
-  - Keys can be limited to a specific external device, any device or the device the app is
-    installed on.
-  - Double press support.
+    - 2 modes. The keys can all be pressed at the same time or one after another in a sequence.
+    - Keys can be limited to a specific external device, any device or the device the app is
+      installed on.
+    - Double press support.
 - Constraints. Keymaps can be restricted to only work in certain situations. Constraints can be
   mixed in OR mode or AND mode.
-  - App in foreground
-  - App not in foreground
-  - Bluetooth device connected
-  - Bluetooth device not connected
+    - App in foreground
+    - App not in foreground
+    - Bluetooth device connected
+    - Bluetooth device not connected
 - The option to show the "performing action" toast has been moved to a toggle in each keymap.
 - The long press delay, double press timeout, sequence trigger timeout, action repeat delay,
   hold-down delay until actions are repeated and vibrate delay can be changed per keymap.

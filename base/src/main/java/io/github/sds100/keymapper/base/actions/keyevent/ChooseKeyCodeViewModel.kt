@@ -8,7 +8,8 @@ import io.github.sds100.keymapper.base.utils.filterByQuery
 import io.github.sds100.keymapper.base.utils.ui.DefaultSimpleListItem
 import io.github.sds100.keymapper.base.utils.ui.SimpleListItemOld
 import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils
+import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +20,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 @HiltViewModel
 class ChooseKeyCodeViewModel @Inject constructor() : ViewModel() {
@@ -31,7 +31,7 @@ class ChooseKeyCodeViewModel @Inject constructor() : ViewModel() {
 
     private val allListItems = flow {
         withContext(Dispatchers.Default) {
-            InputEventUtils.getKeyCodes().sorted().map { keyCode ->
+            KeyEventUtils.getKeyCodes().sorted().map { keyCode ->
                 DefaultSimpleListItem(
                     id = keyCode.toString(),
                     title = "$keyCode \t\t ${KeyEvent.keyCodeToString(keyCode)}",

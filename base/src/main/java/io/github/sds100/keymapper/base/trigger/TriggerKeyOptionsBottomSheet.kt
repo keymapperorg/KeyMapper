@@ -1,8 +1,8 @@
 package io.github.sds100.keymapper.base.trigger
 
+import android.view.KeyEvent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +23,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue.Expanded
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -32,16 +33,21 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowHeightSizeClass
+import androidx.window.core.layout.WindowWidthSizeClass
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
+import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
 import io.github.sds100.keymapper.base.utils.ui.compose.RadioButtonText
 import io.github.sds100.keymapper.base.utils.ui.compose.openUriSafe
+import io.github.sds100.keymapper.system.inputevents.Scancode
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,7 +64,10 @@ fun TriggerKeyOptionsBottomSheet(
     onSelectFingerprintGestureType: (FingerprintGestureType) -> Unit = {},
     onEditFloatingButtonClick: () -> Unit = {},
     onEditFloatingLayoutClick: () -> Unit = {},
+    onScanCodeDetectionChanged: (Boolean) -> Unit = {},
 ) {
+    val isCompact = isVerticalCompactLayout()
+
     ModalBottomSheet(
         modifier = modifier,
         onDismissRequest = onDismissRequest,
@@ -66,37 +75,61 @@ fun TriggerKeyOptionsBottomSheet(
         // Hide drag handle because other bottom sheets don't have it
         dragHandle = {},
     ) {
-        val uriHandler = LocalUriHandler.current
-        val ctx = LocalContext.current
-        val helpUrl = stringResource(R.string.url_trigger_key_options_guide)
         val scope = rememberCoroutineScope()
 
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
             Spacer(modifier = Modifier.height(12.dp))
             Box(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    modifier = Modifier.align(Alignment.Center),
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .fillMaxWidth()
+                        .padding(horizontal = 48.dp),
                     textAlign = TextAlign.Center,
                     text = stringResource(R.string.trigger_key_options_title),
                     style = MaterialTheme.typography.headlineMedium,
+                    overflow = TextOverflow.Ellipsis,
                 )
 
-                IconButton(
+                HelpIconButton(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(horizontal = 8.dp),
-                    onClick = { uriHandler.openUriSafe(ctx, helpUrl) },
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.HelpOutline,
-                        contentDescription = null,
-                    )
-                }
+                )
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            if (state is TriggerKeyOptionsState.KeyCode) {
+            if (state is TriggerKeyOptionsState.KeyEvent) {
+                ScanCodeDetectionButtonRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    isEnabled = state.isScanCodeSettingEnabled,
+                    isScanCodeSelected = state.isScanCodeDetectionSelected,
+                    keyCode = state.keyCode,
+                    scanCode = state.scanCode,
+                    onSelectedChange = onScanCodeDetectionChanged,
+                    isCompact = isCompact,
+                )
+
+                CheckBoxText(
+                    modifier = Modifier.padding(8.dp),
+                    text = stringResource(R.string.flag_dont_override_default_action),
+                    isChecked = state.doNotRemapChecked,
+                    onCheckedChange = onCheckDoNotRemap,
+                )
+            }
+
+            if (state is TriggerKeyOptionsState.EvdevEvent) {
+                ScanCodeDetectionButtonRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    isEnabled = state.isScanCodeSettingEnabled,
+                    isScanCodeSelected = state.isScanCodeDetectionSelected,
+                    keyCode = state.keyCode,
+                    scanCode = state.scanCode,
+                    onSelectedChange = onScanCodeDetectionChanged,
+                    isCompact = isCompact,
+                )
+
                 CheckBoxText(
                     modifier = Modifier.padding(8.dp),
                     text = stringResource(R.string.flag_dont_override_default_action),
@@ -106,52 +139,26 @@ fun TriggerKeyOptionsBottomSheet(
             }
 
             if (state.showClickTypes) {
-                Text(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    text = stringResource(R.string.trigger_key_click_types_header),
-                    style = MaterialTheme.typography.titleSmall,
-                )
-
-                FlowRow(
+                ClickTypeSection(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
-                ) {
-                    Spacer(Modifier.width(8.dp))
+                        .padding(horizontal = 16.dp),
+                    state,
+                    onSelectClickType,
+                    isCompact = isCompact,
+                )
 
-                    RadioButtonText(
-                        modifier = Modifier.weight(1f),
-                        isSelected = state.clickType == ClickType.SHORT_PRESS,
-                        text = stringResource(R.string.radio_button_short_press),
-                        onSelected = { onSelectClickType(ClickType.SHORT_PRESS) },
-                    )
-
-                    if (state.showLongPressClickType) {
-                        RadioButtonText(
-                            modifier = Modifier.weight(1f),
-                            isSelected = state.clickType == ClickType.LONG_PRESS,
-                            text = stringResource(R.string.radio_button_long_press),
-                            onSelected = { onSelectClickType(ClickType.LONG_PRESS) },
-                        )
-                    }
-
-                    RadioButtonText(
-                        modifier = Modifier.weight(1f),
-                        isSelected = state.clickType == ClickType.DOUBLE_PRESS,
-                        text = stringResource(R.string.radio_button_double_press),
-                        onSelected = { onSelectClickType(ClickType.DOUBLE_PRESS) },
-                    )
-
-                    Spacer(Modifier.width(8.dp))
-                }
+                Spacer(Modifier.height(8.dp))
             }
 
-            if (state is TriggerKeyOptionsState.KeyCode) {
+            if (state is TriggerKeyOptionsState.KeyEvent) {
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     text = stringResource(R.string.trigger_key_device_header),
                     style = MaterialTheme.typography.titleSmall,
                 )
+
+                Spacer(Modifier.height(8.dp))
 
                 for (device in state.devices) {
                     RadioButtonText(
@@ -199,28 +206,36 @@ fun TriggerKeyOptionsBottomSheet(
                     modifier = Modifier.padding(horizontal = 8.dp),
                     text = stringResource(R.string.fingerprint_gesture_down),
                     isSelected = state.gestureType == FingerprintGestureType.SWIPE_DOWN,
-                    onSelected = { onSelectFingerprintGestureType(FingerprintGestureType.SWIPE_DOWN) },
+                    onSelected = {
+                        onSelectFingerprintGestureType(FingerprintGestureType.SWIPE_DOWN)
+                    },
                 )
 
                 RadioButtonText(
                     modifier = Modifier.padding(horizontal = 8.dp),
                     text = stringResource(R.string.fingerprint_gesture_up),
                     isSelected = state.gestureType == FingerprintGestureType.SWIPE_UP,
-                    onSelected = { onSelectFingerprintGestureType(FingerprintGestureType.SWIPE_UP) },
+                    onSelected = {
+                        onSelectFingerprintGestureType(FingerprintGestureType.SWIPE_UP)
+                    },
                 )
 
                 RadioButtonText(
                     modifier = Modifier.padding(horizontal = 8.dp),
                     text = stringResource(R.string.fingerprint_gesture_left),
                     isSelected = state.gestureType == FingerprintGestureType.SWIPE_LEFT,
-                    onSelected = { onSelectFingerprintGestureType(FingerprintGestureType.SWIPE_LEFT) },
+                    onSelected = {
+                        onSelectFingerprintGestureType(FingerprintGestureType.SWIPE_LEFT)
+                    },
                 )
 
                 RadioButtonText(
                     modifier = Modifier.padding(horizontal = 8.dp),
                     text = stringResource(R.string.fingerprint_gesture_right),
                     isSelected = state.gestureType == FingerprintGestureType.SWIPE_RIGHT,
-                    onSelected = { onSelectFingerprintGestureType(FingerprintGestureType.SWIPE_RIGHT) },
+                    onSelected = {
+                        onSelectFingerprintGestureType(FingerprintGestureType.SWIPE_RIGHT)
+                    },
                 )
             }
 
@@ -236,7 +251,11 @@ fun TriggerKeyOptionsBottomSheet(
                         modifier = Modifier.weight(1f),
                         onClick = onEditFloatingButtonClick,
                     ) {
-                        Text(stringResource(R.string.floating_button_trigger_option_configure_button))
+                        Text(
+                            stringResource(
+                                R.string.floating_button_trigger_option_configure_button,
+                            ),
+                        )
                     }
 
                     Spacer(Modifier.width(16.dp))
@@ -283,10 +302,112 @@ fun TriggerKeyOptionsBottomSheet(
     }
 }
 
+@Composable
+private fun HelpIconButton(modifier: Modifier) {
+    val uriHandler = LocalUriHandler.current
+    val helpUrl = stringResource(R.string.url_trigger_key_options_guide)
+    val ctx = LocalContext.current
+
+    IconButton(
+        modifier = modifier,
+        onClick = { uriHandler.openUriSafe(ctx, helpUrl) },
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Rounded.HelpOutline,
+            contentDescription = null,
+        )
+    }
+}
+
+@Composable
+private fun ClickTypeSection(
+    modifier: Modifier,
+    state: TriggerKeyOptionsState,
+    onSelectClickType: (ClickType) -> Unit,
+    isCompact: Boolean,
+) {
+    Column(modifier) {
+        Text(
+            text = stringResource(R.string.trigger_key_click_types_header),
+            style = MaterialTheme.typography.titleSmall,
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        val clickTypeButtonContent: List<Pair<ClickType, String>> = buildList {
+            add(ClickType.SHORT_PRESS to stringResource(R.string.radio_button_short_press))
+            if (state.showLongPressClickType) {
+                add(ClickType.LONG_PRESS to stringResource(R.string.radio_button_long_press))
+            }
+            add(ClickType.DOUBLE_PRESS to stringResource(R.string.radio_button_double_press))
+        }
+
+        KeyMapperSegmentedButtonRow(
+            modifier = Modifier.fillMaxWidth(),
+            buttonStates = clickTypeButtonContent,
+            selectedState = state.clickType,
+            onStateSelected = onSelectClickType,
+            isCompact = isCompact,
+        )
+    }
+}
+
+@Composable
+private fun ScanCodeDetectionButtonRow(
+    modifier: Modifier = Modifier,
+    keyCode: Int,
+    scanCode: Int?,
+    isEnabled: Boolean,
+    isScanCodeSelected: Boolean,
+    onSelectedChange: (Boolean) -> Unit,
+    isCompact: Boolean,
+) {
+    Column(modifier) {
+        Text(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            text = stringResource(R.string.trigger_scan_code_detection_explanation),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Spacer(Modifier.height(8.dp))
+
+        val buttonStates = listOf(
+            false to if (keyCode == KeyEvent.KEYCODE_UNKNOWN) {
+                stringResource(R.string.trigger_use_key_code_button_disabled)
+            } else {
+                stringResource(R.string.trigger_use_key_code_button_enabled, keyCode)
+            },
+            true to if (scanCode == null) {
+                stringResource(R.string.trigger_use_scan_code_button_disabled)
+            } else {
+                stringResource(R.string.trigger_use_scan_code_button_enabled, scanCode)
+            },
+        )
+
+        KeyMapperSegmentedButtonRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            buttonStates = buttonStates,
+            selectedState = isScanCodeSelected,
+            onStateSelected = onSelectedChange,
+            isCompact = isCompact,
+            isEnabled = isEnabled,
+        )
+    }
+}
+
+@Composable
+private fun isVerticalCompactLayout(): Boolean {
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+
+    return windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT &&
+        windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-private fun Preview() {
+private fun PreviewKeyEvent() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
@@ -296,7 +417,7 @@ private fun Preview() {
 
         TriggerKeyOptionsBottomSheet(
             sheetState = sheetState,
-            state = TriggerKeyOptionsState.KeyCode(
+            state = TriggerKeyOptionsState.KeyEvent(
                 doNotRemapChecked = true,
                 clickType = ClickType.DOUBLE_PRESS,
                 showClickTypes = true,
@@ -312,6 +433,74 @@ private fun Preview() {
                         isChecked = false,
                     ),
                 ),
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                isScanCodeDetectionSelected = true,
+                isScanCodeSettingEnabled = true,
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(heightDp = 400, widthDp = 300)
+@Composable
+private fun PreviewKeyEventTiny() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = Expanded,
+        )
+
+        TriggerKeyOptionsBottomSheet(
+            sheetState = sheetState,
+            state = TriggerKeyOptionsState.KeyEvent(
+                doNotRemapChecked = true,
+                clickType = ClickType.DOUBLE_PRESS,
+                showClickTypes = true,
+                devices = listOf(
+                    CheckBoxListItem(
+                        id = "id1",
+                        label = "Device 1",
+                        isChecked = true,
+                    ),
+                    CheckBoxListItem(
+                        id = "id2",
+                        label = "Device 2",
+                        isChecked = false,
+                    ),
+                ),
+                keyCode = KeyEvent.KEYCODE_VOLUME_DOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                isScanCodeDetectionSelected = true,
+                isScanCodeSettingEnabled = true,
+            ),
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun PreviewEvdev() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = Expanded,
+        )
+
+        TriggerKeyOptionsBottomSheet(
+            sheetState = sheetState,
+            state = TriggerKeyOptionsState.EvdevEvent(
+                doNotRemapChecked = true,
+                clickType = ClickType.DOUBLE_PRESS,
+                showClickTypes = true,
+                keyCode = KeyEvent.KEYCODE_UNKNOWN,
+                scanCode = Scancode.KEY_VOLUMEDOWN,
+                isScanCodeDetectionSelected = true,
+                isScanCodeSettingEnabled = false,
             ),
         )
     }

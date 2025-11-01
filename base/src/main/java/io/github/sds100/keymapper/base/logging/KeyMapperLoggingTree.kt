@@ -5,6 +5,8 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.data.repositories.LogRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import java.util.Calendar
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
@@ -17,8 +19,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import timber.log.Timber
-import java.util.Calendar
-import javax.inject.Inject
 
 class KeyMapperLoggingTree @Inject constructor(
     private val coroutineScope: CoroutineScope,
@@ -44,8 +44,12 @@ class KeyMapperLoggingTree @Inject constructor(
     }
 
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-        // error and info logs should always log even if the user setting is turned off
-        if (!logEverything.value && priority != Log.ERROR && priority != Log.INFO) {
+        // error, warn, and info logs should always log even if the user setting is turned off
+        if (!logEverything.value &&
+            priority != Log.ERROR &&
+            priority != Log.WARN &&
+            priority != Log.INFO
+        ) {
             return
         }
 

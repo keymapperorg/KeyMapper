@@ -86,7 +86,11 @@ class ChooseSoundFileFragment : Fragment() {
 
         ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
             val insets =
-                insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime())
+                insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or
+                        WindowInsetsCompat.Type.displayCutout() or
+                        WindowInsetsCompat.Type.ime(),
+                )
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
             WindowInsetsCompat.CONSUMED
         }
@@ -101,7 +105,10 @@ class ChooseSoundFileFragment : Fragment() {
 
         viewLifecycleOwner.launchRepeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.chooseSystemRingtone.collectLatest {
-                val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
+                val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
+                    // Allow notification, alarms, and ringtones.
+                    putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALL)
+                }
                 chooseRingtoneLauncher.launch(intent)
             }
         }

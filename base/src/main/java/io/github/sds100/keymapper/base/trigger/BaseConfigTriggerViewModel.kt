@@ -1,82 +1,73 @@
 package io.github.sds100.keymapper.base.trigger
 
 import android.view.KeyEvent
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Assistant
-import androidx.compose.material.icons.rounded.BubbleChart
-import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapOptionsViewModel
-import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCase
-import io.github.sds100.keymapper.base.keymaps.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.base.keymaps.DisplayKeyMapUseCase
 import io.github.sds100.keymapper.base.keymaps.FingerprintGesturesSupportedUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
-import io.github.sds100.keymapper.base.keymaps.ShortcutModel
-import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
+import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegate
+import io.github.sds100.keymapper.base.onboarding.OnboardingTipDelegateImpl
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
-import io.github.sds100.keymapper.base.purchasing.ProductId
-import io.github.sds100.keymapper.base.purchasing.PurchasingManager
+import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
+import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
-import io.github.sds100.keymapper.base.utils.InputEventStrings
+import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
+import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
-import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
-import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
-import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.utils.ui.showDialog
-import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
+import io.github.sds100.keymapper.common.utils.AccessibilityServiceError
+import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.common.utils.dataOrNull
-import io.github.sds100.keymapper.common.utils.ifIsData
 import io.github.sds100.keymapper.common.utils.mapData
-import io.github.sds100.keymapper.common.utils.onSuccess
-import io.github.sds100.keymapper.system.devices.InputDeviceUtils
-import io.github.sds100.keymapper.system.inputevents.InputEventUtils
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 abstract class BaseConfigTriggerViewModel(
-    private val coroutineScope: CoroutineScope,
     private val onboarding: OnboardingUseCase,
-    private val config: ConfigKeyMapUseCase,
-    private val recordTrigger: RecordTriggerUseCase,
+    private val config: ConfigTriggerUseCase,
+    private val recordTrigger: RecordTriggerController,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
-    private val purchasingManager: PurchasingManager,
-    private val setupGuiKeyboard: SetupGuiKeyboardUseCase,
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
+    private val setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
+    onboardingTipDelegate: OnboardingTipDelegate,
+    triggerSetupDelegate: TriggerSetupDelegate,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
-) : ResourceProvider by resourceProvider,
+) : ViewModel(),
+    SetupAccessibilityServiceDelegate by setupAccessibilityServiceDelegate,
+    ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
-    NavigationProvider by navigationProvider {
+    NavigationProvider by navigationProvider,
+    TriggerSetupDelegate by triggerSetupDelegate,
+    OnboardingTipDelegate by onboardingTipDelegate {
 
     companion object {
         private const val DEVICE_ID_ANY = "any"
@@ -84,7 +75,7 @@ abstract class BaseConfigTriggerViewModel(
     }
 
     val optionsViewModel = ConfigKeyMapOptionsViewModel(
-        coroutineScope,
+        viewModelScope,
         config,
         displayKeyMap,
         createKeyMapShortcut,
@@ -92,83 +83,26 @@ abstract class BaseConfigTriggerViewModel(
         resourceProvider,
     )
 
-    private val triggerKeyShortcuts = combine(
-        fingerprintGesturesSupported.isSupported,
-        purchasingManager.purchases,
-    ) { isFingerprintGesturesSupported, purchasesState ->
-        val newShortcuts = mutableSetOf<ShortcutModel<TriggerKeyShortcut>>()
-
-        if (isFingerprintGesturesSupported == true) {
-            newShortcuts.add(
-                ShortcutModel(
-                    icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),
-                    text = getString(R.string.trigger_key_shortcut_add_fingerprint_gesture),
-                    data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
-                ),
-            )
-        }
-
-        purchasesState.ifIsData { result ->
-            result.onSuccess { purchases ->
-                if (purchases.contains(ProductId.ASSISTANT_TRIGGER)) {
-                    newShortcuts.add(
-                        ShortcutModel(
-                            icon = ComposeIconInfo.Vector(Icons.Rounded.Assistant),
-                            text = getString(R.string.trigger_key_shortcut_add_assistant),
-                            data = TriggerKeyShortcut.ASSISTANT,
-                        ),
-                    )
-                }
-
-                if (purchases.contains(ProductId.FLOATING_BUTTONS)) {
-                    newShortcuts.add(
-                        ShortcutModel(
-                            icon = ComposeIconInfo.Vector(Icons.Rounded.BubbleChart),
-                            text = getString(R.string.trigger_key_shortcut_add_floating_button),
-                            data = TriggerKeyShortcut.FLOATING_BUTTON,
-                        ),
-                    )
-                }
-            }
-        }
-
-        newShortcuts
-    }
-
     private val _state: MutableStateFlow<State<ConfigTriggerState>> =
         MutableStateFlow(State.Loading)
     val state: StateFlow<State<ConfigTriggerState>> = _state.asStateFlow()
 
     val recordTriggerState: StateFlow<RecordTriggerState> = recordTrigger.state.stateIn(
-        coroutineScope,
+        viewModelScope,
         SharingStarted.Lazily,
         RecordTriggerState.Idle,
     )
 
-    var showAdvancedTriggersBottomSheet: Boolean by mutableStateOf(false)
-    var showDpadTriggerSetupBottomSheet: Boolean by mutableStateOf(false)
-    var showNoKeysRecordedBottomSheet: Boolean by mutableStateOf(false)
+    val showFingerprintGesturesShortcut: StateFlow<Boolean> =
+        fingerprintGesturesSupported.isSupported.map { it ?: false }
+            .stateIn(viewModelScope, SharingStarted.Lazily, false)
 
-    val setupGuiKeyboardState: StateFlow<SetupGuiKeyboardState> = combine(
-        setupGuiKeyboard.isInstalled,
-        setupGuiKeyboard.isEnabled,
-        setupGuiKeyboard.isChosen,
-    ) { isInstalled, isEnabled, isChosen ->
-        SetupGuiKeyboardState(
-            isInstalled,
-            isEnabled,
-            isChosen,
-        )
-    }.stateIn(
-        coroutineScope,
-        SharingStarted.Lazily,
-        SetupGuiKeyboardState.DEFAULT,
-    )
+    var showDiscoverTriggersBottomSheet: Boolean by mutableStateOf(false)
 
     val triggerKeyOptionsUid = MutableStateFlow<String?>(null)
     val triggerKeyOptionsState: StateFlow<TriggerKeyOptionsState?> =
         combine(config.keyMap, triggerKeyOptionsUid, transform = ::buildKeyOptionsUiState)
-            .stateIn(coroutineScope, SharingStarted.Lazily, null)
+            .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     /**
      * Check whether the user stopped the trigger recording countdown. This
@@ -176,50 +110,32 @@ abstract class BaseConfigTriggerViewModel(
      * when no buttons are recorded is not shown.
      */
     private var isRecordingCompletionUserInitiated: Boolean = false
+    private val midDot = getString(R.string.middot)
 
     init {
-        val showTapTargetsPairFlow: Flow<Pair<Boolean, Boolean>> = combine(
-            onboarding.showTapTarget(OnboardingTapTarget.RECORD_TRIGGER),
-            onboarding.showTapTarget(OnboardingTapTarget.ADVANCED_TRIGGERS),
-        ) { recordTriggerTapTarget, advancedTriggersTapTarget ->
-            Pair(recordTriggerTapTarget, advancedTriggersTapTarget)
-        }
-
         // IMPORTANT! Do not flow on another thread because this causes the drag and drop
         // animations to be more janky.
         combine(
             displayKeyMap.triggerErrorSnapshot,
             config.keyMap,
             displayKeyMap.showDeviceDescriptors,
-            triggerKeyShortcuts,
-            showTapTargetsPairFlow,
-        ) { triggerErrorSnapshot, keyMap, showDeviceDescriptors, shortcuts, showTapTargetsPair ->
+        ) { triggerErrorSnapshot, keyMap, showDeviceDescriptors ->
             _state.update {
                 buildUiState(
                     keyMap,
                     showDeviceDescriptors,
-                    shortcuts,
                     triggerErrorSnapshot,
-                    showTapTargetsPair.first,
-                    showTapTargetsPair.second,
                 )
             }
-        }.launchIn(coroutineScope)
+        }.launchIn(viewModelScope)
 
-        coroutineScope.launch {
-            recordTrigger.onRecordKey.collectLatest {
-                onRecordTriggerKey(it)
-            }
-        }
-
-        coroutineScope.launch {
-            config.keyMap
-                .mapNotNull { it.dataOrNull()?.trigger?.mode }
-                .distinctUntilChanged()
-                .drop(1)
-                .collectLatest { mode ->
-                    onTriggerModeChanged(mode)
+        viewModelScope.launch {
+            recordTrigger.onRecordKey.collect { key ->
+                when (key) {
+                    is RecordedKey.EvdevEvent -> onRecordEvdevEvent(key)
+                    is RecordedKey.KeyEvent -> onRecordKeyEvent(key)
                 }
+            }
         }
 
         // Drop the first state in case it is in the Completed state so the
@@ -228,64 +144,54 @@ abstract class BaseConfigTriggerViewModel(
         recordTrigger.state.drop(1).onEach { state ->
             if (state is RecordTriggerState.Completed &&
                 state.recordedKeys.isEmpty() &&
-                onboarding.showNoKeysDetectedBottomSheet.first() &&
                 !isRecordingCompletionUserInitiated
             ) {
-                showNoKeysRecordedBottomSheet = true
+                showTriggerSetup(TriggerSetupShortcut.NOT_DETECTED)
             }
 
             // reset this field when recording has completed
             isRecordingCompletionUserInitiated = false
-        }.launchIn(coroutineScope)
+        }.launchIn(viewModelScope)
     }
 
-    open fun onClickTriggerKeyShortcut(shortcut: TriggerKeyShortcut) {
-        if (shortcut == TriggerKeyShortcut.FINGERPRINT_GESTURE) {
-            coroutineScope.launch {
-                val listItems = listOf(
-                    FingerprintGestureType.SWIPE_DOWN to getString(R.string.fingerprint_gesture_down),
-                    FingerprintGestureType.SWIPE_UP to getString(R.string.fingerprint_gesture_up),
-                    FingerprintGestureType.SWIPE_LEFT to getString(R.string.fingerprint_gesture_left),
-                    FingerprintGestureType.SWIPE_RIGHT to getString(R.string.fingerprint_gesture_right),
-                )
+    override fun onCleared() {
+        isRecordingCompletionUserInitiated = true
+        recordTrigger.stopRecording()
 
-                val selectedType = showDialog("pick_assistant_type", DialogModel.SingleChoice(listItems))
-                    ?: return@launch
-
-                config.addFingerprintGesture(type = selectedType)
-            }
-        }
+        super.onCleared()
     }
 
     fun onAdvancedTriggersClick() {
         onboarding.viewedAdvancedTriggers()
-        showAdvancedTriggersBottomSheet = true
+
+        viewModelScope.launch {
+            navigateToAdvancedTriggers("advanced_triggers_click")
+        }
+    }
+
+    suspend fun navigateToAdvancedTriggers(navKey: String) {
+        val result: TriggerSetupShortcut =
+            navigate(navKey, NavDestination.AdvancedTriggers) ?: return
+
+        showTriggerSetup(result)
     }
 
     private fun buildUiState(
         keyMapState: State<KeyMap>,
         showDeviceDescriptors: Boolean,
-        triggerKeyShortcuts: Set<ShortcutModel<TriggerKeyShortcut>>,
         triggerErrorSnapshot: TriggerErrorSnapshot,
-        showRecordTriggerTapTarget: Boolean,
-        showAdvancedTriggersTapTarget: Boolean,
     ): State<ConfigTriggerState> {
         return keyMapState.mapData { keyMap ->
             val trigger = keyMap.trigger
 
             if (trigger.keys.isEmpty()) {
-                return@mapData ConfigTriggerState.Empty(
-                    triggerKeyShortcuts,
-                    showRecordTriggerTapTarget = showRecordTriggerTapTarget,
-                    showAdvancedTriggersTapTarget = showAdvancedTriggersTapTarget,
-                )
+                return@mapData ConfigTriggerState.Empty
             }
 
             val triggerKeys =
                 createListItems(
                     keyMap,
                     showDeviceDescriptors,
-                    triggerKeyShortcuts.size,
                     triggerErrorSnapshot,
                 )
             val isReorderingEnabled = trigger.keys.size > 1
@@ -310,7 +216,10 @@ abstract class BaseConfigTriggerViewModel(
                 clickTypeButtons.add(ClickType.DOUBLE_PRESS)
             }
 
-            if (trigger.keys.isNotEmpty() && trigger.mode !is TriggerMode.Sequence && trigger.keys.all { it.allowedLongPress }) {
+            if (trigger.keys.isNotEmpty() &&
+                trigger.mode !is TriggerMode.Sequence &&
+                trigger.keys.all { it.allowedLongPress }
+            ) {
                 clickTypeButtons.add(ClickType.SHORT_PRESS)
                 clickTypeButtons.add(ClickType.LONG_PRESS)
             }
@@ -329,8 +238,6 @@ abstract class BaseConfigTriggerViewModel(
                 triggerModeButtonsEnabled = triggerModeButtonsEnabled,
                 triggerModeButtonsVisible = triggerModeButtonsVisible,
                 checkedTriggerMode = trigger.mode,
-                shortcuts = triggerKeyShortcuts,
-                showAdvancedTriggersTapTarget = showAdvancedTriggersTapTarget,
             )
         }
     }
@@ -353,11 +260,11 @@ abstract class BaseConfigTriggerViewModel(
                 val showClickTypes = trigger.mode is TriggerMode.Sequence
 
                 when (key) {
-                    is KeyCodeTriggerKey -> {
+                    is KeyEventTriggerKey -> {
                         val showDeviceDescriptors = displayKeyMap.showDeviceDescriptors.first()
                         val deviceListItems: List<CheckBoxListItem> =
                             config.getAvailableTriggerKeyDevices()
-                                .map { device: TriggerKeyDevice ->
+                                .map { device: KeyEventTriggerDevice ->
                                     buildDeviceListItem(
                                         device = device,
                                         showDeviceDescriptors = showDeviceDescriptors,
@@ -365,11 +272,15 @@ abstract class BaseConfigTriggerViewModel(
                                     )
                                 }
 
-                        return TriggerKeyOptionsState.KeyCode(
+                        return TriggerKeyOptionsState.KeyEvent(
                             doNotRemapChecked = !key.consumeEvent,
                             clickType = key.clickType,
                             showClickTypes = showClickTypes,
                             devices = deviceListItems,
+                            keyCode = key.keyCode,
+                            scanCode = key.scanCode,
+                            isScanCodeDetectionSelected = key.detectWithScancode(),
+                            isScanCodeSettingEnabled = key.isScanCodeDetectionUserConfigurable(),
                         )
                     }
 
@@ -394,30 +305,42 @@ abstract class BaseConfigTriggerViewModel(
                             clickType = key.clickType,
                         )
                     }
+
+                    is EvdevTriggerKey -> {
+                        return TriggerKeyOptionsState.EvdevEvent(
+                            doNotRemapChecked = !key.consumeEvent,
+                            clickType = key.clickType,
+                            showClickTypes = showClickTypes,
+                            keyCode = key.keyCode,
+                            scanCode = key.scanCode,
+                            isScanCodeDetectionSelected = key.detectWithScancode(),
+                            isScanCodeSettingEnabled = key.isScanCodeDetectionUserConfigurable(),
+                        )
+                    }
                 }
             }
         }
     }
 
     private fun buildDeviceListItem(
-        device: TriggerKeyDevice,
+        device: KeyEventTriggerDevice,
         isChecked: Boolean,
         showDeviceDescriptors: Boolean,
     ): CheckBoxListItem {
         return when (device) {
-            TriggerKeyDevice.Any -> CheckBoxListItem(
+            KeyEventTriggerDevice.Any -> CheckBoxListItem(
                 id = DEVICE_ID_ANY,
                 isChecked = isChecked,
                 label = getString(R.string.any_device),
             )
 
-            TriggerKeyDevice.Internal -> CheckBoxListItem(
+            KeyEventTriggerDevice.Internal -> CheckBoxListItem(
                 id = DEVICE_ID_INTERNAL,
                 isChecked = isChecked,
                 label = getString(R.string.this_device),
             )
 
-            is TriggerKeyDevice.External -> {
+            is KeyEventTriggerDevice.External -> {
                 val name = if (showDeviceDescriptors) {
                     InputDeviceUtils.appendDeviceDescriptorToName(
                         device.descriptor,
@@ -436,92 +359,37 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    private suspend fun onTriggerModeChanged(mode: TriggerMode) {
-        if (mode is TriggerMode.Parallel) {
-            if (onboarding.shownParallelTriggerOrderExplanation) {
-                return
-            }
-
-            val dialog = DialogModel.Ok(
-                message = getString(R.string.dialog_message_parallel_trigger_order),
-            )
-
-            showDialog("parallel_trigger_order", dialog) ?: return
-
-            onboarding.shownParallelTriggerOrderExplanation = true
+    private suspend fun onRecordKeyEvent(key: RecordedKey.KeyEvent) {
+        val triggerDevice = if (key.isExternalDevice) {
+            KeyEventTriggerDevice.External(key.deviceDescriptor, key.deviceName)
+        } else {
+            KeyEventTriggerDevice.Internal
         }
 
-        if (mode is TriggerMode.Sequence) {
-            if (onboarding.shownSequenceTriggerExplanation) {
-                return
-            }
-
-            val dialog = DialogModel.Ok(
-                message = getString(R.string.dialog_message_sequence_trigger_explanation),
-            )
-
-            showDialog("sequence_trigger_explanation", dialog)
-                ?: return
-
-            onboarding.shownSequenceTriggerExplanation = true
-        }
+        config.addKeyEventTriggerKey(
+            key.keyCode,
+            key.scanCode,
+            triggerDevice,
+            key.detectionSource != InputEventDetectionSource.ACCESSIBILITY_SERVICE,
+        )
     }
 
-    private suspend fun onRecordTriggerKey(key: RecordedKey) {
-        // Add the trigger key before showing the dialog so it doesn't
-        // need to be dismissed before it is added.
-        config.addKeyCodeTriggerKey(key.keyCode, key.device, key.detectionSource)
+    private suspend fun onRecordEvdevEvent(key: RecordedKey.EvdevEvent) {
+        config.addEvdevTriggerKey(
+            key.keyCode,
+            key.scanCode,
+            EvdevDeviceInfo(
+                name = key.device.name,
+                bus = key.device.bus,
+                vendor = key.device.vendor,
+                product = key.device.product,
+            ),
+        )
 
-        if (key.keyCode >= InputEventUtils.KEYCODE_TO_SCANCODE_OFFSET || key.keyCode < 0) {
-            if (onboarding.shownKeyCodeToScanCodeTriggerExplanation) {
-                return
-            }
-
-            val dialog = DialogModel.Alert(
-                title = getString(R.string.dialog_title_keycode_to_scancode_trigger_explanation),
-                message = getString(R.string.dialog_message_keycode_to_scancode_trigger_explanation),
-                positiveButtonText = getString(R.string.pos_understood),
-            )
-
-            val response = showDialog("keycode_to_scancode_message", dialog)
-
-            if (response == DialogResponse.POSITIVE) {
-                onboarding.shownKeyCodeToScanCodeTriggerExplanation = true
-            }
-        }
-
-        if (key.keyCode == KeyEvent.KEYCODE_CAPS_LOCK) {
-            val dialog = DialogModel.Ok(
-                message = getString(R.string.dialog_message_enable_physical_keyboard_caps_lock_a_keyboard_layout),
-            )
-
-            showDialog("caps_lock_message", dialog)
-        }
-
-        if (key.keyCode == KeyEvent.KEYCODE_BACK) {
-            val dialog = DialogModel.Ok(
-                message = getString(R.string.dialog_message_screen_pinning_warning),
-            )
-
-            showDialog("screen_pinning_message", dialog)
-        }
-
-        // Issue #491. Some key codes can only be detected through an input method. This will
-        // be shown to the user by showing a keyboard icon next to the trigger key name so
-        // explain this to the user.
-        if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD && displayKeyMap.showTriggerKeyboardIconExplanation.first()) {
-            val dialog = DialogModel.Alert(
-                title = getString(R.string.dialog_title_keyboard_icon_means_ime_detection),
-                message = getString(R.string.dialog_message_keyboard_icon_means_ime_detection),
-                negativeButtonText = getString(R.string.neg_dont_show_again),
-                positiveButtonText = getString(R.string.pos_ok),
-            )
-
-            val response = showDialog("keyboard_icon_explanation", dialog)
-
-            if (response == DialogResponse.NEGATIVE) {
-                displayKeyMap.neverShowTriggerKeyboardIconExplanation()
-            }
+        if (key.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ||
+            key.keyCode == KeyEvent.KEYCODE_VOLUME_UP
+        ) {
+            neverShowTipAgain(OnboardingTipDelegateImpl.VOLUME_BUTTONS_PRO_MODE_TIP_ID)
         }
     }
 
@@ -563,15 +431,15 @@ abstract class BaseConfigTriggerViewModel(
     fun onSelectTriggerKeyDevice(descriptor: String) {
         triggerKeyOptionsUid.value?.let { triggerKeyUid ->
             val device = when (descriptor) {
-                DEVICE_ID_ANY -> TriggerKeyDevice.Any
-                DEVICE_ID_INTERNAL -> TriggerKeyDevice.Internal
+                DEVICE_ID_ANY -> KeyEventTriggerDevice.Any
+                DEVICE_ID_INTERNAL -> KeyEventTriggerDevice.Internal
                 else -> {
                     val device = config.getAvailableTriggerKeyDevices()
-                        .filterIsInstance<TriggerKeyDevice.External>()
+                        .filterIsInstance<KeyEventTriggerDevice.External>()
                         .firstOrNull { it.descriptor == descriptor }
                         ?: return
 
-                    TriggerKeyDevice.External(
+                    KeyEventTriggerDevice.External(
                         device.descriptor,
                         device.name,
                     )
@@ -597,11 +465,17 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
+    fun onSelectScanCodeDetection(isSelected: Boolean) {
+        triggerKeyOptionsUid.value?.let { triggerKeyUid ->
+            config.setScanCodeDetectionEnabled(triggerKeyUid, isSelected)
+        }
+    }
+
     fun onRecordTriggerButtonClick() {
-        coroutineScope.launch {
+        viewModelScope.launch {
             val recordTriggerState = recordTrigger.state.firstOrNull() ?: return@launch
 
-            val result = when (recordTriggerState) {
+            val result: KMResult<*> = when (recordTriggerState) {
                 is RecordTriggerState.CountingDown -> {
                     isRecordingCompletionUserInitiated = true
                     recordTrigger.stopRecording()
@@ -609,7 +483,7 @@ abstract class BaseConfigTriggerViewModel(
 
                 is RecordTriggerState.Completed,
                 RecordTriggerState.Idle,
-                -> recordTrigger.startRecording()
+                    -> recordTrigger.startRecording(enableEvdevRecording = false)
             }
 
             // Show dialog if the accessibility service is disabled or crashed
@@ -617,37 +491,39 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    suspend fun handleServiceEventResult(result: KMResult<*>) {
-        if (result is KMError.AccessibilityServiceDisabled) {
-            ViewModelHelper.handleAccessibilityServiceStoppedDialog(
-                resourceProvider = this@BaseConfigTriggerViewModel,
-                dialogProvider = this@BaseConfigTriggerViewModel,
-                startService = displayKeyMap::startAccessibilityService,
-            )
+    fun handleServiceEventResult(result: KMResult<*>) {
+        if (result is AccessibilityServiceError) {
+            showFixAccessibilityServiceDialog(result)
         }
+    }
 
-        if (result is KMError.AccessibilityServiceCrashed) {
-            ViewModelHelper.handleAccessibilityServiceCrashedDialog(
-                resourceProvider = this@BaseConfigTriggerViewModel,
-                dialogProvider = this@BaseConfigTriggerViewModel,
-                restartService = displayKeyMap::restartAccessibilityService,
-            )
+    override fun onTipButtonClick(tipId: String) {
+        when (tipId) {
+            OnboardingTipDelegateImpl.CAPS_LOCK_PRO_MODE_COMPATIBILITY_TIP_ID -> {
+                showTriggerSetup(TriggerSetupShortcut.KEYBOARD, forceProMode = true)
+            }
+
+            OnboardingTipDelegateImpl.VOLUME_BUTTONS_PRO_MODE_TIP_ID -> {
+                showTriggerSetup(TriggerSetupShortcut.VOLUME, forceProMode = true)
+            }
         }
     }
 
     open fun onTriggerErrorClick(error: TriggerError) {
-        coroutineScope.launch {
+        viewModelScope.launch {
             when (error) {
                 TriggerError.DND_ACCESS_DENIED ->
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@BaseConfigTriggerViewModel,
                         dialogProvider = this@BaseConfigTriggerViewModel,
-                        neverShowDndTriggerErrorAgain = { displayKeyMap.neverShowDndTriggerError() },
+                        neverShowDndTriggerErrorAgain = {
+                            displayKeyMap.neverShowDndTriggerError()
+                        },
                         fixError = { displayKeyMap.fixTriggerError(error) },
                     )
 
                 TriggerError.DPAD_IME_NOT_SELECTED -> {
-                    showDpadTriggerSetupBottomSheet = true
+                    showTriggerSetup(TriggerSetupShortcut.GAMEPAD)
                 }
 
                 else -> displayKeyMap.fixTriggerError(error)
@@ -658,7 +534,6 @@ abstract class BaseConfigTriggerViewModel(
     private fun createListItems(
         keyMap: KeyMap,
         showDeviceDescriptors: Boolean,
-        shortcutCount: Int,
         triggerErrorSnapshot: TriggerErrorSnapshot,
     ): List<TriggerKeyListItemModel> {
         val trigger = keyMap.trigger
@@ -672,10 +547,9 @@ abstract class BaseConfigTriggerViewModel(
                 key.clickType
             }
 
-            val linkType = when {
-                trigger.mode is TriggerMode.Sequence && (index < trigger.keys.lastIndex) -> LinkType.ARROW
-                (index < trigger.keys.lastIndex) -> LinkType.PLUS
-                else -> LinkType.HIDDEN
+            val linkType = when (trigger.mode) {
+                is TriggerMode.Sequence -> LinkType.ARROW
+                else -> LinkType.PLUS
             }
 
             when (key) {
@@ -695,11 +569,11 @@ abstract class BaseConfigTriggerViewModel(
                     error = error,
                 )
 
-                is KeyCodeTriggerKey -> TriggerKeyListItemModel.KeyCode(
+                is KeyEventTriggerKey -> TriggerKeyListItemModel.KeyEvent(
                     id = key.uid,
                     keyName = getTriggerKeyName(key),
                     clickType = clickType,
-                    extraInfo = getTriggerKeyExtraInfo(
+                    extraInfo = getKeyEventTriggerKeyExtraInfo(
                         key,
                         showDeviceDescriptors,
                     ).takeIf { it.isNotBlank() },
@@ -725,17 +599,22 @@ abstract class BaseConfigTriggerViewModel(
                         )
                     }
                 }
+
+                is EvdevTriggerKey -> TriggerKeyListItemModel.EvdevEvent(
+                    id = key.uid,
+                    keyName = key.getCodeLabel(this),
+                    clickType = clickType,
+                    extraInfo = getEvdevTriggerKeyExtraInfo(key),
+                    linkType = linkType,
+                    error = error,
+                )
             }
         }
     }
 
-    private fun getTriggerKeyExtraInfo(
-        key: KeyCodeTriggerKey,
-        showDeviceDescriptors: Boolean,
-    ): String {
+    private fun getEvdevTriggerKeyExtraInfo(key: EvdevTriggerKey): String {
         return buildString {
-            append(getTriggerKeyDeviceName(key.device, showDeviceDescriptors))
-            val midDot = getString(R.string.middot)
+            append(key.device.name)
 
             if (!key.consumeEvent) {
                 append(" $midDot ${getString(R.string.flag_dont_override_default_action)}")
@@ -743,24 +622,36 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    private fun getTriggerKeyName(key: KeyCodeTriggerKey): String {
+    private fun getKeyEventTriggerKeyExtraInfo(
+        key: KeyEventTriggerKey,
+        showDeviceDescriptors: Boolean,
+    ): String {
         return buildString {
-            append(InputEventStrings.keyCodeToString(key.keyCode))
+            append(getTriggerKeyDeviceName(key.device, showDeviceDescriptors))
 
-            if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD) {
-                val midDot = getString(R.string.middot)
+            if (!key.consumeEvent) {
+                append(" $midDot ${getString(R.string.flag_dont_override_default_action)}")
+            }
+        }
+    }
+
+    private fun getTriggerKeyName(key: KeyEventTriggerKey): String {
+        return buildString {
+            append(key.getCodeLabel(this@BaseConfigTriggerViewModel))
+
+            if (key.requiresIme) {
                 append(" $midDot ${getString(R.string.flag_detect_from_input_method)}")
             }
         }
     }
 
     private fun getTriggerKeyDeviceName(
-        device: TriggerKeyDevice,
+        device: KeyEventTriggerDevice,
         showDeviceDescriptors: Boolean,
     ): String = when (device) {
-        is TriggerKeyDevice.Internal -> getString(R.string.this_device)
-        is TriggerKeyDevice.Any -> getString(R.string.any_device)
-        is TriggerKeyDevice.External -> {
+        is KeyEventTriggerDevice.Internal -> getString(R.string.this_device)
+        is KeyEventTriggerDevice.Any -> getString(R.string.any_device)
+        is KeyEventTriggerDevice.External -> {
             if (showDeviceDescriptors) {
                 InputDeviceUtils.appendDeviceDescriptorToName(
                     device.descriptor,
@@ -772,49 +663,12 @@ abstract class BaseConfigTriggerViewModel(
         }
     }
 
-    fun onEnableGuiKeyboardClick() {
-        coroutineScope.launch {
-            setupGuiKeyboard.enableInputMethod()
-        }
-    }
-
-    fun onChooseGuiKeyboardClick() {
-        setupGuiKeyboard.chooseInputMethod()
-    }
-
-    fun onNeverShowSetupDpadClick() {
-        displayKeyMap.neverShowDpadImeSetupError()
-    }
-
-    fun onNeverShowNoKeysRecordedClick() {
-        onboarding.neverShowNoKeysRecordedBottomSheet()
-    }
-
-    fun onRecordTriggerTapTargetCompleted() {
-        onboarding.completedTapTarget(OnboardingTapTarget.RECORD_TRIGGER)
-    }
-
-    fun onSkipTapTargetClick() {
-        onboarding.skipTapTargetOnboarding()
-    }
-
-    fun onAdvancedTriggersTapTargetCompleted() {
-        onboarding.completedTapTarget(OnboardingTapTarget.ADVANCED_TRIGGERS)
-    }
-
     abstract fun onEditFloatingButtonClick()
     abstract fun onEditFloatingLayoutClick()
 }
 
 sealed class ConfigTriggerState {
-    abstract val shortcuts: Set<ShortcutModel<TriggerKeyShortcut>>
-    abstract val showAdvancedTriggersTapTarget: Boolean
-
-    data class Empty(
-        override val shortcuts: Set<ShortcutModel<TriggerKeyShortcut>> = emptySet(),
-        val showRecordTriggerTapTarget: Boolean = false,
-        override val showAdvancedTriggersTapTarget: Boolean = false,
-    ) : ConfigTriggerState()
+    data object Empty : ConfigTriggerState()
 
     data class Loaded(
         val triggerKeys: List<TriggerKeyListItemModel> = emptyList(),
@@ -824,8 +678,6 @@ sealed class ConfigTriggerState {
         val checkedTriggerMode: TriggerMode = TriggerMode.Undefined,
         val triggerModeButtonsEnabled: Boolean = false,
         val triggerModeButtonsVisible: Boolean = false,
-        override val shortcuts: Set<ShortcutModel<TriggerKeyShortcut>> = emptySet(),
-        override val showAdvancedTriggersTapTarget: Boolean = false,
     ) : ConfigTriggerState()
 }
 
@@ -835,7 +687,16 @@ sealed class TriggerKeyListItemModel {
     abstract val error: TriggerError?
     abstract val clickType: ClickType
 
-    data class KeyCode(
+    data class KeyEvent(
+        override val id: String,
+        override val linkType: LinkType,
+        val keyName: String,
+        override val clickType: ClickType,
+        val extraInfo: String?,
+        override val error: TriggerError?,
+    ) : TriggerKeyListItemModel()
+
+    data class EvdevEvent(
         override val id: String,
         override val linkType: LinkType,
         val keyName: String,
@@ -884,11 +745,31 @@ sealed class TriggerKeyOptionsState {
     abstract val showClickTypes: Boolean
     abstract val showLongPressClickType: Boolean
 
-    data class KeyCode(
+    data class KeyEvent(
         val doNotRemapChecked: Boolean = false,
         override val clickType: ClickType,
         override val showClickTypes: Boolean,
         val devices: List<CheckBoxListItem>,
+        val keyCode: Int,
+        val scanCode: Int?,
+        // Whether scan code is checked.
+        val isScanCodeDetectionSelected: Boolean,
+        // Whether the setting should be enabled and allow user interaction.
+        val isScanCodeSettingEnabled: Boolean,
+    ) : TriggerKeyOptionsState() {
+        override val showLongPressClickType: Boolean = true
+    }
+
+    data class EvdevEvent(
+        val doNotRemapChecked: Boolean = false,
+        override val clickType: ClickType,
+        override val showClickTypes: Boolean,
+        val keyCode: Int,
+        val scanCode: Int,
+        // Whether scan code is checked.
+        val isScanCodeDetectionSelected: Boolean,
+        // Whether the setting should be enabled and allow user interaction.
+        val isScanCodeSettingEnabled: Boolean,
     ) : TriggerKeyOptionsState() {
         override val showLongPressClickType: Boolean = true
     }

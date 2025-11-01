@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import io.github.sds100.keymapper.base.keymaps.chipHeight
+import io.github.sds100.keymapper.base.home.chipHeight
 
 @Composable
 fun CompactChip(
@@ -58,11 +58,7 @@ fun CompactChip(
 }
 
 @Composable
-fun ErrorCompactChip(
-    onClick: () -> Unit,
-    text: String,
-    enabled: Boolean,
-) {
+fun ErrorCompactChip(onClick: () -> Unit, text: String, enabled: Boolean) {
     CompactChip(
         text = text,
         icon = {
@@ -80,11 +76,7 @@ fun ErrorCompactChip(
 }
 
 @Composable
-private fun CompactChipContent(
-    icon: @Composable (() -> Unit)?,
-    text: String,
-    contentColor: Color,
-) {
+private fun CompactChipContent(icon: @Composable (() -> Unit)?, text: String, contentColor: Color) {
     Row(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,

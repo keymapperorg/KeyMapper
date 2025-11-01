@@ -54,10 +54,7 @@ import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.flow.update
 
 @Composable
-fun ChooseConstraintScreen(
-    modifier: Modifier = Modifier,
-    viewModel: ChooseConstraintViewModel,
-) {
+fun ChooseConstraintScreen(modifier: Modifier = Modifier, viewModel: ChooseConstraintViewModel) {
     val listItems by viewModel.listItems.collectAsStateWithLifecycle()
     val query by viewModel.searchQuery.collectAsStateWithLifecycle()
 
@@ -103,7 +100,9 @@ private fun ChooseConstraintScreen(
                     }) {
                         Icon(
                             Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(R.string.bottom_app_bar_back_content_description),
+                            contentDescription = stringResource(
+                                R.string.bottom_app_bar_back_content_description,
+                            ),
                         )
                     }
 

@@ -18,9 +18,9 @@ import io.github.sds100.keymapper.base.utils.ui.str
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
+import javax.inject.Inject
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.N)
 @AndroidEntryPoint

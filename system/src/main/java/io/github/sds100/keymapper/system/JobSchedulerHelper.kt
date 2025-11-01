@@ -6,7 +6,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
-import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import io.github.sds100.keymapper.system.accessibility.ObserveEnabledAccessibilityServicesJob
 import io.github.sds100.keymapper.system.inputmethod.AndroidInputMethodAdapter
@@ -19,7 +18,6 @@ object JobSchedulerHelper {
     private const val ID_OBSERVE_ENABLED_INPUT_METHODS = 2
     private const val ID_OBSERVE_NOTIFICATION_LISTENERS = 3
 
-    @RequiresApi(Build.VERSION_CODES.N)
     fun observeEnabledNotificationListeners(ctx: Context) {
         val uri = Settings.Secure.getUriFor("enabled_notification_listeners")
 
@@ -42,7 +40,6 @@ object JobSchedulerHelper {
         ctx.getSystemService<JobScheduler>()?.schedule(builder.build())
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     fun observeEnabledAccessibilityServices(ctx: Context) {
         val uri = Settings.Secure.getUriFor(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
 
@@ -65,7 +62,6 @@ object JobSchedulerHelper {
         ctx.getSystemService<JobScheduler>()?.schedule(builder.build())
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     fun observeInputMethods(ctx: Context) {
         val enabledContentUri = JobInfo.TriggerContentUri(
             Settings.Secure.getUriFor(Settings.Secure.ENABLED_INPUT_METHODS),

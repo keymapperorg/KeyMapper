@@ -6,7 +6,6 @@ import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.repositories.RoomKeyMapRepository
-import io.github.sds100.keymapper.system.devices.InputDeviceInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,16 +24,6 @@ import org.mockito.kotlin.times
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class KeyMapRepositoryTest {
-
-    companion object {
-        private val FAKE_KEYBOARD = InputDeviceInfo(
-            descriptor = "fake_keyboard_descriptor",
-            name = "fake keyboard",
-            id = 1,
-            isExternal = true,
-            isGameController = false,
-        )
-    }
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testScope = TestScope(testDispatcher)
@@ -68,36 +57,37 @@ class KeyMapRepositoryTest {
      * issue #641
      */
     @Test
-    fun `if modifying a huge number of key maps then split job into batches`() = runTest(testDispatcher) {
-        // GIVEN
-        val keyMapList = sequence {
-            repeat(991) {
-                yield(KeyMapEntity(id = it.toLong()))
+    fun `if modifying a huge number of key maps then split job into batches`() =
+        runTest(testDispatcher) {
+            // GIVEN
+            val keyMapList = sequence {
+                repeat(991) {
+                    yield(KeyMapEntity(id = it.toLong()))
+                }
+            }.toList()
+
+            keyMaps.emit(keyMapList)
+
+            inOrder(mockDao) {
+                // WHEN, THEN
+                // split job up into batches of 200 key maps
+                repository.enableById(*keyMapList.map { it.uid }.toTypedArray())
+                verify(mockDao, times(5)).enableKeyMapByUid(anyVararg())
+
+                repository.disableById(*keyMapList.map { it.uid }.toTypedArray())
+                verify(mockDao, times(5)).disableKeyMapByUid(anyVararg())
+
+                repository.delete(*keyMapList.map { it.uid }.toTypedArray())
+                verify(mockDao, times(5)).deleteById(anyVararg())
+
+                repository.duplicate(*keyMapList.map { it.uid }.toTypedArray())
+                verify(mockDao, times(5)).insert(anyVararg())
+
+                repository.insert(*keyMapList.toTypedArray())
+                verify(mockDao, times(5)).insert(anyVararg())
+
+                repository.update(*keyMapList.toTypedArray())
+                verify(mockDao, times(5)).update(anyVararg())
             }
-        }.toList()
-
-        keyMaps.emit(keyMapList)
-
-        inOrder(mockDao) {
-            // WHEN, THEN
-            // split job up into batches of 200 key maps
-            repository.enableById(*keyMapList.map { it.uid }.toTypedArray())
-            verify(mockDao, times(5)).enableKeyMapByUid(anyVararg())
-
-            repository.disableById(*keyMapList.map { it.uid }.toTypedArray())
-            verify(mockDao, times(5)).disableKeyMapByUid(anyVararg())
-
-            repository.delete(*keyMapList.map { it.uid }.toTypedArray())
-            verify(mockDao, times(5)).deleteById(anyVararg())
-
-            repository.duplicate(*keyMapList.map { it.uid }.toTypedArray())
-            verify(mockDao, times(5)).insert(anyVararg())
-
-            repository.insert(*keyMapList.toTypedArray())
-            verify(mockDao, times(5)).insert(anyVararg())
-
-            repository.update(*keyMapList.toTypedArray())
-            verify(mockDao, times(5)).update(anyVararg())
         }
-    }
 }

@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.sorting.comparators
 
 import io.github.sds100.keymapper.base.constraints.Constraint
+import io.github.sds100.keymapper.base.constraints.ConstraintData
 import io.github.sds100.keymapper.base.constraints.DisplayConstraintUseCase
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -18,10 +19,7 @@ class KeyMapConstraintsComparator(
      */
     private val reverse: Boolean = false,
 ) : Comparator<KeyMap> {
-    override fun compare(
-        keyMap: KeyMap?,
-        otherKeyMap: KeyMap?,
-    ): Int {
+    override fun compare(keyMap: KeyMap?, otherKeyMap: KeyMap?): Int {
         if (keyMap == null || otherKeyMap == null) {
             return 0
         }
@@ -54,10 +52,7 @@ class KeyMapConstraintsComparator(
         result
     }
 
-    private fun compareConstraints(
-        constraint: Constraint,
-        otherConstraint: Constraint,
-    ): Int {
+    private fun compareConstraints(constraint: Constraint, otherConstraint: Constraint): Int {
         // If constraints are different, compare their types so they are ordered
         // by their type.
         //
@@ -86,52 +81,63 @@ class KeyMapConstraintsComparator(
     }
 
     private fun getSecondarySortField(constraint: Constraint): KMResult<String> {
-        return when (constraint) {
-            is Constraint.AppInForeground -> displayConstraints.getAppName(constraint.packageName)
-            is Constraint.AppNotInForeground -> displayConstraints.getAppName(constraint.packageName)
-            is Constraint.AppNotPlayingMedia -> displayConstraints.getAppName(constraint.packageName)
-            is Constraint.AppPlayingMedia -> displayConstraints.getAppName(constraint.packageName)
-            is Constraint.BtDeviceConnected -> Success(constraint.deviceName)
-            is Constraint.BtDeviceDisconnected -> Success(constraint.deviceName)
-            is Constraint.Charging -> Success("")
-            is Constraint.DeviceIsLocked -> Success("")
-            is Constraint.DeviceIsUnlocked -> Success("")
-            is Constraint.Discharging -> Success("")
-            is Constraint.FlashlightOff -> Success(constraint.lens.toString())
-            is Constraint.FlashlightOn -> Success(constraint.lens.toString())
-            is Constraint.ImeChosen -> Success(constraint.imeLabel)
-            is Constraint.ImeNotChosen -> Success(constraint.imeLabel)
-            is Constraint.InPhoneCall -> Success("")
-            is Constraint.MediaPlaying -> Success("")
-            is Constraint.NoMediaPlaying -> Success("")
-            is Constraint.NotInPhoneCall -> Success("")
-            is Constraint.OrientationCustom -> Success(constraint.orientation.toString())
-            is Constraint.OrientationLandscape -> Success("")
-            is Constraint.OrientationPortrait -> Success("")
-            is Constraint.PhoneRinging -> Success("")
-            is Constraint.ScreenOff -> Success("")
-            is Constraint.ScreenOn -> Success("")
-            is Constraint.WifiConnected -> if (constraint.ssid == null) {
+        return when (constraint.data) {
+            is ConstraintData.AppInForeground -> displayConstraints.getAppName(
+                constraint.data.packageName,
+            )
+            is ConstraintData.AppNotInForeground -> displayConstraints.getAppName(
+                constraint.data.packageName,
+            )
+            is ConstraintData.AppNotPlayingMedia -> displayConstraints.getAppName(
+                constraint.data.packageName,
+            )
+            is ConstraintData.AppPlayingMedia -> displayConstraints.getAppName(
+                constraint.data.packageName,
+            )
+            is ConstraintData.BtDeviceConnected -> Success(constraint.data.deviceName)
+            is ConstraintData.BtDeviceDisconnected -> Success(constraint.data.deviceName)
+            is ConstraintData.Charging -> Success("")
+            is ConstraintData.DeviceIsLocked -> Success("")
+            is ConstraintData.DeviceIsUnlocked -> Success("")
+            is ConstraintData.Discharging -> Success("")
+            is ConstraintData.FlashlightOff -> Success(constraint.data.lens.toString())
+            is ConstraintData.FlashlightOn -> Success(constraint.data.lens.toString())
+            is ConstraintData.ImeChosen -> Success(constraint.data.imeLabel)
+            is ConstraintData.ImeNotChosen -> Success(constraint.data.imeLabel)
+            is ConstraintData.InPhoneCall -> Success("")
+            is ConstraintData.MediaPlaying -> Success("")
+            is ConstraintData.NoMediaPlaying -> Success("")
+            is ConstraintData.NotInPhoneCall -> Success("")
+            is ConstraintData.OrientationCustom -> Success(constraint.data.orientation.toString())
+            is ConstraintData.OrientationLandscape -> Success("")
+            is ConstraintData.OrientationPortrait -> Success("")
+            is ConstraintData.PhoneRinging -> Success("")
+            is ConstraintData.ScreenOff -> Success("")
+            is ConstraintData.ScreenOn -> Success("")
+            is ConstraintData.WifiConnected -> if (constraint.data.ssid == null) {
                 Success("")
             } else {
-                Success(constraint.ssid)
+                Success(constraint.data.ssid)
             }
 
-            is Constraint.WifiDisconnected -> if (constraint.ssid == null) {
+            is ConstraintData.WifiDisconnected -> if (constraint.data.ssid == null) {
                 Success("")
             } else {
-                Success(constraint.ssid)
+                Success(constraint.data.ssid)
             }
 
-            is Constraint.WifiOff -> Success("")
-            is Constraint.WifiOn -> Success("")
-            is Constraint.LockScreenNotShowing -> Success("")
-            is Constraint.LockScreenShowing -> Success("")
-            is Constraint.Time -> Success(
-                constraint.startTime
+            is ConstraintData.WifiOff -> Success("")
+            is ConstraintData.WifiOn -> Success("")
+            is ConstraintData.LockScreenNotShowing -> Success("")
+            is ConstraintData.LockScreenShowing -> Success("")
+            is ConstraintData.Time -> Success(
+                constraint.data.startTime
                     .toEpochSecond(LocalDate.now(), ZoneOffset.UTC)
                     .toString(),
             )
+
+            ConstraintData.HingeClosed -> Success("")
+            ConstraintData.HingeOpen -> Success("")
         }
     }
 }

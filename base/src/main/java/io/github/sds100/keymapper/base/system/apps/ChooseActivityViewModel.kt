@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.base.utils.ui.IconInfo
 import io.github.sds100.keymapper.base.utils.ui.TintType
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.valueOrNull
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,12 +18,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
 @HiltViewModel
-class ChooseActivityViewModel @Inject constructor(
-    private val useCase: DisplayAppsUseCase,
-) : ViewModel() {
+class ChooseActivityViewModel @Inject constructor(private val useCase: DisplayAppsUseCase) :
+    ViewModel() {
 
     val searchQuery = MutableStateFlow<String?>(null)
 

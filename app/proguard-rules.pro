@@ -99,3 +99,139 @@
 -keep class com.google.gson.reflect.TypeToken
 -keep class * extends com.google.gson.reflect.TypeToken
 -keep public class * implements java.lang.reflect.Type
+
+-keep class io.github.sds100.keymapper.sysbridge.service.SystemBridge {
+    public <methods>;
+    native <methods>;
+    static <methods>;
+    <init>(...);
+}
+
+# Keep all AIDL interface classes and their methods
+-keep class io.github.sds100.keymapper.sysbridge.ISystemBridge** { *; }
+-keep class io.github.sds100.keymapper.sysbridge.IEvdevCallback** { *; }
+-keep class io.github.sds100.keymapper.sysbridge.IShizukuStarterService** { *; }
+
+-keepclassmembers class io.github.sds100.keymapper.sysbridge.shizuku.ShizukuStarterService {
+    public <init>(...);
+}
+
+# Keep binder provider classes
+-keep class io.github.sds100.keymapper.sysbridge.provider.** { *; }
+
+# Keep classes accessed via reflection or from system services
+-keep class io.github.sds100.keymapper.sysbridge.utils.** { *; }
+
+# Keep native method signatures
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+# Keep classes that might be accessed via ContentProvider
+-keep class io.github.sds100.keymapper.sysbridge.** extends android.content.ContentProvider { *; }
+
+# Keep parcelable classes used in AIDL
+-keep class io.github.sds100.keymapper.common.models.EvdevDeviceHandle { *; }
+
+# Keep all rikka.hidden classes and interfaces as they contain AIDL files
+-keep class rikka.hidden.** { *; }
+-keep interface rikka.hidden.** { *; }
+
+# Keep Android system API classes and interfaces that rikka.hidden depends on
+# android.app package classes
+-keep class android.app.ActivityManagerNative { *; }
+-keep class android.app.ActivityTaskManager$RootTaskInfo { *; }
+-keep class android.app.ContentProviderHolder { *; }
+-keep class android.app.IActivityManager** { *; }
+-keep class android.app.IApplicationThread** { *; }
+-keep class android.app.IProcessObserver** { *; }
+-keep class android.app.ITaskStackListener** { *; }
+-keep class android.app.IUidObserver** { *; }
+-keep class android.app.ProfilerInfo { *; }
+
+# android.content package classes
+-keep class android.content.IContentProvider** { *; }
+-keep class android.content.IIntentReceiver** { *; }
+
+# android.content.pm package classes
+-keep class android.content.pm.IPackageManager** { *; }
+-keep class android.content.pm.IPackageInstaller** { *; }
+-keep class android.content.pm.ILauncherApps** { *; }
+-keep class android.content.pm.IOnAppsChangedListener** { *; }
+-keep class android.content.pm.IPackageInstallerCallback** { *; }
+-keep class android.content.pm.ParceledListSlice { *; }
+-keep class android.content.pm.UserInfo { *; }
+
+# android.hardware package classes
+-keep class android.hardware.input.IInputManager** { *; }
+-keep class android.hardware.display.IDisplayManager** { *; }
+-keep class android.hardware.display.IDisplayManagerCallback** { *; }
+
+# android.os package classes
+-keep class android.os.BatteryProperty { *; }
+-keep class android.os.IBatteryPropertiesRegistrar** { *; }
+-keep class android.os.IDeviceIdleController { *; }
+-keep class android.os.IDeviceIdleController** { *; }
+-keep class android.os.IUserManager { *; }
+-keep class android.os.IUserManager** { *; }
+-keep class android.os.RemoteCallback** { *; }
+-keep class android.os.ServiceManager { *; }
+
+# android.view package classes
+-keep class android.view.DisplayInfo { *; }
+-keep class android.view.IWindowManager** { *; }
+
+# android.permission package classes
+-keep class android.permission.IPermissionManager** { *; }
+
+# android.net package classes
+-keep class android.net.wifi.IWifiManager** { *; }
+
+# com.android.internal package classes
+-keep class com.android.internal.app.IAppOpsActiveCallback** { *; }
+-keep class com.android.internal.app.IAppOpsNotedCallback** { *; }
+-keep class com.android.internal.app.IAppOpsService** { *; }
+-keep class com.android.internal.policy.IKeyguardLockedStateListener** { *; }
+
+# Keep all Android AIDL interfaces (they implement IInterface)
+-keep class android.** implements android.os.IInterface { *; }
+
+# Keep Android system service stubs and natives
+-keep class android.**Native { *; }
+-keep class android.**$Stub** { *; }
+-keep class android.**$Proxy** { *; }
+
+# Keep Android hidden/internal classes that might be accessed via reflection
+-dontwarn android.app.ActivityManagerNative
+-dontwarn android.app.ActivityTaskManager$**
+-dontwarn android.app.ContentProviderHolder
+-dontwarn android.app.IActivityManager**
+-dontwarn android.app.IApplicationThread**
+-dontwarn android.app.IProcessObserver**
+-dontwarn android.app.ITaskStackListener**
+-dontwarn android.app.IUidObserver**
+-dontwarn android.app.ProfilerInfo
+-dontwarn android.app.AppOpsManager$**
+-dontwarn android.content.IContentProvider**
+-dontwarn android.content.IIntentReceiver**
+-dontwarn android.content.pm.ILauncherApps**
+-dontwarn android.content.pm.IOnAppsChangedListener**
+-dontwarn android.content.pm.IPackageInstallerCallback**
+-dontwarn android.content.pm.ParceledListSlice
+-dontwarn android.content.pm.UserInfo
+-dontwarn android.content.pm.PackageManagerHidden
+-dontwarn android.hardware.display.IDisplayManager**
+-dontwarn android.hardware.display.IDisplayManagerCallback**
+-dontwarn android.os.BatteryProperty
+-dontwarn android.os.IBatteryPropertiesRegistrar**
+-dontwarn android.os.IDeviceIdleController
+-dontwarn android.os.IDeviceIdleController**
+-dontwarn android.os.IUserManager
+-dontwarn android.os.IUserManager**
+-dontwarn android.os.RemoteCallback**
+-dontwarn android.os.ServiceManager
+-dontwarn android.os.UserHandle$**
+-dontwarn android.view.DisplayInfo
+-dontwarn android.view.IWindowManager**
+-dontwarn com.android.internal.app.**
+-dontwarn com.android.internal.policy.**

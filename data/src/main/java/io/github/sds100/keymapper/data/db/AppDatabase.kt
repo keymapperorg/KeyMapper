@@ -33,6 +33,7 @@ import io.github.sds100.keymapper.data.migration.AutoMigration15To16
 import io.github.sds100.keymapper.data.migration.AutoMigration16To17
 import io.github.sds100.keymapper.data.migration.AutoMigration18To19
 import io.github.sds100.keymapper.data.migration.AutoMigration19To20
+import io.github.sds100.keymapper.data.migration.AutoMigration20To21
 import io.github.sds100.keymapper.data.migration.Migration10To11
 import io.github.sds100.keymapper.data.migration.Migration11To12
 import io.github.sds100.keymapper.data.migration.Migration13To14
@@ -46,7 +47,11 @@ import io.github.sds100.keymapper.data.migration.Migration8To9
 import io.github.sds100.keymapper.data.migration.Migration9To10
 
 @Database(
-    entities = [KeyMapEntity::class, FingerprintMapEntity::class, LogEntryEntity::class, FloatingLayoutEntity::class, FloatingButtonEntity::class, GroupEntity::class, AccessibilityNodeEntity::class],
+    entities = [
+        KeyMapEntity::class, FingerprintMapEntity::class,
+        LogEntryEntity::class, FloatingLayoutEntity::class,
+        FloatingButtonEntity::class, GroupEntity::class, AccessibilityNodeEntity::class,
+    ],
     version = DATABASE_VERSION,
     exportSchema = true,
     autoMigrations = [
@@ -60,6 +65,8 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
         AutoMigration(from = 18, to = 19, spec = AutoMigration18To19::class),
         // Adds interacted, tooltip, and hint fields to accessibility node entity
         AutoMigration(from = 19, to = 20, spec = AutoMigration19To20::class),
+        // Adds floating button settings to show over status bar, and show over input method
+        AutoMigration(from = 20, to = 21, spec = AutoMigration20To21::class),
     ],
 )
 @TypeConverters(
@@ -72,7 +79,7 @@ import io.github.sds100.keymapper.data.migration.Migration9To10
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         const val DATABASE_NAME = "key_map_database"
-        const val DATABASE_VERSION = 20
+        const val DATABASE_VERSION = 21
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
 
@@ -138,7 +145,9 @@ abstract class AppDatabase : RoomDatabase() {
 
         val MIGRATION_12_13 = object : Migration(12, 13) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("CREATE TABLE `log` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `time` INTEGER NOT NULL, `severity` INTEGER NOT NULL, `message` TEXT NOT NULL)")
+                database.execSQL(
+                    "CREATE TABLE `log` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `time` INTEGER NOT NULL, `severity` INTEGER NOT NULL, `message` TEXT NOT NULL)",
+                )
             }
         }
 
@@ -155,9 +164,8 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 
-    class RoomMigration11To12(
-        private val fingerprintMapDataStore: DataStore<Preferences>,
-    ) : Migration(11, 12) {
+    class RoomMigration11To12(private val fingerprintMapDataStore: DataStore<Preferences>) :
+        Migration(11, 12) {
         override fun migrate(database: SupportSQLiteDatabase) {
             Migration11To12.migrateDatabase(database, fingerprintMapDataStore)
         }

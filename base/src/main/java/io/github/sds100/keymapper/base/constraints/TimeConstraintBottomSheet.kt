@@ -45,8 +45,8 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.OptionsHeaderRow
 import io.github.sds100.keymapper.common.utils.TimeUtils
-import kotlinx.coroutines.launch
 import java.time.format.FormatStyle
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,7 +88,7 @@ fun TimeConstraintBottomSheet(viewModel: ChooseConstraintViewModel) {
 private fun TimeConstraintBottomSheet(
     sheetState: SheetState,
     onDismissRequest: () -> Unit,
-    state: Constraint.Time,
+    state: ConstraintData.Time,
     onSelectStartTime: (Int, Int) -> Unit = { _, _ -> },
     onSelectEndTime: (Int, Int) -> Unit = { _, _ -> },
     onDoneClick: () -> Unit = {},
@@ -173,7 +173,9 @@ private fun TimeConstraintBottomSheet(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Edit,
-                        contentDescription = stringResource(R.string.constraint_time_bottom_sheet_edit_start_time),
+                        contentDescription = stringResource(
+                            R.string.constraint_time_bottom_sheet_edit_start_time,
+                        ),
                     )
                 }
             }
@@ -204,7 +206,9 @@ private fun TimeConstraintBottomSheet(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Edit,
-                        contentDescription = stringResource(R.string.constraint_time_bottom_sheet_edit_end_time),
+                        contentDescription = stringResource(
+                            R.string.constraint_time_bottom_sheet_edit_end_time,
+                        ),
                     )
                 }
             }
@@ -245,11 +249,7 @@ private fun TimeConstraintBottomSheet(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TimePickerDialog(
-    state: TimePickerState,
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
-) {
+private fun TimePickerDialog(state: TimePickerState, onDismiss: () -> Unit, onConfirm: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         dismissButton = {
@@ -282,7 +282,7 @@ private fun Preview() {
         TimeConstraintBottomSheet(
             sheetState = sheetState,
             onDismissRequest = {},
-            state = Constraint.Time(
+            state = ConstraintData.Time(
                 startHour = 0,
                 startMinute = 0,
                 endHour = 23,

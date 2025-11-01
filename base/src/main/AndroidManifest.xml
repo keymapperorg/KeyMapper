@@ -5,6 +5,7 @@
 
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.READ_LOGS"/>
 
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
@@ -48,7 +49,7 @@
 
         <!-- Use a different task affinity so this activity can be opened at the same time as others -->
         <activity
-            android:name=".keymaps.CreateKeyMapShortcutActivity"
+            android:name=".shortcuts.CreateKeyMapShortcutActivity"
             android:exported="true"
             android:label="@string/shortcut_label_action"
             android:taskAffinity="">

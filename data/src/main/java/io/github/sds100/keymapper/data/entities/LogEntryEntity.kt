@@ -20,5 +20,6 @@ data class LogEntryEntity(
         const val SEVERITY_ERROR = 0
         const val SEVERITY_DEBUG = 1
         const val SEVERITY_INFO = 2
+        const val SEVERITY_WARNING = 3
     }
 }

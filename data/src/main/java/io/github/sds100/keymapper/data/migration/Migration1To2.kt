@@ -14,7 +14,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.data.entities.ActionEntity
-import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
+import io.github.sds100.keymapper.data.entities.KeyEventTriggerKeyEntity
 import timber.log.Timber
 
 /**
@@ -103,7 +103,7 @@ object Migration1To2 {
 
                             createTriggerKey2(
                                 it.asInt,
-                                KeyCodeTriggerKeyEntity.DEVICE_ID_ANY_DEVICE,
+                                KeyEventTriggerKeyEntity.DEVICE_ID_ANY_DEVICE,
                                 clickType,
                             )
                         }
@@ -153,7 +153,11 @@ object Migration1To2 {
                         execSQL(
                             """
                             INSERT INTO 'new_keymaps' ('id', 'trigger', 'action_list', 'constraint_list', 'constraint_mode', 'flags', 'folder_name', 'is_enabled')
-                            VALUES ($id, '${gson.toJson(it)}', '${gson.toJson(actionListNew)}', '[]', 1, '$flagsNew', 'NULL', $isEnabledOld)
+                            VALUES ($id, '${gson.toJson(
+                                it,
+                            )}', '${gson.toJson(
+                                actionListNew,
+                            )}', '[]', 1, '$flagsNew', 'NULL', $isEnabledOld)
                             """.trimIndent(),
                         )
                         id++
@@ -168,7 +172,9 @@ object Migration1To2 {
 
         execSQL("DROP TABLE keymaps")
         execSQL("ALTER TABLE new_keymaps RENAME TO keymaps")
-        execSQL("CREATE TABLE IF NOT EXISTS `deviceinfo` (`descriptor` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`descriptor`))")
+        execSQL(
+            "CREATE TABLE IF NOT EXISTS `deviceinfo` (`descriptor` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`descriptor`))",
+        )
     }
 
     private fun createTriggerKey2(keyCode: Int, deviceId: String, clickType: Int) =
@@ -180,28 +186,22 @@ object Migration1To2 {
             )
         }
 
-    private fun createTrigger2(
-        keys: JsonArray = JsonArray(),
-        mode: Int = MODE_SEQUENCE,
-    ) = JsonObject().apply {
-        putAll(
-            "keys" to keys,
-            "extras" to JsonArray(),
-            "mode" to mode,
-        )
-    }
+    private fun createTrigger2(keys: JsonArray = JsonArray(), mode: Int = MODE_SEQUENCE) =
+        JsonObject().apply {
+            putAll(
+                "keys" to keys,
+                "extras" to JsonArray(),
+                "mode" to mode,
+            )
+        }
 
-    private fun createAction2(
-        type: String,
-        data: String,
-        extras: JsonArray,
-        flags: Int,
-    ) = JsonObject().apply {
-        putAll(
-            "type" to type,
-            "data" to data,
-            "extras" to extras,
-            "flags" to flags,
-        )
-    }
+    private fun createAction2(type: String, data: String, extras: JsonArray, flags: Int) =
+        JsonObject().apply {
+            putAll(
+                "type" to type,
+                "data" to data,
+                "extras" to extras,
+                "flags" to flags,
+            )
+        }
 }

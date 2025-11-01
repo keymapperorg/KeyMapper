@@ -6,22 +6,14 @@ import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.sin
 
-data class Line(
-    val start: Point,
-    val end: Point,
-)
+data class Line(val start: Point, val end: Point)
 
 object MathUtils {
     fun deg2rad(degrees: Double): Double = degrees * Math.PI / 180
 
     fun rad2deg(radians: Double): Double = radians * 180 / Math.PI
 
-    fun getPerpendicularOfLine(
-        p1: Point,
-        p2: Point,
-        length: Int,
-        reverse: Boolean = false,
-    ): Line {
+    fun getPerpendicularOfLine(p1: Point, p2: Point, length: Int, reverse: Boolean = false): Line {
         var px = p1.y - p2.y
         var py = p2.x - p1.x
 

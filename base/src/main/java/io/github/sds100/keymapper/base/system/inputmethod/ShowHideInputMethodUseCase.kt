@@ -2,10 +2,10 @@ package io.github.sds100.keymapper.base.system.inputmethod
 
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.runBlocking
-import javax.inject.Inject
 
 class ShowHideInputMethodUseCaseImpl @Inject constructor(
     private val serviceAdapter: AccessibilityServiceAdapter,

@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.utils.navigation
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,6 +15,7 @@ import androidx.navigation.NavDirections
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.fragment.findNavController
+import androidx.savedstate.SavedState
 import io.github.sds100.keymapper.base.NavBaseAppDirections
 import io.github.sds100.keymapper.base.actions.keyevent.ChooseKeyCodeFragment
 import io.github.sds100.keymapper.base.actions.keyevent.ConfigKeyEventActionFragment
@@ -27,6 +29,9 @@ import io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutFragment
 import io.github.sds100.keymapper.base.system.bluetooth.ChooseBluetoothDeviceFragment
 import io.github.sds100.keymapper.base.system.intents.ConfigIntentFragment
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
+import javax.inject.Inject
+import javax.inject.Singleton
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,9 +46,9 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
-import javax.inject.Singleton
+import timber.log.Timber
 
 /**
  * This class handles communication of navigation requests and results between view models,
@@ -86,6 +91,8 @@ class NavigationProviderImpl @Inject constructor() : NavigationProvider {
     private val _popBackStack = MutableStateFlow<Unit?>(null)
     val popBackStack: StateFlow<Unit?> = _popBackStack.asStateFlow()
 
+    var savedState: SavedState? = null
+
     fun handledPop() {
         _popBackStack.update { null }
     }
@@ -106,7 +113,11 @@ class NavigationProviderImpl @Inject constructor() : NavigationProvider {
         // wait for the view to collect so navigating can happen
         _onNavigate.subscriptionCount.first { it > 0 }
 
-        _onNavigate.emit(event)
+        Timber.d("Navigation: Navigating to ${event.destination} with key ${event.key}")
+
+        withContext(Dispatchers.Main.immediate) {
+            _onNavigate.emit(event)
+        }
     }
 
     override fun onNavResult(result: NavResult) {
@@ -114,15 +125,18 @@ class NavigationProviderImpl @Inject constructor() : NavigationProvider {
     }
 
     override suspend fun popBackStack() {
+        Timber.d("Navigation: Popping back stack")
         _popBackStack.value = Unit
     }
 
     /**
-     * @param data The data in String or JSON format to return.
+     * @param jsonData The data in String or JSON format to return.
      */
-    override suspend fun popBackStackWithResult(data: String) {
+    override suspend fun popBackStackWithResult(jsonData: String) {
         _onReturnResult.subscriptionCount.first { it > 0 }
-        _onReturnResult.emit(data)
+
+        Timber.d("Navigation: Popping back stack with result")
+        _onReturnResult.emit(jsonData)
     }
 }
 
@@ -138,7 +152,7 @@ interface NavigationProvider {
     val onReturnResult: StateFlow<String?>
     fun handledReturnResult()
 
-    suspend fun popBackStackWithResult(data: String)
+    suspend fun popBackStackWithResult(jsonData: String)
     suspend fun popBackStack()
 }
 
@@ -163,12 +177,10 @@ suspend inline fun <reified R> NavigationProvider.navigate(
 }
 
 @Composable
-fun SetupNavigation(
-    navigationProvider: NavigationProviderImpl,
-    navController: NavHostController,
-) {
+fun SetupNavigation(navigationProvider: NavigationProviderImpl, navController: NavHostController) {
+    @SuppressLint("StateFlowValueCalledInComposition")
     val navEvent: NavigateEvent? by navigationProvider.onNavigate
-        .collectAsStateWithLifecycle(null)
+        .collectAsStateWithLifecycle(navigationProvider.onNavigate.value)
 
     val returnResult: String? by navigationProvider.onReturnResult
         .collectAsStateWithLifecycle(null)
@@ -225,7 +237,7 @@ fun SetupNavigation(
             ?.savedStateHandle
             ?.set("request_key", navEvent.key)
 
-        navController.navigate(navEvent.destination)
+        navController.navigate(navEvent.destination, navOptions = navEvent.navOptions)
 
         navigationProvider.handledNavigateRequest()
     }
@@ -351,11 +363,10 @@ private fun getDirection(destination: NavDestination<*>, requestKey: String): Na
         )
 
         NavDestination.About -> NavBaseAppDirections.actionGlobalAboutFragment()
-        NavDestination.Settings -> NavBaseAppDirections.toSettingsFragment()
 
-        NavDestination.ShizukuSettings -> NavBaseAppDirections.toShizukuSettingsFragment()
-
-        else -> throw IllegalArgumentException("Can not find a direction for this destination: $destination")
+        else -> throw IllegalArgumentException(
+            "Can not find a direction for this destination: $destination",
+        )
     }
 }
 

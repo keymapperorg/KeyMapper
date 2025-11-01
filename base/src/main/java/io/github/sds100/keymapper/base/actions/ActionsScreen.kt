@@ -38,9 +38,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionBottomSheet
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
 import io.github.sds100.keymapper.base.keymaps.ShortcutRow
+import io.github.sds100.keymapper.base.onboarding.OnboardingTipModel
+import io.github.sds100.keymapper.base.onboarding.TipCard
 import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.DraggableItem
@@ -55,6 +58,7 @@ fun ActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewMod
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val state by viewModel.state.collectAsStateWithLifecycle()
     val optionsState by viewModel.actionOptionsState.collectAsStateWithLifecycle()
+    val actionTipModel by viewModel.actionsTip.collectAsStateWithLifecycle()
 
     if (optionsState != null) {
         ActionOptionsBottomSheet(
@@ -66,13 +70,31 @@ fun ActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewMod
         )
     }
 
-    EnableFlashlightActionBottomSheet(viewModel.createActionDelegate)
-    ChangeFlashlightStrengthActionBottomSheet(viewModel.createActionDelegate)
-    HttpRequestBottomSheet(viewModel.createActionDelegate)
+    val fixKeyEventActionState by viewModel.fixKeyEventActionState.collectAsStateWithLifecycle()
+
+    if (fixKeyEventActionState != null) {
+        FixKeyEventActionBottomSheet(
+            modifier = Modifier.systemBarsPadding(),
+            state = fixKeyEventActionState!!,
+            sheetState = sheetState,
+            onDismissRequest = viewModel::dismissFixKeyEventActionBottomSheet,
+            onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
+            onEnableProModeClick = viewModel::onEnableProModeForKeyEventActionsClick,
+            onEnableInputMethodClick = viewModel::onEnableImeClick,
+            onChooseInputMethodClick = viewModel::onChooseImeClick,
+            onDoneClick = viewModel::dismissFixKeyEventActionBottomSheet,
+            onSelectProMode = viewModel::onSelectProMode,
+            onSelectInputMethod = viewModel::onSelectInputMethod,
+            onAutoSwitchImeCheckedChange = viewModel::onAutoSwitchImeCheckedChange,
+        )
+    }
+
+    HandleActionBottomSheets(viewModel.createActionDelegate)
 
     ActionsScreen(
         modifier = modifier,
         state = state,
+        tipModel = actionTipModel,
         onRemoveClick = viewModel::onRemoveClick,
         onEditClick = viewModel::onEditClick,
         onMoveAction = viewModel::onMoveAction,
@@ -80,6 +102,8 @@ fun ActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewMod
         onClickShortcut = viewModel::onClickShortcut,
         onTestClick = viewModel::onTestClick,
         onAddClick = viewModel::onAddActionClick,
+        onActionTipDismiss = viewModel::onActionTipDismissClick,
+        onTipButtonClick = viewModel::onTipButtonClick,
     )
 }
 
@@ -87,6 +111,7 @@ fun ActionsScreen(modifier: Modifier = Modifier, viewModel: ConfigActionsViewMod
 private fun ActionsScreen(
     modifier: Modifier = Modifier,
     state: State<ConfigActionsState>,
+    tipModel: OnboardingTipModel? = null,
     onAddClick: () -> Unit = {},
     onRemoveClick: (String) -> Unit = {},
     onEditClick: (String) -> Unit = {},
@@ -94,6 +119,8 @@ private fun ActionsScreen(
     onFixErrorClick: (String) -> Unit = {},
     onTestClick: (String) -> Unit = {},
     onClickShortcut: (ActionData) -> Unit = {},
+    onActionTipDismiss: () -> Unit = {},
+    onTipButtonClick: (String) -> Unit = {},
 ) {
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
     var actionToDelete by rememberSaveable { mutableStateOf<String?>(null) }
@@ -125,6 +152,25 @@ private fun ActionsScreen(
         State.Loading -> Loading()
         is State.Data<ConfigActionsState> -> Surface(modifier = modifier) {
             Column {
+                Spacer(Modifier.height(8.dp))
+
+                // Display action tip if available
+                tipModel?.let { tip ->
+                    TipCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        title = tip.title,
+                        message = tip.message,
+                        isDismissable = tip.isDismissable,
+                        onDismiss = onActionTipDismiss,
+                        buttonText = tip.buttonText,
+                        onButtonClick = { onTipButtonClick(tip.id) },
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+                }
+
                 when (val data = state.data) {
                     is ConfigActionsState.Empty -> {
                         Column(
@@ -160,8 +206,6 @@ private fun ActionsScreen(
                     }
 
                     is ConfigActionsState.Loaded -> {
-                        Spacer(Modifier.height(8.dp))
-
                         if (data.actions.isNotEmpty()) {
                             Spacer(Modifier.height(8.dp))
 
@@ -314,7 +358,7 @@ private fun EmptyPreview() {
                         ),
                         ShortcutModel(
                             icon = ComposeIconInfo.Vector(Icons.Rounded.Pinch),
-                            text = "Pinch in with 2 finger(s) on coordinates 5/4 with a pinch distance of 8px in 200ms",
+                            text = "Pinch in with 2 finger(s) on coordinates 5/4",
                             data = ActionData.ConsumeKeyEvent,
                         ),
                     ),
@@ -361,7 +405,7 @@ private fun LoadedPreview() {
                         ),
                         ShortcutModel(
                             icon = ComposeIconInfo.Vector(Icons.Rounded.Pinch),
-                            text = "Pinch in with 2 finger(s) on coordinates 5/4 with a pinch distance of 8px in 200ms",
+                            text = "Pinch in with 2 finger(s) on coordinates 5/4",
                             data = ActionData.ConsumeKeyEvent,
                         ),
                     ),

@@ -117,7 +117,9 @@ fun ChooseElementScreen(
                     style = MaterialTheme.typography.titleLarge,
                 )
 
-                if (heightSizeClass == WindowHeightSizeClass.COMPACT || widthSizeClass >= WindowWidthSizeClass.EXPANDED) {
+                if (heightSizeClass == WindowHeightSizeClass.COMPACT ||
+                    widthSizeClass >= WindowWidthSizeClass.EXPANDED
+                ) {
                     Row {
                         InfoSection(
                             modifier = Modifier
@@ -179,7 +181,9 @@ private fun InfoSection(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = stringResource(R.string.action_interact_ui_element_choose_element_not_found_subtitle),
+                text = stringResource(
+                    R.string.action_interact_ui_element_choose_element_not_found_subtitle,
+                ),
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.titleSmall,
             )
@@ -189,7 +193,9 @@ private fun InfoSection(
 
         Text(
             modifier = Modifier.padding(horizontal = 16.dp),
-            text = stringResource(R.string.action_interact_ui_element_choose_element_not_found_text),
+            text = stringResource(
+                R.string.action_interact_ui_element_choose_element_not_found_text,
+            ),
             style = MaterialTheme.typography.bodyMedium,
         )
 
@@ -202,7 +208,9 @@ private fun InfoSection(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp),
-                text = stringResource(R.string.action_interact_ui_element_checkbox_additional_elements),
+                text = stringResource(
+                    R.string.action_interact_ui_element_checkbox_additional_elements,
+                ),
                 isChecked = state.data.showAdditionalElements,
                 onCheckedChange = onAdditionalElementsCheckedChange,
             )
@@ -213,7 +221,13 @@ private fun InfoSection(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 expanded = interactionTypeExpanded,
                 onExpandedChange = { interactionTypeExpanded = it },
-                label = { Text(stringResource(R.string.action_interact_ui_element_filter_interaction_type_dropdown)) },
+                label = {
+                    Text(
+                        stringResource(
+                            R.string.action_interact_ui_element_filter_interaction_type_dropdown,
+                        ),
+                    )
+                },
                 values = state.data.interactionTypes,
                 selectedValue = state.data.selectedInteractionType,
                 onValueChanged = onSelectInteractionType,
@@ -364,11 +378,7 @@ private fun UiElementListItem(
 }
 
 @Composable
-private fun TextWithLeadingLabel(
-    modifier: Modifier = Modifier,
-    title: String,
-    text: String,
-) {
+private fun TextWithLeadingLabel(modifier: Modifier = Modifier, title: String, text: String) {
     val text = buildAnnotatedString {
         pushStyle(
             MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold).toSpanStyle(),

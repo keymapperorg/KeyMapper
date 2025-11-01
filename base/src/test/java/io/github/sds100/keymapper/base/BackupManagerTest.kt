@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base
 
+import android.os.Build
 import com.github.salomonbrys.kotson.get
 import com.google.gson.Gson
 import com.google.gson.JsonParser
@@ -28,6 +29,7 @@ import io.github.sds100.keymapper.data.repositories.GroupRepository
 import io.github.sds100.keymapper.data.repositories.KeyMapRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.system.files.IFile
+import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,7 +61,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import timber.log.Timber
-import java.io.File
 
 @Suppress("BlockingMethodInNonBlockingContext")
 @ExperimentalCoroutinesApi
@@ -96,7 +97,9 @@ class BackupManagerTest {
         mockKeyMapRepository = mock()
         mockGroupRepository = mock<GroupRepository> {
             on { getAllGroups() } doReturn MutableStateFlow(emptyList())
-            on { getGroupsByParent(ArgumentMatchers.any()) }.thenReturn(MutableStateFlow(emptyList()))
+            on {
+                getGroupsByParent(ArgumentMatchers.any())
+            }.thenReturn(MutableStateFlow(emptyList()))
         }
 
         fakeFileAdapter = FakeFileAdapter(temporaryFolder)
@@ -118,7 +121,7 @@ class BackupManagerTest {
                 on { layouts } doReturn MutableStateFlow(State.Data(emptyList()))
             },
             groupRepository = mockGroupRepository,
-            buildConfigProvider = TestBuildConfigProvider(),
+            buildConfigProvider = TestBuildConfigProvider(sdkInt = Build.VERSION_CODES.TIRAMISU),
         )
 
         parser = JsonParser()
@@ -131,58 +134,40 @@ class BackupManagerTest {
     }
 
     /**
-     * Issue #1655. If the list of groups in the backup has a child before the parent then the
-     * parent must be restored first. Otherwise the SqliteConstraintException will be thrown.
+     * If the backup contains a group who's parent does not exist in the backup then
+     * set the parent to null.
      */
     @Test
-    fun `restore groups breadth first so parents exist before children are restored with child first in the backup`() = runTest(testDispatcher) {
-        val parentGroup1 = GroupEntity(
-            uid = "parent_group_1_uid",
-            name = "parent_group_1_name",
-            parentUid = null,
-            lastOpenedDate = 0L,
-        )
-
-        GroupEntity(
-            uid = "parent_group_2_uid",
-            name = "parent_group_2_name",
-            parentUid = null,
-            lastOpenedDate = 0L,
-        )
-
-        val childGroup = GroupEntity(
-            uid = "child_group_uid",
-            name = "child_group_name",
-            parentUid = parentGroup1.uid,
-            lastOpenedDate = 0L,
-        )
-
-        val grandChildGroup = GroupEntity(
-            uid = "grand_child_group_uid",
-            name = "grand_child_group_name",
-            parentUid = childGroup.uid,
+    fun `restore group with missing parent to root group`() = runTest(testDispatcher) {
+        val group = GroupEntity(
+            uid = "child_group",
+            name = "Child",
+            parentUid = "parent_group",
             lastOpenedDate = 0L,
         )
 
         val backupContent = BackupContent(
             appVersion = BuildConfig.VERSION_CODE,
             dbVersion = AppDatabase.DATABASE_VERSION,
-            groups = listOf(childGroup, grandChildGroup, parentGroup1),
+            groups = listOf(group),
         )
 
-        inOrder(mockGroupRepository) {
-            backupManager.restore(
-                RestoreType.REPLACE,
-                backupContent,
-                emptyList(),
-                currentTime = 0L,
-            )
+        backupManager.restore(
+            RestoreType.REPLACE,
+            backupContent,
+            emptyList(),
+            currentTime = 0L,
+        )
 
-            verify(mockGroupRepository).insert(parentGroup1)
-            verify(mockGroupRepository).insert(childGroup)
-            verify(mockGroupRepository).insert(grandChildGroup)
-            verify(mockGroupRepository, never()).update(any())
-        }
+        val expectedGroup = GroupEntity(
+            uid = "child_group",
+            name = "Child",
+            // The parent is null because it did not exist.
+            parentUid = null,
+            lastOpenedDate = 0L,
+        )
+
+        verify(mockGroupRepository).insert(expectedGroup)
     }
 
     /**
@@ -190,111 +175,172 @@ class BackupManagerTest {
      * parent must be restored first. Otherwise the SqliteConstraintException will be thrown.
      */
     @Test
-    fun `restore groups breadth first so parents exist before children are restored`() = runTest(testDispatcher) {
-        val parentGroup1 = GroupEntity(
-            uid = "parent_group_1_uid",
-            name = "parent_group_1_name",
-            parentUid = null,
-            lastOpenedDate = 0L,
-        )
-
-        val parentGroup2 = GroupEntity(
-            uid = "parent_group_2_uid",
-            name = "parent_group_2_name",
-            parentUid = null,
-            lastOpenedDate = 0L,
-        )
-
-        val childGroup = GroupEntity(
-            uid = "child_group_uid",
-            name = "child_group_name",
-            parentUid = parentGroup1.uid,
-            lastOpenedDate = 0L,
-        )
-
-        val grandChildGroup = GroupEntity(
-            uid = "grand_child_group_uid",
-            name = "grand_child_group_name",
-            parentUid = childGroup.uid,
-            lastOpenedDate = 0L,
-        )
-
-        val backupContent = BackupContent(
-            appVersion = BuildConfig.VERSION_CODE,
-            dbVersion = AppDatabase.DATABASE_VERSION,
-            groups = listOf(parentGroup2, grandChildGroup, childGroup, parentGroup1),
-        )
-
-        inOrder(mockGroupRepository) {
-            backupManager.restore(
-                RestoreType.REPLACE,
-                backupContent,
-                emptyList(),
-                currentTime = 0L,
+    fun `restore groups breadth first so parents exist before children are restored with child first in the backup`() =
+        runTest(testDispatcher) {
+            val parentGroup1 = GroupEntity(
+                uid = "parent_group_1_uid",
+                name = "parent_group_1_name",
+                parentUid = null,
+                lastOpenedDate = 0L,
             )
 
-            verify(mockGroupRepository).insert(parentGroup2)
-            verify(mockGroupRepository).insert(parentGroup1)
-            verify(mockGroupRepository).insert(childGroup)
-            verify(mockGroupRepository).insert(grandChildGroup)
-            verify(mockGroupRepository, never()).update(any())
+            GroupEntity(
+                uid = "parent_group_2_uid",
+                name = "parent_group_2_name",
+                parentUid = null,
+                lastOpenedDate = 0L,
+            )
+
+            val childGroup = GroupEntity(
+                uid = "child_group_uid",
+                name = "child_group_name",
+                parentUid = parentGroup1.uid,
+                lastOpenedDate = 0L,
+            )
+
+            val grandChildGroup = GroupEntity(
+                uid = "grand_child_group_uid",
+                name = "grand_child_group_name",
+                parentUid = childGroup.uid,
+                lastOpenedDate = 0L,
+            )
+
+            val backupContent = BackupContent(
+                appVersion = BuildConfig.VERSION_CODE,
+                dbVersion = AppDatabase.DATABASE_VERSION,
+                groups = listOf(childGroup, grandChildGroup, parentGroup1),
+            )
+
+            inOrder(mockGroupRepository) {
+                backupManager.restore(
+                    RestoreType.REPLACE,
+                    backupContent,
+                    emptyList(),
+                    currentTime = 0L,
+                )
+
+                verify(mockGroupRepository).insert(parentGroup1)
+                verify(mockGroupRepository).insert(childGroup)
+                verify(mockGroupRepository).insert(grandChildGroup)
+                verify(mockGroupRepository, never()).update(any())
+            }
         }
-    }
+
+    /**
+     * Issue #1655. If the list of groups in the backup has a child before the parent then the
+     * parent must be restored first. Otherwise the SqliteConstraintException will be thrown.
+     */
+    @Test
+    fun `restore groups breadth first so parents exist before children are restored`() =
+        runTest(testDispatcher) {
+            val parentGroup1 = GroupEntity(
+                uid = "parent_group_1_uid",
+                name = "parent_group_1_name",
+                parentUid = null,
+                lastOpenedDate = 0L,
+            )
+
+            val parentGroup2 = GroupEntity(
+                uid = "parent_group_2_uid",
+                name = "parent_group_2_name",
+                parentUid = null,
+                lastOpenedDate = 0L,
+            )
+
+            val childGroup = GroupEntity(
+                uid = "child_group_uid",
+                name = "child_group_name",
+                parentUid = parentGroup1.uid,
+                lastOpenedDate = 0L,
+            )
+
+            val grandChildGroup = GroupEntity(
+                uid = "grand_child_group_uid",
+                name = "grand_child_group_name",
+                parentUid = childGroup.uid,
+                lastOpenedDate = 0L,
+            )
+
+            val backupContent = BackupContent(
+                appVersion = BuildConfig.VERSION_CODE,
+                dbVersion = AppDatabase.DATABASE_VERSION,
+                groups = listOf(parentGroup2, grandChildGroup, childGroup, parentGroup1),
+            )
+
+            inOrder(mockGroupRepository) {
+                backupManager.restore(
+                    RestoreType.REPLACE,
+                    backupContent,
+                    emptyList(),
+                    currentTime = 0L,
+                )
+
+                verify(mockGroupRepository).insert(parentGroup2)
+                verify(mockGroupRepository).insert(parentGroup1)
+                verify(mockGroupRepository).insert(childGroup)
+                verify(mockGroupRepository).insert(grandChildGroup)
+                verify(mockGroupRepository, never()).update(any())
+            }
+        }
 
     @Test
-    fun `when backing up everything include layouts that are not in the list of key maps`() = runTest(testDispatcher) {
-        val layoutWithButtons = FloatingLayoutEntityWithButtons(
-            layout = FloatingLayoutEntity(
-                uid = "layout_uid",
-                name = "layout_name",
-            ),
-            buttons = listOf(
-                FloatingButtonEntity(
-                    uid = "button_uid",
-                    layoutUid = "layout_uid",
-                    text = "Button",
-                    buttonSize = 10,
-                    x = 0,
-                    y = 0,
-                    orientation = "orientation",
-                    displayWidth = 100,
-                    displayHeight = 100,
-                    borderOpacity = null,
-                    backgroundOpacity = null,
+    fun `when backing up everything include layouts that are not in the list of key maps`() =
+        runTest(testDispatcher) {
+            val layoutWithButtons = FloatingLayoutEntityWithButtons(
+                layout = FloatingLayoutEntity(
+                    uid = "layout_uid",
+                    name = "layout_name",
                 ),
-            ),
-        )
+                buttons = listOf(
+                    FloatingButtonEntity(
+                        uid = "button_uid",
+                        layoutUid = "layout_uid",
+                        text = "Button",
+                        buttonSize = 10,
+                        x = 0,
+                        y = 0,
+                        orientation = "orientation",
+                        displayWidth = 100,
+                        displayHeight = 100,
+                        borderOpacity = null,
+                        backgroundOpacity = null,
+                        showOverStatusBar = false,
+                        showOverInputMethod = false,
+                    ),
+                ),
+            )
 
-        val content = backupManager.createBackupContent(
-            keyMapList = emptyList(),
-            extraGroups = emptyList(),
-            extraLayouts = listOf(layoutWithButtons),
-        )
+            val content = backupManager.createBackupContent(
+                keyMapList = emptyList(),
+                extraGroups = emptyList(),
+                extraLayouts = listOf(layoutWithButtons),
+            )
 
-        assertThat(content.floatingLayouts, Matchers.contains(layoutWithButtons.layout))
-        assertThat(
-            content.floatingButtons,
-            Matchers.contains(*layoutWithButtons.buttons.toTypedArray()),
-        )
-    }
+            assertThat(content.floatingLayouts, Matchers.contains(layoutWithButtons.layout))
+            assertThat(
+                content.floatingButtons,
+                Matchers.contains(*layoutWithButtons.buttons.toTypedArray()),
+            )
+        }
 
     @Test
-    fun `when backing up everything include groups that are not in the list of key maps`() = runTest(testDispatcher) {
-        val group = GroupEntity(
-            uid = "group_uid",
-            name = "group_name",
-            parentUid = null,
-            lastOpenedDate = 0L,
-        )
+    fun `when backing up everything include groups that are not in the list of key maps`() =
+        runTest(testDispatcher) {
+            val group = GroupEntity(
+                uid = "group_uid",
+                name = "group_name",
+                parentUid = null,
+                lastOpenedDate = 0L,
+            )
 
-        val content = backupManager.createBackupContent(
-            keyMapList = emptyList(),
-            extraGroups = listOf(group),
-            extraLayouts = emptyList(),
-        )
+            val content = backupManager.createBackupContent(
+                keyMapList = emptyList(),
+                extraGroups = listOf(group),
+                extraLayouts = emptyList(),
+            )
 
-        assertThat(content.groups, Matchers.contains(group))
-    }
+            assertThat(content.groups, Matchers.contains(group))
+        }
 
     /**
      * #745
@@ -352,24 +398,25 @@ class BackupManagerTest {
     }
 
     @Test
-    fun `successfully restore zip folder with data json and sound files`() = runTest(testDispatcher) {
-        // GIVEN
-        val dataJsonFile = "restore-all.zip/data.json"
-        val soundFile = "restore-all.zip/sounds/sound.ogg"
-        val zipFile = fakeFileAdapter.getPrivateFile("backup.zip")
+    fun `successfully restore zip folder with data json and sound files`() =
+        runTest(testDispatcher) {
+            // GIVEN
+            val dataJsonFile = "restore-all.zip/data.json"
+            val soundFile = "restore-all.zip/sounds/sound.ogg"
+            val zipFile = fakeFileAdapter.getPrivateFile("backup.zip")
 
-        copyFileToPrivateFolder(dataJsonFile, destination = "backup.zip/data.json")
-        copyFileToPrivateFolder(soundFile, destination = "backup.zip/sounds/sound.ogg")
+            copyFileToPrivateFolder(dataJsonFile, destination = "backup.zip/data.json")
+            copyFileToPrivateFolder(soundFile, destination = "backup.zip/sounds/sound.ogg")
 
-        // WHEN
-        val result = backupManager.restore(zipFile, RestoreType.REPLACE)
+            // WHEN
+            val result = backupManager.restore(zipFile, RestoreType.REPLACE)
 
-        // THEN
-        assertThat(result, `is`(Success(Unit)))
+            // THEN
+            assertThat(result, `is`(Success(Unit)))
 
-        verify(mockKeyMapRepository, times(1)).insert(any(), any())
-        verify(mockSoundsManager, times(1)).restoreSound(any())
-    }
+            verify(mockKeyMapRepository, times(1)).insert(any(), any())
+            verify(mockSoundsManager, times(1)).restoreSound(any())
+        }
 
     @Test
     fun `backup sound file if there is a key map with a sound action`() = runTest(testDispatcher) {
@@ -514,67 +561,73 @@ class BackupManagerTest {
     }
 
     @Test
-    fun `restore keymaps with no db version, assume version is 9 and don't show error message`() = runTest(testDispatcher) {
-        val fileName = "restore-keymaps-no-db-version.json"
+    fun `restore keymaps with no db version, assume version is 9 and don't show error message`() =
+        runTest(testDispatcher) {
+            val fileName = "restore-keymaps-no-db-version.json"
 
-        val result =
-            backupManager.restore(copyFileToPrivateFolder(fileName), RestoreType.REPLACE)
+            val result =
+                backupManager.restore(copyFileToPrivateFolder(fileName), RestoreType.REPLACE)
 
-        assertThat(result, `is`(Success(Unit)))
-        verify(mockKeyMapRepository, times(1)).insert(any(), any())
-    }
-
-    @Test
-    fun `restore a single legacy fingerprint map, only restore a single fingerprint map and a success message`() = runTest(testDispatcher) {
-        val fileName = "restore-legacy-single-fingerprint-map.json"
-
-        val result =
-            backupManager.restore(copyFileToPrivateFolder(fileName), RestoreType.REPLACE)
-
-        assertThat(result, `is`(Success(Unit)))
-    }
+            assertThat(result, `is`(Success(Unit)))
+            verify(mockKeyMapRepository, times(1)).insert(any(), any())
+        }
 
     @Test
-    fun `restore all legacy fingerprint maps, all fingerprint maps should be restored and a success message`() = runTest(testDispatcher) {
-        val fileName = "restore-all-legacy-fingerprint-maps.json"
+    fun `restore a single legacy fingerprint map, only restore a single fingerprint map and a success message`() =
+        runTest(testDispatcher) {
+            val fileName = "restore-legacy-single-fingerprint-map.json"
 
-        val result =
-            backupManager.restore(copyFileToPrivateFolder(fileName), RestoreType.REPLACE)
+            val result =
+                backupManager.restore(copyFileToPrivateFolder(fileName), RestoreType.REPLACE)
 
-        assertThat(result, `is`(Success(Unit)))
-    }
-
-    @Test
-    fun `restore many key maps and device info, all key maps and device info should be restored and a success message`() = runTest(testDispatcher) {
-        val fileName = "restore-many-keymaps.json"
-
-        val result =
-            backupManager.restore(copyFileToPrivateFolder(fileName), RestoreType.REPLACE)
-
-        assertThat(result, `is`(Success(Unit)))
-        verify(mockKeyMapRepository, times(1)).insert(any(), any(), any(), any())
-    }
+            assertThat(result, `is`(Success(Unit)))
+        }
 
     @Test
-    fun `restore with key map db version greater than allowed version, send incompatible backup event`() = runTest(testDispatcher) {
-        val fileName = "restore-keymap-db-version-too-big.json"
+    fun `restore all legacy fingerprint maps, all fingerprint maps should be restored and a success message`() =
+        runTest(testDispatcher) {
+            val fileName = "restore-all-legacy-fingerprint-maps.json"
 
-        val result =
-            backupManager.restore(copyFileToPrivateFolder(fileName), RestoreType.REPLACE)
+            val result =
+                backupManager.restore(copyFileToPrivateFolder(fileName), RestoreType.REPLACE)
 
-        assertThat(result, `is`(KMError.BackupVersionTooNew))
-        verify(mockKeyMapRepository, never()).insert(anyVararg())
-    }
+            assertThat(result, `is`(Success(Unit)))
+        }
 
     @Test
-    fun `restore with legacy fingerprint gesture map db version greater than allowed version, send incompatible backup event`() = runTest(testDispatcher) {
-        val fileName = "restore-legacy-fingerprint-map-version-too-big.json"
+    fun `restore many key maps and device info, all key maps and device info should be restored and a success message`() =
+        runTest(testDispatcher) {
+            val fileName = "restore-many-keymaps.json"
 
-        val result =
-            backupManager.restore(copyFileToPrivateFolder(fileName), RestoreType.REPLACE)
+            val result =
+                backupManager.restore(copyFileToPrivateFolder(fileName), RestoreType.REPLACE)
 
-        assertThat(result, `is`(KMError.BackupVersionTooNew))
-    }
+            assertThat(result, `is`(Success(Unit)))
+            verify(mockKeyMapRepository, times(1)).insert(any(), any(), any(), any())
+        }
+
+    @Test
+    fun `restore with key map db version greater than allowed version, send incompatible backup event`() =
+        runTest(testDispatcher) {
+            val fileName = "restore-keymap-db-version-too-big.json"
+
+            val result =
+                backupManager.restore(copyFileToPrivateFolder(fileName), RestoreType.REPLACE)
+
+            assertThat(result, `is`(KMError.BackupVersionTooNew))
+            verify(mockKeyMapRepository, never()).insert(anyVararg())
+        }
+
+    @Test
+    fun `restore with legacy fingerprint gesture map db version greater than allowed version, send incompatible backup event`() =
+        runTest(testDispatcher) {
+            val fileName = "restore-legacy-fingerprint-map-version-too-big.json"
+
+            val result =
+                backupManager.restore(copyFileToPrivateFolder(fileName), RestoreType.REPLACE)
+
+            assertThat(result, `is`(KMError.BackupVersionTooNew))
+        }
 
     @Test
     fun `restore empty file, show empty json error message`() = runTest(testDispatcher) {
@@ -595,46 +648,49 @@ class BackupManagerTest {
     }
 
     @Test
-    fun `backup key maps, return list of default key maps, keymap db version should be current database version`() = runTest(testDispatcher) {
-        // GIVEN
-        val backupDirUuid = "backup_uuid"
+    fun `backup key maps, return list of default key maps, keymap db version should be current database version`() =
+        runTest(testDispatcher) {
+            // GIVEN
+            val backupDirUuid = "backup_uuid"
 
-        whenever(mockUuidGenerator.random()).then {
-            backupDirUuid
+            whenever(mockUuidGenerator.random()).then {
+                backupDirUuid
+            }
+
+            val keyMapList = listOf(KeyMapEntity(0), KeyMapEntity(1))
+
+            whenever(mockKeyMapRepository.keyMapList).then {
+                MutableStateFlow(State.Data(keyMapList))
+            }
+
+            val backupZip = File(temporaryFolder.root, "backup.zip")
+            backupZip.mkdirs()
+
+            // WHEN
+            val result = backupManager.backupKeyMaps(JavaFile(backupZip), keyMapList.map { it.uid })
+
+            // THEN
+            assertThat(result, `is`(Success(Unit)))
+
+            // only 1 file has been backed up
+            assertThat(backupZip.listFiles()?.size, `is`(1))
+
+            val dataJson = File(backupZip, "data.json")
+            val json = dataJson.inputStream().bufferedReader().use { it.readText() }
+            val rootElement = parser.parse(json)
+
+            // the key maps have been backed up
+            assertThat(
+                gson.toJson(rootElement["keymap_list"]),
+                `is`(gson.toJson(keyMapList)),
+            )
+
+            // the database version has been backed up
+            assertThat(
+                rootElement["keymap_db_version"].asInt,
+                `is`(AppDatabase.DATABASE_VERSION),
+            )
         }
-
-        val keyMapList = listOf(KeyMapEntity(0), KeyMapEntity(1))
-
-        whenever(mockKeyMapRepository.keyMapList).then { MutableStateFlow(State.Data(keyMapList)) }
-
-        val backupZip = File(temporaryFolder.root, "backup.zip")
-        backupZip.mkdirs()
-
-        // WHEN
-        val result = backupManager.backupKeyMaps(JavaFile(backupZip), keyMapList.map { it.uid })
-
-        // THEN
-        assertThat(result, `is`(Success(Unit)))
-
-        // only 1 file has been backed up
-        assertThat(backupZip.listFiles()?.size, `is`(1))
-
-        val dataJson = File(backupZip, "data.json")
-        val json = dataJson.inputStream().bufferedReader().use { it.readText() }
-        val rootElement = parser.parse(json)
-
-        // the key maps have been backed up
-        assertThat(
-            gson.toJson(rootElement["keymap_list"]),
-            `is`(gson.toJson(keyMapList)),
-        )
-
-        // the database version has been backed up
-        assertThat(
-            rootElement["keymap_db_version"].asInt,
-            `is`(AppDatabase.DATABASE_VERSION),
-        )
-    }
 
     /**
      * @return a path to the copied file

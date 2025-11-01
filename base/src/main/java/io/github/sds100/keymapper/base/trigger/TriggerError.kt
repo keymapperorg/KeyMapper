@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.base.trigger
 
 enum class TriggerError(val isFixable: Boolean) {
     DND_ACCESS_DENIED(isFixable = true),
-    SCREEN_OFF_ROOT_DENIED(isFixable = true),
     CANT_DETECT_IN_PHONE_CALL(isFixable = true),
 
     // This error appears when a key map has an assistant trigger but the user hasn't purchased
@@ -19,4 +18,10 @@ enum class TriggerError(val isFixable: Boolean) {
     FLOATING_BUTTONS_NOT_PURCHASED(isFixable = true),
 
     PURCHASE_VERIFICATION_FAILED(isFixable = true),
+
+    SYSTEM_BRIDGE_UNSUPPORTED(isFixable = false),
+
+    SYSTEM_BRIDGE_DISCONNECTED(isFixable = true),
+
+    EVDEV_DEVICE_NOT_FOUND(isFixable = false),
 }

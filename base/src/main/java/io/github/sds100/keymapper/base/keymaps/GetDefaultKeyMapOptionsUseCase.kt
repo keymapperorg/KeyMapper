@@ -3,13 +3,16 @@ package io.github.sds100.keymapper.base.keymaps
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class GetDefaultKeyMapOptionsUseCaseImpl(
+@Singleton
+class GetDefaultKeyMapOptionsUseCaseImpl @Inject constructor(
     coroutineScope: CoroutineScope,
     preferenceRepository: PreferenceRepository,
 ) : GetDefaultKeyMapOptionsUseCase {

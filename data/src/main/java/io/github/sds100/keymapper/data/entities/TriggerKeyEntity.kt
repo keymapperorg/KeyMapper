@@ -35,7 +35,8 @@ sealed class TriggerKeyEntity : Parcelable {
         val SERIALIZER: JsonSerializer<TriggerKeyEntity> = jsonSerializer { (key) ->
             when (key) {
                 is AssistantTriggerKeyEntity -> Gson().toJsonTree(key)
-                is KeyCodeTriggerKeyEntity -> Gson().toJsonTree(key)
+                is KeyEventTriggerKeyEntity -> Gson().toJsonTree(key)
+                is EvdevTriggerKeyEntity -> Gson().toJsonTree(key)
                 is FloatingButtonKeyEntity -> Gson().toJsonTree(key)
                 is FingerprintTriggerKeyEntity -> Gson().toJsonTree(key)
             }
@@ -58,6 +59,10 @@ sealed class TriggerKeyEntity : Parcelable {
 
                     json.obj.has(FingerprintTriggerKeyEntity.NAME_FINGERPRINT_GESTURE_TYPE) -> {
                         return@jsonDeserializer deserializeFingerprintTriggerKey(json, uid!!)
+                    }
+
+                    json.obj.has(EvdevTriggerKeyEntity.NAME_DEVICE_PRODUCT) -> {
+                        return@jsonDeserializer deserializeEvdevTriggerKey(json, uid!!)
                     }
 
                     else -> {
@@ -96,23 +101,51 @@ sealed class TriggerKeyEntity : Parcelable {
             return FingerprintTriggerKeyEntity(type, clickType, uid)
         }
 
+        private fun deserializeEvdevTriggerKey(
+            json: JsonElement,
+            uid: String,
+        ): EvdevTriggerKeyEntity {
+            val keyCode by json.byInt(EvdevTriggerKeyEntity.NAME_KEYCODE)
+            val scanCode by json.byInt(EvdevTriggerKeyEntity.NAME_SCANCODE)
+            val deviceName by json.byString(EvdevTriggerKeyEntity.NAME_DEVICE_NAME)
+            val deviceVendor by json.byInt(EvdevTriggerKeyEntity.NAME_DEVICE_VENDOR)
+            val deviceProduct by json.byInt(EvdevTriggerKeyEntity.NAME_DEVICE_PRODUCT)
+            val deviceBus by json.byInt(EvdevTriggerKeyEntity.NAME_DEVICE_BUS)
+            val clickType by json.byInt(NAME_CLICK_TYPE)
+            val flags by json.byNullableInt(EvdevTriggerKeyEntity.NAME_FLAGS)
+
+            return EvdevTriggerKeyEntity(
+                keyCode,
+                scanCode,
+                deviceName,
+                deviceBus,
+                deviceVendor,
+                deviceProduct,
+                clickType,
+                flags ?: 0,
+                uid,
+            )
+        }
+
         private fun deserializeKeyCodeTriggerKey(
             json: JsonElement,
             uid: String,
-        ): KeyCodeTriggerKeyEntity {
-            val keyCode by json.byInt(KeyCodeTriggerKeyEntity.NAME_KEYCODE)
-            val deviceId by json.byString(KeyCodeTriggerKeyEntity.NAME_DEVICE_ID)
-            val deviceName by json.byNullableString(KeyCodeTriggerKeyEntity.NAME_DEVICE_NAME)
+        ): KeyEventTriggerKeyEntity {
+            val keyCode by json.byInt(KeyEventTriggerKeyEntity.NAME_KEYCODE)
+            val scanCode by json.byNullableInt(KeyEventTriggerKeyEntity.NAME_SCANCODE)
+            val deviceId by json.byString(KeyEventTriggerKeyEntity.NAME_DEVICE_ID)
+            val deviceName by json.byNullableString(KeyEventTriggerKeyEntity.NAME_DEVICE_NAME)
             val clickType by json.byInt(NAME_CLICK_TYPE)
-            val flags by json.byNullableInt(KeyCodeTriggerKeyEntity.NAME_FLAGS)
+            val flags by json.byNullableInt(KeyEventTriggerKeyEntity.NAME_FLAGS)
 
-            return KeyCodeTriggerKeyEntity(
+            return KeyEventTriggerKeyEntity(
                 keyCode,
                 deviceId,
                 deviceName,
                 clickType,
                 flags ?: 0,
                 uid,
+                scanCode,
             )
         }
     }

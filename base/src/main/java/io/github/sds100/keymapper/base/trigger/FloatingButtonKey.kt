@@ -6,8 +6,8 @@ import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
 import io.github.sds100.keymapper.data.entities.FloatingButtonKeyEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
-import kotlinx.serialization.Serializable
 import java.util.UUID
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class FloatingButtonKey(
@@ -17,7 +17,6 @@ data class FloatingButtonKey(
     override val clickType: ClickType,
 ) : TriggerKey() {
 
-    override val consumeEvent: Boolean = true
     override val allowedLongPress: Boolean = true
     override val allowedDoublePress: Boolean = true
 

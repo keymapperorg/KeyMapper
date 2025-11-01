@@ -1,125 +1,62 @@
 package io.github.sds100.keymapper.base.trigger
 
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.keymaps.ClickType
-import io.github.sds100.keymapper.common.utils.hasFlag
-import io.github.sds100.keymapper.common.utils.withFlag
-import io.github.sds100.keymapper.data.entities.KeyCodeTriggerKeyEntity
-import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
-import kotlinx.serialization.Serializable
-import java.util.UUID
+import io.github.sds100.keymapper.base.utils.KeyCodeStrings
+import io.github.sds100.keymapper.base.utils.ScancodeStrings
+import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
 
-@Serializable
-data class KeyCodeTriggerKey(
-    override val uid: String = UUID.randomUUID().toString(),
-    val keyCode: Int,
-    val device: TriggerKeyDevice,
-    override val clickType: ClickType,
-    override val consumeEvent: Boolean = true,
-    val detectionSource: KeyEventDetectionSource = KeyEventDetectionSource.ACCESSIBILITY_SERVICE,
-) : TriggerKey() {
+sealed interface KeyCodeTriggerKey {
+    val keyCode: Int
 
-    override val allowedLongPress: Boolean = true
-    override val allowedDoublePress: Boolean = true
+    /**
+     * Scancodes were only saved to KeyEvent trigger keys in version 4.0.0 so this is null
+     * to be backwards compatible.
+     */
+    val scanCode: Int?
+    val clickType: ClickType
 
-    override fun toString(): String {
-        val deviceString = when (device) {
-            TriggerKeyDevice.Any -> "any"
-            is TriggerKeyDevice.External -> "external"
-            TriggerKeyDevice.Internal -> "internal"
-        }
-        return "KeyCodeTriggerKey(uid=${uid.substring(0..5)}, keyCode=$keyCode, device=$deviceString, clickType=$clickType, consume=$consumeEvent) "
-    }
+    /**
+     * The user can specify they want to detect with the scancode instead of the key code.
+     */
+    val detectWithScanCodeUserSetting: Boolean
 
-    // key code -> click type -> device -> consume key event
-    override fun compareTo(other: TriggerKey) = when (other) {
-        is KeyCodeTriggerKey -> compareValuesBy(
-            this,
-            other,
-            { it.keyCode },
-            { it.clickType },
-            { it.device },
-            { it.consumeEvent },
-        )
+    /**
+     * Whether the event that triggers this key will be consumed and not passed
+     * onto subsequent apps. E.g consuming the volume down key event will mean the volume
+     * doesn't change.
+     */
+    val consumeEvent: Boolean
 
-        else -> super.compareTo(other)
-    }
+    fun isSameDevice(otherKey: KeyCodeTriggerKey): Boolean
+}
 
-    companion object {
-        fun fromEntity(entity: KeyCodeTriggerKeyEntity): TriggerKey {
-            val device = when (entity.deviceId) {
-                KeyCodeTriggerKeyEntity.DEVICE_ID_THIS_DEVICE -> TriggerKeyDevice.Internal
-                KeyCodeTriggerKeyEntity.DEVICE_ID_ANY_DEVICE -> TriggerKeyDevice.Any
-                else -> TriggerKeyDevice.External(
-                    entity.deviceId,
-                    entity.deviceName ?: "",
-                )
-            }
+fun KeyCodeTriggerKey.detectWithScancode(): Boolean {
+    return scanCode != null && (detectWithScanCodeUserSetting || isKeyCodeUnknown())
+}
 
-            val clickType = when (entity.clickType) {
-                TriggerKeyEntity.SHORT_PRESS -> ClickType.SHORT_PRESS
-                TriggerKeyEntity.LONG_PRESS -> ClickType.LONG_PRESS
-                TriggerKeyEntity.DOUBLE_PRESS -> ClickType.DOUBLE_PRESS
-                else -> ClickType.SHORT_PRESS
-            }
+fun KeyCodeTriggerKey.isKeyCodeUnknown(): Boolean {
+    return KeyEventUtils.isKeyCodeUnknown(keyCode)
+}
 
-            val consumeEvent =
-                !entity.flags.hasFlag(KeyCodeTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT)
+fun KeyCodeTriggerKey.isScanCodeDetectionUserConfigurable(): Boolean {
+    return scanCode != null && !isKeyCodeUnknown()
+}
 
-            val detectionSource =
-                if (entity.flags.hasFlag(KeyCodeTriggerKeyEntity.FLAG_DETECTION_SOURCE_INPUT_METHOD)) {
-                    KeyEventDetectionSource.INPUT_METHOD
-                } else {
-                    KeyEventDetectionSource.ACCESSIBILITY_SERVICE
-                }
+/**
+ * Get the label for the key code or scan code, depending on whether to detect it with a scan code.
+ */
+fun KeyCodeTriggerKey.getCodeLabel(resourceProvider: ResourceProvider): String {
+    if (detectWithScancode() && scanCode != null) {
+        val codeLabel = ScancodeStrings.getScancodeLabel(scanCode!!)
+            ?: resourceProvider.getString(R.string.trigger_key_unknown_scan_code, scanCode!!)
 
-            return KeyCodeTriggerKey(
-                uid = entity.uid,
-                keyCode = entity.keyCode,
-                device = device,
-                clickType = clickType,
-                consumeEvent = consumeEvent,
-                detectionSource = detectionSource,
-            )
-        }
-
-        fun toEntity(key: KeyCodeTriggerKey): KeyCodeTriggerKeyEntity {
-            val deviceId = when (key.device) {
-                TriggerKeyDevice.Any -> KeyCodeTriggerKeyEntity.DEVICE_ID_ANY_DEVICE
-                is TriggerKeyDevice.External -> key.device.descriptor
-                TriggerKeyDevice.Internal -> KeyCodeTriggerKeyEntity.DEVICE_ID_THIS_DEVICE
-            }
-
-            val deviceName =
-                if (key.device is TriggerKeyDevice.External) {
-                    key.device.name
-                } else {
-                    null
-                }
-
-            val clickType = when (key.clickType) {
-                ClickType.SHORT_PRESS -> TriggerKeyEntity.SHORT_PRESS
-                ClickType.LONG_PRESS -> TriggerKeyEntity.LONG_PRESS
-                ClickType.DOUBLE_PRESS -> TriggerKeyEntity.DOUBLE_PRESS
-            }
-
-            var flags = 0
-
-            if (!key.consumeEvent) {
-                flags = flags.withFlag(KeyCodeTriggerKeyEntity.FLAG_DO_NOT_CONSUME_KEY_EVENT)
-            }
-
-            if (key.detectionSource == KeyEventDetectionSource.INPUT_METHOD) {
-                flags = flags.withFlag(KeyCodeTriggerKeyEntity.FLAG_DETECTION_SOURCE_INPUT_METHOD)
-            }
-
-            return KeyCodeTriggerKeyEntity(
-                keyCode = key.keyCode,
-                deviceId = deviceId,
-                deviceName = deviceName,
-                clickType = clickType,
-                flags = flags,
-                uid = key.uid,
-            )
-        }
+        return "$codeLabel (${resourceProvider.getString(
+            R.string.trigger_key_scan_code_detection_flag,
+        )})"
+    } else {
+        return KeyCodeStrings.keyCodeToString(keyCode)
+            ?: resourceProvider.getString(R.string.trigger_key_unknown_key_code, keyCode)
     }
 }

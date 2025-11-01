@@ -4,9 +4,10 @@ import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickCoordinateResult
 import io.github.sds100.keymapper.base.actions.swipescreen.SwipePickCoordinateResult
 import io.github.sds100.keymapper.base.actions.tapscreen.PickCoordinateResult
-import io.github.sds100.keymapper.base.constraints.Constraint
+import io.github.sds100.keymapper.base.constraints.ConstraintData
 import io.github.sds100.keymapper.base.system.apps.ChooseAppShortcutResult
 import io.github.sds100.keymapper.base.system.intents.ConfigIntentResult
+import io.github.sds100.keymapper.base.trigger.TriggerSetupShortcut
 import io.github.sds100.keymapper.system.apps.ActivityInfo
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import kotlinx.serialization.Serializable
@@ -31,10 +32,15 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
         const val ID_CHOOSE_CONSTRAINT = "choose_constraint"
         const val ID_CHOOSE_BLUETOOTH_DEVICE = "choose_bluetooth_device"
         const val ID_SETTINGS = "settings"
+        const val ID_DEFAULT_OPTIONS_SETTINGS = "default_options_settings"
+        const val ID_AUTOMATIC_CHANGE_IME_SETTINGS = "automatic_change_ime_settings"
         const val ID_ABOUT = "about"
         const val ID_CONFIG_KEY_MAP = "config_key_map"
-        const val ID_SHIZUKU_SETTINGS = "shizuku_settings"
         const val ID_INTERACT_UI_ELEMENT_ACTION = "interact_ui_element_action"
+        const val ID_SHELL_COMMAND_ACTION = "shell_command_action"
+        const val ID_PRO_MODE = "pro_mode"
+        const val ID_LOG = "log"
+        const val ID_ADVANCED_TRIGGERS = "advanced_triggers"
     }
 
     @Serializable
@@ -69,7 +75,8 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data class PickCoordinate(val result: PickCoordinateResult? = null) : NavDestination<PickCoordinateResult>() {
+    data class PickCoordinate(val result: PickCoordinateResult? = null) :
+        NavDestination<PickCoordinateResult>() {
         override val id: String = ID_PICK_COORDINATE
     }
 
@@ -86,7 +93,8 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data class ConfigIntent(val result: ConfigIntentResult? = null) : NavDestination<ConfigIntentResult>() {
+    data class ConfigIntent(val result: ConfigIntentResult? = null) :
+        NavDestination<ConfigIntentResult>() {
         override val id: String = ID_CONFIG_INTENT
     }
 
@@ -106,7 +114,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data object ChooseConstraint : NavDestination<Constraint>(isCompose = true) {
+    data object ChooseConstraint : NavDestination<ConstraintData>(isCompose = true) {
         override val id: String = ID_CHOOSE_CONSTRAINT
     }
 
@@ -116,8 +124,18 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data object Settings : NavDestination<Unit>() {
+    data object Settings : NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_SETTINGS
+    }
+
+    @Serializable
+    data object DefaultOptionsSettings : NavDestination<Unit>(isCompose = true) {
+        override val id: String = ID_DEFAULT_OPTIONS_SETTINGS
+    }
+
+    @Serializable
+    data object AutomaticChangeImeSettings : NavDestination<Unit>(isCompose = true) {
+        override val id: String = ID_AUTOMATIC_CHANGE_IME_SETTINGS
     }
 
     @Serializable
@@ -126,28 +144,55 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data class OpenKeyMap(val keyMapUid: String, val showAdvancedTriggers: Boolean = false) :
-        NavDestination<Unit>(isCompose = true) {
+    data class OpenKeyMap(val keyMapUid: String) : NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_CONFIG_KEY_MAP
     }
 
     @Serializable
     data class NewKeyMap(
         val groupUid: String?,
-        val showAdvancedTriggers: Boolean = false,
-        val floatingButtonToUse: String? = null,
+        /**
+         * The trigger shortcut to immediately launch
+         * when navigating to the screen to create a key map.
+         */
+        val triggerSetupShortcut: TriggerSetupShortcut? = null,
     ) : NavDestination<Unit>(isCompose = true) {
         override val id: String = ID_CONFIG_KEY_MAP
-    }
-
-    @Serializable
-    data object ShizukuSettings : NavDestination<Unit>() {
-        override val id: String = ID_SHIZUKU_SETTINGS
     }
 
     @Serializable
     data class InteractUiElement(val actionJson: String?) :
         NavDestination<ActionData.InteractUiElement>(isCompose = true) {
         override val id: String = ID_INTERACT_UI_ELEMENT_ACTION
+    }
+
+    @Serializable
+    data class ConfigShellCommand(val actionJson: String?) :
+        NavDestination<ActionData.ShellCommand>(isCompose = true) {
+        override val id: String = ID_SHELL_COMMAND_ACTION
+    }
+
+    @Serializable
+    data object ProMode : NavDestination<Unit>(isCompose = true) {
+        override val id: String = ID_PRO_MODE
+    }
+
+    @Serializable
+    data object ProModeSetup : NavDestination<Unit>(isCompose = true) {
+        const val ID_PRO_MODE_SETUP = "pro_mode_setup_wizard"
+        override val id: String = ID_PRO_MODE_SETUP
+    }
+
+    @Serializable
+    data object Log : NavDestination<Unit>(isCompose = true) {
+        override val id: String = ID_LOG
+    }
+
+    /**
+     * This returns a trigger setup shortcut if an advanced trigger is used.
+     */
+    @Serializable
+    data object AdvancedTriggers : NavDestination<TriggerSetupShortcut?>(isCompose = true) {
+        override val id: String = ID_ADVANCED_TRIGGERS
     }
 }

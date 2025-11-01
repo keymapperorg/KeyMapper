@@ -12,9 +12,9 @@ import io.github.sds100.keymapper.common.utils.DefaultDispatcherProvider
 import io.github.sds100.keymapper.common.utils.DispatcherProvider
 import io.github.sds100.keymapper.purchasing.PurchasingManagerImpl
 import io.github.sds100.keymapper.system.accessibility.MyAccessibilityService
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -31,7 +31,7 @@ class AppHiltModule {
     @Provides
     fun provideBuildConfigProvider(): BuildConfigProvider = object : BuildConfigProvider {
         override val minApi: Int
-            get() = Build.VERSION_CODES.LOLLIPOP
+            get() = Build.VERSION_CODES.O
         override val maxApi: Int
             get() = 1000
         override val packageName: String
@@ -40,6 +40,8 @@ class AppHiltModule {
             get() = BuildConfig.VERSION_NAME
         override val versionCode: Int
             get() = BuildConfig.VERSION_CODE
+        override val sdkInt: Int
+            get() = Build.VERSION.SDK_INT
     }
 
     @Singleton

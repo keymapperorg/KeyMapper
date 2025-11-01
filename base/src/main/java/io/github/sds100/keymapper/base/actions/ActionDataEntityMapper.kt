@@ -1,6 +1,8 @@
 package io.github.sds100.keymapper.base.actions
 
+import android.util.Base64
 import androidx.core.net.toUri
+import io.github.sds100.keymapper.common.models.ShellExecutionMode
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.NodeInteractionType
@@ -39,12 +41,15 @@ object ActionDataEntityMapper {
             ActionEntity.Type.PINCH_COORDINATE -> ActionId.PINCH_SCREEN
             ActionEntity.Type.INTENT -> ActionId.INTENT
             ActionEntity.Type.PHONE_CALL -> ActionId.PHONE_CALL
+            ActionEntity.Type.SEND_SMS -> ActionId.SEND_SMS
+            ActionEntity.Type.COMPOSE_SMS -> ActionId.COMPOSE_SMS
             ActionEntity.Type.SOUND -> ActionId.SOUND
             ActionEntity.Type.SYSTEM_ACTION -> {
                 SYSTEM_ACTION_ID_MAP.getKey(entity.data) ?: return null
             }
 
             ActionEntity.Type.INTERACT_UI_ELEMENT -> ActionId.INTERACT_UI_ELEMENT
+            ActionEntity.Type.SHELL_COMMAND -> ActionId.SHELL_COMMAND
         }
 
         return when (actionId) {
@@ -79,11 +84,6 @@ object ActionDataEntityMapper {
                     entity.extras.getData(ActionEntity.EXTRA_KEY_EVENT_DEVICE_NAME)
                         .valueOrNull() ?: ""
 
-                val useShell =
-                    entity.extras.getData(ActionEntity.EXTRA_KEY_EVENT_USE_SHELL).then {
-                        (it == "true").success()
-                    }.valueOrNull() ?: false
-
                 val device = if (deviceDescriptor != null) {
                     ActionData.InputKeyEvent.Device(deviceDescriptor, deviceName)
                 } else {
@@ -93,7 +93,6 @@ object ActionDataEntityMapper {
                 ActionData.InputKeyEvent(
                     keyCode = entity.data.toInt(),
                     metaState = metaState,
-                    useShell = useShell,
                     device = device,
                 )
             }
@@ -235,6 +234,23 @@ object ActionDataEntityMapper {
 
             ActionId.PHONE_CALL -> ActionData.PhoneCall(number = entity.data)
 
+            ActionId.SEND_SMS, ActionId.COMPOSE_SMS -> {
+                val message = entity.extras.getData(ActionEntity.EXTRA_SMS_MESSAGE)
+                    .valueOrNull() ?: return null
+
+                when (actionId) {
+                    ActionId.SEND_SMS -> ActionData.SendSms(
+                        number = entity.data,
+                        message = message,
+                    )
+                    ActionId.COMPOSE_SMS -> ActionData.ComposeSms(
+                        number = entity.data,
+                        message = message,
+                    )
+                    else -> return null
+                }
+            }
+
             ActionId.SOUND -> {
                 val isRingtoneUri = try {
                     entity.data.toUri().scheme != null
@@ -258,7 +274,7 @@ object ActionDataEntityMapper {
 
             ActionId.VOLUME_INCREASE_STREAM,
             ActionId.VOLUME_DECREASE_STREAM,
-            -> {
+                -> {
                 val stream =
                     entity.extras.getData(ActionEntity.EXTRA_STREAM_TYPE).then {
                         VOLUME_STREAM_MAP.getKey(it)!!.success()
@@ -267,12 +283,13 @@ object ActionDataEntityMapper {
                 val showVolumeUi =
                     entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI)
 
+                // Convert old stream actions to new volume up/down with stream parameter
                 when (actionId) {
                     ActionId.VOLUME_INCREASE_STREAM ->
-                        ActionData.Volume.Stream.Increase(showVolumeUi, stream)
+                        ActionData.Volume.Up(showVolumeUi, stream)
 
                     ActionId.VOLUME_DECREASE_STREAM ->
-                        ActionData.Volume.Stream.Decrease(showVolumeUi, stream)
+                        ActionData.Volume.Down(showVolumeUi, stream)
 
                     else -> throw Exception("don't know how to create system action for $actionId")
                 }
@@ -283,13 +300,24 @@ object ActionDataEntityMapper {
             ActionId.VOLUME_TOGGLE_MUTE,
             ActionId.VOLUME_UNMUTE,
             ActionId.VOLUME_MUTE,
-            -> {
+                -> {
                 val showVolumeUi =
                     entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI)
 
+                // For VOLUME_UP and VOLUME_DOWN, optionally read the stream type
+                val volumeStream = if (actionId == ActionId.VOLUME_UP ||
+                    actionId == ActionId.VOLUME_DOWN
+                ) {
+                    entity.extras.getData(ActionEntity.EXTRA_STREAM_TYPE).then {
+                        VOLUME_STREAM_MAP.getKey(it)?.success() ?: null.success()
+                    }.valueOrNull()
+                } else {
+                    null
+                }
+
                 when (actionId) {
-                    ActionId.VOLUME_UP -> ActionData.Volume.Up(showVolumeUi)
-                    ActionId.VOLUME_DOWN -> ActionData.Volume.Down(showVolumeUi)
+                    ActionId.VOLUME_UP -> ActionData.Volume.Up(showVolumeUi, volumeStream)
+                    ActionId.VOLUME_DOWN -> ActionData.Volume.Down(showVolumeUi, volumeStream)
                     ActionId.VOLUME_TOGGLE_MUTE -> ActionData.Volume.ToggleMute(
                         showVolumeUi,
                     )
@@ -301,10 +329,14 @@ object ActionDataEntityMapper {
                 }
             }
 
+            ActionId.MUTE_MICROPHONE -> ActionData.Microphone.Mute
+            ActionId.UNMUTE_MICROPHONE -> ActionData.Microphone.Unmute
+            ActionId.TOGGLE_MUTE_MICROPHONE -> ActionData.Microphone.Toggle
+
             ActionId.TOGGLE_FLASHLIGHT,
             ActionId.ENABLE_FLASHLIGHT,
             ActionId.CHANGE_FLASHLIGHT_STRENGTH,
-            -> {
+                -> {
                 val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
                     LENS_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -330,7 +362,7 @@ object ActionDataEntityMapper {
             }
 
             ActionId.DISABLE_FLASHLIGHT,
-            -> {
+                -> {
                 val lens = entity.extras.getData(ActionEntity.EXTRA_LENS).then {
                     LENS_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -339,7 +371,7 @@ object ActionDataEntityMapper {
 
             ActionId.TOGGLE_DND_MODE,
             ActionId.ENABLE_DND_MODE,
-            -> {
+                -> {
                 val dndMode = entity.extras.getData(ActionEntity.EXTRA_DND_MODE).then {
                     DND_MODE_MAP.getKey(it)!!.success()
                 }.valueOrNull() ?: return null
@@ -369,7 +401,7 @@ object ActionDataEntityMapper {
             ActionId.STOP_MEDIA_PACKAGE,
             ActionId.STEP_FORWARD_PACKAGE,
             ActionId.STEP_BACKWARD_PACKAGE,
-            -> {
+                -> {
                 val packageName =
                     entity.extras.getData(ActionEntity.EXTRA_PACKAGE_NAME).valueOrNull()
                         ?: return null
@@ -618,26 +650,79 @@ object ActionDataEntityMapper {
                 val type =
                     entity.extras.getData(ActionEntity.EXTRA_MOVE_CURSOR_TYPE).then { value ->
                         when (value) {
-                            ActionEntity.CURSOR_TYPE_CHAR -> Success(ActionData.MoveCursor.Type.CHAR)
-                            ActionEntity.CURSOR_TYPE_WORD -> Success(ActionData.MoveCursor.Type.WORD)
-                            ActionEntity.CURSOR_TYPE_LINE -> Success(ActionData.MoveCursor.Type.LINE)
-                            ActionEntity.CURSOR_TYPE_PARAGRAPH -> Success(ActionData.MoveCursor.Type.PARAGRAPH)
-                            ActionEntity.CURSOR_TYPE_PAGE -> Success(ActionData.MoveCursor.Type.PAGE)
-                            else -> KMError.Exception(IllegalArgumentException("Unknown move cursor type: $value"))
+                            ActionEntity.CURSOR_TYPE_CHAR -> Success(
+                                ActionData.MoveCursor.Type.CHAR,
+                            )
+                            ActionEntity.CURSOR_TYPE_WORD -> Success(
+                                ActionData.MoveCursor.Type.WORD,
+                            )
+                            ActionEntity.CURSOR_TYPE_LINE -> Success(
+                                ActionData.MoveCursor.Type.LINE,
+                            )
+                            ActionEntity.CURSOR_TYPE_PARAGRAPH -> Success(
+                                ActionData.MoveCursor.Type.PARAGRAPH,
+                            )
+                            ActionEntity.CURSOR_TYPE_PAGE -> Success(
+                                ActionData.MoveCursor.Type.PAGE,
+                            )
+                            else -> KMError.Exception(
+                                IllegalArgumentException("Unknown move cursor type: $value"),
+                            )
                         }
                     }.valueOrNull() ?: return null
 
                 val direction =
                     entity.extras.getData(ActionEntity.EXTRA_MOVE_CURSOR_DIRECTION).then { value ->
                         when (value) {
-                            ActionEntity.CURSOR_DIRECTION_START -> Success(ActionData.MoveCursor.Direction.START)
-                            ActionEntity.CURSOR_DIRECTION_END -> Success(ActionData.MoveCursor.Direction.END)
-                            else -> KMError.Exception(IllegalArgumentException("Unknown move cursor direction: $value"))
+                            ActionEntity.CURSOR_DIRECTION_START -> Success(
+                                ActionData.MoveCursor.Direction.START,
+                            )
+                            ActionEntity.CURSOR_DIRECTION_END -> Success(
+                                ActionData.MoveCursor.Direction.END,
+                            )
+                            else -> KMError.Exception(
+                                IllegalArgumentException("Unknown move cursor direction: $value"),
+                            )
                         }
                     }.valueOrNull() ?: return null
 
                 ActionData.MoveCursor(moveType = type, direction = direction)
             }
+
+            ActionId.SHELL_COMMAND -> {
+                val useRoot = entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHELL_COMMAND_USE_ROOT)
+                val useAdb = entity.flags.hasFlag(ActionEntity.ACTION_FLAG_SHELL_COMMAND_USE_ADB)
+
+                val executionMode = when {
+                    useAdb -> ShellExecutionMode.ADB
+                    useRoot -> ShellExecutionMode.ROOT
+                    else -> ShellExecutionMode.STANDARD
+                }
+
+                val description =
+                    entity.extras.getData(ActionEntity.EXTRA_SHELL_COMMAND_DESCRIPTION)
+                        .valueOrNull() ?: return null
+
+                val timeoutMs = entity.extras.getData(ActionEntity.EXTRA_SHELL_COMMAND_TIMEOUT)
+                    .valueOrNull()?.toIntOrNull() ?: 10000
+
+                // Decode Base64 command
+                val command = try {
+                    String(Base64.decode(entity.data, Base64.DEFAULT))
+                } catch (e: Exception) {
+                    return null
+                }
+
+                ActionData.ShellCommand(
+                    description = description,
+                    command = command,
+                    executionMode = executionMode,
+                    timeoutMillis = timeoutMs,
+                )
+            }
+
+            ActionId.FORCE_STOP_APP -> ActionData.ForceStopApp
+            ActionId.CLEAR_RECENT_APP -> ActionData.ClearRecentApp
         }
     }
 
@@ -654,6 +739,8 @@ object ActionDataEntityMapper {
             is ActionData.App -> ActionEntity.Type.APP
             is ActionData.AppShortcut -> ActionEntity.Type.APP_SHORTCUT
             is ActionData.PhoneCall -> ActionEntity.Type.PHONE_CALL
+            is ActionData.SendSms -> ActionEntity.Type.SEND_SMS
+            is ActionData.ComposeSms -> ActionEntity.Type.COMPOSE_SMS
             is ActionData.TapScreen -> ActionEntity.Type.TAP_COORDINATE
             is ActionData.SwipeScreen -> ActionEntity.Type.SWIPE_COORDINATE
             is ActionData.PinchScreen -> ActionEntity.Type.PINCH_COORDINATE
@@ -661,6 +748,7 @@ object ActionDataEntityMapper {
             is ActionData.Url -> ActionEntity.Type.URL
             is ActionData.Sound -> ActionEntity.Type.SOUND
             is ActionData.InteractUiElement -> ActionEntity.Type.INTERACT_UI_ELEMENT
+            is ActionData.ShellCommand -> ActionEntity.Type.SHELL_COMMAND
             else -> ActionEntity.Type.SYSTEM_ACTION
         }
 
@@ -673,8 +761,9 @@ object ActionDataEntityMapper {
     }
 
     private fun getFlags(data: ActionData): Int {
+        var flags = 0
+
         val showVolumeUiFlag = when (data) {
-            is ActionData.Volume.Stream -> data.showVolumeUi
             is ActionData.Volume.Up -> data.showVolumeUi
             is ActionData.Volume.Down -> data.showVolumeUi
             is ActionData.Volume.Mute -> data.showVolumeUi
@@ -684,18 +773,37 @@ object ActionDataEntityMapper {
         }
 
         if (showVolumeUiFlag) {
-            return ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI
-        } else {
-            return 0
+            flags = flags or ActionEntity.ACTION_FLAG_SHOW_VOLUME_UI
         }
+
+        if (data is ActionData.ShellCommand) {
+            when (data.executionMode) {
+                ShellExecutionMode.ROOT -> {
+                    flags = flags or ActionEntity.ACTION_FLAG_SHELL_COMMAND_USE_ROOT
+                }
+
+                ShellExecutionMode.ADB -> {
+                    flags = flags or ActionEntity.ACTION_FLAG_SHELL_COMMAND_USE_ADB
+                }
+
+                ShellExecutionMode.STANDARD -> {
+                    // No flag needed for standard mode
+                }
+            }
+        }
+
+        return flags
     }
 
+    @Suppress("ktlint:standard:max-line-length")
     private fun getDataString(data: ActionData): String = when (data) {
         is ActionData.Intent -> data.uri
         is ActionData.InputKeyEvent -> data.keyCode.toString()
         is ActionData.App -> data.packageName
         is ActionData.AppShortcut -> data.uri
         is ActionData.PhoneCall -> data.number
+        is ActionData.SendSms -> data.number
+        is ActionData.ComposeSms -> data.number
         is ActionData.TapScreen -> "${data.x},${data.y}"
         is ActionData.SwipeScreen -> "${data.xStart},${data.yStart},${data.xEnd},${data.yEnd},${data.fingerCount},${data.duration}"
         is ActionData.PinchScreen -> "${data.x},${data.y},${data.distance},${data.pinchType},${data.fingerCount},${data.duration}"
@@ -707,6 +815,11 @@ object ActionDataEntityMapper {
         }
 
         is ActionData.InteractUiElement -> data.description
+        is ActionData.ShellCommand -> Base64.encodeToString(
+            data.command.toByteArray(),
+            Base64.DEFAULT,
+        ).trim() // Trim to remove trailing newline added by Base64.DEFAULT
+        is ActionData.HttpRequest -> SYSTEM_ACTION_ID_MAP[data.id]!!
         is ActionData.ControlMediaForApp.Rewind -> SYSTEM_ACTION_ID_MAP[data.id]!!
         is ActionData.ControlMediaForApp.Stop -> SYSTEM_ACTION_ID_MAP[data.id]!!
         is ActionData.ControlMedia.Rewind -> SYSTEM_ACTION_ID_MAP[data.id]!!
@@ -724,15 +837,6 @@ object ActionDataEntityMapper {
             )
 
         is ActionData.InputKeyEvent -> sequence {
-            if (data.useShell) {
-                val string = if (data.useShell) {
-                    "true"
-                } else {
-                    "false"
-                }
-                yield(EntityExtra(ActionEntity.EXTRA_KEY_EVENT_USE_SHELL, string))
-            }
-
             if (data.metaState != 0) {
                 yield(
                     EntityExtra(
@@ -764,6 +868,14 @@ object ActionDataEntityMapper {
 
         is ActionData.PhoneCall -> emptyList()
 
+        is ActionData.SendSms -> listOf(
+            EntityExtra(ActionEntity.EXTRA_SMS_MESSAGE, data.message),
+        )
+
+        is ActionData.ComposeSms -> listOf(
+            EntityExtra(ActionEntity.EXTRA_SMS_MESSAGE, data.message),
+        )
+
         is ActionData.DoNotDisturb.Enable -> listOf(
             EntityExtra(ActionEntity.EXTRA_DND_MODE, DND_MODE_MAP[data.dndMode]!!),
         )
@@ -783,7 +895,9 @@ object ActionDataEntityMapper {
         is ActionData.Rotation.CycleRotations -> listOf(
             EntityExtra(
                 ActionEntity.EXTRA_ORIENTATIONS,
-                data.orientations.joinToString(",") { ConstantTypeConverters.ORIENTATION_MAP[it]!! },
+                data.orientations.joinToString(",") {
+                    ConstantTypeConverters.ORIENTATION_MAP[it]!!
+                },
             ),
         )
 
@@ -837,12 +951,31 @@ object ActionDataEntityMapper {
 
         is ActionData.Volume ->
             when (data) {
-                is ActionData.Volume.Stream -> listOf(
-                    EntityExtra(
-                        ActionEntity.EXTRA_STREAM_TYPE,
-                        VOLUME_STREAM_MAP[data.volumeStream]!!,
-                    ),
-                )
+                is ActionData.Volume.Up -> buildList {
+                    if (data.volumeStream != null) {
+                        VOLUME_STREAM_MAP[data.volumeStream]?.let { streamValue ->
+                            add(
+                                EntityExtra(
+                                    ActionEntity.EXTRA_STREAM_TYPE,
+                                    streamValue,
+                                ),
+                            )
+                        }
+                    }
+                }
+
+                is ActionData.Volume.Down -> buildList {
+                    if (data.volumeStream != null) {
+                        VOLUME_STREAM_MAP[data.volumeStream]?.let { streamValue ->
+                            add(
+                                EntityExtra(
+                                    ActionEntity.EXTRA_STREAM_TYPE,
+                                    streamValue,
+                                ),
+                            )
+                        }
+                    }
+                }
 
                 else -> emptyList()
             }
@@ -967,6 +1100,11 @@ object ActionDataEntityMapper {
             add(EntityExtra(ActionEntity.EXTRA_MOVE_CURSOR_DIRECTION, directionString))
         }
 
+        is ActionData.ShellCommand -> listOf(
+            EntityExtra(ActionEntity.EXTRA_SHELL_COMMAND_DESCRIPTION, data.description),
+            EntityExtra(ActionEntity.EXTRA_SHELL_COMMAND_TIMEOUT, data.timeoutMillis.toString()),
+        )
+
         else -> emptyList()
     }
 
@@ -1056,6 +1194,9 @@ object ActionDataEntityMapper {
         ActionId.VOLUME_UNMUTE to "volume_unmute",
         ActionId.VOLUME_MUTE to "volume_mute",
         ActionId.VOLUME_TOGGLE_MUTE to "volume_toggle_mute",
+        ActionId.MUTE_MICROPHONE to "mute_microphone",
+        ActionId.UNMUTE_MICROPHONE to "unmute_microphone",
+        ActionId.TOGGLE_MUTE_MICROPHONE to "toggle_mute_microphone",
 
         ActionId.EXPAND_NOTIFICATION_DRAWER to "expand_notification_drawer",
         ActionId.TOGGLE_NOTIFICATION_DRAWER to "toggle_notification_drawer",
@@ -1136,5 +1277,7 @@ object ActionDataEntityMapper {
         ActionId.END_PHONE_CALL to "end_phone_call",
         ActionId.DEVICE_CONTROLS to "device_controls",
         ActionId.HTTP_REQUEST to "http_request",
+        ActionId.FORCE_STOP_APP to "force_stop_app",
+        ActionId.CLEAR_RECENT_APP to "clear_recent_app",
     )
 }

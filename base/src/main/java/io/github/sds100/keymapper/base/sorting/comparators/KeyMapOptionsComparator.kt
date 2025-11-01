@@ -9,10 +9,7 @@ class KeyMapOptionsComparator(
      */
     private val reverse: Boolean = false,
 ) : Comparator<KeyMap> {
-    override fun compare(
-        keyMap: KeyMap?,
-        otherKeyMap: KeyMap?,
-    ): Int {
+    override fun compare(keyMap: KeyMap?, otherKeyMap: KeyMap?): Int {
         if (keyMap == null || otherKeyMap == null) {
             return 0
         }
@@ -21,7 +18,6 @@ class KeyMapOptionsComparator(
             keyMap,
             otherKeyMap,
             { it.vibrate },
-            { it.trigger.screenOffTrigger },
             { it.trigger.triggerFromOtherApps },
             { it.showToast },
         )

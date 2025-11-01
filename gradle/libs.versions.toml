@@ -1,12 +1,12 @@
 [versions]
 compile-sdk = "36"
-hilt-navigation-compose = "1.2.0"
-min-sdk = "21"
+min-sdk = "26"
 build-tools = "36.0.0"
 target-sdk = "36"
 
 android-gradle-plugin = "8.9.1"
 androidx-activity = "1.10.1"
+androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.0"
 androidx-arch-core-testing = "2.2.0"
 androidx-constraintlayout = "2.2.1"
@@ -29,6 +29,7 @@ androidx-test-core = "1.6.1"
 androidx-viewpager2 = "1.1.0"
 
 dagger-hilt-android = "2.56.2"
+hilt-navigation-compose = "1.2.0"
 
 compose-bom = "2025.05.01"
 compose-compiler = "1.5.10" # kotlinCompilerExtensionVersion
@@ -38,7 +39,13 @@ epoxy = "4.6.2"
 flexbox = "3.0.0"
 google-accompanist-drawablepainter = "0.35.0-alpha"
 hiddenapibypass = "4.3"
+hiddenapibypass-lsposed = "6.1"
 introshowcaseview = "2.0.2"
+conscrypt-android = "2.5.3"
+boringssl-ndk = "20250114"
+bouncycastle-bcpkix = "1.70"
+appiconloader = "1.5.0"
+rikkax-core = "1.4.1"
 junit = "4.13.2"
 junit-params = "1.1.1"
 
@@ -48,7 +55,7 @@ coroutines = "1.9.0"
 
 kotson = "2.5.0"
 ksp-gradle-plugin = "2.1.0-1.0.28"
-ktlint-gradle = "12.1.0"
+ktlint-gradle = "13.1.0"
 #leakcanary = "2.6" # Commented out in original file
 lingala-zip4j = "2.8.0"
 material = "1.13.0-alpha13"
@@ -69,6 +76,9 @@ room-testing-legacy = "1.1.1"
 espresso-core = "3.6.1"
 ui-tooling = "1.8.1" # android.arch.persistence.room:testing
 
+libsu-core = "6.0.0"
+rikka-hidden = "4.4.0"
+
 [libraries]
 # Kotlin
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
@@ -82,6 +92,7 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 # AndroidX
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity" }
 androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "androidx-activity" }
+androidx-annotation-jvm = { group = "androidx.annotation", name = "annotation-jvm", version.ref = "androidx-annotation" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidx-arch-core-testing" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraintlayout" }
@@ -149,6 +160,8 @@ splitties-toast = { group = "com.louiscad.splitties", name = "splitties-toast", 
 # Rikka Shizuku
 rikka-shizuku-api = { group = "dev.rikka.shizuku", name = "api", version.ref = "shizuku" }
 rikka-shizuku-provider = { group = "dev.rikka.shizuku", name = "provider", version.ref = "shizuku" }
+rikka-hidden-compat = { group = "dev.rikka.hidden", name = "compat", version.ref = "rikka-hidden" }
+rikka-hidden-stub = { group = "dev.rikka.hidden", name = "stub", version.ref = "rikka-hidden" }
 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -168,7 +181,15 @@ github-mflisar-dragselectrecyclerview = { group = "com.github.MFlisar", name = "
 jakewharton-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 kotson = { group = "com.github.salomonbrys.kotson", name = "kotson", version.ref = "kotson" }
 lsposed-hiddenapibypass = { group = "org.lsposed.hiddenapibypass", name = "hiddenapibypass", version.ref = "hiddenapibypass" }
+lsposed-hiddenapibypass-updated = { group = "org.lsposed.hiddenapibypass", name = "hiddenapibypass", version.ref = "hiddenapibypass-lsposed" }
 net-lingala-zip4j = { group = "net.lingala.zip4j", name = "zip4j", version.ref = "lingala-zip4j" }
+github-topjohnwu-libsu = { group = "com.github.topjohnwu.libsu", name = "core", version.ref = "libsu-core" }
+conscrypt-android = { group = "org.conscrypt", name = "conscrypt-android", version.ref = "conscrypt-android" }
+vvb2060-ndk-boringssl = { group = "io.github.vvb2060.ndk", name = "boringssl", version.ref = "boringssl-ndk" }
+bouncycastle-bcpkix = { group = "org.bouncycastle", name = "bcpkix-jdk15on", version.ref = "bouncycastle-bcpkix" }
+zhanghai-appiconloader = { group = "me.zhanghai.android.appiconloader", name = "appiconloader", version.ref = "appiconloader" }
+rikka-rikkax-core = { group = "dev.rikka.rikkax.core", name = "core-ktx", version.ref = "rikkax-core" }
+
 
 # Gradle Plugins - Aliases for buildscript dependencies / plugins block
 # These are referenced in build.gradle.kts files' plugins blocks by their ID.

@@ -11,13 +11,13 @@ import io.github.sds100.keymapper.data.repositories.GroupRepository
 import io.github.sds100.keymapper.data.repositories.KeyMapRepository
 import io.github.sds100.keymapper.data.repositories.LogRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.data.repositories.PreferenceRepositoryImpl
 import io.github.sds100.keymapper.data.repositories.RoomAccessibilityNodeRepository
 import io.github.sds100.keymapper.data.repositories.RoomFloatingButtonRepository
 import io.github.sds100.keymapper.data.repositories.RoomFloatingLayoutRepository
 import io.github.sds100.keymapper.data.repositories.RoomGroupRepository
 import io.github.sds100.keymapper.data.repositories.RoomKeyMapRepository
 import io.github.sds100.keymapper.data.repositories.RoomLogRepository
-import io.github.sds100.keymapper.data.repositories.SettingsPreferenceRepository
 import javax.inject.Singleton
 
 @Module
@@ -25,7 +25,7 @@ import javax.inject.Singleton
 abstract class DataHiltModule {
     @Singleton
     @Binds
-    abstract fun providePreferenceRepository(impl: SettingsPreferenceRepository): PreferenceRepository
+    abstract fun providePreferenceRepository(impl: PreferenceRepositoryImpl): PreferenceRepository
 
     @Singleton
     @Binds
@@ -37,7 +37,9 @@ abstract class DataHiltModule {
 
     @Singleton
     @Binds
-    abstract fun provideAccessibilityNodeRepository(impl: RoomAccessibilityNodeRepository): AccessibilityNodeRepository
+    abstract fun provideAccessibilityNodeRepository(
+        impl: RoomAccessibilityNodeRepository,
+    ): AccessibilityNodeRepository
 
     @Singleton
     @Binds
@@ -45,9 +47,13 @@ abstract class DataHiltModule {
 
     @Singleton
     @Binds
-    abstract fun provideFloatingButtonRepository(impl: RoomFloatingButtonRepository): FloatingButtonRepository
+    abstract fun provideFloatingButtonRepository(
+        impl: RoomFloatingButtonRepository,
+    ): FloatingButtonRepository
 
     @Singleton
     @Binds
-    abstract fun provideFloatingLayoutRepository(impl: RoomFloatingLayoutRepository): FloatingLayoutRepository
+    abstract fun provideFloatingLayoutRepository(
+        impl: RoomFloatingLayoutRepository,
+    ): FloatingLayoutRepository
 }

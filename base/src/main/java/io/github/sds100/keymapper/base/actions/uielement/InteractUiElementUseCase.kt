@@ -11,6 +11,8 @@ import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
 import io.github.sds100.keymapper.data.repositories.AccessibilityNodeRepository
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,8 +22,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class InteractUiElementController @Inject constructor(
@@ -49,7 +49,9 @@ class InteractUiElementController @Inject constructor(
             .launchIn(coroutineScope)
     }
 
-    override fun getInteractionsByPackage(packageName: String): Flow<State<List<AccessibilityNodeEntity>>> {
+    override fun getInteractionsByPackage(
+        packageName: String,
+    ): Flow<State<List<AccessibilityNodeEntity>>> {
         return nodeRepository.nodes.map { state ->
             state.mapData { nodes ->
                 nodes.filter { it.packageName == packageName }
@@ -61,9 +63,11 @@ class InteractUiElementController @Inject constructor(
         return nodeRepository.get(id)
     }
 
-    override fun getAppName(packageName: String): KMResult<String> = packageManagerAdapter.getAppName(packageName)
+    override fun getAppName(packageName: String): KMResult<String> =
+        packageManagerAdapter.getAppName(packageName)
 
-    override fun getAppIcon(packageName: String): KMResult<Drawable> = packageManagerAdapter.getAppIcon(packageName)
+    override fun getAppIcon(packageName: String): KMResult<Drawable> =
+        packageManagerAdapter.getAppIcon(packageName)
 
     override suspend fun startRecording(): KMResult<*> {
         nodeRepository.deleteAll()

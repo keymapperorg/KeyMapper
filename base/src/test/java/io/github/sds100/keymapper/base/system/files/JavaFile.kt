@@ -4,10 +4,10 @@ import com.anggrayudi.storage.file.recreateFile
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.files.IFile
-import timber.log.Timber
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
+import timber.log.Timber
 
 class JavaFile(val file: File) : IFile {
 

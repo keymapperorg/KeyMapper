@@ -120,8 +120,9 @@ object Migration4To5 {
         }
     }
 
-    private fun JsonArray.getExtraData(id: String): String? =
-        singleOrNull { it["id"].asString == id }?.get("data")?.asString
+    private fun JsonArray.getExtraData(id: String): String? = singleOrNull {
+        it["id"].asString == id
+    }?.get("data")?.asString
 
     private fun JsonArray.putExtra(id: String, data: String) {
         val obj = JsonObject().apply {

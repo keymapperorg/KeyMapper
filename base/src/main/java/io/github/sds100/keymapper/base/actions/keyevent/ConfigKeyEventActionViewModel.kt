@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.ActionData
-import io.github.sds100.keymapper.base.utils.InputEventStrings
+import io.github.sds100.keymapper.base.utils.KeyCodeStrings
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
@@ -15,6 +15,8 @@ import io.github.sds100.keymapper.base.utils.navigation.NavigationProviderImpl
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.common.utils.InputDeviceInfo
+import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
@@ -26,8 +28,7 @@ import io.github.sds100.keymapper.common.utils.minusFlag
 import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.common.utils.withFlag
-import io.github.sds100.keymapper.system.devices.InputDeviceInfo
-import io.github.sds100.keymapper.system.devices.InputDeviceUtils
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -37,7 +38,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class ConfigKeyEventActionViewModel @Inject constructor(
@@ -105,7 +105,6 @@ class ConfigKeyEventActionViewModel @Inject constructor(
             keyEventState.value = KeyEventState(
                 Success(action.keyCode),
                 inputDevice,
-                useShell = action.useShell,
                 metaState = action.metaState,
             )
         }
@@ -119,10 +118,6 @@ class ConfigKeyEventActionViewModel @Inject constructor(
         }
 
         keyEventState.value = keyEventState.value.copy(keyCode = keyCodeState)
-    }
-
-    fun setUseShell(checked: Boolean) {
-        keyEventState.value = keyEventState.value.copy(useShell = checked)
     }
 
     @SuppressLint("NullSafeMutableLiveData")
@@ -157,7 +152,6 @@ class ConfigKeyEventActionViewModel @Inject constructor(
                 ActionData.InputKeyEvent(
                     keyCode = keyCode,
                     metaState = keyEventState.value.metaState,
-                    useShell = keyEventState.value.useShell,
                     device = device,
                 ),
             )
@@ -171,7 +165,6 @@ class ConfigKeyEventActionViewModel @Inject constructor(
     ): ConfigKeyEventUiState {
         val keyCode = state.keyCode
         val metaState = state.metaState
-        val useShell = state.useShell
         val chosenDevice = state.chosenDevice
 
         val keyCodeString = when (keyCode) {
@@ -190,7 +183,7 @@ class ConfigKeyEventActionViewModel @Inject constructor(
             onError = { "" },
         )
 
-        val modifierListItems = InputEventStrings.MODIFIER_LABELS.map { (modifier, label) ->
+        val modifierListItems = KeyCodeStrings.MODIFIER_LABELS.map { (modifier, label) ->
             CheckBoxListItem(
                 id = modifier.toString(),
                 label = getString(label),
@@ -226,9 +219,8 @@ class ConfigKeyEventActionViewModel @Inject constructor(
             keyCodeErrorMessage = keyCode.errorOrNull()?.getFullMessage(this),
             keyCodeLabel = keyCodeLabel,
             showKeyCodeLabel = keyCode.isSuccess,
-            isUseShellChecked = useShell,
-            isDevicePickerShown = !useShell,
-            isModifierListShown = !useShell,
+            isDevicePickerShown = true,
+            isModifierListShown = true,
             modifierListItems = modifierListItems,
             isDoneButtonEnabled = keyCode.isSuccess,
             deviceListItems = deviceListItems,
@@ -239,7 +231,6 @@ class ConfigKeyEventActionViewModel @Inject constructor(
     private data class KeyEventState(
         val keyCode: KMResult<Int> = KMError.EmptyText,
         val chosenDevice: InputDeviceInfo? = null,
-        val useShell: Boolean = false,
         val metaState: Int = 0,
     )
 }
@@ -249,7 +240,6 @@ data class ConfigKeyEventUiState(
     val keyCodeErrorMessage: String?,
     val keyCodeLabel: String,
     val showKeyCodeLabel: Boolean,
-    val isUseShellChecked: Boolean,
     val isDevicePickerShown: Boolean,
     val isModifierListShown: Boolean,
     val modifierListItems: List<CheckBoxListItem>,

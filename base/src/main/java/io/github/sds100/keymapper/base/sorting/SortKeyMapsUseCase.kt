@@ -8,10 +8,10 @@ import io.github.sds100.keymapper.base.sorting.comparators.KeyMapOptionsComparat
 import io.github.sds100.keymapper.base.sorting.comparators.KeyMapTriggerComparator
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
 
 class SortKeyMapsUseCaseImpl @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
@@ -102,13 +102,8 @@ interface SortKeyMapsUseCase {
     fun observeKeyMapsSorter(): Flow<Comparator<KeyMap>>
 }
 
-private class Sorter(
-    private val comparatorsOrder: List<Comparator<KeyMap>>,
-) : Comparator<KeyMap> {
-    override fun compare(
-        keyMap: KeyMap?,
-        otherKeyMap: KeyMap?,
-    ): Int {
+private class Sorter(private val comparatorsOrder: List<Comparator<KeyMap>>) : Comparator<KeyMap> {
+    override fun compare(keyMap: KeyMap?, otherKeyMap: KeyMap?): Int {
         if (keyMap == null || otherKeyMap == null) {
             return 0
         }

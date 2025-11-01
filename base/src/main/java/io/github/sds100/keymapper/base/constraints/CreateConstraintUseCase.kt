@@ -10,10 +10,10 @@ import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
 class CreateConstraintUseCaseImpl @Inject constructor(
     private val networkAdapter: NetworkAdapter,
@@ -25,29 +25,24 @@ class CreateConstraintUseCaseImpl @Inject constructor(
     override fun isSupported(constraint: ConstraintId): KMError? {
         when (constraint) {
             ConstraintId.FLASHLIGHT_ON, ConstraintId.FLASHLIGHT_OFF -> {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    return KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
-                }
-
                 if (cameraAdapter.getFlashInfo(CameraLens.BACK) == null &&
                     cameraAdapter.getFlashInfo(CameraLens.FRONT) == null
                 ) {
                     return KMError.SystemFeatureNotSupported(PackageManager.FEATURE_CAMERA_FLASH)
                 }
             }
-
-            ConstraintId.DEVICE_IS_LOCKED, ConstraintId.DEVICE_IS_UNLOCKED ->
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
-                    return KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.LOLLIPOP_MR1)
+            ConstraintId.HINGE_CLOSED, ConstraintId.HINGE_OPEN -> {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                    return KMError.SdkVersionTooLow(Build.VERSION_CODES.R)
                 }
-
+            }
             else -> Unit
         }
 
         return null
     }
 
-    override fun getKnownWiFiSSIDs(): List<String>? = networkAdapter.getKnownWifiSSIDs()
+    override fun getKnownWiFiSSIDs(): List<String> = networkAdapter.getKnownWifiSSIDs()
 
     override fun getEnabledInputMethods(): List<ImeInfo> = inputMethodAdapter.inputMethods.value
 
@@ -72,8 +67,9 @@ class CreateConstraintUseCaseImpl @Inject constructor(
         )
     }
 
-    override fun getSavedWifiSSIDs(): Flow<List<String>> = preferenceRepository.get(Keys.savedWifiSSIDs)
-        .map { it?.toList() ?: emptyList() }
+    override fun getSavedWifiSSIDs(): Flow<List<String>> =
+        preferenceRepository.get(Keys.savedWifiSSIDs)
+            .map { it?.toList() ?: emptyList() }
 
     override fun getFlashlightLenses(): Set<CameraLens> {
         return CameraLens.entries.filter { cameraAdapter.getFlashInfo(it) != null }.toSet()
@@ -82,7 +78,7 @@ class CreateConstraintUseCaseImpl @Inject constructor(
 
 interface CreateConstraintUseCase {
     fun isSupported(constraint: ConstraintId): KMError?
-    fun getKnownWiFiSSIDs(): List<String>?
+    fun getKnownWiFiSSIDs(): List<String>
     fun getEnabledInputMethods(): List<ImeInfo>
 
     suspend fun saveWifiSSID(ssid: String)

@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
-import io.github.sds100.keymapper.base.trigger.TriggerKeyShortcut
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.drawable
 
@@ -76,7 +75,7 @@ fun <T> ShortcutRow(
 }
 
 @Composable
-private fun ShortcutButton(
+fun ShortcutButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     text: String,
@@ -114,8 +113,10 @@ private fun PreviewVector() {
                 shortcuts = setOf(
                     ShortcutModel(
                         icon = ComposeIconInfo.Vector(Icons.Rounded.Fingerprint),
-                        text = stringResource(R.string.trigger_key_shortcut_add_fingerprint_gesture),
-                        data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
+                        text = stringResource(
+                            R.string.trigger_key_shortcut_add_fingerprint_gesture,
+                        ),
+                        data = "",
                     ),
                 ),
             )
@@ -135,8 +136,10 @@ private fun PreviewDrawable() {
                 shortcuts = setOf(
                     ShortcutModel(
                         icon = ComposeIconInfo.Drawable(icon),
-                        text = stringResource(R.string.trigger_key_shortcut_add_fingerprint_gesture),
-                        data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
+                        text = stringResource(
+                            R.string.trigger_key_shortcut_add_fingerprint_gesture,
+                        ),
+                        data = "",
                     ),
                 ),
             )
@@ -157,7 +160,7 @@ private fun PreviewMultipleLines() {
                     ShortcutModel(
                         icon = ComposeIconInfo.Drawable(icon),
                         text = "Line 1\nLine 2\nLine 3",
-                        data = TriggerKeyShortcut.FINGERPRINT_GESTURE,
+                        data = "",
                     ),
                 ),
             )

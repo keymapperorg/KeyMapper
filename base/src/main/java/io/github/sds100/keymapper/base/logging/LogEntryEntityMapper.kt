@@ -8,6 +8,7 @@ object LogEntryEntityMapper {
             LogSeverity.ERROR -> LogEntryEntity.SEVERITY_ERROR
             LogSeverity.DEBUG -> LogEntryEntity.SEVERITY_DEBUG
             LogSeverity.INFO -> LogEntryEntity.SEVERITY_INFO
+            LogSeverity.WARNING -> LogEntryEntity.SEVERITY_WARNING
         }
 
         return LogEntryEntity(
@@ -23,6 +24,7 @@ object LogEntryEntityMapper {
             LogEntryEntity.SEVERITY_ERROR -> LogSeverity.ERROR
             LogEntryEntity.SEVERITY_DEBUG -> LogSeverity.DEBUG
             LogEntryEntity.SEVERITY_INFO -> LogSeverity.INFO
+            LogEntryEntity.SEVERITY_WARNING -> LogSeverity.WARNING
 
             else -> LogSeverity.DEBUG
         }

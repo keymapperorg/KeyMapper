@@ -4,6 +4,8 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.ActionUiHelper
+import io.github.sds100.keymapper.base.shortcuts.CreateKeyMapShortcutUseCase
+import io.github.sds100.keymapper.base.trigger.ConfigTriggerUseCase
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
@@ -25,7 +27,7 @@ import kotlinx.coroutines.launch
 
 class ConfigKeyMapOptionsViewModel(
     private val coroutineScope: CoroutineScope,
-    private val config: ConfigKeyMapUseCase,
+    private val config: ConfigTriggerUseCase,
     private val displayUseCase: DisplayKeyMapUseCase,
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val dialogProvider: DialogProvider,
@@ -62,10 +64,6 @@ class ConfigKeyMapOptionsViewModel(
 
     override fun onLongPressDoubleVibrationChanged(checked: Boolean) {
         config.setLongPressDoubleVibrationEnabled(checked)
-    }
-
-    override fun onScreenOffTriggerChanged(checked: Boolean) {
-        config.setTriggerWhenScreenOff(checked)
     }
 
     override fun onShowToastChanged(checked: Boolean) {
@@ -164,9 +162,6 @@ class ConfigKeyMapOptionsViewModel(
             showLongPressDoubleVibration = keyMap.trigger.isLongPressDoubleVibrationAllowed(),
             longPressDoubleVibration = keyMap.trigger.longPressDoubleVibration,
 
-            showScreenOffTrigger = keyMap.trigger.isDetectingWhenScreenOffAllowed(),
-            screenOffTrigger = keyMap.trigger.screenOffTrigger,
-
             triggerFromOtherApps = keyMap.trigger.triggerFromOtherApps,
             keyMapUid = keyMap.uid,
             isLauncherShortcutButtonEnabled = createKeyMapShortcut.isSupported,
@@ -198,9 +193,6 @@ data class KeyMapOptionsState(
 
     val showLongPressDoubleVibration: Boolean,
     val longPressDoubleVibration: Boolean,
-
-    val showScreenOffTrigger: Boolean,
-    val screenOffTrigger: Boolean,
 
     val triggerFromOtherApps: Boolean,
     val keyMapUid: String,

@@ -9,18 +9,19 @@ import io.github.sds100.keymapper.data.db.dao.KeyMapDao
 import io.github.sds100.keymapper.data.entities.FingerprintMapEntity
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
 import io.github.sds100.keymapper.data.migration.fingerprintmaps.FingerprintToKeyMapMigration
+import java.util.UUID
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.UUID
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class RoomKeyMapRepository @Inject constructor(
@@ -34,7 +35,7 @@ class RoomKeyMapRepository @Inject constructor(
         private const val MAX_KEY_MAP_BATCH_SIZE = 200
     }
 
-    override val keyMapList = keyMapDao.getAll()
+    override val keyMapList: StateFlow<State<List<KeyMapEntity>>> = keyMapDao.getAll()
         .map { State.Data(it) }
         .flowOn(dispatchers.io())
         .stateIn(coroutineScope, SharingStarted.Eagerly, State.Loading)
@@ -108,10 +109,30 @@ class RoomKeyMapRepository @Inject constructor(
         }
     }
 
+    override fun enableByGroup(groupUid: String?) {
+        coroutineScope.launch(dispatchers.io()) {
+            keyMapDao.enableKeyMapByGroup(groupUid)
+        }
+    }
+
+    override fun disableByGroup(groupUid: String?) {
+        coroutineScope.launch(dispatchers.io()) {
+            keyMapDao.disableKeyMapByGroup(groupUid)
+        }
+    }
+
     override fun disableById(vararg uid: String) {
         coroutineScope.launch(dispatchers.io()) {
             for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
                 keyMapDao.disableKeyMapByUid(*it)
+            }
+        }
+    }
+
+    override fun toggleById(vararg uid: String) {
+        coroutineScope.launch(dispatchers.io()) {
+            for (it in uid.splitIntoBatches(MAX_KEY_MAP_BATCH_SIZE)) {
+                keyMapDao.toggleKeyMapByUid(*it)
             }
         }
     }

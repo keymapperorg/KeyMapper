@@ -4,21 +4,27 @@ import android.app.NotificationManager
 import android.content.Context
 import android.media.AudioManager
 import android.os.Build
-import androidx.annotation.RequiresApi
+import android.provider.Settings
 import androidx.core.content.getSystemService
-import io.github.sds100.keymapper.common.utils.KMError
+import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.otherwise
 import io.github.sds100.keymapper.common.utils.then
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.isConnected
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
-import dagger.hilt.android.qualifiers.ApplicationContext
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class AndroidVolumeAdapter @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager
 ) : VolumeAdapter {
     private val ctx = context.applicationContext
 
@@ -26,12 +32,29 @@ class AndroidVolumeAdapter @Inject constructor(
     private val notificationManager: NotificationManager by lazy { ctx.getSystemService()!! }
 
     override val ringerMode: RingerMode
-        get() = when (audioManager.ringerMode) {
-            AudioManager.RINGER_MODE_NORMAL -> RingerMode.NORMAL
-            AudioManager.RINGER_MODE_VIBRATE -> RingerMode.VIBRATE
-            AudioManager.RINGER_MODE_SILENT -> RingerMode.SILENT
-            else -> throw Exception("Don't know how to convert this ringer moder ${audioManager.ringerMode}")
+        get() {
+            // Get the current ringer mode with the setting because the AudioManager
+            // always returns the same value when the value has been changed by the
+            // the system bridge.
+            val ringerModeSdk = if (systemBridgeConnectionManager.isConnected()) {
+                SettingsUtils.getGlobalSetting<Int>(
+                    ctx,
+                    Settings.Global.MODE_RINGER
+                ) ?: 0
+            } else {
+                audioManager.ringerMode
+            }
+
+            return when (ringerModeSdk) {
+                AudioManager.RINGER_MODE_NORMAL -> RingerMode.NORMAL
+                AudioManager.RINGER_MODE_VIBRATE -> RingerMode.VIBRATE
+                AudioManager.RINGER_MODE_SILENT -> RingerMode.SILENT
+                else -> throw Exception("Don't know how to convert this ringer moder ${audioManager.ringerMode}")
+            }
         }
+
+    override val isMicrophoneMuted: Boolean
+        get() = audioManager.isMicrophoneMute
 
     override fun raiseVolume(stream: VolumeStream?, showVolumeUi: Boolean): KMResult<*> =
         stream.convert().then { streamType ->
@@ -44,32 +67,20 @@ class AndroidVolumeAdapter @Inject constructor(
         }
 
     override fun muteVolume(stream: VolumeStream?, showVolumeUi: Boolean): KMResult<*> {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return stream.convert().then { streamType ->
-                adjustVolume(AudioManager.ADJUST_MUTE, showVolumeUi, streamType)
-            }
-        } else {
-            return KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
+        return stream.convert().then { streamType ->
+            adjustVolume(AudioManager.ADJUST_MUTE, showVolumeUi, streamType)
         }
     }
 
     override fun unmuteVolume(stream: VolumeStream?, showVolumeUi: Boolean): KMResult<*> {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return stream.convert().then { streamType ->
-                adjustVolume(AudioManager.ADJUST_UNMUTE, showVolumeUi, streamType)
-            }
-        } else {
-            return KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
+        return stream.convert().then { streamType ->
+            adjustVolume(AudioManager.ADJUST_UNMUTE, showVolumeUi, streamType)
         }
     }
 
     override fun toggleMuteVolume(stream: VolumeStream?, showVolumeUi: Boolean): KMResult<*> {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return stream.convert().then { streamType ->
-                adjustVolume(AudioManager.ADJUST_TOGGLE_MUTE, showVolumeUi, streamType)
-            }
-        } else {
-            return KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.M)
+        return stream.convert().then { streamType ->
+            adjustVolume(AudioManager.ADJUST_TOGGLE_MUTE, showVolumeUi, streamType)
         }
     }
 
@@ -84,39 +95,49 @@ class AndroidVolumeAdapter @Inject constructor(
                 RingerMode.SILENT -> AudioManager.RINGER_MODE_SILENT
             }
 
-            audioManager.ringerMode = sdkMode
+            return if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
+                systemBridgeConnectionManager.run { systemBridge ->
+                    systemBridge.setRingerMode(sdkMode)
+                }.otherwise {
+                    Timber.e("Failed to set ringer mode with System Bridge, falling back to AudioManager")
 
-            return Success(Unit)
+                    audioManager.ringerMode = sdkMode
+                    Success(Unit)
+                }
+            } else {
+                audioManager.ringerMode = sdkMode
+                Success(Unit)
+            }
         } catch (e: SecurityException) {
             return SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)
         }
     }
 
     override fun enableDndMode(dndMode: DndMode): KMResult<*> {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            notificationManager.setInterruptionFilter(dndMode.convert())
-            return Success(Unit)
-        }
+        notificationManager.setInterruptionFilter(dndMode.convert())
+        return Success(Unit)
 
-        return KMError.SdkVersionTooLow(Build.VERSION_CODES.M)
     }
 
     override fun disableDndMode(): KMResult<*> {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
-            return Success(Unit)
-        }
+        notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
+        return Success(Unit)
 
-        return KMError.SdkVersionTooLow(Build.VERSION_CODES.M)
     }
 
-    override fun isDndEnabled(): Boolean = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    override fun isDndEnabled(): Boolean =
         notificationManager.currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL
-    } else {
-        false
+
+    override fun muteMicrophone(): KMResult<*> {
+        audioManager.isMicrophoneMute = true
+        return Success(Unit)
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
+    override fun unmuteMicrophone(): KMResult<*> {
+        audioManager.isMicrophoneMute = false
+        return Success(Unit)
+    }
+
     private fun DndMode.convert(): Int = when (this) {
         DndMode.ALARMS -> NotificationManager.INTERRUPTION_FILTER_ALARMS
         DndMode.PRIORITY -> NotificationManager.INTERRUPTION_FILTER_PRIORITY
@@ -131,12 +152,7 @@ class AndroidVolumeAdapter @Inject constructor(
         VolumeStream.RING -> Success(AudioManager.STREAM_RING)
         VolumeStream.SYSTEM -> Success(AudioManager.STREAM_SYSTEM)
         VolumeStream.VOICE_CALL -> Success(AudioManager.STREAM_VOICE_CALL)
-        VolumeStream.ACCESSIBILITY ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Success(AudioManager.STREAM_ACCESSIBILITY)
-            } else {
-                KMError.SdkVersionTooLow(minSdk = Build.VERSION_CODES.O)
-            }
+        VolumeStream.ACCESSIBILITY -> Success(AudioManager.STREAM_ACCESSIBILITY)
 
         null -> Success(null)
     }

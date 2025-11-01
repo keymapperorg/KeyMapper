@@ -12,11 +12,10 @@ import javax.inject.Singleton
 class KeyMapShortcutActivityIntentBuilderImpl @Inject constructor(
     @ApplicationContext private val ctx: Context,
 ) : KeyMapShortcutActivityIntentBuilder {
-    override fun build(intentAction: String, intentExtras: Bundle): Intent {
-        return Intent(ctx, LaunchKeyMapShortcutActivity::class.java).apply {
+    override fun build(intentAction: String, intentExtras: Bundle): Intent =
+        Intent(ctx, LaunchKeyMapShortcutActivity::class.java).apply {
             action = intentAction
 
             putExtras(intentExtras)
         }
-    }
 }

@@ -4,9 +4,9 @@ import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.base.system.accessibility.FingerprintGestureType
 import io.github.sds100.keymapper.data.entities.FingerprintTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
+import java.util.UUID
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.util.UUID
 
 @Serializable
 data class FingerprintTriggerKey(
@@ -17,7 +17,6 @@ data class FingerprintTriggerKey(
 
     override val clickType: ClickType,
 ) : TriggerKey() {
-    override val consumeEvent: Boolean = true
     override val allowedLongPress: Boolean = false
     override val allowedDoublePress: Boolean = false
 
@@ -33,9 +32,7 @@ data class FingerprintTriggerKey(
     }
 
     companion object {
-        fun fromEntity(
-            entity: FingerprintTriggerKeyEntity,
-        ): TriggerKey {
+        fun fromEntity(entity: FingerprintTriggerKeyEntity): TriggerKey {
             val type: FingerprintGestureType = when (entity.type) {
                 FingerprintTriggerKeyEntity.ID_SWIPE_DOWN -> FingerprintGestureType.SWIPE_DOWN
                 FingerprintTriggerKeyEntity.ID_SWIPE_UP -> FingerprintGestureType.SWIPE_UP

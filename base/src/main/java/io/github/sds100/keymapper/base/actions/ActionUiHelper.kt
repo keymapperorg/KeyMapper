@@ -7,20 +7,21 @@ import androidx.compose.material.icons.outlined.Android
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.keymaps.KeyMap
 import io.github.sds100.keymapper.base.utils.DndModeStrings
-import io.github.sds100.keymapper.base.utils.InputEventStrings
+import io.github.sds100.keymapper.base.utils.KeyCodeStrings
 import io.github.sds100.keymapper.base.utils.RingerModeStrings
 import io.github.sds100.keymapper.base.utils.VolumeStreamStrings
 import io.github.sds100.keymapper.base.utils.ui.IconInfo
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.TintType
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.common.models.ShellExecutionMode
+import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.PinchScreenType
 import io.github.sds100.keymapper.common.utils.handle
 import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.toPercentString
 import io.github.sds100.keymapper.system.camera.CameraLens
-import io.github.sds100.keymapper.system.devices.InputDeviceUtils
 import io.github.sds100.keymapper.system.intents.IntentTarget
 
 class ActionUiHelper(
@@ -46,46 +47,41 @@ class ActionUiHelper(
             }
 
             // only a key code can be inputted through the shell
-            if (action.useShell) {
-                getString(R.string.description_keyevent_through_shell, keyCodeString)
-            } else {
-                val metaStateString = buildString {
-                    for (label in InputEventStrings.MODIFIER_LABELS.entries) {
-                        val modifier = label.key
-                        val labelRes = label.value
 
-                        if (action.metaState.hasFlag(modifier)) {
-                            append("${getString(labelRes)} + ")
-                        }
+            val metaStateString = buildString {
+                for (label in KeyCodeStrings.MODIFIER_LABELS.entries) {
+                    val modifier = label.key
+                    val labelRes = label.value
+
+                    if (action.metaState.hasFlag(modifier)) {
+                        append("${getString(labelRes)} + ")
                     }
                 }
+            }
 
-                if (action.device != null) {
-                    val name = if (action.device.name.isBlank()) {
-                        getString(R.string.unknown_device_name)
-                    } else {
-                        action.device.name
-                    }
+            if (action.device != null) {
+                val name = action.device.name.ifBlank {
+                    getString(R.string.unknown_device_name)
+                }
 
-                    val nameToShow = if (showDeviceDescriptors) {
-                        InputDeviceUtils.appendDeviceDescriptorToName(
-                            action.device.descriptor,
-                            name,
-                        )
-                    } else {
-                        name
-                    }
-
-                    getString(
-                        R.string.description_keyevent_from_device,
-                        arrayOf(metaStateString, keyCodeString, nameToShow),
+                val nameToShow = if (showDeviceDescriptors) {
+                    InputDeviceUtils.appendDeviceDescriptorToName(
+                        action.device.descriptor,
+                        name,
                     )
                 } else {
-                    getString(
-                        R.string.description_keyevent,
-                        args = arrayOf(metaStateString, keyCodeString),
-                    )
+                    name
                 }
+
+                getString(
+                    R.string.description_keyevent_from_device,
+                    arrayOf(metaStateString, keyCodeString, nameToShow),
+                )
+            } else {
+                getString(
+                    R.string.description_keyevent,
+                    args = arrayOf(metaStateString, keyCodeString),
+                )
             }
         }
 
@@ -118,34 +114,21 @@ class ActionUiHelper(
             val string: String
 
             when (action) {
-                is ActionData.Volume.Stream -> {
-                    val streamString = getString(
-                        VolumeStreamStrings.getLabel(action.volumeStream),
-                    )
-
-                    if (action.showVolumeUi) {
-                        hasShowVolumeUiFlag = true
-                    }
-
-                    string = when (action) {
-                        is ActionData.Volume.Stream.Decrease -> getString(
-                            R.string.action_decrease_stream_formatted,
-                            streamString,
-                        )
-
-                        is ActionData.Volume.Stream.Increase -> getString(
-                            R.string.action_increase_stream_formatted,
-                            streamString,
-                        )
-                    }
-                }
-
                 is ActionData.Volume.Down -> {
                     if (action.showVolumeUi) {
                         hasShowVolumeUiFlag = true
                     }
 
-                    string = getString(R.string.action_volume_down)
+                    string = if (action.volumeStream != null) {
+                        val streamString =
+                            getString(VolumeStreamStrings.getLabel(action.volumeStream))
+                        getString(
+                            R.string.action_decrease_stream_formatted,
+                            streamString,
+                        )
+                    } else {
+                        getString(R.string.action_volume_down)
+                    }
                 }
 
                 is ActionData.Volume.Mute -> {
@@ -177,7 +160,16 @@ class ActionUiHelper(
                         hasShowVolumeUiFlag = true
                     }
 
-                    string = getString(R.string.action_volume_up)
+                    string = if (action.volumeStream != null) {
+                        val streamString =
+                            getString(VolumeStreamStrings.getLabel(action.volumeStream))
+                        getString(
+                            R.string.action_increase_stream_formatted,
+                            streamString,
+                        )
+                    } else {
+                        getString(R.string.action_volume_up)
+                    }
                 }
 
                 ActionData.Volume.CycleRingerMode -> {
@@ -215,32 +207,52 @@ class ActionUiHelper(
             getAppName(action.packageName).handle(
                 onSuccess = { appName ->
                     val resId = when (action) {
-                        is ActionData.ControlMediaForApp.Play -> R.string.action_play_media_package_formatted
-                        is ActionData.ControlMediaForApp.FastForward -> R.string.action_fast_forward_package_formatted
-                        is ActionData.ControlMediaForApp.NextTrack -> R.string.action_next_track_package_formatted
-                        is ActionData.ControlMediaForApp.Pause -> R.string.action_pause_media_package_formatted
-                        is ActionData.ControlMediaForApp.PlayPause -> R.string.action_play_pause_media_package_formatted
-                        is ActionData.ControlMediaForApp.PreviousTrack -> R.string.action_previous_track_package_formatted
-                        is ActionData.ControlMediaForApp.Rewind -> R.string.action_rewind_package_formatted
-                        is ActionData.ControlMediaForApp.Stop -> R.string.action_stop_media_package_formatted
-                        is ActionData.ControlMediaForApp.StepForward -> R.string.action_step_forward_media_package_formatted
-                        is ActionData.ControlMediaForApp.StepBackward -> R.string.action_step_backward_media_package_formatted
+                        is ActionData.ControlMediaForApp.Play ->
+                            R.string.action_play_media_package_formatted
+                        is ActionData.ControlMediaForApp.FastForward ->
+                            R.string.action_fast_forward_package_formatted
+                        is ActionData.ControlMediaForApp.NextTrack ->
+                            R.string.action_next_track_package_formatted
+                        is ActionData.ControlMediaForApp.Pause ->
+                            R.string.action_pause_media_package_formatted
+                        is ActionData.ControlMediaForApp.PlayPause ->
+                            R.string.action_play_pause_media_package_formatted
+                        is ActionData.ControlMediaForApp.PreviousTrack ->
+                            R.string.action_previous_track_package_formatted
+                        is ActionData.ControlMediaForApp.Rewind ->
+                            R.string.action_rewind_package_formatted
+                        is ActionData.ControlMediaForApp.Stop ->
+                            R.string.action_stop_media_package_formatted
+                        is ActionData.ControlMediaForApp.StepForward ->
+                            R.string.action_step_forward_media_package_formatted
+                        is ActionData.ControlMediaForApp.StepBackward ->
+                            R.string.action_step_backward_media_package_formatted
                     }
 
                     getString(resId, appName)
                 },
                 onError = {
                     val resId = when (action) {
-                        is ActionData.ControlMediaForApp.Play -> R.string.action_play_media_package
-                        is ActionData.ControlMediaForApp.FastForward -> R.string.action_fast_forward_package
-                        is ActionData.ControlMediaForApp.NextTrack -> R.string.action_next_track_package
-                        is ActionData.ControlMediaForApp.Pause -> R.string.action_pause_media_package
-                        is ActionData.ControlMediaForApp.PlayPause -> R.string.action_play_pause_media_package
-                        is ActionData.ControlMediaForApp.PreviousTrack -> R.string.action_previous_track_package
-                        is ActionData.ControlMediaForApp.Rewind -> R.string.action_rewind_package
-                        is ActionData.ControlMediaForApp.Stop -> R.string.action_stop_media_package
-                        is ActionData.ControlMediaForApp.StepForward -> R.string.action_step_forward_media_package
-                        is ActionData.ControlMediaForApp.StepBackward -> R.string.action_step_backward_media_package
+                        is ActionData.ControlMediaForApp.Play ->
+                            R.string.action_play_media_package
+                        is ActionData.ControlMediaForApp.FastForward ->
+                            R.string.action_fast_forward_package
+                        is ActionData.ControlMediaForApp.NextTrack ->
+                            R.string.action_next_track_package
+                        is ActionData.ControlMediaForApp.Pause ->
+                            R.string.action_pause_media_package
+                        is ActionData.ControlMediaForApp.PlayPause ->
+                            R.string.action_play_pause_media_package
+                        is ActionData.ControlMediaForApp.PreviousTrack ->
+                            R.string.action_previous_track_package
+                        is ActionData.ControlMediaForApp.Rewind ->
+                            R.string.action_rewind_package
+                        is ActionData.ControlMediaForApp.Stop ->
+                            R.string.action_stop_media_package
+                        is ActionData.ControlMediaForApp.StepForward ->
+                            R.string.action_step_forward_media_package
+                        is ActionData.ControlMediaForApp.StepBackward ->
+                            R.string.action_step_backward_media_package
                     }
 
                     getString(resId)
@@ -250,7 +262,9 @@ class ActionUiHelper(
         is ActionData.Flashlight -> {
             when (action) {
                 is ActionData.Flashlight.Toggle -> {
-                    if (action.strengthPercent == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                    if (action.strengthPercent == null ||
+                        Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+                    ) {
                         if (action.lens == CameraLens.FRONT) {
                             getString(R.string.action_toggle_front_flashlight_formatted)
                         } else {
@@ -261,7 +275,6 @@ class ActionUiHelper(
                             getString(
                                 R.string.action_toggle_front_flashlight_with_strength,
                                 action.strengthPercent.toPercentString(),
-
                             )
                         } else {
                             getString(
@@ -273,7 +286,9 @@ class ActionUiHelper(
                 }
 
                 is ActionData.Flashlight.Enable -> {
-                    if (action.strengthPercent == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                    if (action.strengthPercent == null ||
+                        Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+                    ) {
                         if (action.lens == CameraLens.FRONT) {
                             getString(R.string.action_enable_front_flashlight_formatted)
                         } else {
@@ -496,21 +511,41 @@ class ActionUiHelper(
             when (action.direction) {
                 ActionData.MoveCursor.Direction.START -> {
                     when (action.moveType) {
-                        ActionData.MoveCursor.Type.CHAR -> getString(R.string.action_move_cursor_prev_character)
-                        ActionData.MoveCursor.Type.WORD -> getString(R.string.action_move_cursor_start_word)
-                        ActionData.MoveCursor.Type.LINE -> getString(R.string.action_move_cursor_start_line)
-                        ActionData.MoveCursor.Type.PARAGRAPH -> getString(R.string.action_move_cursor_start_paragraph)
-                        ActionData.MoveCursor.Type.PAGE -> getString(R.string.action_move_cursor_start_page)
+                        ActionData.MoveCursor.Type.CHAR -> getString(
+                            R.string.action_move_cursor_prev_character,
+                        )
+                        ActionData.MoveCursor.Type.WORD -> getString(
+                            R.string.action_move_cursor_start_word,
+                        )
+                        ActionData.MoveCursor.Type.LINE -> getString(
+                            R.string.action_move_cursor_start_line,
+                        )
+                        ActionData.MoveCursor.Type.PARAGRAPH -> getString(
+                            R.string.action_move_cursor_start_paragraph,
+                        )
+                        ActionData.MoveCursor.Type.PAGE -> getString(
+                            R.string.action_move_cursor_start_page,
+                        )
                     }
                 }
 
                 ActionData.MoveCursor.Direction.END -> {
                     when (action.moveType) {
-                        ActionData.MoveCursor.Type.CHAR -> getString(R.string.action_move_cursor_next_character)
-                        ActionData.MoveCursor.Type.WORD -> getString(R.string.action_move_cursor_end_word)
-                        ActionData.MoveCursor.Type.LINE -> getString(R.string.action_move_cursor_end_line)
-                        ActionData.MoveCursor.Type.PARAGRAPH -> getString(R.string.action_move_cursor_end_paragraph)
-                        ActionData.MoveCursor.Type.PAGE -> getString(R.string.action_move_cursor_end_page)
+                        ActionData.MoveCursor.Type.CHAR -> getString(
+                            R.string.action_move_cursor_next_character,
+                        )
+                        ActionData.MoveCursor.Type.WORD -> getString(
+                            R.string.action_move_cursor_end_word,
+                        )
+                        ActionData.MoveCursor.Type.LINE -> getString(
+                            R.string.action_move_cursor_end_line,
+                        )
+                        ActionData.MoveCursor.Type.PARAGRAPH -> getString(
+                            R.string.action_move_cursor_end_paragraph,
+                        )
+                        ActionData.MoveCursor.Type.PAGE -> getString(
+                            R.string.action_move_cursor_end_page,
+                        )
                     }
                 }
             }
@@ -555,9 +590,13 @@ class ActionUiHelper(
         ActionData.ShowPowerMenu -> getString(R.string.action_show_power_menu)
 
         ActionData.StatusBar.Collapse -> getString(R.string.action_collapse_status_bar)
-        ActionData.StatusBar.ExpandNotifications -> getString(R.string.action_expand_notification_drawer)
+        ActionData.StatusBar.ExpandNotifications -> getString(
+            R.string.action_expand_notification_drawer,
+        )
         ActionData.StatusBar.ExpandQuickSettings -> getString(R.string.action_expand_quick_settings)
-        ActionData.StatusBar.ToggleNotifications -> getString(R.string.action_toggle_notification_drawer)
+        ActionData.StatusBar.ToggleNotifications -> getString(
+            R.string.action_toggle_notification_drawer,
+        )
         ActionData.StatusBar.ToggleQuickSettings -> getString(R.string.action_toggle_quick_settings)
 
         ActionData.ToggleKeyboard -> getString(R.string.action_toggle_keyboard)
@@ -568,7 +607,9 @@ class ActionUiHelper(
         ActionData.Wifi.Enable -> getString(R.string.action_enable_wifi)
         ActionData.Wifi.Toggle -> getString(R.string.action_toggle_wifi)
         ActionData.DismissAllNotifications -> getString(R.string.action_dismiss_all_notifications)
-        ActionData.DismissLastNotification -> getString(R.string.action_dismiss_most_recent_notification)
+        ActionData.DismissLastNotification -> getString(
+            R.string.action_dismiss_most_recent_notification,
+        )
 
         ActionData.AnswerCall -> getString(R.string.action_answer_call)
         ActionData.EndCall -> getString(R.string.action_end_call)
@@ -576,7 +617,40 @@ class ActionUiHelper(
         ActionData.DeviceControls -> getString(R.string.action_device_controls)
         is ActionData.HttpRequest -> action.description
 
+        is ActionData.ShellCommand -> when (action.executionMode) {
+            ShellExecutionMode.ROOT -> getString(
+                R.string.action_shell_command_description_with_root,
+                action.description,
+            )
+
+            ShellExecutionMode.ADB -> getString(
+                R.string.action_shell_command_description_with_adb,
+                action.description,
+            )
+
+            ShellExecutionMode.STANDARD -> getString(
+                R.string.action_shell_command_description_with_standard,
+                action.description,
+            )
+        }
+
         is ActionData.InteractUiElement -> action.description
+
+        ActionData.ClearRecentApp -> getString(R.string.action_clear_recent_app)
+        ActionData.ForceStopApp -> getString(R.string.action_force_stop_app)
+        is ActionData.ComposeSms -> getString(
+            R.string.action_compose_sms_description,
+            arrayOf(action.message, action.number),
+        )
+
+        is ActionData.SendSms -> getString(
+            R.string.action_send_sms_description,
+            arrayOf(action.message, action.number),
+        )
+
+        ActionData.Microphone.Mute -> getString(R.string.action_mute_microphone)
+        ActionData.Microphone.Toggle -> getString(R.string.action_toggle_mute_microphone)
+        ActionData.Microphone.Unmute -> getString(R.string.action_unmute_microphone)
     }
 
     fun getIcon(action: ActionData): ComposeIconInfo = when (action) {
@@ -692,7 +766,9 @@ class ActionUiHelper(
                     }
 
                     RepeatMode.TRIGGER_PRESSED_AGAIN -> {
-                        append(getString(R.string.flag_repeat_build_description_until_pressed_again))
+                        append(
+                            getString(R.string.flag_repeat_build_description_until_pressed_again),
+                        )
                     }
 
                     else -> Unit

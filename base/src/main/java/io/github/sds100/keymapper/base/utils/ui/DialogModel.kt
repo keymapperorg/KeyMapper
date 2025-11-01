@@ -27,21 +27,11 @@ sealed class DialogModel<R> {
         val autoCompleteEntries: List<String> = emptyList(),
     ) : DialogModel<String>()
 
-    data class SingleChoice<ID>(
-        val items: List<Pair<ID, String>>,
-    ) : DialogModel<ID>()
+    data class SingleChoice<ID>(val items: List<Pair<ID, String>>) : DialogModel<ID>()
 
     data class MultiChoice<ID>(val items: List<MultiChoiceItem<ID>>) : DialogModel<List<ID>>()
 
     data class Toast(val text: String) : DialogModel<Unit>()
-
-    data class ChooseAppStore(
-        val title: CharSequence,
-        val message: CharSequence,
-        val model: ChooseAppStoreModel,
-        val positiveButtonText: CharSequence? = null,
-        val negativeButtonText: CharSequence? = null,
-    ) : DialogModel<DialogResponse>()
 
     data class OpenUrl(val url: String) : DialogModel<Unit>()
 }

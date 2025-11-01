@@ -15,10 +15,7 @@ class KeyMapActionsComparator(
      */
     private val reverse: Boolean = false,
 ) : Comparator<KeyMap> {
-    override fun compare(
-        keyMap: KeyMap?,
-        otherKeyMap: KeyMap?,
-    ): Int {
+    override fun compare(keyMap: KeyMap?, otherKeyMap: KeyMap?): Int {
         if (keyMap == null || otherKeyMap == null) {
             return 0
         }
@@ -70,7 +67,8 @@ class KeyMapActionsComparator(
             is ActionData.InputKeyEvent -> Success(action.keyCode.toString())
             is ActionData.Sound.SoundFile -> Success(action.soundDescription)
             is ActionData.Sound.Ringtone -> Success(action.uri)
-            is ActionData.Volume.Stream -> Success(action.volumeStream.toString())
+            is ActionData.Volume.Up -> Success(action.volumeStream?.toString() ?: "")
+            is ActionData.Volume.Down -> Success(action.volumeStream?.toString() ?: "")
             is ActionData.Volume.SetRingerMode -> Success(action.ringerMode.toString())
             is ActionData.Flashlight -> Success(action.lens.toString())
             is ActionData.SwitchKeyboard -> Success(action.savedImeName)

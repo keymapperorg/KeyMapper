@@ -8,14 +8,17 @@ import android.os.Handler
 import android.os.Looper
 import android.view.InputDevice
 import androidx.core.content.getSystemService
+import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.sds100.keymapper.common.utils.InputDeviceInfo
+import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.ifIsData
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
-import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.common.utils.ifIsData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +28,6 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -36,6 +38,7 @@ class AndroidDevicesAdapter @Inject constructor(
     private val permissionAdapter: PermissionAdapter,
     private val coroutineScope: CoroutineScope,
 ) : DevicesAdapter {
+
     private val ctx = context.applicationContext
     private val inputManager = ctx.getSystemService<InputManager>()
 
@@ -135,6 +138,10 @@ class AndroidDevicesAdapter @Inject constructor(
         }
 
         return KMError.DeviceNotFound(descriptor)
+    }
+
+    override fun getInputDevice(deviceId: Int): InputDeviceInfo? {
+        return InputDevice.getDevice(deviceId)?.let { InputDeviceUtils.createInputDeviceInfo(it) }
     }
 
     private fun updateInputDevices() {

@@ -116,6 +116,15 @@ android {
         kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 
+    packaging {
+        jniLibs {
+            // This replaces extractNativeLibs option in the manifest. This is needed so the
+            // libraries are extracted to a location on disk where the system bridge process
+            // can access them. Start in Android 6.0, they are no longer extracted by default.
+            useLegacyPackaging = true
+        }
+    }
+
     sourceSets {
         getByName("androidTest") {
             assets.srcDirs(files("$projectDir/schemas"))
@@ -141,6 +150,7 @@ dependencies {
     implementation(project(":base"))
     implementation(project(":api"))
     implementation(project(":data"))
+    implementation(project(":sysbridge"))
     implementation(project(":system"))
     compileOnly(project(":systemstubs"))
 

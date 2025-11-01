@@ -1,11 +1,12 @@
 package io.github.sds100.keymapper.base.keymaps
 
 import io.github.sds100.keymapper.base.constraints.Constraint
+import io.github.sds100.keymapper.base.constraints.ConstraintData
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.constraints.ConstraintState
+import io.github.sds100.keymapper.base.detection.DetectKeyMapModel
+import io.github.sds100.keymapper.base.detection.DetectKeyMapsUseCaseImpl
 import io.github.sds100.keymapper.base.groups.Group
-import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapModel
-import io.github.sds100.keymapper.base.keymaps.detection.DetectKeyMapsUseCaseImpl
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
 import org.junit.Test
@@ -22,15 +23,15 @@ class ProcessKeyMapGroupsForDetectionTest {
                     "child",
                     parentUid = "parent",
                     mode = ConstraintMode.OR,
-                    Constraint.LockScreenNotShowing(),
-                    Constraint.Discharging(),
+                    Constraint(data = ConstraintData.LockScreenNotShowing),
+                    Constraint(data = ConstraintData.Discharging),
                 ),
                 group(
                     "parent",
                     parentUid = "bad_parent",
                     mode = ConstraintMode.AND,
-                    Constraint.DeviceIsLocked(),
-                    Constraint.NotInPhoneCall(),
+                    Constraint(data = ConstraintData.DeviceIsLocked),
+                    Constraint(data = ConstraintData.NotInPhoneCall),
                 ),
             ),
         )
@@ -43,13 +44,13 @@ class ProcessKeyMapGroupsForDetectionTest {
         val keyMap = KeyMap(groupUid = "child")
 
         val constraints1 = arrayOf(
-            Constraint.LockScreenNotShowing(),
-            Constraint.Discharging(),
+            Constraint(data = ConstraintData.LockScreenNotShowing),
+            Constraint(data = ConstraintData.Discharging),
         )
 
         val constraints2 = arrayOf(
-            Constraint.DeviceIsLocked(),
-            Constraint.NotInPhoneCall(),
+            Constraint(data = ConstraintData.DeviceIsLocked),
+            Constraint(data = ConstraintData.NotInPhoneCall),
         )
 
         val models = DetectKeyMapsUseCaseImpl.processKeyMapsAndGroups(
@@ -90,8 +91,8 @@ class ProcessKeyMapGroupsForDetectionTest {
     fun `Key map in grandchild group and child only has constraints`() {
         val keyMap = KeyMap(groupUid = "child")
         val constraints1 = arrayOf(
-            Constraint.LockScreenNotShowing(),
-            Constraint.Discharging(),
+            Constraint(data = ConstraintData.LockScreenNotShowing),
+            Constraint(data = ConstraintData.Discharging),
         )
         val models = DetectKeyMapsUseCaseImpl.processKeyMapsAndGroups(
             keyMaps = listOf(keyMap),
@@ -125,8 +126,8 @@ class ProcessKeyMapGroupsForDetectionTest {
     fun `Key map in grandchild group and parent only has constraints`() {
         val keyMap = KeyMap(groupUid = "child")
         val constraints1 = arrayOf(
-            Constraint.LockScreenNotShowing(),
-            Constraint.Discharging(),
+            Constraint(data = ConstraintData.LockScreenNotShowing),
+            Constraint(data = ConstraintData.Discharging),
         )
 
         val models = DetectKeyMapsUseCaseImpl.processKeyMapsAndGroups(

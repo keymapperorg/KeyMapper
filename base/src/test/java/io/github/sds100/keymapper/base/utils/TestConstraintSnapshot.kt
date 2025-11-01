@@ -1,13 +1,17 @@
 package io.github.sds100.keymapper.base.utils
 
 import io.github.sds100.keymapper.base.constraints.Constraint
+import io.github.sds100.keymapper.base.constraints.ConstraintData
 import io.github.sds100.keymapper.base.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.camera.CameraLens
+import io.github.sds100.keymapper.system.foldable.HingeState
+import io.github.sds100.keymapper.system.foldable.isClosed
+import io.github.sds100.keymapper.system.foldable.isOpen
 import io.github.sds100.keymapper.system.phone.CallState
-import timber.log.Timber
 import java.time.LocalTime
+import timber.log.Timber
 
 class TestConstraintSnapshot(
     val appInForeground: String? = null,
@@ -25,80 +29,83 @@ class TestConstraintSnapshot(
     val isFrontFlashlightOn: Boolean = false,
     val isLockscreenShowing: Boolean = false,
     val localTime: LocalTime = LocalTime.now(),
+    val hingeState: HingeState = HingeState.Unavailable,
 ) : ConstraintSnapshot {
 
     override fun isSatisfied(constraint: Constraint): Boolean {
-        val isSatisfied = when (constraint) {
-            is Constraint.AppInForeground -> appInForeground == constraint.packageName
-            is Constraint.AppNotInForeground -> appInForeground != constraint.packageName
-            is Constraint.AppPlayingMedia ->
-                appsPlayingMedia.contains(constraint.packageName)
+        val isSatisfied = when (val data = constraint.data) {
+            is ConstraintData.AppInForeground -> appInForeground == data.packageName
+            is ConstraintData.AppNotInForeground -> appInForeground != data.packageName
+            is ConstraintData.AppPlayingMedia ->
+                appsPlayingMedia.contains(data.packageName)
 
-            is Constraint.AppNotPlayingMedia ->
-                appsPlayingMedia.none { it == constraint.packageName }
+            is ConstraintData.AppNotPlayingMedia ->
+                appsPlayingMedia.none { it == data.packageName }
 
-            is Constraint.MediaPlaying -> appsPlayingMedia.isNotEmpty()
-            is Constraint.NoMediaPlaying -> appsPlayingMedia.isEmpty()
-            is Constraint.BtDeviceConnected -> {
-                connectedBluetoothDevices.any { it.address == constraint.bluetoothAddress }
+            is ConstraintData.MediaPlaying -> appsPlayingMedia.isNotEmpty()
+            is ConstraintData.NoMediaPlaying -> appsPlayingMedia.isEmpty()
+            is ConstraintData.BtDeviceConnected -> {
+                connectedBluetoothDevices.any { it.address == data.bluetoothAddress }
             }
 
-            is Constraint.BtDeviceDisconnected -> {
-                connectedBluetoothDevices.none { it.address == constraint.bluetoothAddress }
+            is ConstraintData.BtDeviceDisconnected -> {
+                connectedBluetoothDevices.none { it.address == data.bluetoothAddress }
             }
 
-            is Constraint.OrientationCustom -> orientation == constraint.orientation
-            is Constraint.OrientationLandscape ->
-                orientation == Orientation.ORIENTATION_90 || orientation == Orientation.ORIENTATION_270
+            is ConstraintData.OrientationCustom -> orientation == data.orientation
+            is ConstraintData.OrientationLandscape ->
+                orientation == Orientation.ORIENTATION_90 ||
+                    orientation == Orientation.ORIENTATION_270
 
-            is Constraint.OrientationPortrait ->
-                orientation == Orientation.ORIENTATION_0 || orientation == Orientation.ORIENTATION_180
+            is ConstraintData.OrientationPortrait ->
+                orientation == Orientation.ORIENTATION_0 ||
+                    orientation == Orientation.ORIENTATION_180
 
-            is Constraint.ScreenOff -> !isScreenOn
-            is Constraint.ScreenOn -> isScreenOn
-            is Constraint.FlashlightOff -> when (constraint.lens) {
+            is ConstraintData.ScreenOff -> !isScreenOn
+            is ConstraintData.ScreenOn -> isScreenOn
+            is ConstraintData.FlashlightOff -> when (data.lens) {
                 CameraLens.BACK -> !isBackFlashlightOn
                 CameraLens.FRONT -> !isFrontFlashlightOn
             }
 
-            is Constraint.FlashlightOn -> when (constraint.lens) {
+            is ConstraintData.FlashlightOn -> when (data.lens) {
                 CameraLens.BACK -> isBackFlashlightOn
                 CameraLens.FRONT -> isFrontFlashlightOn
             }
 
-            is Constraint.WifiConnected -> {
-                if (constraint.ssid == null) {
+            is ConstraintData.WifiConnected -> {
+                if (data.ssid == null) {
                     // connected to any network
                     connectedWifiSSID != null
                 } else {
-                    connectedWifiSSID == constraint.ssid
+                    connectedWifiSSID == data.ssid
                 }
             }
 
-            is Constraint.WifiDisconnected ->
-                if (constraint.ssid == null) {
+            is ConstraintData.WifiDisconnected ->
+                if (data.ssid == null) {
                     // connected to no network
                     connectedWifiSSID == null
                 } else {
-                    connectedWifiSSID != constraint.ssid
+                    connectedWifiSSID != data.ssid
                 }
 
-            is Constraint.WifiOff -> !isWifiEnabled
-            is Constraint.WifiOn -> isWifiEnabled
-            is Constraint.ImeChosen -> chosenImeId == constraint.imeId
-            is Constraint.ImeNotChosen -> chosenImeId != constraint.imeId
-            is Constraint.DeviceIsLocked -> isLocked
-            is Constraint.DeviceIsUnlocked -> !isLocked
-            is Constraint.InPhoneCall -> callState == CallState.IN_PHONE_CALL
-            is Constraint.NotInPhoneCall -> callState == CallState.NONE
-            is Constraint.PhoneRinging -> callState == CallState.RINGING
-            is Constraint.Charging -> isCharging
-            is Constraint.Discharging -> !isCharging
-            is Constraint.LockScreenShowing -> isLockscreenShowing
-            is Constraint.LockScreenNotShowing -> !isLockscreenShowing
-            is Constraint.Time -> {
-                val startTime = constraint.startTime
-                val endTime = constraint.endTime
+            is ConstraintData.WifiOff -> !isWifiEnabled
+            is ConstraintData.WifiOn -> isWifiEnabled
+            is ConstraintData.ImeChosen -> chosenImeId == data.imeId
+            is ConstraintData.ImeNotChosen -> chosenImeId != data.imeId
+            is ConstraintData.DeviceIsLocked -> isLocked
+            is ConstraintData.DeviceIsUnlocked -> !isLocked
+            is ConstraintData.InPhoneCall -> callState == CallState.IN_PHONE_CALL
+            is ConstraintData.NotInPhoneCall -> callState == CallState.NONE
+            is ConstraintData.PhoneRinging -> callState == CallState.RINGING
+            is ConstraintData.Charging -> isCharging
+            is ConstraintData.Discharging -> !isCharging
+            is ConstraintData.LockScreenShowing -> isLockscreenShowing
+            is ConstraintData.LockScreenNotShowing -> !isLockscreenShowing
+            is ConstraintData.Time -> {
+                val startTime = data.startTime
+                val endTime = data.endTime
 
                 if (startTime.isAfter(endTime)) {
                     localTime.isAfter(startTime) || localTime.isBefore(endTime)
@@ -106,6 +113,11 @@ class TestConstraintSnapshot(
                     localTime.isAfter(startTime) && localTime.isBefore(endTime)
                 }
             }
+
+            ConstraintData.HingeClosed ->
+                hingeState is HingeState.Available && hingeState.isClosed()
+            ConstraintData.HingeOpen ->
+                hingeState is HingeState.Available && hingeState.isOpen()
         }
 
         if (isSatisfied) {

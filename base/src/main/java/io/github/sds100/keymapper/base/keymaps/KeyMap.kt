@@ -8,14 +8,14 @@ import io.github.sds100.keymapper.base.actions.canBeHeldDown
 import io.github.sds100.keymapper.base.constraints.ConstraintEntityMapper
 import io.github.sds100.keymapper.base.constraints.ConstraintModeEntityMapper
 import io.github.sds100.keymapper.base.constraints.ConstraintState
-import io.github.sds100.keymapper.base.keymaps.detection.KeyMapController
+import io.github.sds100.keymapper.base.detection.KeyMapAlgorithm
 import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.trigger.TriggerEntityMapper
 import io.github.sds100.keymapper.base.trigger.TriggerKey
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
 import io.github.sds100.keymapper.data.entities.KeyMapEntity
-import kotlinx.serialization.Serializable
 import java.util.UUID
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class KeyMap(
@@ -37,21 +37,28 @@ data class KeyMap(
     val vibrateDuration: Int?
         get() = trigger.vibrateDuration
 
-    fun isRepeatingActionsAllowed(): Boolean = KeyMapController.performActionOnDown(trigger)
+    fun isRepeatingActionsAllowed(): Boolean = KeyMapAlgorithm.performActionOnDown(trigger)
 
-    fun isChangingActionRepeatRateAllowed(action: Action): Boolean = action.repeat && isRepeatingActionsAllowed()
+    fun isChangingActionRepeatRateAllowed(action: Action): Boolean =
+        action.repeat && isRepeatingActionsAllowed()
 
-    fun isChangingActionRepeatDelayAllowed(action: Action): Boolean = action.repeat && isRepeatingActionsAllowed()
+    fun isChangingActionRepeatDelayAllowed(action: Action): Boolean =
+        action.repeat && isRepeatingActionsAllowed()
 
-    fun isHoldingDownActionAllowed(action: Action): Boolean = KeyMapController.performActionOnDown(trigger) && action.data.canBeHeldDown()
+    fun isHoldingDownActionAllowed(action: Action): Boolean =
+        KeyMapAlgorithm.performActionOnDown(trigger) && action.data.canBeHeldDown()
 
-    fun isHoldingDownActionBeforeRepeatingAllowed(action: Action): Boolean = action.repeat && action.holdDown
+    fun isHoldingDownActionBeforeRepeatingAllowed(action: Action): Boolean =
+        action.repeat && action.holdDown
 
-    fun isChangingRepeatModeAllowed(action: Action): Boolean = action.repeat && isRepeatingActionsAllowed()
+    fun isChangingRepeatModeAllowed(action: Action): Boolean =
+        action.repeat && isRepeatingActionsAllowed()
 
-    fun isChangingRepeatLimitAllowed(action: Action): Boolean = action.repeat && isRepeatingActionsAllowed()
+    fun isChangingRepeatLimitAllowed(action: Action): Boolean =
+        action.repeat && isRepeatingActionsAllowed()
 
-    fun isStopHoldingDownActionWhenTriggerPressedAgainAllowed(action: Action): Boolean = action.holdDown && !action.repeat
+    fun isStopHoldingDownActionWhenTriggerPressedAgainAllowed(action: Action): Boolean =
+        action.holdDown && !action.repeat
 
     fun isDelayBeforeNextActionAllowed(): Boolean = actionList.isNotEmpty()
 }
@@ -67,7 +74,7 @@ fun KeyMap.requiresImeKeyEventForwarding(): Boolean {
         actionList.any { it.data is ActionData.AnswerCall || it.data is ActionData.EndCall }
 
     val hasVolumeKeys = trigger.keys
-        .mapNotNull { it as? io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey }
+        .mapNotNull { it as? io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey }
         .any {
             it.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ||
                 it.keyCode == KeyEvent.KEYCODE_VOLUME_UP
@@ -83,7 +90,7 @@ fun KeyMap.requiresImeKeyEventForwarding(): Boolean {
  * is incoming.
  */
 fun KeyMap.requiresImeKeyEventForwardingInPhoneCall(triggerKey: TriggerKey): Boolean {
-    if (triggerKey !is io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey) {
+    if (triggerKey !is io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey) {
         return false
     }
 
@@ -91,7 +98,7 @@ fun KeyMap.requiresImeKeyEventForwardingInPhoneCall(triggerKey: TriggerKey): Boo
         actionList.any { it.data is ActionData.AnswerCall || it.data is ActionData.EndCall }
 
     val hasVolumeKeys = trigger.keys
-        .mapNotNull { it as? io.github.sds100.keymapper.base.trigger.KeyCodeTriggerKey }
+        .mapNotNull { it as? io.github.sds100.keymapper.base.trigger.KeyEventTriggerKey }
         .any {
             it.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ||
                 it.keyCode == KeyEvent.KEYCODE_VOLUME_UP

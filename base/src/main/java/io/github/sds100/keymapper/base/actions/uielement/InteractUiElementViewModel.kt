@@ -7,15 +7,15 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.ActionData
+import io.github.sds100.keymapper.base.onboarding.SetupAccessibilityServiceDelegate
 import io.github.sds100.keymapper.base.system.accessibility.RecordAccessibilityNodeState
 import io.github.sds100.keymapper.base.utils.containsQuery
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
-import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.AccessibilityServiceError
 import io.github.sds100.keymapper.common.utils.NodeInteractionType
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.Success
@@ -26,6 +26,8 @@ import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.common.utils.valueOrNull
 import io.github.sds100.keymapper.data.entities.AccessibilityNodeEntity
+import java.util.Locale
+import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,16 +43,16 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import java.util.Locale
-import javax.inject.Inject
 
 @HiltViewModel
 class InteractUiElementViewModel @Inject constructor(
     private val useCase: InteractUiElementUseCase,
+    setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
     resourceProvider: ResourceProvider,
     dialogProvider: DialogProvider,
     navigationProvider: NavigationProvider,
 ) : ViewModel(),
+    SetupAccessibilityServiceDelegate by setupAccessibilityServiceDelegate,
     NavigationProvider by navigationProvider,
     DialogProvider by dialogProvider,
     ResourceProvider by resourceProvider {
@@ -362,18 +364,8 @@ class InteractUiElementViewModel @Inject constructor(
 
     private suspend fun startRecording() {
         useCase.startRecording().onFailure { error ->
-            if (error == KMError.AccessibilityServiceDisabled) {
-                ViewModelHelper.handleAccessibilityServiceStoppedDialog(
-                    this,
-                    this,
-                    startService = { useCase.startService() },
-                )
-            } else if (error == KMError.AccessibilityServiceCrashed) {
-                ViewModelHelper.handleAccessibilityServiceCrashedDialog(
-                    this,
-                    this,
-                    restartService = { useCase.startService() },
-                )
+            if (error is AccessibilityServiceError) {
+                showFixAccessibilityServiceDialog(error)
             }
         }
     }
@@ -405,7 +397,9 @@ class InteractUiElementViewModel @Inject constructor(
         )
     }
 
-    private fun buildInteractionTypeFilterItems(interactionTypes: Set<NodeInteractionType>): List<Pair<NodeInteractionType, String>> {
+    private fun buildInteractionTypeFilterItems(
+        interactionTypes: Set<NodeInteractionType>,
+    ): List<Pair<NodeInteractionType, String>> {
         return buildList {
             // They should always be in the same order so iterate over the Enum entries.
             for (type in NodeInteractionType.entries) {
@@ -423,13 +417,27 @@ class InteractUiElementViewModel @Inject constructor(
 
     private fun getInteractionTypeString(interactionType: NodeInteractionType): String {
         return when (interactionType) {
-            NodeInteractionType.CLICK -> getString(R.string.action_interact_ui_element_interaction_type_click)
-            NodeInteractionType.LONG_CLICK -> getString(R.string.action_interact_ui_element_interaction_type_long_click)
-            NodeInteractionType.FOCUS -> getString(R.string.action_interact_ui_element_interaction_type_focus)
-            NodeInteractionType.SCROLL_FORWARD -> getString(R.string.action_interact_ui_element_interaction_type_scroll_forward)
-            NodeInteractionType.SCROLL_BACKWARD -> getString(R.string.action_interact_ui_element_interaction_type_scroll_backward)
-            NodeInteractionType.EXPAND -> getString(R.string.action_interact_ui_element_interaction_type_expand)
-            NodeInteractionType.COLLAPSE -> getString(R.string.action_interact_ui_element_interaction_type_collapse)
+            NodeInteractionType.CLICK -> getString(
+                R.string.action_interact_ui_element_interaction_type_click,
+            )
+            NodeInteractionType.LONG_CLICK -> getString(
+                R.string.action_interact_ui_element_interaction_type_long_click,
+            )
+            NodeInteractionType.FOCUS -> getString(
+                R.string.action_interact_ui_element_interaction_type_focus,
+            )
+            NodeInteractionType.SCROLL_FORWARD -> getString(
+                R.string.action_interact_ui_element_interaction_type_scroll_forward,
+            )
+            NodeInteractionType.SCROLL_BACKWARD -> getString(
+                R.string.action_interact_ui_element_interaction_type_scroll_backward,
+            )
+            NodeInteractionType.EXPAND -> getString(
+                R.string.action_interact_ui_element_interaction_type_expand,
+            )
+            NodeInteractionType.COLLAPSE -> getString(
+                R.string.action_interact_ui_element_interaction_type_collapse,
+            )
         }
     }
 }
@@ -451,10 +459,8 @@ data class SelectedUiElementState(
 sealed class RecordUiElementState {
     data class Recorded(val interactionCount: Int) : RecordUiElementState()
 
-    data class CountingDown(
-        val timeRemaining: String,
-        val interactionCount: Int,
-    ) : RecordUiElementState()
+    data class CountingDown(val timeRemaining: String, val interactionCount: Int) :
+        RecordUiElementState()
 
     data object Empty : RecordUiElementState()
 }

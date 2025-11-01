@@ -1,8 +1,9 @@
 package io.github.sds100.keymapper.system.devices
 
+import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.common.utils.KMResult
-import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -16,4 +17,5 @@ interface DevicesAdapter {
 
     fun deviceHasKey(id: Int, keyCode: Int): Boolean
     fun getInputDeviceName(descriptor: String): KMResult<String>
+    fun getInputDevice(deviceId: Int): InputDeviceInfo?
 }

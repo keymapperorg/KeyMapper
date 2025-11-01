@@ -2,41 +2,33 @@ package io.github.sds100.keymapper.base.system.accessibility
 
 import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.Intent
-import android.database.ContentObserver
-import android.net.Uri
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.provider.Settings
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.KeyMapperClassProvider
-import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.AccessibilityServiceError
 import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.system.JobSchedulerHelper
-import io.github.sds100.keymapper.system.SettingsUtils
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceState
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class AccessibilityServiceAdapterImpl @Inject constructor(
@@ -48,7 +40,8 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
 ) : AccessibilityServiceAdapter {
 
     private val ctx = context.applicationContext
-    override val eventReceiver = MutableSharedFlow<AccessibilityServiceEvent>()
+    override val eventReceiver =
+        MutableSharedFlow<AccessibilityServiceEvent>(extraBufferCapacity = 10)
 
     val eventsToService = MutableSharedFlow<AccessibilityServiceEvent>()
 
@@ -56,35 +49,36 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
 
     init {
         // use job scheduler because there is there is a much shorter delay when the app is in the background
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            JobSchedulerHelper.observeEnabledAccessibilityServices(ctx)
-        } else {
-            val uri = Settings.Secure.getUriFor(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
-            val observer = object : ContentObserver(Handler(Looper.getMainLooper())) {
-                override fun onChange(selfChange: Boolean, uri: Uri?) {
-                    super.onChange(selfChange, uri)
-
-                    coroutineScope.launch {
-                        state.value = getState()
-                    }
-                }
-            }
-
-            ctx.contentResolver.registerContentObserver(uri, false, observer)
-        }
+        JobSchedulerHelper.observeEnabledAccessibilityServices(ctx)
 
         coroutineScope.launch {
             state.value = getState()
-        }
 
-        eventReceiver.onEach {
-            Timber.d("Received event from service: $it")
-        }.launchIn(coroutineScope)
+            eventReceiver.collect {
+                Timber.d("Received event from service: $it")
+            }
+        }
     }
 
-    override fun sendAsync(event: AccessibilityServiceEvent) {
-        coroutineScope.launch {
-            eventsToService.emit(event)
+    override fun sendAsync(event: AccessibilityServiceEvent): KMResult<Unit> {
+        val state = state.value
+
+        when (state) {
+            AccessibilityServiceState.DISABLED -> {
+                return AccessibilityServiceError.Disabled
+            }
+
+            AccessibilityServiceState.CRASHED -> {
+                return AccessibilityServiceError.Crashed
+            }
+
+            AccessibilityServiceState.ENABLED -> {
+                coroutineScope.launch {
+                    eventsToService.emit(event)
+                }
+
+                return Success(Unit)
+            }
         }
     }
 
@@ -93,12 +87,12 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
 
         if (state.value == AccessibilityServiceState.DISABLED) {
             Timber.e("Failed to send event to accessibility service because disabled: $event")
-            return KMError.AccessibilityServiceDisabled
+            return AccessibilityServiceError.Disabled
         }
 
         if (state.value == AccessibilityServiceState.CRASHED) {
             Timber.e("Failed to send event to accessibility service because crashed: $event")
-            return KMError.AccessibilityServiceCrashed
+            return AccessibilityServiceError.Crashed
         }
 
         coroutineScope.launch {
@@ -131,7 +125,9 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
                 }
 
                 val pong: AccessibilityServiceEvent.Pong? = withTimeoutOrNull(2000L) {
-                    eventReceiver.first { it == AccessibilityServiceEvent.Pong(key) } as AccessibilityServiceEvent.Pong?
+                    eventReceiver.first {
+                        it == AccessibilityServiceEvent.Pong(key)
+                    } as AccessibilityServiceEvent.Pong?
                 }
 
                 if (pong == null) {
@@ -178,17 +174,7 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
 
     private fun launchAccessibilitySettings(): Boolean {
         try {
-            val settingsIntent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-
-            settingsIntent.addFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK
-                    or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
-                    // Add this flag so user only has to press back once.
-                    or Intent.FLAG_ACTIVITY_NO_HISTORY,
-            )
-
-            ctx.startActivity(settingsIntent)
+            SettingsUtils.launchSettingsScreen(ctx, Settings.ACTION_ACCESSIBILITY_SETTINGS)
 
             return true
         } catch (e: ActivityNotFoundException) {
@@ -197,15 +183,12 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
     }
 
     private suspend fun disableServiceSuspend() {
-        // disableSelf method only exists in 7.0.0+
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            send(AccessibilityServiceEvent.DisableService).onSuccess {
-                Timber.i("Disabling service by calling disableSelf()")
+        send(AccessibilityServiceEvent.DisableService).onSuccess {
+            Timber.i("Disabling service by calling disableSelf()")
 
-                return
-            }.onFailure {
-                Timber.i("Failed to disable service by calling disableSelf()")
-            }
+            return
+        }.onFailure {
+            Timber.i("Failed to disable service by calling disableSelf()")
         }
 
         if (permissionAdapter.isGranted(Permission.WRITE_SECURE_SETTINGS)) {
@@ -254,7 +237,9 @@ class AccessibilityServiceAdapterImpl @Inject constructor(
         }
 
         val pong: AccessibilityServiceEvent.Pong? = withTimeoutOrNull(2000L) {
-            eventReceiver.first { it == AccessibilityServiceEvent.Pong(key) } as AccessibilityServiceEvent.Pong?
+            eventReceiver.first {
+                it == AccessibilityServiceEvent.Pong(key)
+            } as AccessibilityServiceEvent.Pong?
         }
 
         pingJob.cancel()

@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -28,7 +29,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
 
 @HiltViewModel
 class ChooseActionViewModel @Inject constructor(
@@ -132,9 +132,7 @@ class ChooseActionViewModel @Inject constructor(
         add(unsupportedGroup)
     }
 
-    private fun buildListItems(
-        actionIds: List<ActionId>,
-    ): List<SimpleListItemModel> = buildList {
+    private fun buildListItems(actionIds: List<ActionId>): List<SimpleListItemModel> = buildList {
         for (actionId in actionIds) {
             // See Issue #1593. This action should no longer exist because it is a relic
             // of the past when most apps had a 3-dot menu with a consistent content description
@@ -151,7 +149,9 @@ class ChooseActionViewModel @Inject constructor(
             val icon = ActionUtils.getComposeIcon(actionId)
 
             val subtitle = when {
-                error == SystemError.PermissionDenied(Permission.ROOT) -> getString(R.string.choose_action_warning_requires_root)
+                error == SystemError.PermissionDenied(
+                    Permission.ROOT,
+                ) -> getString(R.string.choose_action_warning_requires_root)
                 error != null -> error.getFullMessage(this@ChooseActionViewModel)
                 else -> null
             }
@@ -180,7 +180,9 @@ class ChooseActionViewModel @Inject constructor(
                 DialogModel.Alert(
                     message = getString(R.string.action_open_app_dialog_message),
                     title = getString(R.string.action_open_app_dialog_title),
-                    positiveButtonText = getString(R.string.action_open_app_dialog_read_more_button),
+                    positiveButtonText = getString(
+                        R.string.action_open_app_dialog_read_more_button,
+                    ),
                     negativeButtonText = getString(R.string.action_open_app_dialog_ignore_button),
                 ),
             )
@@ -199,19 +201,18 @@ class ChooseActionViewModel @Inject constructor(
         val messageToShow: Int? = when (id) {
             ActionId.FAST_FORWARD_PACKAGE,
             ActionId.FAST_FORWARD,
-            -> R.string.action_fast_forward_message
+                -> R.string.action_fast_forward_message
 
             ActionId.REWIND_PACKAGE,
             ActionId.REWIND,
-            -> R.string.action_rewind_message
+                -> R.string.action_rewind_message
 
             ActionId.TOGGLE_KEYBOARD,
             ActionId.SHOW_KEYBOARD,
             ActionId.HIDE_KEYBOARD,
-            -> R.string.action_toggle_keyboard_message
+                -> R.string.action_toggle_keyboard_message
 
             ActionId.SECURE_LOCK_DEVICE -> R.string.action_secure_lock_device_message
-            ActionId.POWER_ON_OFF_DEVICE -> R.string.action_power_on_off_device_message
 
             else -> null
         }

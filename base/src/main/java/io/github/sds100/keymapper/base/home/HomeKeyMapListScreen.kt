@@ -52,27 +52,20 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.canopas.lib.showcase.IntroShowcase
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.actions.keyevent.FixKeyEventActionBottomSheet
 import io.github.sds100.keymapper.base.backup.ImportExportState
 import io.github.sds100.keymapper.base.backup.RestoreType
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.constraints.ConstraintMode
 import io.github.sds100.keymapper.base.groups.GroupListItemModel
-import io.github.sds100.keymapper.base.keymaps.KeyMapAppBarState
-import io.github.sds100.keymapper.base.keymaps.KeyMapList
-import io.github.sds100.keymapper.base.keymaps.KeyMapListViewModel
-import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
 import io.github.sds100.keymapper.base.sorting.SortBottomSheet
-import io.github.sds100.keymapper.base.trigger.DpadTriggerSetupBottomSheet
 import io.github.sds100.keymapper.base.trigger.KeyMapListItemModel
 import io.github.sds100.keymapper.base.trigger.TriggerError
 import io.github.sds100.keymapper.base.utils.ShareUtils
 import io.github.sds100.keymapper.base.utils.ui.compose.CollapsableFloatingActionButton
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeChipModel
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
-import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperTapTarget
-import io.github.sds100.keymapper.base.utils.ui.compose.keyMapperShowcaseStyle
 import io.github.sds100.keymapper.base.utils.ui.compose.openUriSafe
 import io.github.sds100.keymapper.base.utils.ui.drawable
 import io.github.sds100.keymapper.common.utils.KMError
@@ -93,7 +86,6 @@ fun HomeKeyMapListScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val setupGuiKeyboardState by viewModel.setupGuiKeyboardState.collectAsStateWithLifecycle()
 
     val importFileLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
@@ -110,20 +102,6 @@ fun HomeKeyMapListScreen(
         setIdleState = viewModel::setImportExportIdle,
         onConfirmImport = viewModel::onConfirmImport,
     )
-
-    if (viewModel.showDpadTriggerSetupBottomSheet) {
-        DpadTriggerSetupBottomSheet(
-            modifier = Modifier.systemBarsPadding(),
-            onDismissRequest = {
-                viewModel.showDpadTriggerSetupBottomSheet = false
-            },
-            guiKeyboardState = setupGuiKeyboardState,
-            onEnableKeyboardClick = viewModel::onEnableGuiKeyboardClick,
-            onChooseKeyboardClick = viewModel::onChooseGuiKeyboardClick,
-            onNeverShowAgainClick = viewModel::onNeverShowSetupDpadClick,
-            sheetState = sheetState,
-        )
-    }
 
     if (viewModel.showSortBottomSheet) {
         SortBottomSheet(
@@ -148,6 +126,25 @@ fun HomeKeyMapListScreen(
         )
     }
 
+    val fixKeyEventActionState by viewModel.fixKeyEventActionState.collectAsStateWithLifecycle()
+
+    if (fixKeyEventActionState != null) {
+        FixKeyEventActionBottomSheet(
+            modifier = Modifier.systemBarsPadding(),
+            state = fixKeyEventActionState!!,
+            sheetState = sheetState,
+            onDismissRequest = viewModel::dismissFixKeyEventActionBottomSheet,
+            onEnableAccessibilityServiceClick = viewModel::onEnableAccessibilityServiceClick,
+            onEnableProModeClick = viewModel::onEnableProModeForKeyEventActionsClick,
+            onEnableInputMethodClick = viewModel::onEnableImeClick,
+            onChooseInputMethodClick = viewModel::onChooseImeClick,
+            onDoneClick = viewModel::dismissFixKeyEventActionBottomSheet,
+            onSelectProMode = viewModel::onSelectProMode,
+            onSelectInputMethod = viewModel::onSelectInputMethod,
+            onAutoSwitchImeCheckedChange = viewModel::onAutoSwitchImeCheckedChange,
+        )
+    }
+
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val uriHandler = LocalUriHandler.current
     val ctx = LocalContext.current
@@ -155,124 +152,109 @@ fun HomeKeyMapListScreen(
 
     var keyMapListBottomPadding by remember { mutableStateOf(100.dp) }
 
-    IntroShowcase(
-        showIntroShowCase = state.showCreateKeyMapTapTarget,
-        onShowCaseCompleted = {
-            viewModel.onTapTargetsCompleted()
+    HomeKeyMapListScreen(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        snackbarState = snackbarState,
+        floatingActionButton = {
+            AnimatedVisibility(
+                state.appBarState !is KeyMapAppBarState.Selecting,
+                enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
+                exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it }),
+            ) {
+                AnimatedFloatingActionButton(
+                    modifier = Modifier
+                        .padding(bottom = fabBottomPadding)
+                        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.End)),
+                    pulse = state.showCreateKeyMapTapTarget,
+                    showFabText = viewModel.showFabText,
+                    text = stringResource(R.string.home_fab_new_key_map),
+                    onClick = viewModel::onNewKeyMapClick,
+                )
+            }
         },
-        dismissOnClickOutside = true,
-    ) {
-        HomeKeyMapListScreen(
-            modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-            snackbarState = snackbarState,
-            floatingActionButton = {
-                AnimatedVisibility(
-                    state.appBarState !is KeyMapAppBarState.Selecting,
-                    enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
-                    exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it }),
-                ) {
-                    CollapsableFloatingActionButton(
-                        modifier = Modifier
-                            .padding(bottom = fabBottomPadding)
-                            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.End))
-                            .introShowCaseTarget(
-                                index = 0,
-                                style = keyMapperShowcaseStyle(),
-                            ) {
-                                KeyMapperTapTarget(
-                                    OnboardingTapTarget.CREATE_KEY_MAP,
-                                    onSkipClick = viewModel::onSkipTapTargetClick,
-                                )
-                            },
-                        onClick = viewModel::onNewKeyMapClick,
-                        showText = viewModel.showFabText,
-                        text = stringResource(R.string.home_fab_new_key_map),
+        listContent = {
+            KeyMapList(
+                modifier = Modifier.animateContentSize(),
+                lazyListState = rememberLazyListState(),
+                listItems = state.listItems,
+                footerText = stringResource(R.string.home_key_map_list_footer_text),
+                isSelectable = state.appBarState is KeyMapAppBarState.Selecting,
+                onClickKeyMap = viewModel::onKeyMapCardClick,
+                onLongClickKeyMap = viewModel::onKeyMapCardLongClick,
+                onSelectedChange = viewModel::onKeyMapSelectedChanged,
+                onFixClick = viewModel::onFixClick,
+                onTriggerErrorClick = viewModel::onFixTriggerError,
+                bottomListPadding = keyMapListBottomPadding,
+            )
+        },
+        appBarContent = {
+            KeyMapListAppBar(
+                state = state.appBarState,
+                scrollBehavior = scrollBehavior,
+                onSettingsClick = onSettingsClick,
+                onAboutClick = onAboutClick,
+                onSortClick = { viewModel.showSortBottomSheet = true },
+                onHelpClick = { uriHandler.openUriSafe(ctx, helpUrl) },
+                onExportClick = viewModel::onExportClick,
+                onImportClick = { importFileLauncher.launch(FileUtils.MIME_TYPE_ALL) },
+                onInputMethodPickerClick = viewModel::showInputMethodPicker,
+                onTogglePausedClick = viewModel::onTogglePausedClick,
+                onFixWarningClick = viewModel::onFixWarningClick,
+                onBackClick = {
+                    if (!viewModel.onBackClick()) {
+                        finishActivity()
+                    }
+                },
+                onSelectAllClick = viewModel::onSelectAllClick,
+                onNewGroupClick = viewModel::onNewGroupClick,
+                onRenameGroupClick = viewModel::onRenameGroupClick,
+                onEditGroupNameClick = viewModel::onEditGroupNameClick,
+                onGroupClick = viewModel::onGroupClick,
+                onDeleteGroupClick = viewModel::onDeleteGroupClick,
+                onNewConstraintClick = viewModel::onNewGroupConstraintClick,
+                onRemoveConstraintClick = viewModel::onRemoveGroupConstraintClick,
+                onConstraintModeChanged = viewModel::onGroupConstraintModeChanged,
+                onFixConstraintClick = viewModel::onFixClick,
+                onKeyMapsEnabledChange = viewModel::onGroupKeyMapsEnabledChanged,
+            )
+        },
+        selectionBottomSheet = {
+            AnimatedVisibility(
+                visible = state.appBarState is KeyMapAppBarState.Selecting,
+                enter = slideInVertically { it },
+                exit = slideOutVertically { it },
+            ) {
+                val selectionState = (state.appBarState as? KeyMapAppBarState.Selecting)
+                    ?: KeyMapAppBarState.Selecting(
+                        selectionCount = 0,
+                        selectedKeyMapsEnabled = SelectedKeyMapsEnabled.NONE,
+                        isAllSelected = false,
+                        groups = emptyList(),
+                        breadcrumbs = emptyList(),
+                        showThisGroup = false,
                     )
-                }
-            },
-            listContent = {
-                KeyMapList(
-                    modifier = Modifier.animateContentSize(),
-                    lazyListState = rememberLazyListState(),
-                    listItems = state.listItems,
-                    footerText = stringResource(R.string.home_key_map_list_footer_text),
-                    isSelectable = state.appBarState is KeyMapAppBarState.Selecting,
-                    onClickKeyMap = viewModel::onKeyMapCardClick,
-                    onLongClickKeyMap = viewModel::onKeyMapCardLongClick,
-                    onSelectedChange = viewModel::onKeyMapSelectedChanged,
-                    onFixClick = viewModel::onFixClick,
-                    onTriggerErrorClick = viewModel::onFixTriggerError,
-                    bottomListPadding = keyMapListBottomPadding,
-                )
-            },
-            appBarContent = {
-                KeyMapListAppBar(
-                    state = state.appBarState,
-                    scrollBehavior = scrollBehavior,
-                    onSettingsClick = onSettingsClick,
-                    onAboutClick = onAboutClick,
-                    onSortClick = { viewModel.showSortBottomSheet = true },
-                    onHelpClick = { uriHandler.openUriSafe(ctx, helpUrl) },
-                    onExportClick = viewModel::onExportClick,
-                    onImportClick = { importFileLauncher.launch(FileUtils.MIME_TYPE_ALL) },
-                    onInputMethodPickerClick = viewModel::showInputMethodPicker,
-                    onTogglePausedClick = viewModel::onTogglePausedClick,
-                    onFixWarningClick = viewModel::onFixWarningClick,
-                    onBackClick = {
-                        if (!viewModel.onBackClick()) {
-                            finishActivity()
-                        }
-                    },
-                    onSelectAllClick = viewModel::onSelectAllClick,
-                    onNewGroupClick = viewModel::onNewGroupClick,
-                    onRenameGroupClick = viewModel::onRenameGroupClick,
-                    onEditGroupNameClick = viewModel::onEditGroupNameClick,
-                    onGroupClick = viewModel::onGroupClick,
-                    onDeleteGroupClick = viewModel::onDeleteGroupClick,
-                    onNewConstraintClick = viewModel::onNewGroupConstraintClick,
-                    onRemoveConstraintClick = viewModel::onRemoveGroupConstraintClick,
-                    onConstraintModeChanged = viewModel::onGroupConstraintModeChanged,
-                    onFixConstraintClick = viewModel::onFixClick,
-                )
-            },
-            selectionBottomSheet = {
-                AnimatedVisibility(
-                    visible = state.appBarState is KeyMapAppBarState.Selecting,
-                    enter = slideInVertically { it },
-                    exit = slideOutVertically { it },
-                ) {
-                    val selectionState = (state.appBarState as? KeyMapAppBarState.Selecting)
-                        ?: KeyMapAppBarState.Selecting(
-                            selectionCount = 0,
-                            selectedKeyMapsEnabled = SelectedKeyMapsEnabled.NONE,
-                            isAllSelected = false,
-                            groups = emptyList(),
-                            breadcrumbs = emptyList(),
-                            showThisGroup = false,
-                        )
 
-                    SelectionBottomSheet(
-                        modifier = Modifier.onSizeChanged { size ->
-                            keyMapListBottomPadding =
-                                ((size.height.dp / 2) - 100.dp).coerceAtLeast(0.dp)
-                        },
-                        enabled = selectionState.selectionCount > 0,
-                        groups = selectionState.groups,
-                        breadcrumbs = selectionState.breadcrumbs,
-                        selectedKeyMapsEnabled = selectionState.selectedKeyMapsEnabled,
-                        onEnabledKeyMapsChange = viewModel::onEnabledKeyMapsChange,
-                        onDuplicateClick = viewModel::onDuplicateSelectedKeyMapsClick,
-                        onExportClick = viewModel::onExportSelectedKeyMaps,
-                        onDeleteClick = { showDeleteDialog = true },
-                        onGroupClick = viewModel::onSelectionGroupClick,
-                        onNewGroupClick = viewModel::onNewGroupClick,
-                        showThisGroup = selectionState.showThisGroup,
-                        onThisGroupClick = viewModel::onMoveToThisGroupClick,
-                    )
-                }
-            },
-        )
-    }
+                SelectionBottomSheet(
+                    modifier = Modifier.onSizeChanged { size ->
+                        keyMapListBottomPadding =
+                            ((size.height.dp / 2) - 100.dp).coerceAtLeast(0.dp)
+                    },
+                    enabled = selectionState.selectionCount > 0,
+                    groups = selectionState.groups,
+                    breadcrumbs = selectionState.breadcrumbs,
+                    selectedKeyMapsEnabled = selectionState.selectedKeyMapsEnabled,
+                    onEnabledKeyMapsChange = viewModel::onEnabledKeyMapsChange,
+                    onDuplicateClick = viewModel::onDuplicateSelectedKeyMapsClick,
+                    onExportClick = viewModel::onExportSelectedKeyMaps,
+                    onDeleteClick = { showDeleteDialog = true },
+                    onGroupClick = viewModel::onSelectionGroupClick,
+                    onNewGroupClick = viewModel::onNewGroupClick,
+                    showThisGroup = selectionState.showThisGroup,
+                    onThisGroupClick = viewModel::onMoveToThisGroupClick,
+                )
+            }
+        },
+    )
 }
 
 @Composable
@@ -381,7 +363,9 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 actions = listOf(
                     ComposeChipModel.Normal(
                         id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        ComposeIconInfo.Drawable(
+                            drawable = context.drawable(R.drawable.ic_launcher_web),
+                        ),
                         "Open Key Mapper",
                     ),
                     ComposeChipModel.Error(
@@ -404,7 +388,9 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 constraints = listOf(
                     ComposeChipModel.Normal(
                         id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        ComposeIconInfo.Drawable(
+                            drawable = context.drawable(R.drawable.ic_launcher_web),
+                        ),
                         "Key Mapper is not open",
                     ),
                     ComposeChipModel.Error(
@@ -427,7 +413,9 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 actions = listOf(
                     ComposeChipModel.Normal(
                         id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        ComposeIconInfo.Drawable(
+                            drawable = context.drawable(R.drawable.ic_launcher_web),
+                        ),
                         "Open Key Mapper",
                     ),
                 ),
@@ -435,7 +423,9 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 constraints = listOf(
                     ComposeChipModel.Normal(
                         id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        ComposeIconInfo.Drawable(
+                            drawable = context.drawable(R.drawable.ic_launcher_web),
+                        ),
                         "Key Mapper is not open",
                     ),
                 ),
@@ -456,7 +446,9 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 actions = listOf(
                     ComposeChipModel.Normal(
                         id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        ComposeIconInfo.Drawable(
+                            drawable = context.drawable(R.drawable.ic_launcher_web),
+                        ),
                         "Open Key Mapper",
                     ),
                 ),
@@ -464,7 +456,9 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 constraints = listOf(
                     ComposeChipModel.Normal(
                         id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        ComposeIconInfo.Drawable(
+                            drawable = context.drawable(R.drawable.ic_launcher_web),
+                        ),
                         "Key Mapper is not open",
                     ),
                 ),
@@ -482,7 +476,9 @@ private fun sampleList(): List<KeyMapListItemModel> {
                 actions = listOf(
                     ComposeChipModel.Normal(
                         id = "0",
-                        ComposeIconInfo.Drawable(drawable = context.drawable(R.drawable.ic_launcher_web)),
+                        ComposeIconInfo.Drawable(
+                            drawable = context.drawable(R.drawable.ic_launcher_web),
+                        ),
                         "Open Key Mapper",
                     ),
                 ),

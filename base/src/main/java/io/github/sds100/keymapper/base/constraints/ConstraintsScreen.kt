@@ -82,7 +82,7 @@ private fun ConstraintsScreen(
     onAddClick: () -> Unit = {},
     onRemoveClick: (String) -> Unit = {},
     onFixErrorClick: (String) -> Unit = {},
-    onClickShortcut: (Constraint) -> Unit = {},
+    onClickShortcut: (ConstraintData) -> Unit = {},
     onSelectMode: (ConstraintMode) -> Unit = {},
 ) {
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
@@ -126,7 +126,9 @@ private fun ConstraintsScreen(
                                 modifier = Modifier
                                     .padding(32.dp)
                                     .fillMaxWidth(),
-                                text = stringResource(R.string.constraints_recyclerview_placeholder),
+                                text = stringResource(
+                                    R.string.constraints_recyclerview_placeholder,
+                                ),
                                 textAlign = TextAlign.Center,
                             )
 
@@ -247,10 +249,10 @@ private fun Loading(modifier: Modifier = Modifier) {
 private fun ConstraintList(
     modifier: Modifier = Modifier,
     constraintList: List<ConstraintListItemModel>,
-    shortcuts: Set<ShortcutModel<Constraint>>,
+    shortcuts: Set<ShortcutModel<ConstraintData>>,
     onRemoveClick: (String) -> Unit,
     onFixErrorClick: (String) -> Unit,
-    onClickShortcut: (Constraint) -> Unit,
+    onClickShortcut: (ConstraintData) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
 
@@ -307,7 +309,7 @@ private fun EmptyPreview() {
                         ShortcutModel(
                             icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
                             text = "Flashlight is on",
-                            data = Constraint.FlashlightOn(lens = CameraLens.BACK),
+                            data = ConstraintData.FlashlightOn(lens = CameraLens.BACK),
                         ),
                     ),
                 ),
@@ -336,7 +338,9 @@ private fun LoadedPreview() {
                         ),
                         ConstraintListItemModel(
                             id = "2",
-                            icon = ComposeIconInfo.Drawable(ctx.drawable(R.mipmap.ic_launcher_round)),
+                            icon = ComposeIconInfo.Drawable(
+                                ctx.drawable(R.mipmap.ic_launcher_round),
+                            ),
                             constraintModeLink = null,
                             text = "Key Mapper in foreground",
                             error = null,
@@ -347,7 +351,7 @@ private fun LoadedPreview() {
                         ShortcutModel(
                             icon = ComposeIconInfo.Vector(Icons.Rounded.FlashlightOn),
                             text = "Flashlight is on",
-                            data = Constraint.FlashlightOn(lens = CameraLens.BACK),
+                            data = ConstraintData.FlashlightOn(lens = CameraLens.BACK),
                         ),
                     ),
                     selectedMode = ConstraintMode.AND,

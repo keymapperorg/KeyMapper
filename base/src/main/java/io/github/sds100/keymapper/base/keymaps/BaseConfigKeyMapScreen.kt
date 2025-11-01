@@ -1,6 +1,9 @@
 package io.github.sds100.keymapper.base.keymaps
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -15,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.HelpOutline
@@ -36,10 +40,12 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,12 +56,8 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.canopas.lib.showcase.IntroShowcase
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
-import io.github.sds100.keymapper.base.onboarding.OnboardingTapTarget
-import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperTapTarget
-import io.github.sds100.keymapper.base.utils.ui.compose.keyMapperShowcaseStyle
 import io.github.sds100.keymapper.base.utils.ui.compose.openUriSafe
 import kotlinx.coroutines.launch
 
@@ -66,17 +68,13 @@ fun BaseConfigKeyMapScreen(
     isKeyMapEnabled: Boolean,
     onKeyMapEnabledChange: (Boolean) -> Unit = {},
     triggerScreen: @Composable () -> Unit,
-    actionScreen: @Composable () -> Unit,
+    actionsScreen: @Composable () -> Unit,
     constraintsScreen: @Composable () -> Unit,
     optionsScreen: @Composable () -> Unit,
     onBackClick: () -> Unit = {},
     onDoneClick: () -> Unit = {},
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
-    showActionTapTarget: Boolean = false,
-    onActionTapTargetCompleted: () -> Unit = {},
-    showConstraintTapTarget: Boolean = false,
-    onConstraintTapTargetCompleted: () -> Unit = {},
-    onSkipTutorialClick: () -> Unit = {},
+    showActionPulse: Boolean = false,
 ) {
     val scope = rememberCoroutineScope()
     val triggerHelpUrl = stringResource(R.string.url_trigger_guide)
@@ -130,49 +128,75 @@ fun BaseConfigKeyMapScreen(
                     @Composable
                     fun Tabs() {
                         for ((index, tab) in tabs.withIndex()) {
-                            val tapTarget: OnboardingTapTarget? = when {
-                                showActionTapTarget && tab == ConfigKeyMapTab.ACTIONS -> OnboardingTapTarget.CHOOSE_ACTION
-                                showConstraintTapTarget && (tab == ConfigKeyMapTab.CONSTRAINTS || tab == ConfigKeyMapTab.CONSTRAINTS_AND_OPTIONS) -> OnboardingTapTarget.CHOOSE_CONSTRAINT
-                                else -> null
-                            }
+                            val tabModifier = if (tab == ConfigKeyMapTab.ACTIONS) {
+                                val defaultBackgroundColor = MaterialTheme.colorScheme.surface
+                                val pulseBackgroundColor =
+                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                                val animatedBackgroundColor =
+                                    remember { Animatable(defaultBackgroundColor) }
 
-                            IntroShowcase(
-                                showIntroShowCase = tapTarget != null,
-                                onShowCaseCompleted = if (tapTarget == OnboardingTapTarget.CHOOSE_ACTION) onActionTapTargetCompleted else onConstraintTapTargetCompleted,
-                                dismissOnClickOutside = true,
-                            ) {
-                                var tabModifier: Modifier = Modifier
+                                var finishedAnimation by rememberSaveable { mutableStateOf(false) }
 
-                                if (tapTarget != null) {
-                                    tabModifier = tabModifier.introShowCaseTarget(
-                                        index = 0,
-                                        style = keyMapperShowcaseStyle(),
-                                    ) {
-                                        KeyMapperTapTarget(
-                                            tapTarget = tapTarget,
-                                            onSkipClick = onSkipTutorialClick,
+                                LaunchedEffect(showActionPulse) {
+                                    var startedAnimation = false
+
+                                    repeat(10) {
+                                        // Check at the start of each repeat so that it is
+                                        // a smooth animation to the old position when it stops.
+                                        val isActionsTabSelected =
+                                            pagerState.targetPage == index &&
+                                                tab == ConfigKeyMapTab.ACTIONS
+
+                                        if (!showActionPulse ||
+                                            finishedAnimation ||
+                                            isActionsTabSelected
+                                        ) {
+                                            return@repeat
+                                        }
+
+                                        startedAnimation = true
+
+                                        animatedBackgroundColor.animateTo(
+                                            pulseBackgroundColor,
+                                            tween(700),
                                         )
+
+                                        animatedBackgroundColor.animateTo(
+                                            defaultBackgroundColor,
+                                            tween(700),
+                                        )
+                                    }
+
+                                    if (startedAnimation) {
+                                        finishedAnimation = true
                                     }
                                 }
 
-                                Tab(
-                                    modifier = tabModifier,
-                                    selected = pagerState.targetPage == index,
-                                    text = {
-                                        Text(
-                                            text = getTabTitle(tab),
-                                            maxLines = 1,
-                                        )
-                                    },
-                                    onClick = {
-                                        scope.launch {
-                                            pagerState.animateScrollToPage(
-                                                tabs.indexOf(tab),
-                                            )
-                                        }
-                                    },
+                                Modifier.background(
+                                    color = animatedBackgroundColor.value,
+                                    shape = RoundedCornerShape(8.dp),
                                 )
+                            } else {
+                                Modifier
                             }
+
+                            Tab(
+                                modifier = tabModifier,
+                                selected = pagerState.targetPage == index,
+                                text = {
+                                    Text(
+                                        text = getTabTitle(tab),
+                                        maxLines = 1,
+                                    )
+                                },
+                                onClick = {
+                                    scope.launch {
+                                        pagerState.animateScrollToPage(
+                                            tabs.indexOf(tab),
+                                        )
+                                    }
+                                },
+                            )
                         }
                     }
 
@@ -202,7 +226,7 @@ fun BaseConfigKeyMapScreen(
                 ) { pageIndex ->
                     when (tabs[pageIndex]) {
                         ConfigKeyMapTab.TRIGGER -> triggerScreen()
-                        ConfigKeyMapTab.ACTIONS -> actionScreen()
+                        ConfigKeyMapTab.ACTIONS -> actionsScreen()
                         ConfigKeyMapTab.CONSTRAINTS -> constraintsScreen()
                         ConfigKeyMapTab.OPTIONS -> optionsScreen()
                         ConfigKeyMapTab.TRIGGER_AND_ACTIONS -> {
@@ -213,7 +237,7 @@ fun BaseConfigKeyMapScreen(
                                     topScreen = triggerScreen,
                                     bottomTitle = stringResource(R.string.tab_actions),
                                     bottomHelpUrl = actionsHelpUrl,
-                                    bottomScreen = actionScreen,
+                                    bottomScreen = actionsScreen,
                                 )
                             } else {
                                 HorizontalTwoScreens(
@@ -222,7 +246,7 @@ fun BaseConfigKeyMapScreen(
                                     leftScreen = triggerScreen,
                                     rightTitle = stringResource(R.string.tab_actions),
                                     rightHelpUrl = actionsHelpUrl,
-                                    rightScreen = actionScreen,
+                                    rightScreen = actionsScreen,
                                 )
                             }
                         }
@@ -255,7 +279,7 @@ fun BaseConfigKeyMapScreen(
                             topLeftScreen = triggerScreen,
                             topRightTitle = stringResource(R.string.tab_actions),
                             topRightHelpUrl = actionsHelpUrl,
-                            topRightScreen = actionScreen,
+                            topRightScreen = actionsScreen,
                             bottomLeftTitle = stringResource(R.string.tab_constraints),
                             bottomLeftHelpUrl = constraintsHelpUrl,
                             bottomLeftScreen = constraintsScreen,
@@ -557,7 +581,7 @@ private fun SmallScreenPreview() {
             modifier = Modifier.fillMaxSize(),
             isKeyMapEnabled = false,
             triggerScreen = {},
-            actionScreen = {},
+            actionsScreen = {},
             constraintsScreen = {},
             optionsScreen = {},
         )
@@ -572,7 +596,7 @@ private fun MediumScreenPreview() {
             modifier = Modifier.fillMaxSize(),
             isKeyMapEnabled = true,
             triggerScreen = {},
-            actionScreen = {},
+            actionsScreen = {},
             constraintsScreen = {},
             optionsScreen = {},
         )
@@ -587,7 +611,7 @@ private fun MediumScreenLandscapePreview() {
             modifier = Modifier.fillMaxSize(),
             isKeyMapEnabled = true,
             triggerScreen = {},
-            actionScreen = {},
+            actionsScreen = {},
             constraintsScreen = {},
             optionsScreen = {},
         )
@@ -602,7 +626,7 @@ private fun LargeScreenPreview() {
             modifier = Modifier.fillMaxSize(),
             isKeyMapEnabled = true,
             triggerScreen = {},
-            actionScreen = {},
+            actionsScreen = {},
             constraintsScreen = {},
             optionsScreen = {},
         )

@@ -2,8 +2,12 @@ package io.github.sds100.keymapper.common.utils
 
 import android.os.UserHandle
 
-fun UserHandle.getIdentifier(): Int {
-    val getIdentifierMethod = UserHandle::class.java.getMethod("getIdentifier")
+object UserHandleUtils {
+    fun getCallingUserId(): Int {
+        return UserHandle::class.java.getMethod("getCallingUserId").invoke(null) as Int
+    }
+}
 
-    return getIdentifierMethod.invoke(this) as Int
+fun UserHandle.getIdentifier(): Int {
+    return UserHandle::class.java.getMethod("getIdentifier").invoke(this) as Int
 }

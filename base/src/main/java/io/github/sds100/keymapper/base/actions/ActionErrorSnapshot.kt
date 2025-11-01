@@ -1,12 +1,22 @@
 package io.github.sds100.keymapper.base.actions
 
+import android.annotation.SuppressLint
 import io.github.sds100.keymapper.base.actions.sound.SoundsManager
 import io.github.sds100.keymapper.base.system.inputmethod.KeyMapperImeHelper
+import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.common.models.ShellExecutionMode
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
+import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.valueOrNull
+import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.isConnected
+import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.camera.CameraAdapter
@@ -17,18 +27,19 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
-import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 
 class LazyActionErrorSnapshot(
     private val packageManager: PackageManagerAdapter,
     private val inputMethodAdapter: InputMethodAdapter,
+    private val switchImeInterface: SwitchImeInterface,
     private val permissionAdapter: PermissionAdapter,
     systemFeatureAdapter: SystemFeatureAdapter,
     cameraAdapter: CameraAdapter,
     private val soundsManager: SoundsManager,
-    shizukuAdapter: ShizukuAdapter,
     private val ringtoneAdapter: RingtoneAdapter,
     private val buildConfigProvider: BuildConfigProvider,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
+    private val preferenceRepository: PreferenceRepository,
 ) : ActionErrorSnapshot,
     IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(
         systemFeatureAdapter,
@@ -36,12 +47,10 @@ class LazyActionErrorSnapshot(
         permissionAdapter,
     ) {
     private val keyMapperImeHelper =
-        KeyMapperImeHelper(inputMethodAdapter, buildConfigProvider.packageName)
+        KeyMapperImeHelper(switchImeInterface, inputMethodAdapter, buildConfigProvider.packageName)
 
     private val isCompatibleImeEnabled by lazy { keyMapperImeHelper.isCompatibleImeEnabled() }
     private val isCompatibleImeChosen by lazy { keyMapperImeHelper.isCompatibleImeChosen() }
-    private val isShizukuInstalled by lazy { shizukuAdapter.isInstalled.value }
-    private val isShizukuStarted by lazy { shizukuAdapter.isStarted.value }
     private val isVoiceAssistantInstalled by lazy { packageManager.isVoiceAssistantInstalled() }
     private val grantedPermissions: MutableMap<Permission, Boolean> = mutableMapOf()
     private val flashLenses by lazy {
@@ -53,6 +62,22 @@ class LazyActionErrorSnapshot(
             if (cameraAdapter.getFlashInfo(CameraLens.BACK) != null) {
                 add(CameraLens.BACK)
             }
+        }
+    }
+
+    private val isSystemBridgeConnected: Boolean by lazy {
+        if (buildConfigProvider.sdkInt >= Constants.SYSTEM_BRIDGE_MIN_API) {
+            systemBridgeConnectionManager.isConnected()
+        } else {
+            false
+        }
+    }
+
+    private val keyEventActionsUseSystemBridge: Boolean by lazy {
+        if (buildConfigProvider.sdkInt >= Constants.SYSTEM_BRIDGE_MIN_API) {
+            preferenceRepository.get(Keys.keyEventActionsUseSystemBridge).firstBlocking() ?: false
+        } else {
+            false
         }
     }
 
@@ -71,7 +96,14 @@ class LazyActionErrorSnapshot(
 
             var error = getError(action)
 
-            if (error == KMError.NoCompatibleImeChosen && currentImeFromActions != null) {
+            val isImeNotChosenError =
+                error == KMError.NoCompatibleImeChosen ||
+                    (
+                        error is KMError.KeyEventActionError &&
+                            error.baseError == KMError.NoCompatibleImeChosen
+                        )
+
+            if (isImeNotChosenError && currentImeFromActions != null) {
                 val isCurrentImeCompatible =
                     KeyMapperImeHelper.isKeyMapperInputMethod(
                         currentImeFromActions.packageName,
@@ -96,24 +128,37 @@ class LazyActionErrorSnapshot(
             return isSupportedError
         }
 
-        if (action.canUseShizukuToPerform() && isShizukuInstalled) {
-            if (!(action.canUseImeToPerform() && isCompatibleImeChosen)) {
-                when {
-                    !isShizukuStarted -> return KMError.ShizukuNotStarted
-
-                    !isPermissionGranted(Permission.SHIZUKU) -> return SystemError.PermissionDenied(
-                        Permission.SHIZUKU,
-                    )
-                }
+        if (buildConfigProvider.sdkInt >= Constants.SYSTEM_BRIDGE_MIN_API &&
+            action is ActionData.InputKeyEvent &&
+            keyEventActionsUseSystemBridge
+        ) {
+            if (!isSystemBridgeConnected) {
+                return KMError.KeyEventActionError(SystemBridgeError.Disconnected)
             }
         } else if (action.canUseImeToPerform()) {
             if (!isCompatibleImeEnabled) {
-                return KMError.NoCompatibleImeEnabled
+                if (action is ActionData.InputKeyEvent) {
+                    return KMError.KeyEventActionError(KMError.NoCompatibleImeEnabled)
+                } else {
+                    return KMError.NoCompatibleImeEnabled
+                }
             }
 
             if (!isCompatibleImeChosen) {
-                return KMError.NoCompatibleImeChosen
+                if (action is ActionData.InputKeyEvent) {
+                    return KMError.KeyEventActionError(KMError.NoCompatibleImeChosen)
+                } else {
+                    return KMError.NoCompatibleImeChosen
+                }
             }
+        }
+
+        @SuppressLint("NewApi")
+        if (buildConfigProvider.sdkInt >= Constants.SYSTEM_BRIDGE_MIN_API &&
+            ActionUtils.isSystemBridgeRequired(action.id) &&
+            !isSystemBridgeConnected
+        ) {
+            return SystemBridgeError.Disconnected
         }
 
         for (permission in ActionUtils.getRequiredPermissions(action.id)) {
@@ -132,13 +177,6 @@ class LazyActionErrorSnapshot(
 
                 return getAppError(action.packageName)
             }
-
-            is ActionData.InputKeyEvent ->
-                if (
-                    action.useShell && !isPermissionGranted(Permission.ROOT)
-                ) {
-                    return SystemError.PermissionDenied(Permission.ROOT)
-                }
 
             is ActionData.Sound.SoundFile -> {
                 soundsManager.getSound(action.soundUid).onFailure { error ->
@@ -170,6 +208,28 @@ class LazyActionErrorSnapshot(
                 inputMethodAdapter.getInfoById(action.imeId).onFailure {
                     return it
                 }
+
+            is ActionData.ShellCommand -> {
+                return when (action.executionMode) {
+                    ShellExecutionMode.ROOT -> {
+                        if (!isPermissionGranted(Permission.ROOT)) {
+                            SystemError.PermissionDenied(Permission.ROOT)
+                        } else {
+                            null
+                        }
+                    }
+
+                    ShellExecutionMode.ADB -> {
+                        if (!isSystemBridgeConnected) {
+                            SystemBridgeError.Disconnected
+                        } else {
+                            null
+                        }
+                    }
+
+                    ShellExecutionMode.STANDARD -> null
+                }
+            }
 
             else -> {}
         }

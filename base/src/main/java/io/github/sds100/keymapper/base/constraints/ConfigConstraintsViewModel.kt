@@ -3,7 +3,9 @@ package io.github.sds100.keymapper.base.constraints
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapUseCase
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sds100.keymapper.base.keymaps.ShortcutModel
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.isFixable
@@ -20,7 +22,7 @@ import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
-import kotlinx.coroutines.CoroutineScope
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -34,14 +36,15 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class ConfigConstraintsViewModel(
-    private val coroutineScope: CoroutineScope,
-    private val config: ConfigKeyMapUseCase,
+@HiltViewModel
+class ConfigConstraintsViewModel @Inject constructor(
+    private val config: ConfigConstraintsUseCase,
     private val displayConstraint: DisplayConstraintUseCase,
     resourceProvider: ResourceProvider,
     navigationProvider: NavigationProvider,
     dialogProvider: DialogProvider,
-) : ResourceProvider by resourceProvider,
+) : ViewModel(),
+    ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider {
 
@@ -51,14 +54,16 @@ class ConfigConstraintsViewModel(
         MutableStateFlow(State.Loading)
     val state = _state.asStateFlow()
 
-    private val shortcuts: StateFlow<Set<ShortcutModel<Constraint>>> =
-        config.recentlyUsedConstraints.map { actions ->
-            actions.map(::buildShortcut).toSet()
-        }.stateIn(coroutineScope, SharingStarted.Lazily, emptySet())
+    private val shortcuts: StateFlow<Set<ShortcutModel<ConstraintData>>> =
+        config.recentlyUsedConstraints.map { constraintDataList ->
+            constraintDataList.map { constraintData ->
+                buildShortcutFromData(constraintData)
+            }.toSet()
+        }.stateIn(viewModelScope, SharingStarted.Lazily, emptySet())
 
     private val constraintErrorSnapshot: StateFlow<ConstraintErrorSnapshot?> =
         displayConstraint.constraintErrorSnapshot.stateIn(
-            coroutineScope,
+            viewModelScope,
             SharingStarted.Lazily,
             null,
         )
@@ -74,12 +79,12 @@ class ConfigConstraintsViewModel(
             _state.value = keyMapState.mapData { keyMap ->
                 buildState(keyMap.constraintState, shortcuts, errorSnapshot)
             }
-        }.launchIn(coroutineScope)
+        }.launchIn(viewModelScope)
     }
 
-    fun onClickShortcut(constraint: Constraint) {
-        coroutineScope.launch {
-            config.addConstraint(constraint)
+    fun onClickShortcut(constraintData: ConstraintData) {
+        viewModelScope.launch {
+            config.addConstraint(constraintData)
         }
     }
 
@@ -93,7 +98,7 @@ class ConfigConstraintsViewModel(
     }
 
     fun onFixError(constraintUid: String) {
-        coroutineScope.launch {
+        viewModelScope.launch {
             val constraint = config.keyMap
                 .firstOrNull()
                 ?.dataOrNull()
@@ -106,11 +111,13 @@ class ConfigConstraintsViewModel(
                 ?: return@launch
 
             if (error == SystemError.PermissionDenied(Permission.ACCESS_NOTIFICATION_POLICY)) {
-                coroutineScope.launch {
+                viewModelScope.launch {
                     ViewModelHelper.showDialogExplainingDndAccessBeingUnavailable(
                         resourceProvider = this@ConfigConstraintsViewModel,
                         dialogProvider = this@ConfigConstraintsViewModel,
-                        neverShowDndTriggerErrorAgain = { displayConstraint.neverShowDndTriggerError() },
+                        neverShowDndTriggerErrorAgain = {
+                            displayConstraint.neverShowDndTriggerError()
+                        },
                         fixError = { displayConstraint.fixError(error) },
                     )
                 }
@@ -127,8 +134,8 @@ class ConfigConstraintsViewModel(
     }
 
     fun addConstraint() {
-        coroutineScope.launch {
-            val constraint =
+        viewModelScope.launch {
+            val constraint: ConstraintData =
                 navigate("add_constraint", NavDestination.ChooseConstraint)
                     ?: return@launch
 
@@ -140,17 +147,20 @@ class ConfigConstraintsViewModel(
         }
     }
 
-    private fun buildShortcut(constraint: Constraint): ShortcutModel<Constraint> {
+    private fun buildShortcutFromData(
+        constraintData: ConstraintData,
+    ): ShortcutModel<ConstraintData> {
+        val constraint = Constraint(data = constraintData)
         return ShortcutModel(
             icon = uiHelper.getIcon(constraint),
             text = uiHelper.getTitle(constraint),
-            data = constraint,
+            data = constraintData,
         )
     }
 
     private fun buildState(
         state: ConstraintState,
-        shortcuts: Set<ShortcutModel<Constraint>>,
+        shortcuts: Set<ShortcutModel<ConstraintData>>,
         errorSnapshot: ConstraintErrorSnapshot,
     ): ConfigConstraintsState {
         if (state.constraints.isEmpty()) {
@@ -165,7 +175,9 @@ class ConfigConstraintsViewModel(
             ConstraintListItemModel(
                 id = constraint.uid,
                 icon = icon,
-                constraintModeLink = if (state.constraints.size > 1 && index < state.constraints.size - 1) {
+                constraintModeLink = if (state.constraints.size > 1 &&
+                    index < state.constraints.size - 1
+                ) {
                     state.mode
                 } else {
                     null
@@ -185,13 +197,12 @@ class ConfigConstraintsViewModel(
 }
 
 sealed class ConfigConstraintsState {
-    data class Empty(
-        val shortcuts: Set<ShortcutModel<Constraint>> = emptySet(),
-    ) : ConfigConstraintsState()
+    data class Empty(val shortcuts: Set<ShortcutModel<ConstraintData>> = emptySet()) :
+        ConfigConstraintsState()
 
     data class Loaded(
         val constraintList: List<ConstraintListItemModel>,
         val selectedMode: ConstraintMode,
-        val shortcuts: Set<ShortcutModel<Constraint>> = emptySet(),
+        val shortcuts: Set<ShortcutModel<ConstraintData>> = emptySet(),
     ) : ConfigConstraintsState()
 }
