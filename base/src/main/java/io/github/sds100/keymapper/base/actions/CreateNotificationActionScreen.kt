@@ -33,6 +33,10 @@ import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.CheckBoxText
 import io.github.sds100.keymapper.base.utils.ui.compose.SliderOptionText
 
+private const val MIN_TIMEOUT_SECONDS = 5
+private const val MAX_TIMEOUT_SECONDS = 300
+private const val TIMEOUT_STEP_SECONDS = 5
+
 @Composable
 fun CreateNotificationActionScreen(
     modifier: Modifier = Modifier,
@@ -87,6 +91,7 @@ private fun CreateNotificationActionScreen(
                         keyboardController?.hide()
                         onDoneClick()
                     },
+                    enabled = state.title.isNotBlank() && state.text.isNotBlank(),
                     elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
                     text = { Text(stringResource(R.string.pos_done)) },
                     icon = {
@@ -115,6 +120,10 @@ private fun CreateNotificationActionScreen(
                 placeholder = { Text(stringResource(R.string.action_create_notification_title_hint)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
+                isError = state.title.isBlank(),
+                supportingText = if (state.title.isBlank()) {
+                    { Text(stringResource(R.string.action_create_notification_title_error)) }
+                } else null,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -127,6 +136,10 @@ private fun CreateNotificationActionScreen(
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
                 maxLines = 10,
+                isError = state.text.isBlank(),
+                supportingText = if (state.text.isBlank()) {
+                    { Text(stringResource(R.string.action_create_notification_text_error)) }
+                } else null,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -145,8 +158,8 @@ private fun CreateNotificationActionScreen(
                     value = state.timeoutSeconds,
                     onValueChange = { onTimeoutChanged(it.toInt()) },
                     sliderValue = state.timeoutSeconds.toFloat(),
-                    valueRange = 5f..300f,
-                    steps = 58, // (300 - 5) / 5 - 1 = 58 steps for increments of 5 seconds
+                    valueRange = MIN_TIMEOUT_SECONDS.toFloat()..MAX_TIMEOUT_SECONDS.toFloat(),
+                    steps = ((MAX_TIMEOUT_SECONDS - MIN_TIMEOUT_SECONDS) / TIMEOUT_STEP_SECONDS) - 1,
                     valueLabel = stringResource(
                         R.string.action_create_notification_timeout_value,
                         state.timeoutSeconds,

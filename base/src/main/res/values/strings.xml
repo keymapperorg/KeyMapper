@@ -1086,8 +1086,10 @@
     <string name="action_create_notification">Create notification</string>
     <string name="action_create_notification_title_label">Notification title</string>
     <string name="action_create_notification_title_hint">Enter notification title</string>
+    <string name="action_create_notification_title_error">Title cannot be empty</string>
     <string name="action_create_notification_text_label">Notification content</string>
     <string name="action_create_notification_text_hint">Enter notification content</string>
+    <string name="action_create_notification_text_error">Content cannot be empty</string>
     <string name="action_create_notification_timeout_checkbox">Auto-dismiss notification</string>
     <string name="action_create_notification_timeout_label">Auto-dismiss after</string>
     <string name="action_create_notification_timeout_value">%d seconds</string>

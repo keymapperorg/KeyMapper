@@ -932,8 +932,8 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.CreateNotification -> {
-                // Generate a unique notification ID based on title and text hash
-                val notificationId = (action.title + action.text).hashCode()
+                // Generate a unique notification ID using timestamp and hash to avoid collisions
+                val notificationId = (System.currentTimeMillis() / 1000).toInt() + (action.title + action.text).hashCode()
                 
                 val notification = NotificationModel(
                     id = notificationId,
