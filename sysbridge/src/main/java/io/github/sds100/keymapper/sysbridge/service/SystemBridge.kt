@@ -673,13 +673,15 @@ internal class SystemBridge : ISystemBridge.Stub() {
             throw UnsupportedOperationException("ConnectivityManager not supported")
         }
 
-        connectivityManager.startTethering(
-            /* type = */ 0, // TETHERING_WIFI
-            /* showProvisioningUi = */ false,
-            /* receiver = */ null,
-        )
-
-        if (!enable) {
+        if (enable) {
+            // Type 0 = TETHERING_WIFI
+            connectivityManager.startTethering(
+                0, // type
+                null, // ResultReceiver
+                false, // showProvisioningUi
+                processPackageName, // callerPkg
+            )
+        } else {
             connectivityManager.stopTethering(0) // TETHERING_WIFI
         }
     }
