@@ -561,7 +561,8 @@ object ActionDataEntityMapper {
                 val title = entity.extras.getData(ActionEntity.EXTRA_NOTIFICATION_TITLE).valueOrNull()
                     ?: return null
                 
-                val text = entity.data
+                val text = entity.data.takeIf { it.isNotBlank() }
+                    ?: return null
                 
                 val timeoutMs = entity.extras.getData(ActionEntity.EXTRA_NOTIFICATION_TIMEOUT).valueOrNull()
                     ?.toLongOrNull()
