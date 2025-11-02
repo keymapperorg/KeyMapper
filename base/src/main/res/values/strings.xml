@@ -920,6 +920,10 @@
     <string name="action_enable_mobile_data">Enable mobile data</string>
     <string name="action_disable_mobile_data">Disable mobile data</string>
 
+    <string name="action_toggle_hotspot">Toggle hotspot</string>
+    <string name="action_enable_hotspot">Enable hotspot</string>
+    <string name="action_disable_hotspot">Disable hotspot</string>
+
     <string name="action_toggle_auto_brightness">Toggle auto brightness</string>
     <string name="action_disable_auto_brightness">Disable auto brightness</string>
     <string name="action_enable_auto_brightness">Enable auto brightness</string>

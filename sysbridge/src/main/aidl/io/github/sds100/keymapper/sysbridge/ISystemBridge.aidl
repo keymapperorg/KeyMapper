@@ -42,4 +42,6 @@ interface ISystemBridge {
    void removeTasks(String packageName) = 17;
 
    void setRingerMode(int ringerMode) = 18;
+
+   void setTetheringEnabled(boolean enable) = 19;
 }

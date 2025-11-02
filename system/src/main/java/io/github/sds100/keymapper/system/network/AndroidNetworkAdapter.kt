@@ -199,6 +199,27 @@ class AndroidNetworkAdapter @Inject constructor(
         }
     }
 
+    override fun isHotspotEnabled(): Boolean {
+        // This requires reflection or system bridge
+        return false
+    }
+
+    override fun enableHotspot(): KMResult<*> {
+        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
+            return systemBridgeConnManager.run { bridge -> bridge.setTetheringEnabled(true) }
+        } else {
+            return KMError.FeatureUnavailable
+        }
+    }
+
+    override fun disableHotspot(): KMResult<*> {
+        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
+            return systemBridgeConnManager.run { bridge -> bridge.setTetheringEnabled(false) }
+        } else {
+            return KMError.FeatureUnavailable
+        }
+    }
+
     /**
      * @return Null on Android 10+ because there is no API to do this anymore.
      */

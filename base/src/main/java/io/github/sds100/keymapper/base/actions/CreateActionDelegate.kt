@@ -812,6 +812,10 @@ class CreateActionDelegate(
             ActionId.ENABLE_MOBILE_DATA -> return ActionData.MobileData.Enable
             ActionId.DISABLE_MOBILE_DATA -> return ActionData.MobileData.Disable
 
+            ActionId.TOGGLE_HOTSPOT -> return ActionData.Hotspot.Toggle
+            ActionId.ENABLE_HOTSPOT -> return ActionData.Hotspot.Enable
+            ActionId.DISABLE_HOTSPOT -> return ActionData.Hotspot.Disable
+
             ActionId.TOGGLE_AUTO_BRIGHTNESS -> return ActionData.Brightness.ToggleAuto
             ActionId.DISABLE_AUTO_BRIGHTNESS -> return ActionData.Brightness.DisableAuto
             ActionId.ENABLE_AUTO_BRIGHTNESS -> return ActionData.Brightness.EnableAuto

@@ -667,4 +667,20 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
         audioService.setRingerModeInternal(ringerMode, processPackageName)
     }
+
+    override fun setTetheringEnabled(enable: Boolean) {
+        if (connectivityManager == null) {
+            throw UnsupportedOperationException("ConnectivityManager not supported")
+        }
+
+        connectivityManager.startTethering(
+            /* type = */ 0, // TETHERING_WIFI
+            /* showProvisioningUi = */ false,
+            /* receiver = */ null,
+        )
+
+        if (!enable) {
+            connectivityManager.stopTethering(0) // TETHERING_WIFI
+        }
+    }
 }

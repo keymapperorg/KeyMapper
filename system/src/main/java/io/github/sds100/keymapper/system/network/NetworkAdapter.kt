@@ -19,6 +19,11 @@ interface NetworkAdapter {
     fun enableMobileData(): KMResult<*>
     fun disableMobileData(): KMResult<*>
 
+    fun isHotspotEnabled(): Boolean
+
+    fun enableHotspot(): KMResult<*>
+    fun disableHotspot(): KMResult<*>
+
     fun getKnownWifiSSIDs(): List<String>
 
     suspend fun sendHttpRequest(

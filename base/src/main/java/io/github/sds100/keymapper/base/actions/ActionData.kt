@@ -668,6 +668,24 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
+    sealed class Hotspot : ActionData() {
+        @Serializable
+        data object Enable : Hotspot() {
+            override val id = ActionId.ENABLE_HOTSPOT
+        }
+
+        @Serializable
+        data object Disable : Hotspot() {
+            override val id = ActionId.DISABLE_HOTSPOT
+        }
+
+        @Serializable
+        data object Toggle : Hotspot() {
+            override val id = ActionId.TOGGLE_HOTSPOT
+        }
+    }
+
+    @Serializable
     sealed class Brightness : ActionData() {
         @Serializable
         data object EnableAuto : Brightness() {
