@@ -52,7 +52,6 @@ class CreateActionDelegate(
     )
 
     var httpRequestBottomSheetState: ActionData.HttpRequest? by mutableStateOf(null)
-    var createNotificationBottomSheetState: ActionData.CreateNotification? by mutableStateOf(null)
     var smsActionBottomSheetState: SmsActionBottomSheetState? by mutableStateOf(null)
     var volumeActionState: VolumeActionBottomSheetState? by mutableStateOf(null)
 
@@ -886,15 +885,16 @@ class CreateActionDelegate(
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> return ActionData.DismissLastNotification
             ActionId.DISMISS_ALL_NOTIFICATIONS -> return ActionData.DismissAllNotifications
             ActionId.CREATE_NOTIFICATION -> {
-                // This will be handled by a configuration screen later
-                // For now, we'll navigate to the screen
-                createNotificationBottomSheetState = oldData as? ActionData.CreateNotification
-                    ?: ActionData.CreateNotification(
-                        title = "",
-                        text = "",
-                        timeoutMs = null,
-                    )
-                return null
+                val oldAction = oldData as? ActionData.CreateNotification
+
+                return navigate(
+                    "config_create_notification_action",
+                    NavDestination.ConfigCreateNotification(
+                        oldAction?.let {
+                            Json.encodeToString(oldAction)
+                        },
+                    ),
+                )
             }
             ActionId.ANSWER_PHONE_CALL -> return ActionData.AnswerCall
             ActionId.END_PHONE_CALL -> return ActionData.EndCall

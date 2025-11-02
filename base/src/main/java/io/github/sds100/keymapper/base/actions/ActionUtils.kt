@@ -940,6 +940,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.ComposeSms,
     is ActionData.HttpRequest,
     is ActionData.ShellCommand,
+    is ActionData.CreateNotification,
     is ActionData.InteractUiElement,
     is ActionData.MoveCursor,
         -> true

@@ -1084,6 +1084,13 @@
     <string name="action_dismiss_most_recent_notification">Dismiss most recent notification</string>
     <string name="action_dismiss_all_notifications">Dismiss all notifications</string>
     <string name="action_create_notification">Create notification</string>
+    <string name="action_create_notification_title_label">Notification title</string>
+    <string name="action_create_notification_title_hint">Enter notification title</string>
+    <string name="action_create_notification_text_label">Notification content</string>
+    <string name="action_create_notification_text_hint">Enter notification content</string>
+    <string name="action_create_notification_timeout_checkbox">Auto-dismiss notification</string>
+    <string name="action_create_notification_timeout_label">Auto-dismiss after</string>
+    <string name="action_create_notification_timeout_value">%d seconds</string>
     <string name="action_device_controls">Device controls screen</string>
     <string name="action_http_request">HTTP request</string>
     <string name="action_http_request_method_label">HTTP Method</string>
