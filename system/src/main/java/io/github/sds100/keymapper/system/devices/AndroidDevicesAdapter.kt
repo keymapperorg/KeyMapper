@@ -19,6 +19,8 @@ import io.github.sds100.keymapper.common.utils.ifIsData
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,8 +30,6 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class AndroidDevicesAdapter @Inject constructor(
@@ -75,7 +75,9 @@ class AndroidDevicesAdapter @Inject constructor(
                     override fun onInputDeviceAdded(deviceId: Int) {
                         coroutineScope.launch {
                             val device = InputDevice.getDevice(deviceId) ?: return@launch
-                            onInputDeviceConnect.emit(InputDeviceUtils.createInputDeviceInfo(device))
+                            onInputDeviceConnect.emit(
+                                InputDeviceUtils.createInputDeviceInfo(device),
+                            )
 
                             updateInputDevices()
                         }

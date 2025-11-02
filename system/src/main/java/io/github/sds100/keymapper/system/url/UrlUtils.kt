@@ -8,8 +8,6 @@ import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.success
 
-
-
 object UrlUtils {
     fun openUrl(ctx: Context, url: String): KMResult<*> {
         Intent(Intent.ACTION_VIEW, url.toUri()).apply {

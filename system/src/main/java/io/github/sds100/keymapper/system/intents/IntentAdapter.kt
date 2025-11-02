@@ -10,7 +10,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class IntentAdapterImpl @Inject constructor(@ApplicationContext private val context: Context) : IntentAdapter {
+class IntentAdapterImpl @Inject constructor(@ApplicationContext private val context: Context) :
+    IntentAdapter {
     private val ctx = context.applicationContext
 
     override fun send(

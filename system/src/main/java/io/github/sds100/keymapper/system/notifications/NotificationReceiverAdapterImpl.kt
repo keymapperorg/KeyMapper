@@ -18,13 +18,13 @@ import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.system.JobSchedulerHelper
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class NotificationReceiverAdapterImpl @Inject constructor(
@@ -41,7 +41,7 @@ class NotificationReceiverAdapterImpl @Inject constructor(
     init {
         // use job scheduler because there is there is a much shorter delay when the app is in the background
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-           JobSchedulerHelper.observeEnabledNotificationListeners(ctx)
+            JobSchedulerHelper.observeEnabledNotificationListeners(ctx)
         } else {
             val uri = Settings.Secure.getUriFor("enabled_notification_listeners")
             val observer = object : ContentObserver(Handler(Looper.getMainLooper())) {

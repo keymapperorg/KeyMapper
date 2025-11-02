@@ -390,7 +390,9 @@ object KeyEventUtils {
         KeyEvent.KEYCODE_ALT_RIGHT -> KeyEvent.META_ALT_RIGHT_ON.withFlag(KeyEvent.META_ALT_ON)
 
         KeyEvent.KEYCODE_SHIFT_LEFT -> KeyEvent.META_SHIFT_LEFT_ON.withFlag(KeyEvent.META_SHIFT_ON)
-        KeyEvent.KEYCODE_SHIFT_RIGHT -> KeyEvent.META_SHIFT_RIGHT_ON.withFlag(KeyEvent.META_SHIFT_ON)
+        KeyEvent.KEYCODE_SHIFT_RIGHT -> KeyEvent.META_SHIFT_RIGHT_ON.withFlag(
+            KeyEvent.META_SHIFT_ON,
+        )
 
         KeyEvent.KEYCODE_SYM -> KeyEvent.META_SYM_ON
 
@@ -472,4 +474,3 @@ object KeyEventUtils {
             scanCode == Scancode.KEY_POWER2
     }
 }
-

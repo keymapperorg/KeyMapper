@@ -9,5 +9,5 @@ import io.github.sds100.keymapper.common.notifications.KMNotificationAction
  */
 data class NotificationRemoteInput(
     val intentAction: KMNotificationAction.IntentAction,
-    val text: String
+    val text: String,
 )

@@ -6,7 +6,6 @@ import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import kotlinx.coroutines.flow.Flow
 
-
 interface MediaAdapter {
 
     /**
