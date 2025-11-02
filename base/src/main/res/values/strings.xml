@@ -278,9 +278,9 @@
     <string name="constraint_ime_not_chosen_description">%s is not chosen</string>
 
     <string name="constraint_keyboard_showing">Keyboard is showing</string>
-    <string name="constraint_keyboard_showing_description">Keyboard is showing</string>
+    <string name="constraint_keyboard_showing_description">On-screen keyboard is visible</string>
     <string name="constraint_keyboard_not_showing">Keyboard is not showing</string>
-    <string name="constraint_keyboard_not_showing_description">Keyboard is not showing</string>
+    <string name="constraint_keyboard_not_showing_description">On-screen keyboard is hidden</string>
 
     <string name="constraint_device_is_locked">Device is locked</string>
     <string name="constraint_device_is_unlocked">Device is unlocked</string>
