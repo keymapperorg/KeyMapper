@@ -89,6 +89,8 @@ data class ActionEntity(
         const val EXTRA_SHELL_COMMAND_USE_ROOT = "extra_shell_command_use_root"
         const val EXTRA_SHELL_COMMAND_DESCRIPTION = "extra_shell_command_description"
         const val EXTRA_SHELL_COMMAND_TIMEOUT = "extra_shell_command_timeout"
+        const val EXTRA_NOTIFICATION_TITLE = "extra_notification_title"
+        const val EXTRA_NOTIFICATION_TIMEOUT = "extra_notification_timeout"
 
         // Accessibility node extras
         const val EXTRA_ACCESSIBILITY_PACKAGE_NAME = "extra_accessibility_package_name"
@@ -183,6 +185,7 @@ data class ActionEntity(
         SOUND,
         INTERACT_UI_ELEMENT,
         SHELL_COMMAND,
+        CREATE_NOTIFICATION,
     }
 
     constructor(

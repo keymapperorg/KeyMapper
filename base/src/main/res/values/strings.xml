@@ -512,6 +512,7 @@
     <string name="notification_channel_keyboard_hidden">Keyboard is hidden warning</string>
     <string name="notification_channel_toggle_keyboard">Toggle Key Mapper Input Method</string>
     <string name="notification_channel_new_features">New features</string>
+    <string name="notification_channel_custom_notifications">Custom notifications</string>
 
     <string name="notification_keymaps_resumed_title">Running</string>
     <string name="notification_keymaps_resumed_text">Tap to open Key Mapper.</string>
@@ -1082,6 +1083,7 @@
     <string name="action_play_sound">Play sound</string>
     <string name="action_dismiss_most_recent_notification">Dismiss most recent notification</string>
     <string name="action_dismiss_all_notifications">Dismiss all notifications</string>
+    <string name="action_create_notification">Create notification</string>
     <string name="action_device_controls">Device controls screen</string>
     <string name="action_http_request">HTTP request</string>
     <string name="action_http_request_method_label">HTTP Method</string>

@@ -52,6 +52,7 @@ class CreateActionDelegate(
     )
 
     var httpRequestBottomSheetState: ActionData.HttpRequest? by mutableStateOf(null)
+    var createNotificationBottomSheetState: ActionData.CreateNotification? by mutableStateOf(null)
     var smsActionBottomSheetState: SmsActionBottomSheetState? by mutableStateOf(null)
     var volumeActionState: VolumeActionBottomSheetState? by mutableStateOf(null)
 
@@ -884,6 +885,17 @@ class CreateActionDelegate(
             ActionId.DISABLE_DND_MODE -> return ActionData.DoNotDisturb.Disable
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> return ActionData.DismissLastNotification
             ActionId.DISMISS_ALL_NOTIFICATIONS -> return ActionData.DismissAllNotifications
+            ActionId.CREATE_NOTIFICATION -> {
+                // This will be handled by a configuration screen later
+                // For now, we'll navigate to the screen
+                createNotificationBottomSheetState = oldData as? ActionData.CreateNotification
+                    ?: ActionData.CreateNotification(
+                        title = "",
+                        text = "",
+                        timeoutMs = null,
+                    )
+                return null
+            }
             ActionId.ANSWER_PHONE_CALL -> return ActionData.AnswerCall
             ActionId.END_PHONE_CALL -> return ActionData.EndCall
             ActionId.DEVICE_CONTROLS -> return ActionData.DeviceControls

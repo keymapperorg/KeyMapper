@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityServic
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
+import io.github.sds100.keymapper.base.system.notifications.ManageNotificationsUseCase
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.Constants
@@ -60,6 +61,7 @@ import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.nfc.NfcAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationModel
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationServiceEvent
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
@@ -116,6 +118,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val resourceProvider: ResourceProvider,
     private val soundsManager: SoundsManager,
     private val notificationReceiverAdapter: NotificationReceiverAdapter,
+    private val manageNotifications: ManageNotificationsUseCase,
     private val ringtoneAdapter: RingtoneAdapter,
     private val settingsRepository: PreferenceRepository,
     private val inputEventHub: InputEventHub,
@@ -926,6 +929,26 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                     notificationReceiverAdapter.send(
                         NotificationServiceEvent.DismissLastNotification,
                     )
+            }
+
+            is ActionData.CreateNotification -> {
+                // Generate a unique notification ID based on title and text hash
+                val notificationId = (action.title + action.text).hashCode()
+                
+                val notification = NotificationModel(
+                    id = notificationId,
+                    channel = io.github.sds100.keymapper.base.system.notifications.NotificationController.CHANNEL_CUSTOM_NOTIFICATIONS,
+                    title = action.title,
+                    text = action.text,
+                    icon = R.drawable.ic_notification_play,
+                    showOnLockscreen = false,
+                    onGoing = false,
+                    autoCancel = true,
+                    timeout = action.timeoutMs,
+                )
+                
+                manageNotifications.show(notification)
+                result = success()
             }
 
             ActionData.AnswerCall -> {
