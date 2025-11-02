@@ -100,10 +100,10 @@
     <string name="description_url">Open %s</string>
     <string name="description_tap_coordinate_default">Tap screen (%d, %d)</string>
     <string name="description_tap_coordinate_with_description">Tap screen (%s)</string>
-    <string name="description_swipe_coordinate_default">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms</string>
-    <string name="description_swipe_coordinate_with_description">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms (%s)</string>
-    <string name="description_pinch_coordinate_default">%s with %d finger(s) on coordinates %d/%d with a pinch distance of %dpx in %dms</string>
-    <string name="description_pinch_coordinate_with_description">%s with %d finger(s) on coordinates %d/%d to with a pinch distance of %dpx %dms (%s)</string>
+    <string name="description_swipe_coordinate_default">Swipe with %d finger(s) from (%d,%d) to (%d,%d) in %dms</string>
+    <string name="description_swipe_coordinate_with_description">Swipe with %d finger(s) from (%d,%d) to (%d,%d) in %dms (%s)</string>
+    <string name="description_pinch_coordinate_default">%s with %d finger(s) on (%d,%d) with a pinch distance of %dpx in %dms</string>
+    <string name="description_pinch_coordinate_with_description">%s with %d finger(s) on (%d,%d) to with a pinch distance of %dpx %dms (%s)</string>
     <string name="description_phone_call">Call %s</string>
     <string name="description_sound">Play sound: %s</string>
     <string name="description_sound_unknown">Play unknown sound</string>
