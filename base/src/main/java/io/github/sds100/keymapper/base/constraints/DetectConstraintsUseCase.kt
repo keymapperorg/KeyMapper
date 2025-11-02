@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.power.PowerAdapter
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 
@@ -78,6 +79,9 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
                 networkAdapter.connectedWifiSSIDFlow.map { dependency }
             ConstraintDependency.WIFI_STATE -> networkAdapter.isWifiEnabledFlow().map { dependency }
             ConstraintDependency.CHOSEN_IME -> inputMethodAdapter.chosenIme.map { dependency }
+            ConstraintDependency.KEYBOARD_STATE -> 
+                // TODO: Implement keyboard state detection
+                flowOf(dependency)
             ConstraintDependency.DEVICE_LOCKED_STATE ->
                 lockScreenAdapter.isLockedFlow().map { dependency }
 

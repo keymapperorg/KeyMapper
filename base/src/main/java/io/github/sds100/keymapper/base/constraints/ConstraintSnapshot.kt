@@ -57,6 +57,8 @@ class LazyConstraintSnapshot(
         networkAdapter.connectedWifiSSIDFlow.firstBlocking()
     }
     private val chosenImeId: String? by lazy { inputMethodAdapter.chosenIme.value?.id }
+    // TODO: Implement keyboard state detection
+    private val isKeyboardShowing: Boolean by lazy { false }
     private val callState: CallState by lazy { phoneAdapter.getCallState() }
     private val isCharging: Boolean by lazy { powerAdapter.isCharging.value }
 
@@ -139,6 +141,8 @@ class LazyConstraintSnapshot(
             is ConstraintData.WifiOn -> isWifiEnabled
             is ConstraintData.ImeChosen -> chosenImeId == constraint.data.imeId
             is ConstraintData.ImeNotChosen -> chosenImeId != constraint.data.imeId
+            is ConstraintData.KeyboardShowing -> isKeyboardShowing
+            is ConstraintData.KeyboardNotShowing -> !isKeyboardShowing
             is ConstraintData.DeviceIsLocked -> isLocked
             is ConstraintData.DeviceIsUnlocked -> !isLocked
             is ConstraintData.InPhoneCall ->

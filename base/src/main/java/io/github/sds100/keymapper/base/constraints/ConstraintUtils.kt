@@ -10,6 +10,7 @@ import androidx.compose.material.icons.outlined.CallEnd
 import androidx.compose.material.icons.outlined.FlashlightOff
 import androidx.compose.material.icons.outlined.FlashlightOn
 import androidx.compose.material.icons.outlined.Keyboard
+import androidx.compose.material.icons.outlined.KeyboardHide
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.LockOpen
 import androidx.compose.material.icons.outlined.MobileOff
@@ -78,6 +79,9 @@ object ConstraintUtils {
         ConstraintId.IME_NOT_CHOSEN,
             -> ComposeIconInfo.Vector(Icons.Outlined.Keyboard)
 
+        ConstraintId.KEYBOARD_SHOWING -> ComposeIconInfo.Vector(Icons.Outlined.Keyboard)
+        ConstraintId.KEYBOARD_NOT_SHOWING -> ComposeIconInfo.Vector(Icons.Outlined.KeyboardHide)
+
         ConstraintId.DEVICE_IS_LOCKED -> ComposeIconInfo.Vector(Icons.Outlined.Lock)
         ConstraintId.DEVICE_IS_UNLOCKED -> ComposeIconInfo.Vector(Icons.Outlined.LockOpen)
 
@@ -124,6 +128,8 @@ object ConstraintUtils {
         ConstraintId.WIFI_DISCONNECTED -> R.string.constraint_wifi_disconnected
         ConstraintId.IME_CHOSEN -> R.string.constraint_ime_chosen
         ConstraintId.IME_NOT_CHOSEN -> R.string.constraint_ime_not_chosen
+        ConstraintId.KEYBOARD_SHOWING -> R.string.constraint_keyboard_showing
+        ConstraintId.KEYBOARD_NOT_SHOWING -> R.string.constraint_keyboard_not_showing
         ConstraintId.DEVICE_IS_LOCKED -> R.string.constraint_device_is_locked
         ConstraintId.DEVICE_IS_UNLOCKED -> R.string.constraint_device_is_unlocked
         ConstraintId.IN_PHONE_CALL -> R.string.constraint_in_phone_call
