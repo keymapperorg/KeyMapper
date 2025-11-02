@@ -13,6 +13,7 @@ import android.graphics.Point
 import android.os.Build
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import android.view.inputmethod.EditorInfo
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
@@ -64,7 +65,11 @@ abstract class BaseAccessibilityService :
 
     override val rootNode: AccessibilityNodeModel?
         get() {
-            return rootInActiveWindow?.toModel()
+            return try {
+                rootInActiveWindow?.toModel()
+            } catch (e: Exception) {
+                null
+            }
         }
 
     override val activeWindowPackageNames: List<String>
@@ -246,7 +251,15 @@ abstract class BaseAccessibilityService :
         event ?: return
 
         if (event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED) {
-            _activeWindowPackage.update { rootInActiveWindow?.packageName?.toString() }
+            // Catch exceptions because there is a crash report where
+            // getRootInActivityWindow() fails internally inside the AccessibilityService.
+            val rootNode: AccessibilityNodeInfo? = try {
+                rootInActiveWindow
+            } catch (_: Exception) {
+                null
+            }
+
+            _activeWindowPackage.update { rootNode?.packageName?.toString() }
         }
 
         getController()?.onAccessibilityEvent(event)
@@ -503,7 +516,7 @@ abstract class BaseAccessibilityService :
         findNode: (node: AccessibilityNodeModel) -> Boolean,
         performAction: (node: AccessibilityNodeModel) -> AccessibilityNodeAction?,
     ): KMResult<*> {
-        val node = rootInActiveWindow.findNodeRecursively {
+        val node = rootInActiveWindow?.findNodeRecursively {
             findNode(it.toModel())
         }
 
