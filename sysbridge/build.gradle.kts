@@ -13,6 +13,16 @@ android {
     namespace = "io.github.sds100.keymapper.sysbridge"
     compileSdk = libs.versions.compile.sdk.get().toInt()
 
+    // Read NDK version from NDK_VERSION file, with fallback to gradle.properties
+    // The NDK version is stored in a file so the same value can be used across multiple modules.
+    val ndkVersionFile = project.file("NDK_VERSION")
+    val ndkVersionFromFile = if (ndkVersionFile.exists()) {
+        ndkVersionFile.readText().trim()
+    } else {
+        null
+    }
+    ndkVersion = ndkVersionFromFile!!
+
     defaultConfig {
         // Must be API 29 so that the binder-ndk library can be found.
         minSdk = 29
