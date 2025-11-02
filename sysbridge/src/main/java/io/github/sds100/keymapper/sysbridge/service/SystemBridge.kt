@@ -82,6 +82,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
         private const val KEYMAPPER_CHECK_INTERVAL_MS = 60 * 1000L // 1 minute
         private const val DATA_ENABLED_REASON_USER: Int = 0
+        private const val TETHERING_WIFI: Int = 0
 
         @JvmStatic
         fun main(args: Array<String>) {
@@ -674,15 +675,15 @@ internal class SystemBridge : ISystemBridge.Stub() {
         }
 
         if (enable) {
-            // Type 0 = TETHERING_WIFI
             connectivityManager.startTethering(
-                0, // type
+                TETHERING_WIFI,
                 null, // ResultReceiver
                 false, // showProvisioningUi
                 processPackageName, // callerPkg
             )
         } else {
-            connectivityManager.stopTethering(0) // TETHERING_WIFI
+            connectivityManager.stopTethering(TETHERING_WIFI)
         }
+    }
     }
 }

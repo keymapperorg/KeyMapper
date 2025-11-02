@@ -200,7 +200,9 @@ class AndroidNetworkAdapter @Inject constructor(
     }
 
     override fun isHotspotEnabled(): Boolean {
-        // This requires reflection or system bridge
+        // TODO: Implement hotspot state detection using reflection or system bridge.
+        // For now, returning false means toggle action will always attempt to enable.
+        // This is acceptable for the initial implementation.
         return false
     }
 
