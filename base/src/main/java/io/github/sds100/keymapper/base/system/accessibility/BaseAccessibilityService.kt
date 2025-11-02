@@ -469,47 +469,43 @@ abstract class BaseAccessibilityService :
         duration: Int,
         inputEventAction: InputEventAction,
     ): KMResult<*> {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            if (fingerCount >= GestureDescription.getMaxStrokeCount()) {
-                return KMError.GestureStrokeCountTooHigh
-            }
-            if (duration >= GestureDescription.getMaxGestureDuration()) {
-                return KMError.GestureDurationTooHigh
-            }
-
-            val gestureBuilder = GestureDescription.Builder()
-            val distributedPoints: List<Point> =
-                MathUtils.distributePointsOnCircle(Point(x, y), distance.toFloat() / 2, fingerCount)
-
-            for (index in distributedPoints.indices) {
-                val p = Path()
-                if (pinchType == PinchScreenType.PINCH_IN) {
-                    p.moveTo(x.toFloat(), y.toFloat())
-                    p.lineTo(
-                        distributedPoints[index].x.toFloat(),
-                        distributedPoints[index].y.toFloat(),
-                    )
-                } else {
-                    p.moveTo(
-                        distributedPoints[index].x.toFloat(),
-                        distributedPoints[index].y.toFloat(),
-                    )
-                    p.lineTo(x.toFloat(), y.toFloat())
-                }
-
-                gestureBuilder.addStroke(StrokeDescription(p, 0, duration.toLong()))
-            }
-
-            val success = dispatchGesture(gestureBuilder.build(), null, null)
-
-            return if (success) {
-                Success(Unit)
-            } else {
-                KMError.FailedToDispatchGesture
-            }
+        if (fingerCount >= GestureDescription.getMaxStrokeCount()) {
+            return KMError.GestureStrokeCountTooHigh
+        }
+        if (duration >= GestureDescription.getMaxGestureDuration()) {
+            return KMError.GestureDurationTooHigh
         }
 
-        return KMError.SdkVersionTooLow(Build.VERSION_CODES.N)
+        val gestureBuilder = GestureDescription.Builder()
+        val distributedPoints: List<Point> =
+            MathUtils.distributePointsOnCircle(Point(x, y), distance.toFloat() / 2, fingerCount)
+
+        for (index in distributedPoints.indices) {
+            val p = Path()
+            if (pinchType == PinchScreenType.PINCH_IN) {
+                p.moveTo(x.toFloat(), y.toFloat())
+                p.lineTo(
+                    distributedPoints[index].x.toFloat(),
+                    distributedPoints[index].y.toFloat(),
+                )
+            } else {
+                p.moveTo(
+                    distributedPoints[index].x.toFloat(),
+                    distributedPoints[index].y.toFloat(),
+                )
+                p.lineTo(x.toFloat(), y.toFloat())
+            }
+
+            gestureBuilder.addStroke(StrokeDescription(p, 0, duration.toLong()))
+        }
+
+        val success = dispatchGesture(gestureBuilder.build(), null, null)
+
+        return if (success) {
+            Success(Unit)
+        } else {
+            KMError.FailedToDispatchGesture
+        }
     }
 
     override fun performActionOnNode(
