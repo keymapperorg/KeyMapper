@@ -18,28 +18,49 @@ class AndroidSettingsAdapter @Inject constructor(
 ) : SettingsAdapter {
     private val ctx = context.applicationContext
 
-    override fun getSystemSettingKeys(): List<String> {
-        return getSettingKeys(Settings.System.CONTENT_URI)
+    override fun getAll(settingType: SettingType): Map<String, String?> {
+        val uri = when (settingType) {
+            SettingType.SYSTEM -> Settings.System.CONTENT_URI
+            SettingType.SECURE -> Settings.Secure.CONTENT_URI
+            SettingType.GLOBAL -> Settings.Global.CONTENT_URI
+        }
+        
+        val settings = mutableMapOf<String, String?>()
+        var cursor: Cursor? = null
+        try {
+            cursor = ctx.contentResolver.query(
+                uri,
+                arrayOf("name", "value"),
+                null,
+                null,
+                null,
+            )
+
+            cursor?.use {
+                val nameIndex = it.getColumnIndex("name")
+                val valueIndex = it.getColumnIndex("value")
+                if (nameIndex >= 0) {
+                    while (it.moveToNext()) {
+                        val name = it.getString(nameIndex)
+                        if (!name.isNullOrBlank()) {
+                            val value = if (valueIndex >= 0) it.getString(valueIndex) else null
+                            settings[name] = value
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            // Some devices may not allow querying all settings
+        }
+        return settings.toSortedMap()
     }
 
-    override fun getSecureSettingKeys(): List<String> {
-        return getSettingKeys(Settings.Secure.CONTENT_URI)
-    }
-
-    override fun getGlobalSettingKeys(): List<String> {
-        return getSettingKeys(Settings.Global.CONTENT_URI)
-    }
-
-    override fun getSystemSettingValue(key: String): String? {
-        return SettingsUtils.getSystemSetting<String>(ctx, key)
-    }
-
-    override fun getSecureSettingValue(key: String): String? {
-        return SettingsUtils.getSecureSetting<String>(ctx, key)
-    }
-
-    override fun getGlobalSettingValue(key: String): String? {
-        return SettingsUtils.getGlobalSetting<String>(ctx, key)
+    override fun getValue(settingType: SettingType, key: String): String? {
+        return when (settingType) {
+            SettingType.SYSTEM -> SettingsUtils.getSystemSetting<String>(ctx, key)
+            SettingType.SECURE -> SettingsUtils.getSecureSetting<String>(ctx, key)
+            SettingType.GLOBAL -> SettingsUtils.getGlobalSetting<String>(ctx, key)
+        }
     }
 
     override fun modifySetting(settingType: SettingType, key: String, value: String): KMResult<*> {
@@ -70,45 +91,10 @@ class AndroidSettingsAdapter @Inject constructor(
             KMError.FailedToModifySystemSetting(key)
         }
     }
-
-    private fun getSettingKeys(uri: Uri): List<String> {
-        val keys = mutableListOf<String>()
-        var cursor: Cursor? = null
-        try {
-            cursor = ctx.contentResolver.query(
-                uri,
-                arrayOf("name"),
-                null,
-                null,
-                null,
-            )
-
-            cursor?.use {
-                val nameIndex = it.getColumnIndex("name")
-                if (nameIndex >= 0) {
-                    while (it.moveToNext()) {
-                        val name = it.getString(nameIndex)
-                        if (!name.isNullOrBlank()) {
-                            keys.add(name)
-                        }
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            // Some devices may not allow querying all settings
-        }
-        return keys.sorted()
-    }
 }
 
 interface SettingsAdapter {
-    fun getSystemSettingKeys(): List<String>
-    fun getSecureSettingKeys(): List<String>
-    fun getGlobalSettingKeys(): List<String>
-    
-    fun getSystemSettingValue(key: String): String?
-    fun getSecureSettingValue(key: String): String?
-    fun getGlobalSettingValue(key: String): String?
-    
+    fun getAll(settingType: SettingType): Map<String, String?>
+    fun getValue(settingType: SettingType, key: String): String?
     fun modifySetting(settingType: SettingType, key: String, value: String): KMResult<*>
 }

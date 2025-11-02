@@ -42,28 +42,11 @@ class ChooseSettingViewModel @Inject constructor(
 
     val settings: StateFlow<State<List<SettingItem>>> =
         combine(selectedSettingType, searchQuery) { type, query ->
-            val keys = when (type) {
-                SettingType.SYSTEM ->
-                    settingsAdapter.getSystemSettingKeys()
-                SettingType.SECURE ->
-                    settingsAdapter.getSecureSettingKeys()
-                SettingType.GLOBAL ->
-                    settingsAdapter.getGlobalSettingKeys()
-            }
-
-            val items = keys
-                .filter { query == null || it.contains(query, ignoreCase = true) }
-                .map { key ->
-                    val value = when (type) {
-                        SettingType.SYSTEM ->
-                            settingsAdapter.getSystemSettingValue(key)
-                        SettingType.SECURE ->
-                            settingsAdapter.getSecureSettingValue(key)
-                        SettingType.GLOBAL ->
-                            settingsAdapter.getGlobalSettingValue(key)
-                    }
-                    SettingItem(key, value)
-                }
+            val allSettings = settingsAdapter.getAll(type)
+            
+            val items = allSettings
+                .filter { (key, _) -> query == null || key.contains(query, ignoreCase = true) }
+                .map { (key, value) -> SettingItem(key, value) }
 
             State.Data(items)
         }.flowOn(Dispatchers.Default)
