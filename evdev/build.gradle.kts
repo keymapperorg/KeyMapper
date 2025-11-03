@@ -2,6 +2,7 @@ import kotlin.io.path.absolutePathString
 
 plugins {
     alias(libs.plugins.android.library)
+    alias(libs.plugins.mozilla.rust.android)
 }
 
 android {
@@ -52,8 +53,6 @@ android {
     buildFeatures {
         // Disable because a Java implementation of IEvdevCallback is not required in this module
         aidl = false
-        prefab = true
-        buildConfig = true
     }
 
     packaging {
@@ -69,12 +68,24 @@ android {
     }
 }
 
-dependencies {
+cargo {
+    module = "src/main/rust/evdev_manager"
+    libname = "evdev_manager"
+    targets = listOf("arm", "arm64", "x86", "x86_64")
+
+    // Can not do this with buildType configurations.
+    // See https://github.com/mozilla/rust-android-gradle/issues/38
+    profile =
+        if (gradle.startParameter.taskNames
+                .any { it.lowercase().contains("debug") }
+        ) {
+            "debug"
+        } else {
+            "release"
+        }
 }
 
-tasks.named("preBuild") {
-    dependsOn(generateLibEvDevEventNames)
-    dependsOn(compileAidlNdk)
+dependencies {
 }
 
 // The list of event names needs to be parsed from the input.h file in the NDK.
@@ -172,4 +183,21 @@ val compileAidlNdk by tasks.registering(Exec::class) {
     logger.lifecycle(
         "AIDL NDK compilation finished. Check outputs in $cppOutDir and $cppHeaderOutDir",
     )
+}
+
+tasks.named("preBuild") {
+    dependsOn(generateLibEvDevEventNames)
+    dependsOn(compileAidlNdk)
+}
+
+// Must come after all tasks above, otherwise gradle syncing fails.
+//
+// Run cargo build when the files change.
+// See https://github.com/mozilla/rust-android-gradle/issues/166
+tasks.whenTaskAdded {
+    if (name == "mergeDebugJniLibFolders" || name == "mergeReleaseJniLibFolders") {
+        outputs.upToDateWhen { false }
+
+        dependsOn("cargoBuild")
+    }
 }

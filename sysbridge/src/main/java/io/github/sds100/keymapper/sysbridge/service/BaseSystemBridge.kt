@@ -70,6 +70,8 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
     external fun startEvdevEventLoop(callback: IBinder)
     external fun stopEvdevEventLoop()
 
+    external fun helloEvdevManager(input: String)
+
     companion object {
         private const val TAG: String = "KeyMapperSystemBridge"
         private val systemBridgePackageName: String? by lazy {
@@ -185,6 +187,9 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
         val libraryPath = System.getProperty("keymapper_sysbridge.library.path")
         @SuppressLint("UnsafeDynamicallyLoadedCode")
         System.load("$libraryPath/libevdev.so")
+        System.load("$libraryPath/libevdev_manager.so")
+
+        helloEvdevManager("test input")
 
         Log.i(TAG, "SystemBridge starting... Version code $versionCode")
 
