@@ -58,7 +58,7 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_grabEvdevDeviceNative(JNIEnv *env,
+Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_grabEvdevDeviceNative(JNIEnv *env,
                                                                                      jobject thiz,
                                                                                      jstring jDevicePath) {
 
@@ -284,7 +284,7 @@ static int MAX_EPOLL_EVENTS = 100;
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_startEvdevEventLoop(JNIEnv *env,
+Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_startEvdevEventLoop(JNIEnv *env,
                                                                                    jobject thiz,
                                                                                    jobject jCallbackBinder) {
     std::unique_lock epollLock(epollMutex);
@@ -469,7 +469,7 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_ungrabEvdevDevice
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stopEvdevEventLoop(JNIEnv *env,
+Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_stopEvdevEventLoop(JNIEnv *env,
                                                                                   jobject thiz) {
     if (commandEventFd == -1) {
         return;
@@ -490,7 +490,7 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_stopEvdevEventLoo
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_writeEvdevEventNative(JNIEnv *env,
+Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_writeEvdevEventNative(JNIEnv *env,
                                                                                      jobject thiz,
                                                                                      jstring jDevicePath,
                                                                                      jint type,
@@ -518,7 +518,7 @@ Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_writeEvdevEventNa
 }
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_ungrabAllEvdevDevicesNative(
+Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_ungrabAllEvdevDevicesNative(
         JNIEnv *env,
         jobject thiz) {
 
@@ -600,7 +600,7 @@ createEvdevDeviceHandle(JNIEnv *env, const char *path, const char *name, int bus
 
 extern "C"
 JNIEXPORT jobjectArray JNICALL
-Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_getEvdevDevicesNative(JNIEnv *env,
+Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_getEvdevDevicesNative(JNIEnv *env,
                                                                                      jobject thiz) {
     DIR *dir = opendir("/dev/input");
 

@@ -52,7 +52,7 @@ import rikka.hidden.compat.UserManagerApis
 import rikka.hidden.compat.adapter.ProcessObserverAdapter
 
 @SuppressLint("LogNotTimber")
-internal class SystemBridge : ISystemBridge.Stub() {
+abstract class BaseSystemBridge : ISystemBridge.Stub() {
 
     external fun grabEvdevDeviceNative(devicePath: String): Boolean
 
@@ -82,14 +82,6 @@ internal class SystemBridge : ISystemBridge.Stub() {
 
         private const val KEYMAPPER_CHECK_INTERVAL_MS = 60 * 1000L // 1 minute
         private const val DATA_ENABLED_REASON_USER: Int = 0
-
-        @JvmStatic
-        fun main(args: Array<String>) {
-            @Suppress("DEPRECATION")
-            Looper.prepareMainLooper()
-            SystemBridge()
-            Looper.loop()
-        }
 
         private fun waitSystemService(name: String?) {
             var count = 0
