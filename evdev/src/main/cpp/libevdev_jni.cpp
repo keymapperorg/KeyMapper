@@ -10,7 +10,7 @@
 #include "android/input/KeyLayoutMap.h"
 #include "android/libbase/result.h"
 #include "android/input/InputDevice.h"
-#include "aidl/io/github/sds100/keymapper/sysbridge/IEvdevCallback.h"
+#include "aidl/io/github/sds100/keymapper/evdev/IEvdevCallback.h"
 #include <android/binder_ibinder_jni.h>
 #include <sys/epoll.h>
 #include <map>
@@ -19,7 +19,7 @@
 #include <vector>
 #include <sys/eventfd.h>
 
-using aidl::io::github::sds100::keymapper::sysbridge::IEvdevCallback;
+using aidl::io::github::sds100::keymapper::evdev::IEvdevCallback;
 
 enum CommandType {
     STOP
@@ -416,7 +416,7 @@ Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_startEvdevEve
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_ungrabEvdevDeviceNative(JNIEnv *env,
+Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_ungrabEvdevDeviceNative(JNIEnv *env,
                                                                                        jobject thiz,
                                                                                        jstring jDevicePath) {
     const char *devicePath = env->GetStringUTFChars(jDevicePath, nullptr);

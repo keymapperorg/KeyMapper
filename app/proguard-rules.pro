@@ -109,7 +109,7 @@
 
 # Keep all AIDL interface classes and their methods
 -keep class io.github.sds100.keymapper.sysbridge.ISystemBridge** { *; }
--keep class io.github.sds100.keymapper.sysbridge.IEvdevCallback** { *; }
+-keep class io.github.sds100.keymapper.evdev.IEvdevCallback** { *; }
 -keep class io.github.sds100.keymapper.sysbridge.IShizukuStarterService** { *; }
 
 -keepclassmembers class io.github.sds100.keymapper.sysbridge.shizuku.ShizukuStarterService {

@@ -1,5 +1,3 @@
-import kotlin.io.path.absolutePathString
-
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -13,15 +11,7 @@ android {
     namespace = "io.github.sds100.keymapper.sysbridge"
     compileSdk = libs.versions.compile.sdk.get().toInt()
 
-    // Read NDK version from NDK_VERSION file, with fallback to gradle.properties
-    // The NDK version is stored in a file so the same value can be used across multiple modules.
-    val ndkVersionFile = project.file("NDK_VERSION")
-    val ndkVersionFromFile = if (ndkVersionFile.exists()) {
-        ndkVersionFile.readText().trim()
-    } else {
-        null
-    }
-    ndkVersion = ndkVersionFromFile!!
+    ndkVersion = "27.2.12479018"
 
     defaultConfig {
         // Must be API 29 so that the binder-ndk library can be found.
@@ -113,107 +103,4 @@ dependencies {
     implementation(libs.bouncycastle.bcpkix)
     implementation(libs.zhanghai.appiconloader)
     implementation(libs.rikka.rikkax.core)
-}
-
-tasks.named("preBuild") {
-    dependsOn(generateLibEvDevEventNames)
-    dependsOn(compileAidlNdk)
-}
-
-// The list of event names needs to be parsed from the input.h file in the NDK.
-// input.h can be found in the Android/sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include/linux/input.h
-// folder on macOS.
-val generateLibEvDevEventNames by tasks.registering(Exec::class) {
-    dependsOn(compileAidlNdk)
-
-    group = "build"
-    description = "Generates event names header from input.h"
-
-    val prebuiltDir = File(android.ndkDirectory, "toolchains/llvm/prebuilt")
-
-    // The "darwin-x86_64" part of the path is different on each operating system but it seems like
-    // the SDK Manager only downloads the NDK specific to the local operating system. So, just
-    // go into the only directory that the "prebuilt" directory contains.
-    val hostDirs = prebuiltDir.listFiles { file -> file.isDirectory }
-        ?: throw GradleException("No prebuilt toolchain directories found in $prebuiltDir")
-
-    if (hostDirs.size != 1) {
-        throw GradleException(
-            "Expected exactly one prebuilt toolchain directory in $prebuiltDir, found ${hostDirs.size}",
-        )
-    }
-    val toolchainDir = hostDirs[0].absolutePath
-
-    val inputHeader = "$toolchainDir/sysroot/usr/include/linux/input.h"
-    val inputEventCodesHeader = "$toolchainDir/sysroot/usr/include/linux/input-event-codes.h"
-    val outputHeader = "$projectDir/src/main/cpp/libevdev/event-names.h"
-    val pythonScript = "$projectDir/src/main/cpp/libevdev/make-event-names.py"
-
-    commandLine("python3", pythonScript, inputHeader, inputEventCodesHeader)
-
-    standardOutput = File(outputHeader).outputStream()
-
-    inputs.file(pythonScript)
-    inputs.file(inputHeader)
-    inputs.file(inputEventCodesHeader)
-    outputs.file(outputHeader)
-}
-
-// Task to compile AIDL files for NDK.
-// Taken from https://github.com/lakinduboteju/AndroidNdkBinderExamples
-val compileAidlNdk by tasks.registering(Exec::class) {
-    group = "build"
-    description = "Compiles AIDL files in src/main/aidl to NDK C++ headers and sources."
-
-    val aidlSrcDir = project.file("src/main/aidl")
-    // Find all .aidl files. Using fileTree ensures it's dynamic.
-    val aidlFiles = project.fileTree(aidlSrcDir) {
-        include("**/IEvdevCallback.aidl")
-        include("**/InputDeviceIdentifier.aidl")
-    }
-
-    inputs.files(aidlFiles)
-        .withPathSensitivity(PathSensitivity.RELATIVE)
-        .withPropertyName("aidlInputFiles")
-
-    val cppOutDir = project.file("src/main/cpp/aidl")
-    val cppHeaderOutDir = project.file("src/main/cpp")
-
-    outputs.dir(cppOutDir).withPropertyName("cppOutputDir")
-    outputs.dir(cppHeaderOutDir).withPropertyName("cppHeaderOutputDir")
-
-    // Path to the aidl executable in the Android SDK
-    val aidlToolPath =
-        android.sdkDirectory.toPath()
-            .resolve("build-tools")
-            .resolve(android.buildToolsVersion)
-            .resolve("aidl")
-            .absolutePathString()
-    val importSearchPath = aidlSrcDir.absolutePath
-
-    // Ensure output directories exist before trying to write to them
-    cppOutDir.mkdirs()
-    cppHeaderOutDir.mkdirs()
-
-    if (aidlFiles.isEmpty) {
-        logger.info("No AIDL files found in $aidlSrcDir. Skipping compileAidlNdk task.")
-        return@registering // Exit doLast if no files to process
-    }
-
-    for (aidlFile in aidlFiles) {
-        logger.lifecycle("Compiling AIDL file (NDK): ${aidlFile.path}")
-
-        commandLine(
-            aidlToolPath,
-            "--lang=ndk",
-            "-o", cppOutDir.absolutePath,
-            "-h", cppHeaderOutDir.absolutePath,
-            "-I", importSearchPath,
-            aidlFile.absolutePath,
-        )
-    }
-
-    logger.lifecycle(
-        "AIDL NDK compilation finished. Check outputs in $cppOutDir and $cppHeaderOutDir",
-    )
 }

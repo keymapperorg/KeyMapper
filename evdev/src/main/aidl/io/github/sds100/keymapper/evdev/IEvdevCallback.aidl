@@ -1,4 +1,4 @@
-package io.github.sds100.keymapper.sysbridge;
+package io.github.sds100.keymapper.evdev;
 
 interface IEvdevCallback {
    oneway void onEvdevEventLoopStarted();

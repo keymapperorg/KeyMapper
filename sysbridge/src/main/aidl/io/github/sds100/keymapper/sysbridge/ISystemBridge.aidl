@@ -1,6 +1,6 @@
 package io.github.sds100.keymapper.sysbridge;
 
-import io.github.sds100.keymapper.sysbridge.IEvdevCallback;
+import io.github.sds100.keymapper.evdev.IEvdevCallback;
 import io.github.sds100.keymapper.common.models.EvdevDeviceHandle;
 import io.github.sds100.keymapper.common.models.ShellResult;
 import android.view.InputEvent;
