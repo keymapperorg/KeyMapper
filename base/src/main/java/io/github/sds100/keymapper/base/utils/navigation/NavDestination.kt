@@ -174,7 +174,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data class ConfigCreateNotification(val actionJson: String?) :
+    data class ConfigNotificationAction(val actionJson: String?) :
         NavDestination<ActionData.CreateNotification>(isCompose = true) {
         override val id: String = ID_CREATE_NOTIFICATION_ACTION
     }

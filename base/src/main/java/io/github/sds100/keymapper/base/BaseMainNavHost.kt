@@ -91,10 +91,10 @@ fun BaseMainNavHost(
             )
         }
 
-        composable<NavDestination.ConfigCreateNotification> { backStackEntry ->
+        composable<NavDestination.ConfigNotificationAction> { backStackEntry ->
             val viewModel: ConfigCreateNotificationViewModel = hiltViewModel()
 
-            backStackEntry.handleRouteArgs<NavDestination.ConfigCreateNotification> { destination ->
+            backStackEntry.handleRouteArgs<NavDestination.ConfigNotificationAction> { destination ->
                 destination.actionJson?.let { viewModel.loadAction(Json.decodeFromString(it)) }
             }
 

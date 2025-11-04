@@ -889,7 +889,7 @@ class CreateActionDelegate(
 
                 return navigate(
                     "config_create_notification_action",
-                    NavDestination.ConfigCreateNotification(
+                    NavDestination.ConfigNotificationAction(
                         oldAction?.let {
                             Json.encodeToString(oldAction)
                         },
