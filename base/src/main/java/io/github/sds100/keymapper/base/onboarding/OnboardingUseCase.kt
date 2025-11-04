@@ -64,8 +64,6 @@ class OnboardingUseCaseImpl @Inject constructor(
         set(Keys.lastInstalledVersionCodeBackground, buildConfigProvider.versionCode)
     }
 
-    override fun isTvDevice(): Boolean = leanbackAdapter.isTvDevice()
-
     override val promptForShizukuPermission: Flow<Boolean> = combine(
         settingsRepository.get(Keys.shownShizukuPermissionPrompt),
         shizukuAdapter.isInstalled,
@@ -109,8 +107,6 @@ class OnboardingUseCaseImpl @Inject constructor(
 
 interface OnboardingUseCase {
     var shownAppIntro: Boolean
-
-    fun isTvDevice(): Boolean
 
     val showFloatingButtonFeatureNotification: Flow<Boolean>
     fun showedFloatingButtonFeatureNotification()
