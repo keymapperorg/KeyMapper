@@ -23,10 +23,13 @@ import io.github.sds100.keymapper.base.utils.navigation.NavDestination
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.CheckBoxListItem
+import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
+import io.github.sds100.keymapper.base.utils.ui.DialogResponse
 import io.github.sds100.keymapper.base.utils.ui.LinkType
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ViewModelHelper
+import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.AccessibilityServiceError
 import io.github.sds100.keymapper.common.utils.InputDeviceUtils
@@ -524,6 +527,22 @@ abstract class BaseConfigTriggerViewModel(
 
                 TriggerError.DPAD_IME_NOT_SELECTED -> {
                     showTriggerSetup(TriggerSetupShortcut.GAMEPAD)
+                }
+
+                TriggerError.MIGRATE_SCREEN_OFF_TRIGGER -> {
+                    val dialog = DialogModel.Alert(
+                        title = getString(R.string.dialog_title_migrate_screen_off_key_map),
+                        message = getString(R.string.dialog_message_migrate_screen_off_key_map),
+                        positiveButtonText =
+                        getString(R.string.dialog_button_migrate_screen_off_key_map),
+                        negativeButtonText = getString(R.string.neg_cancel),
+                    )
+
+                    val response = showDialog("migrate_screen_off", dialog)
+
+                    if (response == DialogResponse.POSITIVE) {
+                        showTriggerSetup(TriggerSetupShortcut.OTHER, forceProMode = true)
+                    }
                 }
 
                 else -> displayKeyMap.fixTriggerError(error)

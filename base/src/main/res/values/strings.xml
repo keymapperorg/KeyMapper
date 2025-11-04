@@ -80,6 +80,7 @@
     <string name="trigger_error_system_bridge_unsupported">PRO mode is unsupported on this Android version</string>
     <string name="trigger_error_system_bridge_disconnected">PRO mode not started!</string>
     <string name="trigger_error_evdev_device_not_found">Trigger device not connected!</string>
+    <string name="trigger_error_migrate_screen_off_key_map">Migrate this screen off trigger</string>
 
     <string name="home_error_is_battery_optimised">Your key maps will stop working randomly!</string>
     <string name="home_error_key_maps_paused">Your key maps are paused!</string>
@@ -475,6 +476,10 @@
 
     <string name="dialog_title_request_notification_permission">Turn on notifications</string>
     <string name="dialog_message_request_notification_permission">Some actions and options need this permission to work. You can also get notified when there is important news about the app.</string>
+
+    <string name="dialog_title_migrate_screen_off_key_map">Migrate this screen off trigger</string>
+    <string name="dialog_message_migrate_screen_off_key_map">We\'re sorry for the disruption. We\'ve introduced a *free* feature called PRO mode that replaces the old screen off remapping option. This feature is much more reliable and unlocks remapping the power button too.\n\nDue to the way it works you will need to record the trigger again.</string>
+    <string name="dialog_button_migrate_screen_off_key_map">Proceed</string>
 
     <string name="pos_done">Done</string>
     <string name="pos_kill">Kill</string>

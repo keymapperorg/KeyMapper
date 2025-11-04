@@ -42,7 +42,6 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuUtils
-import javax.inject.Inject
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -54,6 +53,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.withTimeout
+import javax.inject.Inject
 
 @ViewModelScoped
 class DisplayKeyMapUseCaseImpl @Inject constructor(
@@ -181,6 +181,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
             TriggerError.EVDEV_DEVICE_NOT_FOUND,
             TriggerError.FLOATING_BUTTON_DELETED,
             TriggerError.SYSTEM_BRIDGE_UNSUPPORTED,
+            TriggerError.MIGRATE_SCREEN_OFF_TRIGGER,
                 -> {}
         }
     }

@@ -24,4 +24,6 @@ enum class TriggerError(val isFixable: Boolean) {
     SYSTEM_BRIDGE_DISCONNECTED(isFixable = true),
 
     EVDEV_DEVICE_NOT_FOUND(isFixable = false),
+
+    MIGRATE_SCREEN_OFF_TRIGGER(isFixable = true),
 }
