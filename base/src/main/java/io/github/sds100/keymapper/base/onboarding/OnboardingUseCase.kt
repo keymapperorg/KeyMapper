@@ -44,26 +44,6 @@ class OnboardingUseCaseImpl @Inject constructor(
             readText()
         }
 
-    override var approvedFloatingButtonFeaturePrompt by PrefDelegate(
-        Keys.approvedFloatingButtonFeaturePrompt,
-        false,
-    )
-
-    /**
-     * Show only when they *upgrade* to the new version and after they've
-     * completed the app intro, which asks them whether they want to receive notifications.
-     */
-    override val showFloatingButtonFeatureNotification: Flow<Boolean> = combine(
-        get(Keys.lastInstalledVersionCodeBackground).map { it ?: -1 },
-        get(Keys.approvedFloatingButtonFeaturePrompt).map { it ?: false },
-    ) { oldVersionCode, approvedPrompt ->
-        oldVersionCode < VersionHelper.FLOATING_BUTTON_MIN_VERSION && !approvedPrompt
-    }
-
-    override fun showedFloatingButtonFeatureNotification() {
-        set(Keys.lastInstalledVersionCodeBackground, buildConfigProvider.versionCode)
-    }
-
     override val promptForShizukuPermission: Flow<Boolean> = combine(
         settingsRepository.get(Keys.shownShizukuPermissionPrompt),
         shizukuAdapter.isInstalled,

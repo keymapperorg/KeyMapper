@@ -46,8 +46,8 @@ object Keys {
 
     //    val approvedAssistantTriggerFeaturePrompt =
 //        booleanPreferencesKey("pref_approved_assistant_trigger_feature_prompt")
-    val approvedFloatingButtonFeaturePrompt =
-        booleanPreferencesKey("pref_approved_floating_button_feature_prompt")
+//    val approvedFloatingButtonFeaturePrompt =
+//        booleanPreferencesKey("pref_approved_floating_button_feature_prompt")
 
     val shownParallelTriggerOrderExplanation =
         booleanPreferencesKey("key_shown_parallel_trigger_order_warning")

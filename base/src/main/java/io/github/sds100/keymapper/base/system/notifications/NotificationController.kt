@@ -124,20 +124,6 @@ class NotificationController @Inject constructor(
             }
         }.flowOn(dispatchers.default()).launchIn(coroutineScope)
 
-        coroutineScope.launch(dispatchers.default()) {
-            // suspend until the notification should be shown.
-            onboardingUseCase.showFloatingButtonFeatureNotification.first { it }
-
-            manageNotifications.show(floatingButtonFeatureNotification())
-
-            // Only save that the notification is shown if the app has
-            // permissions to show notifications so that it is shown
-            // the next time permission is granted.
-            if (manageNotifications.isPermissionGranted()) {
-                onboardingUseCase.showedFloatingButtonFeatureNotification()
-            }
-        }
-
         hideInputMethod.onHiddenChange.onEach { isHidden ->
             manageNotifications.createChannel(
                 NotificationChannelModel(
@@ -389,22 +375,6 @@ class NotificationController @Inject constructor(
         showOnLockscreen = false,
         onGoing = true,
         priority = NotificationCompat.PRIORITY_LOW,
-    )
-
-    private fun floatingButtonFeatureNotification(): NotificationModel = NotificationModel(
-        id = ID_FEATURE_FLOATING_BUTTONS,
-        channel = CHANNEL_NEW_FEATURES,
-        title = getString(R.string.notification_floating_buttons_feature_title),
-        text = getString(R.string.notification_floating_buttons_feature_text),
-        icon = R.drawable.outline_bubble_chart_24,
-        onClickAction = KMNotificationAction.Activity.MainActivity(
-            BaseMainActivity.ACTION_USE_FLOATING_BUTTONS,
-        ),
-        priority = NotificationCompat.PRIORITY_LOW,
-        autoCancel = true,
-        onGoing = false,
-        showOnLockscreen = false,
-        bigTextStyle = true,
     )
 
     private fun showSystemBridgeStartedNotification() {
