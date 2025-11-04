@@ -76,8 +76,16 @@ class SystemBridgeAutoStarter @Inject constructor(
             if (isRooted) {
                 flowOf(AutoStartType.ROOT)
             } else {
-                shizukuAdapter.isStarted.flatMapLatest { isShizukuStarted ->
-                    if (isShizukuStarted) {
+                val useShizukuFlow =
+                    combine(
+                        shizukuAdapter.isStarted,
+                        permissionAdapter.isGrantedFlow(Permission.SHIZUKU),
+                    ) { isStarted, isGranted ->
+                        isStarted && isGranted
+                    }
+
+                useShizukuFlow.flatMapLatest { useShizuku ->
+                    if (useShizuku) {
                         flowOf(AutoStartType.SHIZUKU)
                     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         val isAdbAutoStartAllowed = combine(
