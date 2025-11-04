@@ -204,6 +204,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
         suAdapter.invalidateIsRooted()
         systemBridgeSetupController.invalidateSettings()
         networkAdapter.invalidateState()
+        onboardingUseCase.handledMigrateScreenOffKeyMapsNotification()
     }
 
     override fun onDestroy() {

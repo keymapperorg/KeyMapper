@@ -149,4 +149,7 @@ object Keys {
      * to 4.0 on a rooted device.
      */
     val handledRootToProModeUpgrade = booleanPreferencesKey("key_handled_root_to_pro_mode_upgrade")
+
+    val handledMigrateScreenOffKeyMapsNotification =
+        booleanPreferencesKey("key_handled_migrate_screen_off_key_maps_notification")
 }

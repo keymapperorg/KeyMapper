@@ -478,7 +478,7 @@
     <string name="dialog_message_request_notification_permission">Some actions and options need this permission to work. You can also get notified when there is important news about the app.</string>
 
     <string name="dialog_title_migrate_screen_off_key_map">Migrate this screen off trigger</string>
-    <string name="dialog_message_migrate_screen_off_key_map">We\'re sorry for the disruption. We\'ve introduced a *free* feature called PRO mode that replaces the old screen off remapping option. This feature is much more reliable and unlocks remapping the power button too.\n\nDue to the way it works you will need to record the trigger again.</string>
+    <string name="dialog_message_migrate_screen_off_key_map">We\'re sorry for the disruption. We\'ve introduced a *free* feature called PRO mode that replaces the old screen off remapping option. This feature is much more reliable and unlocks remapping the power button too.\n\nDue to the way it works you will need to record this trigger again with PRO mode.</string>
     <string name="dialog_button_migrate_screen_off_key_map">Proceed</string>
 
     <string name="pos_done">Done</string>
@@ -546,6 +546,8 @@
     <string name="notification_toggle_keyboard_text">Tap \'toggle\' to switch to and from the Key Mapper Input Method.</string>
     <string name="notification_toggle_keyboard_action">Toggle</string>
 
+    <string name="notification_migrate_screen_off_key_map_title">Your screen off key maps need attention!</string>
+    <string name="notification_migrate_screen_off_key_map_text">We\'re sorry for the disruption but you will need to record your screen off key maps again.</string>
     <!-- Notification strings -->
 
     <!--Preference titles and summaries-->
@@ -1389,8 +1391,6 @@
     <string name="floating_button_trigger_option_configure_button">Configure button</string>
     <string name="floating_button_trigger_option_edit_layout">Edit layout</string>
     <string name="floating_buttons_product_min_api_error">Requires Android 11 or newer.</string>
-    <string name="notification_floating_buttons_feature_title">Don’t have enough buttons? Now you can make your own!</string>
-    <string name="notification_floating_buttons_feature_text">Floating buttons display over the apps you want. They work just like real buttons, and you can place, style, and map them however you like.</string>
 
     <!-- Home screen -->
     <string name="sort_bottom_sheet_trigger">Trigger</string>

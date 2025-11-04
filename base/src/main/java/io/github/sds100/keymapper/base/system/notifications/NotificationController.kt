@@ -60,6 +60,7 @@ class NotificationController @Inject constructor(
 
         //        private const val ID_FEATURE_ASSISTANT_TRIGGER = 900
         private const val ID_FEATURE_FLOATING_BUTTONS = 901
+        private const val ID_MIGRATE_SCREEN_OFF_KEY_MAPS = 902
 
         const val CHANNEL_TOGGLE_KEY_MAPS = "channel_toggle_remaps"
 
@@ -70,6 +71,7 @@ class NotificationController @Inject constructor(
         const val CHANNEL_TOGGLE_KEYBOARD = "channel_toggle_keymapper_keyboard"
         const val CHANNEL_NEW_FEATURES = "channel_new_features"
         const val CHANNEL_SETUP_ASSISTANT = "channel_setup_assistant"
+        const val CHANNEL_VERSION_MIGRATION = "channel_version_migration"
 
         @Deprecated("Removed in 2.0. This channel shouldn't exist")
         private const val CHANNEL_ID_WARNINGS = "channel_warnings"
@@ -174,6 +176,23 @@ class NotificationController @Inject constructor(
                             showSystemBridgeStartedNotification()
                         }
                     }
+            }
+        }
+
+        coroutineScope.launch {
+            if (onboardingUseCase.showMigrateScreenOffKeyMapsNotification.first()) {
+                manageNotifications.show(
+                    NotificationModel(
+                        id = ID_MIGRATE_SCREEN_OFF_KEY_MAPS,
+                        channel = CHANNEL_NEW_FEATURES,
+                        title = getString(R.string.notification_migrate_screen_off_key_map_title),
+                        text = getString(R.string.notification_migrate_screen_off_key_map_text),
+                        icon = R.drawable.ic_baseline_warning_24,
+                        onClickAction = KMNotificationAction.Activity.MainActivity(),
+                        showOnLockscreen = true,
+                        onGoing = false,
+                    ),
+                )
             }
         }
     }
