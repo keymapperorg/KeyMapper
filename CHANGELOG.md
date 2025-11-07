@@ -2,11 +2,15 @@
 
 #### TO BE RELEASED
 
+## Added
+
+- #1890 add button to save log to file and share it. The clipboard button now cuts off older entries and keeps newest ones.
+
 ## Fixed
 
 - Only autostart PRO mode with Shizuku if Shizuku permission is granted. Otherwise fallback to method with Wireless Debugging and WRITE_SECURE_SETTINGS permission.
 - Starting system bridge for the first time would be janky because granting READ_LOGS kills the app process. Only grant for READ_LOGS when sharing logcat from settings.
-- #1886 mobile data actions work in PRO mode
+- #1886 mobile data actions work in PRO mode.
 
 ## [4.0.0 Beta 1](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.01)
 

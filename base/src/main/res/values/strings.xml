@@ -388,7 +388,7 @@
     <string name="action_backup_everything">Back up everything</string>
     <string name="action_tap_to_pause_keymaps">Tap to pause</string>
     <string name="action_tap_to_resume_keymaps">Tap to resume</string>
-    <string name="action_save_log">Save</string>
+    <string name="action_share_log">Share</string>
     <string name="action_short_log_message">Toggle short messages</string>
     <string name="action_copy_log">Copy</string>
     <string name="action_clear_log">Clear</string>
