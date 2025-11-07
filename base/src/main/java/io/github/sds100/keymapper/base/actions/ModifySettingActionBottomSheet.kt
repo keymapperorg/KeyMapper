@@ -20,11 +20,7 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -34,7 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
-import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperDropdownMenu
+import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
 import io.github.sds100.keymapper.system.settings.SettingType
 import kotlinx.coroutines.launch
 
@@ -82,7 +78,6 @@ private fun ModifySettingActionBottomSheet(
     onDoneClick: () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
-    var settingTypeExpanded by remember { mutableStateOf(false) }
 
     ModalBottomSheet(
         onDismissRequest = {
@@ -109,18 +104,15 @@ private fun ModifySettingActionBottomSheet(
                 style = MaterialTheme.typography.headlineMedium,
             )
 
-            KeyMapperDropdownMenu(
+            KeyMapperSegmentedButtonRow(
                 modifier = Modifier.fillMaxWidth(),
-                expanded = settingTypeExpanded,
-                onExpandedChange = { settingTypeExpanded = it },
-                label = { Text(stringResource(R.string.modify_setting_type_label)) },
-                selectedValue = state.settingType,
-                values = listOf(
+                buttonStates = listOf(
                     SettingType.SYSTEM to stringResource(R.string.modify_setting_type_system),
                     SettingType.SECURE to stringResource(R.string.modify_setting_type_secure),
                     SettingType.GLOBAL to stringResource(R.string.modify_setting_type_global),
                 ),
-                onValueChanged = onSelectSettingType,
+                selectedState = state.settingType,
+                onStateSelected = onSelectSettingType,
             )
 
             Button(
