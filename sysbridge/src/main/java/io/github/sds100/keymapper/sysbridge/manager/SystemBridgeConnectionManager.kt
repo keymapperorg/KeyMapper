@@ -205,9 +205,11 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
                 -1
             }
 
+        // WARNING! Granting some permissions (e.g READ_LOGS) will cause the system to kill
+        // the app process and restart it. This is normal, expected behavior and can not be
+        // worked around. Do not grant any other permissions automatically here.
         systemBridge.grantPermission(Manifest.permission.WRITE_SECURE_SETTINGS, deviceId)
-        systemBridge.grantPermission(Manifest.permission.READ_LOGS, deviceId)
-        Timber.i("Granted WRITE_SECURE_SETTINGS and READ_LOGS permission with System Bridge")
+        Timber.i("Granted WRITE_SECURE_SETTINGS permission with System Bridge")
 
         if (ContextCompat.checkSelfPermission(
                 ctx,

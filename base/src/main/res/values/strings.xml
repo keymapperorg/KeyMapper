@@ -481,6 +481,10 @@
     <string name="dialog_message_migrate_screen_off_key_map">We\'re sorry for the disruption. We\'ve introduced a *free* feature called PRO mode that replaces the old screen off remapping option. This feature is much more reliable and unlocks remapping the power button too.\n\nDue to the way it works you will need to record this trigger again with PRO mode.</string>
     <string name="dialog_button_migrate_screen_off_key_map">Proceed</string>
 
+    <string name="dialog_title_grant_read_logs_permission_title">Grant READ_LOGS permission</string>
+    <string name="dialog_title_grant_read_logs_permission_message">You will need to be rooted or have enabled PRO mode for this to work. The system will then close the app when it grants this permission. You will need to open it again yourself and try sharing the logcat again.</string>
+
+
     <string name="pos_done">Done</string>
     <string name="pos_kill">Kill</string>
     <string name="pos_grant_write_secure_settings_guide">Guide</string>
@@ -495,6 +499,7 @@
     <string name="pos_save">Save</string>
     <string name="pos_understood">Understood</string>
     <string name="pos_turn_on">Turn on</string>
+    <string name="pos_proceed">Proceed</string>
 
     <string name="neg_turn_off">Turn off</string>
     <string name="neg_cancel">Cancel</string>
@@ -868,6 +873,7 @@
     <string name="error_answer_end_phone_call_permission_denied">Denied permission to answer and end phone calls!</string>
     <string name="error_find_nearby_devices_permission_denied">Denied permission to see paired Bluetooth devices!</string>
     <string name="error_notifications_permission_denied">Denied permission to show notifications!</string>
+    <string name="error_read_logs_permission_denied">Denied permission to read logs!</string>
     <string name="error_pinch_screen_must_be_two_or_more_fingers">Must be 2 or more!</string>
     <string name="error_pinch_screen_must_be_ten_or_less_fingers">Must be %d or less!</string>
     <string name="error_pinch_screen_duration_must_be_more_than_zero">Must be greater than 0!</string>
