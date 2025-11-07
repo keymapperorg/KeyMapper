@@ -201,7 +201,7 @@ abstract class BaseMainActivity : AppCompatActivity() {
         // the activities have not necessarily resumed at that point.
         permissionAdapter.onPermissionsChanged()
         serviceAdapter.invalidateState()
-        suAdapter.invalidateIsRooted()
+        suAdapter.requestPermission()
         systemBridgeSetupController.invalidateSettings()
         networkAdapter.invalidateState()
         onboardingUseCase.handledMigrateScreenOffKeyMapsNotification()
