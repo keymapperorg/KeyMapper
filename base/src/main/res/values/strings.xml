@@ -82,7 +82,7 @@
     <string name="trigger_error_evdev_device_not_found">Trigger device not connected!</string>
     <string name="trigger_error_migrate_screen_off_key_map">Migrate this screen off trigger</string>
 
-    <string name="home_error_is_battery_optimised">Your key maps will stop working randomly!</string>
+    <string name="home_error_is_battery_optimised">Disable battery optimisation.</string>
     <string name="home_error_key_maps_paused">Your key maps are paused!</string>
     <string name="home_error_key_maps_paused_button">Unpause</string>
     <string name="home_error_accessibility_service_is_disabled">The accessibility service needs to be turned on for your key maps to work!</string>
@@ -448,7 +448,7 @@
 
 
     <string name="dialog_title_key_mapper_crashed">Key Mapper was interrupted</string>
-    <string name="dialog_message_key_mapper_crashed">Key Mapper tried to run in the background but was stopped by the system.\nThis can happen if you have battery or memory optimization turned on.\n\nTo fix this, you can try following an online guide. You should also restart the service when you\'re done.</string>
+    <string name="dialog_message_key_mapper_crashed">Key Mapper tried to run in the background but was stopped by the system.\nThis can happen if you have battery or memory optimisation turned on.\n\nTo fix this, you can try following an online guide. You should also restart the service when you\'re done.</string>
     <string name="dialog_button_read_dont_kill_my_app_yes">Proceed</string>
     <string name="dialog_button_read_dont_kill_my_app_no">Ignore</string>
 
@@ -1368,7 +1368,7 @@
     <string name="tip_caps_lock_pro_mode_text">PRO mode provides better compatibility for Caps Lock remapping. Tap \'Use PRO mode\' and record it again.</string>
     <string name="tip_caps_lock_pro_mode_button">Use PRO mode</string>
     <string name="tip_volume_buttons_pro_mode_title">Screen off remapping?</string>
-    <string name="tip_volume_buttons_pro_mode_text">Use PRO mode if you want your trigger to work when the screen is off. Tap \'Use PRO mode\' and record it again.</string>
+    <string name="tip_volume_buttons_pro_mode_text">Any trigger can now work when the screen is off for free with PRO mode! You will need to record it again.</string>
     <string name="tip_volume_buttons_pro_mode_button">Use PRO mode</string>
     <string name="tip_screen_pinning_title">App pinning warning</string>
     <string name="tip_screen_pinning_text">Using the back button as a trigger may conflict with app pinning, causing a black screen on unlock. A reboot will fix it.</string>
