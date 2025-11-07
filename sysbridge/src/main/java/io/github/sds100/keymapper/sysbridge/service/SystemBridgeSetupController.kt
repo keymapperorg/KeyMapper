@@ -318,7 +318,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
     private fun getKeyMapperAppTask(): ActivityManager.AppTask? {
         val task = activityManager.appTasks
-            .firstOrNull {
+            ?.firstOrNull {
                 it.taskInfo.topActivity?.className ==
                     keyMapperClassProvider.getMainActivity().name
             }

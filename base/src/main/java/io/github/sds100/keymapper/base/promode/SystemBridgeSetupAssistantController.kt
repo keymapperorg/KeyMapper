@@ -219,8 +219,6 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
     private suspend fun onPairingSuccess() {
         setupController.startWithAdb()
 
-        stopInteracting()
-
         val isStarted = try {
             withTimeout(10000L) {
                 systemBridgeConnectionManager.connectionState
@@ -234,6 +232,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
         }
 
         if (isStarted) {
+            Timber.i("System bridge started after pairing. Going back to Key Mapper.")
             getKeyMapperAppTask()?.moveToFront()
         } else {
             Timber.e("Failed to start system bridge after pairing.")
@@ -245,6 +244,8 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
                 ),
             )
         }
+
+        stopInteracting()
     }
 
     private fun clickPairWithCodeButton(rootNode: AccessibilityNodeInfo) {
@@ -369,7 +370,7 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
 
     private fun getKeyMapperAppTask(): ActivityManager.AppTask? {
         val task = activityManager.appTasks
-            .firstOrNull {
+            ?.firstOrNull {
                 it.taskInfo.topActivity?.className ==
                     keyMapperClassProvider.getMainActivity().name
             }
