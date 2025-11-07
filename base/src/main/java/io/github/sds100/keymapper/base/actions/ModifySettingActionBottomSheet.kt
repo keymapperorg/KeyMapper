@@ -1,14 +1,22 @@
 package io.github.sds100.keymapper.base.actions
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -17,12 +25,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.base.utils.ui.compose.BottomSheet
-import io.github.sds100.keymapper.base.utils.ui.compose.BottomSheetDefaults
+import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperDropdownMenu
 import io.github.sds100.keymapper.system.settings.SettingType
 import kotlinx.coroutines.launch
@@ -40,122 +51,102 @@ fun ModifySettingActionBottomSheet(delegate: CreateActionDelegate) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     if (delegate.modifySettingActionBottomSheetState != null) {
-        ModalBottomSheet(
+        ModifySettingActionBottomSheet(
+            sheetState = sheetState,
+            state = delegate.modifySettingActionBottomSheetState!!,
             onDismissRequest = {
+                delegate.modifySettingActionBottomSheetState = null
+            },
+            onSelectSettingType = delegate::onSelectSettingType,
+            onSettingKeyChange = delegate::onSettingKeyChange,
+            onSettingValueChange = delegate::onSettingValueChange,
+            onDoneClick = {
                 scope.launch {
                     sheetState.hide()
-                }.invokeOnCompletion {
-                    delegate.modifySettingActionBottomSheetState = null
+                    delegate.onDoneModifySettingClick()
                 }
             },
-            sheetState = sheetState,
-        ) {
-            ModifySettingActionBottomSheetContent(
-                state = delegate.modifySettingActionBottomSheetState!!,
-                onDismiss = {
-                    scope.launch {
-                        sheetState.hide()
-                    }.invokeOnCompletion {
-                        delegate.modifySettingActionBottomSheetState = null
-                    }
-                },
-                onChooseSetting = { settingType ->
-                    delegate.onChooseSettingClick(settingType)
-                },
-                onComplete = { action ->
-                    scope.launch {
-                        sheetState.hide()
-                    }.invokeOnCompletion {
-                        delegate.onDoneModifySettingClick(action)
-                    }
-                },
-            )
-        }
+        )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ModifySettingActionBottomSheetContent(
+private fun ModifySettingActionBottomSheet(
+    sheetState: SheetState,
     state: ModifySettingActionBottomSheetState,
-    onDismiss: () -> Unit,
-    onChooseSetting: (SettingType) -> Unit,
-    onComplete: (ActionData.ModifySetting) -> Unit,
+    onDismissRequest: () -> Unit = {},
+    onSelectSettingType: (SettingType) -> Unit = {},
+    onSettingKeyChange: (String) -> Unit = {},
+    onSettingValueChange: (String) -> Unit = {},
+    onDoneClick: () -> Unit = {},
 ) {
-    var settingType by remember(state) { mutableStateOf(state.settingType) }
-    var settingKey by remember(state) { mutableStateOf(state.settingKey) }
-    var value by remember(state) { mutableStateOf(state.value) }
-    
+    val scope = rememberCoroutineScope()
     var settingTypeExpanded by remember { mutableStateOf(false) }
 
-    BottomSheet(
-        title = stringResource(R.string.action_modify_setting),
-        onDismiss = onDismiss,
-        positiveButton = BottomSheetDefaults.OkButton {
-            val action = ActionData.ModifySetting(
-                settingType = settingType,
-                settingKey = settingKey,
-                value = value,
-            )
-            onComplete(action)
+    ModalBottomSheet(
+        onDismissRequest = {
+            scope.launch {
+                sheetState.hide()
+            }
         },
-        positiveButtonEnabled = settingKey.isNotBlank() && value.isNotBlank(),
+        sheetState = sheetState,
+        dragHandle = null,
     ) {
         Column(
             modifier = Modifier
+                .verticalScroll(rememberScrollState())
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                textAlign = TextAlign.Center,
+                text = stringResource(R.string.modify_setting_bottom_sheet_title),
+                style = MaterialTheme.typography.headlineMedium,
+            )
 
-            // Setting Type Dropdown
             KeyMapperDropdownMenu(
                 modifier = Modifier.fillMaxWidth(),
                 expanded = settingTypeExpanded,
                 onExpandedChange = { settingTypeExpanded = it },
                 label = { Text(stringResource(R.string.modify_setting_type_label)) },
-                selectedValue = settingType,
+                selectedValue = state.settingType,
                 values = listOf(
                     SettingType.SYSTEM to stringResource(R.string.modify_setting_type_system),
                     SettingType.SECURE to stringResource(R.string.modify_setting_type_secure),
                     SettingType.GLOBAL to stringResource(R.string.modify_setting_type_global),
                 ),
-                onValueChanged = { settingType = it },
+                onValueChanged = onSelectSettingType,
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Button to choose an existing setting
             Button(
-                onClick = { onChooseSetting(settingType) },
+                onClick = { onSelectSettingType(state.settingType) },
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(stringResource(R.string.choose_existing_setting))
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Setting Key - manual entry
             OutlinedTextField(
-                value = settingKey,
-                onValueChange = { settingKey = it },
+                value = state.settingKey,
+                onValueChange = onSettingKeyChange,
                 label = { Text(stringResource(R.string.modify_setting_key_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
             OutlinedTextField(
-                value = value,
-                onValueChange = { value = it },
+                value = state.value,
+                onValueChange = onSettingValueChange,
                 label = { Text(stringResource(R.string.modify_setting_value_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            val exampleText = when (settingType) {
+            val exampleText = when (state.settingType) {
                 SettingType.SYSTEM ->
                     stringResource(R.string.modify_setting_example_system)
                 SettingType.SECURE ->
@@ -166,11 +157,61 @@ private fun ModifySettingActionBottomSheetContent(
 
             Text(
                 text = exampleText,
-                style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
-                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            // TODO do not allow empty text fields
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                OutlinedButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        scope.launch {
+                            sheetState.hide()
+                            onDismissRequest()
+                        }
+                    },
+                ) {
+                    Text(stringResource(R.string.neg_cancel))
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Button(
+                    modifier = Modifier.weight(1f),
+                    onClick = onDoneClick,
+                ) {
+                    Text(stringResource(R.string.pos_done))
+                }
+            }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun Preview() {
+    KeyMapperTheme {
+        val sheetState = SheetState(
+            skipPartiallyExpanded = true,
+            density = LocalDensity.current,
+            initialValue = SheetValue.Expanded,
+        )
+
+        ModifySettingActionBottomSheet(
+            sheetState = sheetState,
+            state = ModifySettingActionBottomSheetState(
+                settingType = SettingType.GLOBAL,
+                settingKey = "adb_enabled",
+                value = "1",
+            ),
+        )
     }
 }

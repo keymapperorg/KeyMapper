@@ -26,7 +26,6 @@ import android.os.Process
 import android.os.ServiceManager
 import android.permission.IPermissionManager
 import android.permission.PermissionManagerApis
-import android.provider.Settings
 import android.util.Log
 import android.view.InputEvent
 import com.android.internal.telephony.ITelephony

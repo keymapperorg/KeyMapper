@@ -763,7 +763,8 @@ object ActionUtils {
                     return listOf(Permission.FIND_NEARBY_DEVICES)
                 }
 
-            ActionId.MODIFY_SETTING -> return emptyList() // Permissions handled based on setting type at runtime
+            // Permissions handled based on setting type at runtime
+            ActionId.MODIFY_SETTING -> return emptyList()
 
             else -> return emptyList()
         }

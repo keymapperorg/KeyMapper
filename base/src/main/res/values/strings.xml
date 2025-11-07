@@ -1093,9 +1093,10 @@
     <string name="action_compose_sms">Compose SMS</string>
     <string name="action_compose_sms_description">Compose SMS: "%s" to %s</string>
     <string name="modify_setting_description">Set %3$s: %1$s = %2$s</string>
-    <string name="modify_setting_type_system">System Setting</string>
-    <string name="modify_setting_type_secure">Secure Setting</string>
-    <string name="modify_setting_type_global">Global Setting</string>
+    <string name="modify_setting_type_system">System</string>
+    <string name="modify_setting_type_secure">Secure</string>
+    <string name="modify_setting_type_global">Global</string>
+    <string name="modify_setting_bottom_sheet_title">Modify setting</string>
     <string name="action_play_sound">Play sound</string>
     <string name="action_dismiss_most_recent_notification">Dismiss most recent notification</string>
     <string name="action_dismiss_all_notifications">Dismiss all notifications</string>
@@ -1178,7 +1179,7 @@
     <string name="action_force_stop_app">Force stop app</string>
     <string name="action_clear_recent_app">Close and clear app from recents</string>
     <string name="action_modify_setting">Modify setting</string>
-    <string name="modify_setting_key_label">Setting Key</string>
+    <string name="modify_setting_key_label">Key</string>
     <string name="modify_setting_value_label">Value</string>
     <string name="modify_setting_type_label">Setting Type</string>
     <string name="modify_setting_example_system">Example: screen_off_timeout = 2147483647 (System settings use WRITE_SETTINGS permission)</string>
@@ -1186,7 +1187,7 @@
     <string name="modify_setting_example_global">Example: airplane_mode_on = 1 (Global settings require system bridge)</string>
     <string name="choose_setting_title">Choose Setting</string>
     <string name="choose_setting_empty">No settings found</string>
-    <string name="choose_existing_setting">Choose Existing Setting</string>
+    <string name="choose_existing_setting">Choose existing setting</string>
     <!-- action labels -->
 
     <!-- action category labels -->

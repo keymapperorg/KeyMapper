@@ -732,7 +732,9 @@ object ActionDataEntityMapper {
                     .valueOrNull() ?: "SYSTEM" // Default to SYSTEM for backward compatibility
 
                 val settingType = try {
-                    io.github.sds100.keymapper.system.settings.SettingType.valueOf(settingTypeString)
+                    io.github.sds100.keymapper.system.settings.SettingType.valueOf(
+                        settingTypeString,
+                    )
                 } catch (e: IllegalArgumentException) {
                     io.github.sds100.keymapper.system.settings.SettingType.SYSTEM
                 }

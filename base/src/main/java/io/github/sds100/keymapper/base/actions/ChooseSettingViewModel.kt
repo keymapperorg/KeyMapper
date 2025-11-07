@@ -7,8 +7,8 @@ import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.State
-import io.github.sds100.keymapper.system.settings.SettingsAdapter
 import io.github.sds100.keymapper.system.settings.SettingType
+import io.github.sds100.keymapper.system.settings.SettingsAdapter
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,10 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-data class SettingItem(
-    val key: String,
-    val value: String?,
-)
+data class SettingItem(val key: String, val value: String?)
 
 @HiltViewModel
 class ChooseSettingViewModel @Inject constructor(
@@ -43,7 +40,7 @@ class ChooseSettingViewModel @Inject constructor(
     val settings: StateFlow<State<List<SettingItem>>> =
         combine(selectedSettingType, searchQuery) { type, query ->
             val allSettings = settingsAdapter.getAll(type)
-            
+
             val items = allSettings
                 .filter { (key, _) -> query == null || key.contains(query, ignoreCase = true) }
                 .map { (key, value) -> SettingItem(key, value) }

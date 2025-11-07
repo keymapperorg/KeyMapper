@@ -242,7 +242,8 @@ class LazyActionErrorSnapshot(
                         }
                     }
                     SettingType.SECURE,
-                    SettingType.GLOBAL -> {
+                    SettingType.GLOBAL,
+                        -> {
                         if (!isPermissionGranted(Permission.WRITE_SECURE_SETTINGS)) {
                             SystemError.PermissionDenied(Permission.WRITE_SECURE_SETTINGS)
                         } else {

@@ -1,4 +1,5 @@
-import io.github.sds100.keymapper.base.utils.navigation
+package io.github.sds100.keymapper.base.utils.navigation
+
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.ChooseSettingResult
 import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickCoordinateResult
@@ -175,9 +176,8 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data class ChooseSetting(
-        val currentSettingType: SettingType?,
-    ) : NavDestination<ChooseSettingResult>(isCompose = true) {
+    data class ChooseSetting(val currentSettingType: SettingType?) :
+        NavDestination<ChooseSettingResult>(isCompose = true) {
         override val id: String = ID_CHOOSE_SETTING
     }
 

@@ -99,7 +99,7 @@ private fun ChooseSettingScreen(
             Column(modifier = Modifier.fillMaxSize()) {
                 // Setting type dropdown
                 var expanded by remember { mutableStateOf(false) }
-                
+
                 KeyMapperDropdownMenu(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -121,13 +121,19 @@ private fun ChooseSettingScreen(
                 // Settings list
                 when (state) {
                     State.Loading -> {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center,
+                        ) {
                             CircularProgressIndicator()
                         }
                     }
                     is State.Data -> {
                         if (state.data.isEmpty()) {
-                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center,
+                            ) {
                                 Text(
                                     text = stringResource(R.string.choose_setting_empty),
                                     style = MaterialTheme.typography.bodyLarge,

@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.system.settings
 
 import android.content.Context
 import android.database.Cursor
-import android.net.Uri
 import android.provider.Settings
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.KMError
@@ -24,9 +23,9 @@ class AndroidSettingsAdapter @Inject constructor(
             SettingType.SECURE -> Settings.Secure.CONTENT_URI
             SettingType.GLOBAL -> Settings.Global.CONTENT_URI
         }
-        
+
         val settings = mutableMapOf<String, String?>()
-        var cursor: Cursor? = null
+        var cursor: Cursor?
         try {
             cursor = ctx.contentResolver.query(
                 uri,
@@ -43,7 +42,11 @@ class AndroidSettingsAdapter @Inject constructor(
                     while (it.moveToNext()) {
                         val name = it.getString(nameIndex)
                         if (!name.isNullOrBlank()) {
-                            val value = if (valueIndex >= 0) it.getString(valueIndex) else null
+                            val value = if (valueIndex >= 0) {
+                                it.getString(valueIndex)
+                            } else {
+                                null
+                            }
                             settings[name] = value
                         }
                     }
@@ -65,24 +68,9 @@ class AndroidSettingsAdapter @Inject constructor(
 
     override fun modifySetting(settingType: SettingType, key: String, value: String): KMResult<*> {
         val success = when (settingType) {
-            SettingType.SYSTEM -> when {
-                value.toIntOrNull() != null -> SettingsUtils.putSystemSetting(ctx, key, value.toInt())
-                value.toLongOrNull() != null -> SettingsUtils.putSystemSetting(ctx, key, value.toLong())
-                value.toFloatOrNull() != null -> SettingsUtils.putSystemSetting(ctx, key, value.toFloat())
-                else -> SettingsUtils.putSystemSetting(ctx, key, value)
-            }
-            SettingType.SECURE -> when {
-                value.toIntOrNull() != null -> SettingsUtils.putSecureSetting(ctx, key, value.toInt())
-                value.toLongOrNull() != null -> SettingsUtils.putSecureSetting(ctx, key, value.toLong())
-                value.toFloatOrNull() != null -> SettingsUtils.putSecureSetting(ctx, key, value.toFloat())
-                else -> SettingsUtils.putSecureSetting(ctx, key, value)
-            }
-            SettingType.GLOBAL -> when {
-                value.toIntOrNull() != null -> SettingsUtils.putGlobalSetting(ctx, key, value.toInt())
-                value.toLongOrNull() != null -> SettingsUtils.putGlobalSetting(ctx, key, value.toLong())
-                value.toFloatOrNull() != null -> SettingsUtils.putGlobalSetting(ctx, key, value.toFloat())
-                else -> SettingsUtils.putGlobalSetting(ctx, key, value)
-            }
+            SettingType.SYSTEM -> SettingsUtils.putSystemSetting(ctx, key, value)
+            SettingType.SECURE -> SettingsUtils.putSecureSetting(ctx, key, value)
+            SettingType.GLOBAL -> SettingsUtils.putGlobalSetting(ctx, key, value)
         }
 
         return if (success) {

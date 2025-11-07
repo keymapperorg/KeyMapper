@@ -24,6 +24,7 @@ import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.network.HttpMethod
+import io.github.sds100.keymapper.system.settings.SettingType
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
@@ -54,7 +55,9 @@ class CreateActionDelegate(
     var httpRequestBottomSheetState: ActionData.HttpRequest? by mutableStateOf(null)
     var smsActionBottomSheetState: SmsActionBottomSheetState? by mutableStateOf(null)
     var volumeActionState: VolumeActionBottomSheetState? by mutableStateOf(null)
-    var modifySettingActionBottomSheetState: ModifySettingActionBottomSheetState? by mutableStateOf(null)
+    var modifySettingActionBottomSheetState: ModifySettingActionBottomSheetState? by mutableStateOf(
+        null,
+    )
 
     init {
         coroutineScope.launch {
@@ -197,18 +200,31 @@ class CreateActionDelegate(
         }
     }
 
-    fun onDoneModifySettingClick(action: ActionData.ModifySetting) {
+    fun onDoneModifySettingClick() {
+        val state = modifySettingActionBottomSheetState ?: return
+        val result = ActionData.ModifySetting(
+            settingType = state.settingType,
+            settingKey = state.settingKey,
+            value = state.value,
+        )
+
         modifySettingActionBottomSheetState = null
-        actionResult.update { action }
+        actionResult.update { result }
     }
 
-    fun onChooseSettingClick(settingType: io.github.sds100.keymapper.system.settings.SettingType) {
-        coroutineScope.launch {
-            navigate(
-                "choose_setting",
-                NavDestination.ChooseSetting(currentSettingType = settingType),
-            )
-        }
+    fun onSelectSettingType(settingType: SettingType) {
+        modifySettingActionBottomSheetState =
+            modifySettingActionBottomSheetState?.copy(settingType = settingType)
+    }
+
+    fun onSettingKeyChange(key: String) {
+        modifySettingActionBottomSheetState =
+            modifySettingActionBottomSheetState?.copy(settingKey = key)
+    }
+
+    fun onSettingValueChange(value: String) {
+        modifySettingActionBottomSheetState =
+            modifySettingActionBottomSheetState?.copy(value = value)
     }
 
     suspend fun editAction(oldData: ActionData) {
@@ -944,25 +960,12 @@ class CreateActionDelegate(
             ActionId.CLEAR_RECENT_APP -> return ActionData.ClearRecentApp
 
             ActionId.MODIFY_SETTING -> {
-                val settingType = when (oldData) {
-                    is ActionData.ModifySetting -> oldData.settingType
-                    else -> io.github.sds100.keymapper.system.settings.SettingType.SYSTEM // Default to SYSTEM
-                }
-
-                val settingKey = when (oldData) {
-                    is ActionData.ModifySetting -> oldData.settingKey
-                    else -> ""
-                }
-
-                val value = when (oldData) {
-                    is ActionData.ModifySetting -> oldData.value
-                    else -> ""
-                }
+                val oldAction = oldData as? ActionData.ModifySetting
 
                 modifySettingActionBottomSheetState = ModifySettingActionBottomSheetState(
-                    settingType = settingType,
-                    settingKey = settingKey,
-                    value = value,
+                    settingType = oldAction?.settingType ?: SettingType.SYSTEM,
+                    settingKey = oldAction?.settingKey ?: "",
+                    value = oldAction?.value ?: "",
                 )
 
                 return null
