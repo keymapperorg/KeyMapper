@@ -1,6 +1,6 @@
 ## [4.0.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.02)
 
-#### TO BE RELEASED
+#### 08 November 2025
 
 ## Added
 
