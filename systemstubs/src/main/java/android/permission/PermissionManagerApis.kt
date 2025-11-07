@@ -8,7 +8,7 @@ object PermissionManagerApis {
         packageName: String,
         permission: String,
         deviceId: Int,
-        userId: Int
+        userId: Int,
     ) {
         // In revisions of Android 14 the method to grant permissions changed
         // so try them all.
