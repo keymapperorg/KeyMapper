@@ -9,7 +9,7 @@ data class KMEvdevEvent(
     val value: Int,
     val androidCode: Int,
     val timeSec: Long,
-    val timeUsec: Long
+    val timeUsec: Long,
 ) : KMInputEvent {
 
     companion object {

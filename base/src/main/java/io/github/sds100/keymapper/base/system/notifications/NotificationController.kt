@@ -60,6 +60,7 @@ class NotificationController @Inject constructor(
 
         //        private const val ID_FEATURE_ASSISTANT_TRIGGER = 900
         private const val ID_FEATURE_FLOATING_BUTTONS = 901
+        private const val ID_MIGRATE_SCREEN_OFF_KEY_MAPS = 902
 
         const val CHANNEL_TOGGLE_KEY_MAPS = "channel_toggle_remaps"
 
@@ -70,6 +71,7 @@ class NotificationController @Inject constructor(
         const val CHANNEL_TOGGLE_KEYBOARD = "channel_toggle_keymapper_keyboard"
         const val CHANNEL_NEW_FEATURES = "channel_new_features"
         const val CHANNEL_SETUP_ASSISTANT = "channel_setup_assistant"
+        const val CHANNEL_VERSION_MIGRATION = "channel_version_migration"
 
         @Deprecated("Removed in 2.0. This channel shouldn't exist")
         private const val CHANNEL_ID_WARNINGS = "channel_warnings"
@@ -100,6 +102,14 @@ class NotificationController @Inject constructor(
             ),
         )
 
+        manageNotifications.createChannel(
+            NotificationChannelModel(
+                id = CHANNEL_SETUP_ASSISTANT,
+                name = getString(R.string.pro_mode_setup_assistant_notification_channel),
+                importance = NotificationManagerCompat.IMPORTANCE_MAX,
+            ),
+        )
+
         combine(
             controlAccessibilityService.serviceState,
             pauseMappings.isPaused,
@@ -123,20 +133,6 @@ class NotificationController @Inject constructor(
                 manageNotifications.dismiss(ID_TOGGLE_KEYBOARD)
             }
         }.flowOn(dispatchers.default()).launchIn(coroutineScope)
-
-        coroutineScope.launch(dispatchers.default()) {
-            // suspend until the notification should be shown.
-            onboardingUseCase.showFloatingButtonFeatureNotification.first { it }
-
-            manageNotifications.show(floatingButtonFeatureNotification())
-
-            // Only save that the notification is shown if the app has
-            // permissions to show notifications so that it is shown
-            // the next time permission is granted.
-            if (manageNotifications.isPermissionGranted()) {
-                onboardingUseCase.showedFloatingButtonFeatureNotification()
-            }
-        }
 
         hideInputMethod.onHiddenChange.onEach { isHidden ->
             manageNotifications.createChannel(
@@ -188,6 +184,23 @@ class NotificationController @Inject constructor(
                             showSystemBridgeStartedNotification()
                         }
                     }
+            }
+        }
+
+        coroutineScope.launch {
+            if (onboardingUseCase.showMigrateScreenOffKeyMapsNotification.first()) {
+                manageNotifications.show(
+                    NotificationModel(
+                        id = ID_MIGRATE_SCREEN_OFF_KEY_MAPS,
+                        channel = CHANNEL_NEW_FEATURES,
+                        title = getString(R.string.notification_migrate_screen_off_key_map_title),
+                        text = getString(R.string.notification_migrate_screen_off_key_map_text),
+                        icon = R.drawable.ic_baseline_warning_24,
+                        onClickAction = KMNotificationAction.Activity.MainActivity(),
+                        showOnLockscreen = true,
+                        onGoing = false,
+                    ),
+                )
             }
         }
     }
@@ -389,22 +402,6 @@ class NotificationController @Inject constructor(
         showOnLockscreen = false,
         onGoing = true,
         priority = NotificationCompat.PRIORITY_LOW,
-    )
-
-    private fun floatingButtonFeatureNotification(): NotificationModel = NotificationModel(
-        id = ID_FEATURE_FLOATING_BUTTONS,
-        channel = CHANNEL_NEW_FEATURES,
-        title = getString(R.string.notification_floating_buttons_feature_title),
-        text = getString(R.string.notification_floating_buttons_feature_text),
-        icon = R.drawable.outline_bubble_chart_24,
-        onClickAction = KMNotificationAction.Activity.MainActivity(
-            BaseMainActivity.ACTION_USE_FLOATING_BUTTONS,
-        ),
-        priority = NotificationCompat.PRIORITY_LOW,
-        autoCancel = true,
-        onGoing = false,
-        showOnLockscreen = false,
-        bigTextStyle = true,
     )
 
     private fun showSystemBridgeStartedNotification() {

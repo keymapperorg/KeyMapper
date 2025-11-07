@@ -11,13 +11,15 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.sds100.keymapper.system.media.AndroidMediaAdapter
+import javax.inject.Inject
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
-import javax.inject.Inject
 
 @AndroidEntryPoint
-class NotificationReceiver : NotificationListenerService(), LifecycleOwner {
+class NotificationReceiver :
+    NotificationListenerService(),
+    LifecycleOwner {
     private val mediaSessionManager: MediaSessionManager by lazy { getSystemService()!! }
 
     private val notificationListenerComponent by lazy {
@@ -37,7 +39,6 @@ class NotificationReceiver : NotificationListenerService(), LifecycleOwner {
 
     private var lastNotificationKey: String? = null
 
-
     @Inject
     lateinit var serviceAdapter: NotificationReceiverAdapterImpl
 
@@ -52,7 +53,9 @@ class NotificationReceiver : NotificationListenerService(), LifecycleOwner {
         serviceAdapter.eventsToService
             .onEach { event ->
                 when (event) {
-                    NotificationServiceEvent.DismissLastNotification -> cancelNotification(lastNotificationKey)
+                    NotificationServiceEvent.DismissLastNotification -> cancelNotification(
+                        lastNotificationKey,
+                    )
                     NotificationServiceEvent.DismissAllNotifications -> cancelAllNotifications()
                     else -> Unit
                 }

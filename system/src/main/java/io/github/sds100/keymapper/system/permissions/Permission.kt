@@ -1,6 +1,5 @@
 package io.github.sds100.keymapper.system.permissions
 
-
 enum class Permission {
     WRITE_SETTINGS,
     CAMERA,
@@ -18,4 +17,5 @@ enum class Permission {
     ANSWER_PHONE_CALL,
     FIND_NEARBY_DEVICES,
     POST_NOTIFICATIONS,
+    READ_LOGS,
 }

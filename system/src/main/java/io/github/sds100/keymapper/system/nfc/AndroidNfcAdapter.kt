@@ -9,15 +9,15 @@ import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.system.root.SuAdapter
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.runBlocking
 
 @Singleton
 class AndroidNfcAdapter @Inject constructor(
     @ApplicationContext private val context: Context,
     private val suAdapter: SuAdapter,
-    private val systemBridgeConnectionManager: SystemBridgeConnectionManager
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
 ) : NfcAdapter {
     private val ctx = context.applicationContext
 

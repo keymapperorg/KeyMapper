@@ -1,5 +1,5 @@
 ✨ Screen-off remapping
-You can now remap buttons when the screen is off (including the power button) for free with PRO mode.
+You can now remap ALL buttons when the screen is off (including the power button) for free with PRO mode.
 
 🎯 New Actions
 • Run shell commands

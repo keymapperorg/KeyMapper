@@ -110,6 +110,8 @@ class RequestPermissionDelegate(
                     requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
             }
+
+            Permission.READ_LOGS -> permissionAdapter.grant(Manifest.permission.READ_LOGS)
         }
     }
 

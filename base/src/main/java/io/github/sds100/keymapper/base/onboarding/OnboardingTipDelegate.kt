@@ -177,6 +177,12 @@ class OnboardingTipDelegateImpl @Inject constructor(
         val hasBackKey =
             trigger.keys.any { it is KeyEventTriggerKey && it.keyCode == KeyEvent.KEYCODE_BACK }
         val hasImeKey = trigger.keys.any { it is KeyEventTriggerKey && it.requiresIme }
+        val hasVolumeKey = trigger.keys
+            .filterIsInstance<KeyEventTriggerKey>()
+            .any {
+                it.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ||
+                    it.keyCode == KeyEvent.KEYCODE_VOLUME_UP
+            }
 
         when {
             showPowerButtonEmergencyTip -> {
@@ -212,17 +218,16 @@ class OnboardingTipDelegateImpl @Inject constructor(
                 triggerTip.value = tipModel
             }
 
-            // DISABLE UNTIL PRO MODE IS STABLE
-//            hasVolumeKey && !shownVolumeButtonsProModeTip -> {
-//                val tip = OnboardingTipModel(
-//                    id = VOLUME_BUTTONS_PRO_MODE_TIP_ID,
-//                    title = getString(R.string.tip_volume_buttons_pro_mode_title),
-//                    message = getString(R.string.tip_volume_buttons_pro_mode_text),
-//                    isDismissable = true,
-//                    buttonText = getString(R.string.tip_volume_buttons_pro_mode_button),
-//                )
-//                triggerTip.value = tip
-//            }
+            hasVolumeKey && !shownVolumeButtonsProModeTip -> {
+                val tip = OnboardingTipModel(
+                    id = VOLUME_BUTTONS_PRO_MODE_TIP_ID,
+                    title = getString(R.string.tip_volume_buttons_pro_mode_title),
+                    message = getString(R.string.tip_volume_buttons_pro_mode_text),
+                    isDismissable = true,
+                    buttonText = getString(R.string.tip_volume_buttons_pro_mode_button),
+                )
+                triggerTip.value = tip
+            }
 
             hasCapsLockKey && !shownCapsLockProModeTip -> {
                 val tip = OnboardingTipModel(

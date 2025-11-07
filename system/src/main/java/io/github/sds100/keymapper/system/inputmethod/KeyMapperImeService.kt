@@ -20,8 +20,8 @@ import io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceEvent
-import timber.log.Timber
 import javax.inject.Inject
+import timber.log.Timber
 
 /**
  * DO NOT MOVE. Must stay in this package so the user's input method settings are not reset
@@ -142,7 +142,7 @@ class KeyMapperImeService : InputMethodService() {
 
         keyEventRelayServiceWrapper.registerClient(
             CALLBACK_ID_INPUT_METHOD,
-            keyEventReceiverCallback
+            keyEventReceiverCallback,
         )
     }
 
@@ -164,8 +164,8 @@ class KeyMapperImeService : InputMethodService() {
             serviceAdapter.sendAsync(
                 AccessibilityServiceEvent.OnKeyMapperImeStartInput(
                     attribute = attribute,
-                    restarting = restarting
-                )
+                    restarting = restarting,
+                ),
             )
         }
     }

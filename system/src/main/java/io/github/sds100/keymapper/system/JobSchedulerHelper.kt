@@ -74,7 +74,9 @@ object JobSchedulerHelper {
         )
 
         val historyContentUri = JobInfo.TriggerContentUri(
-            Settings.Secure.getUriFor(AndroidInputMethodAdapter.SETTINGS_SECURE_SUBTYPE_HISTORY_KEY),
+            Settings.Secure.getUriFor(
+                AndroidInputMethodAdapter.SETTINGS_SECURE_SUBTYPE_HISTORY_KEY,
+            ),
             JobInfo.TriggerContentUri.FLAG_NOTIFY_FOR_DESCENDANTS,
         )
 

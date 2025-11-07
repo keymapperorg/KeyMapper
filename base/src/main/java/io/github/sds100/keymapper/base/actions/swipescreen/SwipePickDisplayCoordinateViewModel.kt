@@ -3,7 +3,6 @@ package io.github.sds100.keymapper.base.actions.swipescreen
 import android.accessibilityservice.GestureDescription
 import android.graphics.Bitmap
 import android.graphics.Point
-import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -96,9 +95,7 @@ class SwipePickDisplayCoordinateViewModel @Inject constructor(
 
         var maxFingerCount = 10
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            maxFingerCount = GestureDescription.getMaxStrokeCount()
-        }
+        maxFingerCount = GestureDescription.getMaxStrokeCount()
 
         if (count > maxFingerCount) {
             return@map resourceProvider.getString(

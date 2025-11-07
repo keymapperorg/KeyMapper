@@ -80,8 +80,9 @@
     <string name="trigger_error_system_bridge_unsupported">PRO mode is unsupported on this Android version</string>
     <string name="trigger_error_system_bridge_disconnected">PRO mode not started!</string>
     <string name="trigger_error_evdev_device_not_found">Trigger device not connected!</string>
+    <string name="trigger_error_migrate_screen_off_key_map">Migrate this screen off trigger</string>
 
-    <string name="home_error_is_battery_optimised">Your key maps will stop working randomly!</string>
+    <string name="home_error_is_battery_optimised">Disable battery optimisation.</string>
     <string name="home_error_key_maps_paused">Your key maps are paused!</string>
     <string name="home_error_key_maps_paused_button">Unpause</string>
     <string name="home_error_accessibility_service_is_disabled">The accessibility service needs to be turned on for your key maps to work!</string>
@@ -100,10 +101,10 @@
     <string name="description_url">Open %s</string>
     <string name="description_tap_coordinate_default">Tap screen (%d, %d)</string>
     <string name="description_tap_coordinate_with_description">Tap screen (%s)</string>
-    <string name="description_swipe_coordinate_default">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms</string>
-    <string name="description_swipe_coordinate_with_description">Swipe with %d finger(s) from coordinates %d/%d to %d/%d in %dms (%s)</string>
-    <string name="description_pinch_coordinate_default">%s with %d finger(s) on coordinates %d/%d with a pinch distance of %dpx in %dms</string>
-    <string name="description_pinch_coordinate_with_description">%s with %d finger(s) on coordinates %d/%d to with a pinch distance of %dpx %dms (%s)</string>
+    <string name="description_swipe_coordinate_default">Swipe with %d finger(s) from (%d,%d) to (%d,%d) in %dms</string>
+    <string name="description_swipe_coordinate_with_description">Swipe with %d finger(s) from (%d,%d) to (%d,%d) in %dms (%s)</string>
+    <string name="description_pinch_coordinate_default">%s with %d finger(s) on (%d,%d) with a pinch distance of %dpx in %dms</string>
+    <string name="description_pinch_coordinate_with_description">%s with %d finger(s) on (%d,%d) to with a pinch distance of %dpx %dms (%s)</string>
     <string name="description_phone_call">Call %s</string>
     <string name="description_sound">Play sound: %s</string>
     <string name="description_sound_unknown">Play unknown sound</string>
@@ -387,7 +388,7 @@
     <string name="action_backup_everything">Back up everything</string>
     <string name="action_tap_to_pause_keymaps">Tap to pause</string>
     <string name="action_tap_to_resume_keymaps">Tap to resume</string>
-    <string name="action_save_log">Save</string>
+    <string name="action_share_log">Share</string>
     <string name="action_short_log_message">Toggle short messages</string>
     <string name="action_copy_log">Copy</string>
     <string name="action_clear_log">Clear</string>
@@ -447,7 +448,7 @@
 
 
     <string name="dialog_title_key_mapper_crashed">Key Mapper was interrupted</string>
-    <string name="dialog_message_key_mapper_crashed">Key Mapper tried to run in the background but was stopped by the system.\nThis can happen if you have battery or memory optimization turned on.\n\nTo fix this, you can try following an online guide. You should also restart the service when you\'re done.</string>
+    <string name="dialog_message_key_mapper_crashed">Key Mapper tried to run in the background but was stopped by the system.\nThis can happen if you have battery or memory optimisation turned on.\n\nTo fix this, you can try following an online guide. You should also restart the service when you\'re done.</string>
     <string name="dialog_button_read_dont_kill_my_app_yes">Proceed</string>
     <string name="dialog_button_read_dont_kill_my_app_no">Ignore</string>
 
@@ -476,6 +477,14 @@
     <string name="dialog_title_request_notification_permission">Turn on notifications</string>
     <string name="dialog_message_request_notification_permission">Some actions and options need this permission to work. You can also get notified when there is important news about the app.</string>
 
+    <string name="dialog_title_migrate_screen_off_key_map">Migrate this screen off trigger</string>
+    <string name="dialog_message_migrate_screen_off_key_map">We\'re sorry for the disruption. We\'ve introduced a *free* feature called PRO mode that replaces the old screen off remapping option. This feature is much more reliable and unlocks remapping the power button too.\n\nDue to the way it works you will need to record this trigger again with PRO mode.</string>
+    <string name="dialog_button_migrate_screen_off_key_map">Proceed</string>
+
+    <string name="dialog_title_grant_read_logs_permission_title">Grant READ_LOGS permission</string>
+    <string name="dialog_title_grant_read_logs_permission_message">You will need to be rooted or have enabled PRO mode for this to work. The system will then close the app when it grants this permission. You will need to open it again yourself and try sharing the logcat again.</string>
+
+
     <string name="pos_done">Done</string>
     <string name="pos_kill">Kill</string>
     <string name="pos_grant_write_secure_settings_guide">Guide</string>
@@ -490,6 +499,7 @@
     <string name="pos_save">Save</string>
     <string name="pos_understood">Understood</string>
     <string name="pos_turn_on">Turn on</string>
+    <string name="pos_proceed">Proceed</string>
 
     <string name="neg_turn_off">Turn off</string>
     <string name="neg_cancel">Cancel</string>
@@ -541,6 +551,8 @@
     <string name="notification_toggle_keyboard_text">Tap \'toggle\' to switch to and from the Key Mapper Input Method.</string>
     <string name="notification_toggle_keyboard_action">Toggle</string>
 
+    <string name="notification_migrate_screen_off_key_map_title">Your screen off key maps need attention!</string>
+    <string name="notification_migrate_screen_off_key_map_text">We\'re sorry for the disruption but you will need to record your screen off key maps again.</string>
     <!-- Notification strings -->
 
     <!--Preference titles and summaries-->
@@ -861,6 +873,7 @@
     <string name="error_answer_end_phone_call_permission_denied">Denied permission to answer and end phone calls!</string>
     <string name="error_find_nearby_devices_permission_denied">Denied permission to see paired Bluetooth devices!</string>
     <string name="error_notifications_permission_denied">Denied permission to show notifications!</string>
+    <string name="error_read_logs_permission_denied">Denied permission to read logs!</string>
     <string name="error_pinch_screen_must_be_two_or_more_fingers">Must be 2 or more!</string>
     <string name="error_pinch_screen_must_be_ten_or_less_fingers">Must be %d or less!</string>
     <string name="error_pinch_screen_duration_must_be_more_than_zero">Must be greater than 0!</string>
@@ -1375,7 +1388,7 @@
     <string name="tip_caps_lock_pro_mode_text">PRO mode provides better compatibility for Caps Lock remapping. Tap \'Use PRO mode\' and record it again.</string>
     <string name="tip_caps_lock_pro_mode_button">Use PRO mode</string>
     <string name="tip_volume_buttons_pro_mode_title">Screen off remapping?</string>
-    <string name="tip_volume_buttons_pro_mode_text">Use PRO mode if you want your trigger to work when the screen is off. Tap \'Use PRO mode\' and record it again.</string>
+    <string name="tip_volume_buttons_pro_mode_text">Any trigger can now work when the screen is off for free with PRO mode! You will need to record it again.</string>
     <string name="tip_volume_buttons_pro_mode_button">Use PRO mode</string>
     <string name="tip_screen_pinning_title">App pinning warning</string>
     <string name="tip_screen_pinning_text">Using the back button as a trigger may conflict with app pinning, causing a black screen on unlock. A reboot will fix it.</string>
@@ -1398,8 +1411,6 @@
     <string name="floating_button_trigger_option_configure_button">Configure button</string>
     <string name="floating_button_trigger_option_edit_layout">Edit layout</string>
     <string name="floating_buttons_product_min_api_error">Requires Android 11 or newer.</string>
-    <string name="notification_floating_buttons_feature_title">Don’t have enough buttons? Now you can make your own!</string>
-    <string name="notification_floating_buttons_feature_text">Floating buttons display over the apps you want. They work just like real buttons, and you can place, style, and map them however you like.</string>
 
     <!-- Home screen -->
     <string name="sort_bottom_sheet_trigger">Trigger</string>

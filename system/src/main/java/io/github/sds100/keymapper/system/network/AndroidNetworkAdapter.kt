@@ -26,6 +26,8 @@ import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.system.root.SuAdapter
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,14 +41,12 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okio.IOException
 import okio.use
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class AndroidNetworkAdapter @Inject constructor(
     @ApplicationContext private val context: Context,
     private val suAdapter: SuAdapter,
-    private val systemBridgeConnManager: SystemBridgeConnectionManager
+    private val systemBridgeConnManager: SystemBridgeConnectionManager,
 ) : NetworkAdapter {
     private val ctx = context.applicationContext
     private val wifiManager: WifiManager by lazy { ctx.getSystemService()!! }
@@ -101,7 +101,7 @@ class AndroidNetworkAdapter @Inject constructor(
 
             override fun onCapabilitiesChanged(
                 network: Network,
-                networkCapabilities: NetworkCapabilities
+                networkCapabilities: NetworkCapabilities,
             ) {
                 super.onCapabilitiesChanged(network, networkCapabilities)
 

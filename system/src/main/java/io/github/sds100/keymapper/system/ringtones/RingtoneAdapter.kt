@@ -13,7 +13,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AndroidRingtoneAdapter @Inject constructor(@ApplicationContext private val ctx: Context) : RingtoneAdapter {
+class AndroidRingtoneAdapter @Inject constructor(@ApplicationContext private val ctx: Context) :
+    RingtoneAdapter {
 
     private val ringtoneManager: RingtoneManager by lazy {
         RingtoneManager(ctx).apply {

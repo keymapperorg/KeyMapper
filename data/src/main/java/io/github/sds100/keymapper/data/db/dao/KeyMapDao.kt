@@ -61,7 +61,7 @@ interface KeyMapDao {
     @Query("UPDATE $TABLE_NAME SET $KEY_GROUP_UID=(:groupUid) WHERE $KEY_UID in (:uid)")
     suspend fun setKeyMapGroup(groupUid: String?, vararg uid: String)
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(vararg keyMap: KeyMapEntity)
 
     @Delete
@@ -73,7 +73,7 @@ interface KeyMapDao {
     @Query("DELETE FROM $TABLE_NAME WHERE $KEY_UID in (:uid)")
     suspend fun deleteById(vararg uid: String)
 
-    @Update(onConflict = OnConflictStrategy.ABORT)
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(vararg keyMap: KeyMapEntity)
 
     @Query("SELECT COUNT(*) FROM $TABLE_NAME")

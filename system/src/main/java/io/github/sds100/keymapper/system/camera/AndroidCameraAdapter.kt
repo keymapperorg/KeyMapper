@@ -10,18 +10,17 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
-class AndroidCameraAdapter @Inject constructor(
-    @ApplicationContext private val context: Context
-) : CameraAdapter {
+class AndroidCameraAdapter @Inject constructor(@ApplicationContext private val context: Context) :
+    CameraAdapter {
     private val ctx = context.applicationContext
 
     private val cameraManager: CameraManager by lazy { ctx.getSystemService()!! }
@@ -197,7 +196,6 @@ class AndroidCameraAdapter @Inject constructor(
         lens: CameraLens,
         strengthPercent: Float? = null,
     ): KMResult<*> {
-
         try {
             val cameraId = getFlashlightCameraIdForLens(lens)
             val flashInfo = getFlashInfo(lens)
@@ -210,7 +208,10 @@ class AndroidCameraAdapter @Inject constructor(
             }
 
             // try to find a camera with a flash
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && enabled && flashInfo.supportsVariableStrength) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                enabled &&
+                flashInfo.supportsVariableStrength
+            ) {
                 val strength = if (strengthPercent == null) {
                     flashInfo.defaultStrength
                 } else {
