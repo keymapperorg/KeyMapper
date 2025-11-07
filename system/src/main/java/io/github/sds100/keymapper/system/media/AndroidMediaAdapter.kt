@@ -12,25 +12,25 @@ import android.os.Build
 import android.view.KeyEvent
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.system.volume.VolumeStream
+import java.io.FileNotFoundException
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.io.FileNotFoundException
-import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class AndroidMediaAdapter @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
 ) : MediaAdapter {
     private val ctx = context.applicationContext
 
@@ -49,7 +49,9 @@ class AndroidMediaAdapter @Inject constructor(
     private val audioPlaybackCallback by lazy {
         @RequiresApi(Build.VERSION_CODES.O)
         object : AudioManager.AudioPlaybackCallback() {
-            override fun onPlaybackConfigChanged(configs: MutableList<AudioPlaybackConfiguration>?) {
+            override fun onPlaybackConfigChanged(
+                configs: MutableList<AudioPlaybackConfiguration>?,
+            ) {
                 audioVolumeControlStreams.update { getActiveAudioVolumeStreams() }
             }
         }
@@ -72,21 +74,29 @@ class AndroidMediaAdapter @Inject constructor(
         }
     }
 
-    override fun fastForward(packageName: String?): KMResult<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, packageName)
+    override fun fastForward(packageName: String?): KMResult<*> =
+        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, packageName)
 
-    override fun rewind(packageName: String?): KMResult<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_REWIND, packageName)
+    override fun rewind(packageName: String?): KMResult<*> =
+        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_REWIND, packageName)
 
-    override fun play(packageName: String?): KMResult<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY, packageName)
+    override fun play(packageName: String?): KMResult<*> =
+        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY, packageName)
 
-    override fun pause(packageName: String?): KMResult<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PAUSE, packageName)
+    override fun pause(packageName: String?): KMResult<*> =
+        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PAUSE, packageName)
 
-    override fun playPause(packageName: String?): KMResult<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, packageName)
+    override fun playPause(packageName: String?): KMResult<*> =
+        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, packageName)
 
-    override fun previousTrack(packageName: String?): KMResult<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PREVIOUS, packageName)
+    override fun previousTrack(packageName: String?): KMResult<*> =
+        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_PREVIOUS, packageName)
 
-    override fun nextTrack(packageName: String?): KMResult<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_NEXT, packageName)
+    override fun nextTrack(packageName: String?): KMResult<*> =
+        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_NEXT, packageName)
 
-    override fun stop(packageName: String?): KMResult<*> = sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_STOP, packageName)
+    override fun stop(packageName: String?): KMResult<*> =
+        sendMediaKeyEvent(KeyEvent.KEYCODE_MEDIA_STOP, packageName)
 
     override fun stopFileMedia(): KMResult<*> {
         synchronized(mediaPlayerLock) {
@@ -148,7 +158,9 @@ class AndroidMediaAdapter @Inject constructor(
             mediaPlayer = MediaPlayer().apply {
                 val usage = when (stream) {
                     VolumeStream.ACCESSIBILITY -> AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY
-                    else -> throw Exception("Don't know how to convert volume stream to audio usage attribute")
+                    else -> throw Exception(
+                        "Don't know how to convert volume stream to audio usage attribute",
+                    )
                 }
 
                 setAudioAttributes(

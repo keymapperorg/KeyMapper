@@ -8,17 +8,16 @@ import android.os.BatteryManager
 import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 @Singleton
-class AndroidPowerAdapter @Inject constructor(
-    @ApplicationContext private val context: Context
-) : PowerAdapter {
+class AndroidPowerAdapter @Inject constructor(@ApplicationContext private val context: Context) :
+    PowerAdapter {
     private val ctx: Context = context.applicationContext
     private val batteryManager: BatteryManager by lazy { ctx.getSystemService()!! }
 

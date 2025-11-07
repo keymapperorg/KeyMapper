@@ -9,9 +9,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class LeanbackAdapterImpl @Inject constructor(
-    @ApplicationContext context: Context,
-) : LeanbackAdapter {
+class LeanbackAdapterImpl @Inject constructor(@ApplicationContext context: Context) :
+    LeanbackAdapter {
     private val ctx = context.applicationContext
 
     override fun isTvDevice(): Boolean {

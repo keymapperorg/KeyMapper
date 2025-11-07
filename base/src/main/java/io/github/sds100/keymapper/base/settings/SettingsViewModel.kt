@@ -293,12 +293,32 @@ class SettingsViewModel @Inject constructor(
 
     fun onShareLogcatClick() {
         viewModelScope.launch {
-            shareLogcatUseCase.share().onFailure { error ->
-                val dialog = DialogModel.Ok(
-                    title = getString(R.string.dialog_title_share_logcat_error),
-                    message = error.getFullMessage(this@SettingsViewModel),
+            if (shareLogcatUseCase.isPermissionGranted()) {
+                shareLogcatUseCase.share().onFailure { error ->
+                    val dialog = DialogModel.Ok(
+                        title = getString(R.string.dialog_title_share_logcat_error),
+                        message = error.getFullMessage(this@SettingsViewModel),
+                    )
+                    showDialog("logcat_error", dialog)
+                }
+            } else {
+                val dialog = DialogModel.Alert(
+                    title = getString(R.string.dialog_title_grant_read_logs_permission_title),
+                    message = getString(R.string.dialog_title_grant_read_logs_permission_message),
+                    positiveButtonText = getString(R.string.pos_proceed),
+                    negativeButtonText = getString(R.string.neg_cancel),
                 )
-                showDialog("logcat_error", dialog)
+
+                val response = showDialog("read_logs_permission", dialog)
+
+                if (response == DialogResponse.POSITIVE) {
+                    shareLogcatUseCase.grantPermission().onFailure { error ->
+                        val dialog = DialogModel.Ok(
+                            message = error.getFullMessage(resourceProvider),
+                        )
+                        showDialog("grant_read_log_failure", dialog)
+                    }
+                }
             }
         }
     }

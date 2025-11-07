@@ -9,14 +9,14 @@ object ActivityTaskManagerApis {
         maxNum: Int,
         filterOnlyVisibleRecents: Boolean,
         keepIntentExtra: Boolean,
-        displayId: Int
+        displayId: Int,
     ): MutableList<RunningTaskInfo?>? {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             return activityTaskManager.getTasks(
                 maxNum,
                 filterOnlyVisibleRecents,
                 keepIntentExtra,
-                displayId
+                displayId,
             )
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             return activityTaskManager.getTasks(maxNum, filterOnlyVisibleRecents, keepIntentExtra)

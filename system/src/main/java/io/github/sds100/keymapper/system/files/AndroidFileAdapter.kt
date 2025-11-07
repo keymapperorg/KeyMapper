@@ -15,19 +15,19 @@ import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import net.lingala.zip4j.ZipFile
 import java.io.File
 import java.io.InputStream
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import net.lingala.zip4j.ZipFile
 
 @Singleton
 class AndroidFileAdapter @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val buildConfigProvider: BuildConfigProvider
+    private val buildConfigProvider: BuildConfigProvider,
 ) : FileAdapter {
     private val ctx = context.applicationContext
     private val contentResolver: ContentResolver = ctx.contentResolver

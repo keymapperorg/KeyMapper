@@ -3,6 +3,8 @@ package io.github.sds100.keymapper.system.shizuku
 import io.github.sds100.keymapper.system.apps.PackageManagerAdapter
 import io.github.sds100.keymapper.system.apps.isAppInstalledFlow
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -10,8 +12,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import rikka.shizuku.Shizuku
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class ShizukuAdapterImpl @Inject constructor(

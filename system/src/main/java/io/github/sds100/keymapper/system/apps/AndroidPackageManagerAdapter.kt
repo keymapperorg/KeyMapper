@@ -29,6 +29,9 @@ import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.success
+import java.io.IOException
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -38,9 +41,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.IOException
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class AndroidPackageManagerAdapter @Inject constructor(
@@ -234,7 +234,8 @@ class AndroidPackageManagerAdapter @Inject constructor(
         }
     }
 
-    @SuppressLint("UnspecifiedImmutableFlag") // only specify the flag on SDK 23+. SDK 31 is first to enforce it.
+    // only specify the flag on SDK 23+. SDK 31 is first to enforce it.
+    @SuppressLint("UnspecifiedImmutableFlag")
     override fun openApp(packageName: String): KMResult<*> {
         val leanbackIntent = packageManager.getLeanbackLaunchIntentForPackage(packageName)
         val normalIntent = packageManager.getLaunchIntentForPackage(packageName)

@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Singleton
 class AndroidClipboardAdapter @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
 ) : ClipboardAdapter {
     private val ctx = context.applicationContext
 

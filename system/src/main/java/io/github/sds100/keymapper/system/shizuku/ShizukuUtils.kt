@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.system.shizuku
 
 import android.os.Build
 
-
 object ShizukuUtils {
     const val SHIZUKU_PACKAGE = "moe.shizuku.privileged.api"
 

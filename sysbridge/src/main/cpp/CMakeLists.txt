@@ -94,6 +94,13 @@ add_library(evdev SHARED
         android/libbase/stringprintf.cpp
         ${aidl_src_dir}/io/github/sds100/keymapper/sysbridge/IEvdevCallback.cpp)
 
+# Set a stable custom output directory for libevdev.so so it can be linked to in other modules
+# Outputs to custom "libs" directory in the sysbridge module build directory
+set_target_properties(evdev PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../../build/libs/${ANDROID_ABI}"
+        LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_CURRENT_SOURCE_DIR}/../../../build/libs/${ANDROID_ABI}"
+        LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/../../../build/libs/${ANDROID_ABI}")
+
 find_library(
         binder_ndk-lib
         binder_ndk

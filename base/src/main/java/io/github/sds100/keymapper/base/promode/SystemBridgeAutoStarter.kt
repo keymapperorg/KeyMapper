@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.BuildConfig
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
+import io.github.sds100.keymapper.sysbridge.manager.isConnected
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationAdapter
@@ -76,8 +77,16 @@ class SystemBridgeAutoStarter @Inject constructor(
             if (isRooted) {
                 flowOf(AutoStartType.ROOT)
             } else {
-                shizukuAdapter.isStarted.flatMapLatest { isShizukuStarted ->
-                    if (isShizukuStarted) {
+                val useShizukuFlow =
+                    combine(
+                        shizukuAdapter.isStarted,
+                        permissionAdapter.isGrantedFlow(Permission.SHIZUKU),
+                    ) { isStarted, isGranted ->
+                        isStarted && isGranted
+                    }
+
+                useShizukuFlow.flatMapLatest { useShizuku ->
+                    if (useShizuku) {
                         flowOf(AutoStartType.SHIZUKU)
                     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         val isAdbAutoStartAllowed = combine(
@@ -214,6 +223,11 @@ class SystemBridgeAutoStarter @Inject constructor(
             Timber.w(
                 "Not auto starting the system bridge because it was emergency killed by the user",
             )
+            return
+        }
+
+        if (connectionManager.isConnected()) {
+            Timber.i("Not auto starting with $type because already connected.")
             return
         }
 

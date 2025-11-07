@@ -10,12 +10,12 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ObserveNotificationListenersJob : JobService() {
-    
+
     @Inject
     lateinit var permissionAdapter: AndroidPermissionAdapter
-    
+
     override fun onStartJob(params: JobParameters?): Boolean {
-       permissionAdapter.onPermissionsChanged()
+        permissionAdapter.onPermissionsChanged()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             JobSchedulerHelper.observeEnabledNotificationListeners(applicationContext)

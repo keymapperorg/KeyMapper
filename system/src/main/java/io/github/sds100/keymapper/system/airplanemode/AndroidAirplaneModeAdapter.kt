@@ -11,17 +11,17 @@ import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.system.root.SuAdapter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Singleton
 class AndroidAirplaneModeAdapter @Inject constructor(
     @ApplicationContext private val ctx: Context,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     private val suAdapter: SuAdapter,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
 ) : AirplaneModeAdapter {
 
     override suspend fun enable(): KMResult<*> {
@@ -57,7 +57,9 @@ class AndroidAirplaneModeAdapter @Inject constructor(
 
     private fun broadcastAirplaneModeChanged(enabled: Boolean) {
         coroutineScope.launch {
-            suAdapter.execute("am broadcast -a android.intent.action.AIRPLANE_MODE --ez state $enabled")
+            suAdapter.execute(
+                "am broadcast -a android.intent.action.AIRPLANE_MODE --ez state $enabled",
+            )
         }
     }
 }

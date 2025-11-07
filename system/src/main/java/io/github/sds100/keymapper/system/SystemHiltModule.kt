@@ -82,7 +82,9 @@ abstract class SystemHiltModule {
 
     @Singleton
     @Binds
-    abstract fun providePackageManagerAdapter(impl: AndroidPackageManagerAdapter): PackageManagerAdapter
+    abstract fun providePackageManagerAdapter(
+        impl: AndroidPackageManagerAdapter,
+    ): PackageManagerAdapter
 
     @Singleton
     @Binds
@@ -182,9 +184,13 @@ abstract class SystemHiltModule {
 
     @Singleton
     @Binds
-    abstract fun provideNotificationReceiverAdapter(impl: NotificationReceiverAdapterImpl): NotificationReceiverAdapter
+    abstract fun provideNotificationReceiverAdapter(
+        impl: NotificationReceiverAdapterImpl,
+    ): NotificationReceiverAdapter
 
     @Singleton
     @Binds
-    abstract fun provideSystemFeatureAdapter(impl: AndroidSystemFeatureAdapter): SystemFeatureAdapter
+    abstract fun provideSystemFeatureAdapter(
+        impl: AndroidSystemFeatureAdapter,
+    ): SystemFeatureAdapter
 }

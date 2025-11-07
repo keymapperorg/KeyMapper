@@ -92,6 +92,11 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
     fun onBinderReceived(binder: IBinder) {
         val systemBridge = ISystemBridge.Stub.asInterface(binder)
 
+        // Can not use Timber because the content provider is called before the application's
+        // onCreate where the Timber Tree is installed. The content provider then
+        // calls this message.
+        Log.i(TAG, "Received system bridge binder")
+
         synchronized(systemBridgeLock) {
             if (systemBridge.versionCode == buildConfigProvider.versionCode) {
                 // Only link to death if it is the same version code so restarting it
@@ -111,16 +116,20 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
                         time = SystemClock.elapsedRealtime(),
                     )
                 }
-            } else {
-                coroutineScope.launch(Dispatchers.IO) {
-                    // Can not use Timber because the content provider is called before the application's
-                    // onCreate where the Timber Tree is installed. The content provider then
-                    // calls this message.
-                    Log.w(
-                        TAG,
-                        "System Bridge version mismatch! Restarting it. App: ${buildConfigProvider.versionCode}, System Bridge: ${systemBridge.versionCode}",
-                    )
 
+                // Use Timber here even though it may not be planted. The Application class
+                // will check whether it is connected when it plants the Timber tree.
+                Timber.i("ConnectionManager: System bridge connected")
+            } else {
+                // Can not use Timber because the content provider is called before the application's
+                // onCreate where the Timber Tree is installed. The content provider then
+                // calls this message.
+                Log.w(
+                    TAG,
+                    "System Bridge version mismatch! Restarting it. App: ${buildConfigProvider.versionCode}, System Bridge: ${systemBridge.versionCode}",
+                )
+
+                coroutineScope.launch(Dispatchers.IO) {
                     restartSystemBridge(systemBridge)
                 }
             }
@@ -196,9 +205,11 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
                 -1
             }
 
+        // WARNING! Granting some permissions (e.g READ_LOGS) will cause the system to kill
+        // the app process and restart it. This is normal, expected behavior and can not be
+        // worked around. Do not grant any other permissions automatically here.
         systemBridge.grantPermission(Manifest.permission.WRITE_SECURE_SETTINGS, deviceId)
-        systemBridge.grantPermission(Manifest.permission.READ_LOGS, deviceId)
-        Timber.i("Granted WRITE_SECURE_SETTINGS and READ_LOGS permission with System Bridge")
+        Timber.i("Granted WRITE_SECURE_SETTINGS permission with System Bridge")
 
         if (ContextCompat.checkSelfPermission(
                 ctx,

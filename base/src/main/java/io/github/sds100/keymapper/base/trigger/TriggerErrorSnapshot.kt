@@ -35,9 +35,32 @@ data class TriggerErrorSnapshot(
             KeyEvent.KEYCODE_VOLUME_DOWN,
             KeyEvent.KEYCODE_VOLUME_UP,
         )
+
+        fun isScreenOffTriggerMigrationRequired(trigger: Trigger, key: TriggerKey): Boolean =
+            trigger.legacyDetectScreenOff &&
+                key is KeyEventTriggerKey &&
+                key.keyCode in LEGACY_SCREEN_OFF_KEY_CODES
+
+        /**
+         * These are the key codes that were detected with the getevent command prior to v4.0.0.
+         */
+        val LEGACY_SCREEN_OFF_KEY_CODES: Set<Int> = setOf(
+            KeyEvent.KEYCODE_VOLUME_DOWN,
+            KeyEvent.KEYCODE_VOLUME_UP,
+            KeyEvent.KEYCODE_HEADSETHOOK,
+            KeyEvent.KEYCODE_FOCUS,
+            KeyEvent.KEYCODE_CAMERA,
+            KeyEvent.KEYCODE_MENU,
+            KeyEvent.KEYCODE_ASSIST,
+            KeyEvent.KEYCODE_SEARCH,
+        )
     }
 
     fun getTriggerError(keyMap: KeyMap, key: TriggerKey): TriggerError? {
+        if (isScreenOffTriggerMigrationRequired(keyMap.trigger, key)) {
+            return TriggerError.MIGRATE_SCREEN_OFF_TRIGGER
+        }
+
         purchases.onSuccess { purchases ->
             if (key is AssistantTriggerKey && !purchases.contains(ProductId.ASSISTANT_TRIGGER)) {
                 return TriggerError.ASSISTANT_TRIGGER_NOT_PURCHASED
