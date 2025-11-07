@@ -102,6 +102,14 @@ class NotificationController @Inject constructor(
             ),
         )
 
+        manageNotifications.createChannel(
+            NotificationChannelModel(
+                id = CHANNEL_SETUP_ASSISTANT,
+                name = getString(R.string.pro_mode_setup_assistant_notification_channel),
+                importance = NotificationManagerCompat.IMPORTANCE_MAX,
+            ),
+        )
+
         combine(
             controlAccessibilityService.serviceState,
             pauseMappings.isPaused,

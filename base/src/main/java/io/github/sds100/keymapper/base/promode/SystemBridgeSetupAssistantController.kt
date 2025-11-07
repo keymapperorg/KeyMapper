@@ -5,7 +5,6 @@ import android.os.Build
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.annotation.RequiresApi
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.getSystemService
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -29,7 +28,6 @@ import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManage
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupStep
-import io.github.sds100.keymapper.system.notifications.NotificationChannelModel
 import io.github.sds100.keymapper.system.notifications.NotificationModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -110,8 +108,6 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
     private var foundPairingCode: String? = null
 
     fun onServiceConnected() {
-        createNotificationChannel()
-
         coroutineScope.launch {
             setupController.setupAssistantStep.collect { step ->
                 if (step == null) {
@@ -138,15 +134,6 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
                     }
             }
         }
-    }
-
-    private fun createNotificationChannel() {
-        val notificationChannel = NotificationChannelModel(
-            id = NotificationController.Companion.CHANNEL_SETUP_ASSISTANT,
-            name = getString(R.string.pro_mode_setup_assistant_notification_channel),
-            importance = NotificationManagerCompat.IMPORTANCE_MAX,
-        )
-        manageNotifications.createChannel(notificationChannel)
     }
 
     fun teardown() {
