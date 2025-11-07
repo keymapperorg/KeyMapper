@@ -40,7 +40,7 @@ class DisplayLogUseCaseImpl @Inject constructor(
 
     override suspend fun copyToClipboard() {
         val logEntries = repository.log.first()
-        val logText = createLogText(logEntries)
+        val logText = createLogClipboardText(logEntries)
 
         clipboardAdapter.copy(
             label = resourceProvider.getString(R.string.clip_key_mapper_log),
@@ -48,11 +48,20 @@ class DisplayLogUseCaseImpl @Inject constructor(
         )
     }
 
-    private fun createLogText(logEntries: List<LogEntryEntity>): String {
-        return logEntries.joinToString(separator = "\n") { entry ->
-            val date = dateFormat.format(Date(entry.time))
+    private fun createLogClipboardText(logEntries: List<LogEntryEntity>): String {
+        return buildString {
+            append("Key Mapper log (newest first). Note: it may be cut off due to clipboard limits")
+            appendLine()
+            appendLine()
 
-            return@joinToString "$date ${severityString[entry.severity]} ${entry.message}"
+            logEntries
+                .reversed()
+                .joinToString(separator = "\n") { entry ->
+                    val date = dateFormat.format(Date(entry.time))
+
+                    return@joinToString "$date ${severityString[entry.severity]} ${entry.message}"
+                }
+                .also { append(it) }
         }
     }
 }
