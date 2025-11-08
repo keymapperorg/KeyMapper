@@ -83,11 +83,7 @@ private fun ModifySettingActionBottomSheet(
     val scope = rememberCoroutineScope()
 
     ModalBottomSheet(
-        onDismissRequest = {
-            scope.launch {
-                sheetState.hide()
-            }
-        },
+        onDismissRequest = onDismissRequest,
         sheetState = sheetState,
         dragHandle = null,
     ) {
