@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.actions
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -68,6 +69,8 @@ private fun ChooseSettingScreen(
     onClickSetting: (String, String?) -> Unit = { _, _ -> },
     onNavigateBack: () -> Unit = {},
 ) {
+    BackHandler(onBack = onNavigateBack)
+
     Scaffold(
         modifier = modifier.displayCutoutPadding(),
         topBar = {
