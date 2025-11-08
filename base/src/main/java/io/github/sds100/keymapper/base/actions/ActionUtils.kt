@@ -944,6 +944,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.ShellCommand,
     is ActionData.InteractUiElement,
     is ActionData.MoveCursor,
+    is ActionData.ModifySetting,
         -> true
 
     else -> false
