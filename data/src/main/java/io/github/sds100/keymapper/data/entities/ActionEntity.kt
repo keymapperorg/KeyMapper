@@ -185,6 +185,7 @@ data class ActionEntity(
         SOUND,
         INTERACT_UI_ELEMENT,
         SHELL_COMMAND,
+        MODIFY_SETTING,
     }
 
     constructor(

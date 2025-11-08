@@ -22,6 +22,7 @@ import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.intents.IntentExtraModel
 import io.github.sds100.keymapper.system.intents.IntentTarget
 import io.github.sds100.keymapper.system.network.HttpMethod
+import io.github.sds100.keymapper.system.settings.SettingType
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
@@ -50,6 +51,7 @@ object ActionDataEntityMapper {
 
             ActionEntity.Type.INTERACT_UI_ELEMENT -> ActionId.INTERACT_UI_ELEMENT
             ActionEntity.Type.SHELL_COMMAND -> ActionId.SHELL_COMMAND
+            ActionEntity.Type.MODIFY_SETTING -> ActionId.MODIFY_SETTING
         }
 
         return when (actionId) {
@@ -732,11 +734,9 @@ object ActionDataEntityMapper {
                     .valueOrNull() ?: "SYSTEM" // Default to SYSTEM for backward compatibility
 
                 val settingType = try {
-                    io.github.sds100.keymapper.system.settings.SettingType.valueOf(
-                        settingTypeString,
-                    )
-                } catch (e: IllegalArgumentException) {
-                    io.github.sds100.keymapper.system.settings.SettingType.SYSTEM
+                    SettingType.valueOf(settingTypeString)
+                } catch (_: IllegalArgumentException) {
+                    SettingType.SYSTEM
                 }
 
                 ActionData.ModifySetting(
@@ -771,6 +771,7 @@ object ActionDataEntityMapper {
             is ActionData.Sound -> ActionEntity.Type.SOUND
             is ActionData.InteractUiElement -> ActionEntity.Type.INTERACT_UI_ELEMENT
             is ActionData.ShellCommand -> ActionEntity.Type.SHELL_COMMAND
+            is ActionData.ModifySetting -> ActionEntity.Type.MODIFY_SETTING
             else -> ActionEntity.Type.SYSTEM_ACTION
         }
 
