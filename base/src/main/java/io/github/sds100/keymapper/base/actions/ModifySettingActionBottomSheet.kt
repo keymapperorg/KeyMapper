@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -56,6 +57,7 @@ fun ModifySettingActionBottomSheet(delegate: CreateActionDelegate) {
             onSelectSettingType = delegate::onSelectSettingType,
             onSettingKeyChange = delegate::onSettingKeyChange,
             onSettingValueChange = delegate::onSettingValueChange,
+            onChooseExistingClick = delegate::onChooseExistingSettingClick,
             onDoneClick = {
                 scope.launch {
                     sheetState.hide()
@@ -75,6 +77,7 @@ private fun ModifySettingActionBottomSheet(
     onSelectSettingType: (SettingType) -> Unit = {},
     onSettingKeyChange: (String) -> Unit = {},
     onSettingValueChange: (String) -> Unit = {},
+    onChooseExistingClick: () -> Unit = {},
     onDoneClick: () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
@@ -116,7 +119,7 @@ private fun ModifySettingActionBottomSheet(
             )
 
             Button(
-                onClick = { onSelectSettingType(state.settingType) },
+                onClick = onChooseExistingClick,
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(stringResource(R.string.choose_existing_setting))
@@ -128,6 +131,9 @@ private fun ModifySettingActionBottomSheet(
                 label = { Text(stringResource(R.string.modify_setting_key_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
+                textStyle = MaterialTheme.typography.bodySmall.copy(
+                    fontFamily = FontFamily.Monospace,
+                ),
             )
 
             OutlinedTextField(
@@ -136,21 +142,9 @@ private fun ModifySettingActionBottomSheet(
                 label = { Text(stringResource(R.string.modify_setting_value_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-            )
-
-            val exampleText = when (state.settingType) {
-                SettingType.SYSTEM ->
-                    stringResource(R.string.modify_setting_example_system)
-                SettingType.SECURE ->
-                    stringResource(R.string.modify_setting_example_secure)
-                SettingType.GLOBAL ->
-                    stringResource(R.string.modify_setting_example_global)
-            }
-
-            Text(
-                text = exampleText,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textStyle = MaterialTheme.typography.bodySmall.copy(
+                    fontFamily = FontFamily.Monospace,
+                ),
             )
 
             // TODO do not allow empty text fields

@@ -22,16 +22,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.R
-import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperDropdownMenu
+import io.github.sds100.keymapper.base.compose.KeyMapperTheme
+import io.github.sds100.keymapper.base.utils.ui.compose.KeyMapperSegmentedButtonRow
 import io.github.sds100.keymapper.base.utils.ui.compose.SearchAppBarActions
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.settings.SettingType
@@ -97,28 +96,21 @@ private fun ChooseSettingScreen(
                 .padding(innerPadding),
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                // Setting type dropdown
-                var expanded by remember { mutableStateOf(false) }
-
-                KeyMapperDropdownMenu(
+                KeyMapperSegmentedButtonRow(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    expanded = expanded,
-                    onExpandedChange = { expanded = it },
-                    label = { Text(stringResource(R.string.modify_setting_type_label)) },
-                    selectedValue = settingType,
-                    values = listOf(
+                    buttonStates = listOf(
                         SettingType.SYSTEM to stringResource(R.string.modify_setting_type_system),
                         SettingType.SECURE to stringResource(R.string.modify_setting_type_secure),
                         SettingType.GLOBAL to stringResource(R.string.modify_setting_type_global),
                     ),
-                    onValueChanged = onSettingTypeChange,
+                    selectedState = settingType,
+                    onStateSelected = onSettingTypeChange,
                 )
 
                 HorizontalDivider()
 
-                // Settings list
                 when (state) {
                     State.Loading -> {
                         Box(
@@ -157,5 +149,66 @@ private fun ChooseSettingScreen(
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun PreviewWithData() {
+    KeyMapperTheme {
+        ChooseSettingScreen(
+            state = State.Data(
+                listOf(
+                    SettingItem("adb_enabled", "0"),
+                    SettingItem("airplane_mode_on", "0"),
+                    SettingItem("bluetooth_on", "1"),
+                    SettingItem("screen_brightness", "128"),
+                    SettingItem("wifi_on", "1"),
+                ),
+            ),
+            settingType = SettingType.GLOBAL,
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun PreviewLoading() {
+    KeyMapperTheme {
+        ChooseSettingScreen(
+            state = State.Loading,
+            settingType = SettingType.SECURE,
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun PreviewEmpty() {
+    KeyMapperTheme {
+        ChooseSettingScreen(
+            state = State.Data(emptyList()),
+            settingType = SettingType.SYSTEM,
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun PreviewWithSearch() {
+    KeyMapperTheme {
+        ChooseSettingScreen(
+            state = State.Data(
+                listOf(
+                    SettingItem("bluetooth_on", "1"),
+                ),
+            ),
+            query = "bluetooth",
+            settingType = SettingType.SECURE,
+        )
     }
 }

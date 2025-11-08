@@ -21,8 +21,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-data class SettingItem(val key: String, val value: String?)
-
 @HiltViewModel
 class ChooseSettingViewModel @Inject constructor(
     private val settingsAdapter: SettingsAdapter,
@@ -33,10 +31,9 @@ class ChooseSettingViewModel @Inject constructor(
     ResourceProvider by resourceProvider,
     DialogProvider by dialogProvider,
     NavigationProvider by navigationProvider {
-
     val searchQuery = MutableStateFlow<String?>(null)
-    val selectedSettingType = MutableStateFlow(SettingType.SYSTEM)
 
+    val selectedSettingType = MutableStateFlow(SettingType.SYSTEM)
     val settings: StateFlow<State<List<SettingItem>>> =
         combine(selectedSettingType, searchQuery) { type, query ->
             val allSettings = settingsAdapter.getAll(type)
@@ -70,6 +67,8 @@ class ChooseSettingViewModel @Inject constructor(
         }
     }
 }
+
+data class SettingItem(val key: String, val value: String?)
 
 @Serializable
 data class ChooseSettingResult(

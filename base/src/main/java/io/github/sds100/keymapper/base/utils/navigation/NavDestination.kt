@@ -176,7 +176,7 @@ abstract class NavDestination<R>(val isCompose: Boolean = false) {
     }
 
     @Serializable
-    data class ChooseSetting(val currentSettingType: SettingType?) :
+    data class ChooseSetting(val settingType: SettingType?) :
         NavDestination<ChooseSettingResult>(isCompose = true) {
         override val id: String = ID_CHOOSE_SETTING
     }

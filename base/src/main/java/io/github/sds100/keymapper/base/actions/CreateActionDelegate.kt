@@ -222,6 +222,21 @@ class CreateActionDelegate(
             modifySettingActionBottomSheetState?.copy(settingKey = key)
     }
 
+    fun onChooseExistingSettingClick() {
+        val type = modifySettingActionBottomSheetState?.settingType ?: return
+        val destination = NavDestination.ChooseSetting(settingType = type)
+
+        coroutineScope.launch {
+            val setting = navigate("choose_setting", destination) ?: return@launch
+
+            modifySettingActionBottomSheetState = modifySettingActionBottomSheetState?.copy(
+                settingType = setting.settingType,
+                settingKey = setting.key,
+                value = setting.currentValue ?: "",
+            )
+        }
+    }
+
     fun onSettingValueChange(value: String) {
         modifySettingActionBottomSheetState =
             modifySettingActionBottomSheetState?.copy(value = value)

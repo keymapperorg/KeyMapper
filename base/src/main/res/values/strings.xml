@@ -1181,11 +1181,7 @@
     <string name="action_modify_setting">Modify setting</string>
     <string name="modify_setting_key_label">Key</string>
     <string name="modify_setting_value_label">Value</string>
-    <string name="modify_setting_type_label">Setting Type</string>
-    <string name="modify_setting_example_system">Example: screen_off_timeout = 2147483647 (System settings use WRITE_SETTINGS permission)</string>
-    <string name="modify_setting_example_secure">Example: accessibility_enabled = 1 (Secure settings require system bridge)</string>
-    <string name="modify_setting_example_global">Example: airplane_mode_on = 1 (Global settings require system bridge)</string>
-    <string name="choose_setting_title">Choose Setting</string>
+    <string name="choose_setting_title">Choose setting</string>
     <string name="choose_setting_empty">No settings found</string>
     <string name="choose_existing_setting">Choose existing setting</string>
     <!-- action labels -->
