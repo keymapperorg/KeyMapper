@@ -142,6 +142,8 @@ private fun ModifySettingActionBottomSheet(
             )
 
             // TODO do not allow empty text fields
+            // TODO add test button
+            // TODO add disclaimer that simply modifying setting values is not sufficient for the system to actually process the change
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
