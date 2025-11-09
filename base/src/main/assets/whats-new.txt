@@ -6,6 +6,7 @@ You can now remap ALL buttons when the screen is off (including the power button
 • Send SMS messages
 • Force stop current app or clear from recents
 • Mute/unmute microphone
+• Modify any system setting
 
 🆕 New Features
 • Redesigned Settings screen

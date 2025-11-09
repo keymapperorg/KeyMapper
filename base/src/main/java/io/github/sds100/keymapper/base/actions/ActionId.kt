@@ -147,4 +147,6 @@ enum class ActionId {
 
     FORCE_STOP_APP,
     CLEAR_RECENT_APP,
+
+    MODIFY_SETTING,
 }

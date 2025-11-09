@@ -328,7 +328,6 @@
     <string name="url_fingerprint_map_options_guide" translatable="false">https://docs.keymapper.club/redirects/fingerprint-map-options</string>
     <string name="url_quick_start_guide" translatable="false">https://docs.keymapper.club/redirects/quick-start</string>
     <string name="url_faq" translatable="false">https://docs.keymapper.club/redirects/faq</string>
-    <string name="url_grant_write_secure_settings_guide" translatable="false">https://docs.keymapper.club/redirects/grant-write-secure-settings</string>
     <string name="url_dont_kill_my_app" translatable="false">https://dontkillmyapp.com</string>
     <string name="url_keymap_action_options_guide" translatable="false">https://docs.keymapper.club/redirects/keymap-action-options</string>
     <string name="url_trigger_key_options_guide" translatable="false">https://docs.keymapper.club/redirects/trigger-key-options</string>
@@ -427,7 +426,7 @@
     <string name="dialog_message_root_prompt">Please grant Key Mapper root permission in your root management app, such as Magisk.</string>
 
     <string name="dialog_title_write_secure_settings">Grant WRITE_SECURE_SETTINGS permission</string>
-    <string name="dialog_message_write_secure_settings">A PC/Mac is required to grant this permission. Read the online guide.</string>
+    <string name="dialog_message_write_secure_settings">You will need to use PRO mode to grant this permission.</string>
 
     <string name="dialog_message_cant_find_accessibility_settings_page">Your device doesn\'t seem to have an accessibility services settings page. Tap \"guide\" to read the online guide that explains how to fix this.</string>
     <string name="dialog_message_parallel_trigger_order">You must hold down the keys in the order that they are listed.</string>
@@ -487,7 +486,6 @@
 
     <string name="pos_done">Done</string>
     <string name="pos_kill">Kill</string>
-    <string name="pos_grant_write_secure_settings_guide">Guide</string>
     <string name="pos_start_service_with_adb_guide">Guide</string>
     <string name="pos_change_location">Change</string>
     <string name="pos_turn_off_stock_battery_optimisation">Fix partially</string>
@@ -1092,6 +1090,11 @@
     <string name="action_send_sms_description">Send SMS: "%s"" to %s</string>
     <string name="action_compose_sms">Compose SMS</string>
     <string name="action_compose_sms_description">Compose SMS: "%s" to %s</string>
+    <string name="modify_setting_description">Set setting: %1$s = %2$s</string>
+    <string name="modify_setting_type_system">System</string>
+    <string name="modify_setting_type_secure">Secure</string>
+    <string name="modify_setting_type_global">Global</string>
+    <string name="modify_setting_bottom_sheet_title">Modify setting</string>
     <string name="action_play_sound">Play sound</string>
     <string name="action_dismiss_most_recent_notification">Dismiss most recent notification</string>
     <string name="action_dismiss_all_notifications">Dismiss all notifications</string>
@@ -1173,6 +1176,18 @@
 
     <string name="action_force_stop_app">Force stop app</string>
     <string name="action_clear_recent_app">Close and clear app from recents</string>
+    <string name="action_modify_setting">Modify setting</string>
+    <string name="modify_setting_key_label">Key</string>
+    <string name="modify_setting_value_label">Value</string>
+    <string name="modify_setting_key_empty_error">Setting key cannot be empty</string>
+    <string name="modify_setting_value_empty_error">Setting value cannot be empty</string>
+    <string name="modify_setting_disclaimer">Note: Simply modifying setting values may not be sufficient for the system to process the change. Some settings require additional actions or broadcasts to take effect.</string>
+    <string name="button_test_modify_setting">Test</string>
+    <string name="test_modify_setting_result_ok">Setting modified successfully</string>
+    <string name="modify_setting_grant_permission_button">Grant permission</string>
+    <string name="choose_setting_title">Choose setting</string>
+    <string name="choose_setting_empty">No settings found</string>
+    <string name="choose_existing_setting">Choose existing setting</string>
     <!-- action labels -->
 
     <!-- action category labels -->

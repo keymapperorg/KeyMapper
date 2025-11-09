@@ -1,3 +1,10 @@
+## [4.0.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.03)
+
+#### TO BE RELEASED
+
+## Added
+- #1871 action to modify any system settings
+
 ## [4.0.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.02)
 
 #### 08 November 2025

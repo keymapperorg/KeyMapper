@@ -253,6 +253,7 @@ object ActionUtils {
         ActionId.INTERACT_UI_ELEMENT -> ActionCategory.APPS
         ActionId.FORCE_STOP_APP -> ActionCategory.APPS
         ActionId.CLEAR_RECENT_APP -> ActionCategory.APPS
+        ActionId.MODIFY_SETTING -> ActionCategory.APPS
 
         ActionId.CONSUME_KEY_EVENT -> ActionCategory.SPECIAL
     }
@@ -383,6 +384,8 @@ object ActionUtils {
         ActionId.INTERACT_UI_ELEMENT -> R.string.action_interact_ui_element_title
         ActionId.FORCE_STOP_APP -> R.string.action_force_stop_app
         ActionId.CLEAR_RECENT_APP -> R.string.action_clear_recent_app
+
+        ActionId.MODIFY_SETTING -> R.string.action_modify_setting
     }
 
     @DrawableRes
@@ -760,6 +763,9 @@ object ActionUtils {
                     return listOf(Permission.FIND_NEARBY_DEVICES)
                 }
 
+            // Permissions handled based on setting type at runtime
+            ActionId.MODIFY_SETTING -> return emptyList()
+
             else -> return emptyList()
         }
 
@@ -890,6 +896,8 @@ object ActionUtils {
         ActionId.INTERACT_UI_ELEMENT -> KeyMapperIcons.JumpToElement
         ActionId.FORCE_STOP_APP -> Icons.Outlined.Dangerous
         ActionId.CLEAR_RECENT_APP -> Icons.Outlined.VerticalSplit
+
+        ActionId.MODIFY_SETTING -> Icons.Outlined.Settings
     }
 }
 
@@ -936,6 +944,7 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.ShellCommand,
     is ActionData.InteractUiElement,
     is ActionData.MoveCursor,
+    is ActionData.ModifySetting,
         -> true
 
     else -> false

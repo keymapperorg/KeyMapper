@@ -949,4 +949,24 @@ sealed class ActionData : Comparable<ActionData> {
     data object ClearRecentApp : ActionData() {
         override val id: ActionId = ActionId.CLEAR_RECENT_APP
     }
+
+    @Serializable
+    data class ModifySetting(
+        val settingType: io.github.sds100.keymapper.system.settings.SettingType,
+        val settingKey: String,
+        val value: String,
+    ) : ActionData() {
+        override val id: ActionId = ActionId.MODIFY_SETTING
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is ModifySetting -> compareValuesBy(
+                this,
+                other,
+                { it.settingType },
+                { it.settingKey },
+                { it.value },
+            )
+            else -> super.compareTo(other)
+        }
+    }
 }

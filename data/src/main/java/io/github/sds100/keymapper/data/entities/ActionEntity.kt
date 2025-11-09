@@ -140,6 +140,8 @@ data class ActionEntity(
         const val EXTRA_DELAY_BEFORE_NEXT_ACTION = "extra_delay_before_next_action"
         const val EXTRA_HOLD_DOWN_DURATION = "extra_hold_down_duration"
         const val EXTRA_REPEAT_LIMIT = "extra_repeat_limit"
+        const val EXTRA_SETTING_VALUE = "extra_setting_value"
+        const val EXTRA_SETTING_TYPE = "extra_setting_type"
 
         val DESERIALIZER = jsonDeserializer {
             val typeString by it.json.byNullableString(NAME_ACTION_TYPE)
@@ -193,6 +195,7 @@ data class ActionEntity(
         SOUND,
         INTERACT_UI_ELEMENT,
         SHELL_COMMAND,
+        MODIFY_SETTING,
     }
 
     constructor(

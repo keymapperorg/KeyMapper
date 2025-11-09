@@ -120,6 +120,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val settingsRepository: PreferenceRepository,
     private val inputEventHub: InputEventHub,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
+    private val settingsAdapter: io.github.sds100.keymapper.system.settings.SettingsAdapter,
 ) : PerformActionsUseCase {
 
     @AssistedFactory
@@ -1015,6 +1016,14 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 } else {
                     result = SdkVersionTooLow(minSdk = Constants.SYSTEM_BRIDGE_MIN_API)
                 }
+            }
+
+            is ActionData.ModifySetting -> {
+                result = settingsAdapter.setValue(
+                    action.settingType,
+                    action.settingKey,
+                    action.value,
+                )
             }
         }
 

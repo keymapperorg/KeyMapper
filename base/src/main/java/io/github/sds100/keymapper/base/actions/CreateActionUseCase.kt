@@ -11,10 +11,12 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
-import javax.inject.Inject
+import io.github.sds100.keymapper.system.settings.SettingType
+import io.github.sds100.keymapper.system.settings.SettingsAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge
+import javax.inject.Inject
 
 class CreateActionUseCaseImpl @Inject constructor(
     private val inputMethodAdapter: InputMethodAdapter,
@@ -22,6 +24,7 @@ class CreateActionUseCaseImpl @Inject constructor(
     private val cameraAdapter: CameraAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val phoneAdapter: PhoneAdapter,
+    private val settingsAdapter: SettingsAdapter,
 ) : CreateActionUseCase,
     IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(
         systemFeatureAdapter,
@@ -69,6 +72,25 @@ class CreateActionUseCaseImpl @Inject constructor(
 
         return phoneAdapter.sendSms(number, message)
     }
+
+    override fun setSettingValue(
+        settingType: SettingType,
+        key: String,
+        value: String,
+    ): KMResult<Unit> {
+        return settingsAdapter.setValue(settingType, key, value)
+    }
+
+    override fun getRequiredPermissionForSettingType(settingType: SettingType): Permission {
+        return when (settingType) {
+            SettingType.SYSTEM -> Permission.WRITE_SETTINGS
+            SettingType.SECURE, SettingType.GLOBAL -> Permission.WRITE_SECURE_SETTINGS
+        }
+    }
+
+    override fun isPermissionGrantedFlow(permission: Permission): Flow<Boolean> {
+        return permissionAdapter.isGrantedFlow(permission)
+    }
 }
 
 interface CreateActionUseCase : IsActionSupportedUseCase {
@@ -83,4 +105,7 @@ interface CreateActionUseCase : IsActionSupportedUseCase {
 
     fun requestPermission(permission: Permission)
     suspend fun testSms(number: String, message: String): KMResult<Unit>
+    fun setSettingValue(settingType: SettingType, key: String, value: String): KMResult<Unit>
+    fun getRequiredPermissionForSettingType(settingType: SettingType): Permission
+    fun isPermissionGrantedFlow(permission: Permission): Flow<Boolean>
 }
