@@ -199,27 +199,22 @@ class AndroidNetworkAdapter @Inject constructor(
         }
     }
 
-    override fun isHotspotEnabled(): Boolean {
-        // TODO: Implement hotspot state detection using reflection or system bridge.
-        // For now, returning false means toggle action will always attempt to enable.
-        // This is acceptable for the initial implementation.
-        return false
+    @RequiresApi(Build.VERSION_CODES.R)
+    override suspend fun isHotspotEnabled(): KMResult<Boolean> {
+        // isTetheringEnabled is a blocking call that registers a callback
+        return withContext(Dispatchers.IO) {
+            systemBridgeConnManager.run { systemBridge -> systemBridge.isTetheringEnabled }
+        }
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun enableHotspot(): KMResult<*> {
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
-            return systemBridgeConnManager.run { bridge -> bridge.setTetheringEnabled(true) }
-        } else {
-            return KMError.FeatureUnavailable
-        }
+        return systemBridgeConnManager.run { bridge -> bridge.setTetheringEnabled(true) }
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun disableHotspot(): KMResult<*> {
-        if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
-            return systemBridgeConnManager.run { bridge -> bridge.setTetheringEnabled(false) }
-        } else {
-            return KMError.FeatureUnavailable
-        }
+        return systemBridgeConnManager.run { bridge -> bridge.setTetheringEnabled(false) }
     }
 
     /**

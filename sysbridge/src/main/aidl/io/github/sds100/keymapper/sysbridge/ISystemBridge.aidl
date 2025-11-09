@@ -43,5 +43,7 @@ interface ISystemBridge {
 
    void setRingerMode(int ringerMode) = 18;
 
-   void setTetheringEnabled(boolean enable) = 19;
+   boolean isTetheringEnabled() = 19;
+
+   void setTetheringEnabled(boolean enable) = 20;
 }

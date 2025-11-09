@@ -484,10 +484,16 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.Hotspot.Toggle -> {
-                result = if (networkAdapter.isHotspotEnabled()) {
-                    networkAdapter.disableHotspot()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    result = networkAdapter.isHotspotEnabled().then { isEnabled ->
+                        if (isEnabled) {
+                            networkAdapter.disableHotspot()
+                        } else {
+                            networkAdapter.enableHotspot()
+                        }
+                    }
                 } else {
-                    networkAdapter.enableHotspot()
+                    result = SdkVersionTooLow(minSdk = Build.VERSION_CODES.R)
                 }
             }
 
