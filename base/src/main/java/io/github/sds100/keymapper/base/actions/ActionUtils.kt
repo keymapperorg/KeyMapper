@@ -67,6 +67,8 @@ import androidx.compose.material.icons.outlined.Swipe
 import androidx.compose.material.icons.outlined.TouchApp
 import androidx.compose.material.icons.outlined.VerticalSplit
 import androidx.compose.material.icons.outlined.ViewArray
+import androidx.compose.material.icons.outlined.WifiTethering
+import androidx.compose.material.icons.outlined.WifiTetheringOff
 import androidx.compose.material.icons.rounded.Abc
 import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.Bluetooth
@@ -142,6 +144,10 @@ object ActionUtils {
         ActionId.TOGGLE_MOBILE_DATA -> ActionCategory.CONNECTIVITY
         ActionId.ENABLE_MOBILE_DATA -> ActionCategory.CONNECTIVITY
         ActionId.DISABLE_MOBILE_DATA -> ActionCategory.CONNECTIVITY
+
+        ActionId.TOGGLE_HOTSPOT -> ActionCategory.CONNECTIVITY
+        ActionId.ENABLE_HOTSPOT -> ActionCategory.CONNECTIVITY
+        ActionId.DISABLE_HOTSPOT -> ActionCategory.CONNECTIVITY
 
         ActionId.TOGGLE_AUTO_BRIGHTNESS -> ActionCategory.DISPLAY
         ActionId.DISABLE_AUTO_BRIGHTNESS -> ActionCategory.DISPLAY
@@ -388,6 +394,9 @@ object ActionUtils {
         ActionId.CLEAR_RECENT_APP -> R.string.action_clear_recent_app
 
         ActionId.MODIFY_SETTING -> R.string.action_modify_setting
+        ActionId.TOGGLE_HOTSPOT -> R.string.action_toggle_hotspot
+        ActionId.ENABLE_HOTSPOT -> R.string.action_enable_hotspot
+        ActionId.DISABLE_HOTSPOT -> R.string.action_disable_hotspot
     }
 
     @DrawableRes
@@ -555,6 +564,13 @@ object ActionUtils {
         ActionId.SHOW_POWER_MENU -> Build.VERSION_CODES.LOLLIPOP
         ActionId.DEVICE_CONTROLS -> Build.VERSION_CODES.S
 
+        // It could be supported on older versions but system bridge min API is Q and its extra
+        // maintenance effort to support the older tethering system API.
+        ActionId.TOGGLE_HOTSPOT,
+        ActionId.ENABLE_HOTSPOT,
+        ActionId.DISABLE_HOTSPOT,
+            -> Build.VERSION_CODES.R
+
         else -> Constants.MIN_API
     }
 
@@ -618,6 +634,11 @@ object ActionUtils {
             ActionId.TOGGLE_MOBILE_DATA,
             ActionId.ENABLE_MOBILE_DATA,
             ActionId.DISABLE_MOBILE_DATA,
+                -> true
+
+            ActionId.TOGGLE_HOTSPOT,
+            ActionId.ENABLE_HOTSPOT,
+            ActionId.DISABLE_HOTSPOT,
                 -> true
 
             ActionId.ENABLE_NFC,
@@ -904,6 +925,9 @@ object ActionUtils {
         ActionId.CLEAR_RECENT_APP -> Icons.Outlined.VerticalSplit
 
         ActionId.MODIFY_SETTING -> Icons.Outlined.Settings
+        ActionId.TOGGLE_HOTSPOT -> Icons.Outlined.WifiTethering
+        ActionId.ENABLE_HOTSPOT -> Icons.Outlined.WifiTethering
+        ActionId.DISABLE_HOTSPOT -> Icons.Outlined.WifiTetheringOff
     }
 }
 

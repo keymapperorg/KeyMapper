@@ -483,6 +483,28 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 result = networkAdapter.disableMobileData()
             }
 
+            is ActionData.Hotspot.Toggle -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    result = networkAdapter.isHotspotEnabled().then { isEnabled ->
+                        if (isEnabled) {
+                            networkAdapter.disableHotspot()
+                        } else {
+                            networkAdapter.enableHotspot()
+                        }
+                    }
+                } else {
+                    result = SdkVersionTooLow(minSdk = Build.VERSION_CODES.R)
+                }
+            }
+
+            is ActionData.Hotspot.Enable -> {
+                result = networkAdapter.enableHotspot()
+            }
+
+            is ActionData.Hotspot.Disable -> {
+                result = networkAdapter.disableHotspot()
+            }
+
             is ActionData.Brightness.ToggleAuto -> {
                 result = if (displayAdapter.isAutoBrightnessEnabled()) {
                     displayAdapter.disableAutoBrightness()

@@ -8,6 +8,7 @@ You can now remap ALL buttons when the screen is off (including the power button
 • Mute/unmute microphone
 • Modify any system setting
 • Show a custom notification
+• Toggle hotspot
 
 🆕 New Features
 • Redesigned Settings screen

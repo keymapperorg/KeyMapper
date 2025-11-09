@@ -154,9 +154,12 @@ class SystemBridgeAutoStarter @Inject constructor(
 
             if (isBoot) {
                 handleAutoStartOnBoot()
-            } else if (BuildConfig.DEBUG) {
-                Timber.i("Auto starting system bridge because debug build")
-                autoStartTypeFlow.first()?.let { autoStart(it) }
+            } else if (BuildConfig.DEBUG && connectionManager.isConnected()) {
+                // This is useful when developing and need to restart the system bridge
+                // after making changes to it.
+                Timber.w("Restarting system bridge on debug build.")
+
+                connectionManager.restartSystemBridge()
             } else {
                 handleAutoStartFromPreVersion4()
             }

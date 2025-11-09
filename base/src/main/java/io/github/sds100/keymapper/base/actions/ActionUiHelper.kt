@@ -507,6 +507,10 @@ class ActionUiHelper(
         ActionData.MobileData.Enable -> getString(R.string.action_enable_mobile_data)
         ActionData.MobileData.Toggle -> getString(R.string.action_toggle_mobile_data)
 
+        ActionData.Hotspot.Disable -> getString(R.string.action_disable_hotspot)
+        ActionData.Hotspot.Enable -> getString(R.string.action_enable_hotspot)
+        ActionData.Hotspot.Toggle -> getString(R.string.action_toggle_hotspot)
+
         is ActionData.MoveCursor -> {
             when (action.direction) {
                 ActionData.MoveCursor.Direction.START -> {

@@ -53,10 +53,17 @@ class SystemBridgeStarter @Inject constructor(
 ) {
     private val userManager by lazy { ctx.getSystemService(UserManager::class.java)!! }
 
-    private val baseApkPath = ctx.applicationInfo.sourceDir
-    private val splitApkPaths: Array<String> = ctx.applicationInfo.splitSourceDirs ?: emptyArray()
-    private val libPath = ctx.applicationInfo.nativeLibraryDir
-    private val packageName = ctx.applicationInfo.packageName
+    // Important! Use getters because the values can change at runtime just after the app process
+    // starts
+    private val baseApkPath: String
+        get() = ctx.applicationInfo.sourceDir
+    private val splitApkPaths: Array<String>
+        get() = ctx.applicationInfo.splitSourceDirs ?: emptyArray()
+    private val libPath: String?
+        get() = ctx.applicationInfo.nativeLibraryDir
+    private val packageName: String
+        get() = ctx.applicationInfo.packageName
+
     private val startMutex: Mutex = Mutex()
 
     private val shizukuStarterConnection: ServiceConnection = object : ServiceConnection {

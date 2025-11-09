@@ -199,6 +199,24 @@ class AndroidNetworkAdapter @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
+    override suspend fun isHotspotEnabled(): KMResult<Boolean> {
+        // isTetheringEnabled is a blocking call that registers a callback
+        return withContext(Dispatchers.IO) {
+            systemBridgeConnManager.run { systemBridge -> systemBridge.isTetheringEnabled }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun enableHotspot(): KMResult<*> {
+        return systemBridgeConnManager.run { bridge -> bridge.setTetheringEnabled(true) }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun disableHotspot(): KMResult<*> {
+        return systemBridgeConnManager.run { bridge -> bridge.setTetheringEnabled(false) }
+    }
+
     /**
      * @return Null on Android 10+ because there is no API to do this anymore.
      */

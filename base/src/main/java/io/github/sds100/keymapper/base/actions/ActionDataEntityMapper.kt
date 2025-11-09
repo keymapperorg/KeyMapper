@@ -488,6 +488,10 @@ object ActionDataEntityMapper {
             ActionId.ENABLE_MOBILE_DATA -> ActionData.MobileData.Enable
             ActionId.DISABLE_MOBILE_DATA -> ActionData.MobileData.Disable
 
+            ActionId.TOGGLE_HOTSPOT -> ActionData.Hotspot.Toggle
+            ActionId.ENABLE_HOTSPOT -> ActionData.Hotspot.Enable
+            ActionId.DISABLE_HOTSPOT -> ActionData.Hotspot.Disable
+
             ActionId.TOGGLE_AUTO_BRIGHTNESS -> ActionData.Brightness.ToggleAuto
             ActionId.DISABLE_AUTO_BRIGHTNESS -> ActionData.Brightness.DisableAuto
             ActionId.ENABLE_AUTO_BRIGHTNESS -> ActionData.Brightness.EnableAuto
@@ -1223,6 +1227,10 @@ object ActionDataEntityMapper {
         ActionId.TOGGLE_MOBILE_DATA to "toggle_mobile_data",
         ActionId.ENABLE_MOBILE_DATA to "enable_mobile_data",
         ActionId.DISABLE_MOBILE_DATA to "disable_mobile_data",
+
+        ActionId.TOGGLE_HOTSPOT to "toggle_hotspot",
+        ActionId.ENABLE_HOTSPOT to "enable_hotspot",
+        ActionId.DISABLE_HOTSPOT to "disable_hotspot",
 
         ActionId.TOGGLE_AUTO_BRIGHTNESS to "toggle_auto_brightness",
         ActionId.DISABLE_AUTO_BRIGHTNESS to "disable_auto_brightness",
