@@ -41,9 +41,12 @@ data class KeyMapEntity(
     @ColumnInfo(name = KeyMapDao.KEY_TRIGGER)
     val trigger: TriggerEntity = TriggerEntity(),
 
+    /**
+     * The action can be null if it wasn't deserialized successfully.
+     */
     @SerializedName(NAME_ACTION_LIST)
     @ColumnInfo(name = KeyMapDao.KEY_ACTION_LIST)
-    val actionList: List<ActionEntity> = listOf(),
+    val actionList: List<ActionEntity?> = listOf(),
 
     @SerializedName(NAME_CONSTRAINT_LIST)
     @ColumnInfo(name = KeyMapDao.KEY_CONSTRAINT_LIST)
@@ -87,7 +90,7 @@ data class KeyMapEntity(
 
         val DESERIALIZER = jsonDeserializer {
             val actionListJsonArray by it.json.byArray(NAME_ACTION_LIST)
-            val actionList = it.context.deserialize<List<ActionEntity>>(actionListJsonArray)
+            val actionList = it.context.deserialize<List<ActionEntity?>>(actionListJsonArray)
 
             val triggerJsonObject by it.json.byObject(NAME_TRIGGER)
             val trigger = it.context.deserialize<TriggerEntity>(triggerJsonObject)

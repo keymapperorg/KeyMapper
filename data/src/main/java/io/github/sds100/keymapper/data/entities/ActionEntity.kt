@@ -142,8 +142,18 @@ data class ActionEntity(
         const val EXTRA_REPEAT_LIMIT = "extra_repeat_limit"
 
         val DESERIALIZER = jsonDeserializer {
-            val typeString by it.json.byString(NAME_ACTION_TYPE)
-            val type = Type.valueOf(typeString)
+            val typeString by it.json.byNullableString(NAME_ACTION_TYPE)
+            // If it is an unknown type then do not deserialize
+            if (typeString == null) {
+                return@jsonDeserializer null
+            }
+
+            val type: Type = try {
+                Type.valueOf(typeString!!)
+            } catch (e: IllegalArgumentException) {
+                // If it is an unknown type then do not deserialize
+                return@jsonDeserializer null
+            }
 
             val data by it.json.byString(NAME_DATA)
 
