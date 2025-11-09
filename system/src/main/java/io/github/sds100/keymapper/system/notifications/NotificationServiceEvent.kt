@@ -9,5 +9,4 @@ sealed class NotificationServiceEvent {
 
     @Serializable
     data object DismissAllNotifications : NotificationServiceEvent()
-
 }

@@ -46,8 +46,8 @@ object Keys {
 
     //    val approvedAssistantTriggerFeaturePrompt =
 //        booleanPreferencesKey("pref_approved_assistant_trigger_feature_prompt")
-    val approvedFloatingButtonFeaturePrompt =
-        booleanPreferencesKey("pref_approved_floating_button_feature_prompt")
+//    val approvedFloatingButtonFeaturePrompt =
+//        booleanPreferencesKey("pref_approved_floating_button_feature_prompt")
 
     val shownParallelTriggerOrderExplanation =
         booleanPreferencesKey("key_shown_parallel_trigger_order_warning")
@@ -149,4 +149,7 @@ object Keys {
      * to 4.0 on a rooted device.
      */
     val handledRootToProModeUpgrade = booleanPreferencesKey("key_handled_root_to_pro_mode_upgrade")
+
+    val handledMigrateScreenOffKeyMapsNotification =
+        booleanPreferencesKey("key_handled_migrate_screen_off_key_maps_notification")
 }

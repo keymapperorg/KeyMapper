@@ -4,7 +4,6 @@ import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
 import io.github.sds100.keymapper.common.notifications.KMNotificationAction
 
-
 data class NotificationModel(
     val id: Int,
     val channel: String,
@@ -34,6 +33,5 @@ data class NotificationModel(
     val bigTextStyle: Boolean = false,
     val silent: Boolean = false,
     val showIndeterminateProgress: Boolean = false,
-    val timeout: Long? = null
+    val timeout: Long? = null,
 )
-

@@ -19,11 +19,11 @@ import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.success
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 @Singleton
 class AndroidAppShortcutAdapter @Inject constructor(
@@ -106,7 +106,8 @@ class AndroidAppShortcutAdapter @Inject constructor(
         }
     }
 
-    override fun createShortcutResultIntent(shortcut: ShortcutInfoCompat): Intent = ShortcutManagerCompat.createShortcutResultIntent(ctx, shortcut)
+    override fun createShortcutResultIntent(shortcut: ShortcutInfoCompat): Intent =
+        ShortcutManagerCompat.createShortcutResultIntent(ctx, shortcut)
 
     override fun getShortcutName(info: AppShortcutInfo): KMResult<String> {
         try {

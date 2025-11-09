@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.callbackFlow
 
-
 interface PackageManagerAdapter {
     val onPackagesChanged: Flow<Unit>
     val installedPackages: StateFlow<State<List<PackageInfo>>>

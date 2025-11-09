@@ -11,9 +11,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AndroidVibratorAdapter @Inject constructor(
-    @ApplicationContext private val context: Context
-) : VibratorAdapter {
+class AndroidVibratorAdapter @Inject constructor(@ApplicationContext private val context: Context) :
+    VibratorAdapter {
     private val vibrator: Vibrator? = context.getSystemService()
 
     override fun vibrate(duration: Long) {

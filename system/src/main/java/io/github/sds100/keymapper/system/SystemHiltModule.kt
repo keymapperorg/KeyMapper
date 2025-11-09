@@ -53,6 +53,8 @@ import io.github.sds100.keymapper.system.ringtones.AndroidRingtoneAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.root.SuAdapterImpl
+import io.github.sds100.keymapper.system.settings.AndroidSettingsAdapter
+import io.github.sds100.keymapper.system.settings.SettingsAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
 import io.github.sds100.keymapper.system.shell.StandardShellAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
@@ -82,7 +84,9 @@ abstract class SystemHiltModule {
 
     @Singleton
     @Binds
-    abstract fun providePackageManagerAdapter(impl: AndroidPackageManagerAdapter): PackageManagerAdapter
+    abstract fun providePackageManagerAdapter(
+        impl: AndroidPackageManagerAdapter,
+    ): PackageManagerAdapter
 
     @Singleton
     @Binds
@@ -182,9 +186,17 @@ abstract class SystemHiltModule {
 
     @Singleton
     @Binds
-    abstract fun provideNotificationReceiverAdapter(impl: NotificationReceiverAdapterImpl): NotificationReceiverAdapter
+    abstract fun provideNotificationReceiverAdapter(
+        impl: NotificationReceiverAdapterImpl,
+    ): NotificationReceiverAdapter
 
     @Singleton
     @Binds
-    abstract fun provideSystemFeatureAdapter(impl: AndroidSystemFeatureAdapter): SystemFeatureAdapter
+    abstract fun provideSystemFeatureAdapter(
+        impl: AndroidSystemFeatureAdapter,
+    ): SystemFeatureAdapter
+
+    @Singleton
+    @Binds
+    abstract fun provideSettingsAdapter(impl: AndroidSettingsAdapter): SettingsAdapter
 }

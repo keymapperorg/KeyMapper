@@ -4,6 +4,7 @@ import android.text.InputType
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickCoordinateResult
 import io.github.sds100.keymapper.base.actions.swipescreen.SwipePickCoordinateResult
@@ -24,17 +25,22 @@ import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.network.HttpMethod
+import io.github.sds100.keymapper.system.settings.SettingType
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class CreateActionDelegate(
     private val coroutineScope: CoroutineScope,
     private val useCase: CreateActionUseCase,
@@ -54,6 +60,9 @@ class CreateActionDelegate(
     var httpRequestBottomSheetState: ActionData.HttpRequest? by mutableStateOf(null)
     var smsActionBottomSheetState: SmsActionBottomSheetState? by mutableStateOf(null)
     var volumeActionState: VolumeActionBottomSheetState? by mutableStateOf(null)
+    var modifySettingActionBottomSheetState: ModifySettingActionBottomSheetState? by mutableStateOf(
+        null,
+    )
 
     init {
         coroutineScope.launch {
@@ -62,6 +71,22 @@ class CreateActionDelegate(
                     enableFlashlightActionState = state.copy(isFlashEnabled = enabled)
                 }
             }
+        }
+
+        coroutineScope.launch {
+            snapshotFlow { modifySettingActionBottomSheetState?.settingType }
+                .filterNotNull()
+                .flatMapLatest { settingType ->
+                    val permission = useCase.getRequiredPermissionForSettingType(settingType)
+                    useCase.isPermissionGrantedFlow(permission)
+                }
+                .collectLatest { isGranted ->
+                    modifySettingActionBottomSheetState =
+                        modifySettingActionBottomSheetState?.copy(
+                            isPermissionGranted = isGranted,
+                            testResult = null,
+                        )
+                }
         }
     }
 
@@ -194,6 +219,71 @@ class CreateActionDelegate(
                 }
             }
         }
+    }
+
+    fun onDoneModifySettingClick() {
+        val state = modifySettingActionBottomSheetState ?: return
+        val result = ActionData.ModifySetting(
+            settingType = state.settingType,
+            settingKey = state.settingKey,
+            value = state.value,
+        )
+
+        modifySettingActionBottomSheetState = null
+        actionResult.update { result }
+    }
+
+    fun onSelectSettingType(settingType: SettingType) {
+        modifySettingActionBottomSheetState =
+            modifySettingActionBottomSheetState?.copy(
+                settingType = settingType,
+                testResult = null,
+            )
+    }
+
+    fun onSettingKeyChange(key: String) {
+        modifySettingActionBottomSheetState =
+            modifySettingActionBottomSheetState?.copy(
+                settingKey = key,
+                testResult = null,
+            )
+    }
+
+    fun onChooseExistingSettingClick() {
+        val type = modifySettingActionBottomSheetState?.settingType ?: return
+        val destination = NavDestination.ChooseSetting(settingType = type)
+
+        coroutineScope.launch {
+            val setting = navigate("choose_setting", destination) ?: return@launch
+
+            modifySettingActionBottomSheetState = modifySettingActionBottomSheetState?.copy(
+                settingType = setting.settingType,
+                settingKey = setting.key,
+                value = setting.currentValue ?: "",
+                testResult = null,
+            )
+        }
+    }
+
+    fun onSettingValueChange(value: String) {
+        modifySettingActionBottomSheetState =
+            modifySettingActionBottomSheetState?.copy(value = value)
+    }
+
+    fun onTestModifySettingClick() {
+        val state = modifySettingActionBottomSheetState ?: return
+
+        coroutineScope.launch {
+            val result = useCase.setSettingValue(state.settingType, state.settingKey, state.value)
+            modifySettingActionBottomSheetState =
+                modifySettingActionBottomSheetState?.copy(testResult = result)
+        }
+    }
+
+    fun onRequestModifySettingPermission() {
+        val state = modifySettingActionBottomSheetState ?: return
+        val permission = useCase.getRequiredPermissionForSettingType(state.settingType)
+        useCase.requestPermission(permission)
     }
 
     suspend fun editAction(oldData: ActionData) {
@@ -939,6 +1029,18 @@ class CreateActionDelegate(
             ActionId.MOVE_CURSOR -> return createMoverCursorAction()
             ActionId.FORCE_STOP_APP -> return ActionData.ForceStopApp
             ActionId.CLEAR_RECENT_APP -> return ActionData.ClearRecentApp
+
+            ActionId.MODIFY_SETTING -> {
+                val oldAction = oldData as? ActionData.ModifySetting
+
+                modifySettingActionBottomSheetState = ModifySettingActionBottomSheetState(
+                    settingType = oldAction?.settingType ?: SettingType.SYSTEM,
+                    settingKey = oldAction?.settingKey ?: "",
+                    value = oldAction?.value ?: "",
+                )
+
+                return null
+            }
         }
     }
 

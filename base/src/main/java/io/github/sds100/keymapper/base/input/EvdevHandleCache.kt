@@ -55,10 +55,10 @@ class EvdevHandleCache @Inject constructor(
                 devicesAdapter.connectedInputDevices,
                 systemBridgeConnectionManager.connectionState,
             ) { _, connectionState ->
-                if (connectionState !is SystemBridgeConnectionState.Connected) {
-                    devicesByPath.value = emptyMap()
-                } else {
+                if (connectionState is SystemBridgeConnectionState.Connected) {
                     invalidate()
+                } else {
+                    devicesByPath.value = emptyMap()
                 }
             }.collect()
         }

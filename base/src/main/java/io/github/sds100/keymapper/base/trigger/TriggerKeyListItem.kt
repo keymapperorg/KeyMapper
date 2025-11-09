@@ -305,6 +305,9 @@ private fun getErrorMessage(error: TriggerError): String {
         TriggerError.EVDEV_DEVICE_NOT_FOUND -> stringResource(
             R.string.trigger_error_evdev_device_not_found,
         )
+        TriggerError.MIGRATE_SCREEN_OFF_TRIGGER -> stringResource(
+            R.string.trigger_error_migrate_screen_off_key_map,
+        )
     }
 }
 

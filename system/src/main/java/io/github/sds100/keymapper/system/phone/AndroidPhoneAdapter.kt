@@ -24,6 +24,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.Channel
@@ -31,8 +33,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class AndroidPhoneAdapter @Inject constructor(
@@ -111,7 +111,7 @@ class AndroidPhoneAdapter @Inject constructor(
                 ctx,
                 broadcastReceiver,
                 this,
-                ContextCompat.RECEIVER_EXPORTED
+                ContextCompat.RECEIVER_EXPORTED,
             )
         }
     }
@@ -150,7 +150,7 @@ class AndroidPhoneAdapter @Inject constructor(
     private fun hasAnswerPhoneCallsPermission(): Boolean {
         return ActivityCompat.checkSelfPermission(
             ctx,
-            Manifest.permission.ANSWER_PHONE_CALLS
+            Manifest.permission.ANSWER_PHONE_CALLS,
         ) == PackageManager.PERMISSION_GRANTED
     }
 
@@ -181,7 +181,7 @@ class AndroidPhoneAdapter @Inject constructor(
                 ctx,
                 0,
                 Intent(ACTION_SMS_SENT_RESULT),
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
 
         try {
@@ -234,7 +234,9 @@ class AndroidPhoneAdapter @Inject constructor(
             TelephonyManager.CALL_STATE_IDLE -> return CallState.NONE
             TelephonyManager.CALL_STATE_OFFHOOK -> return CallState.IN_PHONE_CALL
             TelephonyManager.CALL_STATE_RINGING -> return CallState.RINGING
-            else -> throw IllegalArgumentException("Don't know how to convert that call state $sdkCallState")
+            else -> throw IllegalArgumentException(
+                "Don't know how to convert that call state $sdkCallState",
+            )
         }
     }
 }

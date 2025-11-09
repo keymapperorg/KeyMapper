@@ -17,14 +17,14 @@ import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManage
 import io.github.sds100.keymapper.sysbridge.manager.isConnected
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.permissions.Permission
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
+import timber.log.Timber
 
 @Singleton
 class AndroidVolumeAdapter @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val systemBridgeConnectionManager: SystemBridgeConnectionManager
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
 ) : VolumeAdapter {
     private val ctx = context.applicationContext
 
@@ -39,7 +39,7 @@ class AndroidVolumeAdapter @Inject constructor(
             val ringerModeSdk = if (systemBridgeConnectionManager.isConnected()) {
                 SettingsUtils.getGlobalSetting<Int>(
                     ctx,
-                    Settings.Global.MODE_RINGER
+                    Settings.Global.MODE_RINGER,
                 ) ?: 0
             } else {
                 audioManager.ringerMode
@@ -49,7 +49,9 @@ class AndroidVolumeAdapter @Inject constructor(
                 AudioManager.RINGER_MODE_NORMAL -> RingerMode.NORMAL
                 AudioManager.RINGER_MODE_VIBRATE -> RingerMode.VIBRATE
                 AudioManager.RINGER_MODE_SILENT -> RingerMode.SILENT
-                else -> throw Exception("Don't know how to convert this ringer moder ${audioManager.ringerMode}")
+                else -> throw Exception(
+                    "Don't know how to convert this ringer moder ${audioManager.ringerMode}",
+                )
             }
         }
 
@@ -99,7 +101,9 @@ class AndroidVolumeAdapter @Inject constructor(
                 systemBridgeConnectionManager.run { systemBridge ->
                     systemBridge.setRingerMode(sdkMode)
                 }.otherwise {
-                    Timber.e("Failed to set ringer mode with System Bridge, falling back to AudioManager")
+                    Timber.e(
+                        "Failed to set ringer mode with System Bridge, falling back to AudioManager",
+                    )
 
                     audioManager.ringerMode = sdkMode
                     Success(Unit)
@@ -116,13 +120,11 @@ class AndroidVolumeAdapter @Inject constructor(
     override fun enableDndMode(dndMode: DndMode): KMResult<*> {
         notificationManager.setInterruptionFilter(dndMode.convert())
         return Success(Unit)
-
     }
 
     override fun disableDndMode(): KMResult<*> {
         notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
         return Success(Unit)
-
     }
 
     override fun isDndEnabled(): Boolean =

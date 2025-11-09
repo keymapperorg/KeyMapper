@@ -42,6 +42,12 @@ class LogViewModel @Inject constructor(private val displayLogUseCase: DisplayLog
         }
     }
 
+    fun onShareFileClick() {
+        viewModelScope.launch {
+            displayLogUseCase.shareFile()
+        }
+    }
+
     fun onClearLogClick() {
         displayLogUseCase.clearLog()
     }

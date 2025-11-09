@@ -28,6 +28,15 @@ data class Trigger(
     val sequenceTriggerTimeout: Int? = null,
     val triggerFromOtherApps: Boolean = false,
     val showToast: Boolean = false,
+
+    /**
+     * This is true if the user turned on the "screen off" option in versions prior to v4.0.0. This
+     * option has now been removed and replaced with the system bridge but they will have to
+     * record their keys again and create an EvdevTriggerKey. We can not handle this migration
+     * automatically because we could grab the wrong evdev device or if there is a bug
+     * severely mess up their device without them knowing the cause.
+     */
+    val legacyDetectScreenOff: Boolean = false,
 ) {
     fun isVibrateAllowed(): Boolean = true
 
@@ -102,6 +111,7 @@ object TriggerEntityMapper {
             else -> TriggerMode.Undefined
         }
 
+        @Suppress("DEPRECATION")
         return Trigger(
             keys = keys,
             mode = mode,
@@ -127,6 +137,9 @@ object TriggerEntityMapper {
 
             triggerFromOtherApps = entity.flags.hasFlag(TriggerEntity.TRIGGER_FLAG_FROM_OTHER_APPS),
             showToast = entity.flags.hasFlag(TriggerEntity.TRIGGER_FLAG_SHOW_TOAST),
+            legacyDetectScreenOff = entity.flags.hasFlag(
+                TriggerEntity.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS,
+            ),
         )
     }
 
@@ -193,6 +206,13 @@ object TriggerEntityMapper {
 
         if (trigger.showToast) {
             flags = flags.withFlag(TriggerEntity.TRIGGER_FLAG_SHOW_TOAST)
+        }
+
+        // Still persist this so that any errors do not disappear when the key map is saved
+        // for whatever reason.
+        if (trigger.legacyDetectScreenOff) {
+            @Suppress("DEPRECATION")
+            flags = flags.withFlag(TriggerEntity.TRIGGER_FLAG_SCREEN_OFF_TRIGGERS)
         }
 
         val keys = trigger.keys.map { key ->

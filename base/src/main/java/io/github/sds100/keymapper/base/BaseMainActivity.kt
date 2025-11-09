@@ -21,7 +21,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.withStateAtLeast
-import androidx.navigation.findNavController
 import com.anggrayudi.storage.extension.openInputStream
 import com.anggrayudi.storage.extension.openOutputStream
 import com.anggrayudi.storage.extension.toDocumentFile
@@ -32,6 +31,7 @@ import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.permissions.RequestPermissionDelegate
 import io.github.sds100.keymapper.base.trigger.RecordTriggerControllerImpl
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupControllerImpl
@@ -105,6 +105,9 @@ abstract class BaseMainActivity : AppCompatActivity() {
     @Inject
     lateinit var inputEventHub: InputEventHubImpl
 
+    @Inject
+    lateinit var navigationProvider: NavigationProvider
+
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
 
     private val currentNightMode: Int
@@ -162,15 +165,14 @@ abstract class BaseMainActivity : AppCompatActivity() {
             notificationReceiverAdapter = notificationReceiverAdapter,
             buildConfigProvider = buildConfigProvider,
             shizukuAdapter = shizukuAdapter,
+            navigationProvider = navigationProvider,
+            coroutineScope = lifecycleScope,
         )
 
         permissionAdapter.request
             .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
             .onEach { permission ->
-                requestPermissionDelegate.requestPermission(
-                    permission,
-                    findNavController(R.id.container),
-                )
+                requestPermissionDelegate.requestPermission(permission)
             }
             .launchIn(lifecycleScope)
 
@@ -201,9 +203,10 @@ abstract class BaseMainActivity : AppCompatActivity() {
         // the activities have not necessarily resumed at that point.
         permissionAdapter.onPermissionsChanged()
         serviceAdapter.invalidateState()
-        suAdapter.invalidateIsRooted()
+        suAdapter.requestPermission()
         systemBridgeSetupController.invalidateSettings()
         networkAdapter.invalidateState()
+        onboardingUseCase.handledMigrateScreenOffKeyMapsNotification()
     }
 
     override fun onDestroy() {

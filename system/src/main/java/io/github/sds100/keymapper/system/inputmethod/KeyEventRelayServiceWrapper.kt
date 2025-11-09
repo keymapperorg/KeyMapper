@@ -19,7 +19,7 @@ import javax.inject.Singleton
 @Singleton
 class KeyEventRelayServiceWrapperImpl @Inject constructor(
     @ApplicationContext private val ctx: Context,
-    private val buildConfigProvider: BuildConfigProvider
+    private val buildConfigProvider: BuildConfigProvider,
 ) : KeyEventRelayServiceWrapper {
 
     private val keyEventRelayServiceLock: Any = Any()
@@ -27,10 +27,7 @@ class KeyEventRelayServiceWrapperImpl @Inject constructor(
 
     private val serviceConnection: ServiceConnection =
         object : ServiceConnection {
-            override fun onServiceConnected(
-                name: ComponentName?,
-                service: IBinder?,
-            ) {
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
                 synchronized(keyEventRelayServiceLock) {
                     keyEventRelayService = IKeyEventRelayService.Stub.asInterface(service)
                 }
@@ -95,7 +92,7 @@ class KeyEventRelayServiceWrapperImpl @Inject constructor(
             val component =
                 ComponentName(
                     buildConfigProvider.packageName,
-                    "io.github.sds100.keymapper.api.KeyEventRelayService"
+                    "io.github.sds100.keymapper.api.KeyEventRelayService",
                 )
             relayServiceIntent.setComponent(component)
             val isSuccess =

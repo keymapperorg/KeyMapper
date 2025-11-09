@@ -16,19 +16,19 @@ import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class AndroidBluetoothAdapter @Inject constructor(
     @ApplicationContext private val context: Context,
     private val coroutineScope: CoroutineScope,
-    private val systemBridgeConnectionManager: SystemBridgeConnectionManager
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
 ) : io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter {
 
     private val bluetoothManager: BluetoothManager? = context.getSystemService()
@@ -153,7 +153,6 @@ class AndroidBluetoothAdapter @Inject constructor(
             adapter.enable()
             return Success(Unit)
         }
-
     }
 
     override fun disable(): KMResult<*> {

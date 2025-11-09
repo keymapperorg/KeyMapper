@@ -8,6 +8,8 @@ import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapper
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 /**
@@ -23,7 +25,7 @@ class ImeInputEventInjectorImpl @Inject constructor(
         private const val CALLBACK_ID_INPUT_METHOD = "input_method"
     }
 
-    override fun inputKeyEvent(event: InjectKeyEventModel) {
+    override suspend fun inputKeyEvent(event: InjectKeyEventModel) {
         Timber.d("Inject key event with input method $event")
 
         val imePackageName = inputMethodAdapter.chosenIme.value?.packageName
@@ -33,11 +35,15 @@ class ImeInputEventInjectorImpl @Inject constructor(
             return
         }
 
-        keyEventRelayService.sendKeyEvent(
-            event.toAndroidKeyEvent(),
-            imePackageName,
-            CALLBACK_ID_INPUT_METHOD,
-        )
+        // This IPC call can potentially take a long time so do not block the main thread
+        // and cause an ANR.
+        withContext(Dispatchers.IO) {
+            keyEventRelayService.sendKeyEvent(
+                event.toAndroidKeyEvent(),
+                imePackageName,
+                CALLBACK_ID_INPUT_METHOD,
+            )
+        }
     }
 
     override fun inputText(text: String) {
@@ -102,5 +108,5 @@ class ImeInputEventInjectorImpl @Inject constructor(
 
 interface ImeInputEventInjector {
     fun inputText(text: String)
-    fun inputKeyEvent(event: InjectKeyEventModel)
+    suspend fun inputKeyEvent(event: InjectKeyEventModel)
 }
