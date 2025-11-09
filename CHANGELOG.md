@@ -4,6 +4,7 @@
 
 ## Added
 - #1871 action to modify any system settings
+- #1221 action to show a custom notification
 
 ## [4.0.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.02)
 
