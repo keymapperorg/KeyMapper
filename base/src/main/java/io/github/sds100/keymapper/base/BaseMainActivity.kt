@@ -27,10 +27,10 @@ import com.anggrayudi.storage.extension.toDocumentFile
 import io.github.sds100.keymapper.base.compose.ComposeColors
 import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.input.InputEventHubImpl
+import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapStateImpl
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.permissions.RequestPermissionDelegate
-import io.github.sds100.keymapper.base.trigger.RecordTriggerControllerImpl
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
 import io.github.sds100.keymapper.common.BuildConfigProvider
@@ -56,9 +56,6 @@ abstract class BaseMainActivity : AppCompatActivity() {
         const val ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG =
             "${BuildConfig.LIBRARY_PACKAGE_NAME}.ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG"
 
-        const val ACTION_USE_FLOATING_BUTTONS =
-            "${BuildConfig.LIBRARY_PACKAGE_NAME}.ACTION_USE_FLOATING_BUTTONS"
-
         const val ACTION_SAVE_FILE = "${BuildConfig.LIBRARY_PACKAGE_NAME}.ACTION_SAVE_FILE"
         const val EXTRA_FILE_URI = "${BuildConfig.LIBRARY_PACKAGE_NAME}.EXTRA_FILE_URI"
 
@@ -77,9 +74,6 @@ abstract class BaseMainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var onboardingUseCase: OnboardingUseCase
-
-    @Inject
-    lateinit var recordTriggerController: RecordTriggerControllerImpl
 
     @Inject
     lateinit var notificationReceiverAdapter: NotificationReceiverAdapterImpl
@@ -107,6 +101,9 @@ abstract class BaseMainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var navigationProvider: NavigationProvider
+
+    @Inject
+    lateinit var configKeyMapState: ConfigKeyMapStateImpl
 
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
 
@@ -158,6 +155,8 @@ abstract class BaseMainActivity : AppCompatActivity() {
         )
         super.onCreate(savedInstanceState)
 
+        savedInstanceState?.let { configKeyMapState.restoreState(it) }
+
         requestPermissionDelegate = RequestPermissionDelegate(
             this,
             showDialogs = true,
@@ -207,6 +206,12 @@ abstract class BaseMainActivity : AppCompatActivity() {
         systemBridgeSetupController.invalidateSettings()
         networkAdapter.invalidateState()
         onboardingUseCase.handledMigrateScreenOffKeyMapsNotification()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        configKeyMapState.saveState(outState)
+
+        super.onSaveInstanceState(outState)
     }
 
     override fun onDestroy() {

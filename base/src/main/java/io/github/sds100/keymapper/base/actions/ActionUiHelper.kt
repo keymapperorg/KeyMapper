@@ -658,6 +658,13 @@ class ActionUiHelper(
                 arrayOf(action.settingKey, action.value),
             )
         }
+
+        is ActionData.CreateNotification -> {
+            getString(
+                R.string.action_create_notification_description,
+                action.title,
+            )
+        }
     }
 
     fun getIcon(action: ActionData): ComposeIconInfo = when (action) {

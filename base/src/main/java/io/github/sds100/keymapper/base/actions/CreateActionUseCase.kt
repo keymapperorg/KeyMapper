@@ -1,5 +1,7 @@
 package io.github.sds100.keymapper.base.actions
 
+import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.camera.CameraAdapter
@@ -7,6 +9,8 @@ import io.github.sds100.keymapper.system.camera.CameraFlashInfo
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.inputmethod.ImeInfo
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationModel
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
@@ -25,6 +29,7 @@ class CreateActionUseCaseImpl @Inject constructor(
     private val permissionAdapter: PermissionAdapter,
     private val phoneAdapter: PhoneAdapter,
     private val settingsAdapter: SettingsAdapter,
+    private val notificationAdapter: NotificationAdapter,
 ) : CreateActionUseCase,
     IsActionSupportedUseCase by IsActionSupportedUseCaseImpl(
         systemFeatureAdapter,
@@ -91,6 +96,24 @@ class CreateActionUseCaseImpl @Inject constructor(
     override fun isPermissionGrantedFlow(permission: Permission): Flow<Boolean> {
         return permissionAdapter.isGrantedFlow(permission)
     }
+
+    override fun testCreateNotification(title: String, text: String, timeoutMs: Long?) {
+        val notification = NotificationModel(
+            // Use the same id for notifications created when testing so they overwrite each other
+            id = 0,
+            channel = NotificationController.CHANNEL_CUSTOM_NOTIFICATIONS,
+            title = title,
+            text = text,
+            icon = R.drawable.ic_launcher_foreground,
+            showOnLockscreen = true,
+            onGoing = false,
+            autoCancel = true,
+            timeout = timeoutMs,
+            bigTextStyle = true,
+        )
+
+        notificationAdapter.showNotification(notification)
+    }
 }
 
 interface CreateActionUseCase : IsActionSupportedUseCase {
@@ -108,4 +131,5 @@ interface CreateActionUseCase : IsActionSupportedUseCase {
     fun setSettingValue(settingType: SettingType, key: String, value: String): KMResult<Unit>
     fun getRequiredPermissionForSettingType(settingType: SettingType): Permission
     fun isPermissionGrantedFlow(permission: Permission): Flow<Boolean>
+    fun testCreateNotification(title: String, text: String, timeoutMs: Long?)
 }

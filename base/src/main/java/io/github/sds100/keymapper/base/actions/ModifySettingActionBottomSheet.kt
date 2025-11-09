@@ -75,7 +75,7 @@ fun ModifySettingActionBottomSheet(delegate: CreateActionDelegate) {
             onSettingValueChange = delegate::onSettingValueChange,
             onChooseExistingClick = delegate::onChooseExistingSettingClick,
             onTestClick = delegate::onTestModifySettingClick,
-            onRequestPermissionClick = delegate::onRequestModifySettingPermission,
+            onRequestPermissionClick = delegate::onRequestModifySettingPermissionClick,
             onDoneClick = {
                 scope.launch {
                     sheetState.hide()

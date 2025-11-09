@@ -52,6 +52,7 @@ object ActionDataEntityMapper {
             ActionEntity.Type.INTERACT_UI_ELEMENT -> ActionId.INTERACT_UI_ELEMENT
             ActionEntity.Type.SHELL_COMMAND -> ActionId.SHELL_COMMAND
             ActionEntity.Type.MODIFY_SETTING -> ActionId.MODIFY_SETTING
+            ActionEntity.Type.CREATE_NOTIFICATION -> ActionId.CREATE_NOTIFICATION
         }
 
         return when (actionId) {
@@ -558,6 +559,25 @@ object ActionDataEntityMapper {
             ActionId.SHOW_POWER_MENU -> ActionData.ShowPowerMenu
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> ActionData.DismissLastNotification
             ActionId.DISMISS_ALL_NOTIFICATIONS -> ActionData.DismissAllNotifications
+            ActionId.CREATE_NOTIFICATION -> {
+                val title =
+                    entity.extras.getData(ActionEntity.EXTRA_NOTIFICATION_TITLE).valueOrNull()
+                        ?: return null
+
+                val text = entity.data.takeIf { it.isNotBlank() }
+                    ?: return null
+
+                val timeoutMs = entity.extras.getData(
+                    ActionEntity.EXTRA_NOTIFICATION_TIMEOUT,
+                ).valueOrNull()
+                    ?.toLongOrNull()
+
+                ActionData.CreateNotification(
+                    title = title,
+                    text = text,
+                    timeoutMs = timeoutMs,
+                )
+            }
             ActionId.ANSWER_PHONE_CALL -> ActionData.AnswerCall
             ActionId.END_PHONE_CALL -> ActionData.EndCall
             ActionId.DEVICE_CONTROLS -> ActionData.DeviceControls
@@ -772,6 +792,7 @@ object ActionDataEntityMapper {
             is ActionData.InteractUiElement -> ActionEntity.Type.INTERACT_UI_ELEMENT
             is ActionData.ShellCommand -> ActionEntity.Type.SHELL_COMMAND
             is ActionData.ModifySetting -> ActionEntity.Type.MODIFY_SETTING
+            is ActionData.CreateNotification -> ActionEntity.Type.CREATE_NOTIFICATION
             else -> ActionEntity.Type.SYSTEM_ACTION
         }
 
@@ -842,6 +863,7 @@ object ActionDataEntityMapper {
             data.command.toByteArray(),
             Base64.DEFAULT,
         ).trim() // Trim to remove trailing newline added by Base64.DEFAULT
+        is ActionData.CreateNotification -> data.text
         is ActionData.HttpRequest -> SYSTEM_ACTION_ID_MAP[data.id]!!
         is ActionData.ControlMediaForApp.Rewind -> SYSTEM_ACTION_ID_MAP[data.id]!!
         is ActionData.ControlMediaForApp.Stop -> SYSTEM_ACTION_ID_MAP[data.id]!!
@@ -1133,6 +1155,13 @@ object ActionDataEntityMapper {
             EntityExtra(ActionEntity.EXTRA_SETTING_VALUE, data.value),
             EntityExtra(ActionEntity.EXTRA_SETTING_TYPE, data.settingType.name),
         )
+
+        is ActionData.CreateNotification -> buildList {
+            add(EntityExtra(ActionEntity.EXTRA_NOTIFICATION_TITLE, data.title))
+            data.timeoutMs?.let {
+                add(EntityExtra(ActionEntity.EXTRA_NOTIFICATION_TIMEOUT, it.toString()))
+            }
+        }
 
         else -> emptyList()
     }

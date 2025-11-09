@@ -872,6 +872,17 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
+    data class CreateNotification(val title: String, val text: String, val timeoutMs: Long?) :
+        ActionData() {
+        override val id: ActionId = ActionId.CREATE_NOTIFICATION
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is CreateNotification -> title.compareTo(other.title)
+            else -> super.compareTo(other)
+        }
+    }
+
+    @Serializable
     data object AnswerCall : ActionData() {
         override val id: ActionId = ActionId.ANSWER_PHONE_CALL
     }

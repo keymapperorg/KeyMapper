@@ -72,6 +72,7 @@ class NotificationController @Inject constructor(
         const val CHANNEL_NEW_FEATURES = "channel_new_features"
         const val CHANNEL_SETUP_ASSISTANT = "channel_setup_assistant"
         const val CHANNEL_VERSION_MIGRATION = "channel_version_migration"
+        const val CHANNEL_CUSTOM_NOTIFICATIONS = "channel_custom_notifications"
 
         @Deprecated("Removed in 2.0. This channel shouldn't exist")
         private const val CHANNEL_ID_WARNINGS = "channel_warnings"
@@ -107,6 +108,14 @@ class NotificationController @Inject constructor(
                 id = CHANNEL_SETUP_ASSISTANT,
                 name = getString(R.string.pro_mode_setup_assistant_notification_channel),
                 importance = NotificationManagerCompat.IMPORTANCE_MAX,
+            ),
+        )
+
+        manageNotifications.createChannel(
+            NotificationChannelModel(
+                id = CHANNEL_CUSTOM_NOTIFICATIONS,
+                name = getString(R.string.notification_channel_custom_notifications),
+                NotificationManagerCompat.IMPORTANCE_DEFAULT,
             ),
         )
 
