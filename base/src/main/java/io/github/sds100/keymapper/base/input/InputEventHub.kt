@@ -343,7 +343,7 @@ class InputEventHubImpl @Inject constructor(
             val androidKeyEvent = event.toAndroidKeyEvent(flags = KeyEvent.FLAG_FROM_SYSTEM)
 
             if (logInputEventsEnabled.value) {
-                Timber.d("Injecting key event $androidKeyEvent with system bridge")
+                Timber.d("Injecting key event with system bridge $androidKeyEvent")
             }
 
             return withContext(Dispatchers.IO) {
