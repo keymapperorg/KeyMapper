@@ -1,8 +1,10 @@
 package io.github.sds100.keymapper.base.keymaps
 
 import android.database.sqlite.SQLiteConstraintException
+import android.os.Bundle
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.dataOrNull
+import io.github.sds100.keymapper.common.utils.ifIsData
 import io.github.sds100.keymapper.common.utils.mapData
 import io.github.sds100.keymapper.data.entities.FloatingButtonEntityWithLayout
 import io.github.sds100.keymapper.data.repositories.FloatingButtonRepository
@@ -19,6 +21,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 
 @Singleton
 class ConfigKeyMapStateImpl @Inject constructor(
@@ -98,8 +101,18 @@ class ConfigKeyMapStateImpl @Inject constructor(
         }
     }
 
-    override fun restoreState(keyMap: KeyMap) {
-        _keyMap.update { State.Data(keyMap) }
+    fun saveState(bundle: Bundle) {
+        _keyMap.value.ifIsData { keyMap ->
+            bundle.putString("ConfigKeyMapState.key_map", Json.encodeToString(keyMap))
+        }
+    }
+
+    fun restoreState(bundle: Bundle) {
+        if (bundle.containsKey("ConfigKeyMapState.key_map")) {
+            val json = bundle.getString("ConfigKeyMapState.key_map") ?: return
+
+            _keyMap.update { State.Data(Json.decodeFromString(json)) }
+        }
     }
 
     override fun update(block: (keyMap: KeyMap) -> KeyMap) {
@@ -114,7 +127,6 @@ interface ConfigKeyMapState {
     fun update(block: (keyMap: KeyMap) -> KeyMap)
     fun save()
 
-    fun restoreState(keyMap: KeyMap)
     suspend fun loadKeyMap(uid: String)
     fun loadNewKeyMap(groupUid: String?)
 

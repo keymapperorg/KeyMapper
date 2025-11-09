@@ -560,15 +560,18 @@ object ActionDataEntityMapper {
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> ActionData.DismissLastNotification
             ActionId.DISMISS_ALL_NOTIFICATIONS -> ActionData.DismissAllNotifications
             ActionId.CREATE_NOTIFICATION -> {
-                val title = entity.extras.getData(ActionEntity.EXTRA_NOTIFICATION_TITLE).valueOrNull()
-                    ?: return null
-                
+                val title =
+                    entity.extras.getData(ActionEntity.EXTRA_NOTIFICATION_TITLE).valueOrNull()
+                        ?: return null
+
                 val text = entity.data.takeIf { it.isNotBlank() }
                     ?: return null
-                
-                val timeoutMs = entity.extras.getData(ActionEntity.EXTRA_NOTIFICATION_TIMEOUT).valueOrNull()
+
+                val timeoutMs = entity.extras.getData(
+                    ActionEntity.EXTRA_NOTIFICATION_TIMEOUT,
+                ).valueOrNull()
                     ?.toLongOrNull()
-                
+
                 ActionData.CreateNotification(
                     title = title,
                     text = text,
@@ -1155,7 +1158,7 @@ object ActionDataEntityMapper {
 
         is ActionData.CreateNotification -> buildList {
             add(EntityExtra(ActionEntity.EXTRA_NOTIFICATION_TITLE, data.title))
-            data.timeoutMs?.let { 
+            data.timeoutMs?.let {
                 add(EntityExtra(ActionEntity.EXTRA_NOTIFICATION_TIMEOUT, it.toString()))
             }
         }

@@ -62,7 +62,7 @@ class CreateActionDelegate(
     var smsActionBottomSheetState: SmsActionBottomSheetState? by mutableStateOf(null)
     var volumeActionState: VolumeActionBottomSheetState? by mutableStateOf(null)
     var modifySettingActionBottomSheetState: ModifySettingActionBottomSheetState?
-    by mutableStateOf(null)
+        by mutableStateOf(null)
     var createNotificationActionBottomSheetState: CreateNotificationActionBottomSheetState?
         by mutableStateOf(null)
 
