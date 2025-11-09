@@ -89,6 +89,8 @@ data class ActionEntity(
         const val EXTRA_SHELL_COMMAND_USE_ROOT = "extra_shell_command_use_root"
         const val EXTRA_SHELL_COMMAND_DESCRIPTION = "extra_shell_command_description"
         const val EXTRA_SHELL_COMMAND_TIMEOUT = "extra_shell_command_timeout"
+        const val EXTRA_NOTIFICATION_TITLE = "extra_notification_title"
+        const val EXTRA_NOTIFICATION_TIMEOUT = "extra_notification_timeout"
 
         // Accessibility node extras
         const val EXTRA_ACCESSIBILITY_PACKAGE_NAME = "extra_accessibility_package_name"
@@ -140,10 +142,22 @@ data class ActionEntity(
         const val EXTRA_DELAY_BEFORE_NEXT_ACTION = "extra_delay_before_next_action"
         const val EXTRA_HOLD_DOWN_DURATION = "extra_hold_down_duration"
         const val EXTRA_REPEAT_LIMIT = "extra_repeat_limit"
+        const val EXTRA_SETTING_VALUE = "extra_setting_value"
+        const val EXTRA_SETTING_TYPE = "extra_setting_type"
 
         val DESERIALIZER = jsonDeserializer {
-            val typeString by it.json.byString(NAME_ACTION_TYPE)
-            val type = Type.valueOf(typeString)
+            val typeString by it.json.byNullableString(NAME_ACTION_TYPE)
+            // If it is an unknown type then do not deserialize
+            if (typeString == null) {
+                return@jsonDeserializer null
+            }
+
+            val type: Type = try {
+                Type.valueOf(typeString!!)
+            } catch (e: IllegalArgumentException) {
+                // If it is an unknown type then do not deserialize
+                return@jsonDeserializer null
+            }
 
             val data by it.json.byString(NAME_DATA)
 
@@ -183,6 +197,8 @@ data class ActionEntity(
         SOUND,
         INTERACT_UI_ELEMENT,
         SHELL_COMMAND,
+        MODIFY_SETTING,
+        CREATE_NOTIFICATION,
     }
 
     constructor(

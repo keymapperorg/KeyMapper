@@ -56,6 +56,8 @@ fun HandleActionBottomSheets(delegate: CreateActionDelegate) {
     HttpRequestBottomSheet(delegate)
     SmsActionBottomSheet(delegate)
     VolumeActionBottomSheet(delegate)
+    ModifySettingActionBottomSheet(delegate)
+    CreateNotificationActionBottomSheet(delegate)
 }
 
 @Composable

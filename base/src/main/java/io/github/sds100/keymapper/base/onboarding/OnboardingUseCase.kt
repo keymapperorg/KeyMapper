@@ -1,14 +1,15 @@
 package io.github.sds100.keymapper.base.onboarding
 
 import androidx.datastore.preferences.core.Preferences
-import io.github.sds100.keymapper.base.utils.VersionHelper
+import io.github.sds100.keymapper.base.keymaps.KeyMap
+import io.github.sds100.keymapper.base.keymaps.KeyMapEntityMapper
+import io.github.sds100.keymapper.base.trigger.TriggerErrorSnapshot
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.KeyMapRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.data.utils.PrefDelegate
 import io.github.sds100.keymapper.system.files.FileAdapter
-import io.github.sds100.keymapper.system.leanback.LeanbackAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
@@ -16,13 +17,13 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 @Singleton
 class OnboardingUseCaseImpl @Inject constructor(
     private val settingsRepository: PreferenceRepository,
     private val fileAdapter: FileAdapter,
-    private val leanbackAdapter: LeanbackAdapter,
     private val shizukuAdapter: ShizukuAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val keyMapRepository: KeyMapRepository,
@@ -43,28 +44,6 @@ class OnboardingUseCaseImpl @Inject constructor(
         with(fileAdapter.openAsset("whats-new.txt").bufferedReader()) {
             readText()
         }
-
-    override var approvedFloatingButtonFeaturePrompt by PrefDelegate(
-        Keys.approvedFloatingButtonFeaturePrompt,
-        false,
-    )
-
-    /**
-     * Show only when they *upgrade* to the new version and after they've
-     * completed the app intro, which asks them whether they want to receive notifications.
-     */
-    override val showFloatingButtonFeatureNotification: Flow<Boolean> = combine(
-        get(Keys.lastInstalledVersionCodeBackground).map { it ?: -1 },
-        get(Keys.approvedFloatingButtonFeaturePrompt).map { it ?: false },
-    ) { oldVersionCode, approvedPrompt ->
-        oldVersionCode < VersionHelper.FLOATING_BUTTON_MIN_VERSION && !approvedPrompt
-    }
-
-    override fun showedFloatingButtonFeatureNotification() {
-        set(Keys.lastInstalledVersionCodeBackground, buildConfigProvider.versionCode)
-    }
-
-    override fun isTvDevice(): Boolean = leanbackAdapter.isTvDevice()
 
     override val promptForShizukuPermission: Flow<Boolean> = combine(
         settingsRepository.get(Keys.shownShizukuPermissionPrompt),
@@ -105,16 +84,38 @@ class OnboardingUseCaseImpl @Inject constructor(
             OnboardingTapTarget.CREATE_KEY_MAP -> Keys.shownTapTargetCreateKeyMap
         }
     }
+
+    override val showMigrateScreenOffKeyMapsNotification: Flow<Boolean> =
+        get(Keys.handledMigrateScreenOffKeyMapsNotification).map { isHandled ->
+            if (isHandled == true) {
+                return@map false
+            }
+
+            val keyMaps = keyMapRepository.getAll()
+                .first()
+                .map { keyMap -> KeyMapEntityMapper.fromEntity(keyMap, emptyList()) }
+
+            isScreenOffTriggerMigrationRequired(keyMaps)
+        }
+
+    override fun handledMigrateScreenOffKeyMapsNotification() =
+        set(Keys.handledMigrateScreenOffKeyMapsNotification, true)
+
+    private fun isScreenOffTriggerMigrationRequired(keyMapList: List<KeyMap>): Boolean {
+        for (keyMap in keyMapList) {
+            for (key in keyMap.trigger.keys) {
+                if (TriggerErrorSnapshot.isScreenOffTriggerMigrationRequired(keyMap.trigger, key)) {
+                    return true
+                }
+            }
+        }
+
+        return false
+    }
 }
 
 interface OnboardingUseCase {
     var shownAppIntro: Boolean
-
-    fun isTvDevice(): Boolean
-
-    val showFloatingButtonFeatureNotification: Flow<Boolean>
-    fun showedFloatingButtonFeatureNotification()
-    var approvedFloatingButtonFeaturePrompt: Boolean
 
     val showWhatsNew: Flow<Boolean>
     fun showedWhatsNew()
@@ -129,4 +130,7 @@ interface OnboardingUseCase {
 
     fun showTapTarget(tapTarget: OnboardingTapTarget): Flow<Boolean>
     fun completedTapTarget(tapTarget: OnboardingTapTarget)
+
+    val showMigrateScreenOffKeyMapsNotification: Flow<Boolean>
+    fun handledMigrateScreenOffKeyMapsNotification()
 }

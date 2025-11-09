@@ -248,11 +248,13 @@ object ActionUtils {
 
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> ActionCategory.NOTIFICATIONS
         ActionId.DISMISS_ALL_NOTIFICATIONS -> ActionCategory.NOTIFICATIONS
+        ActionId.CREATE_NOTIFICATION -> ActionCategory.NOTIFICATIONS
         ActionId.DEVICE_CONTROLS -> ActionCategory.APPS
 
         ActionId.INTERACT_UI_ELEMENT -> ActionCategory.APPS
         ActionId.FORCE_STOP_APP -> ActionCategory.APPS
         ActionId.CLEAR_RECENT_APP -> ActionCategory.APPS
+        ActionId.MODIFY_SETTING -> ActionCategory.APPS
 
         ActionId.CONSUME_KEY_EVENT -> ActionCategory.SPECIAL
     }
@@ -373,6 +375,7 @@ object ActionUtils {
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION ->
             R.string.action_dismiss_most_recent_notification
         ActionId.DISMISS_ALL_NOTIFICATIONS -> R.string.action_dismiss_all_notifications
+        ActionId.CREATE_NOTIFICATION -> R.string.action_create_notification
         ActionId.ANSWER_PHONE_CALL -> R.string.action_answer_call
         ActionId.END_PHONE_CALL -> R.string.action_end_call
         ActionId.SEND_SMS -> R.string.action_send_sms
@@ -383,6 +386,8 @@ object ActionUtils {
         ActionId.INTERACT_UI_ELEMENT -> R.string.action_interact_ui_element_title
         ActionId.FORCE_STOP_APP -> R.string.action_force_stop_app
         ActionId.CLEAR_RECENT_APP -> R.string.action_clear_recent_app
+
+        ActionId.MODIFY_SETTING -> R.string.action_modify_setting
     }
 
     @DrawableRes
@@ -500,6 +505,7 @@ object ActionUtils {
         ActionId.SOUND -> R.drawable.ic_outline_volume_up_24
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> R.drawable.ic_baseline_clear_all_24
         ActionId.DISMISS_ALL_NOTIFICATIONS -> R.drawable.ic_baseline_clear_all_24
+        ActionId.CREATE_NOTIFICATION -> R.drawable.ic_notification_play
         ActionId.ANSWER_PHONE_CALL -> R.drawable.ic_outline_call_24
         ActionId.END_PHONE_CALL -> R.drawable.ic_outline_call_end_24
         ActionId.SEND_SMS -> R.drawable.ic_outline_message_24
@@ -744,6 +750,8 @@ object ActionUtils {
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION,
                 -> return listOf(Permission.NOTIFICATION_LISTENER)
 
+            ActionId.CREATE_NOTIFICATION -> return listOf(Permission.POST_NOTIFICATIONS)
+
             ActionId.ANSWER_PHONE_CALL,
             ActionId.END_PHONE_CALL,
                 -> return listOf(Permission.ANSWER_PHONE_CALL)
@@ -759,6 +767,9 @@ object ActionUtils {
                 if (Build.VERSION.SDK_INT == Build.VERSION_CODES.S) {
                     return listOf(Permission.FIND_NEARBY_DEVICES)
                 }
+
+            // Permissions handled based on setting type at runtime
+            ActionId.MODIFY_SETTING -> return emptyList()
 
             else -> return emptyList()
         }
@@ -882,6 +893,7 @@ object ActionUtils {
         ActionId.SOUND -> Icons.AutoMirrored.Outlined.VolumeUp
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> Icons.Outlined.ClearAll
         ActionId.DISMISS_ALL_NOTIFICATIONS -> Icons.Outlined.ClearAll
+        ActionId.CREATE_NOTIFICATION -> Icons.AutoMirrored.Outlined.Message
         ActionId.ANSWER_PHONE_CALL -> Icons.Outlined.Call
         ActionId.END_PHONE_CALL -> Icons.Outlined.CallEnd
         ActionId.DEVICE_CONTROLS -> KeyMapperIcons.HomeIotDevice
@@ -890,6 +902,8 @@ object ActionUtils {
         ActionId.INTERACT_UI_ELEMENT -> KeyMapperIcons.JumpToElement
         ActionId.FORCE_STOP_APP -> Icons.Outlined.Dangerous
         ActionId.CLEAR_RECENT_APP -> Icons.Outlined.VerticalSplit
+
+        ActionId.MODIFY_SETTING -> Icons.Outlined.Settings
     }
 }
 
@@ -934,8 +948,10 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.ComposeSms,
     is ActionData.HttpRequest,
     is ActionData.ShellCommand,
+    is ActionData.CreateNotification,
     is ActionData.InteractUiElement,
     is ActionData.MoveCursor,
+    is ActionData.ModifySetting,
         -> true
 
     else -> false

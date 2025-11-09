@@ -4,6 +4,7 @@ import android.text.InputType
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickCoordinateResult
 import io.github.sds100.keymapper.base.actions.swipescreen.SwipePickCoordinateResult
@@ -24,17 +25,23 @@ import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.network.HttpMethod
+import io.github.sds100.keymapper.system.permissions.Permission
+import io.github.sds100.keymapper.system.settings.SettingType
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class CreateActionDelegate(
     private val coroutineScope: CoroutineScope,
     private val useCase: CreateActionUseCase,
@@ -54,6 +61,10 @@ class CreateActionDelegate(
     var httpRequestBottomSheetState: ActionData.HttpRequest? by mutableStateOf(null)
     var smsActionBottomSheetState: SmsActionBottomSheetState? by mutableStateOf(null)
     var volumeActionState: VolumeActionBottomSheetState? by mutableStateOf(null)
+    var modifySettingActionBottomSheetState: ModifySettingActionBottomSheetState?
+        by mutableStateOf(null)
+    var createNotificationActionBottomSheetState: CreateNotificationActionBottomSheetState?
+        by mutableStateOf(null)
 
     init {
         coroutineScope.launch {
@@ -62,6 +73,36 @@ class CreateActionDelegate(
                     enableFlashlightActionState = state.copy(isFlashEnabled = enabled)
                 }
             }
+        }
+
+        coroutineScope.launch {
+            snapshotFlow { modifySettingActionBottomSheetState?.settingType }
+                .filterNotNull()
+                .flatMapLatest { settingType ->
+                    val permission = useCase.getRequiredPermissionForSettingType(settingType)
+                    useCase.isPermissionGrantedFlow(permission)
+                }
+                .collectLatest { isGranted ->
+                    modifySettingActionBottomSheetState =
+                        modifySettingActionBottomSheetState?.copy(
+                            isPermissionGranted = isGranted,
+                            testResult = null,
+                        )
+                }
+        }
+
+        coroutineScope.launch {
+            snapshotFlow { createNotificationActionBottomSheetState }
+                .filterNotNull()
+                .flatMapLatest {
+                    useCase.isPermissionGrantedFlow(Permission.POST_NOTIFICATIONS)
+                }
+                .collectLatest { isGranted ->
+                    createNotificationActionBottomSheetState =
+                        createNotificationActionBottomSheetState?.copy(
+                            isPermissionGranted = isGranted,
+                        )
+                }
         }
     }
 
@@ -194,6 +235,128 @@ class CreateActionDelegate(
                 }
             }
         }
+    }
+
+    fun onDoneModifySettingClick() {
+        val state = modifySettingActionBottomSheetState ?: return
+        val result = ActionData.ModifySetting(
+            settingType = state.settingType,
+            settingKey = state.settingKey,
+            value = state.value,
+        )
+
+        modifySettingActionBottomSheetState = null
+        actionResult.update { result }
+    }
+
+    fun onSelectSettingType(settingType: SettingType) {
+        modifySettingActionBottomSheetState =
+            modifySettingActionBottomSheetState?.copy(
+                settingType = settingType,
+                testResult = null,
+            )
+    }
+
+    fun onSettingKeyChange(key: String) {
+        modifySettingActionBottomSheetState =
+            modifySettingActionBottomSheetState?.copy(
+                settingKey = key,
+                testResult = null,
+            )
+    }
+
+    fun onChooseExistingSettingClick() {
+        val type = modifySettingActionBottomSheetState?.settingType ?: return
+        val destination = NavDestination.ChooseSetting(settingType = type)
+
+        coroutineScope.launch {
+            val setting = navigate("choose_setting", destination) ?: return@launch
+
+            modifySettingActionBottomSheetState = modifySettingActionBottomSheetState?.copy(
+                settingType = setting.settingType,
+                settingKey = setting.key,
+                value = setting.currentValue ?: "",
+                testResult = null,
+            )
+        }
+    }
+
+    fun onSettingValueChange(value: String) {
+        modifySettingActionBottomSheetState =
+            modifySettingActionBottomSheetState?.copy(value = value)
+    }
+
+    fun onTestModifySettingClick() {
+        val state = modifySettingActionBottomSheetState ?: return
+
+        coroutineScope.launch {
+            val result = useCase.setSettingValue(state.settingType, state.settingKey, state.value)
+            modifySettingActionBottomSheetState =
+                modifySettingActionBottomSheetState?.copy(testResult = result)
+        }
+    }
+
+    fun onRequestModifySettingPermissionClick() {
+        val state = modifySettingActionBottomSheetState ?: return
+        val permission = useCase.getRequiredPermissionForSettingType(state.settingType)
+        useCase.requestPermission(permission)
+    }
+
+    fun onCreateNotificationTitleChange(title: String) {
+        createNotificationActionBottomSheetState =
+            createNotificationActionBottomSheetState?.copy(title = title)
+    }
+
+    fun onCreateNotificationTextChange(text: String) {
+        createNotificationActionBottomSheetState =
+            createNotificationActionBottomSheetState?.copy(text = text)
+    }
+
+    fun onCreateNotificationTimeoutEnabledChange(enabled: Boolean) {
+        createNotificationActionBottomSheetState =
+            createNotificationActionBottomSheetState?.copy(timeoutEnabled = enabled)
+    }
+
+    fun onCreateNotificationTimeoutChange(timeoutSeconds: Int) {
+        createNotificationActionBottomSheetState =
+            createNotificationActionBottomSheetState?.copy(timeoutSeconds = timeoutSeconds)
+    }
+
+    fun onTestCreateNotificationClick() {
+        val state = createNotificationActionBottomSheetState ?: return
+
+        coroutineScope.launch {
+            val timeoutMs = if (state.timeoutEnabled) {
+                state.timeoutSeconds * 1000L
+            } else {
+                null
+            }
+
+            useCase.testCreateNotification(state.title, state.text, timeoutMs)
+        }
+    }
+
+    fun onDoneCreateNotificationClick() {
+        val state = createNotificationActionBottomSheetState ?: return
+
+        val timeoutMs = if (state.timeoutEnabled) {
+            state.timeoutSeconds * 1000L
+        } else {
+            null
+        }
+
+        val action = ActionData.CreateNotification(
+            title = state.title,
+            text = state.text,
+            timeoutMs = timeoutMs,
+        )
+
+        createNotificationActionBottomSheetState = null
+        actionResult.update { action }
+    }
+
+    fun onRequestNotificationPermissionClick() {
+        useCase.requestPermission(Permission.POST_NOTIFICATIONS)
     }
 
     suspend fun editAction(oldData: ActionData) {
@@ -888,6 +1051,18 @@ class CreateActionDelegate(
             ActionId.DISABLE_DND_MODE -> return ActionData.DoNotDisturb.Disable
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> return ActionData.DismissLastNotification
             ActionId.DISMISS_ALL_NOTIFICATIONS -> return ActionData.DismissAllNotifications
+            ActionId.CREATE_NOTIFICATION -> {
+                val oldAction = oldData as? ActionData.CreateNotification
+
+                createNotificationActionBottomSheetState = CreateNotificationActionBottomSheetState(
+                    title = oldAction?.title ?: "",
+                    text = oldAction?.text ?: "",
+                    timeoutEnabled = oldAction?.timeoutMs != null,
+                    timeoutSeconds = ((oldAction?.timeoutMs ?: 30000) / 1000).toInt(),
+                )
+
+                return null
+            }
             ActionId.ANSWER_PHONE_CALL -> return ActionData.AnswerCall
             ActionId.END_PHONE_CALL -> return ActionData.EndCall
             ActionId.DEVICE_CONTROLS -> return ActionData.DeviceControls
@@ -931,6 +1106,18 @@ class CreateActionDelegate(
             ActionId.MOVE_CURSOR -> return createMoverCursorAction()
             ActionId.FORCE_STOP_APP -> return ActionData.ForceStopApp
             ActionId.CLEAR_RECENT_APP -> return ActionData.ClearRecentApp
+
+            ActionId.MODIFY_SETTING -> {
+                val oldAction = oldData as? ActionData.ModifySetting
+
+                modifySettingActionBottomSheetState = ModifySettingActionBottomSheetState(
+                    settingType = oldAction?.settingType ?: SettingType.SYSTEM,
+                    settingKey = oldAction?.settingKey ?: "",
+                    value = oldAction?.value ?: "",
+                )
+
+                return null
+            }
         }
     }
 

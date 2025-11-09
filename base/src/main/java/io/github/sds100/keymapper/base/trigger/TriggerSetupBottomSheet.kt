@@ -32,7 +32,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SheetState
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -43,7 +42,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -904,8 +902,8 @@ private fun PowerButtonPreview() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
+            positionalThreshold = { 0f },
+            velocityThreshold = { 0f },
         )
 
         PowerTriggerSetupBottomSheet(
@@ -928,8 +926,8 @@ private fun PowerButtonDisabledPreview() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
+            positionalThreshold = { 0f },
+            velocityThreshold = { 0f },
         )
 
         PowerTriggerSetupBottomSheet(
@@ -952,8 +950,8 @@ private fun VolumeButtonPreview() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
+            positionalThreshold = { 0f },
+            velocityThreshold = { 0f },
         )
 
         VolumeTriggerSetupBottomSheet(
@@ -977,8 +975,8 @@ private fun VolumeButtonDisabledPreview() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
+            positionalThreshold = { 0f },
+            velocityThreshold = { 0f },
         )
 
         VolumeTriggerSetupBottomSheet(
@@ -1002,8 +1000,8 @@ private fun FingerprintGestureRequirementsMetPreview() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
+            positionalThreshold = { 0f },
+            velocityThreshold = { 0f },
         )
 
         FingerprintGestureSetupBottomSheet(
@@ -1024,8 +1022,8 @@ private fun FingerprintGestureRequirementsNotMetPreview() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
+            positionalThreshold = { 0f },
+            velocityThreshold = { 0f },
         )
 
         FingerprintGestureSetupBottomSheet(
@@ -1046,8 +1044,8 @@ private fun KeyboardButtonEnabledPreview() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
+            positionalThreshold = { 0f },
+            velocityThreshold = { 0f },
         )
 
         KeyboardTriggerSetupBottomSheet(
@@ -1071,8 +1069,8 @@ private fun KeyboardButtonDisabledPreview() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
+            positionalThreshold = { 0f },
+            velocityThreshold = { 0f },
         )
 
         KeyboardTriggerSetupBottomSheet(
@@ -1096,8 +1094,8 @@ private fun MouseButtonPreview() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
+            positionalThreshold = { 0f },
+            velocityThreshold = { 0f },
         )
 
         MouseTriggerSetupBottomSheet(
@@ -1120,8 +1118,8 @@ private fun MouseButtonDisabledPreview() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
+            positionalThreshold = { 0f },
+            velocityThreshold = { 0f },
         )
 
         MouseTriggerSetupBottomSheet(
@@ -1144,8 +1142,8 @@ private fun OtherButtonPreview() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
+            positionalThreshold = { 0f },
+            velocityThreshold = { 0f },
         )
 
         OtherTriggerSetupBottomSheet(
@@ -1169,8 +1167,8 @@ private fun OtherButtonDisabledPreview() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
+            positionalThreshold = { 0f },
+            velocityThreshold = { 0f },
         )
 
         OtherTriggerSetupBottomSheet(
@@ -1194,8 +1192,8 @@ private fun GamepadDpadPreview() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
+            positionalThreshold = { 0f },
+            velocityThreshold = { 0f },
         )
 
         GamepadTriggerSetupBottomSheet(
@@ -1219,8 +1217,8 @@ private fun GamepadDpadDisabledPreview() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
+            positionalThreshold = { 0f },
+            velocityThreshold = { 0f },
         )
 
         GamepadTriggerSetupBottomSheet(
@@ -1244,8 +1242,8 @@ private fun GamepadSimpleButtonsPreview() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
+            positionalThreshold = { 0f },
+            velocityThreshold = { 0f },
         )
 
         GamepadTriggerSetupBottomSheet(
@@ -1269,8 +1267,8 @@ private fun GamepadSimpleButtonsDisabledPreview() {
     KeyMapperTheme {
         val sheetState = SheetState(
             skipPartiallyExpanded = true,
-            density = LocalDensity.current,
-            initialValue = SheetValue.Expanded,
+            positionalThreshold = { 0f },
+            velocityThreshold = { 0f },
         )
 
         GamepadTriggerSetupBottomSheet(

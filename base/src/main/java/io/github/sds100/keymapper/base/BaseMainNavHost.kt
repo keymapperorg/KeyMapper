@@ -18,6 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import io.github.sds100.keymapper.base.actions.ChooseActionScreen
 import io.github.sds100.keymapper.base.actions.ChooseActionViewModel
+import io.github.sds100.keymapper.base.actions.ChooseSettingScreen
 import io.github.sds100.keymapper.base.actions.ConfigShellCommandViewModel
 import io.github.sds100.keymapper.base.actions.ShellCommandActionScreen
 import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementScreen
@@ -161,6 +162,13 @@ fun BaseMainNavHost(
                 modifier = Modifier.fillMaxSize(),
                 viewModel = hiltViewModel(),
                 onBackClick = { navController.popBackStack() },
+            )
+        }
+
+        composable<NavDestination.ChooseSetting> {
+            ChooseSettingScreen(
+                modifier = Modifier.fillMaxSize(),
+                viewModel = hiltViewModel(),
             )
         }
 
