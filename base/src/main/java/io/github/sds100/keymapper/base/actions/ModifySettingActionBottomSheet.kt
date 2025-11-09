@@ -109,11 +109,11 @@ private fun ModifySettingActionBottomSheet(
     var settingValueError: String? by rememberSaveable { mutableStateOf(null) }
 
     LaunchedEffect(state) {
-        if (!state.settingKey.isBlank()){
+        if (!state.settingKey.isBlank()) {
             settingKeyError = null
         }
 
-        if (!state.value.isBlank()){
+        if (!state.value.isBlank()) {
             settingValueError = null
         }
     }

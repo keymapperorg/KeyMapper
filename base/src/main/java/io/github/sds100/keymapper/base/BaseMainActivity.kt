@@ -43,12 +43,12 @@ import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapt
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapterImpl
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 
 abstract class BaseMainActivity : AppCompatActivity() {
 

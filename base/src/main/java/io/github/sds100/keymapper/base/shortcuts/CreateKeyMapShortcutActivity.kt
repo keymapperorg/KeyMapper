@@ -23,8 +23,8 @@ import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
-import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class CreateKeyMapShortcutActivity : AppCompatActivity() {

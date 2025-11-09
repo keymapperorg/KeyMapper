@@ -13,10 +13,10 @@ import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.settings.SettingType
 import io.github.sds100.keymapper.system.settings.SettingsAdapter
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge
-import javax.inject.Inject
 
 class CreateActionUseCaseImpl @Inject constructor(
     private val inputMethodAdapter: InputMethodAdapter,
