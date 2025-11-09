@@ -136,6 +136,12 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
         }
     }
 
+    override fun restartSystemBridge() {
+        coroutineScope.launch {
+            systemBridgeFlow.value?.let { restartSystemBridge(it) }
+        }
+    }
+
     @SuppressLint("LogNotTimber")
     private suspend fun restartSystemBridge(systemBridge: ISystemBridge) {
         starter.startSystemBridge(executeCommand = { command ->
@@ -256,6 +262,7 @@ interface SystemBridgeConnectionManager {
 
     fun <T> run(block: (ISystemBridge) -> T): KMResult<T>
     fun stopSystemBridge()
+    fun restartSystemBridge()
 
     fun startWithRoot()
     fun startWithShizuku()
