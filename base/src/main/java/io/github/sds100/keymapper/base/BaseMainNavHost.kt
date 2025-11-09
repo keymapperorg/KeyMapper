@@ -19,9 +19,7 @@ import androidx.navigation.compose.composable
 import io.github.sds100.keymapper.base.actions.ChooseActionScreen
 import io.github.sds100.keymapper.base.actions.ChooseActionViewModel
 import io.github.sds100.keymapper.base.actions.ChooseSettingScreen
-import io.github.sds100.keymapper.base.actions.ConfigCreateNotificationViewModel
 import io.github.sds100.keymapper.base.actions.ConfigShellCommandViewModel
-import io.github.sds100.keymapper.base.actions.CreateNotificationActionScreen
 import io.github.sds100.keymapper.base.actions.ShellCommandActionScreen
 import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementScreen
 import io.github.sds100.keymapper.base.actions.uielement.InteractUiElementViewModel
@@ -87,19 +85,6 @@ fun BaseMainNavHost(
             }
 
             ShellCommandActionScreen(
-                modifier = Modifier.fillMaxSize(),
-                viewModel = viewModel,
-            )
-        }
-
-        composable<NavDestination.ConfigNotificationAction> { backStackEntry ->
-            val viewModel: ConfigCreateNotificationViewModel = hiltViewModel()
-
-            backStackEntry.handleRouteArgs<NavDestination.ConfigNotificationAction> { destination ->
-                destination.actionJson?.let { viewModel.loadAction(Json.decodeFromString(it)) }
-            }
-
-            CreateNotificationActionScreen(
                 modifier = Modifier.fillMaxSize(),
                 viewModel = viewModel,
             )

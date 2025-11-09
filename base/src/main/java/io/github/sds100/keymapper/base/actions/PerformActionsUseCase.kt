@@ -18,7 +18,7 @@ import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityServic
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
-import io.github.sds100.keymapper.base.system.notifications.ManageNotificationsUseCase
+import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.Constants
@@ -61,6 +61,7 @@ import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.nfc.NfcAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationModel
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationServiceEvent
@@ -85,6 +86,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
+import kotlin.math.absoluteValue
 
 class PerformActionsUseCaseImpl @AssistedInject constructor(
     @Assisted
@@ -118,7 +120,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val resourceProvider: ResourceProvider,
     private val soundsManager: SoundsManager,
     private val notificationReceiverAdapter: NotificationReceiverAdapter,
-    private val manageNotifications: ManageNotificationsUseCase,
+    private val notificationAdapter: NotificationAdapter,
     private val ringtoneAdapter: RingtoneAdapter,
     private val settingsRepository: PreferenceRepository,
     private val inputEventHub: InputEventHub,
@@ -934,13 +936,11 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
             is ActionData.CreateNotification -> {
                 // Use the hashcode of the action instance as the unique notification ID
-                val notificationId = action.hashCode().let { 
-                    if (it < 0) -it else it 
-                }
-                
+                val notificationId = action.hashCode().absoluteValue
+
                 val notification = NotificationModel(
                     id = notificationId,
-                    channel = io.github.sds100.keymapper.base.system.notifications.NotificationController.CHANNEL_CUSTOM_NOTIFICATIONS,
+                    channel = NotificationController.CHANNEL_CUSTOM_NOTIFICATIONS,
                     title = action.title,
                     text = action.text,
                     icon = R.drawable.ic_notification_play,
@@ -948,9 +948,10 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                     onGoing = false,
                     autoCancel = true,
                     timeout = action.timeoutMs,
+                    bigTextStyle = true,
                 )
-                
-                manageNotifications.show(notification)
+
+                notificationAdapter.showNotification(notification)
                 result = success()
             }
 

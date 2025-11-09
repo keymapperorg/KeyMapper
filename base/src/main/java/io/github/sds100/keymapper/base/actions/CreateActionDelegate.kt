@@ -25,6 +25,7 @@ import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.SystemError
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.network.HttpMethod
+import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.settings.SettingType
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
@@ -60,9 +61,10 @@ class CreateActionDelegate(
     var httpRequestBottomSheetState: ActionData.HttpRequest? by mutableStateOf(null)
     var smsActionBottomSheetState: SmsActionBottomSheetState? by mutableStateOf(null)
     var volumeActionState: VolumeActionBottomSheetState? by mutableStateOf(null)
-    var modifySettingActionBottomSheetState: ModifySettingActionBottomSheetState? by mutableStateOf(
-        null,
-    )
+    var modifySettingActionBottomSheetState: ModifySettingActionBottomSheetState?
+    by mutableStateOf(null)
+    var createNotificationActionBottomSheetState: CreateNotificationActionBottomSheetState?
+        by mutableStateOf(null)
 
     init {
         coroutineScope.launch {
@@ -85,6 +87,20 @@ class CreateActionDelegate(
                         modifySettingActionBottomSheetState?.copy(
                             isPermissionGranted = isGranted,
                             testResult = null,
+                        )
+                }
+        }
+
+        coroutineScope.launch {
+            snapshotFlow { createNotificationActionBottomSheetState }
+                .filterNotNull()
+                .flatMapLatest {
+                    useCase.isPermissionGrantedFlow(Permission.POST_NOTIFICATIONS)
+                }
+                .collectLatest { isGranted ->
+                    createNotificationActionBottomSheetState =
+                        createNotificationActionBottomSheetState?.copy(
+                            isPermissionGranted = isGranted,
                         )
                 }
         }
@@ -280,10 +296,67 @@ class CreateActionDelegate(
         }
     }
 
-    fun onRequestModifySettingPermission() {
+    fun onRequestModifySettingPermissionClick() {
         val state = modifySettingActionBottomSheetState ?: return
         val permission = useCase.getRequiredPermissionForSettingType(state.settingType)
         useCase.requestPermission(permission)
+    }
+
+    fun onCreateNotificationTitleChange(title: String) {
+        createNotificationActionBottomSheetState =
+            createNotificationActionBottomSheetState?.copy(title = title)
+    }
+
+    fun onCreateNotificationTextChange(text: String) {
+        createNotificationActionBottomSheetState =
+            createNotificationActionBottomSheetState?.copy(text = text)
+    }
+
+    fun onCreateNotificationTimeoutEnabledChange(enabled: Boolean) {
+        createNotificationActionBottomSheetState =
+            createNotificationActionBottomSheetState?.copy(timeoutEnabled = enabled)
+    }
+
+    fun onCreateNotificationTimeoutChange(timeoutSeconds: Int) {
+        createNotificationActionBottomSheetState =
+            createNotificationActionBottomSheetState?.copy(timeoutSeconds = timeoutSeconds)
+    }
+
+    fun onTestCreateNotificationClick() {
+        val state = createNotificationActionBottomSheetState ?: return
+
+        coroutineScope.launch {
+            val timeoutMs = if (state.timeoutEnabled) {
+                state.timeoutSeconds * 1000L
+            } else {
+                null
+            }
+
+            useCase.testCreateNotification(state.title, state.text, timeoutMs)
+        }
+    }
+
+    fun onDoneCreateNotificationClick() {
+        val state = createNotificationActionBottomSheetState ?: return
+
+        val timeoutMs = if (state.timeoutEnabled) {
+            state.timeoutSeconds * 1000L
+        } else {
+            null
+        }
+
+        val action = ActionData.CreateNotification(
+            title = state.title,
+            text = state.text,
+            timeoutMs = timeoutMs,
+        )
+
+        createNotificationActionBottomSheetState = null
+        actionResult.update { action }
+    }
+
+    fun onRequestNotificationPermissionClick() {
+        useCase.requestPermission(Permission.POST_NOTIFICATIONS)
     }
 
     suspend fun editAction(oldData: ActionData) {
@@ -977,14 +1050,14 @@ class CreateActionDelegate(
             ActionId.CREATE_NOTIFICATION -> {
                 val oldAction = oldData as? ActionData.CreateNotification
 
-                return navigate(
-                    "config_create_notification_action",
-                    NavDestination.ConfigNotificationAction(
-                        oldAction?.let {
-                            Json.encodeToString(oldAction)
-                        },
-                    ),
+                createNotificationActionBottomSheetState = CreateNotificationActionBottomSheetState(
+                    title = oldAction?.title ?: "",
+                    text = oldAction?.text ?: "",
+                    timeoutEnabled = oldAction?.timeoutMs != null,
+                    timeoutSeconds = ((oldAction?.timeoutMs ?: 30000) / 1000).toInt(),
                 )
+
+                return null
             }
             ActionId.ANSWER_PHONE_CALL -> return ActionData.AnswerCall
             ActionId.END_PHONE_CALL -> return ActionData.EndCall
