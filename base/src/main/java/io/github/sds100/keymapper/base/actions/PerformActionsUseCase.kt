@@ -1019,7 +1019,7 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.ModifySetting -> {
-                result = settingsAdapter.modifySetting(
+                result = settingsAdapter.setValue(
                     action.settingType,
                     action.settingKey,
                     action.value,

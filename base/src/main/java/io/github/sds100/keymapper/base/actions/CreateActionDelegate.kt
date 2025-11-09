@@ -4,6 +4,7 @@ import android.text.InputType
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.actions.pinchscreen.PinchPickCoordinateResult
 import io.github.sds100.keymapper.base.actions.swipescreen.SwipePickCoordinateResult
@@ -29,13 +30,17 @@ import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class CreateActionDelegate(
     private val coroutineScope: CoroutineScope,
     private val useCase: CreateActionUseCase,
@@ -66,6 +71,22 @@ class CreateActionDelegate(
                     enableFlashlightActionState = state.copy(isFlashEnabled = enabled)
                 }
             }
+        }
+
+        coroutineScope.launch {
+            snapshotFlow { modifySettingActionBottomSheetState?.settingType }
+                .filterNotNull()
+                .flatMapLatest { settingType ->
+                    val permission = useCase.getRequiredPermissionForSettingType(settingType)
+                    useCase.isPermissionGrantedFlow(permission)
+                }
+                .collectLatest { isGranted ->
+                    modifySettingActionBottomSheetState =
+                        modifySettingActionBottomSheetState?.copy(
+                            isPermissionGranted = isGranted,
+                            testResult = null,
+                        )
+                }
         }
     }
 
@@ -214,12 +235,18 @@ class CreateActionDelegate(
 
     fun onSelectSettingType(settingType: SettingType) {
         modifySettingActionBottomSheetState =
-            modifySettingActionBottomSheetState?.copy(settingType = settingType)
+            modifySettingActionBottomSheetState?.copy(
+                settingType = settingType,
+                testResult = null,
+            )
     }
 
     fun onSettingKeyChange(key: String) {
         modifySettingActionBottomSheetState =
-            modifySettingActionBottomSheetState?.copy(settingKey = key)
+            modifySettingActionBottomSheetState?.copy(
+                settingKey = key,
+                testResult = null,
+            )
     }
 
     fun onChooseExistingSettingClick() {
@@ -233,6 +260,7 @@ class CreateActionDelegate(
                 settingType = setting.settingType,
                 settingKey = setting.key,
                 value = setting.currentValue ?: "",
+                testResult = null,
             )
         }
     }
@@ -240,6 +268,22 @@ class CreateActionDelegate(
     fun onSettingValueChange(value: String) {
         modifySettingActionBottomSheetState =
             modifySettingActionBottomSheetState?.copy(value = value)
+    }
+
+    fun onTestModifySettingClick() {
+        val state = modifySettingActionBottomSheetState ?: return
+
+        coroutineScope.launch {
+            val result = useCase.setSettingValue(state.settingType, state.settingKey, state.value)
+            modifySettingActionBottomSheetState =
+                modifySettingActionBottomSheetState?.copy(testResult = result)
+        }
+    }
+
+    fun onRequestModifySettingPermission() {
+        val state = modifySettingActionBottomSheetState ?: return
+        val permission = useCase.getRequiredPermissionForSettingType(state.settingType)
+        useCase.requestPermission(permission)
     }
 
     suspend fun editAction(oldData: ActionData) {

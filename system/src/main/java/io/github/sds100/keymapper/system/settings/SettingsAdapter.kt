@@ -8,6 +8,8 @@ import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.system.SystemError
+import io.github.sds100.keymapper.system.permissions.Permission
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -66,17 +68,28 @@ class AndroidSettingsAdapter @Inject constructor(
         }
     }
 
-    override fun modifySetting(settingType: SettingType, key: String, value: String): KMResult<*> {
-        val success = when (settingType) {
-            SettingType.SYSTEM -> SettingsUtils.putSystemSetting(ctx, key, value)
-            SettingType.SECURE -> SettingsUtils.putSecureSetting(ctx, key, value)
-            SettingType.GLOBAL -> SettingsUtils.putGlobalSetting(ctx, key, value)
-        }
+    override fun setValue(settingType: SettingType, key: String, value: String): KMResult<Unit> {
+        try {
+            val success = when (settingType) {
+                SettingType.SYSTEM -> SettingsUtils.putSystemSetting(ctx, key, value)
+                SettingType.SECURE -> SettingsUtils.putSecureSetting(ctx, key, value)
+                SettingType.GLOBAL -> SettingsUtils.putGlobalSetting(ctx, key, value)
+            }
 
-        return if (success) {
-            Success(Unit)
-        } else {
-            KMError.FailedToModifySystemSetting(key)
+            return if (success) {
+                Success(Unit)
+            } else {
+                KMError.FailedToModifySystemSetting(key)
+            }
+        } catch (_: IllegalArgumentException) {
+            return KMError.FailedToModifySystemSetting(key)
+        } catch (_: SecurityException) {
+            return when (settingType) {
+                SettingType.SYSTEM ->
+                    SystemError.PermissionDenied(Permission.WRITE_SETTINGS)
+                SettingType.SECURE, SettingType.GLOBAL ->
+                    SystemError.PermissionDenied(Permission.WRITE_SECURE_SETTINGS)
+            }
         }
     }
 }
@@ -84,5 +97,5 @@ class AndroidSettingsAdapter @Inject constructor(
 interface SettingsAdapter {
     fun getAll(settingType: SettingType): Map<String, String?>
     fun getValue(settingType: SettingType, key: String): String?
-    fun modifySetting(settingType: SettingType, key: String, value: String): KMResult<*>
+    fun setValue(settingType: SettingType, key: String, value: String): KMResult<Unit>
 }
