@@ -67,6 +67,8 @@ import androidx.compose.material.icons.outlined.Swipe
 import androidx.compose.material.icons.outlined.TouchApp
 import androidx.compose.material.icons.outlined.VerticalSplit
 import androidx.compose.material.icons.outlined.ViewArray
+import androidx.compose.material.icons.outlined.WifiTethering
+import androidx.compose.material.icons.outlined.WifiTetheringOff
 import androidx.compose.material.icons.rounded.Abc
 import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.Bluetooth
@@ -142,6 +144,10 @@ object ActionUtils {
         ActionId.TOGGLE_MOBILE_DATA -> ActionCategory.CONNECTIVITY
         ActionId.ENABLE_MOBILE_DATA -> ActionCategory.CONNECTIVITY
         ActionId.DISABLE_MOBILE_DATA -> ActionCategory.CONNECTIVITY
+
+        ActionId.TOGGLE_HOTSPOT -> ActionCategory.CONNECTIVITY
+        ActionId.ENABLE_HOTSPOT -> ActionCategory.CONNECTIVITY
+        ActionId.DISABLE_HOTSPOT -> ActionCategory.CONNECTIVITY
 
         ActionId.TOGGLE_AUTO_BRIGHTNESS -> ActionCategory.DISPLAY
         ActionId.DISABLE_AUTO_BRIGHTNESS -> ActionCategory.DISPLAY
@@ -248,11 +254,13 @@ object ActionUtils {
 
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> ActionCategory.NOTIFICATIONS
         ActionId.DISMISS_ALL_NOTIFICATIONS -> ActionCategory.NOTIFICATIONS
+        ActionId.CREATE_NOTIFICATION -> ActionCategory.NOTIFICATIONS
         ActionId.DEVICE_CONTROLS -> ActionCategory.APPS
 
         ActionId.INTERACT_UI_ELEMENT -> ActionCategory.APPS
         ActionId.FORCE_STOP_APP -> ActionCategory.APPS
         ActionId.CLEAR_RECENT_APP -> ActionCategory.APPS
+        ActionId.MODIFY_SETTING -> ActionCategory.APPS
 
         ActionId.CONSUME_KEY_EVENT -> ActionCategory.SPECIAL
     }
@@ -373,6 +381,7 @@ object ActionUtils {
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION ->
             R.string.action_dismiss_most_recent_notification
         ActionId.DISMISS_ALL_NOTIFICATIONS -> R.string.action_dismiss_all_notifications
+        ActionId.CREATE_NOTIFICATION -> R.string.action_create_notification
         ActionId.ANSWER_PHONE_CALL -> R.string.action_answer_call
         ActionId.END_PHONE_CALL -> R.string.action_end_call
         ActionId.SEND_SMS -> R.string.action_send_sms
@@ -383,6 +392,11 @@ object ActionUtils {
         ActionId.INTERACT_UI_ELEMENT -> R.string.action_interact_ui_element_title
         ActionId.FORCE_STOP_APP -> R.string.action_force_stop_app
         ActionId.CLEAR_RECENT_APP -> R.string.action_clear_recent_app
+
+        ActionId.MODIFY_SETTING -> R.string.action_modify_setting
+        ActionId.TOGGLE_HOTSPOT -> R.string.action_toggle_hotspot
+        ActionId.ENABLE_HOTSPOT -> R.string.action_enable_hotspot
+        ActionId.DISABLE_HOTSPOT -> R.string.action_disable_hotspot
     }
 
     @DrawableRes
@@ -500,6 +514,7 @@ object ActionUtils {
         ActionId.SOUND -> R.drawable.ic_outline_volume_up_24
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> R.drawable.ic_baseline_clear_all_24
         ActionId.DISMISS_ALL_NOTIFICATIONS -> R.drawable.ic_baseline_clear_all_24
+        ActionId.CREATE_NOTIFICATION -> R.drawable.ic_notification_play
         ActionId.ANSWER_PHONE_CALL -> R.drawable.ic_outline_call_24
         ActionId.END_PHONE_CALL -> R.drawable.ic_outline_call_end_24
         ActionId.SEND_SMS -> R.drawable.ic_outline_message_24
@@ -548,6 +563,13 @@ object ActionUtils {
 
         ActionId.SHOW_POWER_MENU -> Build.VERSION_CODES.LOLLIPOP
         ActionId.DEVICE_CONTROLS -> Build.VERSION_CODES.S
+
+        // It could be supported on older versions but system bridge min API is Q and its extra
+        // maintenance effort to support the older tethering system API.
+        ActionId.TOGGLE_HOTSPOT,
+        ActionId.ENABLE_HOTSPOT,
+        ActionId.DISABLE_HOTSPOT,
+            -> Build.VERSION_CODES.R
 
         else -> Constants.MIN_API
     }
@@ -612,6 +634,11 @@ object ActionUtils {
             ActionId.TOGGLE_MOBILE_DATA,
             ActionId.ENABLE_MOBILE_DATA,
             ActionId.DISABLE_MOBILE_DATA,
+                -> true
+
+            ActionId.TOGGLE_HOTSPOT,
+            ActionId.ENABLE_HOTSPOT,
+            ActionId.DISABLE_HOTSPOT,
                 -> true
 
             ActionId.ENABLE_NFC,
@@ -744,6 +771,8 @@ object ActionUtils {
             ActionId.DISMISS_MOST_RECENT_NOTIFICATION,
                 -> return listOf(Permission.NOTIFICATION_LISTENER)
 
+            ActionId.CREATE_NOTIFICATION -> return listOf(Permission.POST_NOTIFICATIONS)
+
             ActionId.ANSWER_PHONE_CALL,
             ActionId.END_PHONE_CALL,
                 -> return listOf(Permission.ANSWER_PHONE_CALL)
@@ -759,6 +788,9 @@ object ActionUtils {
                 if (Build.VERSION.SDK_INT == Build.VERSION_CODES.S) {
                     return listOf(Permission.FIND_NEARBY_DEVICES)
                 }
+
+            // Permissions handled based on setting type at runtime
+            ActionId.MODIFY_SETTING -> return emptyList()
 
             else -> return emptyList()
         }
@@ -882,6 +914,7 @@ object ActionUtils {
         ActionId.SOUND -> Icons.AutoMirrored.Outlined.VolumeUp
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> Icons.Outlined.ClearAll
         ActionId.DISMISS_ALL_NOTIFICATIONS -> Icons.Outlined.ClearAll
+        ActionId.CREATE_NOTIFICATION -> Icons.AutoMirrored.Outlined.Message
         ActionId.ANSWER_PHONE_CALL -> Icons.Outlined.Call
         ActionId.END_PHONE_CALL -> Icons.Outlined.CallEnd
         ActionId.DEVICE_CONTROLS -> KeyMapperIcons.HomeIotDevice
@@ -890,6 +923,11 @@ object ActionUtils {
         ActionId.INTERACT_UI_ELEMENT -> KeyMapperIcons.JumpToElement
         ActionId.FORCE_STOP_APP -> Icons.Outlined.Dangerous
         ActionId.CLEAR_RECENT_APP -> Icons.Outlined.VerticalSplit
+
+        ActionId.MODIFY_SETTING -> Icons.Outlined.Settings
+        ActionId.TOGGLE_HOTSPOT -> Icons.Outlined.WifiTethering
+        ActionId.ENABLE_HOTSPOT -> Icons.Outlined.WifiTethering
+        ActionId.DISABLE_HOTSPOT -> Icons.Outlined.WifiTetheringOff
     }
 }
 
@@ -934,8 +972,10 @@ fun ActionData.isEditable(): Boolean = when (this) {
     is ActionData.ComposeSms,
     is ActionData.HttpRequest,
     is ActionData.ShellCommand,
+    is ActionData.CreateNotification,
     is ActionData.InteractUiElement,
     is ActionData.MoveCursor,
+    is ActionData.ModifySetting,
         -> true
 
     else -> false

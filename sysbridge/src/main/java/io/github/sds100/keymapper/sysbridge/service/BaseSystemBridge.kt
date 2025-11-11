@@ -14,6 +14,14 @@ import android.content.pm.PackageManager
 import android.hardware.input.IInputManager
 import android.media.IAudioService
 import android.net.IConnectivityManager
+import android.net.ITetheringConnector
+import android.net.ITetheringEventCallback
+import android.net.Network
+import android.net.TetherStatesParcel
+import android.net.TetheredClient
+import android.net.TetheringCallbackStartedParcel
+import android.net.TetheringConfigurationParcel
+import android.net.TetheringRequestParcel
 import android.net.wifi.IWifiManager
 import android.nfc.INfcAdapter
 import android.nfc.NfcAdapterApis
@@ -28,6 +36,7 @@ import android.permission.IPermissionManager
 import android.permission.PermissionManagerApis
 import android.util.Log
 import android.view.InputEvent
+import androidx.annotation.RequiresApi
 import com.android.internal.telephony.ITelephony
 import io.github.sds100.keymapper.common.models.EvdevDeviceHandle
 import io.github.sds100.keymapper.common.models.ShellResult
@@ -84,6 +93,7 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
 
         private const val KEYMAPPER_CHECK_INTERVAL_MS = 60 * 1000L // 1 minute
         private const val DATA_ENABLED_REASON_USER: Int = 0
+        private const val TETHERING_WIFI: Int = 0
 
         private fun waitSystemService(name: String?) {
             var count = 0
@@ -168,6 +178,7 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
     private val bluetoothManager: IBluetoothManager?
     private val nfcAdapter: INfcAdapter?
     private val connectivityManager: IConnectivityManager?
+    private val tetheringConnector: ITetheringConnector?
     private val activityManager: IActivityManager
     private val activityTaskManager: IActivityTaskManager
     private val audioService: IAudioService?
@@ -258,6 +269,14 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
         waitSystemService(Context.AUDIO_SERVICE)
         audioService =
             IAudioService.Stub.asInterface(ServiceManager.getService(Context.AUDIO_SERVICE))
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            waitSystemService("tethering")
+            tetheringConnector =
+                ITetheringConnector.Stub.asInterface(ServiceManager.getService("tethering"))
+        } else {
+            tetheringConnector = null
+        }
 
         val applicationInfo = getKeyMapperPackageInfo()
 
@@ -663,5 +682,86 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
         }
 
         audioService.setRingerModeInternal(ringerMode, processPackageName)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun isTetheringEnabled(): Boolean {
+        if (tetheringConnector == null) {
+            throw UnsupportedOperationException("TetheringConnector not supported")
+        }
+
+        val lock = Object()
+        var result = false
+        val timeoutMillis = 5000L
+
+        val callback = object : ITetheringEventCallback.Stub() {
+            override fun onCallbackStarted(parcel: TetheringCallbackStartedParcel?) {
+                if (parcel?.states?.tetheredList != null) {
+                    // Check if any tethering interface is active
+                    result = parcel.states.tetheredList.isNotEmpty()
+                }
+
+                synchronized(lock) {
+                    lock.notify()
+                }
+            }
+
+            override fun onCallbackStopped(errorCode: Int) {}
+            override fun onUpstreamChanged(network: Network?) {}
+            override fun onConfigurationChanged(config: TetheringConfigurationParcel?) {}
+            override fun onTetherStatesChanged(states: TetherStatesParcel?) {}
+            override fun onTetherClientsChanged(clients: List<TetheredClient?>?) {}
+            override fun onOffloadStatusChanged(status: Int) {}
+            override fun onSupportedTetheringTypes(supportedBitmap: Long) {}
+        }
+
+        try {
+            // We register and immediately unregister the callback after getting the state
+            // instead of keeping it registered for the lifetime of SystemBridge. This is
+            // a safety measure in case there's a bug in the callback that could crash
+            // the entire SystemBridge process.
+            tetheringConnector.registerTetheringEventCallback(callback, processPackageName)
+
+            // Wait for callback with timeout using Handler
+            mainHandler.postDelayed({
+                synchronized(lock) {
+                    lock.notify()
+                }
+            }, timeoutMillis)
+
+            synchronized(lock) {
+                lock.wait(timeoutMillis)
+            }
+        } catch (e: InterruptedException) {
+            Thread.currentThread().interrupt()
+        } finally {
+            tetheringConnector.unregisterTetheringEventCallback(callback, processPackageName)
+        }
+
+        return result
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun setTetheringEnabled(enable: Boolean) {
+        if (tetheringConnector == null) {
+            throw UnsupportedOperationException("TetheringConnector not supported")
+        }
+
+        if (enable) {
+            val request = TetheringRequestParcel().apply {
+                // TetheringManager.TETHERING_WIFI
+                tetheringType = TETHERING_WIFI
+                localIPv4Address = null
+                staticClientAddress = null
+                exemptFromEntitlementCheck = false
+                showProvisioningUi = true
+                // TetheringManager.CONNECTIVITY_SCOPE_GLOBAL
+                connectivityScope = 1
+            }
+
+            tetheringConnector.startTethering(request, processPackageName, null, null)
+        } else {
+            tetheringConnector.stopTethering(TETHERING_WIFI, processPackageName, null, null)
+        }
     }
 }

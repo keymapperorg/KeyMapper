@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.BuildConfig
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
+import io.github.sds100.keymapper.sysbridge.manager.isConnected
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationAdapter
@@ -76,8 +77,16 @@ class SystemBridgeAutoStarter @Inject constructor(
             if (isRooted) {
                 flowOf(AutoStartType.ROOT)
             } else {
-                shizukuAdapter.isStarted.flatMapLatest { isShizukuStarted ->
-                    if (isShizukuStarted) {
+                val useShizukuFlow =
+                    combine(
+                        shizukuAdapter.isStarted,
+                        permissionAdapter.isGrantedFlow(Permission.SHIZUKU),
+                    ) { isStarted, isGranted ->
+                        isStarted && isGranted
+                    }
+
+                useShizukuFlow.flatMapLatest { useShizuku ->
+                    if (useShizuku) {
                         flowOf(AutoStartType.SHIZUKU)
                     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         val isAdbAutoStartAllowed = combine(
@@ -145,9 +154,12 @@ class SystemBridgeAutoStarter @Inject constructor(
 
             if (isBoot) {
                 handleAutoStartOnBoot()
-            } else if (BuildConfig.DEBUG) {
-                Timber.i("Auto starting system bridge because debug build")
-                autoStartTypeFlow.first()?.let { autoStart(it) }
+            } else if (BuildConfig.DEBUG && connectionManager.isConnected()) {
+                // This is useful when developing and need to restart the system bridge
+                // after making changes to it.
+                Timber.w("Restarting system bridge on debug build.")
+
+                connectionManager.restartSystemBridge()
             } else {
                 handleAutoStartFromPreVersion4()
             }
@@ -214,6 +226,11 @@ class SystemBridgeAutoStarter @Inject constructor(
             Timber.w(
                 "Not auto starting the system bridge because it was emergency killed by the user",
             )
+            return
+        }
+
+        if (connectionManager.isConnected()) {
+            Timber.i("Not auto starting with $type because already connected.")
             return
         }
 

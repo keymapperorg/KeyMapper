@@ -27,6 +27,7 @@ import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.permissions.SystemFeatureAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
+import io.github.sds100.keymapper.system.settings.SettingType
 
 class LazyActionErrorSnapshot(
     private val packageManager: PackageManagerAdapter,
@@ -228,6 +229,27 @@ class LazyActionErrorSnapshot(
                     }
 
                     ShellExecutionMode.STANDARD -> null
+                }
+            }
+
+            is ActionData.ModifySetting -> {
+                return when (action.settingType) {
+                    SettingType.SYSTEM -> {
+                        if (!isPermissionGranted(Permission.WRITE_SETTINGS)) {
+                            SystemError.PermissionDenied(Permission.WRITE_SETTINGS)
+                        } else {
+                            null
+                        }
+                    }
+                    SettingType.SECURE,
+                    SettingType.GLOBAL,
+                        -> {
+                        if (!isPermissionGranted(Permission.WRITE_SECURE_SETTINGS)) {
+                            SystemError.PermissionDenied(Permission.WRITE_SECURE_SETTINGS)
+                        } else {
+                            null
+                        }
+                    }
                 }
             }
 

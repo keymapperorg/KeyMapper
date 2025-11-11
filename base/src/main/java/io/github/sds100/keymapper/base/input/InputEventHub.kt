@@ -21,6 +21,7 @@ import io.github.sds100.keymapper.evdev.IEvdevCallback
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.sysbridge.manager.isConnected
+import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
@@ -304,8 +305,11 @@ class InputEventHubImpl @Inject constructor(
             .onSuccess { result ->
                 Timber.i("Grabbed evdev devices [${evdevDevices.joinToString { it.name }}]")
             }
-            .onFailure {
-                Timber.e("Failed to grab evdev devices.")
+            .onFailure { error ->
+                // Do not log if it is expected to prevent log spam.
+                if (error !is SystemBridgeError.Disconnected) {
+                    Timber.e("Failed to grab evdev devices.")
+                }
             }
     }
 
@@ -339,7 +343,7 @@ class InputEventHubImpl @Inject constructor(
             val androidKeyEvent = event.toAndroidKeyEvent(flags = KeyEvent.FLAG_FROM_SYSTEM)
 
             if (logInputEventsEnabled.value) {
-                Timber.d("Injecting key event $androidKeyEvent with system bridge")
+                Timber.d("Injecting key event with system bridge $androidKeyEvent")
             }
 
             return withContext(Dispatchers.IO) {

@@ -21,17 +21,17 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.withStateAtLeast
-import androidx.navigation.findNavController
 import com.anggrayudi.storage.extension.openInputStream
 import com.anggrayudi.storage.extension.openOutputStream
 import com.anggrayudi.storage.extension.toDocumentFile
 import io.github.sds100.keymapper.base.compose.ComposeColors
 import io.github.sds100.keymapper.base.input.InputEventDetectionSource
 import io.github.sds100.keymapper.base.input.InputEventHubImpl
+import io.github.sds100.keymapper.base.keymaps.ConfigKeyMapStateImpl
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.permissions.RequestPermissionDelegate
-import io.github.sds100.keymapper.base.trigger.RecordTriggerControllerImpl
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupControllerImpl
@@ -56,9 +56,6 @@ abstract class BaseMainActivity : AppCompatActivity() {
         const val ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG =
             "${BuildConfig.LIBRARY_PACKAGE_NAME}.ACTION_SHOW_ACCESSIBILITY_SETTINGS_NOT_FOUND_DIALOG"
 
-        const val ACTION_USE_FLOATING_BUTTONS =
-            "${BuildConfig.LIBRARY_PACKAGE_NAME}.ACTION_USE_FLOATING_BUTTONS"
-
         const val ACTION_SAVE_FILE = "${BuildConfig.LIBRARY_PACKAGE_NAME}.ACTION_SAVE_FILE"
         const val EXTRA_FILE_URI = "${BuildConfig.LIBRARY_PACKAGE_NAME}.EXTRA_FILE_URI"
 
@@ -77,9 +74,6 @@ abstract class BaseMainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var onboardingUseCase: OnboardingUseCase
-
-    @Inject
-    lateinit var recordTriggerController: RecordTriggerControllerImpl
 
     @Inject
     lateinit var notificationReceiverAdapter: NotificationReceiverAdapterImpl
@@ -104,6 +98,12 @@ abstract class BaseMainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var inputEventHub: InputEventHubImpl
+
+    @Inject
+    lateinit var navigationProvider: NavigationProvider
+
+    @Inject
+    lateinit var configKeyMapState: ConfigKeyMapStateImpl
 
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
 
@@ -155,6 +155,8 @@ abstract class BaseMainActivity : AppCompatActivity() {
         )
         super.onCreate(savedInstanceState)
 
+        savedInstanceState?.let { configKeyMapState.restoreState(it) }
+
         requestPermissionDelegate = RequestPermissionDelegate(
             this,
             showDialogs = true,
@@ -162,15 +164,14 @@ abstract class BaseMainActivity : AppCompatActivity() {
             notificationReceiverAdapter = notificationReceiverAdapter,
             buildConfigProvider = buildConfigProvider,
             shizukuAdapter = shizukuAdapter,
+            navigationProvider = navigationProvider,
+            coroutineScope = lifecycleScope,
         )
 
         permissionAdapter.request
             .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
             .onEach { permission ->
-                requestPermissionDelegate.requestPermission(
-                    permission,
-                    findNavController(R.id.container),
-                )
+                requestPermissionDelegate.requestPermission(permission)
             }
             .launchIn(lifecycleScope)
 
@@ -201,9 +202,16 @@ abstract class BaseMainActivity : AppCompatActivity() {
         // the activities have not necessarily resumed at that point.
         permissionAdapter.onPermissionsChanged()
         serviceAdapter.invalidateState()
-        suAdapter.invalidateIsRooted()
+        suAdapter.requestPermission()
         systemBridgeSetupController.invalidateSettings()
         networkAdapter.invalidateState()
+        onboardingUseCase.handledMigrateScreenOffKeyMapsNotification()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        configKeyMapState.saveState(outState)
+
+        super.onSaveInstanceState(outState)
     }
 
     override fun onDestroy() {

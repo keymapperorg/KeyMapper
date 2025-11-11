@@ -112,7 +112,9 @@ object KeyMapEntityMapper {
         entity: KeyMapEntity,
         floatingButtons: List<FloatingButtonEntityWithLayout>,
     ): KeyMap {
-        val actionList = entity.actionList.mapNotNull { ActionEntityMapper.fromEntity(it) }
+        val actionList = entity.actionList
+            .filterNotNull()
+            .mapNotNull { ActionEntityMapper.fromEntity(it) }
 
         val constraintList =
             entity.constraintList.map { ConstraintEntityMapper.fromEntity(it) }.toSet()

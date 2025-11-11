@@ -57,6 +57,8 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
                         R.string.error_find_nearby_devices_permission_denied
                     Permission.POST_NOTIFICATIONS ->
                         R.string.error_notifications_permission_denied
+                    Permission.READ_LOGS ->
+                        R.string.error_read_logs_permission_denied
                 }
 
                 resourceProvider.getString(resId)

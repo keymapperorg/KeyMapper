@@ -29,6 +29,7 @@ import io.github.sds100.keymapper.data.repositories.LogRepository
 import io.github.sds100.keymapper.data.repositories.PreferenceRepositoryImpl
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManagerImpl
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
+import io.github.sds100.keymapper.sysbridge.manager.isConnected
 import io.github.sds100.keymapper.system.apps.AndroidPackageManagerAdapter
 import io.github.sds100.keymapper.system.devices.AndroidDevicesAdapter
 import io.github.sds100.keymapper.system.inputmethod.KeyEventRelayServiceWrapperImpl
@@ -223,6 +224,12 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
 
         autoGrantPermissionController.start()
         keyEventRelayServiceWrapper.bind()
+
+        if (systemBridgeConnectionManager.isConnected()) {
+            Timber.i("KeyMapperApp: System bridge is connected")
+        } else {
+            Timber.i("KeyMapperApp: System bridge is disconnected")
+        }
 
         if (Build.VERSION.SDK_INT >= Constants.SYSTEM_BRIDGE_MIN_API) {
             systemBridgeAutoStarter.init()

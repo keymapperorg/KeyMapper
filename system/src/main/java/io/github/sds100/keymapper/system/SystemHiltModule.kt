@@ -53,6 +53,8 @@ import io.github.sds100.keymapper.system.ringtones.AndroidRingtoneAdapter
 import io.github.sds100.keymapper.system.ringtones.RingtoneAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
 import io.github.sds100.keymapper.system.root.SuAdapterImpl
+import io.github.sds100.keymapper.system.settings.AndroidSettingsAdapter
+import io.github.sds100.keymapper.system.settings.SettingsAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
 import io.github.sds100.keymapper.system.shell.StandardShellAdapter
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
@@ -193,4 +195,8 @@ abstract class SystemHiltModule {
     abstract fun provideSystemFeatureAdapter(
         impl: AndroidSystemFeatureAdapter,
     ): SystemFeatureAdapter
+
+    @Singleton
+    @Binds
+    abstract fun provideSettingsAdapter(impl: AndroidSettingsAdapter): SettingsAdapter
 }

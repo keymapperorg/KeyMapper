@@ -83,14 +83,9 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
             SettingsUtils.settingsCallbackFlow(ctx, uri).collect {
                 isWirelessDebuggingEnabled.update { getWirelessDebuggingEnabled() }
 
-                // Only go back if the user is currently setting up the wireless debugging step.
-                // This stops Key Mapper going back if they are turning on wireless debugging
-                // for another reason.
-                if (isWirelessDebuggingEnabled.value &&
-                    setupAssistantStepState.value == SystemBridgeSetupStep.WIRELESS_DEBUGGING
-                ) {
-                    getKeyMapperAppTask()?.moveToFront()
-                }
+                // Do not automatically go back to Key Mapper after this step because
+                // some devices show a dialog that will be auto dismissed resulting in wireless
+                // ADB being immediately disabled. E.g OnePlus 6T Oxygen OS 11
             }
         }
 
@@ -318,7 +313,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
 
     private fun getKeyMapperAppTask(): ActivityManager.AppTask? {
         val task = activityManager.appTasks
-            .firstOrNull {
+            ?.firstOrNull {
                 it.taskInfo.topActivity?.className ==
                     keyMapperClassProvider.getMainActivity().name
             }
