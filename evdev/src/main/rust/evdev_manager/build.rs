@@ -13,7 +13,10 @@ fn main() {
     let is_android = target.contains("android");
 
     if !is_android {
-        eprintln!("Warning: Building for non-Android target '{}'. Skipping C/C++ compilation.", target);
+        eprintln!(
+            "Warning: Building for non-Android target '{}'. Skipping C/C++ compilation.",
+            target
+        );
         eprintln!("This crate is designed for Android. Use Gradle for actual builds.");
         // Skip all compilation but succeed to allow cargo check to work
         return;
@@ -62,6 +65,8 @@ fn main() {
         .file(android_dir.join("input/InputEventLabels.cpp"))
         .file(android_dir.join("input/InputDevice.cpp"))
         .file(android_dir.join("input/Input.cpp"))
+        // C interface wrapper for KeyLayoutMap
+        .file(cpp_dir.join("keylayoutmap_c.cpp"))
         // Android base library files
         .file(android_dir.join("libbase/result.cpp"))
         .file(android_dir.join("libbase/stringprintf.cpp"))
@@ -103,20 +108,33 @@ fn main() {
     println!("cargo:rustc-link-lib=log");
     println!("cargo:rustc-link-lib=binder_ndk");
 
-    // Generate Rust bindings from libevdev headers
+    // Generate Rust bindings from headers
+    // We generate C and C++ bindings separately because:
+    // 1. C headers (libevdev) need C mode to allow implicit void* conversions
+    // 2. C++ headers (KeyLayoutMap.h) need C++ mode to find cstdint
     let evdev_headers_path = libevdev_dir.clone();
 
-    // Configure bindgen with Android NDK sysroot and include paths
-    let mut bindgen_builder = bindgen::Builder::default()
-        .formatter(bindgen::Formatter::Prettyplease)
-        // Disable all format/style warnings for generated code
-        .raw_line("#![allow(clippy::all)]")
-        .raw_line("#![allow(non_camel_case_types)]")
-        .raw_line("#![allow(non_snake_case)]")
-        .raw_line("#![allow(non_upper_case_globals)]")
-        .raw_line("#![allow(dead_code)]")
-        .raw_line("#![allow(rustdoc::broken_intra_doc_links)]")
-        .raw_line("#![allow(rustdoc::private_intra_doc_links)]")
+    // Common bindgen configuration
+    let common_allow_attributes = vec![
+        "#![allow(clippy::all)]",
+        "#![allow(non_camel_case_types)]",
+        "#![allow(non_snake_case)]",
+        "#![allow(non_upper_case_globals)]",
+        "#![allow(dead_code)]",
+        "#![allow(rustdoc::broken_intra_doc_links)]",
+        "#![allow(rustdoc::private_intra_doc_links)]",
+        "#![allow(arithmetic_overflow)]", // Needed for bindgen-generated array size calculations
+    ];
+
+    // Generate C bindings (libevdev headers) in C mode
+    let mut bindgen_builder =
+        bindgen::Builder::default().formatter(bindgen::Formatter::Prettyplease);
+
+    for attr in &common_allow_attributes {
+        bindgen_builder = bindgen_builder.raw_line(*attr);
+    }
+
+    bindgen_builder = bindgen_builder
         .header(evdev_headers_path.join("libevdev.h").display().to_string())
         .header(
             evdev_headers_path
@@ -136,6 +154,7 @@ fn main() {
                 .display()
                 .to_string(),
         )
+        .header(cpp_dir.join("keylayoutmap_c.h").display().to_string())
         .clang_arg(format!("--sysroot={}", ndk_sysroot.display()))
         .clang_arg(format!("-I{}", sysroot_include.display()));
 
@@ -147,7 +166,7 @@ fn main() {
 
     let bindings = bindgen_builder
         .generate()
-        .expect("Unable to generate bindings");
+        .expect("Unable to generate C bindings");
 
     let out_path = manifest_dir.join("src");
 

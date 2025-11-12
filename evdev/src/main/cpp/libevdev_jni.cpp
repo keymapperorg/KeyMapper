@@ -124,6 +124,7 @@ Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_grabEvdevDevi
         identifier.vendor = libevdev_get_id_vendor(dev);
         identifier.product = libevdev_get_id_product(dev);
 
+        // TODO convert this code into rust
         std::string klPath = android::getInputDeviceConfigurationFilePathByDeviceIdentifier(
                 identifier, android::InputDeviceConfigurationFileType::KEY_LAYOUT);
 

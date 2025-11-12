@@ -1,4 +1,4 @@
-mod bindings;
+mod bindings; // libevdev C bindings + KeyLayoutMap C interface bindings
 mod enums;
 mod evdev;
 
