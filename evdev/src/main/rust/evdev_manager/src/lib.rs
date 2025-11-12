@@ -1,3 +1,7 @@
+mod bindings;
+mod enums;
+mod evdev;
+
 #[macro_use]
 extern crate log;
 extern crate android_log;

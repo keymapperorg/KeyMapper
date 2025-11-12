@@ -197,7 +197,6 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
 
         val libraryPath = System.getProperty("keymapper_sysbridge.library.path")
         @SuppressLint("UnsafeDynamicallyLoadedCode")
-        System.load("$libraryPath/libevdev.so")
         System.load("$libraryPath/libevdev_manager.so")
 
         helloEvdevManager("test input")

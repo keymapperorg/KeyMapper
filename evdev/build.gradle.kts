@@ -17,21 +17,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-
-        externalNativeBuild {
-            cmake {
-                val aidlSrcDir = project.file("src/main/cpp/aidl")
-
-                // -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON is required to get the app running on the Android 15. This is related to the new 16kB page size support.
-                // -DANDROID_WEAK_API_DEFS=ON is required so the libevdev_jni file can run code depending on the SDK. https://developer.android.com/ndk/guides/using-newer-apis
-                arguments(
-                    "-DANDROID_STL=c++_static",
-                    "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
-                    "-DANDROID_WEAK_API_DEFS=ON",
-                    "-Daidl_src_dir=${aidlSrcDir.absolutePath}",
-                )
-            }
-        }
     }
 
     buildTypes {
@@ -40,13 +25,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-        }
-    }
-
-    externalNativeBuild {
-        cmake {
-            path("src/main/cpp/CMakeLists.txt")
-            version = "3.22.1"
         }
     }
 
@@ -188,6 +166,14 @@ val compileAidlNdk by tasks.registering(Exec::class) {
 tasks.named("preBuild") {
     dependsOn(generateLibEvDevEventNames)
     dependsOn(compileAidlNdk)
+}
+
+// Ensure AIDL files are compiled before cargo build runs
+afterEvaluate {
+    tasks.matching { it.name.contains("cargoBuild") }.configureEach {
+        dependsOn(compileAidlNdk)
+        dependsOn(generateLibEvDevEventNames)
+    }
 }
 
 // Must come after all tasks above, otherwise gradle syncing fails.
