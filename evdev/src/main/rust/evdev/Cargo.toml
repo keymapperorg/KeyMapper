@@ -1,21 +1,21 @@
 [package]
-name = "evdev_manager"
+name = "evdev"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "evdev_manager"
+name = "evdev"
 # "cdylib" is necessary to produce a C-style dynamic library that can be loaded by Android's JNI.
 crate-type = ["cdylib"]
+
+[dependencies]
+libc = "1.0.0-alpha.1"
+log = "0.4.28"
+bitflags = "2.10.0"
 
 [profile.dev]
 debug = true
 strip = false  # Don't strip symbols, keeps them in the .so file
 
-[dependencies]
-jni = "0.21.1"
-log = "0.4.28"
-android_log = "0.1.3"
-evdev = { path = "../evdev" }
-libc = "0.2.177"
-tokio = { version = "1.48.0", features = ["fs", "net", "rt", "rt-multi-thread"] }
+[build-dependencies]
+cc = "1.2.46"

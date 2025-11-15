@@ -1,22 +1,22 @@
+mod android;
 mod bindings; // libevdev C bindings + KeyLayoutMap C interface bindings
 mod device_manager;
 mod device_manager_tokio;
 mod device_task;
-mod enums;
-mod evdev;
 mod evdevcallback_binder_observer;
 mod event_loop;
-mod key_layout_map_manager;
-mod observer;
+mod input_device_config;
+mod input_event_lookup;
 mod jni_bridge;
+mod key_layout_map;
+mod key_layout_map_manager;
+mod evdev_error;
+mod observer;
+mod tokenizer;
 mod tokio_runtime;
 
-// Public re-exports for testing
-// Integration tests need public APIs, so we make these always available
-// They're safe to expose as they're part of the internal API surface
-pub use evdevcallback_binder_observer::{EmergencyKillCallback, EvdevCallbackBinderObserver};
-pub use evdev::{EvdevEvent, EvdevError};
-pub use enums::EventType;
+// Export public types
+pub use key_layout_map::{KeyLayoutAxisInfo, KeyLayoutAxisMode, KeyLayoutKey, KeyLayoutMap};
 
 #[macro_use]
 extern crate log;

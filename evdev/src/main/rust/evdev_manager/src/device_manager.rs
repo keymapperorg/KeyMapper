@@ -1,13 +1,13 @@
-use crate::bindings;
-use crate::evdev::{EvdevDevice, EvdevError, UInputDevice};
-use nix::errno::Errno;
-use nix::fcntl::{open, OFlag};
-use nix::sys::stat::Mode;
-use std::os::fd::{AsRawFd, BorrowedFd, OwnedFd, RawFd};
+use crate::evdev_error::EvdevError;
+use evdev::enums::{EventCode, EV_SYN};
+use evdev::{util::int_to_event_code, Device, GrabMode, InputEvent, TimeVal, UInputDevice};
+use std::fs::OpenOptions;
+use std::os::fd::{AsFd, AsRawFd, BorrowedFd, FromRawFd, OwnedFd, RawFd};
+use std::os::unix::fs::OpenOptionsExt;
 
 /// Device context containing all information about a grabbed evdev device
 pub struct DeviceContext {
-    pub evdev: EvdevDevice,
+    pub evdev: Device,
     pub uinput: UInputDevice,
     pub device_path: String,
     pub fd: OwnedFd,
@@ -18,20 +18,28 @@ impl DeviceContext {
     pub fn grab_device(device_path: &str) -> Result<Self, EvdevError> {
         // Open device with O_NONBLOCK so that the loop reading events eventually returns
         // due to an EAGAIN error
-        let fd = open(
-            device_path,
-            OFlag::O_RDONLY | OFlag::O_NONBLOCK,
-            Mode::empty(),
-        ).map_err(|e| EvdevError::new(-(e as i32)))?;
 
-        let fd = unsafe { OwnedFd::from_raw_fd(fd) };
-        let mut evdev = EvdevDevice::new_from_fd(fd.as_raw_fd())?;
+        // TODO do not allow grabbing uinput devices
+
+        let file = OpenOptions::new()
+            .read(true)
+            .custom_flags(libc::O_NONBLOCK)
+            .open(device_path)
+            .map_err(|e| EvdevError::from(e))?;
+
+        // Create device from file
+        let mut evdev = Device::new_from_file(file).map_err(|e| EvdevError::from(e))?;
 
         // Grab the device
-        evdev.grab()?;
+        evdev
+            .grab(GrabMode::Grab)
+            .map_err(|e| EvdevError::from(e))?;
+
+        // Get the file descriptor for keeping track (Device owns the file, so we get the fd)
+        let fd = unsafe { OwnedFd::from_raw_fd(evdev.as_raw_fd()) };
 
         // Create uinput device for forwarding unconsumed events
-        let uinput = UInputDevice::create_from_device(&evdev)?;
+        let uinput = UInputDevice::create_from_device(&evdev).map_err(|e| EvdevError::from(e))?;
 
         Ok(Self {
             evdev,
@@ -43,50 +51,36 @@ impl DeviceContext {
 
     /// Write an event to the uinput device
     pub fn write_event(&self, event_type: u32, code: u32, value: i32) -> Result<(), EvdevError> {
-        self.uinput.write_event(
-            crate::enums::EventType::from_raw(event_type)
-                .ok_or_else(|| EvdevError::new(-(Errno::EINVAL as i32)))?,
-            code,
-            value,
-        )?;
-        // Send SYN_REPORT
-        self.uinput.write_event(
-            crate::enums::EventType::Syn,
-            bindings::SYN_REPORT,
-            0,
-        )?;
-        Ok(())
-    }
+        // Convert raw event type and code to EventCode
+        let event_code = int_to_event_code(event_type, code);
 
-    /// Get the raw file descriptor for epoll operations
-    pub fn fd(&self) -> RawFd {
-        self.fd.as_raw_fd()
-    }
-    
-    /// Get a borrowed reference to the file descriptor
-    pub fn fd_borrowed(&self) -> BorrowedFd<'_> {
-        self.fd.as_fd()
+        // Create InputEvent
+        let event = InputEvent::new(&TimeVal::new(0, 0), &event_code, value);
+
+        self.uinput
+            .write_event(&event)
+            .map_err(|e| EvdevError::from(e))?;
+
+        // Send SYN_REPORT
+        let syn_event = InputEvent::new(
+            &TimeVal::new(0, 0),
+            &EventCode::EV_SYN(EV_SYN::SYN_REPORT),
+            0,
+        );
+
+        self.uinput
+            .write_event(&syn_event)
+            .map_err(|e| EvdevError::from(e))?;
+
+        Ok(())
     }
 }
 
 impl Drop for DeviceContext {
     fn drop(&mut self) {
         // Ungrab the device
-        let _ = self.evdev.ungrab();
-        
+        let _ = self.evdev.grab(GrabMode::Ungrab);
+
         // uinput device is dropped automatically
     }
 }
-
-/// Check if a device path is a uinput device (should not be grabbed)
-pub fn is_uinput_device(device_path: &str) -> bool {
-    device_path.starts_with("/dev/input/event") && {
-        // Check if it's a uinput device by trying to read its name
-        // This is a heuristic - uinput devices typically have specific characteristics
-        // For now, we'll check if we can open it and if it has certain properties
-        // A better approach would be to check sysfs, but for simplicity we'll
-        // rely on the caller to not pass uinput devices
-        false // We'll rely on the caller to not pass uinput devices
-    }
-}
-

@@ -11,7 +11,7 @@ pub fn init_runtime() -> Result<tokio::runtime::Handle, String> {
     let runtime = RUNTIME.get_or_try_init(|| {
         Runtime::new().map_err(|e| format!("Failed to create Tokio runtime: {}", e))
     })?;
-    
+
     Ok(runtime.handle().clone())
 }
 
@@ -27,4 +27,3 @@ pub fn shutdown_runtime() {
         runtime.shutdown_background();
     }
 }
-

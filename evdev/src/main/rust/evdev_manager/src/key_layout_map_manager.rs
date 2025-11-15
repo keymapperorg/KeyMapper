@@ -1,6 +1,5 @@
+use crate::{KeyLayoutKey, KeyLayoutMap};
 use std::collections::HashMap;
-use crate::bindings;
-use crate::bindings::KeyLayoutMapHandle;
 use std::env;
 use std::ffi::CString;
 use std::fs;
@@ -15,7 +14,7 @@ use std::sync::{Arc, Mutex};
 pub struct KeyLayoutMapManager {
     /// KeyLayoutMap cache
     /// Maps device path to KeyLayoutMap handle
-    key_layout_maps: Arc<Mutex<HashMap<String, KeyLayoutMapHandle>>>,
+    key_layout_maps: Arc<Mutex<HashMap<String, KeyLayoutMap>>>,
 }
 
 impl KeyLayoutMapManager {
@@ -130,15 +129,16 @@ impl KeyLayoutMapManager {
     /// This should be called when a device is grabbed
     pub fn register_device(
         &self,
-        device_path: String,
-        name: String,
+        device_path: &str,
+        name: &str,
         bus: u16,
         vendor: u16,
         product: u16,
         version: u16,
     ) {
         // Find key layout map file path
-        let kl_path = self.find_key_layout_file_by_device_identifier(&name, vendor, product, version);
+        let kl_path =
+            self.find_key_layout_file_by_device_identifier(&name, vendor, product, version);
 
         if let Some(path) = kl_path {
             let path_cstr = match CString::new(path.clone()) {
@@ -149,11 +149,14 @@ impl KeyLayoutMapManager {
                 }
             };
 
-            let mut handle: KeyLayoutMapHandle = ptr::null_mut();
+            let mut key_layout_map: KeyLayoutMap = ptr::null_mut();
             let result = unsafe { bindings::keylayoutmap_load(path_cstr.as_ptr(), &mut handle) };
 
             if result == 0 && !handle.is_null() {
-                info!("Loaded key layout map from {} for device {}", path, device_path);
+                info!(
+                    "Loaded key layout map from {} for device {}",
+                    path, device_path
+                );
                 let mut key_layout_maps = self.key_layout_maps.lock().unwrap();
                 key_layout_maps.insert(device_path, handle);
             } else {
@@ -171,43 +174,19 @@ impl KeyLayoutMapManager {
     /// This should be called when a device is ungrabbed
     pub fn unregister_device(&self, device_path: &str) {
         let mut key_layout_maps = self.key_layout_maps.lock().unwrap();
-        if let Some(handle) = key_layout_maps.remove(device_path) {
-            if !handle.is_null() {
-                unsafe {
-                    bindings::keylayoutmap_destroy(handle);
-                }
-                info!("Unregistered and destroyed key layout map for device {}", device_path);
-            }
-        }
+        key_layout_maps.remove(device_path);
+    }
+
+    pub fn unregister_all(&self) {
+        self.key_layout_maps.lock().unwrap().clear();
     }
 
     /// Map a raw evdev key code to Android key code
     /// Returns (android_keycode, flags) or (0, 0) if mapping not found
-    pub fn map_key(
-        &self,
-        device_path: &str,
-        scan_code: u32,
-    ) -> (i32, u32) {
+    pub fn map_key(&self, device_path: &str, scan_code: u32) -> Option<KeyLayoutKey> {
         let key_layout_maps = self.key_layout_maps.lock().unwrap();
-        if let Some(kl_handle) = key_layout_maps.get(device_path) {
-            if !kl_handle.is_null() {
-                let mut out_key_code: i32 = -1;
-                let mut out_flags: u32 = 0;
-                let result = unsafe {
-                    bindings::keylayoutmap_map_key(
-                        *kl_handle,
-                        scan_code as i32,
-                        &mut out_key_code,
-                        &mut out_flags,
-                    )
-                };
-                if result == 0 && out_key_code >= 0 {
-                    return (out_key_code, out_flags);
-                }
-            }
-        }
-        // Default: return unknown keycode (0 = AKEYCODE_UNKNOWN)
-        (0, 0)
+
+        key_layout_maps.get(device_path)?.map_key(scan_code)
     }
 }
 
@@ -229,4 +208,3 @@ fn get_canonical_name(name: &str) -> String {
         })
         .collect()
 }
-
