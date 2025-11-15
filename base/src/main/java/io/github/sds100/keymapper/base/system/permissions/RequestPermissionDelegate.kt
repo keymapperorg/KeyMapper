@@ -13,16 +13,21 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.navigation.NavController
 import io.github.sds100.keymapper.base.R
+import io.github.sds100.keymapper.base.utils.navigation.NavDestination
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
+import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.str
 import io.github.sds100.keymapper.common.BuildConfigProvider
+import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.system.DeviceAdmin
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapterImpl
 import io.github.sds100.keymapper.system.permissions.AndroidPermissionAdapter
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.shizuku.ShizukuAdapter
 import io.github.sds100.keymapper.system.url.UrlUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import splitties.alertdialog.appcompat.messageResource
 import splitties.alertdialog.appcompat.negativeButton
 import splitties.alertdialog.appcompat.neutralButton
@@ -38,6 +43,8 @@ class RequestPermissionDelegate(
     private val notificationReceiverAdapter: NotificationReceiverAdapterImpl,
     private val buildConfigProvider: BuildConfigProvider,
     private val shizukuAdapter: ShizukuAdapter,
+    private val navigationProvider: NavigationProvider,
+    private val coroutineScope: CoroutineScope,
 ) {
 
     private val startActivityForResultLauncher =
@@ -58,7 +65,7 @@ class RequestPermissionDelegate(
             permissionAdapter.onPermissionsChanged()
         }
 
-    fun requestPermission(permission: Permission, navController: NavController?) {
+    fun requestPermission(permission: Permission) {
         when (permission) {
             Permission.WRITE_SETTINGS -> requestWriteSettings()
             Permission.CAMERA -> requestPermissionLauncher.launch(Manifest.permission.CAMERA)
@@ -110,6 +117,8 @@ class RequestPermissionDelegate(
                     requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
             }
+
+            Permission.READ_LOGS -> permissionAdapter.grant(Manifest.permission.READ_LOGS)
         }
     }
 
@@ -160,30 +169,29 @@ class RequestPermissionDelegate(
     }
 
     private fun requestWriteSecureSettings() {
-        if (permissionAdapter.isGranted(Permission.SHIZUKU) ||
-            permissionAdapter.isGranted(Permission.ROOT)
-        ) {
-            permissionAdapter.grant(Manifest.permission.WRITE_SECURE_SETTINGS)
+        // Try granting with Shizuku, Root, or System Bridge
+        permissionAdapter.grant(Manifest.permission.WRITE_SECURE_SETTINGS).onFailure { error ->
+            activity.materialAlertDialog {
+                titleResource = R.string.dialog_title_write_secure_settings
+                messageResource = R.string.dialog_message_write_secure_settings
 
-            return
-        }
+                positiveButton(R.string.pos_proceed) {
+                    val destination = NavDestination.ProMode
 
-        activity.materialAlertDialog {
-            titleResource = R.string.dialog_title_write_secure_settings
-            messageResource = R.string.dialog_message_write_secure_settings
+                    coroutineScope.launch {
+                        navigationProvider.navigate(
+                            "grant_write_secure_settings_pro_mode",
+                            destination,
+                        )
+                    }
+                }
 
-            positiveButton(R.string.pos_grant_write_secure_settings_guide) {
-                UrlUtils.openUrl(
-                    activity,
-                    activity.str(R.string.url_grant_write_secure_settings_guide),
-                )
+                negativeButton(R.string.neg_cancel) {
+                    it.cancel()
+                }
+
+                show()
             }
-
-            negativeButton(R.string.neg_cancel) {
-                it.cancel()
-            }
-
-            show()
         }
     }
 

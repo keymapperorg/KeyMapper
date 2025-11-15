@@ -20,6 +20,7 @@ fun <T> KeyMapperDropdownMenu(
     label: (@Composable () -> Unit)? = null,
     selectedValue: T,
     values: List<Pair<T, String>>,
+    readOnly: Boolean = true,
     onValueChanged: (T) -> Unit = {},
 ) {
     ExposedDropdownMenuBox(
@@ -33,7 +34,7 @@ fun <T> KeyMapperDropdownMenu(
             onValueChange = { newValue ->
                 onValueChanged(values.single { it.second == newValue }.first)
             },
-            readOnly = true,
+            readOnly = readOnly,
             label = label,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),

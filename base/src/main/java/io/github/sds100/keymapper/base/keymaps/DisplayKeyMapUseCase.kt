@@ -181,6 +181,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
             TriggerError.EVDEV_DEVICE_NOT_FOUND,
             TriggerError.FLOATING_BUTTON_DELETED,
             TriggerError.SYSTEM_BRIDGE_UNSUPPORTED,
+            TriggerError.MIGRATE_SCREEN_OFF_TRIGGER,
                 -> {}
         }
     }

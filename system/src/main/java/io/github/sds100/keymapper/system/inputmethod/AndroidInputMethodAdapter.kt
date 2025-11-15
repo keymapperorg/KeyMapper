@@ -128,7 +128,9 @@ class AndroidInputMethodAdapter @Inject constructor(
      * :com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME;1891618174
      */
     private fun getImeHistory(): List<String> {
-        val ids = getSubtypeHistoryString(ctx)
+        val subtypeString = getSubtypeHistoryString(ctx) ?: return emptyList()
+
+        val ids = subtypeString
             .split(':')
             .map { it.split(';')[0] }
 
@@ -156,7 +158,7 @@ class AndroidInputMethodAdapter @Inject constructor(
         }
     }
 
-    private fun getSubtypeHistoryString(ctx: Context): String = Settings.Secure.getString(
+    private fun getSubtypeHistoryString(ctx: Context): String? = Settings.Secure.getString(
         ctx.contentResolver,
         SETTINGS_SECURE_SUBTYPE_HISTORY_KEY,
     )

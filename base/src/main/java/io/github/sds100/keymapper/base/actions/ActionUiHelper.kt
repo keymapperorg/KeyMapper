@@ -507,6 +507,10 @@ class ActionUiHelper(
         ActionData.MobileData.Enable -> getString(R.string.action_enable_mobile_data)
         ActionData.MobileData.Toggle -> getString(R.string.action_toggle_mobile_data)
 
+        ActionData.Hotspot.Disable -> getString(R.string.action_disable_hotspot)
+        ActionData.Hotspot.Enable -> getString(R.string.action_enable_hotspot)
+        ActionData.Hotspot.Toggle -> getString(R.string.action_toggle_hotspot)
+
         is ActionData.MoveCursor -> {
             when (action.direction) {
                 ActionData.MoveCursor.Direction.START -> {
@@ -651,6 +655,20 @@ class ActionUiHelper(
         ActionData.Microphone.Mute -> getString(R.string.action_mute_microphone)
         ActionData.Microphone.Toggle -> getString(R.string.action_toggle_mute_microphone)
         ActionData.Microphone.Unmute -> getString(R.string.action_unmute_microphone)
+
+        is ActionData.ModifySetting -> {
+            getString(
+                R.string.modify_setting_description,
+                arrayOf(action.settingKey, action.value),
+            )
+        }
+
+        is ActionData.CreateNotification -> {
+            getString(
+                R.string.action_create_notification_description,
+                action.title,
+            )
+        }
     }
 
     fun getIcon(action: ActionData): ComposeIconInfo = when (action) {

@@ -18,6 +18,7 @@ import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityServic
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.base.system.inputmethod.SwitchImeInterface
 import io.github.sds100.keymapper.base.system.navigation.OpenMenuHelper
+import io.github.sds100.keymapper.base.system.notifications.NotificationController
 import io.github.sds100.keymapper.base.utils.getFullMessage
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.Constants
@@ -60,6 +61,8 @@ import io.github.sds100.keymapper.system.lock.LockScreenAdapter
 import io.github.sds100.keymapper.system.media.MediaAdapter
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.nfc.NfcAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationModel
 import io.github.sds100.keymapper.system.notifications.NotificationReceiverAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationServiceEvent
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
@@ -71,6 +74,7 @@ import io.github.sds100.keymapper.system.url.OpenUrlAdapter
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeAdapter
 import io.github.sds100.keymapper.system.volume.VolumeStream
+import kotlin.math.absoluteValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -116,10 +120,12 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
     private val resourceProvider: ResourceProvider,
     private val soundsManager: SoundsManager,
     private val notificationReceiverAdapter: NotificationReceiverAdapter,
+    private val notificationAdapter: NotificationAdapter,
     private val ringtoneAdapter: RingtoneAdapter,
     private val settingsRepository: PreferenceRepository,
     private val inputEventHub: InputEventHub,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
+    private val settingsAdapter: io.github.sds100.keymapper.system.settings.SettingsAdapter,
 ) : PerformActionsUseCase {
 
     @AssistedFactory
@@ -475,6 +481,28 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
 
             is ActionData.MobileData.Disable -> {
                 result = networkAdapter.disableMobileData()
+            }
+
+            is ActionData.Hotspot.Toggle -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    result = networkAdapter.isHotspotEnabled().then { isEnabled ->
+                        if (isEnabled) {
+                            networkAdapter.disableHotspot()
+                        } else {
+                            networkAdapter.enableHotspot()
+                        }
+                    }
+                } else {
+                    result = SdkVersionTooLow(minSdk = Build.VERSION_CODES.R)
+                }
+            }
+
+            is ActionData.Hotspot.Enable -> {
+                result = networkAdapter.enableHotspot()
+            }
+
+            is ActionData.Hotspot.Disable -> {
+                result = networkAdapter.disableHotspot()
             }
 
             is ActionData.Brightness.ToggleAuto -> {
@@ -928,6 +956,27 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                     )
             }
 
+            is ActionData.CreateNotification -> {
+                // Use the hashcode of the action instance as the unique notification ID
+                val notificationId = action.hashCode().absoluteValue
+
+                val notification = NotificationModel(
+                    id = notificationId,
+                    channel = NotificationController.CHANNEL_CUSTOM_NOTIFICATIONS,
+                    title = action.title,
+                    text = action.text,
+                    icon = R.drawable.ic_notification_play,
+                    showOnLockscreen = false,
+                    onGoing = false,
+                    autoCancel = true,
+                    timeout = action.timeoutMs,
+                    bigTextStyle = true,
+                )
+
+                notificationAdapter.showNotification(notification)
+                result = success()
+            }
+
             ActionData.AnswerCall -> {
                 phoneAdapter.answerCall()
                 result = success()
@@ -1015,6 +1064,14 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 } else {
                     result = SdkVersionTooLow(minSdk = Constants.SYSTEM_BRIDGE_MIN_API)
                 }
+            }
+
+            is ActionData.ModifySetting -> {
+                result = settingsAdapter.setValue(
+                    action.settingType,
+                    action.settingKey,
+                    action.value,
+                )
             }
         }
 

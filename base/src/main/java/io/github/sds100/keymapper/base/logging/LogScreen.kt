@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -53,6 +54,7 @@ fun LogScreen(
         modifier = modifier,
         onBackClick = onBackClick,
         onCopyToClipboardClick = viewModel::onCopyToClipboardClick,
+        onShareClick = viewModel::onShareFileClick,
         onClearLogClick = viewModel::onClearLogClick,
         content = {
             Content(
@@ -69,6 +71,7 @@ private fun LogScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onCopyToClipboardClick: () -> Unit = {},
+    onShareClick: () -> Unit = {},
     onClearLogClick: () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
@@ -96,6 +99,13 @@ private fun LogScreen(
                     )
                 }
                 Spacer(Modifier.weight(1f))
+                IconButton(onClick = onShareClick) {
+                    Icon(
+                        imageVector = Icons.Outlined.Share,
+                        contentDescription = stringResource(R.string.action_share_log),
+                    )
+                }
+
                 IconButton(onClick = onCopyToClipboardClick) {
                     Icon(
                         imageVector = Icons.Outlined.ContentCopy,

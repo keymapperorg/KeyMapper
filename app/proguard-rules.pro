@@ -75,6 +75,11 @@
 -keep class io.github.sds100.keymapper.api.IKeyEventRelayService$Stub { *; }
 -keep class io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback { *; }
 -keep class io.github.sds100.keymapper.api.IKeyEventRelayServiceCallback$Stub { *; }
+-keep class com.android.internal.telephony.ITelephony { *; }
+-keep class com.android.internal.telephony.ITelephony$Stub { *; }
+-keep class android.net.ITetheringConnector { *; }
+-keep class android.net.ITetheringConnector$Stub { *; }
+-keep class android.net.* { *; }
 
 -keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.AnnotationsKt # core serialization annotations

@@ -304,6 +304,13 @@ class AndroidPermissionAdapter @Inject constructor(
             } else {
                 true
             }
+
+        Permission.READ_LOGS -> {
+            ContextCompat.checkSelfPermission(
+                ctx,
+                Manifest.permission.READ_LOGS,
+            ) == PERMISSION_GRANTED
+        }
     }
 
     override fun isGrantedFlow(permission: Permission): Flow<Boolean> = channelFlow {

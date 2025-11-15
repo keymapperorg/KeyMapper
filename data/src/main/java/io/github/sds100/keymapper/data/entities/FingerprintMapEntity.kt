@@ -17,9 +17,12 @@ data class FingerprintMapEntity(
     @PrimaryKey
     val id: Int = ID_UNKNOWN,
 
+    /**
+     * The action can be null if it wasn't deserialized successfully.
+     */
     @SerializedName(NAME_ACTION_LIST)
     @ColumnInfo(name = FingerprintMapDao.KEY_ACTION_LIST)
-    val actionList: List<ActionEntity> = listOf(),
+    val actionList: List<ActionEntity?> = listOf(),
 
     @SerializedName(NAME_CONSTRAINTS)
     @ColumnInfo(name = FingerprintMapDao.KEY_CONSTRAINT_LIST)
@@ -63,7 +66,7 @@ data class FingerprintMapEntity(
             val id by it.json.byNullableInt(NAME_ID)
 
             val actionListJson by it.json.byArray(NAME_ACTION_LIST)
-            val actionList = it.context.deserialize<List<ActionEntity>>(actionListJson)
+            val actionList = it.context.deserialize<List<ActionEntity?>>(actionListJson)
 
             val extrasJson by it.json.byArray(NAME_EXTRAS)
             val extras = it.context.deserialize<List<EntityExtra>>(extrasJson)

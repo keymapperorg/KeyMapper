@@ -19,7 +19,7 @@ androidx-legacy-support-core-ui = "1.0.0"
 androidx-lifecycle = "2.9.0"
 androidx-lifecycle-extensions = "2.2.0" # Note: lifecycle-extensions is deprecated
 androidx-multidex = "2.0.1"
-androidx-navigation = "2.9.0" # App level nav_version
+androidx-navigation = "2.9.6" # App level nav_version
 androidx-navigation-safeargs-gradle-plugin = "2.6.0" # Project level nav_version
 androidx-preference-ktx = "1.2.1"
 androidx-recyclerview = "1.4.0"
@@ -29,9 +29,9 @@ androidx-test-core = "1.6.1"
 androidx-viewpager2 = "1.1.0"
 
 dagger-hilt-android = "2.56.2"
-hilt-navigation-compose = "1.2.0"
+hilt-navigation-compose = "1.3.0"
 
-compose-bom = "2025.05.01"
+compose-bom = "2025.11.00"
 compose-compiler = "1.5.10" # kotlinCompilerExtensionVersion
 
 desugar-jdk-libs = "2.1.5"
