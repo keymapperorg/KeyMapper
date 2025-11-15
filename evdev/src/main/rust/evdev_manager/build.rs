@@ -127,6 +127,7 @@ fn main() {
         "#![allow(rustdoc::broken_intra_doc_links)]",
         "#![allow(rustdoc::private_intra_doc_links)]",
         "#![allow(arithmetic_overflow)]", // Needed for bindgen-generated array size calculations
+        "#![rustfmt::skip]",
     ];
 
     // Generate C bindings (libevdev headers) in C mode

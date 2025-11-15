@@ -1,4 +1,0 @@
-# Workspace-wide rustfmt configuration
-# Exclude generated bindings.rs from formatting
-ignore = ["src/bindings.rs"]
-

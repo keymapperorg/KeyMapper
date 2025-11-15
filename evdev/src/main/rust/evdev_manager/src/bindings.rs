@@ -8,6 +8,7 @@
 #![allow(rustdoc::broken_intra_doc_links)]
 #![allow(rustdoc::private_intra_doc_links)]
 #![allow(arithmetic_overflow)]
+#[rustfmt::skip]
 
 /// If Bindgen could only determine the size and alignment of a
 /// type, it is represented like this.
