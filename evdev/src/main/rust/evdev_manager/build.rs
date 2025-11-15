@@ -32,7 +32,6 @@ fn main() {
     let sysroot_include = ndk_sysroot.join("usr/include");
 
     let libevdev_dir = cpp_dir.join("libevdev");
-    let android_dir = cpp_dir.join("android");
     let aidl_dir = cpp_dir.join("aidl");
 
     // Build C files from libevdev
@@ -43,6 +42,8 @@ fn main() {
         .file(libevdev_dir.join("libevdev-uinput.c"))
         .include(&cpp_dir)
         .include(&libevdev_dir)
+        .include(sysroot_include.join("linux/input-event-codes.h"))
+        .include(sysroot_include.join("keycodes.h"))
         .flag("-Werror=format")
         .flag("-fdata-sections")
         .flag("-ffunction-sections");
@@ -58,34 +59,9 @@ fn main() {
     cpp_builder
         .cpp(true)
         .std("c++20")
-        // libevdev JNI wrapper
-        .file(cpp_dir.join("libevdev_jni.cpp"))
-        // Android input framework files
-        .file(android_dir.join("input/KeyLayoutMap.cpp"))
-        .file(android_dir.join("input/InputEventLabels.cpp"))
-        .file(android_dir.join("input/InputDevice.cpp"))
-        .file(android_dir.join("input/Input.cpp"))
-        // C interface wrapper for KeyLayoutMap
-        .file(cpp_dir.join("keylayoutmap_c.cpp"))
-        // Android base library files
-        .file(android_dir.join("libbase/result.cpp"))
-        .file(android_dir.join("libbase/stringprintf.cpp"))
-        // Android utils files
-        .file(android_dir.join("utils/Tokenizer.cpp"))
-        .file(android_dir.join("utils/String16.cpp"))
-        .file(android_dir.join("utils/String8.cpp"))
-        .file(android_dir.join("utils/SharedBuffer.cpp"))
-        .file(android_dir.join("utils/FileMap.cpp"))
-        .file(android_dir.join("utils/Unicode.cpp"))
         // AIDL generated file
         .file(aidl_dir.join("io/github/sds100/keymapper/evdev/IEvdevCallback.cpp"))
-        // Include directories
         .include(&cpp_dir)
-        .include(&android_dir)
-        .include(&android_dir.join("input"))
-        .include(&android_dir.join("libbase"))
-        .include(&android_dir.join("utils"))
-        .include(&libevdev_dir)
         // Compiler flags matching CMakeLists.txt
         .flag("-Werror=format")
         .flag("-fdata-sections")
@@ -154,7 +130,6 @@ fn main() {
                 .display()
                 .to_string(),
         )
-        .header(cpp_dir.join("keylayoutmap_c.h").display().to_string())
         .clang_arg(format!("--sysroot={}", ndk_sysroot.display()))
         .clang_arg(format!("-I{}", sysroot_include.display()));
 

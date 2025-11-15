@@ -1,6 +1,12 @@
 mod bindings; // libevdev C bindings + KeyLayoutMap C interface bindings
 mod enums;
 mod evdev;
+mod input_event_lookup;
+mod key_layout_map;
+mod tokenizer;
+
+// Export public types
+pub use key_layout_map::{KeyLayoutAxisInfo, KeyLayoutAxisMode, KeyLayoutKey, KeyLayoutMap};
 
 #[macro_use]
 extern crate log;
