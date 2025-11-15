@@ -66,7 +66,9 @@ fn main() {
         .file(android_dir.join("input/InputDevice.cpp"))
         .file(android_dir.join("input/Input.cpp"))
         // C interface wrapper for KeyLayoutMap
-        .file(cpp_dir.join("keylayoutmap_c.cpp"))
+        .file(cpp_dir.join("wrappers/keylayoutmap_c.cpp"))
+        // JNI manager for IEvdevCallback so don't need to use a Rust binder library
+        .file(cpp_dir.join("evdev_callback_jni_manager.cpp"))
         // Android base library files
         .file(android_dir.join("libbase/result.cpp"))
         .file(android_dir.join("libbase/stringprintf.cpp"))
@@ -81,6 +83,7 @@ fn main() {
         .file(aidl_dir.join("io/github/sds100/keymapper/evdev/IEvdevCallback.cpp"))
         // Include directories
         .include(&cpp_dir)
+        .include(&cpp_dir.join("wrappers"))
         .include(&android_dir)
         .include(&android_dir.join("input"))
         .include(&android_dir.join("libbase"))
@@ -154,7 +157,10 @@ fn main() {
                 .display()
                 .to_string(),
         )
-        .header(cpp_dir.join("keylayoutmap_c.h").display().to_string())
+        .header(cpp_dir.join("evdev_callback_jni_manager.h").display().to_string())
+        .header(cpp_dir.join("wrappers/keylayoutmap_c.h").display().to_string())
+        // Generate a proper Rust enum for EvdevCallbackError
+        .rustified_enum("EvdevCallbackError")
         .clang_arg(format!("--sysroot={}", ndk_sysroot.display()))
         .clang_arg(format!("-I{}", sysroot_include.display()));
 

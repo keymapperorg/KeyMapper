@@ -7627,6 +7627,39 @@ const _: () = {
         "Offset of field: libevdev_uinput::ctime",
     ][::std::mem::offset_of!(libevdev_uinput, ctime) - 32usize];
 };
+#[repr(i32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum EvdevCallbackError {
+    EVDEV_CALLBACK_SUCCESS = 0,
+    EVDEV_CALLBACK_ERROR_INVALID_ARG = -1,
+    EVDEV_CALLBACK_ERROR_BINDER_CONVERSION_FAILED = -2,
+    EVDEV_CALLBACK_ERROR_CALLBACK_CREATION_FAILED = -3,
+    EVDEV_CALLBACK_ERROR_NO_CALLBACK = -4,
+    EVDEV_CALLBACK_ERROR_INVALID_HANDLE = -5,
+    EVDEV_CALLBACK_ERROR_CALLBACK_FAILED = -6,
+}
+pub type IEvdevCallbackHandle = *mut ::std::os::raw::c_void;
+pub type AIBinderHandle = *mut ::std::os::raw::c_void;
+unsafe extern "C" {
+    pub fn evdev_callback_on_evdev_event_loop_started() -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn evdev_callback_on_evdev_event(
+        device_path: *const ::std::os::raw::c_char,
+        time_sec: i64,
+        time_usec: i64,
+        type_: i32,
+        code: i32,
+        value: i32,
+        android_code: i32,
+    ) -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn evdev_callback_on_emergency_kill_system_bridge() -> ::std::os::raw::c_int;
+}
+unsafe extern "C" {
+    pub fn evdev_callback_destroy(handle: IEvdevCallbackHandle);
+}
 pub type KeyLayoutMapHandle = *mut ::std::os::raw::c_void;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
