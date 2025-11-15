@@ -17,7 +17,7 @@ version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aaf82c031178ca72b38595a54d16df8a257df9deea7d97a8992870e5c6a738e7"
 dependencies = [
- "libc",
+ "libc 0.2.177",
 ]
 
 [[package]]
@@ -100,7 +100,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b023947811758c97c59bf9d1c188fd619ad4718dcaa767947df1cadb14f39f4"
 dependencies = [
  "glob",
- "libc",
+ "libc 0.2.177",
  "libloading",
 ]
 
@@ -128,6 +128,7 @@ dependencies = [
  "bindgen",
  "cc",
  "jni",
+ "libc 1.0.0-alpha.1",
  "log 0.4.28",
 ]
 
@@ -179,6 +180,12 @@ name = "libc"
 version = "0.2.177"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2874a2af47a2325c2001a6e6fad9b16a53b802102b528163885171cf92b15976"
+
+[[package]]
+name = "libc"
+version = "1.0.0-alpha.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7222002e5385b4d9327755661e3847c970e8fbf9dea6da8c57f16e8cfbff53a8"
 
 [[package]]
 name = "libloading"

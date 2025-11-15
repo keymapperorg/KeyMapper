@@ -4,6 +4,7 @@ mod evdev;
 mod input_event_lookup;
 mod key_layout_map;
 mod tokenizer;
+mod android;
 
 // Export public types
 pub use key_layout_map::{KeyLayoutAxisInfo, KeyLayoutAxisMode, KeyLayoutKey, KeyLayoutMap};

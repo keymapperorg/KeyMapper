@@ -43,7 +43,6 @@ fn main() {
         .include(&cpp_dir)
         .include(&libevdev_dir)
         .include(sysroot_include.join("linux/input-event-codes.h"))
-        .include(sysroot_include.join("keycodes.h"))
         .flag("-Werror=format")
         .flag("-fdata-sections")
         .flag("-ffunction-sections");
@@ -84,12 +83,6 @@ fn main() {
     println!("cargo:rustc-link-lib=log");
     println!("cargo:rustc-link-lib=binder_ndk");
 
-    // Generate Rust bindings from headers
-    // We generate C and C++ bindings separately because:
-    // 1. C headers (libevdev) need C mode to allow implicit void* conversions
-    // 2. C++ headers (KeyLayoutMap.h) need C++ mode to find cstdint
-    let evdev_headers_path = libevdev_dir.clone();
-
     // Common bindgen configuration
     let common_allow_attributes = vec![
         "#![allow(clippy::all)]",
@@ -100,7 +93,6 @@ fn main() {
         "#![allow(rustdoc::broken_intra_doc_links)]",
         "#![allow(rustdoc::private_intra_doc_links)]",
         "#![allow(arithmetic_overflow)]", // Needed for bindgen-generated array size calculations
-        "#![rustfmt::skip]",
     ];
 
     // Generate C bindings (libevdev headers) in C mode
@@ -112,25 +104,7 @@ fn main() {
     }
 
     bindgen_builder = bindgen_builder
-        .header(evdev_headers_path.join("libevdev.h").display().to_string())
-        .header(
-            evdev_headers_path
-                .join("libevdev-int.h")
-                .display()
-                .to_string(),
-        )
-        .header(
-            evdev_headers_path
-                .join("libevdev-uinput.h")
-                .display()
-                .to_string(),
-        )
-        .header(
-            evdev_headers_path
-                .join("libevdev-uinput-int.h")
-                .display()
-                .to_string(),
-        )
+        .allowlist_recursively(false)
         .clang_arg(format!("--sysroot={}", ndk_sysroot.display()))
         .clang_arg(format!("-I{}", sysroot_include.display()));
 
