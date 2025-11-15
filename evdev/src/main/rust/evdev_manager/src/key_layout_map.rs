@@ -215,6 +215,7 @@ impl<'a> Parser<'a> {
         let key_code_token = self.tokenizer.next_token(WHITESPACE);
         let key_code = get_key_code_by_label(&key_code_token);
 
+        // TODO do not parse flags, just skip them
         let mut flags = 0u32;
         loop {
             self.tokenizer.skip_delimiters(WHITESPACE);

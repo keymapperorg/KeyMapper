@@ -32,7 +32,6 @@ fn main() {
     let sysroot_include = ndk_sysroot.join("usr/include");
 
     let libevdev_dir = cpp_dir.join("libevdev");
-    let aidl_dir = cpp_dir.join("aidl");
 
     // Build C files from libevdev
     let mut c_builder = cc::Build::new();
@@ -40,7 +39,6 @@ fn main() {
         .file(libevdev_dir.join("libevdev.c"))
         .file(libevdev_dir.join("libevdev-names.c"))
         .file(libevdev_dir.join("libevdev-uinput.c"))
-        .include(&cpp_dir)
         .include(&libevdev_dir)
         .include(sysroot_include.join("linux/input-event-codes.h"))
         .flag("-Werror=format")
@@ -52,77 +50,6 @@ fn main() {
     }
 
     c_builder.compile("evdev_c");
-
-    // Build C++ files
-    let mut cpp_builder = cc::Build::new();
-    cpp_builder
-        .cpp(true)
-        .std("c++20")
-        // AIDL generated file
-        .file(aidl_dir.join("io/github/sds100/keymapper/evdev/IEvdevCallback.cpp"))
-        .include(&cpp_dir)
-        // Compiler flags matching CMakeLists.txt
-        .flag("-Werror=format")
-        .flag("-fdata-sections")
-        .flag("-ffunction-sections")
-        .flag("-fno-exceptions")
-        .flag("-fno-rtti")
-        .flag("-fno-threadsafe-statics");
-
-    if env::var("PROFILE").unwrap() == "release" {
-        cpp_builder
-            .flag("-O2")
-            .flag("-fvisibility=hidden")
-            .flag("-fvisibility-inlines-hidden");
-    }
-
-    cpp_builder.compile("evdev_cpp");
-
-    // Link against Android libraries
-    println!("cargo:rustc-link-lib=android");
-    println!("cargo:rustc-link-lib=log");
-    println!("cargo:rustc-link-lib=binder_ndk");
-
-    // Common bindgen configuration
-    let common_allow_attributes = vec![
-        "#![allow(clippy::all)]",
-        "#![allow(non_camel_case_types)]",
-        "#![allow(non_snake_case)]",
-        "#![allow(non_upper_case_globals)]",
-        "#![allow(dead_code)]",
-        "#![allow(rustdoc::broken_intra_doc_links)]",
-        "#![allow(rustdoc::private_intra_doc_links)]",
-        "#![allow(arithmetic_overflow)]", // Needed for bindgen-generated array size calculations
-    ];
-
-    // Generate C bindings (libevdev headers) in C mode
-    let mut bindgen_builder =
-        bindgen::Builder::default().formatter(bindgen::Formatter::Prettyplease);
-
-    for attr in &common_allow_attributes {
-        bindgen_builder = bindgen_builder.raw_line(*attr);
-    }
-
-    bindgen_builder = bindgen_builder
-        .allowlist_recursively(false)
-        .clang_arg(format!("--sysroot={}", ndk_sysroot.display()))
-        .clang_arg(format!("-I{}", sysroot_include.display()));
-
-    // Add architecture-specific includes if needed
-    let arch_include = get_arch_include_path(&target, &ndk_sysroot);
-    if arch_include.exists() {
-        bindgen_builder = bindgen_builder.clang_arg(format!("-I{}", arch_include.display()));
-    }
-
-    let bindings = bindgen_builder
-        .generate()
-        .expect("Unable to generate C bindings");
-
-    let out_path = manifest_dir.join("src");
-
-    bindings
-        .write_to_file(out_path.join("bindings.rs"))
-        .expect("Couldn't write bindings!");
 }
 
 fn find_ndk_sysroot(manifest_dir: &Path) -> PathBuf {

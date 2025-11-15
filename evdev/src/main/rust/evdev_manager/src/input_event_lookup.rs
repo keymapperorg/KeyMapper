@@ -6,97 +6,28 @@
 //! Uses Android NDK constants (AKEYCODE_*, AMOTION_EVENT_AXIS_*) from the generated bindings.
 //! POLICY_FLAG_* constants are defined locally as they come from the local Input.h header.
 
-use crate::bindings;
+use crate::android::android_codes;
 use std::collections::HashMap;
 use std::sync::OnceLock;
-
-// Policy flags from android/input/Input.h
-// These are defined as an enum in the C++ header, so we define them here
-const POLICY_FLAG_WAKE: u32 = 0x00000001;
-const POLICY_FLAG_VIRTUAL: u32 = 0x00000002;
-const POLICY_FLAG_FUNCTION: u32 = 0x00000004;
-const POLICY_FLAG_GESTURE: u32 = 0x00000008;
-const POLICY_FLAG_FALLBACK_USAGE_MAPPING: u32 = 0x00000010;
-
-// Motion event axes from android/input.h
-// These are defined in the NDK header but not accessible via bindgen in C mode
-// Values from frameworks/base/core/jni/android_view_MotionEvent.cpp
-const AMOTION_EVENT_AXIS_X: i32 = 0;
-const AMOTION_EVENT_AXIS_Y: i32 = 1;
-const AMOTION_EVENT_AXIS_PRESSURE: i32 = 2;
-const AMOTION_EVENT_AXIS_SIZE: i32 = 3;
-const AMOTION_EVENT_AXIS_TOUCH_MAJOR: i32 = 4;
-const AMOTION_EVENT_AXIS_TOUCH_MINOR: i32 = 5;
-const AMOTION_EVENT_AXIS_TOOL_MAJOR: i32 = 6;
-const AMOTION_EVENT_AXIS_TOOL_MINOR: i32 = 7;
-const AMOTION_EVENT_AXIS_ORIENTATION: i32 = 8;
-const AMOTION_EVENT_AXIS_VSCROLL: i32 = 9;
-const AMOTION_EVENT_AXIS_HSCROLL: i32 = 10;
-const AMOTION_EVENT_AXIS_Z: i32 = 11;
-const AMOTION_EVENT_AXIS_RX: i32 = 12;
-const AMOTION_EVENT_AXIS_RY: i32 = 13;
-const AMOTION_EVENT_AXIS_RZ: i32 = 14;
-const AMOTION_EVENT_AXIS_HAT_X: i32 = 15;
-const AMOTION_EVENT_AXIS_HAT_Y: i32 = 16;
-const AMOTION_EVENT_AXIS_LTRIGGER: i32 = 17;
-const AMOTION_EVENT_AXIS_RTRIGGER: i32 = 18;
-const AMOTION_EVENT_AXIS_THROTTLE: i32 = 19;
-const AMOTION_EVENT_AXIS_RUDDER: i32 = 20;
-const AMOTION_EVENT_AXIS_WHEEL: i32 = 21;
-const AMOTION_EVENT_AXIS_GAS: i32 = 22;
-const AMOTION_EVENT_AXIS_BRAKE: i32 = 23;
-const AMOTION_EVENT_AXIS_DISTANCE: i32 = 24;
-const AMOTION_EVENT_AXIS_TILT: i32 = 25;
-const AMOTION_EVENT_AXIS_SCROLL: i32 = 26;
-const AMOTION_EVENT_AXIS_RELATIVE_X: i32 = 27;
-const AMOTION_EVENT_AXIS_GENERIC_1: i32 = 32;
-const AMOTION_EVENT_AXIS_GENERIC_2: i32 = 33;
-const AMOTION_EVENT_AXIS_GENERIC_3: i32 = 34;
-const AMOTION_EVENT_AXIS_GENERIC_4: i32 = 35;
-const AMOTION_EVENT_AXIS_GENERIC_5: i32 = 36;
-const AMOTION_EVENT_AXIS_GENERIC_6: i32 = 37;
-const AMOTION_EVENT_AXIS_GENERIC_7: i32 = 38;
-const AMOTION_EVENT_AXIS_GENERIC_8: i32 = 39;
-const AMOTION_EVENT_AXIS_GENERIC_9: i32 = 40;
-const AMOTION_EVENT_AXIS_GENERIC_10: i32 = 41;
-const AMOTION_EVENT_AXIS_GENERIC_11: i32 = 42;
-const AMOTION_EVENT_AXIS_GENERIC_12: i32 = 43;
-const AMOTION_EVENT_AXIS_GENERIC_13: i32 = 44;
-const AMOTION_EVENT_AXIS_GENERIC_14: i32 = 45;
-const AMOTION_EVENT_AXIS_GENERIC_15: i32 = 46;
-const AMOTION_EVENT_AXIS_GENERIC_16: i32 = 47;
-const AMOTION_EVENT_AXIS_GESTURE_X_OFFSET: i32 = 48;
-const AMOTION_EVENT_AXIS_GESTURE_Y_OFFSET: i32 = 49;
-const AMOTION_EVENT_AXIS_GESTURE_SCROLL_X_DISTANCE: i32 = 50;
-const AMOTION_EVENT_AXIS_GESTURE_SCROLL_Y_DISTANCE: i32 = 51;
-const AMOTION_EVENT_AXIS_GESTURE_PINCH_SCALE_FACTOR: i32 = 52;
-const AMOTION_EVENT_AXIS_GESTURE_SWIPE_FINGER_COUNT: i32 = 53;
 
 // Macro to define keycode entry using AKEYCODE_* constant
 macro_rules! define_keycode {
     ($name:ident) => {
-        (stringify!($name).to_string(), bindings::$name as i32)
-    };
-}
-
-// Macro to define flag entry using POLICY_FLAG_* constant
-macro_rules! define_flag {
-    ($name:ident) => {
-        (stringify!($name).to_string(), $name as u32)
+        (stringify!($name).to_string(), android_codes::$name as i32)
     };
 }
 
 // Macro to define axis entry using AMOTION_EVENT_AXIS_* constant
 macro_rules! define_axis {
     ($name:ident) => {
-        (stringify!($name).to_string(), $name as i32)
+        (stringify!($name).to_string(), android_codes::$name as i32)
     };
 }
 
 // Build the keycodes map
 fn build_keycodes_map() -> HashMap<String, i32> {
     let mut map = HashMap::new();
-    
+
     // Helper macro to insert keycode
     macro_rules! insert_keycode {
         ($name:ident) => {
@@ -104,8 +35,7 @@ fn build_keycodes_map() -> HashMap<String, i32> {
             map.insert(name, value);
         };
     }
-    
-    // Add numeric keycodes (0-9, 11, 12) - these map to AKEYCODE_0, AKEYCODE_1, etc.
+
     insert_keycode!(AKEYCODE_0);
     insert_keycode!(AKEYCODE_1);
     insert_keycode!(AKEYCODE_2);
@@ -116,8 +46,6 @@ fn build_keycodes_map() -> HashMap<String, i32> {
     insert_keycode!(AKEYCODE_7);
     insert_keycode!(AKEYCODE_8);
     insert_keycode!(AKEYCODE_9);
-    
-    // Add all other keycodes
     insert_keycode!(AKEYCODE_UNKNOWN);
     insert_keycode!(AKEYCODE_SOFT_LEFT);
     insert_keycode!(AKEYCODE_SOFT_RIGHT);
@@ -423,24 +351,7 @@ fn build_keycodes_map() -> HashMap<String, i32> {
     insert_keycode!(AKEYCODE_MACRO_2);
     insert_keycode!(AKEYCODE_MACRO_3);
     insert_keycode!(AKEYCODE_MACRO_4);
-    
-    map
-}
 
-// Build the flags map
-fn build_flags_map() -> HashMap<String, u32> {
-    let mut map = HashMap::new();
-    macro_rules! insert_flag {
-        ($name:ident) => {
-            let (name, value) = define_flag!($name);
-            map.insert(name, value);
-        };
-    }
-    insert_flag!(POLICY_FLAG_VIRTUAL);
-    insert_flag!(POLICY_FLAG_FUNCTION);
-    insert_flag!(POLICY_FLAG_GESTURE);
-    insert_flag!(POLICY_FLAG_WAKE);
-    insert_flag!(POLICY_FLAG_FALLBACK_USAGE_MAPPING);
     map
 }
 
@@ -508,15 +419,10 @@ fn build_axes_map() -> HashMap<String, i32> {
 
 // Static lookup tables (lazily initialized)
 static KEYCODES: OnceLock<HashMap<String, i32>> = OnceLock::new();
-static FLAGS: OnceLock<HashMap<String, u32>> = OnceLock::new();
 static AXES: OnceLock<HashMap<String, i32>> = OnceLock::new();
 
 fn get_keycodes() -> &'static HashMap<String, i32> {
     KEYCODES.get_or_init(build_keycodes_map)
-}
-
-fn get_flags() -> &'static HashMap<String, u32> {
-    FLAGS.get_or_init(build_flags_map)
 }
 
 fn get_axes() -> &'static HashMap<String, i32> {
@@ -526,11 +432,6 @@ fn get_axes() -> &'static HashMap<String, i32> {
 /// Look up a key code by its label.
 pub fn get_key_code_by_label(label: &str) -> Option<i32> {
     get_keycodes().get(label).copied()
-}
-
-/// Look up a key flag by its label.
-pub fn get_key_flag_by_label(label: &str) -> Option<u32> {
-    get_flags().get(label).copied()
 }
 
 /// Look up an axis by its label.
