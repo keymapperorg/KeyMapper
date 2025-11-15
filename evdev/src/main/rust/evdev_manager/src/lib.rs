@@ -1,5 +1,7 @@
 mod bindings; // libevdev C bindings + KeyLayoutMap C interface bindings
 mod device_manager;
+mod device_manager_tokio;
+mod device_task;
 mod enums;
 mod evdev;
 mod evdevcallback_binder_observer;
@@ -7,6 +9,14 @@ mod event_loop;
 mod key_layout_map_manager;
 mod observer;
 mod jni_bridge;
+mod tokio_runtime;
+
+// Public re-exports for testing
+// Integration tests need public APIs, so we make these always available
+// They're safe to expose as they're part of the internal API surface
+pub use evdevcallback_binder_observer::{EmergencyKillCallback, EvdevCallbackBinderObserver};
+pub use evdev::{EvdevEvent, EvdevError};
+pub use enums::EventType;
 
 #[macro_use]
 extern crate log;
@@ -40,28 +50,4 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
 
     output.into_raw()
 }
-
-fn set_log_panic_hook() {
-    std::panic::set_hook(Box::new(|panic_info| {
-        error!("PANIC in Rust code!");
-
-        if let Some(location) = panic_info.location() {
-            error!(
-                "Panic at {}:{}:{}",
-                location.file(),
-                location.line(),
-                location.column()
-            );
-        } else {
-            error!("Panic at unknown location");
-        }
-
-        if let Some(payload) = panic_info.payload().downcast_ref::<&str>() {
-            error!("Panic message: {}", payload);
-        } else if let Some(payload) = panic_info.payload().downcast_ref::<String>() {
-            error!("Panic message: {}", payload);
-        } else {
-            error!("Panic with unknown payload");
-        }
-    }));
-}
+    

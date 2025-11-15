@@ -58,8 +58,6 @@ fn main() {
     cpp_builder
         .cpp(true)
         .std("c++20")
-        // libevdev JNI wrapper
-        .file(cpp_dir.join("libevdev_jni.cpp"))
         // Android input framework files
         .file(android_dir.join("input/KeyLayoutMap.cpp"))
         .file(android_dir.join("input/InputEventLabels.cpp"))
@@ -158,8 +156,18 @@ fn main() {
                 .display()
                 .to_string(),
         )
-        .header(cpp_dir.join("evdev_callback_jni_manager.h").display().to_string())
-        .header(cpp_dir.join("wrappers/keylayoutmap_c.h").display().to_string())
+        .header(
+            cpp_dir
+                .join("evdev_callback_jni_manager.h")
+                .display()
+                .to_string(),
+        )
+        .header(
+            cpp_dir
+                .join("wrappers/keylayoutmap_c.h")
+                .display()
+                .to_string(),
+        )
         // Generate a proper Rust enum for EvdevCallbackError
         .rustified_enum("EvdevCallbackError")
         .clang_arg(format!("--sysroot={}", ndk_sysroot.display()))

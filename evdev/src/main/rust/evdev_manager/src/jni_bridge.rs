@@ -4,31 +4,17 @@ use crate::evdev::{EvdevDevice, EvdevError};
 use crate::evdevcallback_binder_observer::EvdevCallbackBinderObserver;
 use crate::event_loop;
 use crate::observer::EvdevEventNotifier;
-use jni::objects::{GlobalRef, JClass, JObject, JString};
+use crate::tokio_runtime;
+use jni::objects::{GlobalRef, JClass, JObject, JString, JValue};
 use jni::sys::{jboolean, jint, jobject, jobjectArray, jstring};
 use jni::JNIEnv;
 use nix::dir::Dir;
 use nix::fcntl::OFlag;
 use nix::sys::stat::Mode;
-use std::ffi::CString;
-use std::os::fd::AsRawFd;
 use std::ptr;
 use std::sync::{Arc, Mutex, OnceLock};
 
-fn init_logger() {
-    static LOGGER_INIT: OnceLock<()> = OnceLock::new();
-
-    LOGGER_INIT.get_or_init(|| {
-        android_log::init("KeyMapperSystemBridge").unwrap_or_else(|e| {
-            eprintln!("Failed to initialize Android logger: {:?}", e);
-        });
-    });
-}
-
-/// Global event notifier
 static EVENT_NOTIFIER: OnceLock<Arc<EvdevEventNotifier>> = OnceLock::new();
-
-/// Global binder observer
 static BINDER_OBSERVER: OnceLock<Arc<EvdevCallbackBinderObserver>> = OnceLock::new();
 
 /// Get or create the event notifier
@@ -45,8 +31,7 @@ fn get_binder_observer() -> Arc<EvdevCallbackBinderObserver> {
         .clone()
 }
 
-/// Create a Java EvdevDeviceHandle object
-fn create_evdev_device_handle(
+fn create_java_evdev_device_handle(
     env: &mut JNIEnv,
     path: &str,
     name: &str,
@@ -62,11 +47,11 @@ fn create_evdev_device_handle(
         class,
         "(Ljava/lang/String;Ljava/lang/String;III)V",
         &[
-            jni::objects::JValue::Object(&path_str.into()),
-            jni::objects::JValue::Object(&name_str.into()),
-            jni::objects::JValue::Int(bus),
-            jni::objects::JValue::Int(vendor),
-            jni::objects::JValue::Int(product),
+            JValue::Object(&path_str.into()),
+            JValue::Object(&name_str.into()),
+            JValue::Int(bus),
+            JValue::Int(vendor),
+            JValue::Int(product),
         ],
     )?;
 
@@ -79,8 +64,6 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     _class: JClass,
     j_device_path: JString,
 ) -> jboolean {
-    init_logger();
-
     let device_path = match env.get_string(&j_device_path) {
         Ok(s) => s.to_string_lossy().into_owned(),
         Err(e) => {
@@ -134,8 +117,6 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     _class: JClass,
     j_device_path: JString,
 ) -> jboolean {
-    init_logger();
-
     let device_path = match _env.get_string(&j_device_path) {
         Ok(s) => s.to_string_lossy().into_owned(),
         Err(_) => return false as jboolean,
@@ -166,8 +147,6 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     _env: JNIEnv,
     _class: JClass,
 ) -> jboolean {
-    init_logger();
-
     let binder_observer = get_binder_observer();
 
     // Get all device paths before clearing
@@ -197,8 +176,6 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     j_code: jint,
     j_value: jint,
 ) -> jboolean {
-    init_logger();
-
     let device_path = match _env.get_string(&j_device_path) {
         Ok(s) => s.to_string_lossy().into_owned(),
         Err(_) => return false as jboolean,
@@ -216,8 +193,6 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     mut env: JNIEnv,
     _class: JClass,
 ) -> jobjectArray {
-    init_logger();
-
     let dir = match Dir::open("/dev/input") {
         Ok(d) => d,
         Err(e) => {
@@ -274,7 +249,7 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
         let product = unsafe { bindings::libevdev_get_id_product(evdev.as_ptr()) } as i32;
 
         // Create EvdevDeviceHandle
-        match create_evdev_device_handle(&mut env, &full_path, &name, bus, vendor, product) {
+        match create_java_evdev_device_handle(&mut env, &full_path, &name, bus, vendor, product) {
             Ok(handle) => device_handles.push(handle),
             Err(e) => {
                 error!("Failed to create EvdevDeviceHandle: {:?}", e);
@@ -315,48 +290,66 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
 }
 
 #[no_mangle]
-pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_startEvdevEventLoop(
-    mut env: JNIEnv,
+pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_startEvdevManager(
+    _env: JNIEnv,
     _class: JClass,
-    j_callback_binder: JObject,
+    _j_callback_binder: JObject,
 ) {
-    init_logger();
+    android_log::init("KeyMapperSystemBridge").unwrap();
+    set_log_panic_hook();
 
-    // Register the callback binder with the C++ callback manager
-    // This needs to be done before starting the event loop
-    // The C++ callback manager will handle the AIDL interface
+    tokio_runtime::init_runtime().expect("Failed to initialize tokio runtime");
 
-    // Convert Java IBinder to AIBinder and register with C++ callback manager
-    // We'll use the existing C++ callback manager registration function
-    // For now, we'll need to call the JNI function from C++ side
-    // Actually, the callback registration should happen in the Kotlin/Java side
-    // and the C++ callback manager should already be set up
-
-    // Get the event notifier and register the binder observer
     let notifier = get_event_notifier();
     let binder_observer = get_binder_observer();
+
     notifier.register(Box::new(binder_observer.clone()));
 
-    // Start the event loop
-    match event_loop::start_event_loop(notifier) {
+    // Initialize device task manager
+    match event_loop::init_device_task_manager(notifier) {
         Ok(()) => {
-            info!("Started evdev event loop");
+            info!("Initialized evdev manager with Tokio");
 
             // Notify callback that event loop started
             let _ = unsafe { bindings::evdev_callback_on_evdev_event_loop_started() };
         }
         Err(e) => {
-            error!("Failed to start evdev event loop: {}", e);
+            error!("Failed to initialize device task manager: {}", e);
         }
     }
 }
 
 #[no_mangle]
-pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_stopEvdevEventLoop(
+pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_stopEvdevManager(
     _env: JNIEnv,
     _class: JClass,
 ) {
-    init_logger();
-    event_loop::stop_event_loop();
-    info!("Stopped evdev event loop");
+    event_loop::remove_all_devices();
+    tokio_runtime::shutdown_runtime();
+    info!("Stopped evdev manager");
+}
+
+fn set_log_panic_hook() {
+    std::panic::set_hook(Box::new(|panic_info| {
+        error!("PANIC in Rust code!");
+
+        if let Some(location) = panic_info.location() {
+            error!(
+                "Panic at {}:{}:{}",
+                location.file(),
+                location.line(),
+                location.column()
+            );
+        } else {
+            error!("Panic at unknown location");
+        }
+
+        if let Some(payload) = panic_info.payload().downcast_ref::<&str>() {
+            error!("Panic message: {}", payload);
+        } else if let Some(payload) = panic_info.payload().downcast_ref::<String>() {
+            error!("Panic message: {}", payload);
+        } else {
+            error!("Panic with unknown payload");
+        }
+    }));
 }

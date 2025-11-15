@@ -17,6 +17,7 @@ jni = "0.21.1"
 log = "0.4.28"
 android_log = "0.1.3"
 nix = { version = "0.30.1", features = ["event", "dir"] }
+tokio = { version = "1", features = ["rt", "io-util", "macros"] }
 
 [build-dependencies]
 cc = "1.2.46"
