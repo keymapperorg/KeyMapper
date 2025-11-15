@@ -1,4 +1,0 @@
-[build]
-# Default target for cargo commands
-target = "aarch64-linux-android"
-

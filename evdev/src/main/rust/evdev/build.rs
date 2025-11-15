@@ -130,19 +130,3 @@ fn get_sysroot_for_version(sdk_dir: &str, version: &str) -> PathBuf {
 
     sysroot
 }
-
-fn get_arch_include_path(target: &str, sysroot: &Path) -> PathBuf {
-    let arch = if target.contains("aarch64") {
-        "aarch64-linux-android"
-    } else if target.contains("armv7") {
-        "arm-linux-androideabi"
-    } else if target.contains("i686") {
-        "i686-linux-android"
-    } else if target.contains("x86_64") {
-        "x86_64-linux-android"
-    } else {
-        return sysroot.join("usr").join("include").join("nonexistent");
-    };
-
-    sysroot.join("usr").join("include").join(arch)
-}

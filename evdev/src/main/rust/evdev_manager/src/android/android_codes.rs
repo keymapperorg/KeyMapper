@@ -625,3 +625,35 @@ pub const AMOTION_EVENT_AXIS_GESTURE_PINCH_SCALE_FACTOR: c_uint = 52;
 Since CLASSIFICATION_MULTI_FINGER_SWIPE is a hidden API, so is this axis. It is only set on
 the first pointer in a motion event.*/
 pub const AMOTION_EVENT_AXIS_GESTURE_SWIPE_FINGER_COUNT: c_uint = 53;
+
+/* These flags originate in RawEvents and are generally set in the key map.
+ * NOTE: If you want a flag to be able to set in a keylayout file, then you must add it to
+ * InputEventLabels.h as well. */
+
+// Indicates that the event should wake the device.
+pub const POLICY_FLAG_WAKE: c_uint = 0x00000001;
+
+// Indicates that the key is virtual, such as a capacitive button, and should
+// generate haptic feedback.  Virtual keys may be suppressed for some time
+// after a recent touch to prevent accidental activation of virtual keys adjacent
+// to the touch screen during an edge swipe.
+
+pub const POLICY_FLAG_VIRTUAL: c_uint = 0x00000002;
+
+// Indicates that the key is the special function modifier.
+pub const POLICY_FLAG_FUNCTION: c_uint = 0x00000004;
+
+// Indicates that the key represents a special gesture that has been detected by
+// the touch firmware or driver.  Causes touch events from the same device to be canceled.
+// This policy flag prevents key events from changing touch mode state.
+pub const POLICY_FLAG_GESTURE: c_uint = 0x00000008;
+
+// Indicates that key usage mapping represents a fallback mapping.
+// Fallback mappings cannot be used to definitively determine whether a device
+// supports a key code. For example, a HID device can report a key press
+// as a HID usage code if it is not mapped to any linux key code in the kernel.
+// However, we cannot know which HID usage codes that device supports from
+// userspace through the evdev. We can use fallback mappings to convert HID
+// usage codes to Android key codes without needing to know if a device can
+// actually report the usage code.
+pub const POLICY_FLAG_FALLBACK_USAGE_MAPPING: c_uint = 0x00000010;

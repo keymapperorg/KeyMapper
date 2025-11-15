@@ -1,6 +1,7 @@
 use crate::device_manager::DeviceContext;
 use crate::device_manager_tokio::DeviceTaskManager;
-use crate::evdev::EvdevError;
+use crate::evdev_error::EvdevError;
+use crate::observer::EvdevEventNotifier;
 use std::collections::HashSet;
 use std::sync::{Arc, Mutex, OnceLock};
 
@@ -8,19 +9,18 @@ use std::sync::{Arc, Mutex, OnceLock};
 static DEVICE_TASK_MANAGER: OnceLock<Arc<Mutex<Option<Arc<DeviceTaskManager>>>>> = OnceLock::new();
 
 /// Initialize the device task manager
-pub fn init_device_task_manager(notifier: Arc<crate::observer::EvdevEventNotifier) -> Result<(), EvdevError> {
+pub fn init_device_task_manager(notifier: Arc<EvdevEventNotifier>) -> Result<(), EvdevError> {
     let manager = Arc::new(DeviceTaskManager::new(notifier));
     let global = DEVICE_TASK_MANAGER.get_or_init(|| Arc::new(Mutex::new(None)));
     let mut guard = global.lock().unwrap();
 
     if guard.is_some() {
-        return Err(EvdevError::new(-(nix::errno::Errno::EBUSY as i32)));
+        return Err(EvdevError::new(-(libc::EBUSY as i32)));
     }
 
     *guard = Some(manager);
     Ok(())
 }
-
 
 /// Get the device task manager
 fn get_device_task_manager() -> Option<Arc<DeviceTaskManager>> {
@@ -31,22 +31,22 @@ fn get_device_task_manager() -> Option<Arc<DeviceTaskManager>> {
 
 /// Add a device to be handled by a Tokio task
 pub fn add_device(device_path: String, device: Arc<DeviceContext>) -> Result<(), EvdevError> {
-    let manager = get_device_task_manager()
-        .ok_or_else(|| EvdevError::new(-(nix::errno::Errno::EINVAL as i32)))?;
+    let manager =
+        get_device_task_manager().ok_or_else(|| EvdevError::new(-(libc::EINVAL as i32)))?;
 
     manager
         .add_device(device_path, device)
-        .map_err(|e| EvdevError::new(-(nix::errno::Errno::EINVAL as i32)))
+        .map_err(|e| EvdevError::new(-(libc::EINVAL as i32)))
 }
 
 /// Remove a device and cancel its task
 pub fn remove_device(device_path: &str) -> Result<(), EvdevError> {
-    let manager = get_device_task_manager()
-        .ok_or_else(|| EvdevError::new(-(nix::errno::Errno::EINVAL as i32)))?;
+    let manager =
+        get_device_task_manager().ok_or_else(|| EvdevError::new(-(libc::EINVAL as i32)))?;
 
     manager
         .remove_device(device_path)
-        .map_err(|_| EvdevError::new(-(nix::errno::Errno::ENODEV as i32)))
+        .map_err(|_| EvdevError::new(-(libc::ENODEV as i32)))
 }
 
 /// Remove all devices and cancel their tasks
@@ -63,12 +63,12 @@ pub fn write_event_to_device(
     code: u32,
     value: i32,
 ) -> Result<(), EvdevError> {
-    let manager = get_device_task_manager()
-        .ok_or_else(|| EvdevError::new(-(nix::errno::Errno::EINVAL as i32)))?;
+    let manager =
+        get_device_task_manager().ok_or_else(|| EvdevError::new(-(libc::EINVAL as i32)))?;
 
     manager
         .write_event_to_device(device_path, event_type, code, value)
-        .map_err(|_| EvdevError::new(-(nix::errno::Errno::ENODEV as i32)))
+        .map_err(|_| EvdevError::new(-(libc::ENODEV as i32)))
 }
 
 /// Get uinput device paths
@@ -87,14 +87,4 @@ pub fn is_device_grabbed(device_path: &str) -> bool {
     } else {
         false
     }
-}
-
-/// Legacy event loop state (kept for compatibility but no longer used)
-/// This is maintained for any code that might still reference EVENT_LOOP_STATE
-pub(crate) static EVENT_LOOP_STATE: Mutex<LegacyEventLoopState> = Mutex::new(LegacyEventLoopState {
-    running: false,
-});
-
-struct LegacyEventLoopState {
-    running: bool,
 }

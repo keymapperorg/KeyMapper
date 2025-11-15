@@ -24,8 +24,15 @@ macro_rules! define_axis {
     };
 }
 
+// Macro to define policy flag entry using POLICY_FLAG_* constant
+macro_rules! define_flag {
+    ($name:ident) => {
+        (stringify!($name).to_string(), android_codes::$name as i32)
+    };
+}
+
 // Build the keycodes map
-fn build_keycodes_map() -> HashMap<String, i32> {
+fn build_keycodes_map() -> HashMap<String, u32> {
     let mut map = HashMap::new();
 
     // Helper macro to insert keycode
@@ -417,11 +424,29 @@ fn build_axes_map() -> HashMap<String, i32> {
     map
 }
 
-// Static lookup tables (lazily initialized)
-static KEYCODES: OnceLock<HashMap<String, i32>> = OnceLock::new();
-static AXES: OnceLock<HashMap<String, i32>> = OnceLock::new();
+// Build the flags map
+fn build_flags_map() -> HashMap<String, u32> {
+    let mut map = HashMap::new();
+    macro_rules! insert_flag {
+        ($name:ident) => {
+            let (name, value) = define_flag!($name);
+            map.insert(name, value);
+        };
+    }
+    insert_flag!(POLICY_FLAG_VIRTUAL);
+    insert_flag!(POLICY_FLAG_FUNCTION);
+    insert_flag!(POLICY_FLAG_GESTURE);
+    insert_flag!(POLICY_FLAG_WAKE);
+    insert_flag!(POLICY_FLAG_FALLBACK_USAGE_MAPPING);
+    map
+}
 
-fn get_keycodes() -> &'static HashMap<String, i32> {
+// Static lookup tables (lazily initialized)
+static KEYCODES: OnceLock<HashMap<String, u32>> = OnceLock::new();
+static AXES: OnceLock<HashMap<String, i32>> = OnceLock::new();
+static FLAGS: OnceLock<HashMap<String, u32>> = OnceLock::new();
+
+fn get_keycodes() -> &'static HashMap<String, u32> {
     KEYCODES.get_or_init(build_keycodes_map)
 }
 
@@ -429,12 +454,20 @@ fn get_axes() -> &'static HashMap<String, i32> {
     AXES.get_or_init(build_axes_map)
 }
 
+fn get_flags() -> &'static HashMap<String, u32> {
+    FLAGS.get_or_init(build_flags_map)
+}
 /// Look up a key code by its label.
-pub fn get_key_code_by_label(label: &str) -> Option<i32> {
+pub fn get_key_code_by_label(label: &str) -> Option<u32> {
     get_keycodes().get(label).copied()
 }
 
 /// Look up an axis by its label.
 pub fn get_axis_by_label(label: &str) -> Option<i32> {
     get_axes().get(label).copied()
+}
+
+/// Look up a key flag by its label.
+pub fn get_key_flag_by_label(label: &str) -> Option<u32> {
+    get_flags().get(label).copied()
 }

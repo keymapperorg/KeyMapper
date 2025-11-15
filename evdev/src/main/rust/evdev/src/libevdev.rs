@@ -36,10 +36,6 @@ pub const LIBEVDEV_UINPUT_OPEN_MANAGED: libevdev_uinput_open_mode = -2;
 pub enum libevdev {}
 pub enum libevdev_uinput {}
 
-#[repr(C)]
-pub struct va_list {
-    // TODO
-}
 
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -61,40 +57,10 @@ pub struct input_absinfo {
     pub resolution: c_int,
 }
 
-type libevdev_log_func_t = extern "C" fn(
-    *const libevdev,
-    *mut c_void,
-    *const c_char,
-    c_int,
-    *const c_char,
-    *const c_char,
-    va_list,
-);
-
-type libevdev_device_log_func_t = extern "C" fn(
-    *const libevdev,
-    c_int,
-    *mut c_void,
-    *const c_char,
-    c_int,
-    *const c_char,
-    *const c_char,
-    va_list,
-);
-
 extern "C" {
     pub fn libevdev_new() -> *mut libevdev;
     pub fn libevdev_new_from_fd(fd: c_int, ctx: *mut *mut libevdev) -> c_int;
     pub fn libevdev_free(ctx: *mut libevdev);
-    pub fn libevdev_set_log_function(logfunc: libevdev_log_func_t, data: *mut c_void);
-    pub fn libevdev_set_log_priority(priority: libevdev_log_priority);
-    pub fn libevdev_get_log_priority() -> libevdev_log_priority;
-    pub fn libevdev_set_device_log_function(
-        ctx: *mut libevdev,
-        logfunc: libevdev_device_log_func_t,
-        priority: libevdev_log_priority,
-        data: *mut c_void,
-    );
     pub fn libevdev_grab(ctx: *mut libevdev, grab: libevdev_grab_mode) -> c_int;
     pub fn libevdev_set_fd(ctx: *mut libevdev, fd: c_int) -> c_int;
     pub fn libevdev_change_fd(ctx: *mut libevdev, fd: c_int) -> c_int;

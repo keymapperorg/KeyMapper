@@ -8,7 +8,7 @@ mod macros;
 
 mod device;
 pub mod enums;
-pub mod libevdev;
+mod libevdev;
 mod uinput;
 pub mod util;
 
@@ -162,7 +162,7 @@ impl TimeVal {
     pub const fn new(tv_sec: time_t, tv_usec: suseconds_t) -> TimeVal {
         const MICROS_PER_SEC: suseconds_t = 1_000_000;
         TimeVal {
-            tv_sec: tv_sec + (tv_usec / MICROS_PER_SEC),
+            tv_sec: tv_sec + (tv_usec / MICROS_PER_SEC) as time_t,
             tv_usec: tv_usec % MICROS_PER_SEC,
         }
     }

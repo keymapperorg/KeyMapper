@@ -1,10 +1,10 @@
-use crate::evdev::EvdevEvent;
+use evdev::InputEvent;
 use std::sync::{Arc, Mutex};
 
 /// Trait for observers that receive evdev events
 /// Returns true if the event was consumed, false otherwise
 pub trait EvdevEventObserver: Send + Sync {
-    fn on_event(&self, device_path: &str, event: &EvdevEvent) -> bool;
+    fn on_event(&self, device_path: &str, event: &InputEvent) -> bool;
 }
 
 /// Manages multiple observers and notifies them of events
@@ -33,7 +33,7 @@ impl EvdevEventNotifier {
 
     /// Notify all observers of an event
     /// Returns true if any observer consumed the event, false otherwise
-    pub fn notify(&self, device_path: &str, event: &EvdevEvent) -> bool {
+    pub fn notify(&self, device_path: &str, event: &InputEvent) -> bool {
         let observers = self.observers.lock().unwrap();
         let mut consumed = false;
         

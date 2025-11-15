@@ -6,22 +6,24 @@
 //! AOSP keylayout files can be found at:
 //! https://cs.android.com/android/platform/superproject/+/android-latest-release:frameworks/base/data/keyboards/
 
+use crate::android::android_codes::POLICY_FLAG_FUNCTION;
 use crate::input_event_lookup::{get_axis_by_label, get_key_code_by_label, get_key_flag_by_label};
 use crate::tokenizer::Tokenizer;
 use std::collections::HashMap;
+use std::fmt::format;
 
 /// Describes a mapping from keyboard scan codes to Android key codes.
 ///
 /// This object is immutable after it has been loaded.
 pub struct KeyLayoutMap {
-    keys_by_scan_code: HashMap<i32, KeyLayoutKey>,
-    axes: HashMap<i32, KeyLayoutAxisInfo>,
+    keys_by_scan_code: HashMap<u32, KeyLayoutKey>,
+    axes: HashMap<u32, KeyLayoutAxisInfo>,
 }
 
 /// Represents a key mapping entry.
 #[derive(Debug, Clone)]
 pub struct KeyLayoutKey {
-    key_code: i32,
+    key_code: u32,
     flags: u32,
 }
 
@@ -85,28 +87,22 @@ impl KeyLayoutMap {
 
     /// Map a scan code to an Android key code.
     ///
-    /// Returns `Ok((key_code, flags))` on success, or `Err` if the scan code is not found.
-    pub fn map_key(&self, scan_code: i32) -> Result<(i32, u32), String> {
-        if let Some(key) = self.keys_by_scan_code.get(&scan_code) {
-            Ok((key.key_code, key.flags))
-        } else {
-            Err(format!("Scan code {} not found", scan_code))
-        }
+    /// Returns `Ok((key_code, flags))` on success, or
+    pub fn map_key(&self, scan_code: u32) -> Option<KeyLayoutKey> {
+        self.keys_by_scan_code.get(&scan_code).cloned()
     }
 
     /// Map a scan code to axis information.
     ///
     /// Returns `Some(axis_info)` if the scan code maps to an axis, or `None` if not found.
-    pub fn map_axis(&self, scan_code: i32) -> Option<KeyLayoutAxisInfo> {
+    pub fn map_axis(&self, scan_code: u32) -> Option<KeyLayoutAxisInfo> {
         self.axes.get(&scan_code).cloned()
     }
 
     /// Find all scan codes that map to the given key code.
     ///
     /// Only considers keys without the FUNCTION flag.
-    pub fn find_scan_codes_for_key(&self, key_code: i32) -> Vec<i32> {
-        const POLICY_FLAG_FUNCTION: u32 = 0x00000004;
-
+    pub fn find_scan_codes_for_key(&self, key_code: u32) -> Vec<u32> {
         self.keys_by_scan_code
             .iter()
             .filter_map(|(scan_code, key)| {
@@ -188,7 +184,7 @@ impl<'a> Parser<'a> {
         const WHITESPACE: &str = " \t\r";
 
         let code_token = self.tokenizer.next_token(WHITESPACE);
-        
+
         // Skip "usage" entries - we only support scan codes
         if code_token == "usage" {
             self.tokenizer.next_line();
@@ -203,7 +199,14 @@ impl<'a> Parser<'a> {
             )
         })?;
 
-        if self.map.keys_by_scan_code.contains_key(&code) {
+        if code < 0 {
+            return Err(format!(
+                "{} is not a valid key scan code. Negative numbers are not allowed.",
+                code
+            ));
+        }
+
+        if self.map.keys_by_scan_code.contains_key(&(code as u32)) {
             return Err(format!(
                 "{}: Duplicate entry for key scan code '{}'.",
                 self.tokenizer.get_location(),
@@ -215,7 +218,6 @@ impl<'a> Parser<'a> {
         let key_code_token = self.tokenizer.next_token(WHITESPACE);
         let key_code = get_key_code_by_label(&key_code_token);
 
-        // TODO do not parse flags, just skip them
         let mut flags = 0u32;
         loop {
             self.tokenizer.skip_delimiters(WHITESPACE);
@@ -244,10 +246,7 @@ impl<'a> Parser<'a> {
 
         // Only insert if the key code is known
         if let Some(key_code) = key_code {
-            let key = KeyLayoutKey {
-                key_code,
-                flags,
-            };
+            let key = KeyLayoutKey { key_code, flags };
             self.map.keys_by_scan_code.insert(code, key);
         }
 
@@ -393,6 +392,7 @@ mod tests {
     #[test]
     fn test_parse_int() {
         assert_eq!(parse_int("123"), Some(123));
+        assert_eq!(parse_int("-999"), Some(-999));
         assert_eq!(parse_int("0x1a"), Some(26));
         assert_eq!(parse_int("0XFF"), Some(255));
         assert_eq!(parse_int("077"), Some(63)); // octal
@@ -404,35 +404,35 @@ mod tests {
     fn test_load_from_contents_simple() {
         let contents = "key 1 ESCAPE\nkey 2 1\n";
         let map = KeyLayoutMap::load_from_contents(contents).unwrap();
-        
-        let (key_code, flags) = map.map_key(1).unwrap();
-        assert_eq!(key_code, 111); // ESCAPE
-        assert_eq!(flags, 0);
-        
-        let (key_code, flags) = map.map_key(2).unwrap();
-        assert_eq!(key_code, 8); // KEYCODE_1
-        assert_eq!(flags, 0);
+
+        let key = map.map_key(1).unwrap();
+        assert_eq!(key.key_code, 111); // ESCAPE
+        assert_eq!(key.flags, 0);
+
+        let key = map.map_key(2).unwrap();
+        assert_eq!(key.key_code, 8); // KEYCODE_1
+        assert_eq!(key.flags, 0);
     }
 
     #[test]
     fn test_load_from_contents_with_flags() {
         let contents = "key 465 ESCAPE FUNCTION\n";
         let map = KeyLayoutMap::load_from_contents(contents).unwrap();
-        
-        let (key_code, flags) = map.map_key(465).unwrap();
-        assert_eq!(key_code, 111); // ESCAPE
-        assert_eq!(flags, 0x00000004); // FUNCTION flag
+
+        let key = map.map_key(465).unwrap();
+        assert_eq!(key.key_code, 111); // ESCAPE
+        assert_eq!(key.flags, 0x00000004); // FUNCTION flag
     }
 
     #[test]
     fn test_load_from_contents_axis() {
         let contents = "axis 0x00 X\naxis 0x01 Y\n";
         let map = KeyLayoutMap::load_from_contents(contents).unwrap();
-        
+
         let axis_info = map.map_axis(0x00).unwrap();
         assert_eq!(axis_info.mode, KeyLayoutAxisMode::Normal);
         assert_eq!(axis_info.axis, 0); // X axis
-        
+
         let axis_info = map.map_axis(0x01).unwrap();
         assert_eq!(axis_info.mode, KeyLayoutAxisMode::Normal);
         assert_eq!(axis_info.axis, 1); // Y axis
@@ -442,9 +442,8 @@ mod tests {
     fn test_find_scan_codes_for_key() {
         let contents = "key 1 ESCAPE\nkey 465 ESCAPE FUNCTION\n";
         let map = KeyLayoutMap::load_from_contents(contents).unwrap();
-        
+
         let scan_codes = map.find_scan_codes_for_key(111); // ESCAPE
         assert_eq!(scan_codes, vec![1]); // Only scan code 1, not 465 (has FUNCTION flag)
     }
 }
-

@@ -1,16 +1,15 @@
 use crate::bindings;
 use crate::device_manager::DeviceContext;
-use crate::evdev::{EvdevDevice, EvdevError};
 use crate::evdevcallback_binder_observer::EvdevCallbackBinderObserver;
 use crate::event_loop;
 use crate::observer::EvdevEventNotifier;
 use crate::tokio_runtime;
+use evdev::{Device, DeviceWrapper};
 use jni::objects::{GlobalRef, JClass, JObject, JString, JValue};
-use jni::sys::{jboolean, jint, jobject, jobjectArray, jstring};
+use jni::sys::{jboolean, jint, jobject, jobjectArray};
 use jni::JNIEnv;
-use nix::dir::Dir;
-use nix::fcntl::OFlag;
-use nix::sys::stat::Mode;
+use std::fs::File;
+use std::os::unix::io::FromRawFd;
 use std::ptr;
 use std::sync::{Arc, Mutex, OnceLock};
 
@@ -64,7 +63,7 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     _class: JClass,
     j_device_path: JString,
 ) -> jboolean {
-    let device_path = match env.get_string(&j_device_path) {
+    let device_path: String = match env.get_string(&j_device_path) {
         Ok(s) => s.to_string_lossy().into_owned(),
         Err(e) => {
             error!("Failed to get device path string: {:?}", e);
@@ -113,7 +112,7 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
 
 #[no_mangle]
 pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_ungrabEvdevDeviceNative(
-    _env: JNIEnv,
+    mut _env: JNIEnv,
     _class: JClass,
     j_device_path: JString,
 ) -> jboolean {
@@ -149,12 +148,6 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
 ) -> jboolean {
     let binder_observer = get_binder_observer();
 
-    // Get all device paths before clearing
-    let device_paths: Vec<String> = {
-        let state = event_loop::EVENT_LOOP_STATE.lock().unwrap();
-        state.devices.keys().cloned().collect()
-    };
-
     // Unregister all devices from binder observer
     for path in &device_paths {
         binder_observer.unregister_device(path);
@@ -169,7 +162,7 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
 
 #[no_mangle]
 pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_writeEvdevEventNative(
-    _env: JNIEnv,
+    mut _env: JNIEnv,
     _class: JClass,
     j_device_path: JString,
     j_type: jint,
@@ -229,24 +222,21 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
         }
 
         // Try to open the device
-        let fd = match nix::fcntl::open(&full_path, OFlag::O_RDONLY, Mode::empty()) {
+        let file = match File::open(&full_path) {
             Ok(f) => f,
             Err(_) => continue,
         };
 
         // Create evdev device to get info
-        let evdev = match EvdevDevice::new_from_fd(fd) {
+        let evdev = match Device::new_from_file(file) {
             Ok(d) => d,
-            Err(_) => {
-                let _ = nix::unistd::close(fd);
-                continue;
-            }
+            Err(_) => continue,
         };
 
         let name = evdev.name();
-        let bus = unsafe { bindings::libevdev_get_id_bustype(evdev.as_ptr()) } as i32;
-        let vendor = unsafe { bindings::libevdev_get_id_vendor(evdev.as_ptr()) } as i32;
-        let product = unsafe { bindings::libevdev_get_id_product(evdev.as_ptr()) } as i32;
+        let bus = evdev.bustype() as i32;
+        let vendor = evdev.vendor_id() as i32;
+        let product = evdev.product_id() as i32;
 
         // Create EvdevDeviceHandle
         match create_java_evdev_device_handle(&mut env, &full_path, &name, bus, vendor, product) {
@@ -255,9 +245,6 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
                 error!("Failed to create EvdevDeviceHandle: {:?}", e);
             }
         }
-
-        // Close fd (evdev device will be dropped)
-        let _ = nix::unistd::close(fd);
     }
 
     // Create Java array
