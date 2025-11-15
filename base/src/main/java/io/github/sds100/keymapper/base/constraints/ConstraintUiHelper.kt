@@ -135,8 +135,12 @@ class ConstraintUiHelper(
             getString(R.string.constraint_ime_not_chosen_description, label)
         }
 
-        is ConstraintData.KeyboardShowing -> getString(R.string.constraint_keyboard_showing_description)
-        is ConstraintData.KeyboardNotShowing -> getString(R.string.constraint_keyboard_not_showing_description)
+        is ConstraintData.KeyboardShowing -> getString(
+            R.string.constraint_keyboard_showing_description,
+        )
+        is ConstraintData.KeyboardNotShowing -> getString(
+            R.string.constraint_keyboard_not_showing_description,
+        )
 
         is ConstraintData.DeviceIsLocked -> getString(R.string.constraint_device_is_locked)
         is ConstraintData.DeviceIsUnlocked -> getString(R.string.constraint_device_is_unlocked)

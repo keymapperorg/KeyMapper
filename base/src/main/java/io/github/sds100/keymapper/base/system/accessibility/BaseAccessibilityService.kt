@@ -16,6 +16,7 @@ import android.os.HandlerThread
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import android.view.accessibility.AccessibilityWindowInfo
 import android.view.inputmethod.EditorInfo
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
@@ -112,6 +113,13 @@ abstract class BaseAccessibilityService :
 
     override val isKeyboardHidden: Flow<Boolean>
         get() = _isKeyboardHidden
+
+    private val _isInputMethodVisible by lazy {
+        MutableStateFlow(isImeWindowVisible())
+    }
+
+    override val isInputMethodVisible: Flow<Boolean>
+        get() = _isInputMethodVisible
 
     override var serviceFlags: Int?
         get() = serviceInfo?.flags
@@ -273,6 +281,7 @@ abstract class BaseAccessibilityService :
             }
 
             _activeWindowPackage.update { rootNode?.packageName?.toString() }
+            _isInputMethodVisible.update { isImeWindowVisible() }
         }
 
         getController()?.onAccessibilityEvent(event)
@@ -539,5 +548,12 @@ abstract class BaseAccessibilityService :
         node.recycle()
 
         return Success(Unit)
+    }
+
+    fun isImeWindowVisible(): Boolean {
+        val imeWindow: AccessibilityWindowInfo? =
+            windows.find { it.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD }
+
+        return imeWindow != null && imeWindow.root?.isVisibleToUser == true
     }
 }

@@ -49,9 +49,16 @@ interface IAccessibilityService : SwitchImeInterface {
 
     fun hideKeyboard()
     fun showKeyboard()
+
+    /**
+     * Whether the keyboard is force hidden by the accessibility service SoftKeyboardController
+     */
     val isKeyboardHidden: Flow<Boolean>
 
-    fun disableSelf()
+    /**
+     * Whether the input method is visible on the screen.
+     */
+    val isInputMethodVisible: Flow<Boolean>
 
     fun findFocussedNode(focus: Int): AccessibilityNodeModel?
 }

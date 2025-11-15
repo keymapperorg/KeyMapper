@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.constraints
 
+import android.os.Build
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -16,7 +17,7 @@ import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.phone.PhoneAdapter
 import io.github.sds100.keymapper.system.power.PowerAdapter
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 
@@ -79,9 +80,6 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
                 networkAdapter.connectedWifiSSIDFlow.map { dependency }
             ConstraintDependency.WIFI_STATE -> networkAdapter.isWifiEnabledFlow().map { dependency }
             ConstraintDependency.CHOSEN_IME -> inputMethodAdapter.chosenIme.map { dependency }
-            ConstraintDependency.KEYBOARD_STATE -> 
-                // TODO: Implement keyboard state detection
-                flowOf(dependency)
             ConstraintDependency.DEVICE_LOCKED_STATE ->
                 lockScreenAdapter.isLockedFlow().map { dependency }
 
@@ -93,7 +91,14 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
 
             ConstraintDependency.PHONE_STATE -> phoneAdapter.callStateFlow.map { dependency }
             ConstraintDependency.CHARGING_STATE -> powerAdapter.isCharging.map { dependency }
-            ConstraintDependency.HINGE_STATE -> foldableAdapter.hingeState.map { dependency }
+            ConstraintDependency.HINGE_STATE ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    foldableAdapter.hingeState.map { dependency }
+                } else {
+                    emptyFlow()
+                }
+            ConstraintDependency.KEYBOARD_VISIBLE ->
+                accessibilityService.isInputMethodVisible.map { dependency }
         }
     }
 }
