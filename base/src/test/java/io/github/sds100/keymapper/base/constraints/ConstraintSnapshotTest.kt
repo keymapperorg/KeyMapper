@@ -206,4 +206,36 @@ class ConstraintSnapshotTest {
         val state = ConstraintState(constraints = emptySet())
         assertThat(snapshot.isSatisfied(state), `is`(true))
     }
+
+    @Test
+    fun `When keyboard is showing and constraint is KeyboardShowing return true`() {
+        val snapshot = TestConstraintSnapshot(isKeyboardShowing = true)
+        val constraint = Constraint(data = ConstraintData.KeyboardShowing)
+        val state = ConstraintState(constraints = setOf(constraint))
+        assertThat(snapshot.isSatisfied(state), `is`(true))
+    }
+
+    @Test
+    fun `When keyboard is not showing and constraint is KeyboardShowing return false`() {
+        val snapshot = TestConstraintSnapshot(isKeyboardShowing = false)
+        val constraint = Constraint(data = ConstraintData.KeyboardShowing)
+        val state = ConstraintState(constraints = setOf(constraint))
+        assertThat(snapshot.isSatisfied(state), `is`(false))
+    }
+
+    @Test
+    fun `When keyboard is not showing and constraint is KeyboardNotShowing return true`() {
+        val snapshot = TestConstraintSnapshot(isKeyboardShowing = false)
+        val constraint = Constraint(data = ConstraintData.KeyboardNotShowing)
+        val state = ConstraintState(constraints = setOf(constraint))
+        assertThat(snapshot.isSatisfied(state), `is`(true))
+    }
+
+    @Test
+    fun `When keyboard is showing and constraint is KeyboardNotShowing return false`() {
+        val snapshot = TestConstraintSnapshot(isKeyboardShowing = true)
+        val constraint = Constraint(data = ConstraintData.KeyboardNotShowing)
+        val state = ConstraintState(constraints = setOf(constraint))
+        assertThat(snapshot.isSatisfied(state), `is`(false))
+    }
 }

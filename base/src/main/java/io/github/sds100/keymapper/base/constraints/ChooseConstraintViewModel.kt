@@ -77,6 +77,9 @@ class ChooseConstraintViewModel @Inject constructor(
             ConstraintId.IME_CHOSEN,
             ConstraintId.IME_NOT_CHOSEN,
 
+            ConstraintId.KEYBOARD_SHOWING,
+            ConstraintId.KEYBOARD_NOT_SHOWING,
+
             ConstraintId.DEVICE_IS_LOCKED,
             ConstraintId.DEVICE_IS_UNLOCKED,
             ConstraintId.LOCK_SCREEN_SHOWING,
@@ -203,6 +206,12 @@ class ChooseConstraintViewModel @Inject constructor(
                 ConstraintId.IME_CHOSEN,
                 ConstraintId.IME_NOT_CHOSEN,
                     -> onSelectImeChosenConstraint(constraintType)
+
+                ConstraintId.KEYBOARD_SHOWING ->
+                    returnResult.emit(ConstraintData.KeyboardShowing)
+
+                ConstraintId.KEYBOARD_NOT_SHOWING ->
+                    returnResult.emit(ConstraintData.KeyboardNotShowing)
 
                 ConstraintId.DEVICE_IS_LOCKED ->
                     returnResult.emit(ConstraintData.DeviceIsLocked)

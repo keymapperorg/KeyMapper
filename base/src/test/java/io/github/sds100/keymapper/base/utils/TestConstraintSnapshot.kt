@@ -22,6 +22,7 @@ class TestConstraintSnapshot(
     val isWifiEnabled: Boolean = false,
     val connectedWifiSSID: String? = null,
     val chosenImeId: String? = null,
+    val isKeyboardShowing: Boolean = false,
     val callState: CallState = CallState.NONE,
     val isCharging: Boolean = false,
     val isLocked: Boolean = false,
@@ -94,6 +95,8 @@ class TestConstraintSnapshot(
             is ConstraintData.WifiOn -> isWifiEnabled
             is ConstraintData.ImeChosen -> chosenImeId == data.imeId
             is ConstraintData.ImeNotChosen -> chosenImeId != data.imeId
+            is ConstraintData.KeyboardShowing -> isKeyboardShowing
+            is ConstraintData.KeyboardNotShowing -> !isKeyboardShowing
             is ConstraintData.DeviceIsLocked -> isLocked
             is ConstraintData.DeviceIsUnlocked -> !isLocked
             is ConstraintData.InPhoneCall -> callState == CallState.IN_PHONE_CALL
