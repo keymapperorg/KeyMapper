@@ -7703,7 +7703,6 @@ unsafe extern "C" {
     pub fn keylayoutmap_map_key(
         handle: KeyLayoutMapHandle,
         scan_code: i32,
-        usage_code: i32,
         out_key_code: *mut i32,
         out_flags: *mut u32,
     ) -> ::std::os::raw::c_int;

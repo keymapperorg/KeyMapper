@@ -1,6 +1,12 @@
 mod bindings; // libevdev C bindings + KeyLayoutMap C interface bindings
+mod device_manager;
 mod enums;
 mod evdev;
+mod evdevcallback_binder_observer;
+mod event_loop;
+mod key_layout_map_manager;
+mod observer;
+mod jni_bridge;
 
 #[macro_use]
 extern crate log;

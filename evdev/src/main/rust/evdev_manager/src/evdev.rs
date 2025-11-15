@@ -75,7 +75,7 @@ pub struct EvdevError {
 }
 
 impl EvdevError {
-    fn new(code: i32) -> Self {
+    pub(crate) fn new(code: i32) -> Self {
         let kind = EvdevErrorCode::from_code(code);
         let message = if let EvdevErrorCode::Unknown(_) = kind {
             format!("libevdev error: {}", code)
@@ -281,10 +281,10 @@ impl EvdevDevice {
 
     /// Read the next event from the device (non-blocking)
     ///
-    /// Returns `Ok(Some(InputEvent))` if an event was read,
+    /// Returns `Ok(Some(EvdevEvent))` if an event was read,
     /// `Ok(None)` if no events are available (EAGAIN),
     /// or `Err(EvdevError)` on error.
-    pub fn next_event(&mut self) -> Result<Option<InputEvent>, EvdevError> {
+    pub fn next_event(&mut self) -> Result<Option<EvdevEvent>, EvdevError> {
         let mut ev = MaybeUninit::<bindings::input_event>::uninit();
 
         let result = unsafe {
@@ -299,7 +299,7 @@ impl EvdevDevice {
         match result {
             0.. => {
                 let ev = unsafe { ev.assume_init() };
-                Ok(Some(InputEvent {
+                Ok(Some(EvdevEvent {
                     time_sec: ev.time.tv_sec,
                     time_usec: ev.time.tv_usec,
                     event_type: EventType::from_raw(ev.type_ as u32).expect("Unknown event type"),
@@ -318,9 +318,9 @@ impl EvdevDevice {
     }
 }
 
-/// Represents a single input event
+/// Represents a single evdev input event
 #[derive(Debug, Clone, Copy)]
-pub struct InputEvent {
+pub struct EvdevEvent {
     pub time_sec: i64,
     pub time_usec: i64,
     pub event_type: EventType,

@@ -16,7 +16,8 @@ strip = false  # Don't strip symbols, keeps them in the .so file
 jni = "0.21.1"
 log = "0.4.28"
 android_log = "0.1.3"
+nix = { version = "0.30.1", features = ["event", "dir"] }
 
 [build-dependencies]
-cc = "1.2.45"
+cc = "1.2.46"
 bindgen = "0.72.1"
