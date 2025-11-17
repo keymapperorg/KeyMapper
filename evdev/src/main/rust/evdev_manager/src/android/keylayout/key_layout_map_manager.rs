@@ -1,4 +1,4 @@
-use crate::{KeyLayoutKey, KeyLayoutMap};
+use crate::android::keylayout::key_layout_map::{KeyLayoutKey, KeyLayoutMap};
 use std::collections::HashMap;
 use std::env;
 use std::fs;

@@ -1,9 +1,9 @@
+use crate::enums::{EventCode, EventType, EV_SYN};
+use crate::util::*;
 use crate::{device::DeviceWrapper, InputEvent};
-use libc::c_int;
+use libc::{c_int, c_uint};
 use std::io;
 use std::os::unix::io::RawFd;
-
-use crate::util::*;
 
 use crate::libevdev;
 
@@ -88,18 +88,20 @@ impl UInputDevice {
     /// It is the caller's responsibility that any event sequence is terminated
     /// with an EV_SYN/SYN_REPORT/0 event. Otherwise, listeners on the device
     /// node will not see the events until the next EV_SYN event is posted.
-    pub fn write_event(&self, event: &InputEvent) -> io::Result<()> {
-        let (ev_type, ev_code) = event_code_to_int(&event.event_code);
-        let ev_value = event.value as c_int;
-
-        let result = unsafe {
-            libevdev::libevdev_uinput_write_event(self.raw(), ev_type, ev_code, ev_value)
-        };
+    pub fn write_event(&self, event_type: u32, code: u32, value: i32) -> io::Result<()> {
+        let result =
+            unsafe { libevdev::libevdev_uinput_write_event(self.raw(), event_type, code, value) };
 
         match result {
             0 => Ok(()),
             error => Err(io::Error::from_raw_os_error(-error)),
         }
+    }
+
+    pub fn write_syn_event(&self, code: EV_SYN) -> io::Result<()> {
+        let (event_type, event_code) = event_code_to_int(&EventCode::EV_SYN(code));
+
+        self.write_event(event_type, event_code, 0)
     }
 }
 

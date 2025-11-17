@@ -1,7 +1,7 @@
 use crate::android::android_codes;
 use crate::android::android_codes::AKEYCODE_UNKNOWN;
-use crate::key_layout_map_manager::KeyLayoutMapManager;
 use crate::observer::EvdevEventObserver;
+use crate::android::keylayout::key_layout_map_manager::KeyLayoutMapManager;
 use evdev::{util::event_code_to_int, Device, DeviceWrapper, InputEvent};
 use std::ffi::CString;
 use std::os::raw::c_int;

@@ -1,36 +1,75 @@
-use crate::device_manager::DeviceContext;
 use crate::device_manager_tokio::DeviceTaskManager;
 use crate::evdev_error::EvdevError;
+use crate::grabbed_device::GrabbedDevice;
 use crate::observer::EvdevEventNotifier;
+use evdev::util::event_code_to_int;
+use evdev::{ReadFlag, ReadStatus};
 use std::collections::HashSet;
 use std::sync::{Arc, Mutex, OnceLock};
 
-/// Global device task manager
-static DEVICE_TASK_MANAGER: OnceLock<Arc<Mutex<Option<Arc<DeviceTaskManager>>>>> = OnceLock::new();
 
-/// Initialize the device task manager
-pub fn init_device_task_manager(notifier: Arc<EvdevEventNotifier>) -> Result<(), EvdevError> {
-    let manager = Arc::new(DeviceTaskManager::new(notifier));
-    let global = DEVICE_TASK_MANAGER.get_or_init(|| Arc::new(Mutex::new(None)));
-    let mut guard = global.lock().unwrap();
 
-    if guard.is_some() {
-        return Err(EvdevError::new(-(libc::EBUSY as i32)));
+/// Read and process events from a device
+fn start_event_loop(notifier: &EvdevEventNotifier) -> Result<(), EvdevError> {
+    // Read all available events from device
+    loop {
+        match device.evdev.next_event(ReadFlag::NORMAL) {
+            Ok((ReadStatus::Success, event)) => {
+                // Notify all observers
+                let consumed = notifier.notify(device_path, &event);
+
+                // If no observer consumed the event, forward to uinput
+                if !consumed {
+                    // Extract event type and code from EventCode
+                    let (ev_type, ev_code) = event_code_to_int(&event.event_code);
+
+                    if let Err(e) = device.write_event(ev_type as u32, ev_code as u32, event.value)
+                    {
+                        error!("Failed to write event to uinput: {}", e);
+                    }
+                }
+            }
+            Ok((ReadStatus::Sync, _event)) => {
+                // Handle sync event - read sync events until EAGAIN
+                loop {
+                    match device.evdev.next_event(ReadFlag::NORMAL | ReadFlag::SYNC) {
+                        Ok((ReadStatus::Sync, _)) => {
+                            // Continue reading sync events
+                        }
+                        Ok((ReadStatus::Success, _)) => {
+                            // Sync complete, break inner loop
+                            break;
+                        }
+                        Err(e) => {
+                            // Check if it's EAGAIN (no more events)
+                            if let Some(err) = e.raw_os_error() {
+                                if err == -(libc::EAGAIN as i32) {
+                                    break;
+                                }
+                            }
+                            return Err(EvdevError::from(e));
+                        }
+                    }
+                }
+            }
+            Err(e) => {
+                // Check if it's EAGAIN (no more events available)
+                if let Some(err) = e.raw_os_error() {
+                    if err == -(libc::EAGAIN as i32) {
+                        // No more events available
+                        break;
+                    }
+                }
+                return Err(EvdevError::from(e));
+            }
+        }
     }
 
-    *guard = Some(manager);
     Ok(())
 }
 
-/// Get the device task manager
-fn get_device_task_manager() -> Option<Arc<DeviceTaskManager>> {
-    let global = DEVICE_TASK_MANAGER.get()?;
-    let guard = global.lock().ok()?;
-    guard.clone()
-}
-
 /// Add a device to be handled by a Tokio task
-pub fn add_device(device_path: String, device: Arc<DeviceContext>) -> Result<(), EvdevError> {
+pub fn add_device(device_path: String, device: Arc<GrabbedDevice>) -> Result<(), EvdevError> {
     let manager =
         get_device_task_manager().ok_or_else(|| EvdevError::new(-(libc::EINVAL as i32)))?;
 

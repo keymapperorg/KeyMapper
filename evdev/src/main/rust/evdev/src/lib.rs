@@ -185,7 +185,7 @@ impl TimeVal {
 /// The event structure itself
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct InputEvent {
-    /// The time at which event occured
+    /// The time at which event occurred
     pub time: TimeVal,
     pub event_code: EventCode,
     pub value: i32,

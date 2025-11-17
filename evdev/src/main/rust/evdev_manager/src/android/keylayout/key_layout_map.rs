@@ -7,10 +7,11 @@
 //! https://cs.android.com/android/platform/superproject/+/android-latest-release:frameworks/base/data/keyboards/
 
 use crate::android::android_codes::POLICY_FLAG_FUNCTION;
-use crate::input_event_lookup::{get_axis_by_label, get_key_code_by_label, get_key_flag_by_label};
-use crate::tokenizer::Tokenizer;
+use crate::android::keylayout::input_event_lookup::{
+    get_axis_by_label, get_key_code_by_label, get_key_flag_by_label,
+};
+use crate::android::keylayout::tokenizer::Tokenizer;
 use std::collections::HashMap;
-use std::fmt::format;
 
 /// Describes a mapping from keyboard scan codes to Android key codes.
 ///

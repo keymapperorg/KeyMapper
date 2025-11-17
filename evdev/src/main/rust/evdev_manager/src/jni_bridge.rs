@@ -1,8 +1,7 @@
-use crate::device_manager::DeviceContext;
+use crate::grabbed_device::GrabbedDevice;
 use crate::evdev_callback_binder_observer::EvdevCallbackBinderObserver;
 use crate::event_loop;
 use crate::observer::EvdevEventNotifier;
-use crate::tokio_runtime;
 use evdev::{Device, DeviceWrapper};
 use jni::objects::{GlobalRef, JClass, JObject, JString, JValue};
 use jni::sys::{jboolean, jint, jobject, jobjectArray};
@@ -82,7 +81,7 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     }
 
     // Grab the device
-    let device = match DeviceContext::grab_device(&device_path) {
+    let device = match GrabbedDevice::new(&device_path) {
         Ok(d) => Arc::new(d),
         Err(e) => {
             error!("Failed to grab device {}: {}", device_path, e);
@@ -282,9 +281,7 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
 ) {
     android_log::init("KeyMapperSystemBridge").unwrap();
     set_log_panic_hook();
-
-    tokio_runtime::init_runtime().expect("Failed to initialize tokio runtime");
-
+    
     let notifier = get_event_notifier();
     let binder_observer = get_binder_observer();
 
@@ -310,7 +307,6 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     _class: JClass,
 ) {
     event_loop::remove_all_devices();
-    tokio_runtime::shutdown_runtime();
     info!("Stopped evdev manager");
 }
 
