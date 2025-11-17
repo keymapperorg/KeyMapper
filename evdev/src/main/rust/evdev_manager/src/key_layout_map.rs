@@ -23,7 +23,7 @@ pub struct KeyLayoutMap {
 /// Represents a key mapping entry.
 #[derive(Debug, Clone)]
 pub struct KeyLayoutKey {
-    key_code: u32,
+    pub key_code: u32,
     flags: u32,
 }
 
@@ -31,10 +31,10 @@ pub struct KeyLayoutKey {
 #[derive(Debug, Clone)]
 pub struct KeyLayoutAxisInfo {
     mode: KeyLayoutAxisMode,
-    axis: i32,
-    high_axis: i32,
-    split_value: i32,
-    flat_override: i32,
+    axis: u32,
+    high_axis: Option<u32>,
+    split_value: Option<i32>,
+    flat_override: Option<i32>,
 }
 
 /// Axis mapping mode.
@@ -46,18 +46,6 @@ pub enum KeyLayoutAxisMode {
     Invert,
     /// Axis value should be split into two axes.
     Split,
-}
-
-impl KeyLayoutAxisInfo {
-    fn new() -> Self {
-        Self {
-            mode: KeyLayoutAxisMode::Normal,
-            axis: -1,
-            high_axis: -1,
-            split_value: 0,
-            flat_override: -1,
-        }
-    }
 }
 
 impl KeyLayoutMap {
@@ -191,7 +179,7 @@ impl<'a> Parser<'a> {
             return Ok(());
         }
 
-        let code = parse_int(&code_token).ok_or_else(|| {
+        let scan_code = parse_int(&code_token).ok_or_else(|| {
             format!(
                 "{}: Expected key scan code number, got '{}'.",
                 self.tokenizer.get_location(),
@@ -199,14 +187,14 @@ impl<'a> Parser<'a> {
             )
         })?;
 
-        if code < 0 {
+        if scan_code < 0 {
             return Err(format!(
                 "{} is not a valid key scan code. Negative numbers are not allowed.",
-                code
+                scan_code
             ));
         }
 
-        if self.map.keys_by_scan_code.contains_key(&(code as u32)) {
+        if self.map.keys_by_scan_code.contains_key(&(scan_code as u32)) {
             return Err(format!(
                 "{}: Duplicate entry for key scan code '{}'.",
                 self.tokenizer.get_location(),
@@ -247,7 +235,7 @@ impl<'a> Parser<'a> {
         // Only insert if the key code is known
         if let Some(key_code) = key_code {
             let key = KeyLayoutKey { key_code, flags };
-            self.map.keys_by_scan_code.insert(code, key);
+            self.map.keys_by_scan_code.insert(scan_code as u32, key);
         }
 
         Ok(())
@@ -265,7 +253,14 @@ impl<'a> Parser<'a> {
             )
         })?;
 
-        if self.map.axes.contains_key(&scan_code) {
+        if scan_code < 0 {
+            return Err(format!(
+                "{} is not a valid key scan code for an axis. Negative numbers are not allowed.",
+                scan_code
+            ));
+        }
+
+        if self.map.axes.contains_key(&(scan_code as u32)) {
             return Err(format!(
                 "{}: Duplicate entry for axis scan code '{}'.",
                 self.tokenizer.get_location(),
@@ -273,68 +268,71 @@ impl<'a> Parser<'a> {
             ));
         }
 
-        let mut axis_info = KeyLayoutAxisInfo::new();
+        let mut axis_mode: KeyLayoutAxisMode = KeyLayoutAxisMode::Normal;
+        let axis: u32;
+        let mut split_value: Option<i32> = None;
+        let mut high_axis: Option<u32> = None;
+        let mut flat_override: Option<i32> = None;
 
         self.tokenizer.skip_delimiters(WHITESPACE);
         let token = self.tokenizer.next_token(WHITESPACE);
 
         if token == "invert" {
-            axis_info.mode = KeyLayoutAxisMode::Invert;
+            axis_mode = KeyLayoutAxisMode::Invert;
 
             self.tokenizer.skip_delimiters(WHITESPACE);
+
             let axis_token = self.tokenizer.next_token(WHITESPACE);
-            let axis = get_axis_by_label(&axis_token).ok_or_else(|| {
+
+            axis = get_axis_by_label(&axis_token).ok_or_else(|| {
                 format!(
                     "{}: Expected inverted axis label, got '{}'.",
                     self.tokenizer.get_location(),
                     axis_token
                 )
             })?;
-            axis_info.axis = axis;
         } else if token == "split" {
-            axis_info.mode = KeyLayoutAxisMode::Split;
+            axis_mode = KeyLayoutAxisMode::Split;
 
             self.tokenizer.skip_delimiters(WHITESPACE);
             let split_token = self.tokenizer.next_token(WHITESPACE);
-            let split_value = parse_int(&split_token).ok_or_else(|| {
+            let split_value_raw = parse_int(&split_token).ok_or_else(|| {
                 format!(
                     "{}: Expected split value, got '{}'.",
                     self.tokenizer.get_location(),
                     split_token
                 )
             })?;
-            axis_info.split_value = split_value;
+            split_value = Some(split_value_raw);
 
             self.tokenizer.skip_delimiters(WHITESPACE);
             let low_axis_token = self.tokenizer.next_token(WHITESPACE);
-            let axis = get_axis_by_label(&low_axis_token).ok_or_else(|| {
+            axis = get_axis_by_label(&low_axis_token).ok_or_else(|| {
                 format!(
                     "{}: Expected low axis label, got '{}'.",
                     self.tokenizer.get_location(),
                     low_axis_token
                 )
             })?;
-            axis_info.axis = axis;
 
             self.tokenizer.skip_delimiters(WHITESPACE);
             let high_axis_token = self.tokenizer.next_token(WHITESPACE);
-            let high_axis = get_axis_by_label(&high_axis_token).ok_or_else(|| {
+            let high_axis_raw = get_axis_by_label(&high_axis_token).ok_or_else(|| {
                 format!(
                     "{}: Expected high axis label, got '{}'.",
                     self.tokenizer.get_location(),
                     high_axis_token
                 )
             })?;
-            axis_info.high_axis = high_axis;
+            high_axis = Some(high_axis_raw);
         } else {
-            let axis = get_axis_by_label(&token).ok_or_else(|| {
+            axis = get_axis_by_label(&token).ok_or_else(|| {
                 format!(
                     "{}: Expected axis label, 'split' or 'invert', got '{}'.",
                     self.tokenizer.get_location(),
                     token
                 )
             })?;
-            axis_info.axis = axis;
         }
 
         loop {
@@ -347,14 +345,14 @@ impl<'a> Parser<'a> {
             if keyword_token == "flat" {
                 self.tokenizer.skip_delimiters(WHITESPACE);
                 let flat_token = self.tokenizer.next_token(WHITESPACE);
-                let flat_override = parse_int(&flat_token).ok_or_else(|| {
+                let flat_override_raw = parse_int(&flat_token).ok_or_else(|| {
                     format!(
                         "{}: Expected flat value, got '{}'.",
                         self.tokenizer.get_location(),
                         flat_token
                     )
                 })?;
-                axis_info.flat_override = flat_override;
+                flat_override = Some(flat_override_raw);
             } else {
                 return Err(format!(
                     "{}: Expected keyword 'flat', got '{}'.",
@@ -364,7 +362,15 @@ impl<'a> Parser<'a> {
             }
         }
 
-        self.map.axes.insert(scan_code, axis_info);
+        let axis_info: KeyLayoutAxisInfo = KeyLayoutAxisInfo {
+            mode: axis_mode,
+            axis,
+            high_axis,
+            split_value,
+            flat_override,
+        };
+
+        self.map.axes.insert(scan_code as u32, axis_info);
         Ok(())
     }
 }

@@ -2,11 +2,12 @@ use crate::device_manager::DeviceContext;
 use crate::evdev_error::{EvdevError, EvdevErrorCode};
 use crate::observer::EvdevEventNotifier;
 use crate::tokio_runtime;
+use evdev::util::event_code_to_int;
 use evdev::{InputEvent, ReadFlag, ReadStatus};
 use std::os::fd::{AsRawFd, RawFd};
 use std::sync::Arc;
-use std::thread::JoinHandle;
 use tokio::io::unix::AsyncFd;
+use tokio::task::JoinHandle;
 
 /// Spawn a Tokio task to handle events from a device
 /// Returns a handle that can be used to cancel the task
@@ -22,7 +23,7 @@ pub fn spawn_device_task(
     // Get the runtime handle to spawn the task
     // We can't use tokio::spawn() directly because JNI methods aren't in a Tokio context
     let runtime_handle = tokio_runtime::get_runtime_handle()
-        .ok_or_else(|| EvdevError::new(-(libc::EINVAL as i32)))?;
+        .ok_or_else(|| EvdevError::from_enum(EvdevErrorCode::InvalidArgument))?;
 
     let handle = runtime_handle.spawn(async move {
         device_task_loop(device_path, device, notifier, async_fd).await;
@@ -31,7 +32,9 @@ pub fn spawn_device_task(
     Ok(handle)
 }
 
-/// Main loop for a device task
+// TODO tokio is overcomplicating it, it is important that events are processed synchronously and in the correct order. Just use one event loop with mio::Poll like in the original and this is runs forever until a call from JNI is made to kill it. One can use enums for the commands.
+// TODO do not allow multiple event loops to run
+// / Main loop for a device task
 async fn device_task_loop(
     device_path: String,
     device: Arc<DeviceContext>,
@@ -87,7 +90,6 @@ fn read_and_process_events(
                 // If no observer consumed the event, forward to uinput
                 if !consumed {
                     // Extract event type and code from EventCode
-                    use evdev::util::event_code_to_int;
                     let (ev_type, ev_code) = event_code_to_int(&event.event_code);
 
                     if let Err(e) = device.write_event(ev_type as u32, ev_code as u32, event.value)

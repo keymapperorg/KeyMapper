@@ -50,10 +50,6 @@ int evdev_callback_on_evdev_event(
 // Returns 0 on success, non-zero error code on failure
 int evdev_callback_on_emergency_kill_system_bridge();
 
-// Destroy an IEvdevCallback handle
-// Safe to call with NULL handle
-void evdev_callback_destroy(IEvdevCallbackHandle handle);
-
 #ifdef __cplusplus
 }
 #endif

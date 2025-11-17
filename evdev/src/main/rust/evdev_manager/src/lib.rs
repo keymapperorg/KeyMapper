@@ -1,9 +1,8 @@
 mod android;
-mod bindings; // libevdev C bindings + KeyLayoutMap C interface bindings
 mod device_manager;
 mod device_manager_tokio;
 mod device_task;
-mod evdevcallback_binder_observer;
+mod evdev_callback_binder_observer;
 mod event_loop;
 mod input_device_config;
 mod input_event_lookup;

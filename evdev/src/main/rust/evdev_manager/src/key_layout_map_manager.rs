@@ -1,11 +1,9 @@
 use crate::{KeyLayoutKey, KeyLayoutMap};
 use std::collections::HashMap;
 use std::env;
-use std::ffi::CString;
 use std::fs;
 use std::fs::File;
 use std::io::ErrorKind;
-use std::ptr;
 use std::sync::{Arc, Mutex};
 
 /// Manages KeyLayoutMap caching and key code mapping
@@ -136,38 +134,14 @@ impl KeyLayoutMapManager {
         product: u16,
         version: u16,
     ) {
-        // Find key layout map file path
-        let kl_path =
-            self.find_key_layout_file_by_device_identifier(&name, vendor, product, version);
+        let layout_file_path = self
+            .find_key_layout_file_by_device_identifier(&name, vendor, product, version)
+            .expect("Failed to find key layout map");
 
-        if let Some(path) = kl_path {
-            let path_cstr = match CString::new(path.clone()) {
-                Ok(s) => s,
-                Err(_) => {
-                    warn!("Failed to create CString for key layout path: {}", path);
-                    return;
-                }
-            };
+        let key_layout_map: KeyLayoutMap = KeyLayoutMap::load_from_file(&layout_file_path).unwrap();
 
-            let mut key_layout_map: KeyLayoutMap = ptr::null_mut();
-            let result = unsafe { bindings::keylayoutmap_load(path_cstr.as_ptr(), &mut handle) };
-
-            if result == 0 && !handle.is_null() {
-                info!(
-                    "Loaded key layout map from {} for device {}",
-                    path, device_path
-                );
-                let mut key_layout_maps = self.key_layout_maps.lock().unwrap();
-                key_layout_maps.insert(device_path, handle);
-            } else {
-                warn!(
-                    "Failed to load key layout map from {} for device {}: {}",
-                    path, device_path, result
-                );
-            }
-        } else {
-            debug!("Key layout map not found for device {}", device_path);
-        }
+        let mut key_layout_maps = self.key_layout_maps.lock().unwrap();
+        key_layout_maps.insert(String::from(device_path), key_layout_map);
     }
 
     /// Unregister a device and cleanup its KeyLayoutMap

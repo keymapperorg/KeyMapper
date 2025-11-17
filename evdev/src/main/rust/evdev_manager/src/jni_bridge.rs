@@ -1,6 +1,5 @@
-use crate::bindings;
 use crate::device_manager::DeviceContext;
-use crate::evdevcallback_binder_observer::EvdevCallbackBinderObserver;
+use crate::evdev_callback_binder_observer::EvdevCallbackBinderObserver;
 use crate::event_loop;
 use crate::observer::EvdevEventNotifier;
 use crate::tokio_runtime;
@@ -9,9 +8,8 @@ use jni::objects::{GlobalRef, JClass, JObject, JString, JValue};
 use jni::sys::{jboolean, jint, jobject, jobjectArray};
 use jni::JNIEnv;
 use std::fs::File;
-use std::os::unix::io::FromRawFd;
 use std::ptr;
-use std::sync::{Arc, Mutex, OnceLock};
+use std::sync::{Arc, OnceLock};
 
 static EVENT_NOTIFIER: OnceLock<Arc<EvdevEventNotifier>> = OnceLock::new();
 static BINDER_OBSERVER: OnceLock<Arc<EvdevCallbackBinderObserver>> = OnceLock::new();
@@ -94,7 +92,7 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
 
     // Register device with binder observer for KeyLayoutMap lookup
     let binder_observer = get_binder_observer();
-    binder_observer.register_device(device_path.clone(), &device.evdev);
+    binder_observer.register_device(device_path.as_str(), &device.evdev);
 
     // Add device to event loop
     match event_loop::add_device(device_path.clone(), device.clone()) {

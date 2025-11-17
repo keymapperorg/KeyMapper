@@ -1,9 +1,10 @@
 use crate::android::android_codes;
-use crate::bindings;
+use crate::android::android_codes::AKEYCODE_UNKNOWN;
 use crate::key_layout_map_manager::KeyLayoutMapManager;
 use crate::observer::EvdevEventObserver;
 use evdev::{util::event_code_to_int, Device, DeviceWrapper, InputEvent};
 use std::ffi::CString;
+use std::os::raw::c_int;
 use std::process;
 use std::sync::Arc;
 
@@ -45,17 +46,17 @@ impl EvdevCallbackBinderObserver {
     }
 
     pub fn unregister_all(&self) {
-        self.key_layout_map_manager.unregister_device()
+        self.key_layout_map_manager.unregister_all()
     }
 
     /// Handle power button emergency kill
     /// Returns true if system bridge should be killed
-    fn handle_power_button(&self, code: u32, android_code: i32, value: i32, time_sec: i64) -> bool {
+    fn handle_power_button(&self, code: u32, android_code: u32, value: i32, time_sec: i64) -> bool {
         use std::sync::atomic::{AtomicI64, Ordering};
         static POWER_BUTTON_DOWN_TIME: AtomicI64 = AtomicI64::new(0);
 
         // KEY_POWER scan code = 116
-        if code == 116 || android_code == android_codes::AKEYCODE_POWER as i32 {
+        if code == 116 || android_code == android_codes::AKEYCODE_POWER {
             if value == 1 {
                 // Button down - store time
                 POWER_BUTTON_DOWN_TIME.store(time_sec, Ordering::Relaxed);
@@ -64,7 +65,7 @@ impl EvdevCallbackBinderObserver {
                 let down_time = POWER_BUTTON_DOWN_TIME.load(Ordering::Relaxed);
                 if down_time > 0 && time_sec - down_time >= 10 {
                     // Kill system bridge
-                    let _ = unsafe { bindings::evdev_callback_on_emergency_kill_system_bridge() };
+                    let _ = unsafe { evdev_callback_on_emergency_kill_system_bridge() };
                     process::exit(0);
                 }
                 POWER_BUTTON_DOWN_TIME.store(0, Ordering::Relaxed);
@@ -81,7 +82,11 @@ impl EvdevEventObserver for EvdevCallbackBinderObserver {
         let code = ev_code as u32;
 
         // Convert raw evdev code to Android keycode
-        let (android_code, _flags) = self.key_layout_map_manager.map_key(device_path, code);
+        let android_code = self
+            .key_layout_map_manager
+            .map_key(device_path, code)
+            .map(|key| key.key_code)
+            .unwrap_or(AKEYCODE_UNKNOWN);
 
         // Handle power button emergency kill
         self.handle_power_button(code, android_code, event.value, event.time.tv_sec as i64);
@@ -97,7 +102,7 @@ impl EvdevEventObserver for EvdevCallbackBinderObserver {
         };
 
         let result = unsafe {
-            bindings::evdev_callback_on_evdev_event(
+            evdev_callback_on_evdev_event(
                 device_path_cstr.as_ptr(),
                 event.time.tv_sec as i64,
                 event.time.tv_usec as i64,
@@ -129,5 +134,53 @@ impl EvdevEventObserver for EvdevCallbackBinderObserver {
 impl Default for EvdevCallbackBinderObserver {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+// Manual FFI bindings for evdev_callback_jni_manager.h
+#[link(name = "evdev_manager_cpp")]
+extern "C" {
+    /// Call onEvdevEvent using stored callback
+    /// Returns 0 on success, non-zero error code on failure
+    fn evdev_callback_on_evdev_event(
+        device_path: *const std::ffi::c_char,
+        time_sec: i64,
+        time_usec: i64,
+        type_: i32,
+        code: i32,
+        value: i32,
+        android_code: i32,
+    ) -> c_int;
+
+    /// Call onEmergencyKillSystemBridge using stored callback
+    /// Returns 0 on success, non-zero error code on failure
+    fn evdev_callback_on_emergency_kill_system_bridge() -> c_int;
+}
+
+/// Error codes for evdev callback operations (matching C enum)
+#[repr(i32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum EvdevCallbackError {
+    Success = 0,
+    InvalidArg = -1,
+    BinderConversionFailed = -2,
+    CallbackCreationFailed = -3,
+    NoCallback = -4,
+    InvalidHandle = -5,
+    CallbackFailed = -6,
+}
+
+impl From<c_int> for EvdevCallbackError {
+    fn from(value: c_int) -> Self {
+        match value {
+            0 => EvdevCallbackError::Success,
+            -1 => EvdevCallbackError::InvalidArg,
+            -2 => EvdevCallbackError::BinderConversionFailed,
+            -3 => EvdevCallbackError::CallbackCreationFailed,
+            -4 => EvdevCallbackError::NoCallback,
+            -5 => EvdevCallbackError::InvalidHandle,
+            -6 => EvdevCallbackError::CallbackFailed,
+            _ => EvdevCallbackError::InvalidArg,
+        }
     }
 }

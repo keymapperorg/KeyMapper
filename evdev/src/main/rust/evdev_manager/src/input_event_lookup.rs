@@ -13,21 +13,21 @@ use std::sync::OnceLock;
 // Macro to define keycode entry using AKEYCODE_* constant
 macro_rules! define_keycode {
     ($name:ident) => {
-        (stringify!($name).to_string(), android_codes::$name as i32)
+        (stringify!($name).to_string(), android_codes::$name as u32)
     };
 }
 
 // Macro to define axis entry using AMOTION_EVENT_AXIS_* constant
 macro_rules! define_axis {
     ($name:ident) => {
-        (stringify!($name).to_string(), android_codes::$name as i32)
+        (stringify!($name).to_string(), android_codes::$name as u32)
     };
 }
 
 // Macro to define policy flag entry using POLICY_FLAG_* constant
 macro_rules! define_flag {
     ($name:ident) => {
-        (stringify!($name).to_string(), android_codes::$name as i32)
+        (stringify!($name).to_string(), android_codes::$name as u32)
     };
 }
 
@@ -363,7 +363,7 @@ fn build_keycodes_map() -> HashMap<String, u32> {
 }
 
 // Build the axes map
-fn build_axes_map() -> HashMap<String, i32> {
+fn build_axes_map() -> HashMap<String, u32> {
     let mut map = HashMap::new();
     macro_rules! insert_axis {
         ($name:ident) => {
@@ -443,14 +443,14 @@ fn build_flags_map() -> HashMap<String, u32> {
 
 // Static lookup tables (lazily initialized)
 static KEYCODES: OnceLock<HashMap<String, u32>> = OnceLock::new();
-static AXES: OnceLock<HashMap<String, i32>> = OnceLock::new();
+static AXES: OnceLock<HashMap<String, u32>> = OnceLock::new();
 static FLAGS: OnceLock<HashMap<String, u32>> = OnceLock::new();
 
 fn get_keycodes() -> &'static HashMap<String, u32> {
     KEYCODES.get_or_init(build_keycodes_map)
 }
 
-fn get_axes() -> &'static HashMap<String, i32> {
+fn get_axes() -> &'static HashMap<String, u32> {
     AXES.get_or_init(build_axes_map)
 }
 
@@ -463,7 +463,7 @@ pub fn get_key_code_by_label(label: &str) -> Option<u32> {
 }
 
 /// Look up an axis by its label.
-pub fn get_axis_by_label(label: &str) -> Option<i32> {
+pub fn get_axis_by_label(label: &str) -> Option<u32> {
     get_axes().get(label).copied()
 }
 

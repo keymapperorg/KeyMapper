@@ -1,4 +1,3 @@
-
 /// Error type for evdev operations
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EvdevErrorCode {
@@ -76,6 +75,19 @@ impl EvdevError {
         Self {
             kind,
             code,
+            message,
+        }
+    }
+    pub fn from_enum(error_code: EvdevErrorCode) -> Self {
+        let message = format!(
+            "evdev manager error: {} ({})",
+            error_code.description(),
+            -error_code.to_code()
+        );
+
+        Self {
+            kind: error_code,
+            code: error_code.to_code(),
             message,
         }
     }

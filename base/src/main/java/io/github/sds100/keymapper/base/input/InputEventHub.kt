@@ -123,6 +123,7 @@ class InputEventHubImpl @Inject constructor(
         return systemBridgeConnManager.isConnected()
     }
 
+    // TODO delete because devices can be grabbed asynchronously of the event loop
     override fun onEvdevEventLoopStarted() {
         Timber.i("On evdev event loop started")
 

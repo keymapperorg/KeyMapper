@@ -6,7 +6,6 @@
 
 #include "evdev_callback_jni_manager.h"
 #include "aidl/io/github/sds100/keymapper/evdev/IEvdevCallback.h"
-#include "logging.h"
 #include <android/binder_ibinder_jni.h>
 #include <jni.h>
 #include <mutex>
@@ -46,7 +45,6 @@ Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_registerEvdev
 
     std::lock_guard<std::mutex> lock(g_callback_mutex);
     g_callback = callback;
-    LOGI("Registered evdev callback via JNI");
     return EVDEV_CALLBACK_SUCCESS;
 }
 
@@ -58,7 +56,6 @@ Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_unregisterEvd
     
     std::lock_guard<std::mutex> lock(g_callback_mutex);
     g_callback = nullptr;
-    LOGI("Unregistered evdev callback via JNI");
 }
 
 int evdev_callback_on_evdev_event_loop_started() {
@@ -125,17 +122,6 @@ int evdev_callback_on_emergency_kill_system_bridge() {
     }
 
     return EVDEV_CALLBACK_SUCCESS;
-}
-
-void evdev_callback_destroy(IEvdevCallbackHandle handle) {
-    if (!handle) {
-        return;
-    }
-
-    std::shared_ptr<IEvdevCallback>* callback_ptr = 
-        reinterpret_cast<std::shared_ptr<IEvdevCallback>*>(handle);
-    
-    delete callback_ptr;
 }
 
 } // extern "C"
