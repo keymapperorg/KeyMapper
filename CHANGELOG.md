@@ -3,10 +3,11 @@
 #### TO BE RELEASED
 
 ## Added
-- #1871 action to modify any system settings
-- #1221 action to show a custom notification
-- #1491 action to toggle/enable/disable hotspot
-- #1414 constraint for when the keyboard is showing
+- #1871 action to modify any system settings.
+- #1221 action to show a custom notification.
+- #1491 action to toggle/enable/disable hotspot.
+- #1414 constraint for when the keyboard is showing.
+- #1900 log error, warn, and info to logcat if extra logging is enabled.
 
 ## [4.0.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.02)
 
