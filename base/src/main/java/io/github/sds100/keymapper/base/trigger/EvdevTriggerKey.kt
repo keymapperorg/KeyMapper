@@ -7,12 +7,14 @@ import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.entities.EvdevTriggerKeyEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 import java.util.UUID
+import kotlinx.serialization.Serializable
 
 /**
  * This must be a different class to KeyEventTriggerKey because trigger keys from evdev events
  * must come from one device, even if it is internal, and can not come from any device. The input
  * devices must be grabbed so that Key Mapper can remap them.
  */
+@Serializable
 data class EvdevTriggerKey(
     override val uid: String = UUID.randomUUID().toString(),
     override val keyCode: Int,
