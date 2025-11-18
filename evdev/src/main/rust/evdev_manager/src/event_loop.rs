@@ -1,16 +1,20 @@
-use crate::device_manager_tokio::DeviceTaskManager;
 use crate::evdev_error::EvdevError;
 use crate::grabbed_device::GrabbedDevice;
 use crate::observer::EvdevEventNotifier;
 use evdev::util::event_code_to_int;
 use evdev::{ReadFlag, ReadStatus};
+use mio::{Poll, Token};
 use std::collections::HashSet;
+use std::error::Error;
 use std::sync::{Arc, Mutex, OnceLock};
 
-
+const TOKEN: Token = Token(0);
 
 /// Read and process events from a device
-fn start_event_loop(notifier: &EvdevEventNotifier) -> Result<(), EvdevError> {
+fn start_event_loop(notifier: &EvdevEventNotifier) -> Result<(), Box<dyn Error>> {
+    let mut poll = Poll::new()?;
+    poll.registry().register()
+
     // Read all available events from device
     loop {
         match device.evdev.next_event(ReadFlag::NORMAL) {
