@@ -59,6 +59,7 @@ fun BaseTriggerScreen(
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val recordTriggerState by viewModel.recordTriggerState.collectAsStateWithLifecycle()
+    val proModeSwitchState by viewModel.proModeSwitchState.collectAsStateWithLifecycle()
     val showFingerprintGestures: Boolean by
         viewModel.showFingerprintGesturesShortcut.collectAsStateWithLifecycle()
 
@@ -133,9 +134,11 @@ fun BaseTriggerScreen(
                     modifier = modifier,
                     configState = state.data,
                     recordTriggerState = recordTriggerState,
+                    proModeSwitchState = proModeSwitchState,
                     onRemoveClick = viewModel::onRemoveKeyClick,
                     onEditClick = viewModel::onTriggerKeyOptionsClick,
                     onRecordTriggerClick = viewModel::onRecordTriggerButtonClick,
+                    onProModeSwitchChange = viewModel::onProModeSwitchChange,
                     onAdvancedTriggersClick = viewModel::onAdvancedTriggersClick,
                     onSelectClickType = viewModel::onClickTypeRadioButtonChecked,
                     onSelectParallelMode = viewModel::onParallelRadioButtonChecked,
@@ -153,9 +156,11 @@ fun BaseTriggerScreen(
                     modifier = modifier,
                     configState = state.data,
                     recordTriggerState = recordTriggerState,
+                    proModeSwitchState = proModeSwitchState,
                     onRemoveClick = viewModel::onRemoveKeyClick,
                     onEditClick = viewModel::onTriggerKeyOptionsClick,
                     onRecordTriggerClick = viewModel::onRecordTriggerButtonClick,
+                    onProModeSwitchChange = viewModel::onProModeSwitchChange,
                     onAdvancedTriggersClick = viewModel::onAdvancedTriggersClick,
                     onSelectClickType = viewModel::onClickTypeRadioButtonChecked,
                     onSelectParallelMode = viewModel::onParallelRadioButtonChecked,
@@ -200,12 +205,14 @@ private fun TriggerScreenVertical(
     modifier: Modifier = Modifier,
     configState: ConfigTriggerState,
     recordTriggerState: RecordTriggerState,
+    proModeSwitchState: ProModeRecordSwitchState,
     onRemoveClick: (String) -> Unit = {},
     onEditClick: (String) -> Unit = {},
     onSelectClickType: (ClickType) -> Unit = {},
     onSelectParallelMode: () -> Unit = {},
     onSelectSequenceMode: () -> Unit = {},
     onRecordTriggerClick: () -> Unit = {},
+    onProModeSwitchChange: (Boolean) -> Unit = {},
     onAdvancedTriggersClick: () -> Unit = {},
     onMoveTriggerKey: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     onFixErrorClick: (TriggerError) -> Unit = {},
@@ -232,6 +239,8 @@ private fun TriggerScreenVertical(
                             modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
                             onRecordTriggerClick = onRecordTriggerClick,
                             recordTriggerState = recordTriggerState,
+                            proModeRecordSwitchState = proModeSwitchState,
+                            onProModeSwitchChange = onProModeSwitchChange,
                             onAdvancedTriggersClick = onAdvancedTriggersClick,
                         )
                     }
@@ -281,21 +290,23 @@ private fun TriggerScreenVertical(
                             isCompact = isCompact,
                         )
                     }
+
+                    if (!isCompact) {
+                        Spacer(Modifier.height(8.dp))
+                    }
+
+                    RecordTriggerButtonRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+                        onRecordTriggerClick = onRecordTriggerClick,
+                        recordTriggerState = recordTriggerState,
+                        proModeRecordSwitchState = proModeSwitchState,
+                        onProModeSwitchChange = onProModeSwitchChange,
+                        onAdvancedTriggersClick = onAdvancedTriggersClick,
+                    )
                 }
             }
-
-            if (!isCompact) {
-                Spacer(Modifier.height(8.dp))
-            }
-
-            RecordTriggerButtonRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
-                onRecordTriggerClick = onRecordTriggerClick,
-                recordTriggerState = recordTriggerState,
-                onAdvancedTriggersClick = onAdvancedTriggersClick,
-            )
         }
     }
 }
@@ -305,12 +316,14 @@ private fun TriggerScreenHorizontal(
     modifier: Modifier = Modifier,
     configState: ConfigTriggerState,
     recordTriggerState: RecordTriggerState,
+    proModeSwitchState: ProModeRecordSwitchState,
     onRemoveClick: (String) -> Unit = {},
     onEditClick: (String) -> Unit = {},
     onSelectClickType: (ClickType) -> Unit = {},
     onSelectParallelMode: () -> Unit = {},
     onSelectSequenceMode: () -> Unit = {},
     onRecordTriggerClick: () -> Unit = {},
+    onProModeSwitchChange: (Boolean) -> Unit = {},
     onAdvancedTriggersClick: () -> Unit = {},
     onMoveTriggerKey: (fromIndex: Int, toIndex: Int) -> Unit = { _, _ -> },
     onFixErrorClick: (TriggerError) -> Unit = {},
@@ -336,6 +349,8 @@ private fun TriggerScreenHorizontal(
                         .padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
                     onRecordTriggerClick = onRecordTriggerClick,
                     recordTriggerState = recordTriggerState,
+                    proModeRecordSwitchState = proModeSwitchState,
+                    onProModeSwitchChange = onProModeSwitchChange,
                     onAdvancedTriggersClick = onAdvancedTriggersClick,
                 )
             }
@@ -403,6 +418,8 @@ private fun TriggerScreenHorizontal(
                         modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
                         onRecordTriggerClick = onRecordTriggerClick,
                         recordTriggerState = recordTriggerState,
+                        proModeRecordSwitchState = proModeSwitchState,
+                        onProModeSwitchChange = onProModeSwitchChange,
                         onAdvancedTriggersClick = onAdvancedTriggersClick,
                     )
                 }
@@ -608,6 +625,11 @@ private fun VerticalPreview() {
         TriggerScreenVertical(
             configState = previewState,
             recordTriggerState = RecordTriggerState.Idle,
+            proModeSwitchState = ProModeRecordSwitchState(
+                isVisible = true,
+                isChecked = false,
+                isEnabled = true,
+            ),
             discoverScreenContent = {
                 TriggerDiscoverScreen()
             },
@@ -622,6 +644,11 @@ private fun VerticalPreviewTiny() {
         TriggerScreenVertical(
             configState = previewState,
             recordTriggerState = RecordTriggerState.Idle,
+            proModeSwitchState = ProModeRecordSwitchState(
+                isVisible = true,
+                isChecked = true,
+                isEnabled = true,
+            ),
             discoverScreenContent = {
                 TriggerDiscoverScreen()
             },
@@ -636,6 +663,11 @@ private fun VerticalEmptyPreview() {
         TriggerScreenVertical(
             configState = ConfigTriggerState.Empty,
             recordTriggerState = RecordTriggerState.Idle,
+            proModeSwitchState = ProModeRecordSwitchState(
+                isVisible = false,
+                isChecked = false,
+                isEnabled = true,
+            ),
             discoverScreenContent = {
                 TriggerDiscoverScreen()
             },
@@ -650,6 +682,11 @@ private fun VerticalEmptyDarkPreview() {
         TriggerScreenVertical(
             configState = ConfigTriggerState.Empty,
             recordTriggerState = RecordTriggerState.Idle,
+            proModeSwitchState = ProModeRecordSwitchState(
+                isVisible = true,
+                isChecked = true,
+                isEnabled = false,
+            ),
             discoverScreenContent = {
                 TriggerDiscoverScreen()
             },
@@ -664,6 +701,11 @@ private fun HorizontalPreview() {
         TriggerScreenHorizontal(
             configState = previewState,
             recordTriggerState = RecordTriggerState.Idle,
+            proModeSwitchState = ProModeRecordSwitchState(
+                isVisible = true,
+                isChecked = false,
+                isEnabled = true,
+            ),
             discoverScreenContent = {
                 TriggerDiscoverScreen()
             },
@@ -693,6 +735,11 @@ private fun HorizontalEmptyPreview() {
         TriggerScreenHorizontal(
             configState = ConfigTriggerState.Empty,
             recordTriggerState = RecordTriggerState.Idle,
+            proModeSwitchState = ProModeRecordSwitchState(
+                isVisible = true,
+                isChecked = false,
+                isEnabled = true,
+            ),
             discoverScreenContent = {
                 TriggerDiscoverScreen()
             },

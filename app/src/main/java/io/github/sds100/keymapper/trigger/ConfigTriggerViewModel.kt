@@ -16,6 +16,7 @@ import io.github.sds100.keymapper.base.trigger.TriggerSetupShortcut
 import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 
@@ -27,6 +28,7 @@ class ConfigTriggerViewModel @Inject constructor(
     private val createKeyMapShortcut: CreateKeyMapShortcutUseCase,
     private val displayKeyMap: DisplayKeyMapUseCase,
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
     onboardingTipDelegate: OnboardingTipDelegate,
     triggerSetupDelegate: TriggerSetupDelegate,
@@ -41,6 +43,7 @@ class ConfigTriggerViewModel @Inject constructor(
     displayKeyMap = displayKeyMap,
     fingerprintGesturesSupported = fingerprintGesturesSupported,
     setupAccessibilityServiceDelegate = setupAccessibilityServiceDelegate,
+    systemBridgeConnectionManager = systemBridgeConnectionManager,
     onboardingTipDelegate = onboardingTipDelegate,
     triggerSetupDelegate = triggerSetupDelegate,
     resourceProvider = resourceProvider,

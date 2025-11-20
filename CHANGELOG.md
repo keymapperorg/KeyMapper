@@ -8,6 +8,7 @@
 - #1491 action to toggle/enable/disable hotspot.
 - #1414 constraint for when the keyboard is showing.
 - #1900 log to logcat if extra logging is enabled.
+- #1902 add toggle next to record trigger button to use PRO mode.
 
 ## Bug fixes
 

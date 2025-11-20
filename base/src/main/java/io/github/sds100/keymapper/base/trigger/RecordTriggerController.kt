@@ -68,14 +68,14 @@ class RecordTriggerControllerImpl @Inject constructor(
     private val downEvdevEvents: MutableSet<KMEvdevEvent> = mutableSetOf()
     private val dpadMotionEventTracker: DpadMotionEventTracker = DpadMotionEventTracker()
 
-    private var isEvdevRecordingEnabled: Boolean = false
+    override val isEvdevRecordingEnabled: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     override fun setEvdevRecordingEnabled(enabled: Boolean) {
         if (state.value is RecordTriggerState.CountingDown) {
             return
         }
 
-        isEvdevRecordingEnabled = enabled
+        isEvdevRecordingEnabled.value = enabled
     }
 
     override fun onInputEvent(
@@ -88,7 +88,7 @@ class RecordTriggerControllerImpl @Inject constructor(
 
         when (event) {
             is KMEvdevEvent -> {
-                if (!isEvdevRecordingEnabled) {
+                if (!isEvdevRecordingEnabled.value) {
                     return false
                 }
 
@@ -172,7 +172,7 @@ class RecordTriggerControllerImpl @Inject constructor(
         }
     }
 
-    override suspend fun startRecording(enableEvdevRecording: Boolean): KMResult<*> {
+    override suspend fun startRecording(): KMResult<*> {
         val serviceResult =
             accessibilityServiceAdapter.send(AccessibilityServiceEvent.Ping("record_trigger"))
 
@@ -184,7 +184,6 @@ class RecordTriggerControllerImpl @Inject constructor(
             return Success(Unit)
         }
 
-        this.isEvdevRecordingEnabled = enableEvdevRecording
         recordingTriggerJob = recordTriggerJob()
 
         return Success(Unit)
@@ -231,6 +230,8 @@ class RecordTriggerControllerImpl @Inject constructor(
     // Run on a different thread in case the main thread is locked up while recording and
     // the evdev devices aren't ungrabbed.
     private fun recordTriggerJob(): Job = coroutineScope.launch(Dispatchers.Default) {
+        val isEvdevRecordingEnabled = isEvdevRecordingEnabled.value
+
         Timber.i("Starting trigger recording. Evdev recording: $isEvdevRecordingEnabled")
 
         recordedKeys.clear()
@@ -273,11 +274,12 @@ interface RecordTriggerController {
     val state: StateFlow<RecordTriggerState>
     val onRecordKey: Flow<RecordedKey>
 
+    val isEvdevRecordingEnabled: StateFlow<Boolean>
     fun setEvdevRecordingEnabled(enabled: Boolean)
 
     /**
      * @return Success if started and an Error if failed to start.
      */
-    suspend fun startRecording(enableEvdevRecording: Boolean): KMResult<*>
+    suspend fun startRecording(): KMResult<*>
     fun stopRecording(): KMResult<*>
 }
