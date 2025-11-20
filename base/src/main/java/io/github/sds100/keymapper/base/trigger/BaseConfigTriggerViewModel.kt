@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.trigger
 
+import android.os.Build
 import android.view.KeyEvent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +37,8 @@ import io.github.sds100.keymapper.common.utils.InputDeviceUtils
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.mapData
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
+import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -59,6 +62,7 @@ abstract class BaseConfigTriggerViewModel(
     private val displayKeyMap: DisplayKeyMapUseCase,
     private val fingerprintGesturesSupported: FingerprintGesturesSupportedUseCase,
     private val setupAccessibilityServiceDelegate: SetupAccessibilityServiceDelegate,
+    private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
     onboardingTipDelegate: OnboardingTipDelegate,
     triggerSetupDelegate: TriggerSetupDelegate,
     resourceProvider: ResourceProvider,
@@ -75,6 +79,18 @@ abstract class BaseConfigTriggerViewModel(
     companion object {
         private const val DEVICE_ID_ANY = "any"
         private const val DEVICE_ID_INTERNAL = "internal"
+
+        fun buildProModeSwitchState(
+            recordTriggerState: RecordTriggerState,
+            isProModeRecordingEnabled: Boolean,
+            systemBridgeState: SystemBridgeConnectionState,
+        ): ProModeRecordSwitchState {
+            return ProModeRecordSwitchState(
+                isVisible = systemBridgeState is SystemBridgeConnectionState.Connected,
+                isChecked = isProModeRecordingEnabled,
+                isEnabled = recordTriggerState !is RecordTriggerState.CountingDown,
+            )
+        }
     }
 
     val optionsViewModel = ConfigKeyMapOptionsViewModel(
@@ -96,6 +112,29 @@ abstract class BaseConfigTriggerViewModel(
         RecordTriggerState.Idle,
     )
 
+    val proModeSwitchState: StateFlow<ProModeRecordSwitchState> =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            combine(
+                recordTrigger.state,
+                recordTrigger.isEvdevRecordingEnabled,
+                systemBridgeConnectionManager.connectionState,
+                Companion::buildProModeSwitchState,
+            )
+                .stateIn(
+                    viewModelScope,
+                    SharingStarted.Eagerly,
+                    ProModeRecordSwitchState(
+                        isVisible = false,
+                        isChecked = false,
+                        isEnabled = false,
+                    ),
+                )
+        } else {
+            MutableStateFlow(
+                ProModeRecordSwitchState(isVisible = false, isChecked = false, isEnabled = false),
+            )
+        }
+
     val showFingerprintGesturesShortcut: StateFlow<Boolean> =
         fingerprintGesturesSupported.isSupported.map { it ?: false }
             .stateIn(viewModelScope, SharingStarted.Lazily, false)
@@ -116,6 +155,10 @@ abstract class BaseConfigTriggerViewModel(
     private val midDot = getString(R.string.middot)
 
     init {
+        // Always disable when launching the trigger screen because recording with PRO mode should
+        // only be used when necessary.
+        recordTrigger.setEvdevRecordingEnabled(false)
+
         // IMPORTANT! Do not flow on another thread because this causes the drag and drop
         // animations to be more janky.
         combine(
@@ -486,13 +529,16 @@ abstract class BaseConfigTriggerViewModel(
 
                 is RecordTriggerState.Completed,
                 RecordTriggerState.Idle,
-                    -> recordTrigger.startRecording(enableEvdevRecording = false)
+                    -> recordTrigger.startRecording()
             }
 
             // Show dialog if the accessibility service is disabled or crashed
             handleServiceEventResult(result)
         }
     }
+
+    fun onProModeSwitchChange(isChecked: Boolean) =
+        recordTrigger.setEvdevRecordingEnabled(isChecked)
 
     fun handleServiceEventResult(result: KMResult<*>) {
         if (result is AccessibilityServiceError) {
