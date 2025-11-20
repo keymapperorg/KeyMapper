@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.base.system.inputmethod
 
 import android.os.Build
 import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityWindowInfo
 import android.view.inputmethod.EditorInfo
 import androidx.annotation.RequiresApi
 import dagger.assisted.Assisted
@@ -168,7 +167,7 @@ class AutoSwitchImeController @AssistedInject constructor(
                 return
             }
 
-            val isInputStarted = isImeWindowVisible()
+            val isInputStarted = service.isImeWindowVisible()
 
             if (isInputStarted) {
                 if (chooseIncompatibleIme()) {
@@ -180,13 +179,6 @@ class AutoSwitchImeController @AssistedInject constructor(
                 }
             }
         }
-    }
-
-    private fun isImeWindowVisible(): Boolean {
-        val imeWindow: AccessibilityWindowInfo? =
-            service.windows.find { it.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD }
-
-        return imeWindow != null && imeWindow.root?.isVisibleToUser == true
     }
 
     fun onStartInput(attribute: EditorInfo, restarting: Boolean) {

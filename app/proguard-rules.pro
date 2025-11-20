@@ -79,6 +79,8 @@
 -keep class com.android.internal.telephony.ITelephony$Stub { *; }
 -keep class android.net.ITetheringConnector { *; }
 -keep class android.net.ITetheringConnector$Stub { *; }
+-keep class android.hardware.usb.IUsbManager { *; }
+-keep class android.hardware.usb.IUsbManager$Stub { *; }
 -keep class android.net.* { *; }
 
 -keepattributes *Annotation*, InnerClasses

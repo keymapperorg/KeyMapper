@@ -1,9 +1,11 @@
 package io.github.sds100.keymapper.base.promode
 
 import android.os.Build
+import android.os.Process
 import androidx.annotation.RequiresApi
 import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.sds100.keymapper.common.utils.Constants
+import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
@@ -42,6 +44,15 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     private val accessibilityServiceAdapter: AccessibilityServiceAdapter,
     private val networkAdapter: NetworkAdapter,
 ) : SystemBridgeSetupUseCase {
+
+    companion object {
+        /**
+         * This is specified in android/hardware/usb/UsbManager.java and called
+         * FUNCTION_NONE in that file.
+         */
+        private const val USB_FUNCTION_NONE = 0
+    }
+
     override val isWarningUnderstood: Flow<Boolean> =
         preferences.get(Keys.isProModeWarningUnderstood).map { it ?: false }
 
@@ -198,6 +209,24 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         }
     }
 
+    /**
+     * This applies to older Android versions (tested on Android 11 and 13).
+     * Having the "Default USB Configuration" in developer options set to something other
+     * than "No data transfer" causes the system bridge (ADB) process to be killed when the device
+     * is locked. Not 100% sure what the mechanic is but it can be reproduced by pressing the
+     * power button. On Android 15 this is not the case because it seems like turning on
+     * wireless debugging or ADB resets the setting to "No data transfer".
+     */
+    override fun isCompatibleUsbModeSelected(): KMResult<Boolean> {
+        return systemBridgeConnectionManager
+            .run { systemBridge ->
+                // The USB setting does not matter if the system bridge is running as root
+                // because it doesn't rely on the ADB process.
+                systemBridge.processUid == Process.SHELL_UID &&
+                    systemBridge.usbScreenUnlockedFunctions.toInt() == 0
+            }
+    }
+
     @RequiresApi(Build.VERSION_CODES.R)
     private fun getNextStep(
         accessibilityServiceState: AccessibilityServiceState,
@@ -253,4 +282,6 @@ interface SystemBridgeSetupUseCase {
     fun startSystemBridgeWithRoot()
     fun startSystemBridgeWithShizuku()
     suspend fun startSystemBridgeWithAdb()
+
+    fun isCompatibleUsbModeSelected(): KMResult<Boolean>
 }

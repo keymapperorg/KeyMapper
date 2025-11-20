@@ -138,6 +138,8 @@ class KeyMapConstraintsComparator(
 
             ConstraintData.HingeClosed -> Success("")
             ConstraintData.HingeOpen -> Success("")
+            ConstraintData.KeyboardNotShowing -> Success("")
+            ConstraintData.KeyboardShowing -> Success("")
         }
     }
 }

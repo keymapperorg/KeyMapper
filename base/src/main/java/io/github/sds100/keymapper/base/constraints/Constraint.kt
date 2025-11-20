@@ -128,6 +128,16 @@ sealed class ConstraintData {
     }
 
     @Serializable
+    data object KeyboardShowing : ConstraintData() {
+        override val id: ConstraintId = ConstraintId.KEYBOARD_SHOWING
+    }
+
+    @Serializable
+    data object KeyboardNotShowing : ConstraintData() {
+        override val id: ConstraintId = ConstraintId.KEYBOARD_NOT_SHOWING
+    }
+
+    @Serializable
     data object DeviceIsLocked : ConstraintData() {
         override val id: ConstraintId = ConstraintId.DEVICE_IS_LOCKED
     }
@@ -333,6 +343,9 @@ object ConstraintEntityMapper {
                 getImeId(),
                 getImeLabel(),
             )
+
+            ConstraintEntity.KEYBOARD_SHOWING -> ConstraintData.KeyboardShowing
+            ConstraintEntity.KEYBOARD_NOT_SHOWING -> ConstraintData.KeyboardNotShowing
 
             ConstraintEntity.DEVICE_IS_UNLOCKED -> ConstraintData.DeviceIsUnlocked
             ConstraintEntity.DEVICE_IS_LOCKED -> ConstraintData.DeviceIsLocked
@@ -569,6 +582,16 @@ object ConstraintEntityMapper {
                 EntityExtra(ConstraintEntity.EXTRA_IME_LABEL, constraint.data.imeLabel),
             )
         }
+
+        is ConstraintData.KeyboardShowing -> ConstraintEntity(
+            uid = constraint.uid,
+            ConstraintEntity.KEYBOARD_SHOWING,
+        )
+
+        is ConstraintData.KeyboardNotShowing -> ConstraintEntity(
+            uid = constraint.uid,
+            ConstraintEntity.KEYBOARD_NOT_SHOWING,
+        )
 
         is ConstraintData.DeviceIsLocked -> ConstraintEntity(
             uid = constraint.uid,

@@ -69,6 +69,9 @@ data class ConstraintEntity(
         const val IME_CHOSEN = "ime_chosen"
         const val IME_NOT_CHOSEN = "ime_not_chosen"
 
+        const val KEYBOARD_SHOWING = "keyboard_showing"
+        const val KEYBOARD_NOT_SHOWING = "keyboard_not_showing"
+
         const val DEVICE_IS_LOCKED = "is_locked"
         const val DEVICE_IS_UNLOCKED = "is_unlocked"
         const val LOCK_SCREEN_SHOWING = "lock_screen_showing"

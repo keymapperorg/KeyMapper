@@ -278,6 +278,11 @@
     <string name="constraint_ime_not_chosen">Input method is not chosen</string>
     <string name="constraint_ime_not_chosen_description">%s is not chosen</string>
 
+    <string name="constraint_keyboard_showing">Keyboard is showing</string>
+    <string name="constraint_keyboard_showing_description">On-screen keyboard is visible</string>
+    <string name="constraint_keyboard_not_showing">Keyboard is not showing</string>
+    <string name="constraint_keyboard_not_showing_description">On-screen keyboard is hidden</string>
+
     <string name="constraint_device_is_locked">Device is locked</string>
     <string name="constraint_device_is_unlocked">Device is unlocked</string>
     <string name="constraint_lock_screen_showing">Lockscreen is showing</string>
@@ -1691,6 +1696,9 @@
     <string name="pro_mode_setup_wizard_enable_notification_permission_title">Allow notifications</string>
     <string name="pro_mode_setup_wizard_enable_notification_permission_description">Key Mapper needs permission to notify you if there are any issues with the set up process.</string>
     <string name="pro_mode_setup_wizard_enable_notification_permission_button">Give permission</string>
+
+    <string name="pro_mode_setup_wizard_change_default_usb_configuration_title">Incompatible USB configuration</string>
+    <string name="pro_mode_setup_wizard_change_default_usb_configuration_description">You must select \'No data transfer\' as your default USB configuration so that PRO Mode is not killed every time you lock your device.</string>
 
     <string name="pro_mode_setup_assistant_notification_channel">Setup assistant</string>
 

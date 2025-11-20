@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.intents.IntentExtraModel
 import io.github.sds100.keymapper.system.intents.IntentTarget
 import io.github.sds100.keymapper.system.network.HttpMethod
+import io.github.sds100.keymapper.system.settings.SettingType
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
@@ -981,7 +982,7 @@ sealed class ActionData : Comparable<ActionData> {
 
     @Serializable
     data class ModifySetting(
-        val settingType: io.github.sds100.keymapper.system.settings.SettingType,
+        val settingType: SettingType,
         val settingKey: String,
         val value: String,
     ) : ActionData() {

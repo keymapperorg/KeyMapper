@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.State
+import io.github.sds100.keymapper.common.utils.valueOrNull
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -156,7 +157,12 @@ class ProModeViewModel @Inject constructor(
         isNotificationPermissionGranted: Boolean,
     ): State<ProModeState> {
         if (isSystemBridgeConnected) {
-            return State.Data(ProModeState.Started)
+            return State.Data(
+                ProModeState.Started(
+                    isDefaultUsbModeCompatible =
+                    useCase.isCompatibleUsbModeSelected().valueOrNull() ?: false,
+                ),
+            )
         } else {
             return State.Data(
                 ProModeState.Stopped(
@@ -182,5 +188,5 @@ sealed class ProModeState {
         val isNotificationPermissionGranted: Boolean,
     ) : ProModeState()
 
-    data object Started : ProModeState()
+    data class Started(val isDefaultUsbModeCompatible: Boolean) : ProModeState()
 }

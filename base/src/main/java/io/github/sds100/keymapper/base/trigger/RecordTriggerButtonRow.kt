@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -26,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -40,16 +42,30 @@ import androidx.compose.ui.unit.sp
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.compose.LocalCustomColorsPalette
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.ProModeIcon
+import io.github.sds100.keymapper.base.utils.ui.compose.icons.ProModeIconDisabled
 
 @Composable
 fun RecordTriggerButtonRow(
     modifier: Modifier = Modifier,
     onRecordTriggerClick: () -> Unit = {},
     recordTriggerState: RecordTriggerState,
+    proModeRecordSwitchState: ProModeRecordSwitchState,
+    onProModeSwitchChange: (Boolean) -> Unit = {},
     onAdvancedTriggersClick: () -> Unit = {},
 ) {
     Column(modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
+            if (proModeRecordSwitchState.isVisible) {
+                ProModeSwitch(
+                    state = proModeRecordSwitchState,
+                    onCheckedChange = onProModeSwitchChange,
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+
             RecordTriggerButton(
                 modifier = Modifier.weight(1f),
                 recordTriggerState,
@@ -61,6 +77,37 @@ fun RecordTriggerButtonRow(
             AdvancedTriggersButton(onClick = onAdvancedTriggersClick)
         }
     }
+}
+
+@Composable
+private fun ProModeSwitch(
+    modifier: Modifier = Modifier,
+    state: ProModeRecordSwitchState,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Switch(
+        modifier = modifier,
+        checked = state.isChecked,
+        enabled = state.isEnabled,
+//        colors = SwitchDefaults.colors(
+//            checkedTrackColor = MaterialTheme.colorScheme.surface,
+//            checkedThumbColor = LocalCustomColorsPalette.current.greenContainer,
+//            checkedIconColor = LocalCustomColorsPalette.current.onGreenContainer,
+//            checkedBorderColor = LocalCustomColorsPalette.current.green,
+//        ),
+        onCheckedChange = onCheckedChange,
+        thumbContent = {
+            Icon(
+                modifier = Modifier.padding(2.dp),
+                imageVector = if (state.isChecked) {
+                    KeyMapperIcons.ProModeIcon
+                } else {
+                    KeyMapperIcons.ProModeIconDisabled
+                },
+                contentDescription = null,
+            )
+        },
+    )
 }
 
 @Composable
@@ -149,6 +196,11 @@ private fun PreviewCountingDown() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.CountingDown(3),
+                proModeRecordSwitchState = ProModeRecordSwitchState(
+                    isVisible = true,
+                    isChecked = true,
+                    isEnabled = true,
+                ),
             )
         }
     }
@@ -162,6 +214,11 @@ private fun PreviewStopped() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.Idle,
+                proModeRecordSwitchState = ProModeRecordSwitchState(
+                    isVisible = true,
+                    isChecked = false,
+                    isEnabled = true,
+                ),
             )
         }
     }
@@ -175,6 +232,11 @@ private fun PreviewStoppedDark() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.Idle,
+                proModeRecordSwitchState = ProModeRecordSwitchState(
+                    isVisible = true,
+                    isChecked = true,
+                    isEnabled = true,
+                ),
             )
         }
     }
@@ -188,6 +250,65 @@ private fun PreviewStoppedCompact() {
             RecordTriggerButtonRow(
                 modifier = Modifier.fillMaxWidth(),
                 recordTriggerState = RecordTriggerState.Idle,
+                proModeRecordSwitchState = ProModeRecordSwitchState(
+                    isVisible = true,
+                    isChecked = false,
+                    isEnabled = true,
+                ),
+            )
+        }
+    }
+}
+
+@Preview(widthDp = 400)
+@Composable
+private fun PreviewProModeSwitchHidden() {
+    KeyMapperTheme {
+        Surface {
+            RecordTriggerButtonRow(
+                modifier = Modifier.fillMaxWidth(),
+                recordTriggerState = RecordTriggerState.Idle,
+                proModeRecordSwitchState = ProModeRecordSwitchState(
+                    isVisible = false,
+                    isChecked = false,
+                    isEnabled = true,
+                ),
+            )
+        }
+    }
+}
+
+@Preview(widthDp = 400)
+@Composable
+private fun PreviewProModeSwitchDisabled() {
+    KeyMapperTheme {
+        Surface {
+            RecordTriggerButtonRow(
+                modifier = Modifier.fillMaxWidth(),
+                recordTriggerState = RecordTriggerState.Idle,
+                proModeRecordSwitchState = ProModeRecordSwitchState(
+                    isVisible = true,
+                    isChecked = true,
+                    isEnabled = false,
+                ),
+            )
+        }
+    }
+}
+
+@Preview(widthDp = 400)
+@Composable
+private fun PreviewCompleted() {
+    KeyMapperTheme {
+        Surface {
+            RecordTriggerButtonRow(
+                modifier = Modifier.fillMaxWidth(),
+                recordTriggerState = RecordTriggerState.Completed(emptyList()),
+                proModeRecordSwitchState = ProModeRecordSwitchState(
+                    isVisible = true,
+                    isChecked = false,
+                    isEnabled = true,
+                ),
             )
         }
     }
