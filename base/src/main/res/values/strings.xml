@@ -1697,6 +1697,9 @@
     <string name="pro_mode_setup_wizard_enable_notification_permission_description">Key Mapper needs permission to notify you if there are any issues with the set up process.</string>
     <string name="pro_mode_setup_wizard_enable_notification_permission_button">Give permission</string>
 
+    <string name="pro_mode_setup_wizard_change_default_usb_configuration_title">Incompatible USB configuration</string>
+    <string name="pro_mode_setup_wizard_change_default_usb_configuration_description">You must select \'No data transfer\' as your default USB configuration so that PRO Mode is not killed every time you lock your device.</string>
+
     <string name="pro_mode_setup_assistant_notification_channel">Setup assistant</string>
 
     <string name="pro_mode_setup_wizard_complete_title">PRO mode is running</string>

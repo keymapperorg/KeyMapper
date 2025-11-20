@@ -12,6 +12,7 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.IPackageManager
 import android.content.pm.PackageManager
 import android.hardware.input.IInputManager
+import android.hardware.usb.IUsbManager
 import android.media.IAudioService
 import android.net.IConnectivityManager
 import android.net.ITetheringConnector
@@ -31,6 +32,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.Process
+import android.os.RemoteException
 import android.os.ServiceManager
 import android.permission.IPermissionManager
 import android.permission.PermissionManagerApis
@@ -188,6 +190,7 @@ internal class SystemBridge : ISystemBridge.Stub() {
     private val activityManager: IActivityManager
     private val activityTaskManager: IActivityTaskManager
     private val audioService: IAudioService?
+    private val usbManager: IUsbManager?
 
     private val processPackageName: String = when (Process.myUid()) {
         Process.ROOT_UID -> "root"
@@ -280,6 +283,10 @@ internal class SystemBridge : ISystemBridge.Stub() {
         } else {
             tetheringConnector = null
         }
+
+        waitSystemService(Context.USB_SERVICE)
+        usbManager =
+            IUsbManager.Stub.asInterface(ServiceManager.getService(Context.USB_SERVICE))
 
         val applicationInfo = getKeyMapperPackageInfo()
 
@@ -765,6 +772,14 @@ internal class SystemBridge : ISystemBridge.Stub() {
             tetheringConnector.startTethering(request, processPackageName, null, null)
         } else {
             tetheringConnector.stopTethering(TETHERING_WIFI, processPackageName, null, null)
+        }
+    }
+
+    override fun getUsbScreenUnlockedFunctions(): Long {
+        return try {
+            usbManager?.screenUnlockedFunctions ?: 0
+        } catch (_: RemoteException) {
+            -1
         }
     }
 }

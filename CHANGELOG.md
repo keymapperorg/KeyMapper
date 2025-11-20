@@ -9,6 +9,10 @@
 - #1414 constraint for when the keyboard is showing.
 - #1900 log to logcat if extra logging is enabled.
 
+## Bug fixes
+
+- #1901 prompt user to set default USB configuration to 'No data transfer' after starting pro mode.
+
 ## [4.0.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.02)
 
 #### 08 November 2025

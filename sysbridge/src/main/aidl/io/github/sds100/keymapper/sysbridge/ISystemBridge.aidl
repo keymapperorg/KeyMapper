@@ -46,4 +46,6 @@ interface ISystemBridge {
    boolean isTetheringEnabled() = 19;
 
    void setTetheringEnabled(boolean enable) = 20;
+
+   long getUsbScreenUnlockedFunctions() = 21;
 }
