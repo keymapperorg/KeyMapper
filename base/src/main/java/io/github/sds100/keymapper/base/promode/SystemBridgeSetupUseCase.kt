@@ -222,7 +222,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
             .run { systemBridge ->
                 // The USB setting does not matter if the system bridge is running as root
                 // because it doesn't rely on the ADB process.
-                systemBridge.processUid == Process.SHELL_UID &&
+                systemBridge.processUid == Process.ROOT_UID ||
                     systemBridge.usbScreenUnlockedFunctions.toInt() == 0
             }
     }
