@@ -12,6 +12,7 @@
 ## Bug fixes
 
 - #1901 prompt user to set default USB configuration to 'No data transfer' after starting pro mode.
+- #1898 do not launch directly into the Wireless Debugging activity on Xiaomi devices due to a bug they introduced.
 
 ## [4.0.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.02)
 
