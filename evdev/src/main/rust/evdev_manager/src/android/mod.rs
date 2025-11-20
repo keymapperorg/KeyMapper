@@ -1,2 +1,2 @@
 pub mod android_codes;
-pub(crate) mod keylayout;
+pub mod keylayout;

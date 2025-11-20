@@ -149,7 +149,7 @@ extern "C" {
         type_: i32,
         code: i32,
         value: i32,
-        android_code: i32,
+        android_code: u32,
     ) -> c_int;
 
     /// Call onEmergencyKillSystemBridge using stored callback

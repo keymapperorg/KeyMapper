@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/_env python3
 #
 # Parses linux/input.h scanning for #define KEY_FOO 134
 # Prints C header files or Python files that can be used as

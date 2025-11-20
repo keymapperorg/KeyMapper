@@ -79,7 +79,7 @@ int evdev_callback_on_evdev_event(
     int32_t type,
     int32_t code,
     int32_t value,
-    int32_t android_code
+    uint32_t android_code
 ) {
     if (!device_path) {
         return EVDEV_CALLBACK_ERROR_INVALID_ARG;

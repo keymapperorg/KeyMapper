@@ -78,10 +78,8 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
 
     external fun getEvdevDevicesNative(): Array<EvdevDeviceHandle>
 
-    external fun startEvdevEventLoop(callback: IBinder)
-    external fun stopEvdevEventLoop()
-
-    external fun helloEvdevManager(input: String)
+    external fun startEvdevManager(callback: IBinder)
+    external fun stopEvdevManager()
 
     companion object {
         private const val TAG: String = "KeyMapperSystemBridge"
@@ -165,7 +163,7 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
         evdevCallback = null
 
         coroutineScope.launch(Dispatchers.Default) {
-            stopEvdevEventLoop()
+            stopEvdevManager()
         }
 
         // Start periodic check for Key Mapper installation
@@ -201,8 +199,6 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
         val libraryPath = System.getProperty("keymapper_sysbridge.library.path")
         @SuppressLint("UnsafeDynamicallyLoadedCode")
         System.load("$libraryPath/libevdev_manager.so")
-
-        helloEvdevManager("test input")
 
         Log.i(TAG, "SystemBridge starting... Version code $versionCode")
 
@@ -368,7 +364,7 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
 
         coroutineScope.launch(Dispatchers.IO) {
             mainHandler.post {
-                startEvdevEventLoop(binder)
+                startEvdevManager(binder)
             }
         }
     }
@@ -377,7 +373,7 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
         synchronized(evdevCallbackLock) {
             evdevCallback?.asBinder()?.unlinkToDeath(evdevCallbackDeathRecipient, 0)
             evdevCallback = null
-            stopEvdevEventLoop()
+            stopEvdevManager()
         }
     }
 

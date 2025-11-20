@@ -1,6 +1,5 @@
-mod android;
+pub mod android;
 mod grabbed_device;
-mod device_task;
 mod evdev_callback_binder_observer;
 mod evdev_error;
 mod event_loop;

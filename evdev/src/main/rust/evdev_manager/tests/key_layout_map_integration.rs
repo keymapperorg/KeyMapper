@@ -1,8 +1,8 @@
 //! Integration tests for key layout map parsing.
 
-use evdev_manager::key_layout_map::KeyLayoutMap;
 use std::fs;
 use std::path::Path;
+use evdev_manager::android::keylayout::key_layout_map::KeyLayoutMap;
 
 fn get_test_data_dir() -> &'static str {
     "tests/test_data"
