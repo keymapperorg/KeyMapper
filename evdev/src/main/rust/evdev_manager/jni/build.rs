@@ -23,7 +23,7 @@ fn main() {
     }
 
     // Path to C/C++ source files
-    let cpp_dir = manifest_dir.join("../../cpp");
+    let cpp_dir = manifest_dir.join("../../../cpp");
 
     println!("cargo:rerun-if-changed={}", cpp_dir.to_str().unwrap());
 

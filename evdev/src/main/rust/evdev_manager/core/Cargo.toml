@@ -1,0 +1,15 @@
+[package]
+name = "evdev_manager_core"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "evdev_manager_core"
+crate-type = ["rlib"]
+
+[dependencies]
+log = "0.4.28"
+evdev = { path = "../../evdev" }
+libc = "0.2.177"
+mio = { version = "1.1.0", features = ["os-poll", "os-ext"] }
+

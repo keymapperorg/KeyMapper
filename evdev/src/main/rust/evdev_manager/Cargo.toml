@@ -1,25 +1,6 @@
-[package]
-name = "evdev_manager"
-version = "0.1.0"
-edition = "2021"
-
-[lib]
-name = "evdev_manager"
-# "cdylib" is necessary to produce a C-style dynamic library that can be loaded by Android's JNI.
-# "rlib" is necessary for integration tests to be able to import the crate.
-crate-type = ["cdylib", "rlib"]
-
-[profile.dev]
-debug = true
-strip = false  # Don't strip symbols, keeps them in the .so file
-
-[dependencies]
-jni = "0.21.1"
-log = "0.4.28"
-android_log = "0.1.3"
-evdev = { path = "../evdev" }
-libc = "0.2.177"
-mio = { version = "1.1.0", features = ["os-poll", "os-ext"] }
-
-[build-dependencies]
-cc = "1.2.46"
+[workspace]
+members = [
+    "core",
+    "jni",
+]
+resolver = "2"

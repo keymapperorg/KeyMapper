@@ -13,7 +13,7 @@ use mio::unix::SourceFd;
 // TODO use Mutex to store tokens
 const TOKEN: Token = Token(0);
 
-pub(crate) fn start_event_loop(notifier: &EvdevEventNotifier) -> Result<(), Box<dyn Error>> {
+pub fn start_event_loop(notifier: &EvdevEventNotifier) -> Result<(), Box<dyn Error>> {
     error!("START EVDEV EVENT LOOP");
 
     let mut poll = Poll::new()?;

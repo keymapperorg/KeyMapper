@@ -1,7 +1,7 @@
 use crate::evdev_callback_binder_observer::EvdevCallbackBinderObserver;
-use crate::event_loop;
-use crate::grabbed_device::GrabbedDevice;
-use crate::observer::EvdevEventNotifier;
+use evdev_manager_core::event_loop;
+use evdev_manager_core::grabbed_device::GrabbedDevice;
+use evdev_manager_core::observer::EvdevEventNotifier;
 use evdev::{Device, DeviceWrapper};
 use jni::objects::{GlobalRef, JClass, JObject, JString, JValue};
 use jni::sys::{jboolean, jint, jobject, jobjectArray};

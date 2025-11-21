@@ -82,7 +82,18 @@ dependencies = [
  "android_log",
  "cc",
  "evdev",
+ "evdev_manager_core",
  "jni",
+ "libc 0.2.177",
+ "log 0.4.28",
+ "mio",
+]
+
+[[package]]
+name = "evdev_manager_core"
+version = "0.1.0"
+dependencies = [
+ "evdev",
  "libc 0.2.177",
  "log 0.4.28",
  "mio",
