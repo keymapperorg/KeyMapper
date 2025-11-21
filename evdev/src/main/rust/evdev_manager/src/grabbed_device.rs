@@ -5,12 +5,14 @@ use std::borrow::Cow::Owned;
 use std::fs::OpenOptions;
 use std::os::fd::{AsFd, AsRawFd, BorrowedFd, FromRawFd, OwnedFd, RawFd};
 use std::os::unix::fs::OpenOptionsExt;
+use mio::Token;
 
 /// Device context containing all information about a grabbed evdev device
 pub struct GrabbedDevice {
+    pub device_path: String,
     pub evdev: Device,
     pub uinput: UInputDevice,
-    pub device_path: String,
+    pub token: Token,
 }
 
 impl GrabbedDevice {
@@ -42,6 +44,7 @@ impl GrabbedDevice {
             evdev,
             uinput,
             device_path: device_path.to_string(),
+            token: Token(0),
         })
     }
 
