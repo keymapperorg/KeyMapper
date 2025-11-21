@@ -1,5 +1,8 @@
 //! Integration tests for key layout map parsing.
-
+use evdev_manager_core::android::android_codes::{
+    AKEYCODE_F4, AKEYCODE_FUNCTION, POLICY_FLAG_FUNCTION,
+};
+use evdev_manager_core::android::keylayout::key_layout_map;
 use evdev_manager_core::android::keylayout::key_layout_map::{KeyLayoutAxisMode, KeyLayoutMap};
 use std::fs;
 use std::path::Path;
@@ -12,10 +15,91 @@ fn get_test_data_path() -> String {
     format!("{}/tests/test_data", get_test_data_dir())
 }
 
+fn load_key_layout_map(file_name: &str) -> KeyLayoutMap {
+    let file_path = format!("{}/Generic.kl", get_test_data_path());
+    KeyLayoutMap::load_from_file(&file_path).unwrap()
+}
+
+#[test]
+fn test_parse_int() {
+    assert_eq!(key_layout_map::parse_int("123"), Some(123));
+    assert_eq!(key_layout_map::parse_int("-999"), Some(-999));
+    assert_eq!(key_layout_map::parse_int("0x1a"), Some(26));
+    assert_eq!(key_layout_map::parse_int("0XFF"), Some(255));
+    assert_eq!(key_layout_map::parse_int("077"), Some(63)); // octal
+    assert_eq!(key_layout_map::parse_int(""), None);
+    assert_eq!(key_layout_map::parse_int("abc"), None);
+}
+
+#[test]
+fn test_load_from_contents_simple() {
+    let contents = "key 1 ESCAPE\nkey 2 1\n";
+    let map = KeyLayoutMap::load_from_contents(contents).unwrap();
+
+    let key = map.map_key(1).unwrap();
+    assert_eq!(key.key_code, 111); // ESCAPE
+    assert_eq!(key.flags, 0);
+
+    let key = map.map_key(2).unwrap();
+    assert_eq!(key.key_code, 8); // KEYCODE_1
+    assert_eq!(key.flags, 0);
+}
+
+#[test]
+fn test_load_from_contents_with_flags() {
+    let contents = "key 465 ESCAPE FUNCTION\n";
+    let map = KeyLayoutMap::load_from_contents(contents).unwrap();
+
+    let key = map.map_key(465).unwrap();
+    assert_eq!(key.key_code, 111); // ESCAPE
+    assert_eq!(key.flags, 0x00000004); // FUNCTION flag
+}
+
+#[test]
+fn test_load_from_contents_axis() {
+    let contents = "axis 0x00 X\naxis 0x01 Y\n";
+    let map = KeyLayoutMap::load_from_contents(contents).unwrap();
+
+    let axis_info = map.map_axis(0x00).unwrap();
+    assert_eq!(axis_info.mode, KeyLayoutAxisMode::Normal);
+    assert_eq!(axis_info.axis, 0); // X axis
+
+    let axis_info = map.map_axis(0x01).unwrap();
+    assert_eq!(axis_info.mode, KeyLayoutAxisMode::Normal);
+    assert_eq!(axis_info.axis, 1); // Y axis
+}
+
+#[test]
+fn test_function_key_line() {
+    let content = "key 464   FUNCTION";
+    let map = KeyLayoutMap::load_from_contents(content).unwrap();
+    let key = map.map_key(464).unwrap();
+    assert_eq!(key.key_code, AKEYCODE_FUNCTION);
+}
+
+#[test]
+fn test_f4_key_line() {
+    let content = "key 469   F4                FUNCTION";
+    let map = KeyLayoutMap::load_from_contents(content).unwrap();
+    let key = map.map_key(469).unwrap();
+    assert_eq!(key.key_code, AKEYCODE_F4);
+    assert_eq!(key.flags, POLICY_FLAG_FUNCTION);
+}
+
+#[test]
+fn test_brightness_usage_key_lines() {
+    let content = "\
+    key usage 0x0c0067 WINDOW
+    key usage 0x0c006F BRIGHTNESS_UP
+    key usage 0x0c0070 BRIGHTNESS_DOWN";
+
+    KeyLayoutMap::load_from_contents(content).unwrap();
+    // Just do not crash because it should be skipped.
+}
+
 #[test]
 fn test_load_generic_kl() {
-    let file_path = format!("{}/Generic.kl", get_test_data_path());
-    let map = KeyLayoutMap::load_from_file(&file_path).expect("Failed to load Generic.kl");
+    let map = load_key_layout_map("Generic.kl");
 
     // Test some basic key mappings
     let key = map.map_key(1).expect("Scan code 1 should map to ESCAPE");
@@ -30,8 +114,7 @@ fn test_load_generic_kl() {
 
 #[test]
 fn test_parse_all_key_entries() {
-    let file_path = format!("{}/Generic.kl", get_test_data_path());
-    let map = KeyLayoutMap::load_from_file(&file_path).expect("Failed to load Generic.kl");
+    let map = load_key_layout_map("Generic.kl");
 
     // Test various key types
     let test_cases = vec![
@@ -57,8 +140,7 @@ fn test_parse_all_key_entries() {
 
 #[test]
 fn test_parse_axis_entries() {
-    let file_path = format!("{}/Generic.kl", get_test_data_path());
-    let map = KeyLayoutMap::load_from_file(&file_path).expect("Failed to load Generic.kl");
+    let map = load_key_layout_map("Generic.kl");
 
     // Test axis mappings
     let axis_info = map.map_axis(0x00).expect("Axis 0x00 should exist");
@@ -93,8 +175,7 @@ fn test_error_handling_malformed_file() {
 
 #[test]
 fn test_map_key_with_scan_codes() {
-    let file_path = format!("{}/Generic.kl", get_test_data_path());
-    let map = KeyLayoutMap::load_from_file(&file_path).expect("Failed to load Generic.kl");
+    let map = load_key_layout_map("Generic.kl");
 
     // Test mapping various scan codes
     let key = map.map_key(1).unwrap();
@@ -109,8 +190,7 @@ fn test_map_key_with_scan_codes() {
 
 #[test]
 fn test_map_axis_functionality() {
-    let file_path = format!("{}/Generic.kl", get_test_data_path());
-    let map = KeyLayoutMap::load_from_file(&file_path).expect("Failed to load Generic.kl");
+    let map = load_key_layout_map("Generic.kl");
 
     // Test normal axis
     let axis_info = map.map_axis(0x00).unwrap();
@@ -126,8 +206,7 @@ fn test_map_axis_functionality() {
 
 #[test]
 fn test_find_scan_codes_for_key() {
-    let file_path = format!("{}/Generic.kl", get_test_data_path());
-    let map = KeyLayoutMap::load_from_file(&file_path).expect("Failed to load Generic.kl");
+    let map = load_key_layout_map("Generic.kl");
 
     // Find scan codes for ESCAPE (should find scan code 1, but not 465 which has FUNCTION flag)
     let scan_codes = map.find_scan_codes_for_key(111); // ESCAPE

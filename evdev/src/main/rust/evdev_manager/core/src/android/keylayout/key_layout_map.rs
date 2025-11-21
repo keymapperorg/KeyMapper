@@ -49,6 +49,8 @@ pub enum KeyLayoutAxisMode {
     Split,
 }
 
+const WHITESPACE: &str = " \t\r";
+
 impl KeyLayoutMap {
     /// Load a key layout map from a file path.
     pub fn load_from_file(file_path: &str) -> Result<Self, String> {
@@ -117,17 +119,24 @@ impl<'a> Parser<'a> {
     }
 
     fn parse(&mut self) -> Result<(), String> {
-        const WHITESPACE: &str = " \t\r";
-
         while !self.tokenizer.is_eof() {
             self.tokenizer.skip_delimiters(WHITESPACE);
 
             if !self.tokenizer.is_eol() && self.tokenizer.peek_char() != '#' {
                 let keyword_token = self.tokenizer.next_token(WHITESPACE);
+                let mut skipped_line: bool = false;
+
                 match keyword_token.as_str() {
                     "key" => {
                         self.tokenizer.skip_delimiters(WHITESPACE);
-                        self.parse_key()?;
+                        let code_token = self.tokenizer.next_token(WHITESPACE);
+
+                        // Skip "usage" entries - we only support scan codes
+                        if code_token == "usage" {
+                            skipped_line = true;
+                        } else {
+                            self.parse_key(&code_token)?;
+                        }
                     }
                     "axis" => {
                         self.tokenizer.skip_delimiters(WHITESPACE);
@@ -136,11 +145,13 @@ impl<'a> Parser<'a> {
                     "led" | "sensor" => {
                         // Skip LEDs and sensors, we don't need them
                         self.tokenizer.next_line();
+                        skipped_line = true;
                         continue;
                     }
                     "usage" => {
                         // Skip usage code entries - evdev only provides scan codes
                         self.tokenizer.next_line();
+                        skipped_line = true;
                         continue;
                     }
                     _ => {
@@ -154,7 +165,7 @@ impl<'a> Parser<'a> {
 
                 self.tokenizer.skip_delimiters(WHITESPACE);
 
-                if !self.tokenizer.is_eol() && self.tokenizer.peek_char() != '#' {
+                if !skipped_line && !self.tokenizer.is_eol() && self.tokenizer.peek_char() != '#' {
                     return Err(format!(
                         "{}: Expected end of line or trailing comment, got '{}'.",
                         self.tokenizer.get_location(),
@@ -169,17 +180,7 @@ impl<'a> Parser<'a> {
         Ok(())
     }
 
-    fn parse_key(&mut self) -> Result<(), String> {
-        const WHITESPACE: &str = " \t\r";
-
-        let code_token = self.tokenizer.next_token(WHITESPACE);
-
-        // Skip "usage" entries - we only support scan codes
-        if code_token == "usage" {
-            self.tokenizer.next_line();
-            return Ok(());
-        }
-
+    fn parse_key(&mut self, code_token: &str) -> Result<(), String> {
         let scan_code = parse_int(&code_token).ok_or_else(|| {
             format!(
                 "{}: Expected key scan code number, got '{}'.",
@@ -243,8 +244,6 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_axis(&mut self) -> Result<(), String> {
-        const WHITESPACE: &str = " \t\r";
-
         let scan_code_token = self.tokenizer.next_token(WHITESPACE);
         let scan_code = parse_int(&scan_code_token).ok_or_else(|| {
             format!(
@@ -377,7 +376,7 @@ impl<'a> Parser<'a> {
 }
 
 /// Parse an integer from a string (supports decimal, hex with 0x prefix, and octal with 0 prefix).
-fn parse_int(s: &str) -> Option<i32> {
+pub fn parse_int(s: &str) -> Option<i32> {
     if s.is_empty() {
         return None;
     }
@@ -389,68 +388,5 @@ fn parse_int(s: &str) -> Option<i32> {
         i32::from_str_radix(&s[1..], 8).ok()
     } else {
         s.parse::<i32>().ok()
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_parse_int() {
-        assert_eq!(parse_int("123"), Some(123));
-        assert_eq!(parse_int("-999"), Some(-999));
-        assert_eq!(parse_int("0x1a"), Some(26));
-        assert_eq!(parse_int("0XFF"), Some(255));
-        assert_eq!(parse_int("077"), Some(63)); // octal
-        assert_eq!(parse_int(""), None);
-        assert_eq!(parse_int("abc"), None);
-    }
-
-    #[test]
-    fn test_load_from_contents_simple() {
-        let contents = "key 1 ESCAPE\nkey 2 1\n";
-        let map = KeyLayoutMap::load_from_contents(contents).unwrap();
-
-        let key = map.map_key(1).unwrap();
-        assert_eq!(key.key_code, 111); // ESCAPE
-        assert_eq!(key.flags, 0);
-
-        let key = map.map_key(2).unwrap();
-        assert_eq!(key.key_code, 8); // KEYCODE_1
-        assert_eq!(key.flags, 0);
-    }
-
-    #[test]
-    fn test_load_from_contents_with_flags() {
-        let contents = "key 465 ESCAPE FUNCTION\n";
-        let map = KeyLayoutMap::load_from_contents(contents).unwrap();
-
-        let key = map.map_key(465).unwrap();
-        assert_eq!(key.key_code, 111); // ESCAPE
-        assert_eq!(key.flags, 0x00000004); // FUNCTION flag
-    }
-
-    #[test]
-    fn test_load_from_contents_axis() {
-        let contents = "axis 0x00 X\naxis 0x01 Y\n";
-        let map = KeyLayoutMap::load_from_contents(contents).unwrap();
-
-        let axis_info = map.map_axis(0x00).unwrap();
-        assert_eq!(axis_info.mode, KeyLayoutAxisMode::Normal);
-        assert_eq!(axis_info.axis, 0); // X axis
-
-        let axis_info = map.map_axis(0x01).unwrap();
-        assert_eq!(axis_info.mode, KeyLayoutAxisMode::Normal);
-        assert_eq!(axis_info.axis, 1); // Y axis
-    }
-
-    #[test]
-    fn test_find_scan_codes_for_key() {
-        let contents = "key 1 ESCAPE\nkey 465 ESCAPE FUNCTION\n";
-        let map = KeyLayoutMap::load_from_contents(contents).unwrap();
-
-        let scan_codes = map.find_scan_codes_for_key(111); // ESCAPE
-        assert_eq!(scan_codes, vec![1]); // Only scan code 1, not 465 (has FUNCTION flag)
     }
 }
