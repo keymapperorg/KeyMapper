@@ -25,17 +25,17 @@ pub struct KeyLayoutMap {
 #[derive(Debug, Clone)]
 pub struct KeyLayoutKey {
     pub key_code: u32,
-    flags: u32,
+    pub flags: u32,
 }
 
 /// Represents axis information for joystick/gamepad axes.
 #[derive(Debug, Clone)]
 pub struct KeyLayoutAxisInfo {
-    mode: KeyLayoutAxisMode,
-    axis: u32,
-    high_axis: Option<u32>,
-    split_value: Option<i32>,
-    flat_override: Option<i32>,
+    pub mode: KeyLayoutAxisMode,
+    pub axis: u32,
+    pub high_axis: Option<u32>,
+    pub split_value: Option<i32>,
+    pub flat_override: Option<i32>,
 }
 
 /// Axis mapping mode.

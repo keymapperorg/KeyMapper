@@ -6,7 +6,8 @@ edition = "2021"
 [lib]
 name = "evdev_manager"
 # "cdylib" is necessary to produce a C-style dynamic library that can be loaded by Android's JNI.
-crate-type = ["cdylib"]
+# "rlib" is necessary for integration tests to be able to import the crate.
+crate-type = ["cdylib", "rlib"]
 
 [profile.dev]
 debug = true
