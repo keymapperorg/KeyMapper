@@ -8,6 +8,7 @@
 
 use crate::android::android_codes;
 use std::collections::HashMap;
+use std::fmt::format;
 use std::sync::OnceLock;
 
 // Macro to define keycode entry using AKEYCODE_* constant
@@ -457,17 +458,18 @@ fn get_axes() -> &'static HashMap<String, u32> {
 fn get_flags() -> &'static HashMap<String, u32> {
     FLAGS.get_or_init(build_flags_map)
 }
+
 /// Look up a key code by its label.
 pub fn get_key_code_by_label(label: &str) -> Option<u32> {
-    get_keycodes().get(label).copied()
+    get_keycodes().get(&format!("AKEYCODE_{}", label)).copied()
 }
 
 /// Look up an axis by its label.
 pub fn get_axis_by_label(label: &str) -> Option<u32> {
-    get_axes().get(label).copied()
+    get_axes().get(&format!("AMOTION_EVENT_AXIS_{}", label)).copied()
 }
 
 /// Look up a key flag by its label.
 pub fn get_key_flag_by_label(label: &str) -> Option<u32> {
-    get_flags().get(label).copied()
+    get_flags().get(&format!("POLICY_FLAG_{}", label)).copied()
 }
