@@ -1,8 +1,8 @@
+use evdev::{util::event_code_to_int, Device, DeviceWrapper, InputEvent};
 use evdev_manager_core::android::android_codes;
 use evdev_manager_core::android::android_codes::AKEYCODE_UNKNOWN;
-use evdev_manager_core::observer::EvdevEventObserver;
 use evdev_manager_core::android::keylayout::key_layout_map_manager::KeyLayoutMapManager;
-use evdev::{util::event_code_to_int, Device, DeviceWrapper, InputEvent};
+use evdev_manager_core::observer::EvdevEventObserver;
 use std::ffi::CString;
 use std::os::raw::c_int;
 use std::process;
@@ -79,17 +79,16 @@ impl EvdevEventObserver for EvdevCallbackBinderObserver {
     fn on_event(&self, device_path: &str, event: &InputEvent) -> bool {
         // Extract event type and code from EventCode
         let (ev_type, ev_code) = event_code_to_int(&event.event_code);
-        let code = ev_code as u32;
 
         // Convert raw evdev code to Android keycode
         let android_code = self
             .key_layout_map_manager
-            .map_key(device_path, code)
+            .map_key(device_path, ev_code)
             .map(|key| key.key_code)
             .unwrap_or(AKEYCODE_UNKNOWN);
 
         // Handle power button emergency kill
-        self.handle_power_button(code, android_code, event.value, event.time.tv_sec as i64);
+        self.handle_power_button(ev_code, android_code, event.value, event.time.tv_sec);
 
         // Call the AIDL callback via C++ callback manager
         // NOTE: The current C++ callback manager doesn't return the consumed status.
@@ -104,7 +103,7 @@ impl EvdevEventObserver for EvdevCallbackBinderObserver {
         let result = unsafe {
             evdev_callback_on_evdev_event(
                 device_path_cstr.as_ptr(),
-                event.time.tv_sec as i64,
+                event.time.tv_sec,
                 event.time.tv_usec as i64,
                 ev_type as i32,
                 ev_code as i32,
