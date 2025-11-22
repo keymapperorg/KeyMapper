@@ -367,7 +367,7 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
 
         startEventLoop(binder)
 // TODO remove
-        grabEvdevDeviceNative("/dev/input/event0")
+        grabEvdevDeviceNative("/dev/input/event12")
     }
 
     override fun unregisterEvdevCallback() {

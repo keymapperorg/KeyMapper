@@ -32,6 +32,7 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     _class: JClass,
     _j_callback_binder: JObject,
 ) {
+    // TODO only log errors in production because a lot of verbose messages
     android_log::init("KeyMapperSystemBridge").unwrap();
     set_log_panic_hook();
     info!("Initializing evdev manager");

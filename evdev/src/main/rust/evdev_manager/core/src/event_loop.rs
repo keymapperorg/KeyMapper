@@ -138,14 +138,15 @@ impl EventLoopManager {
 
     fn send_command(&self, command: Command) -> Result<(), Box<dyn Error>> {
         error!("Sending command: {:?}", command);
+        {
+            self.command_queue.lock().unwrap().push_back(command);
+        }
+
         match self.waker.lock().unwrap().as_ref() {
             None => {
                 error!("EvdevManager event loop is not running");
             }
-            Some(waker) => {
-                self.command_queue.lock().unwrap().push_back(command);
-                waker.wake()?
-            }
+            Some(waker) => waker.wake()?,
         }
 
         Ok(())
@@ -171,9 +172,9 @@ impl EventLoop {
         command_queue: &Mutex<VecDeque<Command>>,
         evdev_event_notifier: &EvdevEventNotifier,
     ) {
-        info!("Start evdev event loop");
-
         let mut events = Events::with_capacity(128);
+
+        info!("Started evdev event loop");
 
         'main_loop: loop {
             match self.poll.poll(&mut events, None) {
@@ -198,8 +199,9 @@ impl EventLoop {
             let mut source_fd = SourceFd(&device.evdev.as_raw_fd());
 
             // Do not unwrap here so that other devices can be ungrabbed.
-            source_fd
-                .deregister(self.poll.registry())
+            self.poll
+                .registry()
+                .deregister(&mut source_fd)
                 .inspect_err(|e| {
                     error!("Failed to deregister device {}: {}", device.device_path, e)
                 })
@@ -225,7 +227,10 @@ impl EventLoop {
         let stored_device = self.grabbed_devices.get(key).unwrap();
         let mut source_fd = SourceFd(&stored_device.evdev.as_raw_fd());
 
-        source_fd.register(self.poll.registry(), Token(key), Interest::READABLE)
+        // Register with key + 1 because 0 is reserved for commands.
+        self.poll
+            .registry()
+            .register(&mut source_fd, Token(key + 1), Interest::READABLE)
     }
 
     /// Returns whether to stop the loop.
@@ -253,7 +258,12 @@ impl EventLoop {
             }
 
             Token(key) => {
-                let grabbed_device = self.grabbed_devices.get(key).unwrap();
+                let slab_key = key - 1;
+                let grabbed_device = self
+                    .grabbed_devices
+                    .get(slab_key)
+                    .unwrap_or_else(|| panic!("Can not find grabbed device with key {}", slab_key));
+
                 self.read_evdev_events(&grabbed_device.evdev);
             }
         }
