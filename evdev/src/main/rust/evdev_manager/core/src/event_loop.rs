@@ -2,188 +2,284 @@ use crate::evdev_error::EvdevError;
 use crate::grabbed_device::GrabbedDevice;
 use crate::observer::EvdevEventNotifier;
 use crate::runtime::get_runtime;
-use evdev::{ReadFlag, ReadStatus};
-use mio::event::Event;
+use evdev::{Device, GrabMode, ReadFlag, ReadStatus};
+use mio::event::{Event, Source};
+use mio::unix::SourceFd;
 use mio::{Events, Interest, Poll, Registry, Token, Waker};
 use slab::Slab;
 use std::collections::VecDeque;
 use std::error::Error;
+use std::os::fd::AsRawFd;
 use std::sync::mpsc::Receiver;
-use std::sync::{mpsc, Arc, LazyLock, LockResult, Mutex, OnceLock, RwLock};
+use std::sync::{mpsc, Arc, LazyLock, LockResult, Mutex, OnceLock, PoisonError, RwLock};
 use tokio::task::JoinHandle;
 
 static EVENT_LOOP_MANAGER: OnceLock<EventLoopManager> = OnceLock::new();
 
+/// This uses the Waker and command queue pattern for updating the grabbed devices
+/// because the libevdev struct can not be safely shared between threads. Otherwise, the
+/// grabbed_devices slab would be stored here and an EventLoop struct wouldn't be necessary.
+/// This also has the benefit that the loop can be interrupted gracefully without having to
+/// kill it.
 pub struct EventLoopManager {
-    notifier: EvdevEventNotifier,
     loop_handle: Mutex<Option<JoinHandle<()>>>,
-    waker: OnceLock<Waker>,
-    command_queue: Mutex<VecDeque<Command>>,
+    waker: Arc<Mutex<Option<Waker>>>,
+    command_queue: Arc<Mutex<VecDeque<Command>>>,
 }
 
 const TOKEN_COMMAND: Token = Token(0);
 
 impl EventLoopManager {
-    pub fn get() -> Option<&'static EventLoopManager> {
-        EVENT_LOOP_MANAGER.get()
+    pub fn get() -> &'static EventLoopManager {
+        EVENT_LOOP_MANAGER.get_or_init(Self::new)
     }
 
-    pub fn init(notifier: EvdevEventNotifier) -> &'static EventLoopManager {
-        EVENT_LOOP_MANAGER.get_or_init(|| Self::new(notifier))
-    }
-
-    fn new(notifier: EvdevEventNotifier) -> Self {
+    fn new() -> Self {
         EventLoopManager {
-            notifier,
             loop_handle: Mutex::new(None),
-            waker: OnceLock::new(),
-            command_queue: Mutex::new(VecDeque::with_capacity(32)),
+            waker: Arc::new(Mutex::new(None)),
+            command_queue: Arc::new(Mutex::new(VecDeque::with_capacity(64))),
         }
     }
 
-    pub fn start(self) -> Result<(), Box<dyn Error>> {
-        match self.loop_handle.lock() {
-            Ok(guard) => match *(guard) {
-                Some(handle) => {
-                    // Do nothing. The event loop is already started.
-                }
+    pub fn start(&self, notifier: &'static EvdevEventNotifier) {
+        let mut handle_option = self.loop_handle.lock().unwrap();
 
-                None => {}
-            },
-            Err(err) => {
-                return Err(Box::new(err));
+        match *handle_option {
+            Some(_) => {
+                // Do nothing. The event loop is already started.
+                info!("EvdevManager event loop is already running");
+            }
+
+            None => {
+                let waker = self.waker.clone();
+                let command_queue = self.command_queue.clone();
+
+                let handle = get_runtime().spawn(async move {
+                    // TODO does logging still work across threads or does another need to be installed?
+                    let poll = Poll::new().unwrap();
+                    *waker.lock().unwrap() =
+                        Some(Waker::new(poll.registry(), TOKEN_COMMAND).unwrap());
+
+                    EventLoop::new(poll).start(&command_queue, notifier);
+                });
+
+                get_runtime().spawn(async {});
+
+                *handle_option = Some(handle);
+            }
+        }
+    }
+
+    pub fn stop(&self) -> Result<(), Box<dyn Error>> {
+        let handle_option = self
+            .loop_handle
+            .lock()
+            .inspect_err(|e| error!("Failed to get loop handle: {}", e))
+            .unwrap()
+            .take();
+
+        match handle_option {
+            None => {}
+            Some(handle) => {
+                self.send_command(Command::StopLoop)?;
+
+                // TODO does this block, join until finished? Test by not sending stop loop command.
+                handle.abort();
             }
         }
 
-        self.loop_handle.get_or_init(|| {
-            get_runtime().spawn(async move {
-                // TODO does logging still work across threads or does another need to be installed?
-                let poll = Poll::new().unwrap();
-                self.waker
-                    .get_or_init(|| Waker::new(poll.registry(), TOKEN_COMMAND).unwrap());
+        let queue_option = self
+            .command_queue
+            .lock()
+            .inspect_err(|e| error!("Failed to get command queue: {}", e))
+            .ok();
 
-                EventLoop::new().start(poll, &self.command_queue);
-            })
-        });
+        if let Some(mut queue) = queue_option {
+            queue.clear();
+        }
+
+        let waker_option = self
+            .waker
+            .lock()
+            .inspect_err(|e| error!("Failed to get loop handle: {}", e))
+            .ok();
+
+        if let Some(mut waker) = waker_option {
+            waker.take();
+        }
 
         Ok(())
     }
 
-    pub fn stop(self) {
-        match self.loop_handle.get() {}
+    pub fn grab_device(&self, path: &str) -> Result<(), Box<dyn Error>> {
+        self.send_command(Command::GrabDevice {
+            path: path.to_string(),
+        })
     }
 
-    pub fn grab_device(self, path: &str) {}
+    fn send_command(&self, command: Command) -> Result<(), Box<dyn Error>> {
+        error!("Sending command: {:?}", command);
+        match self.waker.lock().unwrap().as_ref() {
+            None => {
+                error!("EvdevManager event loop is not running");
+            }
+            Some(waker) => {
+                self.command_queue.lock().unwrap().push_back(command);
+                waker.wake()?
+            }
+        }
+
+        Ok(())
+    }
 }
 
 struct EventLoop {
+    poll: Poll,
     grabbed_devices: Slab<GrabbedDevice>,
 }
 
 impl EventLoop {
-    fn new() -> Self {
+    fn new(poll: Poll) -> Self {
         EventLoop {
+            poll,
             grabbed_devices: Slab::with_capacity(32),
         }
     }
 
     /// This blocks until a Stop command is sent in the command queue.
-    fn start(&mut self, mut poll: Poll, command_queue: &Mutex<VecDeque<Command>>) {
+    fn start(
+        &mut self,
+        command_queue: &Mutex<VecDeque<Command>>,
+        evdev_event_notifier: &EvdevEventNotifier,
+    ) {
         info!("Start evdev event loop");
 
         let mut events = Events::with_capacity(128);
 
         'main_loop: loop {
-            poll.poll(&mut events, None).unwrap();
-
-            for event in events.iter() {
-                if self.on_poll_event(event, command_recv) {
+            match self.poll.poll(&mut events, None) {
+                Ok(_) => {
+                    for event in events.iter() {
+                        if self.on_poll_event(event, command_queue) {
+                            break 'main_loop;
+                        }
+                    }
+                }
+                Err(e) => {
+                    error!("EvdevManager poll error. Stopping loop: {}", e);
+                    self.stop();
                     break 'main_loop;
                 }
             }
         }
     }
 
-    fn stop() {
-        // TODO
-        // Ungrab all devices
-        // Stop the loop
-        // Stop the thread
+    fn stop(&mut self) {
+        for (_, device) in self.grabbed_devices.iter_mut() {
+            let mut source_fd = SourceFd(&device.evdev.as_raw_fd());
+
+            // Do not unwrap here so that other devices can be ungrabbed.
+            source_fd
+                .deregister(self.poll.registry())
+                .inspect_err(|e| {
+                    error!("Failed to deregister device {}: {}", device.device_path, e)
+                })
+                .ok();
+
+            device
+                .evdev
+                .grab(GrabMode::Ungrab)
+                .inspect_err(|e| error!("Failed to ungrab device {}: {}", device.device_path, e))
+                .ok();
+        }
+
+        self.grabbed_devices.clear();
+        info!("Stopped evdev event loop");
+    }
+
+    fn ungrab_device(&mut self) {}
+
+    fn grab_device(&mut self, path: &str) -> std::io::Result<()> {
+        let device = GrabbedDevice::new(path)?;
+        let key = self.grabbed_devices.insert(device);
+
+        let stored_device = self.grabbed_devices.get(key).unwrap();
+        let mut source_fd = SourceFd(&stored_device.evdev.as_raw_fd());
+
+        source_fd.register(self.poll.registry(), Token(key), Interest::READABLE)
     }
 
     /// Returns whether to stop the loop.
-    fn on_poll_event(&mut self, event: &Event, command_recv: &Receiver<Command>) -> bool {
+    fn on_poll_event(&mut self, event: &Event, command_queue: &Mutex<VecDeque<Command>>) -> bool {
         match event.token() {
             TOKEN_COMMAND => {
-                for command in command_recv.iter() {
+                for command in command_queue.lock().unwrap().iter() {
                     match command {
                         Command::StopLoop => {
+                            self.stop();
                             return true;
                         }
+
                         Command::GrabDevice { path } => {
-                            let device = GrabbedDevice::new(path.as_str()).unwrap();
-                            self.grabbed_devices.insert(device);
+                            self.grab_device(path)
+                                .inspect_err(|e| error!("Failed to grab device {}: {}", path, e))
+                                .ok();
                         }
+
                         Command::UngrabDevice { path } => {}
+
                         Command::UngrabAllDevices => {}
                     }
                 }
             }
-            Token(n) => {}
+
+            Token(key) => {
+                let grabbed_device = self.grabbed_devices.get(key).unwrap();
+                self.read_evdev_events(&grabbed_device.evdev);
+            }
         }
 
         false
     }
-}
 
-// TODO remove
-pub fn start_event_loop(notifier: &EvdevEventNotifier) -> Result<(), Box<dyn Error>> {
-    info!("Start evdev event loop");
-
-    let mut poll = Poll::new()?;
-    WAKER.get_or_init(|| Waker::new(poll.registry(), TOKEN_COMMAND).unwrap());
-
-    let mut events = Events::with_capacity(128);
-
-    // Read all available events from device
-    loop {
-        poll.poll(&mut events, None)?;
-
-        for event in events.iter() {
-            match event.token() {
-                TOKEN_COMMAND => {}
+    fn read_evdev_events(&self, device: &Device) {
+        match device.next_event(ReadFlag::NORMAL) {
+            Ok((ReadStatus::Success, event)) => {
+                // TODO call notifier
+                error!("Evdev event: {:?}", event);
             }
 
-            match evdev_device.next_event(ReadFlag::NORMAL) {
-                Ok((ReadStatus::Success, event)) => {
-                    error!("Evdev event: {:?}", event);
-                }
-
-                Ok((ReadStatus::Sync, event)) => {
-                    loop {
-                        match evdev_device.next_event(ReadFlag::NORMAL | ReadFlag::SYNC) {
-                            Ok((ReadStatus::Sync, _)) => {
-                                // Continue reading sync events
-                            }
-                            Ok((ReadStatus::Success, _)) => {
-                                // Sync complete, break inner loop
-                                break;
-                            }
-                            Err(e) => {
-                                // Check if it's EAGAIN (no more events)
-                                if let Some(err) = e.raw_os_error() {
-                                    if err == -(libc::EAGAIN as i32) {
-                                        break;
-                                    }
+            Ok((ReadStatus::Sync, _)) => {
+                loop {
+                    match device.next_event(ReadFlag::NORMAL | ReadFlag::SYNC) {
+                        Ok((ReadStatus::Sync, _)) => {
+                            // Continue reading sync events
+                        }
+                        Ok((ReadStatus::Success, _)) => {
+                            // Sync complete, break inner loop
+                            break;
+                        }
+                        Err(e) => {
+                            // Check if it's EAGAIN (no more events)
+                            if let Some(err) = e.raw_os_error() {
+                                if err == -(libc::EAGAIN as i32) {
+                                    break;
                                 }
-                                return Err(EvdevError::from(e).into());
                             }
+                            let evdev_error = EvdevError::from(e);
+
+                            error!("Evdev error: {}", evdev_error);
                         }
                     }
                 }
-                Err(_) => {
-                    error!("EvdevManager: failed to get next event: {:?}", event);
-                }
+            }
+
+            Err(e) => {
+                error!(
+                    "EvdevManager: failed to read next event for device: {:?}, error: {}",
+                    device, e
+                );
             }
         }
     }

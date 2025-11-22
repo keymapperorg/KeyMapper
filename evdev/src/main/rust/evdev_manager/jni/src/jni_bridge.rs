@@ -1,31 +1,80 @@
 use crate::evdev_callback_binder_observer::EvdevCallbackBinderObserver;
+use android_log::AndroidLogger;
 use evdev::{Device, DeviceWrapper};
 use evdev_manager_core::event_loop;
+use evdev_manager_core::event_loop::EventLoopManager;
 use evdev_manager_core::grabbed_device::GrabbedDevice;
 use evdev_manager_core::observer::EvdevEventNotifier;
 use jni::objects::{GlobalRef, JClass, JObject, JString, JValue};
 use jni::sys::{jboolean, jint, jobject, jobjectArray};
 use jni::JNIEnv;
+use log::logger;
+use std::error::Error;
 use std::fs::File;
 use std::ptr;
 use std::ptr::null;
 use std::sync::{Arc, OnceLock};
 
-static EVENT_NOTIFIER: OnceLock<Arc<EvdevEventNotifier>> = OnceLock::new();
-static BINDER_OBSERVER: OnceLock<Arc<EvdevCallbackBinderObserver>> = OnceLock::new();
+static EVENT_NOTIFIER: OnceLock<EvdevEventNotifier> = OnceLock::new();
+static BINDER_OBSERVER: OnceLock<EvdevCallbackBinderObserver> = OnceLock::new();
 
-/// Get or create the event notifier
-fn get_event_notifier() -> Arc<EvdevEventNotifier> {
-    EVENT_NOTIFIER
-        .get_or_init(|| Arc::new(EvdevEventNotifier::new()))
-        .clone()
+fn get_event_notifier() -> &'static EvdevEventNotifier {
+    EVENT_NOTIFIER.get_or_init(EvdevEventNotifier::new)
 }
 
-/// Get or create the binder observer
-fn get_binder_observer() -> Arc<EvdevCallbackBinderObserver> {
-    BINDER_OBSERVER
-        .get_or_init(|| Arc::new(EvdevCallbackBinderObserver::new()))
-        .clone()
+fn get_binder_observer() -> &'static EvdevCallbackBinderObserver {
+    BINDER_OBSERVER.get_or_init(EvdevCallbackBinderObserver::new)
+}
+
+#[no_mangle]
+pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_initEvdevManager(
+    _env: JNIEnv,
+    _class: JClass,
+    _j_callback_binder: JObject,
+) {
+    android_log::init("KeyMapperSystemBridge").unwrap();
+    set_log_panic_hook();
+    info!("Initializing evdev manager");
+}
+
+#[no_mangle]
+pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_startEventLoop(
+    _env: JNIEnv,
+    _class: JClass,
+    _j_callback_binder: JObject,
+) {
+    let notifier = get_event_notifier();
+    let binder_observer = get_binder_observer();
+
+    EventLoopManager::get().start(notifier);
+    // notifier.register(Box::new(binder_observer.clone()));
+    //
+    // // Initialize device task manager
+    // match event_loop::init_device_task_manager(notifier) {
+    //     Ok(()) => {
+    //         info!("Initialized evdev manager with Tokio");
+    //
+    //         // Notify callback that event loop started
+    //         let _ = unsafe { bindings::evdev_callback_on_evdev_event_loop_started() };
+    //     }
+    //     Err(e) => {
+    //         error!("Failed to initialize device task manager: {}", e);
+    //     }
+    // }
+}
+
+#[no_mangle]
+pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_stopEventLoop(
+    _env: JNIEnv,
+    _class: JClass,
+) {
+    // event_loop::remove_all_devices();
+    EventLoopManager::get()
+        .stop()
+        .inspect_err(|e| error!("Failed to stop event loop: {:?}", e))
+        .unwrap();
+
+    info!("Stopped evdev manager");
 }
 
 fn create_java_evdev_device_handle(
@@ -69,7 +118,13 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
         }
     };
 
-    false as jboolean
+    match EventLoopManager::get().grab_device(device_path.as_str()) {
+        Ok(_) => true as jboolean,
+        Err(e) => {
+            error!("Failed to grab device {}: {}", device_path, e);
+            false as jboolean
+        }
+    }
 
     // Check if device is already grabbed
     // if event_loop::is_device_grabbed(&device_path) {
@@ -278,47 +333,6 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     // }
 
     array.into_raw()
-}
-
-#[no_mangle]
-pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_startEvdevManager(
-    _env: JNIEnv,
-    _class: JClass,
-    _j_callback_binder: JObject,
-) {
-    android_log::init("KeyMapperSystemBridge").unwrap();
-    set_log_panic_hook();
-
-    let notifier = get_event_notifier();
-    let binder_observer = get_binder_observer();
-
-    event_loop::start_event_loop(&notifier).unwrap();
-
-    event_loop::EventLoopManager::new(notifier);
-
-    // notifier.register(Box::new(binder_observer.clone()));
-    //
-    // // Initialize device task manager
-    // match event_loop::init_device_task_manager(notifier) {
-    //     Ok(()) => {
-    //         info!("Initialized evdev manager with Tokio");
-    //
-    //         // Notify callback that event loop started
-    //         let _ = unsafe { bindings::evdev_callback_on_evdev_event_loop_started() };
-    //     }
-    //     Err(e) => {
-    //         error!("Failed to initialize device task manager: {}", e);
-    //     }
-    // }
-}
-
-#[no_mangle]
-pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_stopEvdevManager(
-    _env: JNIEnv,
-    _class: JClass,
-) {
-    // event_loop::remove_all_devices();
-    info!("Stopped evdev manager");
 }
 
 fn set_log_panic_hook() {

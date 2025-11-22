@@ -78,8 +78,9 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
 
     external fun getEvdevDevicesNative(): Array<EvdevDeviceHandle>
 
-    external fun startEvdevManager(callback: IBinder)
-    external fun stopEvdevManager()
+    external fun initEvdevManager()
+    external fun startEventLoop(callback: IBinder)
+    external fun stopEventLoop()
 
     companion object {
         private const val TAG: String = "KeyMapperSystemBridge"
@@ -159,11 +160,11 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
     private val evdevCallbackLock: Any = Any()
     private var evdevCallback: IEvdevCallback? = null
     private val evdevCallbackDeathRecipient: IBinder.DeathRecipient = IBinder.DeathRecipient {
-        Log.i(TAG, "EvdevCallback binder died")
+        Log.i(TAG, "EvdevCallback binder died. Stopping evdev event loop")
         evdevCallback = null
 
         coroutineScope.launch(Dispatchers.Default) {
-            stopEvdevManager()
+            stopEventLoop()
         }
 
         // Start periodic check for Key Mapper installation
@@ -293,6 +294,8 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
             sendBinderToApp()
         }
 
+        initEvdevManager()
+
         Log.i(TAG, "SystemBridge started complete. Version code $versionCode")
     }
 
@@ -362,18 +365,16 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
             binder.linkToDeath(evdevCallbackDeathRecipient, 0)
         }
 
-        coroutineScope.launch(Dispatchers.IO) {
-            mainHandler.post {
-                startEvdevManager(binder)
-            }
-        }
+        startEventLoop(binder)
+// TODO remove
+        grabEvdevDeviceNative("/dev/input/event0")
     }
 
     override fun unregisterEvdevCallback() {
         synchronized(evdevCallbackLock) {
             evdevCallback?.asBinder()?.unlinkToDeath(evdevCallbackDeathRecipient, 0)
             evdevCallback = null
-            stopEvdevManager()
+            stopEventLoop()
         }
     }
 

@@ -1,5 +1,6 @@
 use crate::{AbsInfo, GrabMode, InputEvent, LedState, ReadFlag, ReadStatus, TimeVal};
 use libc::{c_int, c_uint, c_void};
+use std::ffi::CString;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read;
@@ -8,7 +9,6 @@ use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::io::{AsRawFd, FromRawFd, RawFd};
 use std::path::Path;
 use std::{io, ptr};
-use std::ffi::CString;
 
 use crate::enums::*;
 use crate::libevdev;
@@ -575,7 +575,7 @@ impl std::fmt::Debug for UninitDevice {
 
 /// Opaque struct representing an evdev device
 ///
-/// Unlike libevdev, this `Device` mantains an associated file as an invariant
+/// Unlike libevdev, this `Device` maintains an associated file as an invariant
 pub struct Device {
     file: File,
     raw: *mut libevdev::libevdev,
