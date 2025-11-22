@@ -42,18 +42,21 @@ impl EventLoopManager {
         }
     }
 
-    pub fn start(&self, notifier: &'static EvdevEventNotifier) {
+    pub fn start(&self, notifier: &'static EvdevEventNotifier) -> Result<(), EvdevError> {
         let mut handle_option = self.loop_handle.lock().unwrap();
 
         match *handle_option {
             Some(_) => {
                 // Do nothing. The event loop is already started.
                 info!("EvdevManager event loop is already running");
+                Ok(())
             }
 
             None => {
                 let waker = self.waker.clone();
                 let command_queue = self.command_queue.clone();
+
+                let (tx, rx) = mpsc::channel();
 
                 let handle = get_runtime().spawn(async move {
                     // TODO does logging still work across threads or does another need to be installed?
@@ -61,12 +64,27 @@ impl EventLoopManager {
                     *waker.lock().unwrap() =
                         Some(Waker::new(poll.registry(), TOKEN_COMMAND).unwrap());
 
+                    if let Err(e) = tx.send(()) {
+                        error!("Failed to signal event loop start: {}", e);
+                    }
+
                     EventLoop::new(poll).start(&command_queue, notifier);
                 });
 
                 get_runtime().spawn(async {});
 
                 *handle_option = Some(handle);
+
+                match rx.recv_timeout(std::time::Duration::from_secs(2)) {
+                    Ok(_) => Ok(()),
+                    Err(e) => {
+                        error!("Failed to wait for event loop start: {}", e);
+                        if let Some(handle) = handle_option.take() {
+                            handle.abort();
+                        }
+                        Err(EvdevError::new(-libc::ETIMEDOUT))
+                    }
+                }
             }
         }
     }
