@@ -79,6 +79,7 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
     external fun getEvdevDevicesNative(): Array<EvdevDeviceHandle>
 
     external fun initEvdevManager()
+    external fun destroyEvdevManager()
     external fun startEventLoop(callback: IBinder)
     external fun stopEventLoop()
 
@@ -340,6 +341,11 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
     }
 
     override fun destroy() {
+        Log.i(TAG, "Destroying system bridge...")
+
+        stopKeyMapperPeriodicCheck()
+        destroyEvdevManager()
+
         Log.i(TAG, "SystemBridge destroyed")
 
         // Must be last line in this method because it halts the JVM.
@@ -366,8 +372,6 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
         }
 
         startEventLoop(binder)
-// TODO remove
-        grabEvdevDeviceNative("/dev/input/event12")
     }
 
     override fun unregisterEvdevCallback() {

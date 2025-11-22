@@ -3,15 +3,19 @@ use crate::grabbed_device::GrabbedDevice;
 use crate::observer::EvdevEventNotifier;
 use crate::runtime::get_runtime;
 use evdev::{Device, GrabMode, ReadFlag, ReadStatus};
+use io::ErrorKind;
 use mio::event::{Event, Source};
 use mio::unix::SourceFd;
 use mio::{Events, Interest, Poll, Registry, Token, Waker};
 use slab::Slab;
 use std::collections::VecDeque;
 use std::error::Error;
+use std::fmt::format;
+use std::io;
 use std::os::fd::AsRawFd;
 use std::sync::mpsc::Receiver;
 use std::sync::{mpsc, Arc, LazyLock, LockResult, Mutex, OnceLock, PoisonError, RwLock};
+use std::time::Duration;
 use tokio::task::JoinHandle;
 
 static EVENT_LOOP_MANAGER: OnceLock<EventLoopManager> = OnceLock::new();
@@ -75,7 +79,7 @@ impl EventLoopManager {
 
                 *handle_option = Some(handle);
 
-                match rx.recv_timeout(std::time::Duration::from_secs(2)) {
+                match rx.recv_timeout(Duration::from_secs(2)) {
                     Ok(_) => Ok(()),
                     Err(e) => {
                         error!("Failed to wait for event loop start: {}", e);
@@ -100,10 +104,19 @@ impl EventLoopManager {
         match handle_option {
             None => {}
             Some(handle) => {
-                self.send_command(Command::StopLoop)?;
+                let (tx, rx) = mpsc::channel();
+                self.send_command(Command::StopLoop(tx))?;
 
-                // TODO does this block, join until finished? Test by not sending stop loop command.
-                handle.abort();
+                match rx.recv_timeout(Duration::from_secs(2)) {
+                    Ok(_) => {
+                        // Loop stopped gracefully
+                    }
+                    Err(e) => {
+                        error!("Failed to wait for event loop stop: {}", e);
+                        handle.abort();
+                        return Err(Box::new(EvdevError::new(-libc::ETIMEDOUT)));
+                    }
+                }
             }
         }
 
@@ -134,14 +147,11 @@ impl EventLoopManager {
         self.send_command(Command::GrabDevice {
             path: path.to_string(),
         })
+        .inspect_err(|e| error!("Failed to send grab device command {}: {}", path, e))
     }
 
     fn send_command(&self, command: Command) -> Result<(), Box<dyn Error>> {
-        error!("Sending command: {:?}", command);
-        {
-            self.command_queue.lock().unwrap().push_back(command);
-        }
-
+        self.command_queue.lock().unwrap().push_back(command);
         match self.waker.lock().unwrap().as_ref() {
             None => {
                 error!("EvdevManager event loop is not running");
@@ -159,7 +169,7 @@ struct EventLoop {
 }
 
 impl EventLoop {
-    fn new(poll: Poll) -> Self {
+    pub fn new(poll: Poll) -> Self {
         EventLoop {
             poll,
             grabbed_devices: Slab::with_capacity(32),
@@ -218,9 +228,40 @@ impl EventLoop {
         info!("Stopped evdev event loop");
     }
 
-    fn ungrab_device(&mut self) {}
+    fn ungrab_device(&mut self, path: &str) -> io::Result<()> {
+        let device_option = self
+            .grabbed_devices
+            .iter()
+            .find(|(_, device)| device.device_path == path);
 
-    fn grab_device(&mut self, path: &str) -> std::io::Result<()> {
+        match device_option {
+            None => Err(io::Error::new(
+                ErrorKind::NotFound,
+                format!("Device not found {}", path),
+            )),
+            Some((key, _)) => {
+                let mut device = self.grabbed_devices.remove(key);
+
+                device
+                    .evdev
+                    .grab(GrabMode::Ungrab)
+                    .inspect_err(|e| error!("Failed to ungrab device {}: {}", path, e))
+            }
+        }
+    }
+
+    fn grab_device(&mut self, path: &str) -> io::Result<()> {
+        if self
+            .grabbed_devices
+            .iter()
+            .any(|(_, device)| device.device_path == path)
+        {
+            return Err(io::Error::new(
+                ErrorKind::AlreadyExists,
+                format!("Device already grabbed: {}", path),
+            ));
+        }
+
         let device = GrabbedDevice::new(path)?;
         let key = self.grabbed_devices.insert(device);
 
@@ -237,15 +278,16 @@ impl EventLoop {
     fn on_poll_event(&mut self, event: &Event, command_queue: &Mutex<VecDeque<Command>>) -> bool {
         match event.token() {
             TOKEN_COMMAND => {
-                for command in command_queue.lock().unwrap().iter() {
+                while let Some(command) = command_queue.lock().unwrap().pop_front() {
                     match command {
-                        Command::StopLoop => {
+                        Command::StopLoop(tx) => {
                             self.stop();
+                            tx.send(()).ok();
                             return true;
                         }
 
                         Command::GrabDevice { path } => {
-                            self.grab_device(path)
+                            self.grab_device(path.as_str())
                                 .inspect_err(|e| error!("Failed to grab device {}: {}", path, e))
                                 .ok();
                         }
@@ -313,122 +355,9 @@ impl EventLoop {
     }
 }
 
-// fn process_next_event(device: Device, notifier: &mut EvdevEventNotifier) -> Result<(), EvdevError> {
-//     match device.next_event(ReadFlag::NORMAL) {
-//         Ok((ReadStatus::Success, event)) => {
-//             // Notify all observers
-//             let consumed = notifier.notify(device_path, &event);
-//
-//             // If no observer consumed the event, forward to uinput
-//             if !consumed {
-//                 // Extract event type and code from EventCode
-//                 let (ev_type, ev_code) = event_code_to_int(&event.event_code);
-//
-//                 if let Err(e) = device.write_event(ev_type as u32, ev_code as u32, event.value)
-//                 {
-//                     error!("Failed to write event to uinput: {}", e);
-//                 }
-//             }
-//         }
-//         Ok((ReadStatus::Sync, _event)) => {
-//             // Handle sync event - read sync events until EAGAIN
-//             loop {
-//                 match device.evdev.next_event(ReadFlag::NORMAL | ReadFlag::SYNC) {
-//                     Ok((ReadStatus::Sync, _)) => {
-//                         // Continue reading sync events
-//                     }
-//                     Ok((ReadStatus::Success, _)) => {
-//                         // Sync complete, break inner loop
-//                         break;
-//                     }
-//                     Err(e) => {
-//                         // Check if it's EAGAIN (no more events)
-//                         if let Some(err) = e.raw_os_error() {
-//                             if err == -(libc::EAGAIN as i32) {
-//                                 break;
-//                             }
-//                         }
-//                         return Err(EvdevError::from(e));
-//                     }
-//                 }
-//             }
-//         }
-//         Err(e) => {
-//             // Check if it's EAGAIN (no more events available)
-//             if let Some(err) = e.raw_os_error() {
-//                 if err == -(libc::EAGAIN as i32) {
-//                     // No more events available
-//                     break;
-//                 }
-//             }
-//             return Err(EvdevError::from(e));
-//         }
-//     }
-// }
-
-// Add a device to be handled by a Tokio task
-// pub fn add_device(device_path: String, device: Arc<GrabbedDevice>) -> Result<(), EvdevError> {
-//     let manager =
-//         get_device_task_manager().ok_or_else(|| EvdevError::new(-(libc::EINVAL as i32)))?;
-//
-//     manager
-//         .add_device(device_path, device)
-//         .map_err(|e| EvdevError::new(-(libc::EINVAL as i32)))
-// }
-//
-// /// Remove a device and cancel its task
-// pub fn remove_device(device_path: &str) -> Result<(), EvdevError> {
-//     let manager =
-//         get_device_task_manager().ok_or_else(|| EvdevError::new(-(libc::EINVAL as i32)))?;
-//
-//     manager
-//         .remove_device(device_path)
-//         .map_err(|_| EvdevError::new(-(libc::ENODEV as i32)))
-// }
-//
-// /// Remove all devices and cancel their tasks
-// pub fn remove_all_devices() {
-//     if let Some(manager) = get_device_task_manager() {
-//         manager.remove_all_devices();
-//     }
-// }
-//
-// /// Write an event to a device
-// pub fn write_event_to_device(
-//     device_path: &str,
-//     event_type: u32,
-//     code: u32,
-//     value: i32,
-// ) -> Result<(), EvdevError> {
-//     let manager =
-//         get_device_task_manager().ok_or_else(|| EvdevError::new(-(libc::EINVAL as i32)))?;
-//
-//     manager
-//         .write_event_to_device(device_path, event_type, code, value)
-//         .map_err(|_| EvdevError::new(-(libc::ENODEV as i32)))
-// }
-//
-// /// Get uinput device paths
-// pub fn get_uinput_device_paths() -> HashSet<String> {
-//     if let Some(manager) = get_device_task_manager() {
-//         manager.get_uinput_device_paths()
-//     } else {
-//         HashSet::new()
-//     }
-// }
-//
-// /// Check if a device is already grabbed
-// pub fn is_device_grabbed(device_path: &str) -> bool {
-//     if let Some(manager) = get_device_task_manager() {
-//         manager.is_device_grabbed(device_path)
-//     } else {
-//         false
-//     }
-// }
-
 #[derive(Debug, Clone)]
 enum Command {
-    StopLoop,
+    StopLoop(mpsc::Sender<()>),
 
     GrabDevice { path: String },
 

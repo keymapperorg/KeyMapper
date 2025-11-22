@@ -1,19 +1,11 @@
 use crate::evdev_callback_binder_observer::EvdevCallbackBinderObserver;
-use android_log::AndroidLogger;
-use evdev::{Device, DeviceWrapper};
-use evdev_manager_core::event_loop;
 use evdev_manager_core::event_loop::EventLoopManager;
-use evdev_manager_core::grabbed_device::GrabbedDevice;
 use evdev_manager_core::observer::EvdevEventNotifier;
 use jni::objects::{GlobalRef, JClass, JObject, JString, JValue};
 use jni::sys::{jboolean, jint, jobject, jobjectArray};
 use jni::JNIEnv;
-use log::logger;
-use std::error::Error;
-use std::fs::File;
 use std::ptr;
-use std::ptr::null;
-use std::sync::{Arc, OnceLock};
+use std::sync::OnceLock;
 
 static EVENT_NOTIFIER: OnceLock<EvdevEventNotifier> = OnceLock::new();
 static BINDER_OBSERVER: OnceLock<EvdevCallbackBinderObserver> = OnceLock::new();
@@ -39,6 +31,20 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
 }
 
 #[no_mangle]
+pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_destroyEvdevManager(
+    _env: JNIEnv,
+    _class: JClass,
+    _j_callback_binder: JObject,
+) {
+    info!("Destroying evdev manager");
+
+    EventLoopManager::get()
+        .stop()
+        .inspect_err(|e| error!("Failed to stop event loop: {:?}", e))
+        .unwrap();
+}
+
+#[no_mangle]
 pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_startEventLoop(
     _env: JNIEnv,
     _class: JClass,
@@ -47,7 +53,10 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     let notifier = get_event_notifier();
     let binder_observer = get_binder_observer();
 
-    EventLoopManager::get().start(notifier);
+    EventLoopManager::get()
+        .start(notifier)
+        .inspect_err(|e| error!("Failed to start event loop: {:?}", e))
+        .unwrap();
     // notifier.register(Box::new(binder_observer.clone()));
     //
     // // Initialize device task manager
@@ -119,51 +128,9 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
         }
     };
 
-    match EventLoopManager::get().grab_device(device_path.as_str()) {
-        Ok(_) => true as jboolean,
-        Err(e) => {
-            error!("Failed to grab device {}: {}", device_path, e);
-            false as jboolean
-        }
-    }
-
-    // Check if device is already grabbed
-    // if event_loop::is_device_grabbed(&device_path) {
-    //     warn!("Device {} is already grabbed", device_path);
-    //     return false as jboolean;
-    // }
-    //
-    // // Never grab uinput devices
-    // if device_path.contains("uinput") {
-    //     warn!("Cannot grab uinput device: {}", device_path);
-    //     return false as jboolean;
-    // }
-    //
-    // // Grab the device
-    // let device = match GrabbedDevice::new(&device_path) {
-    //     Ok(d) => Arc::new(d),
-    //     Err(e) => {
-    //         error!("Failed to grab device {}: {}", device_path, e);
-    //         return false as jboolean;
-    //     }
-    // };
-    //
-    // // Register device with binder observer for KeyLayoutMap lookup
-    // let binder_observer = get_binder_observer();
-    // binder_observer.register_device(device_path.as_str(), &device.evdev);
-    //
-    // // Add device to event loop
-    // match event_loop::add_device(device_path.clone(), device.clone()) {
-    //     Ok(()) => {
-    //         info!("Grabbed device: {}", device_path);
-    //         true as jboolean
-    //     }
-    //     Err(e) => {
-    //         error!("Failed to add device to event loop: {}", e);
-    //         binder_observer.unregister_device(&device_path);
-    //         false as jboolean
-    //     }
-    // }
+    EventLoopManager::get()
+        .grab_device(device_path.as_str())
+        .is_ok() as jboolean
 }
 
 #[no_mangle]
@@ -178,25 +145,6 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     };
 
     false as jboolean
-
-    // Unregister from binder observer
-    // let binder_observer = get_binder_observer();
-    // binder_observer.unregister_device(&device_path);
-    //
-    // // Remove from event loop
-    // match event_loop::remove_device(&device_path) {
-    //     Ok(()) => {
-    //         info!("Ungrabbed device: {}", device_path);
-    //         true as jboolean
-    //     }
-    //     Err(_) => {
-    //         warn!(
-    //             "Device {} was not found in grabbed devices list",
-    //             device_path
-    //         );
-    //         false as jboolean
-    //     }
-    // }
 }
 
 #[no_mangle]
@@ -205,14 +153,6 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     _class: JClass,
 ) -> jboolean {
     let binder_observer = get_binder_observer();
-
-    // Unregister all devices from binder observer
-    // for path in &device_paths {
-    //     binder_observer.unregister_device(path);
-    // }
-
-    // Remove all devices from event loop
-    // event_loop::remove_all_devices();
 
     info!("Ungrabbed all devices");
     true as jboolean
@@ -233,12 +173,6 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     };
 
     false as jboolean
-
-    // Write event to device through event loop
-    // match event_loop::write_event_to_device(&device_path, j_type as u32, j_code as u32, j_value) {
-    //     Ok(()) => true as jboolean,
-    //     Err(_) => false as jboolean,
-    // }
 }
 
 #[no_mangle]
