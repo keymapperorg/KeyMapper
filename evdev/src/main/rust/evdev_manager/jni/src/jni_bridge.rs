@@ -1,8 +1,8 @@
 use crate::evdev_callback_binder_observer::EvdevCallbackBinderObserver;
+use evdev::{Device, DeviceWrapper};
 use evdev_manager_core::event_loop;
 use evdev_manager_core::grabbed_device::GrabbedDevice;
 use evdev_manager_core::observer::EvdevEventNotifier;
-use evdev::{Device, DeviceWrapper};
 use jni::objects::{GlobalRef, JClass, JObject, JString, JValue};
 use jni::sys::{jboolean, jint, jobject, jobjectArray};
 use jni::JNIEnv;
@@ -293,6 +293,8 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     let binder_observer = get_binder_observer();
 
     event_loop::start_event_loop(&notifier).unwrap();
+
+    event_loop::EventLoopManager::new(notifier);
 
     // notifier.register(Box::new(binder_observer.clone()));
     //

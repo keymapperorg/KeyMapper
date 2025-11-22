@@ -1,18 +1,14 @@
 use crate::evdev_error::EvdevError;
-use evdev::enums::{EventCode, EV_SYN};
-use evdev::{util::int_to_event_code, Device, GrabMode, InputEvent, TimeVal, UInputDevice};
-use std::borrow::Cow::Owned;
+use evdev::enums::EV_SYN;
+use evdev::{Device, GrabMode, UInputDevice};
 use std::fs::OpenOptions;
-use std::os::fd::{AsFd, AsRawFd, BorrowedFd, FromRawFd, OwnedFd, RawFd};
 use std::os::unix::fs::OpenOptionsExt;
-use mio::Token;
 
 /// Device context containing all information about a grabbed evdev device
 pub struct GrabbedDevice {
     pub device_path: String,
     pub evdev: Device,
     pub uinput: UInputDevice,
-    pub token: Token,
 }
 
 impl GrabbedDevice {
@@ -27,24 +23,21 @@ impl GrabbedDevice {
             .read(true)
             .custom_flags(libc::O_NONBLOCK)
             .open(device_path)
-            .map_err(|e| EvdevError::from(e))?;
+            .map_err(EvdevError::from)?;
 
         // Create device from file
-        let mut evdev = Device::new_from_file(file).map_err(|e| EvdevError::from(e))?;
+        let mut evdev = Device::new_from_file(file).map_err(EvdevError::from)?;
 
         // Grab the device
-        evdev
-            .grab(GrabMode::Grab)
-            .map_err(|e| EvdevError::from(e))?;
+        evdev.grab(GrabMode::Grab).map_err(EvdevError::from)?;
 
         // Create uinput device for forwarding unconsumed events
-        let uinput = UInputDevice::create_from_device(&evdev).map_err(|e| EvdevError::from(e))?;
+        let uinput = UInputDevice::create_from_device(&evdev).map_err(EvdevError::from)?;
 
         Ok(Self {
             evdev,
             uinput,
             device_path: device_path.to_string(),
-            token: Token(0),
         })
     }
 
@@ -52,12 +45,12 @@ impl GrabbedDevice {
     pub fn write_event(&self, event_type: u32, code: u32, value: i32) -> Result<(), EvdevError> {
         self.uinput
             .write_event(event_type, code, value)
-            .map_err(|e| EvdevError::from(e))?;
+            .map_err(EvdevError::from)?;
 
         // Send SYN_REPORT
         self.uinput
             .write_syn_event(EV_SYN::SYN_REPORT)
-            .map_err(|e| EvdevError::from(e))?;
+            .map_err(EvdevError::from)?;
 
         Ok(())
     }

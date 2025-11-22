@@ -34,8 +34,8 @@ pub const LIBEVDEV_LED_OFF: libevdev_led_value = 4;
 pub const LIBEVDEV_UINPUT_OPEN_MANAGED: libevdev_uinput_open_mode = -2;
 
 pub enum libevdev {}
-pub enum libevdev_uinput {}
 
+pub enum libevdev_uinput {}
 
 #[repr(C)]
 #[derive(Copy, Clone)]
