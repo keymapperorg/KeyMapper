@@ -1,12 +1,15 @@
+use std::any::Any;
+use crate::device_identifier::DeviceIdentifier;
 use crate::evdev_error::EvdevError;
 use evdev::enums::EV_SYN;
-use evdev::{Device, GrabMode, UInputDevice};
+use evdev::{Device, DeviceWrapper, GrabMode, UInputDevice};
 use std::fs::OpenOptions;
 use std::os::unix::fs::OpenOptionsExt;
 
 /// Device context containing all information about a grabbed evdev device
 pub struct GrabbedDevice {
     pub device_path: String,
+    pub device_id: DeviceIdentifier,
     pub evdev: Device,
     pub uinput: UInputDevice,
 }
@@ -34,8 +37,16 @@ impl GrabbedDevice {
         // Create uinput device for forwarding unconsumed events
         let uinput = UInputDevice::create_from_device(&evdev).map_err(EvdevError::from)?;
 
+        let device_id: DeviceIdentifier = DeviceIdentifier {
+            name: evdev.name().unwrap_or("").to_string(),
+            vendor: evdev.vendor_id(),
+            product: evdev.product_id(),
+            version: evdev.version(),
+        };
+
         Ok(Self {
             evdev,
+            device_id,
             uinput,
             device_path: device_path.to_string(),
         })

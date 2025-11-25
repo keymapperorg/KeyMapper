@@ -5,4 +5,4 @@ pub mod evdev_error;
 pub mod event_loop;
 pub mod grabbed_device;
 pub mod runtime;
-mod device_identifier;
+pub mod device_identifier;

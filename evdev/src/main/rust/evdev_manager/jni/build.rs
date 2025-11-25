@@ -35,7 +35,8 @@ fn main() {
         .include(&cpp_dir)
         .flag("-Werror=format")
         .flag("-fdata-sections")
-        .flag("-ffunction-sections");
+        .flag("-ffunction-sections")
+        .flag("-DANDROID_STL=c++_shared");
 
     if env::var("PROFILE").unwrap() == "release" {
         c_builder.flag("-O2").flag("-fvisibility=hidden");

@@ -1,11 +1,13 @@
 use evdev::{util::event_code_to_int, Device, DeviceWrapper, InputEvent};
 use evdev_manager_core::android::android_codes;
 use evdev_manager_core::android::android_codes::AKEYCODE_UNKNOWN;
+use evdev_manager_core::android::keylayout::key_layout_map::KeyLayoutKey;
 use evdev_manager_core::android::keylayout::key_layout_map_manager::KeyLayoutMapManager;
+use evdev_manager_core::device_identifier::DeviceIdentifier;
 use std::ffi::CString;
 use std::os::raw::c_int;
 use std::process;
-use std::sync::atomic::AtomicI64;
+use std::sync::atomic::{AtomicI64, Ordering};
 use std::sync::Arc;
 
 pub struct EvdevCallbackBinderObserver {
@@ -23,13 +25,10 @@ impl EvdevCallbackBinderObserver {
         }
     }
 
-    /// Handle power button emergency kill
-    /// Returns true if system bridge should be killed
-    fn handle_power_button(code: u32, android_code: u32, value: i32, time_sec: i64) -> bool {
-        use std::sync::atomic::{AtomicI64, Ordering};
-
+    /// Handle power button emergency kill.
+    fn handle_power_button(ev_code: u32, android_code: u32, value: i32, time_sec: i64) {
         // KEY_POWER scan code = 116
-        if code == 116 || android_code == android_codes::AKEYCODE_POWER {
+        if ev_code == 116 || android_code == android_codes::AKEYCODE_POWER {
             if value == 1 {
                 POWER_BUTTON_DOWN_TIME.store(time_sec, Ordering::Relaxed);
             } else if value == 0 {
@@ -42,22 +41,32 @@ impl EvdevCallbackBinderObserver {
                 POWER_BUTTON_DOWN_TIME.store(0, Ordering::Relaxed);
             }
         }
-        false
     }
 
-    pub fn on_event(&self, device_path: &str, event: &InputEvent) -> bool {
+    const UNKNOWN_KEY: KeyLayoutKey = KeyLayoutKey {
+        key_code: AKEYCODE_UNKNOWN,
+        flags: 0,
+    };
+
+    pub fn on_event(
+        &self,
+        device_path: &str,
+        device_id: &DeviceIdentifier,
+        event: &InputEvent,
+    ) -> bool {
         // Extract event type and code from EventCode
         let (ev_type, ev_code) = event_code_to_int(&event.event_code);
 
         // Convert raw evdev code to Android keycode
         let android_code = self
             .key_layout_map_manager
-            .map_key(device_path, ev_code)
+            .map_key(device_id, ev_code)
+            .unwrap_or(Some(Self::UNKNOWN_KEY))
             .map(|key| key.key_code)
             .unwrap_or(AKEYCODE_UNKNOWN);
 
         // Handle power button emergency kill
-        self.handle_power_button(ev_code, android_code, event.value, event.time.tv_sec);
+        Self::handle_power_button(ev_code, android_code, event.value, event.time.tv_sec);
 
         // Call the AIDL callback via C++ callback manager
         // NOTE: The current C++ callback manager doesn't return the consumed status.

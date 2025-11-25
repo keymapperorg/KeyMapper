@@ -8,7 +8,7 @@ use std::io::ErrorKind;
 use std::sync::{Arc, Mutex, OnceLock};
 use std::{env, io};
 
-static KEY_LAYOUT_MANAGER: OnceLock<KeyLayoutMapManager> = OnceLock::new();
+static KEY_LAYOUT_MANAGER: OnceLock<Arc<KeyLayoutMapManager>> = OnceLock::new();
 
 /// Manages KeyLayoutMap caching and key code mapping
 /// This is the only file that directly interacts with KeyLayoutMap C bindings
@@ -20,8 +20,8 @@ pub struct KeyLayoutMapManager {
 }
 
 impl KeyLayoutMapManager {
-    pub fn get() -> &'static Self {
-        KEY_LAYOUT_MANAGER.get_or_init(Self::new)
+    pub fn get() -> Arc<Self> {
+        Arc::clone(KEY_LAYOUT_MANAGER.get_or_init(|| Arc::new(Self::new())))
     }
 
     fn new() -> Self {
@@ -41,6 +41,7 @@ impl KeyLayoutMapManager {
             .map(|map| map.map_key(scan_code))
     }
 
+    // TODO use when they call grab devices
     pub fn preload_key_layout_map(
         &self,
         device_identifier: &DeviceIdentifier,
@@ -48,6 +49,7 @@ impl KeyLayoutMapManager {
         self.get_key_layout_map_lazy(device_identifier).map(|_| ())
     }
 
+    // TODO test
     fn get_key_layout_map_lazy(
         &self,
         device_identifier: &DeviceIdentifier,

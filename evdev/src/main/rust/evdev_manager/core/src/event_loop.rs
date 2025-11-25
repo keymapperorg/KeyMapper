@@ -1,9 +1,12 @@
+use crate::device_identifier::DeviceIdentifier;
 use crate::evdev_error::EvdevError;
 use crate::grabbed_device::GrabbedDevice;
 use crate::runtime::get_runtime;
 use evdev::enums::EV_SYN;
 use evdev::util::event_code_to_int;
-use evdev::{Device, GrabMode, InputEvent, ReadFlag, ReadStatus, UInputDevice};
+use evdev::{
+    Device, DeviceId, DeviceWrapper, GrabMode, InputEvent, ReadFlag, ReadStatus, UInputDevice,
+};
 use io::ErrorKind;
 use mio::event::{Event, Source};
 use mio::unix::SourceFd;
@@ -12,17 +15,20 @@ use slab::Slab;
 use std::collections::VecDeque;
 use std::error::Error;
 use std::fmt::format;
-use std::io;
+use std::fs::read_dir;
 use std::os::fd::AsRawFd;
+use std::path::PathBuf;
 use std::sync::mpsc::Receiver;
 use std::sync::{mpsc, Arc, LazyLock, LockResult, Mutex, OnceLock, PoisonError, RwLock};
 use std::time::Duration;
+use std::{io, ptr};
 use tokio::task::JoinHandle;
 
 static EVENT_LOOP_MANAGER: OnceLock<EventLoopManager> = OnceLock::new();
 
 /// This callback returns true if the observer consumed the input event.
-pub type EvdevObserver = fn(device_path: &str, event: &InputEvent) -> bool;
+pub type EvdevObserver =
+    fn(device_path: &str, device_id: &DeviceIdentifier, event: &InputEvent) -> bool;
 
 /// This uses the Waker and command queue pattern for updating the grabbed devices
 /// because the libevdev struct can not be safely shared between threads. Otherwise, the
@@ -171,6 +177,33 @@ impl EventLoopManager {
         }
 
         Ok(())
+    }
+
+    /// Get the paths to all the real (non uinput) connected devices.
+    pub fn get_all_real_devices() -> Result<Vec<PathBuf>, EvdevError> {
+        let mut paths: Vec<PathBuf> = Vec::new();
+
+        let dir = read_dir("/dev/input")?;
+
+        for entry_result in dir {
+            match entry_result {
+                Ok(entry) => {
+                    let path = entry.path();
+
+                    // TODO check phys for whether it is uinput or not
+                    // Device::new_from_path(path).unwrap().phys()
+                    paths.push(path);
+                }
+                Err(_) => {
+                    debug!(
+                        "Failed to read /dev/input entry: {}",
+                        entry_result.unwrap_err()
+                    );
+                }
+            }
+        }
+
+        Ok(paths)
     }
 }
 
@@ -341,7 +374,11 @@ impl EventLoop {
         let mut consume = false;
 
         for (_, observer) in observers.lock().unwrap().iter() {
-            if observer(&grabbed_device.device_path, event) {
+            if observer(
+                &grabbed_device.device_path,
+                &grabbed_device.device_id,
+                event,
+            ) {
                 consume = true;
             }
         }
