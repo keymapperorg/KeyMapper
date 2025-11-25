@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.promode
 
 import android.os.Build
+import android.provider.Settings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -33,6 +34,7 @@ import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Numbers
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material.icons.rounded.Usb
 import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ButtonDefaults
@@ -54,6 +56,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -68,6 +71,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.SwitchPreferenceCompose
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.FakeShizuku
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcon
 import io.github.sds100.keymapper.base.utils.ui.compose.icons.KeyMapperIcons
+import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.State
 
 @Composable
@@ -295,7 +299,17 @@ private fun LoadedContent(
         }
 
         when (state) {
-            ProModeState.Started -> {
+            is ProModeState.Started -> {
+                if (!state.isDefaultUsbModeCompatible) {
+                    IncompatibleUsbModeCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+                }
+
                 ProModeStartedCard(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -427,6 +441,44 @@ private fun LoadedContent(
 
         Spacer(modifier = Modifier.height(8.dp))
     }
+}
+
+@Composable
+private fun IncompatibleUsbModeCard(modifier: Modifier = Modifier) {
+    val ctx = LocalContext.current
+    SetupCard(
+        modifier = modifier,
+        color = MaterialTheme.colorScheme.errorContainer,
+        icon = {
+            Icon(
+                imageVector = Icons.Rounded.Usb,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface,
+            )
+        },
+        title = stringResource(
+            R.string.pro_mode_setup_wizard_change_default_usb_configuration_title,
+        ),
+        content = {
+            Text(
+                text = stringResource(
+                    R.string.pro_mode_setup_wizard_change_default_usb_configuration_description,
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        },
+        buttonText = stringResource(
+            R.string.button_fix,
+        ),
+        onButtonClick = {
+            // Go to developer options and highlight the "Default USB configuration" option
+            SettingsUtils.launchSettingsScreen(
+                ctx,
+                Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS,
+                "default_usb_configuration",
+            )
+        },
+    )
 }
 
 @Composable
@@ -692,7 +744,7 @@ private fun PreviewDark() {
         ProModeScreen {
             Content(
                 warningState = ProModeWarningState.Understood,
-                setupState = State.Data(ProModeState.Started),
+                setupState = State.Data(ProModeState.Started(isDefaultUsbModeCompatible = true)),
                 showInfoCard = false,
                 onInfoCardDismiss = {},
                 autoStartAtBoot = true,
@@ -728,7 +780,7 @@ private fun PreviewStarted() {
         ProModeScreen {
             Content(
                 warningState = ProModeWarningState.Understood,
-                setupState = State.Data(ProModeState.Started),
+                setupState = State.Data(ProModeState.Started(isDefaultUsbModeCompatible = false)),
                 showInfoCard = false,
                 onInfoCardDismiss = {},
                 autoStartAtBoot = false,

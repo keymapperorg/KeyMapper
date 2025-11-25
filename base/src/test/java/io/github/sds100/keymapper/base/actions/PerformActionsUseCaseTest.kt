@@ -86,6 +86,8 @@ class PerformActionsUseCaseTest {
             systemBridgeConnectionManager = mock(),
             executeShellCommandUseCase = mock(),
             coroutineScope = testCoroutineScope,
+            notificationAdapter = mock(),
+            settingsAdapter = mock(),
         )
     }
 

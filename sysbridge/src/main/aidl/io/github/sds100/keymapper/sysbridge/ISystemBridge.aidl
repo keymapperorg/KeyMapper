@@ -42,4 +42,10 @@ interface ISystemBridge {
    void removeTasks(String packageName) = 17;
 
    void setRingerMode(int ringerMode) = 18;
+
+   boolean isTetheringEnabled() = 19;
+
+   void setTetheringEnabled(boolean enable) = 20;
+
+   long getUsbScreenUnlockedFunctions() = 21;
 }

@@ -8,6 +8,7 @@ import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.intents.IntentExtraModel
 import io.github.sds100.keymapper.system.intents.IntentTarget
 import io.github.sds100.keymapper.system.network.HttpMethod
+import io.github.sds100.keymapper.system.settings.SettingType
 import io.github.sds100.keymapper.system.volume.DndMode
 import io.github.sds100.keymapper.system.volume.RingerMode
 import io.github.sds100.keymapper.system.volume.VolumeStream
@@ -668,6 +669,24 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
+    sealed class Hotspot : ActionData() {
+        @Serializable
+        data object Enable : Hotspot() {
+            override val id = ActionId.ENABLE_HOTSPOT
+        }
+
+        @Serializable
+        data object Disable : Hotspot() {
+            override val id = ActionId.DISABLE_HOTSPOT
+        }
+
+        @Serializable
+        data object Toggle : Hotspot() {
+            override val id = ActionId.TOGGLE_HOTSPOT
+        }
+    }
+
+    @Serializable
     sealed class Brightness : ActionData() {
         @Serializable
         data object EnableAuto : Brightness() {
@@ -872,6 +891,17 @@ sealed class ActionData : Comparable<ActionData> {
     }
 
     @Serializable
+    data class CreateNotification(val title: String, val text: String, val timeoutMs: Long?) :
+        ActionData() {
+        override val id: ActionId = ActionId.CREATE_NOTIFICATION
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is CreateNotification -> title.compareTo(other.title)
+            else -> super.compareTo(other)
+        }
+    }
+
+    @Serializable
     data object AnswerCall : ActionData() {
         override val id: ActionId = ActionId.ANSWER_PHONE_CALL
     }
@@ -948,5 +978,25 @@ sealed class ActionData : Comparable<ActionData> {
     @Serializable
     data object ClearRecentApp : ActionData() {
         override val id: ActionId = ActionId.CLEAR_RECENT_APP
+    }
+
+    @Serializable
+    data class ModifySetting(
+        val settingType: SettingType,
+        val settingKey: String,
+        val value: String,
+    ) : ActionData() {
+        override val id: ActionId = ActionId.MODIFY_SETTING
+
+        override fun compareTo(other: ActionData) = when (other) {
+            is ModifySetting -> compareValuesBy(
+                this,
+                other,
+                { it.settingType },
+                { it.settingKey },
+                { it.value },
+            )
+            else -> super.compareTo(other)
+        }
     }
 }

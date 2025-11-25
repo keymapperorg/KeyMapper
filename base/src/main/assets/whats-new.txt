@@ -6,12 +6,17 @@ You can now remap ALL buttons when the screen is off (including the power button
 • Send SMS messages
 • Force stop current app or clear from recents
 • Mute/unmute microphone
+• Modify any system setting
+• Show a custom notification
+• Toggle hotspot
 
 🆕 New Features
 • Redesigned Settings screen
 • Constraints for foldable hinge open/closed
 • Shortcuts on the trigger screen to guide setup
 • Select notification and alarm sounds for Sound action
+• Constraints for keyboard is showing
+• Switch next to record trigger button to use PRO mode
 
 ⚙️ Enhanced Controls
 • Enable or disable all key maps in a group at once

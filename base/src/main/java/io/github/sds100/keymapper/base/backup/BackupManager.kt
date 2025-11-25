@@ -780,6 +780,7 @@ class BackupManagerImpl @Inject constructor(
     private fun getSoundUidsToBackup(keyMapList: List<KeyMapEntity>): Set<String> {
         val soundActions = keyMapList
             .flatMap { it.actionList }
+            .filterNotNull()
             .filter { it.type == ActionEntity.Type.SOUND }
 
         return soundActions

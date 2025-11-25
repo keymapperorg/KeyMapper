@@ -1,3 +1,20 @@
+## [4.0.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.03)
+
+#### 25 November 2025
+
+## Added
+- #1871 action to modify any system settings.
+- #1221 action to show a custom notification.
+- #1491 action to toggle/enable/disable hotspot.
+- #1414 constraint for when the keyboard is showing.
+- #1900 log to logcat if extra logging is enabled.
+- #1902 add toggle next to record trigger button to use PRO mode.
+
+## Bug fixes
+
+- #1901 prompt user to set default USB configuration to 'No data transfer' after starting pro mode.
+- #1898 do not launch directly into the Wireless Debugging activity on Xiaomi devices due to a bug they introduced.
+
 ## [4.0.0 Beta 2](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.02)
 
 #### 08 November 2025

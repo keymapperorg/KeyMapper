@@ -83,14 +83,9 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
             SettingsUtils.settingsCallbackFlow(ctx, uri).collect {
                 isWirelessDebuggingEnabled.update { getWirelessDebuggingEnabled() }
 
-                // Only go back if the user is currently setting up the wireless debugging step.
-                // This stops Key Mapper going back if they are turning on wireless debugging
-                // for another reason.
-                if (isWirelessDebuggingEnabled.value &&
-                    setupAssistantStepState.value == SystemBridgeSetupStep.WIRELESS_DEBUGGING
-                ) {
-                    getKeyMapperAppTask()?.moveToFront()
-                }
+                // Do not automatically go back to Key Mapper after this step because
+                // some devices show a dialog that will be auto dismissed resulting in wireless
+                // ADB being immediately disabled. E.g OnePlus 6T Oxygen OS 11
             }
         }
 
@@ -260,6 +255,13 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
      * false then developer options was launched.
      */
     private fun launchWirelessDebuggingActivity(): Boolean {
+        // See issue #1898. Xiaomi like to do dodgy stuff, which causes a crash
+        // when long pressing the quick settings tile for wireless debugging.
+        if (Build.BRAND in setOf("xiaomi", "redmi", "poco")) {
+            highlightDeveloperOptionsWirelessDebuggingOption()
+            return false
+        }
+
         val quickSettingsIntent = Intent(TileService.ACTION_QS_TILE_PREFERENCES).apply {
             // Set the package name because this action can also resolve to a "Permission Controller" activity.
             val packageName = "com.android.settings"
@@ -285,14 +287,18 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
             ctx.startActivity(quickSettingsIntent)
             return true
         } catch (_: ActivityNotFoundException) {
-            SettingsUtils.launchSettingsScreen(
-                ctx,
-                Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS,
-                "toggle_adb_wireless",
-            )
+            highlightDeveloperOptionsWirelessDebuggingOption()
 
             return false
         }
+    }
+
+    private fun highlightDeveloperOptionsWirelessDebuggingOption() {
+        SettingsUtils.launchSettingsScreen(
+            ctx,
+            Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS,
+            "toggle_adb_wireless",
+        )
     }
 
     fun invalidateSettings() {

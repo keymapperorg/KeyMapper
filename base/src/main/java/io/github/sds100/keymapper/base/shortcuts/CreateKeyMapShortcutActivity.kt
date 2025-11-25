@@ -8,15 +8,15 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.Lifecycle
-import androidx.navigation.findNavController
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.ComposeColors
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.onboarding.OnboardingUseCase
 import io.github.sds100.keymapper.base.system.accessibility.AccessibilityServiceAdapterImpl
 import io.github.sds100.keymapper.base.system.permissions.RequestPermissionDelegate
 import io.github.sds100.keymapper.base.trigger.RecordTriggerControllerImpl
+import io.github.sds100.keymapper.base.utils.navigation.NavigationProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.launchRepeatOnLifecycle
 import io.github.sds100.keymapper.common.BuildConfigProvider
@@ -53,6 +53,9 @@ class CreateKeyMapShortcutActivity : AppCompatActivity() {
     @Inject
     lateinit var buildConfigProvider: BuildConfigProvider
 
+    @Inject
+    lateinit var navigationProvider: NavigationProvider
+
     private lateinit var requestPermissionDelegate: RequestPermissionDelegate
 
     private val viewModel by viewModels<CreateKeyMapShortcutViewModel>()
@@ -86,15 +89,14 @@ class CreateKeyMapShortcutActivity : AppCompatActivity() {
             notificationReceiverAdapter = notificationReceiverAdapter,
             buildConfigProvider = buildConfigProvider,
             shizukuAdapter = shizukuAdapter,
+            navigationProvider = navigationProvider,
+            coroutineScope = lifecycleScope,
         )
 
         launchRepeatOnLifecycle(Lifecycle.State.STARTED) {
             permissionAdapter.request
                 .collectLatest { permission ->
-                    requestPermissionDelegate.requestPermission(
-                        permission,
-                        findNavController(R.id.container),
-                    )
+                    requestPermissionDelegate.requestPermission(permission)
                 }
         }
 

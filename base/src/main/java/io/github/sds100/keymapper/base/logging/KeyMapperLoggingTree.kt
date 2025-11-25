@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.logging
 
 import android.util.Log
+import io.github.sds100.keymapper.base.BuildConfig
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.entities.LogEntryEntity
 import io.github.sds100.keymapper.data.repositories.LogRepository
@@ -51,6 +52,12 @@ class KeyMapperLoggingTree @Inject constructor(
             priority != Log.INFO
         ) {
             return
+        }
+
+        // Log to logcat if extra logging is enabled. If it is a debug build then a Timber
+        // DebugTree is planted in BaseKeyMapperApp so do not duplicate the log.
+        if (logEverything.value && !BuildConfig.DEBUG) {
+            Log.println(priority, tag, message)
         }
 
         val severity = when (priority) {

@@ -386,6 +386,8 @@ class TriggerSetupDelegateImpl @Inject constructor(
             is TriggerSetupState.NotDetected -> true
         }
 
+        recordTriggerController.setEvdevRecordingEnabled(enableEvdevRecording)
+
         viewModelScope.launch {
             val recordTriggerState = recordTriggerController.state.firstOrNull() ?: return@launch
 
@@ -396,9 +398,7 @@ class TriggerSetupDelegateImpl @Inject constructor(
 
                 is RecordTriggerState.Completed,
                 RecordTriggerState.Idle,
-                    -> recordTriggerController.startRecording(
-                        enableEvdevRecording,
-                    )
+                    -> recordTriggerController.startRecording()
             }
 
             result.onSuccess {
