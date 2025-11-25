@@ -48,7 +48,7 @@ Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_registerEvdev
     return EVDEV_CALLBACK_SUCCESS;
 }
 
-// JNI method to unregister the callback
+// JNI method to unregister the callback=
 JNIEXPORT void JNICALL
 Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_unregisterEvdevCallbackNative(
     JNIEnv *env,

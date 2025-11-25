@@ -24,7 +24,6 @@ fn get_binder_observer() -> &'static EvdevCallbackBinderObserver {
 pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_initEvdevManager(
     _env: JNIEnv,
     _class: JClass,
-    _j_callback_binder: JObject,
 ) {
     info!("Initializing evdev manager");
     android_log::init("KeyMapperSystemBridge").unwrap();
@@ -33,28 +32,7 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     EventLoopManager::get().register_observer(|path, device_id, event| {
         get_binder_observer().on_event(path, device_id, event)
     });
-}
 
-#[no_mangle]
-pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_destroyEvdevManager(
-    _env: JNIEnv,
-    _class: JClass,
-    _j_callback_binder: JObject,
-) {
-    info!("Destroying evdev manager");
-
-    EventLoopManager::get()
-        .stop()
-        .inspect_err(|e| error!("Failed to stop event loop: {:?}", e))
-        .unwrap();
-}
-
-#[no_mangle]
-pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_startEventLoop(
-    _env: JNIEnv,
-    _class: JClass,
-    _j_callback_binder: JObject,
-) {
     EventLoopManager::get()
         .start()
         .inspect_err(|e| error!("Failed to start event loop: {:?}", e))
@@ -62,16 +40,16 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
 }
 
 #[no_mangle]
-pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_stopEventLoop(
+pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_destroyEvdevManager(
     _env: JNIEnv,
     _class: JClass,
 ) {
+    info!("Destroying evdev manager");
+
     EventLoopManager::get()
         .stop()
         .inspect_err(|e| error!("Failed to stop event loop: {:?}", e))
         .unwrap();
-
-    info!("Stopped evdev manager");
 }
 
 #[no_mangle]
