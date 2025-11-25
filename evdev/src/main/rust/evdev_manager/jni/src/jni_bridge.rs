@@ -1,18 +1,12 @@
 use crate::evdev_callback_binder_observer::EvdevCallbackBinderObserver;
 use evdev_manager_core::event_loop::EventLoopManager;
-use evdev_manager_core::observer::EvdevEventNotifier;
 use jni::objects::{GlobalRef, JClass, JObject, JString, JValue};
 use jni::sys::{jboolean, jint, jobject, jobjectArray};
 use jni::JNIEnv;
 use std::ptr;
 use std::sync::OnceLock;
 
-static EVENT_NOTIFIER: OnceLock<EvdevEventNotifier> = OnceLock::new();
 static BINDER_OBSERVER: OnceLock<EvdevCallbackBinderObserver> = OnceLock::new();
-
-fn get_event_notifier() -> &'static EvdevEventNotifier {
-    EVENT_NOTIFIER.get_or_init(EvdevEventNotifier::new)
-}
 
 fn get_binder_observer() -> &'static EvdevCallbackBinderObserver {
     BINDER_OBSERVER.get_or_init(EvdevCallbackBinderObserver::new)
@@ -24,10 +18,12 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     _class: JClass,
     _j_callback_binder: JObject,
 ) {
-    // TODO only log errors in production because a lot of verbose messages
+    info!("Initializing evdev manager");
     android_log::init("KeyMapperSystemBridge").unwrap();
     set_log_panic_hook();
-    info!("Initializing evdev manager");
+
+    EventLoopManager::get()
+        .register_observer(|path, device| get_binder_observer().on_event(path, device));
 }
 
 #[no_mangle]
@@ -50,27 +46,10 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     _class: JClass,
     _j_callback_binder: JObject,
 ) {
-    let notifier = get_event_notifier();
-    let binder_observer = get_binder_observer();
-
     EventLoopManager::get()
-        .start(notifier)
+        .start()
         .inspect_err(|e| error!("Failed to start event loop: {:?}", e))
         .unwrap();
-    // notifier.register(Box::new(binder_observer.clone()));
-    //
-    // // Initialize device task manager
-    // match event_loop::init_device_task_manager(notifier) {
-    //     Ok(()) => {
-    //         info!("Initialized evdev manager with Tokio");
-    //
-    //         // Notify callback that event loop started
-    //         let _ = unsafe { bindings::evdev_callback_on_evdev_event_loop_started() };
-    //     }
-    //     Err(e) => {
-    //         error!("Failed to initialize device task manager: {}", e);
-    //     }
-    // }
 }
 
 #[no_mangle]
@@ -78,7 +57,6 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     _env: JNIEnv,
     _class: JClass,
 ) {
-    // event_loop::remove_all_devices();
     EventLoopManager::get()
         .stop()
         .inspect_err(|e| error!("Failed to stop event loop: {:?}", e))
@@ -152,8 +130,6 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     _env: JNIEnv,
     _class: JClass,
 ) -> jboolean {
-    let binder_observer = get_binder_observer();
-
     info!("Ungrabbed all devices");
     true as jboolean
 }

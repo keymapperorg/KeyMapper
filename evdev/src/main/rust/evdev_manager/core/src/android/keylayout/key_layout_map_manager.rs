@@ -1,10 +1,14 @@
 use crate::android::keylayout::key_layout_map::{KeyLayoutKey, KeyLayoutMap};
+use crate::device_identifier::DeviceIdentifier;
 use std::collections::HashMap;
-use std::env;
+use std::error::Error;
 use std::fs;
 use std::fs::File;
 use std::io::ErrorKind;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, OnceLock};
+use std::{env, io};
+
+static KEY_LAYOUT_MANAGER: OnceLock<KeyLayoutMapManager> = OnceLock::new();
 
 /// Manages KeyLayoutMap caching and key code mapping
 /// This is the only file that directly interacts with KeyLayoutMap C bindings
@@ -12,14 +16,68 @@ use std::sync::{Arc, Mutex};
 pub struct KeyLayoutMapManager {
     /// KeyLayoutMap cache
     /// Maps device path to KeyLayoutMap handle
-    key_layout_maps: Arc<Mutex<HashMap<String, KeyLayoutMap>>>,
+    key_layout_maps: Mutex<HashMap<DeviceIdentifier, Arc<KeyLayoutMap>>>,
 }
 
 impl KeyLayoutMapManager {
-    pub fn new() -> Self {
+    pub fn get() -> &'static Self {
+        KEY_LAYOUT_MANAGER.get_or_init(Self::new)
+    }
+
+    fn new() -> Self {
         Self {
-            key_layout_maps: Arc::new(Mutex::new(HashMap::new())),
+            key_layout_maps: Mutex::new(HashMap::with_capacity(32)),
         }
+    }
+
+    /// Map a raw evdev key code to Android key code
+    /// Returns the android keycode and flags if the key is found in the map, otherwise, `None`.
+    pub fn map_key(
+        &self,
+        device_identifier: &DeviceIdentifier,
+        scan_code: u32,
+    ) -> Result<Option<KeyLayoutKey>, Box<dyn Error>> {
+        self.get_key_layout_map_lazy(device_identifier)
+            .map(|map| map.map_key(scan_code))
+    }
+
+    pub fn preload_key_layout_map(
+        &self,
+        device_identifier: &DeviceIdentifier,
+    ) -> Result<(), Box<dyn Error>> {
+        self.get_key_layout_map_lazy(device_identifier).map(|_| ())
+    }
+
+    fn get_key_layout_map_lazy(
+        &self,
+        device_identifier: &DeviceIdentifier,
+    ) -> Result<Arc<KeyLayoutMap>, Box<dyn Error>> {
+        let mut key_layout_maps = self.key_layout_maps.lock().unwrap();
+
+        if let Some(key_layout_map) = key_layout_maps.get(device_identifier) {
+            return Ok(key_layout_map.clone());
+        }
+
+        let file_path = match self.find_key_layout_file_by_device_identifier(device_identifier) {
+            None => {
+                let error = io::Error::new(
+                    ErrorKind::NotFound,
+                    format!(
+                        "Key layout map file not found for device {:?}",
+                        device_identifier
+                    ),
+                );
+
+                return Err(error.into());
+            }
+            Some(path) => path,
+        };
+
+        let key_layout_map = Arc::new(KeyLayoutMap::load_from_file(file_path.as_str())?);
+
+        key_layout_maps.insert(device_identifier.clone(), key_layout_map.clone());
+
+        Ok(key_layout_map)
     }
 
     /// Find key layout file path by name
@@ -86,11 +144,13 @@ impl KeyLayoutMapManager {
     /// This code is translated from AOSP frameworks/native/libs/input/InputDevice.cpp
     fn find_key_layout_file_by_device_identifier(
         &self,
-        name: &str,
-        vendor: u16,
-        product: u16,
-        version: u16,
+        device_identifier: &DeviceIdentifier,
     ) -> Option<String> {
+        let name = device_identifier.name.as_str();
+        let vendor = device_identifier.vendor;
+        let product = device_identifier.product;
+        let version = device_identifier.version;
+
         // Try vendor/product/version path first
         if vendor != 0 && product != 0 {
             if version != 0 {
@@ -121,46 +181,6 @@ impl KeyLayoutMapManager {
 
         // As a last resort, try Generic
         self.find_key_layout_file_by_name("Generic")
-    }
-
-    /// Register a device and load its KeyLayoutMap
-    /// This should be called when a device is grabbed
-    pub fn register_device(
-        &self,
-        device_path: &str,
-        name: &str,
-        bus: u16,
-        vendor: u16,
-        product: u16,
-        version: u16,
-    ) {
-        let layout_file_path = self
-            .find_key_layout_file_by_device_identifier(&name, vendor, product, version)
-            .expect("Failed to find key layout map");
-
-        let key_layout_map: KeyLayoutMap = KeyLayoutMap::load_from_file(&layout_file_path).unwrap();
-
-        let mut key_layout_maps = self.key_layout_maps.lock().unwrap();
-        key_layout_maps.insert(String::from(device_path), key_layout_map);
-    }
-
-    /// Unregister a device and cleanup its KeyLayoutMap
-    /// This should be called when a device is ungrabbed
-    pub fn unregister_device(&self, device_path: &str) {
-        let mut key_layout_maps = self.key_layout_maps.lock().unwrap();
-        key_layout_maps.remove(device_path);
-    }
-
-    pub fn unregister_all(&self) {
-        self.key_layout_maps.lock().unwrap().clear();
-    }
-
-    /// Map a raw evdev key code to Android key code
-    /// Returns (android_keycode, flags) or (0, 0) if mapping not found
-    pub fn map_key(&self, device_path: &str, scan_code: u32) -> Option<KeyLayoutKey> {
-        let key_layout_maps = self.key_layout_maps.lock().unwrap();
-
-        key_layout_maps.get(device_path)?.map_key(scan_code)
     }
 }
 

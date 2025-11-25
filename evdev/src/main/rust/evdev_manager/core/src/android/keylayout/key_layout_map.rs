@@ -78,7 +78,7 @@ impl KeyLayoutMap {
 
     /// Map a scan code to an Android key code.
     ///
-    /// Returns `Ok((key_code, flags))` on success, or
+    /// Returns `Ok((key_code, flags))` on success, or `None` if not found.
     pub fn map_key(&self, scan_code: u32) -> Option<KeyLayoutKey> {
         self.keys_by_scan_code.get(&scan_code).cloned()
     }

@@ -1,8 +1,9 @@
 use crate::evdev_error::EvdevError;
 use crate::grabbed_device::GrabbedDevice;
-use crate::observer::EvdevEventNotifier;
 use crate::runtime::get_runtime;
-use evdev::{Device, GrabMode, ReadFlag, ReadStatus};
+use evdev::enums::EV_SYN;
+use evdev::util::event_code_to_int;
+use evdev::{Device, GrabMode, InputEvent, ReadFlag, ReadStatus, UInputDevice};
 use io::ErrorKind;
 use mio::event::{Event, Source};
 use mio::unix::SourceFd;
@@ -20,6 +21,9 @@ use tokio::task::JoinHandle;
 
 static EVENT_LOOP_MANAGER: OnceLock<EventLoopManager> = OnceLock::new();
 
+/// This callback returns true if the observer consumed the input event.
+pub type EvdevObserver = fn(device_path: &str, event: &InputEvent) -> bool;
+
 /// This uses the Waker and command queue pattern for updating the grabbed devices
 /// because the libevdev struct can not be safely shared between threads. Otherwise, the
 /// grabbed_devices slab would be stored here and an EventLoop struct wouldn't be necessary.
@@ -29,6 +33,7 @@ pub struct EventLoopManager {
     loop_handle: Mutex<Option<JoinHandle<()>>>,
     waker: Arc<Mutex<Option<Waker>>>,
     command_queue: Arc<Mutex<VecDeque<Command>>>,
+    observers: Arc<Mutex<Slab<EvdevObserver>>>,
 }
 
 const TOKEN_COMMAND: Token = Token(0);
@@ -43,10 +48,11 @@ impl EventLoopManager {
             loop_handle: Mutex::new(None),
             waker: Arc::new(Mutex::new(None)),
             command_queue: Arc::new(Mutex::new(VecDeque::with_capacity(64))),
+            observers: Arc::new(Mutex::new(Slab::with_capacity(16))),
         }
     }
 
-    pub fn start(&self, notifier: &'static EvdevEventNotifier) -> Result<(), EvdevError> {
+    pub fn start(&self) -> Result<(), EvdevError> {
         let mut handle_option = self.loop_handle.lock().unwrap();
 
         match *handle_option {
@@ -59,6 +65,7 @@ impl EventLoopManager {
             None => {
                 let waker = self.waker.clone();
                 let command_queue = self.command_queue.clone();
+                let observers = self.observers.clone();
 
                 let (tx, rx) = mpsc::channel();
 
@@ -72,7 +79,7 @@ impl EventLoopManager {
                         error!("Failed to signal event loop start: {}", e);
                     }
 
-                    EventLoop::new(poll).start(&command_queue, notifier);
+                    EventLoop::new(poll).start(&command_queue, &observers);
                 });
 
                 get_runtime().spawn(async {});
@@ -150,6 +157,10 @@ impl EventLoopManager {
         .inspect_err(|e| error!("Failed to send grab device command {}: {}", path, e))
     }
 
+    pub fn register_observer(&self, observer: EvdevObserver) {
+        self.observers.lock().unwrap().insert(observer);
+    }
+
     fn send_command(&self, command: Command) -> Result<(), Box<dyn Error>> {
         self.command_queue.lock().unwrap().push_back(command);
         match self.waker.lock().unwrap().as_ref() {
@@ -180,7 +191,7 @@ impl EventLoop {
     fn start(
         &mut self,
         command_queue: &Mutex<VecDeque<Command>>,
-        evdev_event_notifier: &EvdevEventNotifier,
+        observers: &Mutex<Slab<EvdevObserver>>,
     ) {
         let mut events = Events::with_capacity(128);
 
@@ -190,7 +201,7 @@ impl EventLoop {
             match self.poll.poll(&mut events, None) {
                 Ok(_) => {
                     for event in events.iter() {
-                        if self.on_poll_event(event, command_queue) {
+                        if self.on_poll_event(event, command_queue, observers) {
                             break 'main_loop;
                         }
                     }
@@ -275,7 +286,12 @@ impl EventLoop {
     }
 
     /// Returns whether to stop the loop.
-    fn on_poll_event(&mut self, event: &Event, command_queue: &Mutex<VecDeque<Command>>) -> bool {
+    fn on_poll_event(
+        &mut self,
+        event: &Event,
+        command_queue: &Mutex<VecDeque<Command>>,
+        observers: &Mutex<Slab<EvdevObserver>>,
+    ) -> bool {
         match event.token() {
             TOKEN_COMMAND => {
                 while let Some(command) = command_queue.lock().unwrap().pop_front() {
@@ -300,58 +316,104 @@ impl EventLoop {
             }
 
             Token(key) => {
+                // Subtract 1 because Token(0) is used for commands
                 let slab_key = key - 1;
+
                 let grabbed_device = self
                     .grabbed_devices
                     .get(slab_key)
                     .unwrap_or_else(|| panic!("Can not find grabbed device with key {}", slab_key));
 
-                self.read_evdev_events(&grabbed_device.evdev);
+                if let Ok(Some(event)) = self.read_evdev_events(&grabbed_device.evdev) {
+                    Self::process_observers(&event, grabbed_device, observers);
+                }
             }
         }
 
         false
     }
 
-    fn read_evdev_events(&self, device: &Device) {
-        match device.next_event(ReadFlag::NORMAL) {
-            Ok((ReadStatus::Success, event)) => {
-                // TODO call notifier
-                error!("Evdev event: {:?}", event);
-            }
+    fn process_observers(
+        event: &InputEvent,
+        grabbed_device: &GrabbedDevice,
+        observers: &Mutex<Slab<EvdevObserver>>,
+    ) {
+        let mut consume = false;
 
-            Ok((ReadStatus::Sync, _)) => {
-                loop {
-                    match device.next_event(ReadFlag::NORMAL | ReadFlag::SYNC) {
-                        Ok((ReadStatus::Sync, _)) => {
-                            // Continue reading sync events
-                        }
-                        Ok((ReadStatus::Success, _)) => {
-                            // Sync complete, break inner loop
-                            break;
-                        }
-                        Err(e) => {
-                            // Check if it's EAGAIN (no more events)
-                            if let Some(err) = e.raw_os_error() {
-                                if err == -(libc::EAGAIN as i32) {
-                                    break;
-                                }
-                            }
-                            let evdev_error = EvdevError::from(e);
-
-                            error!("Evdev error: {}", evdev_error);
-                        }
-                    }
-                }
-            }
-
-            Err(e) => {
-                error!(
-                    "EvdevManager: failed to read next event for device: {:?}, error: {}",
-                    device, e
-                );
+        for (_, observer) in observers.lock().unwrap().iter() {
+            if observer(&grabbed_device.device_path, event) {
+                consume = true;
             }
         }
+
+        if !consume {
+            let (event_type, event_code) = event_code_to_int(&event.event_code);
+            grabbed_device
+                .uinput
+                .write_event(event_type, event_code, event.value)
+                .inspect_err(|e| {
+                    error!(
+                        "Failed to passthrough event to {}. Event: {:?}. Error: {:?}",
+                        grabbed_device.device_path, event, e
+                    )
+                })
+                .ok();
+        }
+    }
+
+    fn read_evdev_events(&self, evdev_device: &Device) -> io::Result<Option<InputEvent>> {
+        match evdev_device.next_event(ReadFlag::NORMAL)? {
+            (ReadStatus::Success, event) => {
+                // Keep this logging line. Later debug/verbose events can be toggled from
+                // the frontend.
+                debug!("Evdev event: {:?}", event);
+                Ok(Some(event))
+            }
+
+            (ReadStatus::Sync, _) => {
+                Self::process_sync_event(evdev_device);
+                Ok(None)
+            }
+        }
+    }
+
+    fn process_sync_event(evdev_device: &Device) {
+        loop {
+            match evdev_device.next_event(ReadFlag::NORMAL | ReadFlag::SYNC) {
+                Ok((ReadStatus::Sync, _)) => {
+                    // Continue reading sync events
+                }
+                Ok((ReadStatus::Success, _)) => {
+                    // Sync complete, break inner loop
+                    break;
+                }
+                Err(e) => {
+                    // Check if it's EAGAIN (no more events)
+                    if let Some(err) = e.raw_os_error() {
+                        if err == -(libc::EAGAIN as i32) {
+                            break;
+                        }
+                    }
+
+                    let evdev_error = EvdevError::from(e);
+                    error!("Evdev sync event error: {}", evdev_error);
+                }
+            }
+        }
+    }
+
+    pub fn write_event_to_device(
+        uinput: &UInputDevice,
+        event_type: u32,
+        code: u32,
+        value: i32,
+    ) -> Result<(), EvdevError> {
+        uinput
+            .write_event(event_type, code, value)
+            .map_err(|e| EvdevError::from(e))?;
+        uinput
+            .write_syn_event(EV_SYN::SYN_REPORT)
+            .map_err(|e| EvdevError::from(e))
     }
 }
 

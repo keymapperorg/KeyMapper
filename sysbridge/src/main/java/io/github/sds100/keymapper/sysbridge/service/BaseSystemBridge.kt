@@ -38,6 +38,7 @@ import android.permission.IPermissionManager
 import android.permission.PermissionManagerApis
 import android.util.Log
 import android.view.InputEvent
+import android.view.KeyEvent
 import androidx.annotation.RequiresApi
 import com.android.internal.telephony.ITelephony
 import io.github.sds100.keymapper.common.models.EvdevDeviceHandle

@@ -2,69 +2,40 @@ use evdev::{util::event_code_to_int, Device, DeviceWrapper, InputEvent};
 use evdev_manager_core::android::android_codes;
 use evdev_manager_core::android::android_codes::AKEYCODE_UNKNOWN;
 use evdev_manager_core::android::keylayout::key_layout_map_manager::KeyLayoutMapManager;
-use evdev_manager_core::observer::EvdevEventObserver;
 use std::ffi::CString;
 use std::os::raw::c_int;
 use std::process;
+use std::sync::atomic::AtomicI64;
 use std::sync::Arc;
 
-/// Observer that forwards events to the AIDL IEvdevCallback interface
-/// Performs KeyLayoutMap conversion from raw evdev codes to Android keycodes
 pub struct EvdevCallbackBinderObserver {
-    /// KeyLayoutMap manager for key code conversion
     key_layout_map_manager: Arc<KeyLayoutMapManager>,
 }
 
+static POWER_BUTTON_DOWN_TIME: AtomicI64 = AtomicI64::new(0);
+
+/// Observer that forwards events to the AIDL IEvdevCallback interface
+/// Performs KeyLayoutMap conversion from raw evdev codes to Android keycodes
 impl EvdevCallbackBinderObserver {
-    pub fn new() -> Self {
-        Self {
-            key_layout_map_manager: Arc::new(KeyLayoutMapManager::new()),
+    pub fn new(key_layout_map_manager: Arc<KeyLayoutMapManager>) -> Self {
+        EvdevCallbackBinderObserver {
+            key_layout_map_manager,
         }
-    }
-
-    /// Register a device and load its KeyLayoutMap
-    pub fn register_device(&self, device_path: &str, evdev: &Device) {
-        let name = evdev.name().expect("Evdev name is required");
-        let bus = evdev.bustype();
-        let vendor = evdev.vendor_id();
-        let product = evdev.product_id();
-        let version = evdev.version();
-
-        self.key_layout_map_manager.register_device(
-            device_path,
-            name,
-            bus,
-            vendor,
-            product,
-            version,
-        );
-    }
-
-    /// Unregister a device and cleanup its KeyLayoutMap
-    pub fn unregister_device(&self, device_path: &str) {
-        self.key_layout_map_manager.unregister_device(device_path);
-    }
-
-    pub fn unregister_all(&self) {
-        self.key_layout_map_manager.unregister_all()
     }
 
     /// Handle power button emergency kill
     /// Returns true if system bridge should be killed
-    fn handle_power_button(&self, code: u32, android_code: u32, value: i32, time_sec: i64) -> bool {
+    fn handle_power_button(code: u32, android_code: u32, value: i32, time_sec: i64) -> bool {
         use std::sync::atomic::{AtomicI64, Ordering};
-        static POWER_BUTTON_DOWN_TIME: AtomicI64 = AtomicI64::new(0);
 
         // KEY_POWER scan code = 116
         if code == 116 || android_code == android_codes::AKEYCODE_POWER {
             if value == 1 {
-                // Button down - store time
                 POWER_BUTTON_DOWN_TIME.store(time_sec, Ordering::Relaxed);
             } else if value == 0 {
                 // Button up - check if held for 10+ seconds
                 let down_time = POWER_BUTTON_DOWN_TIME.load(Ordering::Relaxed);
                 if down_time > 0 && time_sec - down_time >= 10 {
-                    // Kill system bridge
                     let _ = unsafe { evdev_callback_on_emergency_kill_system_bridge() };
                     process::exit(0);
                 }
@@ -73,10 +44,8 @@ impl EvdevCallbackBinderObserver {
         }
         false
     }
-}
 
-impl EvdevEventObserver for EvdevCallbackBinderObserver {
-    fn on_event(&self, device_path: &str, event: &InputEvent) -> bool {
+    pub fn on_event(&self, device_path: &str, event: &InputEvent) -> bool {
         // Extract event type and code from EventCode
         let (ev_type, ev_code) = event_code_to_int(&event.event_code);
 
@@ -127,12 +96,6 @@ impl EvdevEventObserver for EvdevCallbackBinderObserver {
         // Temporary: Assume event is consumed if callback succeeded
         // This is not correct - we need the actual return value from AIDL
         true
-    }
-}
-
-impl Default for EvdevCallbackBinderObserver {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
