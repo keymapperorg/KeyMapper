@@ -125,7 +125,7 @@ impl EvdevJniObserver {
             &[
                 JValue::Object(&JObject::from(device_path_jstring)),
                 JValue::Long(event.time.tv_sec),
-                JValue::Long(event.time.tv_usec),
+                JValue::Long(event.time.tv_usec.into()),
                 JValue::Int(ev_type as i32),
                 JValue::Int(ev_code as i32),
                 JValue::Int(event.value),

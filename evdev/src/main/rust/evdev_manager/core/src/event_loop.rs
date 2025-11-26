@@ -2,26 +2,21 @@ use crate::device_identifier::DeviceIdentifier;
 use crate::evdev_error::EvdevError;
 use crate::grabbed_device::GrabbedDevice;
 use crate::runtime::get_runtime;
-use evdev::enums::EV_SYN;
 use evdev::util::event_code_to_int;
-use evdev::{
-    Device, DeviceId, DeviceWrapper, GrabMode, InputEvent, ReadFlag, ReadStatus, UInputDevice,
-};
+use evdev::{InputEvent, ReadFlag, ReadStatus};
 use io::ErrorKind;
-use mio::event::{Event, Source};
-use mio::unix::SourceFd;
-use mio::{Events, Interest, Poll, Registry, Token, Waker};
-use slab::Slab;
-use std::collections::VecDeque;
 use std::error::Error;
-use std::fmt::format;
+use mio::event::Event;
+use mio::unix::SourceFd;
+use mio::{Events, Interest, Poll, Registry, Token};
+use slab::Slab;
 use std::fs::read_dir;
+use std::io;
 use std::os::fd::AsRawFd;
 use std::path::PathBuf;
-use std::sync::mpsc::Receiver;
-use std::sync::{mpsc, Arc, LazyLock, LockResult, Mutex, OnceLock, PoisonError, RwLock};
-use std::time::Duration;
-use std::{io, ptr};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{mpsc, Arc, Mutex, OnceLock, RwLock};
+use std::time::{Duration, Instant};
 use tokio::task::JoinHandle;
 
 static EVENT_LOOP_MANAGER: OnceLock<EventLoopManager> = OnceLock::new();
@@ -30,19 +25,15 @@ static EVENT_LOOP_MANAGER: OnceLock<EventLoopManager> = OnceLock::new();
 pub type EvdevObserver =
     fn(device_path: &str, device_id: &DeviceIdentifier, event: &InputEvent) -> bool;
 
-/// This uses the Waker and command queue pattern for updating the grabbed devices
-/// because the libevdev struct can not be safely shared between threads. Otherwise, the
-/// grabbed_devices slab would be stored here and an EventLoop struct wouldn't be necessary.
-/// This also has the benefit that the loop can be interrupted gracefully without having to
-/// kill it.
 pub struct EventLoopManager {
+    registry: Arc<Mutex<Option<Registry>>>,
     loop_handle: Mutex<Option<JoinHandle<()>>>,
-    waker: Arc<Mutex<Option<Waker>>>,
-    command_queue: Arc<Mutex<VecDeque<Command>>>,
+    stop_flag: Arc<AtomicBool>,
     observers: Arc<Mutex<Slab<EvdevObserver>>>,
+    grabbed_devices: Arc<RwLock<Slab<GrabbedDevice>>>,
 }
 
-const TOKEN_COMMAND: Token = Token(0);
+const POLL_TIMEOUT: Duration = Duration::from_millis(100);
 
 impl EventLoopManager {
     pub fn get() -> &'static EventLoopManager {
@@ -51,10 +42,11 @@ impl EventLoopManager {
 
     fn new() -> Self {
         EventLoopManager {
+            registry: Arc::new(Mutex::new(None)),
             loop_handle: Mutex::new(None),
-            waker: Arc::new(Mutex::new(None)),
-            command_queue: Arc::new(Mutex::new(VecDeque::with_capacity(64))),
+            stop_flag: Arc::new(AtomicBool::new(false)),
             observers: Arc::new(Mutex::new(Slab::with_capacity(16))),
+            grabbed_devices: Arc::new(RwLock::new(Slab::with_capacity(32))),
         }
     }
 
@@ -69,26 +61,27 @@ impl EventLoopManager {
             }
 
             None => {
-                let waker = self.waker.clone();
-                let command_queue = self.command_queue.clone();
+                self.stop_flag.store(false, Ordering::SeqCst);
+
+                let stop_flag = self.stop_flag.clone();
                 let observers = self.observers.clone();
+                let grabbed_devices = self.grabbed_devices.clone();
+                let registry = self.registry.clone();
 
                 let (tx, rx) = mpsc::channel();
 
                 let handle = get_runtime().spawn(async move {
-                    // TODO does logging still work across threads or does another need to be installed?
                     let poll = Poll::new().unwrap();
-                    *waker.lock().unwrap() =
-                        Some(Waker::new(poll.registry(), TOKEN_COMMAND).unwrap());
+
+                    // Store the registry for use by grab/ungrab operations
+                    *registry.lock().unwrap() = Some(poll.registry().try_clone().unwrap());
 
                     if let Err(e) = tx.send(()) {
                         error!("Failed to signal event loop start: {}", e);
                     }
 
-                    EventLoop::new(poll).start(&command_queue, &observers);
+                    EventLoop::new(poll).start(&stop_flag, &grabbed_devices, &observers);
                 });
-
-                get_runtime().spawn(async {});
 
                 *handle_option = Some(handle);
 
@@ -117,78 +110,128 @@ impl EventLoopManager {
         match handle_option {
             None => {}
             Some(handle) => {
-                let (tx, rx) = mpsc::channel();
-                self.send_command(Command::StopLoop(tx))?;
+                // Signal the loop to stop
+                self.stop_flag.store(true, Ordering::SeqCst);
 
-                match rx.recv_timeout(Duration::from_secs(2)) {
-                    Ok(_) => {
-                        // Loop stopped gracefully
-                    }
-                    Err(e) => {
-                        error!("Failed to wait for event loop stop: {}", e);
+                // Wait for the loop to finish (with timeout)
+                let start = Instant::now();
+                while !handle.is_finished() {
+                    if start.elapsed() > Duration::from_secs(2) {
+                        error!("Event loop did not stop in time, aborting");
                         handle.abort();
                         return Err(Box::new(EvdevError::new(-libc::ETIMEDOUT)));
                     }
+                    std::thread::sleep(Duration::from_millis(10));
                 }
             }
         }
 
-        let queue_option = self
-            .command_queue
-            .lock()
-            .inspect_err(|e| error!("Failed to get command queue: {}", e))
-            .ok();
-
-        if let Some(mut queue) = queue_option {
-            queue.clear();
-        }
-
-        let waker_option = self
-            .waker
-            .lock()
-            .inspect_err(|e| error!("Failed to get loop handle: {}", e))
-            .ok();
-
-        if let Some(mut waker) = waker_option {
-            waker.take();
+        // Clear the registry
+        if let Ok(mut registry) = self.registry.lock() {
+            registry.take();
         }
 
         Ok(())
     }
 
     pub fn grab_device(&self, path: &str) -> Result<(), Box<dyn Error>> {
-        self.send_command(Command::GrabDevice {
-            path: path.to_string(),
-        })
-        .inspect_err(|e| error!("Failed to send grab device command {}: {}", path, e))
+        let registry_guard = self.registry.lock().unwrap();
+        let registry = registry_guard
+            .as_ref()
+            .ok_or_else(|| io::Error::new(ErrorKind::NotConnected, "Event loop not running"))?;
+
+        let mut devices = self.grabbed_devices.write().unwrap();
+
+        // Check if device is already grabbed
+        if devices.iter().any(|(_, device)| device.device_path == path) {
+            return Err(Box::new(io::Error::new(
+                ErrorKind::AlreadyExists,
+                format!("Device already grabbed: {}", path),
+            )));
+        }
+
+        let device = GrabbedDevice::new(path)?;
+        let fd = device.evdev.lock().unwrap().as_raw_fd();
+        let key = devices.insert(device);
+
+        let mut source_fd = SourceFd(&fd);
+
+        // Register with key + 1 because 0 could be reserved for future use
+        registry
+            .register(&mut source_fd, Token(key + 1), Interest::READABLE)
+            .inspect_err(|e| {
+                // Remove device on registration failure
+                devices.remove(key);
+                error!("Failed to register device {}: {}", path, e);
+            })?;
+
+        info!("Grabbed device: {}", path);
+        Ok(())
     }
 
-    pub fn ungrab_device(&self, path: &str) -> Result<(), Box<dyn Error>> {
-        self.send_command(Command::UngrabDevice {
-            path: path.to_string(),
-        })
-        .inspect_err(|e| error!("Failed to send ungrab device command {}: {}", path, e))
+    pub fn ungrab_device(&self, path: &str) -> Result<(), io::Error> {
+        let registry_guard = self.registry.lock().unwrap();
+        let registry = registry_guard
+            .as_ref()
+            .ok_or_else(|| io::Error::new(ErrorKind::NotConnected, "Event loop not running"))?;
+
+        let mut devices = self.grabbed_devices.write().unwrap();
+
+        let device_entry = devices
+            .iter()
+            .find(|(_, device)| device.device_path == path);
+
+        match device_entry {
+            None => Err(io::Error::new(
+                ErrorKind::NotFound,
+                format!("Device not found: {}", path),
+            )),
+            Some((key, device)) => {
+                let fd = device.evdev.lock().unwrap().as_raw_fd();
+                let mut source_fd = SourceFd(&fd);
+
+                registry
+                    .deregister(&mut source_fd)
+                    .inspect_err(|e| error!("Failed to deregister device {}: {}", path, e))
+                    .ok();
+
+                // Remove device (Drop will ungrab it)
+                devices.remove(key);
+                info!("Ungrabbed device: {}", path);
+                Ok(())
+            }
+        }
     }
 
     pub fn ungrab_all_devices(&self) -> Result<(), Box<dyn Error>> {
-        self.send_command(Command::UngrabAllDevices)
-            .inspect_err(|e| error!("Failed to send ungrab all devices command: {}", e))
+        let registry_guard = self.registry.lock().unwrap();
+        let registry = registry_guard.as_ref();
+
+        let mut devices = self.grabbed_devices.write().unwrap();
+
+        // Deregister all devices from the registry
+        if let Some(registry) = registry {
+            for (_, device) in devices.iter() {
+                let fd = device.evdev.lock().unwrap().as_raw_fd();
+                let mut source_fd = SourceFd(&fd);
+
+                registry
+                    .deregister(&mut source_fd)
+                    .inspect_err(|e| {
+                        error!("Failed to deregister device {}: {}", device.device_path, e)
+                    })
+                    .ok();
+            }
+        }
+
+        // Clear all devices (Drop will ungrab each one)
+        devices.clear();
+        info!("Ungrabbed all devices");
+        Ok(())
     }
 
     pub fn register_observer(&self, observer: EvdevObserver) {
         self.observers.lock().unwrap().insert(observer);
-    }
-
-    fn send_command(&self, command: Command) -> Result<(), Box<dyn Error>> {
-        self.command_queue.lock().unwrap().push_back(command);
-        match self.waker.lock().unwrap().as_ref() {
-            None => {
-                error!("EvdevManager event loop is not running");
-            }
-            Some(waker) => waker.wake()?,
-        }
-
-        Ok(())
     }
 
     /// Get the paths to all the real (non uinput) connected devices.
@@ -202,8 +245,7 @@ impl EventLoopManager {
                 Ok(entry) => {
                     let path = entry.path();
 
-                    // TODO check phys for whether it is uinput or not
-                    // Device::new_from_path(path).unwrap().phys()
+                    // TODO filter devices that are not grabbed uinput devices
                     paths.push(path);
                 }
                 Err(_) => {
@@ -221,206 +263,92 @@ impl EventLoopManager {
 
 struct EventLoop {
     poll: Poll,
-    grabbed_devices: Slab<GrabbedDevice>,
 }
 
 impl EventLoop {
     pub fn new(poll: Poll) -> Self {
-        EventLoop {
-            poll,
-            grabbed_devices: Slab::with_capacity(32),
-        }
+        EventLoop { poll }
     }
 
-    /// This blocks until a Stop command is sent in the command queue.
+    /// This blocks until the stop flag is set.
     fn start(
         &mut self,
-        command_queue: &Mutex<VecDeque<Command>>,
+        stop_flag: &AtomicBool,
+        grabbed_devices: &RwLock<Slab<GrabbedDevice>>,
         observers: &Mutex<Slab<EvdevObserver>>,
     ) {
         let mut events = Events::with_capacity(128);
 
         info!("Started evdev event loop");
 
-        'main_loop: loop {
-            match self.poll.poll(&mut events, None) {
+        loop {
+            if stop_flag.load(Ordering::SeqCst) {
+                break;
+            }
+
+            // TODO use waker to wake it up and then stop the loop
+            match self.poll.poll(&mut events, Some(POLL_TIMEOUT)) {
                 Ok(_) => {
                     for event in events.iter() {
-                        if self.on_poll_event(event, command_queue, observers) {
-                            break 'main_loop;
-                        }
+                        self.on_poll_event(event, grabbed_devices, observers);
                     }
+                }
+                Err(e) if e.kind() == ErrorKind::Interrupted => {
+                    // Interrupted, continue polling
+                    continue;
                 }
                 Err(e) => {
                     error!("EvdevManager poll error. Stopping loop: {}", e);
-                    self.stop();
-                    break 'main_loop;
+                    break;
                 }
             }
         }
-    }
 
-    fn stop(&mut self) {
-        for (_, device) in self.grabbed_devices.iter_mut() {
-            let mut source_fd = SourceFd(&device.evdev.as_raw_fd());
-
-            // Do not unwrap here so that other devices can be ungrabbed.
-            self.poll
-                .registry()
-                .deregister(&mut source_fd)
-                .inspect_err(|e| {
-                    error!("Failed to deregister device {}: {}", device.device_path, e)
-                })
-                .ok();
-
-            device
-                .evdev
-                .grab(GrabMode::Ungrab)
-                .inspect_err(|e| error!("Failed to ungrab device {}: {}", device.device_path, e))
-                .ok();
-        }
-
-        self.grabbed_devices.clear();
         info!("Stopped evdev event loop");
     }
 
-    fn ungrab_device(&mut self, path: &str) -> io::Result<()> {
-        let device_option = self
-            .grabbed_devices
-            .iter()
-            .find(|(_, device)| device.device_path == path);
-
-        match device_option {
-            None => Err(io::Error::new(
-                ErrorKind::NotFound,
-                format!("Device not found {}", path),
-            )),
-            Some((key, _)) => {
-                let mut device = self.grabbed_devices.remove(key);
-
-                device
-                    .evdev
-                    .grab(GrabMode::Ungrab)
-                    .inspect_err(|e| error!("Failed to ungrab device {}: {}", path, e))
-            }
-        }
-    }
-
-    fn ungrab_all_devices(&mut self) -> io::Result<()> {
-        let mut result: io::Result<()> = Ok(());
-
-        for (_key, device) in self.grabbed_devices.iter_mut() {
-            let ungrab_result = device
-                .evdev
-                .grab(GrabMode::Ungrab)
-                .inspect_err(|e| error!("Failed to ungrab device {}: {}", device.device_path, e));
-
-            if ungrab_result.is_err() {
-                result = ungrab_result;
-            }
-        }
-
-        self.grabbed_devices.clear();
-
-        result
-    }
-
-    fn grab_device(&mut self, path: &str) -> io::Result<()> {
-        if self
-            .grabbed_devices
-            .iter()
-            .any(|(_, device)| device.device_path == path)
-        {
-            return Err(io::Error::new(
-                ErrorKind::AlreadyExists,
-                format!("Device already grabbed: {}", path),
-            ));
-        }
-
-        let device = GrabbedDevice::new(path)?;
-        let key = self.grabbed_devices.insert(device);
-
-        let stored_device = self.grabbed_devices.get(key).unwrap();
-        let mut source_fd = SourceFd(&stored_device.evdev.as_raw_fd());
-
-        // Register with key + 1 because 0 is reserved for commands.
-        self.poll
-            .registry()
-            .register(&mut source_fd, Token(key + 1), Interest::READABLE)
-    }
-
-    /// Returns whether to stop the loop.
     fn on_poll_event(
         &mut self,
         event: &Event,
-        command_queue: &Mutex<VecDeque<Command>>,
+        grabbed_devices: &RwLock<Slab<GrabbedDevice>>,
         observers: &Mutex<Slab<EvdevObserver>>,
-    ) -> bool {
-        match event.token() {
-            TOKEN_COMMAND => {
-                while let Some(command) = command_queue.lock().unwrap().pop_front() {
-                    match command {
-                        Command::StopLoop(tx) => {
-                            self.stop();
-                            tx.send(()).ok();
-                            return true;
-                        }
+    ) {
+        let Token(key) = event.token();
+        // Subtract 1 because Token(0) is reserved
+        let slab_key = key - 1;
 
-                        Command::GrabDevice { path } => {
-                            self.grab_device(path.as_str())
-                                .inspect_err(|e| error!("Failed to grab device {}: {}", path, e))
-                                .ok();
-                        }
+        let devices = grabbed_devices.read().unwrap();
 
-                        Command::UngrabDevice { path } => {
-                            self.ungrab_device(path.as_str())
-                                .inspect_err(|e| error!("Failed to ungrab device {}: {}", path, e))
-                                .ok();
-                        }
-
-                        Command::UngrabAllDevices => {
-                            self.ungrab_all_devices()
-                                .inspect_err(|e| error!("Failed to ungrab device: {}", e))
-                                .ok();
-                        }
-                    }
-                }
+        let grabbed_device = match devices.get(slab_key) {
+            Some(device) => device,
+            None => {
+                debug!("Device with key {} no longer exists", slab_key);
+                return;
             }
+        };
 
-            Token(key) => {
-                // Subtract 1 because Token(0) is used for commands
-                let slab_key = key - 1;
+        let evdev = grabbed_device.evdev.lock().unwrap();
+        let mut flags: ReadFlag = ReadFlag::NORMAL;
 
-                let grabbed_device = self
-                    .grabbed_devices
-                    .get(slab_key)
-                    .unwrap_or_else(|| panic!("Can not find grabbed device with key {}", slab_key));
-
-                let mut flags: ReadFlag = ReadFlag::NORMAL;
-
-                loop {
-                    match grabbed_device.evdev.next_event(flags) {
-                        Ok((ReadStatus::Success, event)) => {
-                            flags = ReadFlag::NORMAL;
-                            // Keep this logging line. Debug/verbose events will be disabled in production.
-                            debug!("Evdev event: {:?}", event);
-                            Self::process_observers(&event, grabbed_device, observers);
-                        }
-                        Ok((ReadStatus::Sync, _event)) => {
-                            // Continue reading sync events
-                            flags = ReadFlag::NORMAL | ReadFlag::SYNC;
-                        }
-                        Err(_error) => {
-                            // Break if it's EAGAIN (no more events) or any other error.
-                            // Do not log these errors because it is expected
-                            break;
-                        }
-                    }
+        loop {
+            match evdev.next_event(flags) {
+                Ok((ReadStatus::Success, input_event)) => {
+                    flags = ReadFlag::NORMAL;
+                    // Keep this logging line. Debug/verbose events will be disabled in production.
+                    debug!("Evdev event: {:?}", input_event);
+                    Self::process_observers(&input_event, grabbed_device, observers);
+                }
+                Ok((ReadStatus::Sync, _event)) => {
+                    // Continue reading sync events
+                    flags = ReadFlag::NORMAL | ReadFlag::SYNC;
+                }
+                Err(_error) => {
+                    // Break if it's EAGAIN (no more events) or any other error.
+                    // Do not log these errors because it is expected
+                    break;
                 }
             }
         }
-
-        false
     }
 
     fn process_observers(
@@ -442,7 +370,8 @@ impl EventLoop {
 
         if !consume {
             let (event_type, event_code) = event_code_to_int(&event.event_code);
-            Self::write_event_to_device(&grabbed_device.uinput, event_type, event_code, event.value)
+            grabbed_device
+                .write_event(event_type, event_code, event.value)
                 .inspect_err(|e| {
                     error!(
                         "Failed to passthrough event to {}. Event: {:?}. Error: {:?}",
@@ -452,29 +381,4 @@ impl EventLoop {
                 .ok();
         }
     }
-
-    pub fn write_event_to_device(
-        uinput: &UInputDevice,
-        event_type: u32,
-        code: u32,
-        value: i32,
-    ) -> Result<(), EvdevError> {
-        uinput
-            .write_event(event_type, code, value)
-            .map_err(EvdevError::from)?;
-        uinput
-            .write_syn_event(EV_SYN::SYN_REPORT)
-            .map_err(EvdevError::from)
-    }
-}
-
-#[derive(Debug, Clone)]
-enum Command {
-    StopLoop(mpsc::Sender<()>),
-
-    GrabDevice { path: String },
-
-    UngrabDevice { path: String },
-
-    UngrabAllDevices,
 }

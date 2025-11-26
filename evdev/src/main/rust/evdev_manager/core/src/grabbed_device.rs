@@ -1,16 +1,17 @@
-use std::any::Any;
 use crate::device_identifier::DeviceIdentifier;
 use crate::evdev_error::EvdevError;
 use evdev::enums::EV_SYN;
 use evdev::{Device, DeviceWrapper, GrabMode, UInputDevice};
 use std::fs::OpenOptions;
 use std::os::unix::fs::OpenOptionsExt;
+use std::sync::Mutex;
 
 /// Device context containing all information about a grabbed evdev device
 pub struct GrabbedDevice {
     pub device_path: String,
     pub device_id: DeviceIdentifier,
-    pub evdev: Device,
+    /// The libevdev Device can not be shared safely across threads so wrap it in a mutex.
+    pub evdev: Mutex<Device>,
     pub uinput: UInputDevice,
 }
 
@@ -45,7 +46,7 @@ impl GrabbedDevice {
         };
 
         Ok(Self {
-            evdev,
+            evdev: Mutex::new(evdev),
             device_id,
             uinput,
             device_path: device_path.to_string(),
@@ -70,7 +71,7 @@ impl GrabbedDevice {
 impl Drop for GrabbedDevice {
     fn drop(&mut self) {
         // Ungrab the device
-        let _ = self.evdev.grab(GrabMode::Ungrab);
+        let _ = self.evdev.lock().unwrap().grab(GrabMode::Ungrab);
         // uinput device is dropped automatically
     }
 }
