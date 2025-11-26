@@ -1,42 +1,59 @@
-use crate::evdev_callback_binder_observer::EvdevCallbackBinderObserver;
+use crate::evdev_jni_observer::EvdevJniObserver;
 use evdev::{Device, DeviceWrapper};
 use evdev_manager_core::android::keylayout::key_layout_map_manager::KeyLayoutMapManager;
-use evdev_manager_core::evdev_error::EvdevError;
 use evdev_manager_core::event_loop::EventLoopManager;
-use jni::objects::{GlobalRef, JClass, JObject, JString, JValue};
+use jni::objects::{JClass, JObject, JString, JValue};
 use jni::sys::{jboolean, jint, jobject, jobjectArray};
 use jni::JNIEnv;
 use std::path::PathBuf;
 use std::ptr;
 use std::sync::{Arc, OnceLock};
 
-static BINDER_OBSERVER: OnceLock<EvdevCallbackBinderObserver> = OnceLock::new();
+static JNI_OBSERVER: OnceLock<EvdevJniObserver> = OnceLock::new();
 
-fn get_binder_observer() -> &'static EvdevCallbackBinderObserver {
-    BINDER_OBSERVER.get_or_init(|| {
-        let key_layout_manager = KeyLayoutMapManager::get();
-        EvdevCallbackBinderObserver::new(key_layout_manager)
-    })
+fn get_jni_observer() -> &'static EvdevJniObserver {
+    JNI_OBSERVER.get().expect("JNI observer not initialized")
 }
 
 /// MUST only be called once in the lifetime of the process.
 #[no_mangle]
 pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_initEvdevManager(
-    _env: JNIEnv,
-    _class: JClass,
+    env: JNIEnv,
+    this: JObject,
 ) {
     info!("Initializing evdev manager");
     android_log::init("KeyMapperSystemBridge").unwrap();
     set_log_panic_hook();
 
+    // Get the JavaVM
+    let jvm = env.get_java_vm().expect("Failed to get JavaVM");
+
+    // Create a global reference to the BaseSystemBridge instance
+    let system_bridge = env
+        .new_global_ref(this)
+        .expect("Failed to create global reference to BaseSystemBridge");
+
+    // Initialize the JNI observer
+    let key_layout_manager = KeyLayoutMapManager::get();
+    let observer = EvdevJniObserver::new(Arc::new(jvm), system_bridge, key_layout_manager);
+
+    if let Err(_) = JNI_OBSERVER.set(observer) {
+        panic!("JNI observer already initialized");
+    }
+
+    // Register the observer with the event loop
     EventLoopManager::get().register_observer(|path, device_id, event| {
-        get_binder_observer().on_event(path, device_id, event)
+        get_jni_observer().on_event(path, device_id, event)
     });
 
+    // Start the event loop
     EventLoopManager::get()
         .start()
         .inspect_err(|e| error!("Failed to start event loop: {:?}", e))
         .unwrap();
+
+    // Notify that the event loop has started
+    get_jni_observer().on_event_loop_started();
 }
 
 #[no_mangle]
@@ -75,13 +92,8 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
 pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_ungrabEvdevDeviceNative(
     mut _env: JNIEnv,
     _class: JClass,
-    j_device_path: JString,
+    _j_device_path: JString,
 ) -> jboolean {
-    let device_path = match _env.get_string(&j_device_path) {
-        Ok(s) => s.to_string_lossy().into_owned(),
-        Err(_) => return false as jboolean,
-    };
-
     false as jboolean
 }
 
@@ -98,16 +110,11 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
 pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_writeEvdevEventNative(
     mut _env: JNIEnv,
     _class: JClass,
-    j_device_path: JString,
-    j_type: jint,
-    j_code: jint,
-    j_value: jint,
+    _j_device_path: JString,
+    _j_type: jint,
+    _j_code: jint,
+    _j_value: jint,
 ) -> jboolean {
-    let device_path = match _env.get_string(&j_device_path) {
-        Ok(s) => s.to_string_lossy().into_owned(),
-        Err(_) => return false as jboolean,
-    };
-
     false as jboolean
 }
 

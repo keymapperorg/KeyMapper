@@ -79,11 +79,52 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
 
     external fun getEvdevDevicesNative(): Array<EvdevDeviceHandle>
 
-    external fun registerEvdevCallbackNative(callback: IBinder): Int
-    external fun unregisterEvdevCallbackNative()
-
     external fun initEvdevManager()
     external fun destroyEvdevManager()
+
+    /**
+     * Called from Rust via JNI when the evdev event loop has started.
+     * Forwards the call to the registered IEvdevCallback.
+     */
+    fun onEvdevEventLoopStarted() {
+        synchronized(evdevCallbackLock) {
+            evdevCallback?.onEvdevEventLoopStarted()
+        }
+    }
+
+    /**
+     * Called from Rust via JNI when an evdev event occurs.
+     * Forwards the call to the registered IEvdevCallback and returns whether the event was consumed.
+     */
+    fun onEvdevEvent(
+        devicePath: String,
+        timeSec: Long,
+        timeUsec: Long,
+        type: Int,
+        code: Int,
+        value: Int,
+        androidCode: Int,
+    ): Boolean {
+        synchronized(evdevCallbackLock) {
+            val callback = evdevCallback ?: return false
+            return try {
+                callback.onEvdevEvent(devicePath, timeSec, timeUsec, type, code, value, androidCode)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error calling evdev callback", e)
+                false
+            }
+        }
+    }
+
+    /**
+     * Called from Rust via JNI when the power button is held for 10+ seconds.
+     * Forwards the call to the registered IEvdevCallback for emergency system bridge kill.
+     */
+    fun onEmergencyKillSystemBridge() {
+        synchronized(evdevCallbackLock) {
+            evdevCallback?.onEmergencyKillSystemBridge()
+        }
+    }
 
     companion object {
         private const val TAG: String = "KeyMapperSystemBridge"
@@ -164,9 +205,10 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
     private var evdevCallback: IEvdevCallback? = null
     private val evdevCallbackDeathRecipient: IBinder.DeathRecipient = IBinder.DeathRecipient {
         Log.i(TAG, "EvdevCallback binder died. Stopping evdev event loop")
-        evdevCallback = null
 
-        unregisterEvdevCallbackNative()
+        synchronized(evdevCallbackLock) {
+            evdevCallback = null
+        }
 
         // Start periodic check for Key Mapper installation
         startKeyMapperPeriodicCheck()
@@ -370,15 +412,12 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
             this.evdevCallback = callback
             binder.linkToDeath(evdevCallbackDeathRecipient, 0)
         }
-
-        registerEvdevCallbackNative(callback.asBinder())
     }
 
     override fun unregisterEvdevCallback() {
         synchronized(evdevCallbackLock) {
             evdevCallback?.asBinder()?.unlinkToDeath(evdevCallbackDeathRecipient, 0)
             evdevCallback = null
-            unregisterEvdevCallbackNative()
         }
     }
 

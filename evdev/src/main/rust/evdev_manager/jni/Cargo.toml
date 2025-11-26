@@ -15,4 +15,4 @@ evdev = { path = "../../evdev" }
 evdev_manager_core = { path = "../core" }
 
 [build-dependencies]
-cc = "1.2.46"
+# No C++ compilation needed since we're using pure JNI

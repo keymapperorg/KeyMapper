@@ -80,7 +80,6 @@ name = "evdev_manager"
 version = "0.1.0"
 dependencies = [
  "android_log",
- "cc",
  "evdev",
  "evdev_manager_core",
  "jni",
