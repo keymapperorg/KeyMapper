@@ -163,6 +163,18 @@ impl EventLoopManager {
         .inspect_err(|e| error!("Failed to send grab device command {}: {}", path, e))
     }
 
+    pub fn ungrab_device(&self, path: &str) -> Result<(), Box<dyn Error>> {
+        self.send_command(Command::UngrabDevice {
+            path: path.to_string(),
+        })
+        .inspect_err(|e| error!("Failed to send ungrab device command {}: {}", path, e))
+    }
+
+    pub fn ungrab_all_devices(&self) -> Result<(), Box<dyn Error>> {
+        self.send_command(Command::UngrabAllDevices)
+            .inspect_err(|e| error!("Failed to send ungrab all devices command: {}", e))
+    }
+
     pub fn register_observer(&self, observer: EvdevObserver) {
         self.observers.lock().unwrap().insert(observer);
     }
@@ -294,6 +306,25 @@ impl EventLoop {
         }
     }
 
+    fn ungrab_all_devices(&mut self) -> io::Result<()> {
+        let mut result: io::Result<()> = Ok(());
+
+        for (_key, device) in self.grabbed_devices.iter_mut() {
+            let ungrab_result = device
+                .evdev
+                .grab(GrabMode::Ungrab)
+                .inspect_err(|e| error!("Failed to ungrab device {}: {}", device.device_path, e));
+
+            if ungrab_result.is_err() {
+                result = ungrab_result;
+            }
+        }
+
+        self.grabbed_devices.clear();
+
+        result
+    }
+
     fn grab_device(&mut self, path: &str) -> io::Result<()> {
         if self
             .grabbed_devices
@@ -341,9 +372,17 @@ impl EventLoop {
                                 .ok();
                         }
 
-                        Command::UngrabDevice { path } => {}
+                        Command::UngrabDevice { path } => {
+                            self.ungrab_device(path.as_str())
+                                .inspect_err(|e| error!("Failed to ungrab device {}: {}", path, e))
+                                .ok();
+                        }
 
-                        Command::UngrabAllDevices => {}
+                        Command::UngrabAllDevices => {
+                            self.ungrab_all_devices()
+                                .inspect_err(|e| error!("Failed to ungrab device: {}", e))
+                                .ok();
+                        }
                     }
                 }
             }

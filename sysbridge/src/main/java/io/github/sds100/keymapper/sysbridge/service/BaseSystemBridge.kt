@@ -426,6 +426,7 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
         return grabEvdevDeviceNative(devicePath)
     }
 
+    // TODO remove so key mapper can handle errors when grabbing a specific device
     override fun grabEvdevDeviceArray(devicePath: Array<out String>?): Boolean {
         devicePath ?: return false
 
@@ -439,13 +440,11 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
 
     override fun ungrabEvdevDevice(devicePath: String?): Boolean {
         devicePath ?: return false
-        ungrabEvdevDeviceNative(devicePath)
-        return true
+        return ungrabEvdevDeviceNative(devicePath)
     }
 
     override fun ungrabAllEvdevDevices(): Boolean {
-        ungrabAllEvdevDevicesNative()
-        return true
+        return ungrabAllEvdevDevicesNative()
     }
 
     override fun injectInputEvent(event: InputEvent?, mode: Int): Boolean {

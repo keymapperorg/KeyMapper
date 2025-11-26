@@ -5,6 +5,7 @@ use evdev_manager_core::event_loop::EventLoopManager;
 use jni::objects::{JClass, JObject, JString, JValue};
 use jni::sys::{jboolean, jint, jobject, jobjectArray};
 use jni::JNIEnv;
+use log::LevelFilter;
 use std::path::PathBuf;
 use std::ptr;
 use std::sync::{Arc, OnceLock};
@@ -23,6 +24,11 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
 ) {
     info!("Initializing evdev manager");
     android_log::init("KeyMapperSystemBridge").unwrap();
+    
+    // Set minimum log level to reduce verbosity from JNI (Info = show Info, Warn, Error only)
+    // Options: Trace, Debug, Info, Warn, Error
+    log::set_max_level(LevelFilter::Debug);
+    
     set_log_panic_hook();
 
     // Get the JavaVM
@@ -90,11 +96,21 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
 
 #[no_mangle]
 pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_ungrabEvdevDeviceNative(
-    mut _env: JNIEnv,
+    mut env: JNIEnv,
     _class: JClass,
-    _j_device_path: JString,
+    j_device_path: JString,
 ) -> jboolean {
-    false as jboolean
+    let device_path: String = match env.get_string(&j_device_path) {
+        Ok(s) => s.to_string_lossy().into_owned(),
+        Err(e) => {
+            error!("Failed to get device path string: {:?}", e);
+            return false as jboolean;
+        }
+    };
+
+    EventLoopManager::get()
+        .ungrab_device(device_path.as_str())
+        .is_ok() as jboolean
 }
 
 #[no_mangle]
@@ -102,8 +118,9 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     _env: JNIEnv,
     _class: JClass,
 ) -> jboolean {
-    info!("Ungrabbed all devices");
-    true as jboolean
+    EventLoopManager::get()
+        .ungrab_all_devices()
+        .is_ok() as jboolean
 }
 
 #[no_mangle]
@@ -169,7 +186,7 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
         }
     };
 
-    let array = match env.new_object_array(0, class, JObject::null()) {
+    let array = match env.new_object_array(device_handles.len() as i32, class, JObject::null()) {
         Ok(a) => a,
         Err(e) => {
             error!("Failed to create EvdevDeviceHandle array: {:?}", e);
