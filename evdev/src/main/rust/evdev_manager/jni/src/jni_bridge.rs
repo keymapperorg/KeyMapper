@@ -25,8 +25,7 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     info!("Initializing evdev manager");
     android_log::init("KeyMapperSystemBridge").unwrap();
     
-    // Set minimum log level to reduce verbosity from JNI (Info = show Info, Warn, Error only)
-    // Options: Trace, Debug, Info, Warn, Error
+    // Set minimum log level to reduce verbosity from JNI
     log::set_max_level(LevelFilter::Debug);
     
     set_log_panic_hook();

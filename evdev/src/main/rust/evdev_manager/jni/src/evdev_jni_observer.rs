@@ -101,6 +101,7 @@ impl EvdevJniObserver {
         self.handle_power_button(ev_code, android_code, event.value, event.time.tv_sec);
 
         // Call BaseSystemBridge.onEvdevEvent() via JNI
+        // TODO attach permanently? Is attaching necessary if sending primitives?
         let mut env = match self.jvm.attach_current_thread() {
             Ok(env) => env,
             Err(e) => {

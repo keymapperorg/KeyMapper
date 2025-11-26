@@ -396,8 +396,26 @@ impl EventLoop {
                     .get(slab_key)
                     .unwrap_or_else(|| panic!("Can not find grabbed device with key {}", slab_key));
 
-                if let Ok(Some(event)) = self.read_evdev_events(&grabbed_device.evdev) {
-                    Self::process_observers(&event, grabbed_device, observers);
+                let mut flags: ReadFlag = ReadFlag::NORMAL;
+
+                loop {
+                    match grabbed_device.evdev.next_event(flags) {
+                        Ok((ReadStatus::Success, event)) => {
+                            flags = ReadFlag::NORMAL;
+                            // Keep this logging line. Debug/verbose events will be disabled in production.
+                            debug!("Evdev event: {:?}", event);
+                            Self::process_observers(&event, grabbed_device, observers);
+                        }
+                        Ok((ReadStatus::Sync, _event)) => {
+                            // Continue reading sync events
+                            flags = ReadFlag::NORMAL | ReadFlag::SYNC;
+                        }
+                        Err(_error) => {
+                            // Break if it's EAGAIN (no more events) or any other error.
+                            // Do not log these errors because it is expected
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -424,9 +442,7 @@ impl EventLoop {
 
         if !consume {
             let (event_type, event_code) = event_code_to_int(&event.event_code);
-            grabbed_device
-                .uinput
-                .write_event(event_type, event_code, event.value)
+            Self::write_event_to_device(&grabbed_device.uinput, event_type, event_code, event.value)
                 .inspect_err(|e| {
                     error!(
                         "Failed to passthrough event to {}. Event: {:?}. Error: {:?}",
@@ -434,47 +450,6 @@ impl EventLoop {
                     )
                 })
                 .ok();
-        }
-    }
-
-    fn read_evdev_events(&self, evdev_device: &Device) -> io::Result<Option<InputEvent>> {
-        match evdev_device.next_event(ReadFlag::NORMAL)? {
-            (ReadStatus::Success, event) => {
-                // Keep this logging line. Later debug/verbose events can be toggled from
-                // the frontend.
-                debug!("Evdev event: {:?}", event);
-                Ok(Some(event))
-            }
-
-            (ReadStatus::Sync, _) => {
-                Self::process_sync_event(evdev_device);
-                Ok(None)
-            }
-        }
-    }
-
-    fn process_sync_event(evdev_device: &Device) {
-        loop {
-            match evdev_device.next_event(ReadFlag::NORMAL | ReadFlag::SYNC) {
-                Ok((ReadStatus::Sync, _)) => {
-                    // Continue reading sync events
-                }
-                Ok((ReadStatus::Success, _)) => {
-                    // Sync complete, break inner loop
-                    break;
-                }
-                Err(e) => {
-                    // Check if it's EAGAIN (no more events)
-                    if let Some(err) = e.raw_os_error() {
-                        if err == -(libc::EAGAIN as i32) {
-                            break;
-                        }
-                    }
-
-                    let evdev_error = EvdevError::from(e);
-                    error!("Evdev sync event error: {}", evdev_error);
-                }
-            }
         }
     }
 
@@ -486,10 +461,10 @@ impl EventLoop {
     ) -> Result<(), EvdevError> {
         uinput
             .write_event(event_type, code, value)
-            .map_err(|e| EvdevError::from(e))?;
+            .map_err(EvdevError::from)?;
         uinput
             .write_syn_event(EV_SYN::SYN_REPORT)
-            .map_err(|e| EvdevError::from(e))
+            .map_err(EvdevError::from)
     }
 }
 

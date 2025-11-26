@@ -67,9 +67,9 @@ impl EvdevError {
     pub fn new(code: i32) -> Self {
         let kind = EvdevErrorCode::from_code(code);
         let message = if let EvdevErrorCode::Unknown(_) = kind {
-            format!("evdev manager error: {}", code)
+            format!("evdev error: {}", code)
         } else {
-            format!("evdev manager error: {} ({})", kind.description(), -code)
+            format!("evdev error: {} ({})", kind.description(), -code)
         };
 
         Self {
@@ -80,7 +80,7 @@ impl EvdevError {
     }
     pub fn from_enum(error_code: EvdevErrorCode) -> Self {
         let message = format!(
-            "evdev manager error: {} ({})",
+            "evdev error: {} ({})",
             error_code.description(),
             -error_code.to_code()
         );
