@@ -304,8 +304,11 @@ class AndroidDisplayAdapter @Inject constructor(
      * Using a tolerance helps avoid rapid orientation changes at boundaries.
      */
     private fun degreesToPhysicalOrientation(degrees: Int): PhysicalOrientation {
-        // OrientationEventListener returns 0-359 degrees
-        // Handle wraparound at 0/360 boundary for portrait detection
+        // OrientationEventListener returns 0-359 degrees.
+        // Handle wraparound at 0/360 boundary for portrait detection.
+        // Degrees outside the defined tolerance zones (e.g., 45-89° between portrait and landscape)
+        // are intentionally kept as the current orientation to provide hysteresis and prevent
+        // rapid orientation switching when the device is tilted at boundary angles.
         return when {
             degrees >= (360 - ORIENTATION_TOLERANCE) ||
                 degrees < ORIENTATION_TOLERANCE ->
@@ -316,7 +319,7 @@ class AndroidDisplayAdapter @Inject constructor(
                 PhysicalOrientation.PORTRAIT_INVERTED
             degrees in (270 - ORIENTATION_TOLERANCE) until (270 + ORIENTATION_TOLERANCE) ->
                 PhysicalOrientation.LANDSCAPE_INVERTED
-            else -> _physicalOrientation.value // Keep current orientation if in transition zone
+            else -> _physicalOrientation.value // Keep current orientation in transition zone
         }
     }
 }
