@@ -30,6 +30,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 
+/**
+ * Android implementation of DisplayAdapter.
+ *
+ * This is a Singleton that lives for the lifetime of the application.
+ * Listeners (DisplayManager.DisplayListener, BroadcastReceiver, OrientationEventListener)
+ * are intentionally not unregistered because the adapter needs to continuously track
+ * display state changes throughout the app's lifecycle.
+ */
 @Singleton
 class AndroidDisplayAdapter @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -296,9 +304,11 @@ class AndroidDisplayAdapter @Inject constructor(
      * Using a tolerance helps avoid rapid orientation changes at boundaries.
      */
     private fun degreesToPhysicalOrientation(degrees: Int): PhysicalOrientation {
+        // OrientationEventListener returns 0-359 degrees
+        // Handle wraparound at 0/360 boundary for portrait detection
         return when {
-            degrees in (360 - ORIENTATION_TOLERANCE)..360 ||
-                degrees in 0 until ORIENTATION_TOLERANCE ->
+            degrees >= (360 - ORIENTATION_TOLERANCE) ||
+                degrees < ORIENTATION_TOLERANCE ->
                 PhysicalOrientation.PORTRAIT
             degrees in (90 - ORIENTATION_TOLERANCE) until (90 + ORIENTATION_TOLERANCE) ->
                 PhysicalOrientation.LANDSCAPE
