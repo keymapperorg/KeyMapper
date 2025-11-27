@@ -256,6 +256,8 @@
     <string name="constraint_choose_orientation_270">Landscape (270°)</string>
     <string name="constraint_choose_orientation_portrait">Portrait (any)</string>
     <string name="constraint_choose_orientation_landscape">Landscape (any)</string>
+    <string name="constraint_choose_screen_orientation">Screen orientation</string>
+    <string name="constraint_choose_physical_orientation">Physical orientation</string>
     <string name="constraint_choose_physical_orientation_portrait">Physical: Portrait</string>
     <string name="constraint_choose_physical_orientation_landscape">Physical: Landscape</string>
     <string name="constraint_choose_physical_orientation_portrait_inverted">Physical: Portrait (upside down)</string>

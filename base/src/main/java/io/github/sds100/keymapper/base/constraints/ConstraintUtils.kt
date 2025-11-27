@@ -64,12 +64,14 @@ object ConstraintUtils {
 
         ConstraintId.SCREEN_ON,
         ConstraintId.SCREEN_OFF,
+        ConstraintId.SCREEN_ORIENTATION,
         ConstraintId.ORIENTATION_PORTRAIT,
         ConstraintId.ORIENTATION_LANDSCAPE,
         ConstraintId.ORIENTATION_0,
         ConstraintId.ORIENTATION_90,
         ConstraintId.ORIENTATION_180,
         ConstraintId.ORIENTATION_270,
+        ConstraintId.PHYSICAL_ORIENTATION,
         ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT,
         ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE,
         ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT_INVERTED,
@@ -131,6 +133,7 @@ object ConstraintUtils {
             Icons.Outlined.BluetoothDisabled,
         )
 
+        ConstraintId.SCREEN_ORIENTATION,
         ConstraintId.ORIENTATION_0,
         ConstraintId.ORIENTATION_180,
             -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
@@ -146,6 +149,7 @@ object ConstraintUtils {
             Icons.Outlined.StayCurrentPortrait,
         )
 
+        ConstraintId.PHYSICAL_ORIENTATION,
         ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT,
         ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT_INVERTED,
             -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
@@ -206,12 +210,14 @@ object ConstraintUtils {
             R.string.constraint_choose_bluetooth_device_disconnected
         ConstraintId.SCREEN_ON -> R.string.constraint_choose_screen_on_description
         ConstraintId.SCREEN_OFF -> R.string.constraint_choose_screen_off_description
+        ConstraintId.SCREEN_ORIENTATION -> R.string.constraint_choose_screen_orientation
         ConstraintId.ORIENTATION_PORTRAIT -> R.string.constraint_choose_orientation_portrait
         ConstraintId.ORIENTATION_LANDSCAPE -> R.string.constraint_choose_orientation_landscape
         ConstraintId.ORIENTATION_0 -> R.string.constraint_choose_orientation_0
         ConstraintId.ORIENTATION_90 -> R.string.constraint_choose_orientation_90
         ConstraintId.ORIENTATION_180 -> R.string.constraint_choose_orientation_180
         ConstraintId.ORIENTATION_270 -> R.string.constraint_choose_orientation_270
+        ConstraintId.PHYSICAL_ORIENTATION -> R.string.constraint_choose_physical_orientation
         ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT ->
             R.string.constraint_choose_physical_orientation_portrait
         ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE ->

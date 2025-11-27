@@ -132,6 +132,8 @@ class ChooseConstraintViewModel @Inject constructor(
 
                 ConstraintId.SCREEN_OFF -> returnResult.emit(ConstraintData.ScreenOff)
 
+                ConstraintId.SCREEN_ORIENTATION -> onSelectScreenOrientationConstraint()
+
                 ConstraintId.ORIENTATION_PORTRAIT ->
                     returnResult.emit(ConstraintData.OrientationPortrait)
 
@@ -157,6 +159,8 @@ class ChooseConstraintViewModel @Inject constructor(
                     returnResult.emit(
                         ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_270),
                     )
+
+                ConstraintId.PHYSICAL_ORIENTATION -> onSelectPhysicalOrientationConstraint()
 
                 ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT ->
                     returnResult.emit(
@@ -280,8 +284,76 @@ class ChooseConstraintViewModel @Inject constructor(
         return cameraLens
     }
 
+    private suspend fun onSelectScreenOrientationConstraint() {
+        val items = listOf(
+            ConstraintId.ORIENTATION_PORTRAIT to
+                getString(R.string.constraint_choose_orientation_portrait),
+            ConstraintId.ORIENTATION_LANDSCAPE to
+                getString(R.string.constraint_choose_orientation_landscape),
+            ConstraintId.ORIENTATION_0 to getString(R.string.constraint_choose_orientation_0),
+            ConstraintId.ORIENTATION_90 to getString(R.string.constraint_choose_orientation_90),
+            ConstraintId.ORIENTATION_180 to getString(R.string.constraint_choose_orientation_180),
+            ConstraintId.ORIENTATION_270 to getString(R.string.constraint_choose_orientation_270),
+        )
+
+        val dialog = DialogModel.SingleChoice(items)
+        val selectedOrientation = showDialog("choose_screen_orientation", dialog) ?: return
+
+        val constraintData = when (selectedOrientation) {
+            ConstraintId.ORIENTATION_PORTRAIT -> ConstraintData.OrientationPortrait
+            ConstraintId.ORIENTATION_LANDSCAPE -> ConstraintData.OrientationLandscape
+            ConstraintId.ORIENTATION_0 ->
+                ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_0)
+            ConstraintId.ORIENTATION_90 ->
+                ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_90)
+            ConstraintId.ORIENTATION_180 ->
+                ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_180)
+            ConstraintId.ORIENTATION_270 ->
+                ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_270)
+            else -> return
+        }
+
+        returnResult.emit(constraintData)
+    }
+
+    private suspend fun onSelectPhysicalOrientationConstraint() {
+        val items = listOf(
+            PhysicalOrientation.PORTRAIT to
+                getString(R.string.constraint_choose_physical_orientation_portrait),
+            PhysicalOrientation.LANDSCAPE to
+                getString(R.string.constraint_choose_physical_orientation_landscape),
+            PhysicalOrientation.PORTRAIT_INVERTED to
+                getString(R.string.constraint_choose_physical_orientation_portrait_inverted),
+            PhysicalOrientation.LANDSCAPE_INVERTED to
+                getString(R.string.constraint_choose_physical_orientation_landscape_inverted),
+        )
+
+        val dialog = DialogModel.SingleChoice(items)
+        val selectedOrientation = showDialog("choose_physical_orientation", dialog) ?: return
+
+        returnResult.emit(
+            ConstraintData.PhysicalOrientationConstraint(physicalOrientation = selectedOrientation),
+        )
+    }
+
     private fun buildListGroups(): List<SimpleListItemGroup> = buildList {
-        val listItems = buildListItems(ConstraintId.entries)
+        // Filter out individual orientation constraints - show only the consolidated ones
+        val filteredConstraints = ConstraintId.entries.filter { constraintId ->
+            constraintId !in listOf(
+                ConstraintId.ORIENTATION_PORTRAIT,
+                ConstraintId.ORIENTATION_LANDSCAPE,
+                ConstraintId.ORIENTATION_0,
+                ConstraintId.ORIENTATION_90,
+                ConstraintId.ORIENTATION_180,
+                ConstraintId.ORIENTATION_270,
+                ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT,
+                ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE,
+                ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT_INVERTED,
+                ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED,
+            )
+        }
+
+        val listItems = buildListItems(filteredConstraints)
 
         for (category in CATEGORY_ORDER) {
             val header = getString(ConstraintUtils.getCategoryLabel(category))
