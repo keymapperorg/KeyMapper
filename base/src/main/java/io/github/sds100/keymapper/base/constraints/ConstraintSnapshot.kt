@@ -119,7 +119,7 @@ class LazyConstraintSnapshot(
                 orientation == Orientation.ORIENTATION_0 ||
                     orientation == Orientation.ORIENTATION_180
 
-            is ConstraintData.PhysicalOrientationConstraint ->
+            is ConstraintData.PhysicalOrientation ->
                 physicalOrientation == constraint.data.physicalOrientation
 
             is ConstraintData.ScreenOff -> !isScreenOn

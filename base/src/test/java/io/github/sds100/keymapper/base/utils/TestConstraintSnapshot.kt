@@ -64,7 +64,7 @@ class TestConstraintSnapshot(
                 orientation == Orientation.ORIENTATION_0 ||
                     orientation == Orientation.ORIENTATION_180
 
-            is ConstraintData.PhysicalOrientationConstraint ->
+            is ConstraintData.PhysicalOrientation ->
                 physicalOrientation == data.physicalOrientation
 
             is ConstraintData.ScreenOff -> !isScreenOn

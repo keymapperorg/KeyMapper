@@ -70,33 +70,33 @@ sealed class ConstraintData {
 
     @Serializable
     data object OrientationPortrait : ConstraintData() {
-        override val id: ConstraintId = ConstraintId.ORIENTATION_PORTRAIT
+        override val id: ConstraintId = ConstraintId.DISPLAY_ORIENTATION_PORTRAIT
     }
 
     @Serializable
     data object OrientationLandscape : ConstraintData() {
-        override val id: ConstraintId = ConstraintId.ORIENTATION_LANDSCAPE
+        override val id: ConstraintId = ConstraintId.DISPLAY_ORIENTATION_LANDSCAPE
     }
 
     @Serializable
     data class OrientationCustom(val orientation: Orientation) : ConstraintData() {
         override val id: ConstraintId = when (orientation) {
-            Orientation.ORIENTATION_0 -> ConstraintId.ORIENTATION_0
-            Orientation.ORIENTATION_90 -> ConstraintId.ORIENTATION_90
-            Orientation.ORIENTATION_180 -> ConstraintId.ORIENTATION_180
-            Orientation.ORIENTATION_270 -> ConstraintId.ORIENTATION_270
+            Orientation.ORIENTATION_0 -> ConstraintId.DISPLAY_ORIENTATION_0
+            Orientation.ORIENTATION_90 -> ConstraintId.DISPLAY_ORIENTATION_90
+            Orientation.ORIENTATION_180 -> ConstraintId.DISPLAY_ORIENTATION_180
+            Orientation.ORIENTATION_270 -> ConstraintId.DISPLAY_ORIENTATION_270
         }
     }
 
     @Serializable
-    data class PhysicalOrientationConstraint(
-        val physicalOrientation: PhysicalOrientation,
+    data class PhysicalOrientation(
+        val physicalOrientation: io.github.sds100.keymapper.common.utils.PhysicalOrientation,
     ) : ConstraintData() {
         override val id: ConstraintId = when (physicalOrientation) {
-            PhysicalOrientation.PORTRAIT -> ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT
-            PhysicalOrientation.LANDSCAPE -> ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE
-            PhysicalOrientation.PORTRAIT_INVERTED -> ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT_INVERTED
-            PhysicalOrientation.LANDSCAPE_INVERTED -> ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED
+            io.github.sds100.keymapper.common.utils.PhysicalOrientation.PORTRAIT -> ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT
+            io.github.sds100.keymapper.common.utils.PhysicalOrientation.LANDSCAPE -> ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE
+            io.github.sds100.keymapper.common.utils.PhysicalOrientation.PORTRAIT_INVERTED -> ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT_INVERTED
+            io.github.sds100.keymapper.common.utils.PhysicalOrientation.LANDSCAPE_INVERTED -> ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED
         }
     }
 
@@ -330,13 +330,13 @@ object ConstraintEntityMapper {
             ConstraintEntity.ORIENTATION_LANDSCAPE -> ConstraintData.OrientationLandscape
 
             ConstraintEntity.PHYSICAL_ORIENTATION_PORTRAIT ->
-                ConstraintData.PhysicalOrientationConstraint(PhysicalOrientation.PORTRAIT)
+                ConstraintData.PhysicalOrientation(PhysicalOrientation.PORTRAIT)
             ConstraintEntity.PHYSICAL_ORIENTATION_LANDSCAPE ->
-                ConstraintData.PhysicalOrientationConstraint(PhysicalOrientation.LANDSCAPE)
+                ConstraintData.PhysicalOrientation(PhysicalOrientation.LANDSCAPE)
             ConstraintEntity.PHYSICAL_ORIENTATION_PORTRAIT_INVERTED ->
-                ConstraintData.PhysicalOrientationConstraint(PhysicalOrientation.PORTRAIT_INVERTED)
+                ConstraintData.PhysicalOrientation(PhysicalOrientation.PORTRAIT_INVERTED)
             ConstraintEntity.PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED ->
-                ConstraintData.PhysicalOrientationConstraint(PhysicalOrientation.LANDSCAPE_INVERTED)
+                ConstraintData.PhysicalOrientation(PhysicalOrientation.LANDSCAPE_INVERTED)
 
             ConstraintEntity.SCREEN_OFF -> ConstraintData.ScreenOff
             ConstraintEntity.SCREEN_ON -> ConstraintData.ScreenOn
@@ -521,7 +521,7 @@ object ConstraintEntityMapper {
             ConstraintEntity.ORIENTATION_PORTRAIT,
         )
 
-        is ConstraintData.PhysicalOrientationConstraint -> when (constraint.data.physicalOrientation) {
+        is ConstraintData.PhysicalOrientation -> when (constraint.data.physicalOrientation) {
             PhysicalOrientation.PORTRAIT -> ConstraintEntity(
                 uid = constraint.uid,
                 ConstraintEntity.PHYSICAL_ORIENTATION_PORTRAIT,

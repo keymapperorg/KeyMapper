@@ -83,7 +83,7 @@ class ConstraintUiHelper(
         is ConstraintData.OrientationPortrait ->
             getString(R.string.constraint_choose_orientation_portrait)
 
-        is ConstraintData.PhysicalOrientationConstraint -> {
+        is ConstraintData.PhysicalOrientation -> {
             val resId = when (constraint.data.physicalOrientation) {
                 PhysicalOrientation.PORTRAIT ->
                     R.string.constraint_choose_physical_orientation_portrait
