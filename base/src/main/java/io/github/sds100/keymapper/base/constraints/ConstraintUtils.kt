@@ -70,6 +70,10 @@ object ConstraintUtils {
         ConstraintId.ORIENTATION_90,
         ConstraintId.ORIENTATION_180,
         ConstraintId.ORIENTATION_270,
+        ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT,
+        ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE,
+        ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT_INVERTED,
+        ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED,
             -> ConstraintCategory.DISPLAY
 
         ConstraintId.FLASHLIGHT_ON,
@@ -142,6 +146,14 @@ object ConstraintUtils {
             Icons.Outlined.StayCurrentPortrait,
         )
 
+        ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT,
+        ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT_INVERTED,
+            -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
+
+        ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE,
+        ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED,
+            -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentLandscape)
+
         ConstraintId.SCREEN_OFF -> ComposeIconInfo.Vector(Icons.Outlined.MobileOff)
         ConstraintId.SCREEN_ON -> ComposeIconInfo.Vector(Icons.Outlined.StayCurrentPortrait)
 
@@ -200,6 +212,14 @@ object ConstraintUtils {
         ConstraintId.ORIENTATION_90 -> R.string.constraint_choose_orientation_90
         ConstraintId.ORIENTATION_180 -> R.string.constraint_choose_orientation_180
         ConstraintId.ORIENTATION_270 -> R.string.constraint_choose_orientation_270
+        ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT ->
+            R.string.constraint_choose_physical_orientation_portrait
+        ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE ->
+            R.string.constraint_choose_physical_orientation_landscape
+        ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT_INVERTED ->
+            R.string.constraint_choose_physical_orientation_portrait_inverted
+        ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED ->
+            R.string.constraint_choose_physical_orientation_landscape_inverted
         ConstraintId.FLASHLIGHT_ON -> R.string.constraint_flashlight_on
         ConstraintId.FLASHLIGHT_OFF -> R.string.constraint_flashlight_off
         ConstraintId.WIFI_ON -> R.string.constraint_wifi_on

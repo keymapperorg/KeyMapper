@@ -4,6 +4,7 @@ import android.media.AudioManager
 import android.os.Build
 import io.github.sds100.keymapper.base.system.accessibility.IAccessibilityService
 import io.github.sds100.keymapper.common.utils.Orientation
+import io.github.sds100.keymapper.common.utils.PhysicalOrientation
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.camera.CameraAdapter
@@ -43,6 +44,7 @@ class LazyConstraintSnapshot(
         devicesAdapter.connectedBluetoothDevices.value
     }
     private val orientation: Orientation by lazy { displayAdapter.cachedOrientation }
+    private val physicalOrientation: PhysicalOrientation by lazy { displayAdapter.cachedPhysicalOrientation }
     private val isScreenOn: Boolean by lazy { displayAdapter.isScreenOn.firstBlocking() }
     private val appsPlayingMedia: List<String> by lazy {
         mediaAdapter.getActiveMediaSessionPackages()
@@ -116,6 +118,9 @@ class LazyConstraintSnapshot(
             is ConstraintData.OrientationPortrait ->
                 orientation == Orientation.ORIENTATION_0 ||
                     orientation == Orientation.ORIENTATION_180
+
+            is ConstraintData.PhysicalOrientationConstraint ->
+                physicalOrientation == constraint.data.physicalOrientation
 
             is ConstraintData.ScreenOff -> !isScreenOn
             is ConstraintData.ScreenOn -> isScreenOn

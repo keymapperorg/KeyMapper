@@ -256,6 +256,10 @@
     <string name="constraint_choose_orientation_270">Landscape (270°)</string>
     <string name="constraint_choose_orientation_portrait">Portrait (any)</string>
     <string name="constraint_choose_orientation_landscape">Landscape (any)</string>
+    <string name="constraint_choose_physical_orientation_portrait">Physical: Portrait</string>
+    <string name="constraint_choose_physical_orientation_landscape">Physical: Landscape</string>
+    <string name="constraint_choose_physical_orientation_portrait_inverted">Physical: Portrait (upside down)</string>
+    <string name="constraint_choose_physical_orientation_landscape_inverted">Physical: Landscape (inverted)</string>
     <string name="constraint_choose_app_playing_media">App playing media</string>
     <string name="constraint_choose_app_not_playing_media">App not playing media</string>
     <string name="constraint_choose_media_playing">Media is playing</string>

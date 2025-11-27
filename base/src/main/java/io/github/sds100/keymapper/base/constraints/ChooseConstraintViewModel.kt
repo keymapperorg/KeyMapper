@@ -19,6 +19,7 @@ import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemGroup
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
 import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.Orientation
+import io.github.sds100.keymapper.common.utils.PhysicalOrientation
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.system.camera.CameraLens
 import javax.inject.Inject
@@ -155,6 +156,34 @@ class ChooseConstraintViewModel @Inject constructor(
                 ConstraintId.ORIENTATION_270 ->
                     returnResult.emit(
                         ConstraintData.OrientationCustom(orientation = Orientation.ORIENTATION_270),
+                    )
+
+                ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT ->
+                    returnResult.emit(
+                        ConstraintData.PhysicalOrientationConstraint(
+                            physicalOrientation = PhysicalOrientation.PORTRAIT,
+                        ),
+                    )
+
+                ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE ->
+                    returnResult.emit(
+                        ConstraintData.PhysicalOrientationConstraint(
+                            physicalOrientation = PhysicalOrientation.LANDSCAPE,
+                        ),
+                    )
+
+                ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT_INVERTED ->
+                    returnResult.emit(
+                        ConstraintData.PhysicalOrientationConstraint(
+                            physicalOrientation = PhysicalOrientation.PORTRAIT_INVERTED,
+                        ),
+                    )
+
+                ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED ->
+                    returnResult.emit(
+                        ConstraintData.PhysicalOrientationConstraint(
+                            physicalOrientation = PhysicalOrientation.LANDSCAPE_INVERTED,
+                        ),
                     )
 
                 ConstraintId.FLASHLIGHT_ON -> {
