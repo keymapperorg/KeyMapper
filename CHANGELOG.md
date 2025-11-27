@@ -9,6 +9,7 @@
 - #1414 constraint for when the keyboard is showing.
 - #1900 log to logcat if extra logging is enabled.
 - #1902 add toggle next to record trigger button to use PRO mode.
+- #1909 categorise constraints similar to actions.
 
 ## Bug fixes
 

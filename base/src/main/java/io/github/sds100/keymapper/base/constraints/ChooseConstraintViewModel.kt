@@ -15,6 +15,7 @@ import io.github.sds100.keymapper.base.utils.navigation.navigate
 import io.github.sds100.keymapper.base.utils.ui.DialogModel
 import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemGroup
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
 import io.github.sds100.keymapper.base.utils.ui.showDialog
 import io.github.sds100.keymapper.common.utils.Orientation
@@ -45,70 +46,42 @@ class ChooseConstraintViewModel @Inject constructor(
     NavigationProvider by navigationProvider {
 
     companion object {
-        private val ALL_CONSTRAINTS_ORDERED: Array<ConstraintId> = arrayOf(
-            ConstraintId.APP_IN_FOREGROUND,
-            ConstraintId.APP_NOT_IN_FOREGROUND,
-            ConstraintId.APP_PLAYING_MEDIA,
-            ConstraintId.APP_NOT_PLAYING_MEDIA,
-            ConstraintId.MEDIA_PLAYING,
-            ConstraintId.MEDIA_NOT_PLAYING,
-
-            ConstraintId.BT_DEVICE_CONNECTED,
-            ConstraintId.BT_DEVICE_DISCONNECTED,
-
-            ConstraintId.SCREEN_ON,
-            ConstraintId.SCREEN_OFF,
-
-            ConstraintId.ORIENTATION_PORTRAIT,
-            ConstraintId.ORIENTATION_LANDSCAPE,
-            ConstraintId.ORIENTATION_0,
-            ConstraintId.ORIENTATION_90,
-            ConstraintId.ORIENTATION_180,
-            ConstraintId.ORIENTATION_270,
-
-            ConstraintId.FLASHLIGHT_ON,
-            ConstraintId.FLASHLIGHT_OFF,
-
-            ConstraintId.WIFI_ON,
-            ConstraintId.WIFI_OFF,
-            ConstraintId.WIFI_CONNECTED,
-            ConstraintId.WIFI_DISCONNECTED,
-
-            ConstraintId.IME_CHOSEN,
-            ConstraintId.IME_NOT_CHOSEN,
-
-            ConstraintId.KEYBOARD_SHOWING,
-            ConstraintId.KEYBOARD_NOT_SHOWING,
-
-            ConstraintId.DEVICE_IS_LOCKED,
-            ConstraintId.DEVICE_IS_UNLOCKED,
-            ConstraintId.LOCK_SCREEN_SHOWING,
-            ConstraintId.LOCK_SCREEN_NOT_SHOWING,
-
-            ConstraintId.IN_PHONE_CALL,
-            ConstraintId.NOT_IN_PHONE_CALL,
-            ConstraintId.PHONE_RINGING,
-
-            ConstraintId.CHARGING,
-            ConstraintId.DISCHARGING,
-
-            ConstraintId.HINGE_CLOSED,
-            ConstraintId.HINGE_OPEN,
-
-            ConstraintId.TIME,
+        private val CATEGORY_ORDER = arrayOf(
+            ConstraintCategory.APPS,
+            ConstraintCategory.MEDIA,
+            ConstraintCategory.BLUETOOTH,
+            ConstraintCategory.DISPLAY,
+            ConstraintCategory.FLASHLIGHT,
+            ConstraintCategory.WIFI,
+            ConstraintCategory.KEYBOARD,
+            ConstraintCategory.LOCK,
+            ConstraintCategory.PHONE,
+            ConstraintCategory.POWER,
+            ConstraintCategory.DEVICE,
+            ConstraintCategory.TIME,
         )
     }
 
     private val returnResult = MutableSharedFlow<ConstraintData>()
 
-    private val allListItems: List<SimpleListItemModel> by lazy { buildListItems() }
+    private val allGroupedListItems: List<SimpleListItemGroup> by lazy { buildListGroups() }
 
     val searchQuery = MutableStateFlow<String?>(null)
 
-    val listItems: StateFlow<State<List<SimpleListItemModel>>> =
+    val groups: StateFlow<State<List<SimpleListItemGroup>>> =
         searchQuery.map { query ->
-            val filteredItems = allListItems.filter { it.title.containsQuery(query) }
-            State.Data(filteredItems)
+            val groups = allGroupedListItems.mapNotNull { group ->
+
+                val filteredItems = group.items.filter { it.title.containsQuery(query) }
+
+                if (filteredItems.isEmpty()) {
+                    return@mapNotNull null
+                } else {
+                    group.copy(items = filteredItems)
+                }
+            }
+
+            State.Data(groups)
         }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
 
     var timeConstraintState: ConstraintData.Time? by mutableStateOf(null)
@@ -278,24 +251,54 @@ class ChooseConstraintViewModel @Inject constructor(
         return cameraLens
     }
 
-    private fun buildListItems(): List<SimpleListItemModel> = buildList {
-        ALL_CONSTRAINTS_ORDERED.forEach { id ->
-            val title = getString(ConstraintUtils.getTitleStringId(id))
-            val icon = ConstraintUtils.getIcon(id)
-            val error = useCase.isSupported(id)
+    private fun buildListGroups(): List<SimpleListItemGroup> = buildList {
+        val listItems = buildListItems(ConstraintId.entries)
 
-            val listItem = SimpleListItemModel(
-                id = id.toString(),
-                title = title,
-                icon = icon,
-                subtitle = error?.getFullMessage(this@ChooseConstraintViewModel),
-                isSubtitleError = true,
-                isEnabled = error == null,
+        for (category in CATEGORY_ORDER) {
+            val header = getString(ConstraintUtils.getCategoryLabel(category))
+
+            val group = SimpleListItemGroup(
+                header,
+                items = listItems.filter {
+                    it.isEnabled &&
+                        ConstraintUtils.getCategory(ConstraintId.valueOf(it.id)) == category
+                },
             )
 
-            add(listItem)
+            if (group.items.isNotEmpty()) {
+                add(group)
+            }
+        }
+
+        val unsupportedItems = listItems.filter { !it.isEnabled }
+        if (unsupportedItems.isNotEmpty()) {
+            val unsupportedGroup = SimpleListItemGroup(
+                header = getString(R.string.choose_constraint_group_unsupported),
+                items = unsupportedItems,
+            )
+            add(unsupportedGroup)
         }
     }
+
+    private fun buildListItems(constraintIds: List<ConstraintId>): List<SimpleListItemModel> =
+        buildList {
+            for (constraintId in constraintIds) {
+                val title = getString(ConstraintUtils.getTitleStringId(constraintId))
+                val icon = ConstraintUtils.getIcon(constraintId)
+                val error = useCase.isSupported(constraintId)
+
+                val listItem = SimpleListItemModel(
+                    id = constraintId.toString(),
+                    title = title,
+                    icon = icon,
+                    subtitle = error?.getFullMessage(this@ChooseConstraintViewModel),
+                    isSubtitleError = true,
+                    isEnabled = error == null,
+                )
+
+                add(listItem)
+            }
+        }
 
     private suspend fun onSelectWifiConnectedConstraint(type: ConstraintId) {
         val knownSSIDs: List<String> = useCase.getKnownWiFiSSIDs()

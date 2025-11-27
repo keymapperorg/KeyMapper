@@ -1230,6 +1230,21 @@
     <string name="action_cat_special">Special</string>
     <!-- action category labels -->
 
+    <!-- constraint category labels -->
+    <string name="constraint_cat_apps">Apps</string>
+    <string name="constraint_cat_media">Media</string>
+    <string name="constraint_cat_bluetooth">Bluetooth</string>
+    <string name="constraint_cat_display">Display</string>
+    <string name="constraint_cat_flashlight">Flashlight</string>
+    <string name="constraint_cat_wifi">WiFi</string>
+    <string name="constraint_cat_keyboard">Keyboard</string>
+    <string name="constraint_cat_lock">Lock</string>
+    <string name="constraint_cat_phone">Phone</string>
+    <string name="constraint_cat_power">Power</string>
+    <string name="constraint_cat_device">Device</string>
+    <string name="constraint_cat_time">Time</string>
+    <!-- constraint category labels -->
+
     <!--  Intent action type strings  -->
     <string name="intent_type_bool_header">Boolean</string>
     <string name="intent_type_bool_array_header">Boolean array</string>
@@ -1600,6 +1615,7 @@
     <string name="action_config_volume_options">Options</string>
 
     <string name="choose_action_group_unsupported">Unsupported</string>
+    <string name="choose_constraint_group_unsupported">Unsupported</string>
 
     <!--  Constraint screen  -->
     <string name="constraints_recyclerview_placeholder">Add constraints if you want key maps to only work in some situations.</string>
