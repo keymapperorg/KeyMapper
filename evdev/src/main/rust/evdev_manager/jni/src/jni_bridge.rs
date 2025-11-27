@@ -22,13 +22,12 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     env: JNIEnv,
     this: JObject,
 ) {
-    info!("Initializing evdev manager");
     android_log::init("KeyMapperSystemBridge").unwrap();
-    
     // Set minimum log level to reduce verbosity from JNI
     log::set_max_level(LevelFilter::Debug);
-    
     set_log_panic_hook();
+
+    info!("Initializing evdev manager");
 
     // Get the JavaVM
     let jvm = env.get_java_vm().expect("Failed to get JavaVM");
@@ -117,9 +116,7 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     _env: JNIEnv,
     _class: JClass,
 ) -> jboolean {
-    EventLoopManager::get()
-        .ungrab_all_devices()
-        .is_ok() as jboolean
+    EventLoopManager::get().ungrab_all_devices().is_ok() as jboolean
 }
 
 #[no_mangle]
@@ -140,7 +137,7 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     _class: JClass,
 ) -> jobjectArray {
     let mut device_handles = Vec::new();
-    let device_paths_result = EventLoopManager::get_all_real_devices();
+    let device_paths_result = EventLoopManager::get().get_all_real_devices();
 
     match device_paths_result {
         Ok(paths) => {
