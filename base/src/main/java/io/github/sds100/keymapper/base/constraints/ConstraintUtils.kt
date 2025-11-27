@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.constraints
 
+import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Battery2Bar
 import androidx.compose.material.icons.outlined.BatteryChargingFull
@@ -29,6 +30,85 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
 
 object ConstraintUtils {
+
+    @StringRes
+    fun getCategoryLabel(category: ConstraintCategory): Int = when (category) {
+        ConstraintCategory.APPS -> R.string.constraint_cat_apps
+        ConstraintCategory.MEDIA -> R.string.constraint_cat_media
+        ConstraintCategory.BLUETOOTH -> R.string.constraint_cat_bluetooth
+        ConstraintCategory.DISPLAY -> R.string.constraint_cat_display
+        ConstraintCategory.FLASHLIGHT -> R.string.constraint_cat_flashlight
+        ConstraintCategory.WIFI -> R.string.constraint_cat_wifi
+        ConstraintCategory.KEYBOARD -> R.string.constraint_cat_keyboard
+        ConstraintCategory.LOCK -> R.string.constraint_cat_lock
+        ConstraintCategory.PHONE -> R.string.constraint_cat_phone
+        ConstraintCategory.POWER -> R.string.constraint_cat_power
+        ConstraintCategory.DEVICE -> R.string.constraint_cat_device
+        ConstraintCategory.TIME -> R.string.constraint_cat_time
+    }
+
+    fun getCategory(constraintId: ConstraintId): ConstraintCategory = when (constraintId) {
+        ConstraintId.APP_IN_FOREGROUND,
+        ConstraintId.APP_NOT_IN_FOREGROUND,
+        ConstraintId.APP_PLAYING_MEDIA,
+        ConstraintId.APP_NOT_PLAYING_MEDIA,
+            -> ConstraintCategory.APPS
+
+        ConstraintId.MEDIA_PLAYING,
+        ConstraintId.MEDIA_NOT_PLAYING,
+            -> ConstraintCategory.MEDIA
+
+        ConstraintId.BT_DEVICE_CONNECTED,
+        ConstraintId.BT_DEVICE_DISCONNECTED,
+            -> ConstraintCategory.BLUETOOTH
+
+        ConstraintId.SCREEN_ON,
+        ConstraintId.SCREEN_OFF,
+        ConstraintId.ORIENTATION_PORTRAIT,
+        ConstraintId.ORIENTATION_LANDSCAPE,
+        ConstraintId.ORIENTATION_0,
+        ConstraintId.ORIENTATION_90,
+        ConstraintId.ORIENTATION_180,
+        ConstraintId.ORIENTATION_270,
+            -> ConstraintCategory.DISPLAY
+
+        ConstraintId.FLASHLIGHT_ON,
+        ConstraintId.FLASHLIGHT_OFF,
+            -> ConstraintCategory.FLASHLIGHT
+
+        ConstraintId.WIFI_ON,
+        ConstraintId.WIFI_OFF,
+        ConstraintId.WIFI_CONNECTED,
+        ConstraintId.WIFI_DISCONNECTED,
+            -> ConstraintCategory.WIFI
+
+        ConstraintId.IME_CHOSEN,
+        ConstraintId.IME_NOT_CHOSEN,
+        ConstraintId.KEYBOARD_SHOWING,
+        ConstraintId.KEYBOARD_NOT_SHOWING,
+            -> ConstraintCategory.KEYBOARD
+
+        ConstraintId.DEVICE_IS_LOCKED,
+        ConstraintId.DEVICE_IS_UNLOCKED,
+        ConstraintId.LOCK_SCREEN_SHOWING,
+        ConstraintId.LOCK_SCREEN_NOT_SHOWING,
+            -> ConstraintCategory.LOCK
+
+        ConstraintId.IN_PHONE_CALL,
+        ConstraintId.NOT_IN_PHONE_CALL,
+        ConstraintId.PHONE_RINGING,
+            -> ConstraintCategory.PHONE
+
+        ConstraintId.CHARGING,
+        ConstraintId.DISCHARGING,
+            -> ConstraintCategory.POWER
+
+        ConstraintId.HINGE_CLOSED,
+        ConstraintId.HINGE_OPEN,
+            -> ConstraintCategory.DEVICE
+
+        ConstraintId.TIME -> ConstraintCategory.TIME
+    }
 
     fun getIcon(constraintId: ConstraintId): ComposeIconInfo = when (constraintId) {
         ConstraintId.APP_IN_FOREGROUND,

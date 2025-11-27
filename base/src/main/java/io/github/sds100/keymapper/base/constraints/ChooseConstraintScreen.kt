@@ -2,7 +2,6 @@ package io.github.sds100.keymapper.base.constraints
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -15,25 +14,19 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Android
-import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Bluetooth
+import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -48,25 +41,28 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.compose.KeyMapperTheme
 import io.github.sds100.keymapper.base.utils.ui.compose.ComposeIconInfo
+import io.github.sds100.keymapper.base.utils.ui.compose.SearchAppBarActions
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemFixedHeight
+import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemGroup
+import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemHeader
 import io.github.sds100.keymapper.base.utils.ui.compose.SimpleListItemModel
 import io.github.sds100.keymapper.common.utils.State
 import kotlinx.coroutines.flow.update
 
 @Composable
 fun ChooseConstraintScreen(modifier: Modifier = Modifier, viewModel: ChooseConstraintViewModel) {
-    val listItems by viewModel.listItems.collectAsStateWithLifecycle()
+    val state by viewModel.groups.collectAsStateWithLifecycle()
     val query by viewModel.searchQuery.collectAsStateWithLifecycle()
 
     TimeConstraintBottomSheet(viewModel)
 
     ChooseConstraintScreen(
         modifier = modifier,
-        state = listItems,
+        state = state,
         query = query,
         onQueryChange = { newQuery -> viewModel.searchQuery.update { newQuery } },
         onCloseSearch = { viewModel.searchQuery.update { null } },
-        onClickAction = viewModel::onListItemClick,
+        onClickConstraint = viewModel::onListItemClick,
         onNavigateBack = viewModel::onNavigateBack,
     )
 }
@@ -75,78 +71,30 @@ fun ChooseConstraintScreen(modifier: Modifier = Modifier, viewModel: ChooseConst
 @Composable
 private fun ChooseConstraintScreen(
     modifier: Modifier = Modifier,
-    state: State<List<SimpleListItemModel>>,
+    state: State<List<SimpleListItemGroup>>,
     query: String? = null,
     onQueryChange: (String) -> Unit = {},
     onCloseSearch: () -> Unit = {},
-    onClickAction: (String) -> Unit = {},
+    onClickConstraint: (String) -> Unit = {},
     onNavigateBack: () -> Unit = {},
 ) {
-    var isExpanded: Boolean by rememberSaveable { mutableStateOf(false) }
-
     Scaffold(
         modifier = modifier.displayCutoutPadding(),
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.choose_constraint_title)) },
+            )
+        },
         bottomBar = {
             BottomAppBar(
                 modifier = Modifier.imePadding(),
                 actions = {
-                    IconButton(onClick = {
-                        if (isExpanded) {
-                            onCloseSearch()
-                            isExpanded = false
-                        } else {
-                            onNavigateBack()
-                        }
-                    }) {
-                        Icon(
-                            Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(
-                                R.string.bottom_app_bar_back_content_description,
-                            ),
-                        )
-                    }
-
-                    DockedSearchBar(
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        inputField = {
-                            SearchBarDefaults.InputField(
-                                modifier = Modifier.align(Alignment.CenterVertically),
-                                onSearch = {
-                                    onQueryChange(it)
-                                    isExpanded = false
-                                },
-                                leadingIcon = {
-                                    Icon(
-                                        Icons.Rounded.Search,
-                                        contentDescription = null,
-                                    )
-                                },
-                                enabled = state is State.Data,
-                                placeholder = { Text(stringResource(R.string.search_placeholder)) },
-                                query = query ?: "",
-                                onQueryChange = onQueryChange,
-                                expanded = isExpanded,
-                                onExpandedChange = { expanded ->
-                                    if (expanded) {
-                                        isExpanded = true
-                                    } else {
-                                        onCloseSearch()
-                                        isExpanded = false
-                                    }
-                                },
-                            )
-                        },
-                        // This is false to prevent an empty "content" showing underneath.
-                        expanded = isExpanded,
-                        onExpandedChange = { expanded ->
-                            if (expanded) {
-                                isExpanded = true
-                            } else {
-                                onCloseSearch()
-                                isExpanded = false
-                            }
-                        },
-                        content = {},
+                    SearchAppBarActions(
+                        onCloseSearch = onCloseSearch,
+                        onNavigateBack = onNavigateBack,
+                        onQueryChange = onQueryChange,
+                        enabled = state is State.Data,
+                        query = query,
                     )
                 },
             )
@@ -167,33 +115,20 @@ private fun ChooseConstraintScreen(
                 ),
 
         ) {
-            Column {
-                Text(
-                    modifier = Modifier.padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 16.dp,
-                        bottom = 8.dp,
-                    ),
-                    text = stringResource(R.string.choose_constraint_title),
-                    style = MaterialTheme.typography.titleLarge,
-                )
+            when (state) {
+                State.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
 
-                when (state) {
-                    State.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
-
-                    is State.Data -> {
-                        if (state.data.isEmpty()) {
-                            EmptyScreen(
-                                modifier = Modifier.fillMaxSize(),
-                            )
-                        } else {
-                            ListScreen(
-                                modifier = Modifier.fillMaxSize(),
-                                listItems = state.data,
-                                onClickAction = onClickAction,
-                            )
-                        }
+                is State.Data -> {
+                    if (state.data.isEmpty()) {
+                        EmptyScreen(
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    } else {
+                        ListScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            groups = state.data,
+                            onClickConstraint = onClickConstraint,
+                        )
                     }
                 }
             }
@@ -233,8 +168,8 @@ private fun EmptyScreen(modifier: Modifier = Modifier) {
 @Composable
 private fun ListScreen(
     modifier: Modifier = Modifier,
-    listItems: List<SimpleListItemModel>,
-    onClickAction: (String) -> Unit,
+    groups: List<SimpleListItemGroup>,
+    onClickConstraint: (String) -> Unit,
 ) {
     LazyVerticalGrid(
         modifier = modifier,
@@ -243,12 +178,21 @@ private fun ListScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        items(listItems, key = { it.id }) { model ->
-            SimpleListItemFixedHeight(
-                modifier = Modifier.fillMaxWidth(),
-                model = model,
-                onClick = { onClickAction(model.id) },
-            )
+        for (group in groups) {
+            stickyHeader(contentType = "header") {
+                SimpleListItemHeader(modifier = Modifier.fillMaxWidth(), text = group.header)
+            }
+
+            items(
+                group.items,
+                contentType = { "list_item" },
+            ) { model ->
+                SimpleListItemFixedHeight(
+                    modifier = Modifier.fillMaxWidth(),
+                    model = model,
+                    onClick = { onClickConstraint(model.id) },
+                )
+            }
         }
     }
 }
@@ -261,18 +205,30 @@ private fun PreviewList() {
             query = "Search query",
             state = State.Data(
                 listOf(
-                    SimpleListItemModel(
-                        "app",
-                        title = "App in foreground",
-                        icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
+                    SimpleListItemGroup(
+                        header = "Apps",
+                        items = listOf(
+                            SimpleListItemModel(
+                                "app1",
+                                title = "App in foreground",
+                                icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
+                            ),
+                            SimpleListItemModel(
+                                "app2",
+                                title = "App not in foreground",
+                                icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
+                            ),
+                        ),
                     ),
-                    SimpleListItemModel(
-                        "app",
-                        title = "App not in foreground",
-                        icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
-                        subtitle = "Error",
-                        isSubtitleError = true,
-                        isEnabled = false,
+                    SimpleListItemGroup(
+                        header = "Bluetooth",
+                        items = listOf(
+                            SimpleListItemModel(
+                                "bt1",
+                                title = "Bluetooth device connected",
+                                icon = ComposeIconInfo.Vector(Icons.Rounded.Bluetooth),
+                            ),
+                        ),
                     ),
                 ),
             ),
@@ -285,21 +241,42 @@ private fun PreviewList() {
 private fun PreviewGrid() {
     KeyMapperTheme {
         ChooseConstraintScreen(
-            query = "Search query",
             state = State.Data(
                 listOf(
-                    SimpleListItemModel(
-                        "app1",
-                        title = "App in foreground",
-                        icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
+                    SimpleListItemGroup(
+                        header = "Apps",
+                        items = listOf(
+                            SimpleListItemModel(
+                                "app1",
+                                title = "App in foreground",
+                                icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
+                            ),
+                            SimpleListItemModel(
+                                "app2",
+                                title = "App not in foreground",
+                                icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
+                            ),
+                        ),
                     ),
-                    SimpleListItemModel(
-                        "app2",
-                        title = "App not in foreground",
-                        icon = ComposeIconInfo.Vector(Icons.Rounded.Android),
-                        subtitle = "Error",
-                        isSubtitleError = true,
-                        isEnabled = false,
+                    SimpleListItemGroup(
+                        header = "WiFi",
+                        items = listOf(
+                            SimpleListItemModel(
+                                "wifi1",
+                                title = "WiFi is on",
+                                icon = ComposeIconInfo.Vector(Icons.Rounded.Wifi),
+                                subtitle = "Requires root",
+                                isSubtitleError = true,
+                            ),
+                            SimpleListItemModel(
+                                "wifi2",
+                                title = "WiFi is off",
+                                icon = ComposeIconInfo.Vector(Icons.Rounded.Wifi),
+                                subtitle = "Requires root",
+                                isSubtitleError = true,
+                                isEnabled = false,
+                            ),
+                        ),
                     ),
                 ),
             ),
