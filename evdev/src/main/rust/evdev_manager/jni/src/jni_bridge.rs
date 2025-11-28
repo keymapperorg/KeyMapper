@@ -200,7 +200,7 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
 
 fn get_evdev_from_path(path: PathBuf) -> Option<Device> {
     Device::new_from_path(path.clone())
-        .inspect_err(|e| warn!("Failed to open evdev device: {:?}", e))
+        .inspect_err(|e| warn!("Failed to open evdev device {:?}: {:?}", path, e))
         .ok()
 }
 
