@@ -76,18 +76,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "evdev_manager"
-version = "0.1.0"
-dependencies = [
- "android_log",
- "evdev",
- "evdev_manager_core",
- "jni",
- "libc 0.2.177",
- "log 0.4.28",
-]
-
-[[package]]
 name = "evdev_manager_core"
 version = "0.1.0"
 dependencies = [
@@ -97,6 +85,18 @@ dependencies = [
  "mio",
  "slab",
  "tokio",
+]
+
+[[package]]
+name = "evdev_manager_jni"
+version = "0.1.0"
+dependencies = [
+ "android_log",
+ "evdev",
+ "evdev_manager_core",
+ "jni",
+ "libc 0.2.177",
+ "log 0.4.28",
 ]
 
 [[package]]
@@ -153,6 +153,13 @@ name = "log"
 version = "0.4.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "34080505efa8e45a4b816c349525ebe327ceaa8559756f0356cba97ef3bf7432"
+
+[[package]]
+name = "main"
+version = "0.1.0"
+dependencies = [
+ "evdev_manager_jni",
+]
 
 [[package]]
 name = "memchr"

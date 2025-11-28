@@ -1,11 +1,11 @@
 [package]
-name = "evdev_manager"
+name = "evdev_manager_jni"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "evdev_manager"
-crate-type = ["cdylib"]
+name = "evdev_manager_jni"
+crate-type = ["rlib"]
 
 [dependencies]
 jni = "0.21.1"
@@ -14,6 +14,3 @@ android_log = "0.1.3"
 evdev = { path = "../../evdev" }
 evdev_manager_core = { path = "../core" }
 libc = "0.2.177"
-
-[build-dependencies]
-# No C++ compilation needed since we're using pure JNI
