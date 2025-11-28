@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.models.isSuccess
+import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.SettingsUtils
@@ -256,7 +257,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
 }
 
 @SuppressLint("ObsoleteSdkInt")
-@RequiresApi(Build.VERSION_CODES.Q)
+@RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
 interface SystemBridgeConnectionManager {
     val connectionState: StateFlow<SystemBridgeConnectionState>
 
