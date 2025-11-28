@@ -94,6 +94,18 @@ lane :internal do
     version_code = get_properties_value(key: "VERSION_CODE", path: "./app/version.properties")
     version_name = get_properties_value(key: "VERSION_NAME", path: "./app/version.properties")
 
+    # Check Rust formatting and run tests
+    Dir.chdir("../evdev/src/main/rust/evdev_manager") do
+      sh("cargo fmt --check")
+      sh("cargo test --package evdev_manager_core")
+    end
+
+    Dir.chdir("..") do
+      gradle(task: "ktlintFormat")
+      gradle(task: "ktlintCheck")
+      gradle(task: "testDebugUnitTest")
+    end
+
 #   Don't create changelog for f-droid because not committing it
 #   File.write("metadata/android/en-US/changelogs/" + version_code + ".txt", whats_new)
 
@@ -107,20 +119,7 @@ lane :internal do
                     secure_text: true
                    )
 
-#   Do not release a debug build for pro version.
-#   gradle(task: "assembleDebug")
-
-    # Check Rust formatting and run tests
-    Dir.chdir("../evdev/src/main/rust/evdev_manager") do
-      sh("cargo fmt --check")
-      sh("cargo test --package evdev_manager_core")
-    end
-
     Dir.chdir("..") do
-  #   Release the free build to GitHub because billing only works if signed by Google Play
-      gradle(task: "ktlintFormat")
-      gradle(task: "ktlintCheck")
-      gradle(task: "testDebugUnitTest")
       gradle(task: "app:bundleRelease")
     end
 
