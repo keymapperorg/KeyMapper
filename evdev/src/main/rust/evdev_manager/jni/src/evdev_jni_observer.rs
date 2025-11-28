@@ -86,6 +86,11 @@ impl EvdevJniObserver {
         device_identifier: &DeviceIdentifier,
         event: &InputEvent,
     ) -> bool {
+        let mut env = self
+            .jvm
+            .attach_current_thread_permanently()
+            .expect("Failed to attach to JVM thread");
+
         // Extract event type and code from EventCode
         let (ev_type, ev_code) = event_code_to_int(&event.event_code);
 
@@ -101,13 +106,6 @@ impl EvdevJniObserver {
         self.handle_power_button(ev_code, android_code, event.value, event.time.tv_sec);
 
         // Call BaseSystemBridge.onEvdevEvent() via JNI
-        let mut env = match self.jvm.attach_current_thread() {
-            Ok(env) => env,
-            Err(e) => {
-                error!("Failed to attach to JVM thread: {:?}", e);
-                return false;
-            }
-        };
 
         let result = env.call_method(
             &self.system_bridge,
