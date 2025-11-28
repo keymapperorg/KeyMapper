@@ -41,6 +41,7 @@ import android.view.InputEvent
 import androidx.annotation.RequiresApi
 import com.android.internal.telephony.ITelephony
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
+import io.github.sds100.keymapper.common.models.GrabbedDeviceHandle
 import io.github.sds100.keymapper.common.models.ShellResult
 import io.github.sds100.keymapper.common.utils.UserHandleUtils
 import io.github.sds100.keymapper.evdev.IEvdevCallback
@@ -66,7 +67,9 @@ import rikka.hidden.compat.adapter.ProcessObserverAdapter
 abstract class BaseSystemBridge : ISystemBridge.Stub() {
 
     @Suppress("KotlinJniMissingFunction")
-    external fun setGrabbedDevicesNative(devices: Array<EvdevDeviceInfo>): Boolean
+    external fun setGrabbedDevicesNative(
+        devices: Array<EvdevDeviceInfo>,
+    ): Array<GrabbedDeviceHandle>
 
     @Suppress("KotlinJniMissingFunction")
     external fun writeEvdevEventNative(deviceId: Int, type: Int, code: Int, value: Int): Boolean
@@ -411,7 +414,9 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
         }
     }
 
-    override fun setGrabbedDevices(devices: Array<out EvdevDeviceInfo?>?): Boolean {
+    override fun setGrabbedDevices(
+        devices: Array<out EvdevDeviceInfo?>?,
+    ): Array<out GrabbedDeviceHandle?>? {
         return setGrabbedDevicesNative(devices?.filterNotNull()?.toTypedArray() ?: emptyArray())
     }
 

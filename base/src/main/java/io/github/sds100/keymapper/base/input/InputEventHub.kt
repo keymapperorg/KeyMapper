@@ -6,7 +6,6 @@ import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.base.BuildConfig
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
-import io.github.sds100.keymapper.common.models.GrabbedDeviceHandle
 import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -248,11 +247,6 @@ class InputEventHubImpl @Inject constructor(
         val devices = evdevDevicesDelegate.allDevices.value.toSet()
         clients[clientId] = clients[clientId]!!.copy(devicesToGrab = devices)
         invalidateGrabbedDevices()
-    }
-
-    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
-    override fun onGrabbedDevicesChanged(devices: Array<out GrabbedDeviceHandle?>?) {
-        evdevDevicesDelegate.onGrabbedDevicesChanged(devices?.filterNotNull() ?: emptyList())
     }
 
     @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)

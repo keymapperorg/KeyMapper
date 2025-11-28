@@ -204,3 +204,4 @@ class TriggerErrorSnapshotTest {
         )
     }
 }
+

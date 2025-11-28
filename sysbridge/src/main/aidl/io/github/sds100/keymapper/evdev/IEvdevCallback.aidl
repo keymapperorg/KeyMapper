@@ -9,5 +9,4 @@ interface IEvdevCallback {
    */
    boolean onEvdevEvent(int deviceId, long timeSec, long timeUsec, int type, int code, int value, int androidCode);
    void onEmergencyKillSystemBridge();
-   void onGrabbedDevicesChanged(in GrabbedDeviceHandle[] devices);
 }

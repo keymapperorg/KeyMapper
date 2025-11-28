@@ -65,12 +65,12 @@ class EvdevDevicesDelegate @Inject constructor(
             grabDevicesChannel.receiveAsFlow().collect { devices ->
                 systemBridgeConnectionManager
                     .run { bridge -> bridge.setGrabbedDevices(devices.toTypedArray()) }
-                    .onSuccess { grabbed ->
-                        if (!grabbed) {
-                            Timber.w(
-                                "Grabbing devices failed in system bridge: $devices",
-                            )
-                        }
+                    .onSuccess { grabbedDevices ->
+                        onGrabbedDevicesChanged(grabbedDevices?.filterNotNull() ?: emptyList())
+                    }.onFailure { error ->
+                        Timber.w(
+                            "Grabbing devices failed in system bridge: $error",
+                        )
                     }
             }
         }
@@ -80,7 +80,11 @@ class EvdevDevicesDelegate @Inject constructor(
         grabDevicesChannel.trySend(devices)
     }
 
-    fun onGrabbedDevicesChanged(devices: List<GrabbedDeviceHandle>) {
+    fun getGrabbedDeviceInfo(id: Int): EvdevDeviceInfo? {
+        return grabbedDevicesById.value[id]
+    }
+
+    private fun onGrabbedDevicesChanged(devices: List<GrabbedDeviceHandle>) {
         Timber.i("Grabbed devices changed: ${devices.joinToString { it.name }}")
 
         grabbedDevicesById.value =
@@ -88,10 +92,6 @@ class EvdevDevicesDelegate @Inject constructor(
                 handle.id to
                     EvdevDeviceInfo(handle.name, handle.bus, handle.vendor, handle.product)
             }
-    }
-
-    fun getGrabbedDeviceInfo(id: Int): EvdevDeviceInfo? {
-        return grabbedDevicesById.value[id]
     }
 
     private suspend fun fetchAllDevices(): List<EvdevDeviceInfo> {
