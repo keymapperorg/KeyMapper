@@ -23,9 +23,6 @@ jobs:
           java-version: 17
           cache: 'gradle'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
-
       - name: Unit tests
         run: bash ./gradlew testDebugUnitTest
 
@@ -51,9 +48,6 @@ jobs:
           distribution: 'oracle'
           java-version: 17
           cache: 'gradle'
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
 
       - name: Ktlint check
         run: ./gradlew ktlintCheck
