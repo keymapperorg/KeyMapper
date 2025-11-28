@@ -14,10 +14,13 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -28,6 +31,7 @@ import timber.log.Timber
  * could be sent in the onEvdevEvent callback instead, but sending non-primitive strings for the
  * device name introduces extra overhead across Binder and JNI.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
 @Singleton
 class EvdevDevicesDelegate @Inject constructor(
@@ -47,15 +51,20 @@ class EvdevDevicesDelegate @Inject constructor(
     init {
         coroutineScope.launch {
             coroutineScope.launch {
-                combine(
-                    devicesAdapter.connectedInputDevices,
-                    systemBridgeConnectionManager.connectionState,
-                ) { _, connectionState ->
-                    if (connectionState is SystemBridgeConnectionState.Connected) {
-                        allDevices.value = fetchAllDevices()
-                    } else {
-                        allDevices.value = emptyList()
-                        grabbedDevicesById.value = emptyMap()
+                // Only listen to changes in the connected input devices if the system bridge
+                // is connected.
+                systemBridgeConnectionManager.connectionState.flatMapLatest { connectionState ->
+                    when (connectionState) {
+                        is SystemBridgeConnectionState.Connected -> {
+                            devicesAdapter.connectedInputDevices.onEach {
+                                allDevices.value = fetchAllDevices()
+                            }
+                        }
+                        is SystemBridgeConnectionState.Disconnected -> {
+                            allDevices.value = emptyList()
+                            grabbedDevicesById.value = emptyMap()
+                            emptyFlow()
+                        }
                     }
                 }.collect()
             }
