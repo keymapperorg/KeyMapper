@@ -7,8 +7,10 @@ android {
     namespace = "io.github.sds100.keymapper.evdev"
     compileSdk = libs.versions.compile.sdk.get().toInt()
 
-    // IMPORTANT! If you change this, also change it in build.rs for evdev crate and any CI workflows
-    ndkVersion = "27.2.12479018"
+    // IMPORTANT! If you change this, also change it in build.rs for evdev crate and any CI workflows. This must
+    // match one of the NDK versions installed in the GitHub actions runner. E.g look here for Ubuntu 24.04
+    // https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md
+    ndkVersion = "27.3.13750724"
 
     defaultConfig {
         // Must be API 29 so that the binder-ndk library can be found.

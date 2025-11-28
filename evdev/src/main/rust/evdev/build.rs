@@ -55,7 +55,7 @@ fn main() {
 
 fn find_ndk_sysroot(manifest_dir: &Path) -> PathBuf {
     let sdk_dir = get_sdk_dir(manifest_dir).expect("SDK directory not available");
-    let ndk_version = "27.2.12479018";
+    let ndk_version = "27.3.13750724";
 
     get_sysroot_for_version(&sdk_dir, ndk_version)
 }
