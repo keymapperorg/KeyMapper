@@ -77,7 +77,10 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
 pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_grabEvdevDeviceNative(
     mut env: JNIEnv,
     _class: JClass,
-    j_device_path: JString,
+    j_name: JString,
+    j_bus: jint,
+    j_vendor: jint,
+    j_product: jint
 ) -> jboolean {
     let device_path: String = match env.get_string(&j_device_path) {
         Ok(s) => s.to_string_lossy().into_owned(),
@@ -93,25 +96,6 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
 }
 
 #[no_mangle]
-pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_ungrabEvdevDeviceNative(
-    mut env: JNIEnv,
-    _class: JClass,
-    j_device_path: JString,
-) -> jboolean {
-    let device_path: String = match env.get_string(&j_device_path) {
-        Ok(s) => s.to_string_lossy().into_owned(),
-        Err(e) => {
-            error!("Failed to get device path string: {:?}", e);
-            return false as jboolean;
-        }
-    };
-
-    EventLoopManager::get()
-        .ungrab_device(device_path.as_str())
-        .is_ok() as jboolean
-}
-
-#[no_mangle]
 pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_ungrabAllEvdevDevicesNative(
     _env: JNIEnv,
     _class: JClass,
@@ -119,6 +103,7 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     EventLoopManager::get().ungrab_all_devices().is_ok() as jboolean
 }
 
+// TODO
 #[no_mangle]
 pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_writeEvdevEventNative(
     mut _env: JNIEnv,

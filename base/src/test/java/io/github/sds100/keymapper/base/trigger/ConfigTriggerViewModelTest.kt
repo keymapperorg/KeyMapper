@@ -171,4 +171,3 @@ class ConfigTriggerViewModelTest {
         assertThat(result.isEnabled, `is`(false))
     }
 }
-

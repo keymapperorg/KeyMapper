@@ -38,10 +38,9 @@ import android.permission.IPermissionManager
 import android.permission.PermissionManagerApis
 import android.util.Log
 import android.view.InputEvent
-import android.view.KeyEvent
 import androidx.annotation.RequiresApi
 import com.android.internal.telephony.ITelephony
-import io.github.sds100.keymapper.common.models.EvdevDeviceHandle
+import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.models.ShellResult
 import io.github.sds100.keymapper.common.utils.UserHandleUtils
 import io.github.sds100.keymapper.evdev.IEvdevCallback
@@ -66,38 +65,28 @@ import rikka.hidden.compat.adapter.ProcessObserverAdapter
 @SuppressLint("LogNotTimber")
 abstract class BaseSystemBridge : ISystemBridge.Stub() {
 
-    external fun grabEvdevDeviceNative(devicePath: String): Boolean
+    @Suppress("KotlinJniMissingFunction")
+    external fun setGrabbedDevicesNative(devices: Array<EvdevDeviceInfo>): Boolean
 
-    external fun ungrabEvdevDeviceNative(devicePath: String): Boolean
-    external fun ungrabAllEvdevDevicesNative(): Boolean
-    external fun writeEvdevEventNative(
-        devicePath: String,
-        type: Int,
-        code: Int,
-        value: Int,
-    ): Boolean
+    @Suppress("KotlinJniMissingFunction")
+    external fun writeEvdevEventNative(deviceId: Int, type: Int, code: Int, value: Int): Boolean
 
-    external fun getEvdevDevicesNative(): Array<EvdevDeviceHandle>
+    @Suppress("KotlinJniMissingFunction")
+    external fun getEvdevDevicesNative(): Array<EvdevDeviceInfo>
 
+    @Suppress("KotlinJniMissingFunction")
     external fun initEvdevManager()
-    external fun destroyEvdevManager()
 
-    /**
-     * Called from Rust via JNI when the evdev event loop has started.
-     * Forwards the call to the registered IEvdevCallback.
-     */
-    fun onEvdevEventLoopStarted() {
-        synchronized(evdevCallbackLock) {
-            evdevCallback?.onEvdevEventLoopStarted()
-        }
-    }
+    @Suppress("KotlinJniMissingFunction")
+    external fun destroyEvdevManager()
 
     /**
      * Called from Rust via JNI when an evdev event occurs.
      * Forwards the call to the registered IEvdevCallback and returns whether the event was consumed.
      */
+    @Suppress("unused")
     fun onEvdevEvent(
-        devicePath: String,
+        deviceId: Int,
         timeSec: Long,
         timeUsec: Long,
         type: Int,
@@ -108,7 +97,7 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
         synchronized(evdevCallbackLock) {
             val callback = evdevCallback ?: return false
             return try {
-                callback.onEvdevEvent(devicePath, timeSec, timeUsec, type, code, value, androidCode)
+                callback.onEvdevEvent(deviceId, timeSec, timeUsec, type, code, value, androidCode)
             } catch (e: Exception) {
                 Log.e(TAG, "Error calling evdev callback", e)
                 false
@@ -120,6 +109,7 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
      * Called from Rust via JNI when the power button is held for 10+ seconds.
      * Forwards the call to the registered IEvdevCallback for emergency system bridge kill.
      */
+    @Suppress("unused")
     fun onEmergencyKillSystemBridge() {
         synchronized(evdevCallbackLock) {
             evdevCallback?.onEmergencyKillSystemBridge()
@@ -421,37 +411,15 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
         }
     }
 
-    override fun grabEvdevDevice(devicePath: String?): Boolean {
-        devicePath ?: return false
-        return grabEvdevDeviceNative(devicePath)
-    }
-
-    // TODO remove so key mapper can handle errors when grabbing a specific device
-    override fun grabEvdevDeviceArray(devicePath: Array<out String>?): Boolean {
-        devicePath ?: return false
-
-        for (path in devicePath) {
-            Log.i(TAG, "Grabbing evdev device $path")
-            grabEvdevDeviceNative(path)
-        }
-
-        return true
-    }
-
-    override fun ungrabEvdevDevice(devicePath: String?): Boolean {
-        devicePath ?: return false
-        return ungrabEvdevDeviceNative(devicePath)
-    }
-
-    override fun ungrabAllEvdevDevices(): Boolean {
-        return ungrabAllEvdevDevicesNative()
+    override fun setGrabbedDevices(devices: Array<out EvdevDeviceInfo?>?): Boolean {
+        return setGrabbedDevicesNative(devices?.filterNotNull()?.toTypedArray() ?: emptyArray())
     }
 
     override fun injectInputEvent(event: InputEvent?, mode: Int): Boolean {
         return inputManager.injectInputEvent(event, mode)
     }
 
-    override fun getEvdevInputDevices(): Array<out EvdevDeviceHandle?>? {
+    override fun getEvdevInputDevices(): Array<out EvdevDeviceInfo?>? {
         return getEvdevDevicesNative()
     }
 
@@ -463,9 +431,8 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
         return wifiManager.setWifiEnabled(processPackageName, enable)
     }
 
-    override fun writeEvdevEvent(devicePath: String?, type: Int, code: Int, value: Int): Boolean {
-        devicePath ?: return false
-        return writeEvdevEventNative(devicePath, type, code, value)
+    override fun writeEvdevEvent(deviceId: Int, type: Int, code: Int, value: Int): Boolean {
+        return writeEvdevEventNative(deviceId, type, code, value)
     }
 
     override fun getProcessUid(): Int {

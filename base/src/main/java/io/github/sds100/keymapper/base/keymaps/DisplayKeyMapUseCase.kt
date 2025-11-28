@@ -7,7 +7,7 @@ import io.github.sds100.keymapper.base.actions.DisplayActionUseCase
 import io.github.sds100.keymapper.base.actions.GetActionErrorUseCase
 import io.github.sds100.keymapper.base.constraints.DisplayConstraintUseCase
 import io.github.sds100.keymapper.base.constraints.GetConstraintErrorUseCase
-import io.github.sds100.keymapper.base.input.EvdevHandleCache
+import io.github.sds100.keymapper.base.input.EvdevDevicesDelegate
 import io.github.sds100.keymapper.base.purchasing.ProductId
 import io.github.sds100.keymapper.base.purchasing.PurchasingError.ProductNotPurchased
 import io.github.sds100.keymapper.base.purchasing.PurchasingManager
@@ -70,7 +70,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
     private val buildConfigProvider: BuildConfigProvider,
     private val navigationProvider: NavigationProvider,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
-    private val evdevHandleCache: EvdevHandleCache,
+    private val grabbedEvdevDeviceCache: EvdevDevicesDelegate,
 ) : DisplayKeyMapUseCase,
     GetActionErrorUseCase by getActionErrorUseCase,
     GetConstraintErrorUseCase by getConstraintErrorUseCase {
@@ -113,7 +113,7 @@ class DisplayKeyMapUseCaseImpl @Inject constructor(
 
     private val evdevDevices: Flow<List<EvdevDeviceInfo>?> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            evdevHandleCache.devices
+            grabbedEvdevDeviceCache.allDevices
         } else {
             flowOf(null)
         }

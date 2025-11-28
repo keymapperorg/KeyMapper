@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.sysbridge;
 
 import io.github.sds100.keymapper.evdev.IEvdevCallback;
-import io.github.sds100.keymapper.common.models.EvdevDeviceHandle;
+import io.github.sds100.keymapper.common.models.EvdevDeviceInfo;
 import io.github.sds100.keymapper.common.models.ShellResult;
 import android.view.InputEvent;
 
@@ -11,19 +11,15 @@ interface ISystemBridge {
    int getVersionCode() = 16777112;
    ShellResult executeCommand(String command, long timeoutMillis) = 16777111;
 
-   boolean grabEvdevDevice(String devicePath) = 1;
-   boolean grabEvdevDeviceArray(in String[] devicePath) = 2;
-
-   boolean ungrabEvdevDevice(String devicePath) = 3;
-   boolean ungrabAllEvdevDevices() = 4;
+   boolean setGrabbedDevices(in EvdevDeviceInfo[] devices) = 1;
 
    void registerEvdevCallback(IEvdevCallback callback) = 5;
    void unregisterEvdevCallback() = 6;
 
-   boolean writeEvdevEvent(String devicePath, int type, int code, int value) = 7;
+   boolean writeEvdevEvent(int deviceId, int type, int code, int value) = 7;
    boolean injectInputEvent(in InputEvent event, int mode) = 8;
 
-   EvdevDeviceHandle[] getEvdevInputDevices() = 9;
+   EvdevDeviceInfo[] getEvdevInputDevices() = 9;
 
    boolean setWifiEnabled(boolean enable) = 10;
 

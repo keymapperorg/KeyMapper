@@ -21,8 +21,6 @@ impl GrabbedDevice {
         // Open device with O_NONBLOCK so that the loop reading events eventually returns
         // due to an EAGAIN error
 
-        // TODO do not allow grabbing uinput devices
-
         let file = OpenOptions::new()
             .read(true)
             .custom_flags(libc::O_NONBLOCK)

@@ -129,14 +129,21 @@ impl EventLoopManager {
         Ok(())
     }
 
-    pub fn grab_device(&self, path: &str) -> Result<(), Box<dyn Error>> {
+    /// returns: The new list of grabbed devices.
+    pub fn grab_device(
+        &self,
+        device_identifier: DeviceIdentifier,
+    ) -> Result<Vec<(usize, DeviceIdentifier)>, Box<dyn Error>> {
         let mut devices = self.grabbed_devices.write().unwrap();
 
         // Check if device is already grabbed
-        if devices.iter().any(|(_, device)| device.device_path == path) {
+        if devices
+            .iter()
+            .any(|(_, device)| device.device_id == device_identifier)
+        {
             return Err(Box::new(io::Error::new(
                 ErrorKind::AlreadyExists,
-                format!("Device already grabbed: {}", path),
+                format!("Device already grabbed: {}", device_identifier),
             )));
         }
 
@@ -156,7 +163,12 @@ impl EventLoopManager {
             })?;
 
         info!("Grabbed device: {}", path);
-        Ok(())
+
+        let grabbed_devices_result = devices
+            .iter()
+            .map(|(key, device)| (key, device.device_id))
+            .collect();
+        Ok(grabbed_devices_result)
     }
 
     pub fn ungrab_device(&self, path: &str) -> Result<(), io::Error> {

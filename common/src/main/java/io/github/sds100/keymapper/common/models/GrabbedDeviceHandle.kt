@@ -4,11 +4,8 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class EvdevDeviceHandle(
-    /**
-     * The path to the device. E.g /dev/input/event1
-     */
-    val path: String,
+data class GrabbedDeviceHandle(
+    val id: Int,
     val name: String,
     val bus: Int,
     val vendor: Int,
