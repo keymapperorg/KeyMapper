@@ -4,7 +4,7 @@ use evdev_manager_core::android::android_codes::AKEYCODE_UNKNOWN;
 use evdev_manager_core::android::keylayout::key_layout_map::KeyLayoutKey;
 use evdev_manager_core::android::keylayout::key_layout_map_manager::KeyLayoutMapManager;
 use evdev_manager_core::device_identifier::DeviceIdentifier;
-use jni::objects::{GlobalRef, JObject, JValue};
+use jni::objects::{GlobalRef, JValue};
 use jni::JavaVM;
 use std::process;
 use std::sync::atomic::{AtomicI64, Ordering};
@@ -82,8 +82,8 @@ impl EvdevJniObserver {
 
     pub fn on_event(
         &self,
-        device_path: &str,
-        device_id: &DeviceIdentifier,
+        device_id: usize,
+        device_identifier: &DeviceIdentifier,
         event: &InputEvent,
     ) -> bool {
         // Extract event type and code from EventCode
@@ -92,7 +92,7 @@ impl EvdevJniObserver {
         // Convert raw evdev code to Android keycode
         let android_code = self
             .key_layout_map_manager
-            .map_key(device_id, ev_code)
+            .map_key(device_identifier, ev_code)
             .unwrap_or(Some(Self::UNKNOWN_KEY))
             .map(|key| key.key_code)
             .unwrap_or(AKEYCODE_UNKNOWN);
@@ -101,7 +101,6 @@ impl EvdevJniObserver {
         self.handle_power_button(ev_code, android_code, event.value, event.time.tv_sec);
 
         // Call BaseSystemBridge.onEvdevEvent() via JNI
-        // TODO attach permanently? Is attaching necessary if sending primitives?
         let mut env = match self.jvm.attach_current_thread() {
             Ok(env) => env,
             Err(e) => {
@@ -110,20 +109,12 @@ impl EvdevJniObserver {
             }
         };
 
-        let device_path_jstring = match env.new_string(device_path) {
-            Ok(s) => s,
-            Err(e) => {
-                error!("Failed to create Java string: {:?}", e);
-                return false;
-            }
-        };
-
         let result = env.call_method(
             &self.system_bridge,
             "onEvdevEvent",
-            "(Ljava/lang/String;JJIIII)Z",
+            "(IJJIIII)Z",
             &[
-                JValue::Object(&JObject::from(device_path_jstring)),
+                JValue::Int(device_id as i32),
                 JValue::Long(event.time.tv_sec),
                 JValue::Long(event.time.tv_usec.into()),
                 JValue::Int(ev_type as i32),
@@ -137,37 +128,15 @@ impl EvdevJniObserver {
             Ok(value) => {
                 // The method returns a primitive boolean (Z)
                 // Extract the boolean value using z() method which returns Result<bool, _>
-                match value.z() {
-                    Ok(consumed) => consumed,
-                    Err(e) => {
-                        error!("Failed to extract boolean from result: {:?}", e);
-                        false
-                    }
-                }
+                value.z().unwrap_or_else(|e| {
+                    error!("Failed to extract boolean from result: {:?}", e);
+                    false
+                })
             }
             Err(e) => {
                 error!("Failed to call onEvdevEvent: {:?}", e);
                 false
             }
-        }
-    }
-
-    pub fn on_event_loop_started(&self) {
-        let mut env = match self.jvm.attach_current_thread() {
-            Ok(env) => env,
-            Err(e) => {
-                error!("Failed to attach to JVM thread: {:?}", e);
-                return;
-            }
-        };
-
-        if let Err(e) = env.call_method(
-            &self.system_bridge,
-            "onEvdevEventLoopStarted",
-            "()V",
-            &[],
-        ) {
-            error!("Failed to call onEvdevEventLoopStarted: {:?}", e);
         }
     }
 }

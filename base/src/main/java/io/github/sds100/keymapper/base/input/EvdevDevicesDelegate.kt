@@ -55,6 +55,7 @@ class EvdevDevicesDelegate @Inject constructor(
                         allDevices.value = fetchAllDevices()
                     } else {
                         allDevices.value = emptyList()
+                        grabbedDevicesById.value = emptyMap()
                     }
                 }.collect()
             }
@@ -85,7 +86,7 @@ class EvdevDevicesDelegate @Inject constructor(
     }
 
     private fun onGrabbedDevicesChanged(devices: List<GrabbedDeviceHandle>) {
-        Timber.i("Grabbed devices changed: ${devices.joinToString { it.name }}")
+        Timber.i("Grabbed devices changed: [${devices.joinToString { it.name }}]")
 
         grabbedDevicesById.value =
             devices.associate { handle ->

@@ -38,6 +38,7 @@ impl GrabbedDevice {
 
         let device_id: DeviceIdentifier = DeviceIdentifier {
             name: evdev.name().unwrap_or("").to_string(),
+            bus: evdev.bustype(),
             vendor: evdev.vendor_id(),
             product: evdev.product_id(),
             version: evdev.version(),

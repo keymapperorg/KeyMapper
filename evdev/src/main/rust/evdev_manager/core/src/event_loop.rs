@@ -3,29 +3,52 @@ use crate::evdev_error::EvdevError;
 use crate::grabbed_device::GrabbedDevice;
 use crate::runtime::get_runtime;
 use evdev::util::event_code_to_int;
-use evdev::{InputEvent, ReadFlag, ReadStatus};
-use io::ErrorKind;
+use evdev::{DeviceWrapper, InputEvent, ReadFlag, ReadStatus};
 use mio::event::Event;
 use mio::unix::SourceFd;
 use mio::{Events, Interest, Poll, Registry, Token, Waker};
 use slab::Slab;
+use std::collections::HashMap;
 use std::error::Error;
 use std::fs::read_dir;
 use std::io;
+use std::io::ErrorKind;
 use std::os::fd::AsRawFd;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{mpsc, Arc, Mutex, OnceLock, RwLock};
+use std::sync::{mpsc, Arc, OnceLock, RwLock};
 use std::time::{Duration, Instant};
 use tokio::task::JoinHandle;
+
+/// Key for device path map - only JNI-exposed fields (excludes version).
+/// Used for O(1) HashMap lookup when matching devices.
+#[derive(Hash, Eq, PartialEq)]
+struct DeviceIdentifierKey {
+    name: String,
+    bus: u16,
+    vendor: u16,
+    product: u16,
+}
+
+impl From<&DeviceIdentifier> for DeviceIdentifierKey {
+    fn from(id: &DeviceIdentifier) -> Self {
+        DeviceIdentifierKey {
+            name: id.name.clone(),
+            bus: id.bus,
+            vendor: id.vendor,
+            product: id.product,
+        }
+    }
+}
 
 static EVENT_LOOP_MANAGER: OnceLock<EventLoopManager> = OnceLock::new();
 
 const WAKER_TOKEN: Token = Token(0);
 
 /// This callback returns true if the observer consumed the input event.
+/// Parameters: device_id (slab key), device_identifier, event
 pub type EvdevObserver =
-    fn(device_path: &str, device_id: &DeviceIdentifier, event: &InputEvent) -> bool;
+    fn(device_id: usize, device_identifier: &DeviceIdentifier, event: &InputEvent) -> bool;
 
 pub struct EventLoopManager {
     stop_flag: Arc<AtomicBool>,
@@ -129,24 +152,93 @@ impl EventLoopManager {
         Ok(())
     }
 
-    /// returns: The new list of grabbed devices.
-    pub fn grab_device(
+    /// Set the list of grabbed devices. This will ungrab any devices that are no longer in the list
+    /// and grab any new devices. Devices are matched by DeviceIdentifier (name, bus, vendor, product).
+    /// Returns: A list of (device_id, DeviceIdentifier) for all successfully grabbed devices.
+    pub fn set_grabbed_devices(
         &self,
-        device_identifier: DeviceIdentifier,
-    ) -> Result<Vec<(usize, DeviceIdentifier)>, Box<dyn Error>> {
+        requested_devices: Vec<DeviceIdentifier>,
+    ) -> Vec<(usize, DeviceIdentifier)> {
         let mut devices = self.grabbed_devices.write().unwrap();
 
-        // Check if device is already grabbed
-        if devices
+        // Find devices to ungrab (currently grabbed but not in requested list)
+        // Compare by JNI-exposed fields only (name, bus, vendor, product), not version
+        let keys_to_remove: Vec<usize> = devices
             .iter()
-            .any(|(_, device)| device.device_id == device_identifier)
-        {
-            return Err(Box::new(io::Error::new(
-                ErrorKind::AlreadyExists,
-                format!("Device already grabbed: {}", device_identifier),
-            )));
+            .filter(|(_, device)| {
+                !requested_devices
+                    .iter()
+                    .any(|req| device_id_matches_jni_fields(&device.device_id, req))
+            })
+            .map(|(key, _)| key)
+            .collect();
+
+        // Ungrab devices that are no longer requested
+        for key in keys_to_remove {
+            if let Some(device) = devices.get(key) {
+                let fd = device.evdev.lock().unwrap().as_raw_fd();
+                let mut source_fd = SourceFd(&fd);
+                self.registry
+                    .deregister(&mut source_fd)
+                    .inspect_err(|e| {
+                        error!("Failed to deregister device {}: {}", device.device_path, e)
+                    })
+                    .ok();
+                info!("Ungrabbed device: {}", device.device_path);
+            }
+            devices.remove(key);
         }
 
+        // Find devices to grab (requested but not currently grabbed)
+        // Compare by JNI-exposed fields only (name, bus, vendor, product), not version
+        let devices_to_grab: Vec<&DeviceIdentifier> = requested_devices
+            .iter()
+            .filter(|req| {
+                !devices
+                    .iter()
+                    .any(|(_, device)| device_id_matches_jni_fields(&device.device_id, req))
+            })
+            .collect();
+
+        // Build device path map once for all devices to grab - O(m) instead of O(n*m)
+        if !devices_to_grab.is_empty() {
+            // Collect uinput paths while we still hold the lock
+            let uinput_paths: Vec<String> = devices
+                .iter()
+                .map(|(_, device)| device.uinput.devnode().unwrap().to_string())
+                .collect();
+
+            let device_path_map = build_device_path_map(&uinput_paths);
+
+            for device_id in devices_to_grab {
+                let key = DeviceIdentifierKey::from(device_id);
+                match device_path_map.get(&key) {
+                    Some(path) => {
+                        if let Err(e) = self.grab_device_internal(&mut devices, path) {
+                            error!("Failed to grab device {}: {:?}", path, e);
+                        }
+                    }
+                    None => {
+                        warn!("Device not found: {:?}", device_id);
+                    }
+                }
+            }
+        }
+
+        // Return all currently grabbed devices as (slab_key, DeviceIdentifier) tuples
+        // The slab_key is used as device_id for O(1) lookup when writing events
+        devices
+            .iter()
+            .map(|(slab_key, device)| (slab_key, device.device_id.clone()))
+            .collect()
+    }
+
+    /// Internal method to grab a device and register it with the poll
+    fn grab_device_internal(
+        &self,
+        devices: &mut Slab<GrabbedDevice>,
+        path: &str,
+    ) -> Result<usize, Box<dyn Error>> {
         let device = GrabbedDevice::new(path)?;
         let fd = device.evdev.lock().unwrap().as_raw_fd();
         let key = devices.insert(device);
@@ -163,63 +255,23 @@ impl EventLoopManager {
             })?;
 
         info!("Grabbed device: {}", path);
-
-        let grabbed_devices_result = devices
-            .iter()
-            .map(|(key, device)| (key, device.device_id))
-            .collect();
-        Ok(grabbed_devices_result)
+        Ok(key)
     }
 
-    pub fn ungrab_device(&self, path: &str) -> Result<(), io::Error> {
-        let mut devices = self.grabbed_devices.write().unwrap();
-
-        let device_entry = devices
-            .iter()
-            .find(|(_, device)| device.device_path == path);
-
-        match device_entry {
-            None => Err(io::Error::new(
-                ErrorKind::NotFound,
-                format!("Device not found: {}", path),
-            )),
-            Some((key, device)) => {
-                let fd = device.evdev.lock().unwrap().as_raw_fd();
-                let mut source_fd = SourceFd(&fd);
-
-                self.registry
-                    .deregister(&mut source_fd)
-                    .inspect_err(|e| error!("Failed to deregister device {}: {}", path, e))
-                    .ok();
-
-                // Remove device (Drop will ungrab it)
-                devices.remove(key);
-                info!("Ungrabbed device: {}", path);
-                Ok(())
-            }
-        }
-    }
-
-    pub fn ungrab_all_devices(&self) -> Result<(), Box<dyn Error>> {
-        let mut devices = self.grabbed_devices.write().unwrap();
-
-        // Deregister all devices from the registry
-        for (_, device) in devices.iter() {
-            let fd = device.evdev.lock().unwrap().as_raw_fd();
-            let mut source_fd = SourceFd(&fd);
-
-            self.registry
-                .deregister(&mut source_fd)
-                .inspect_err(|e| {
-                    error!("Failed to deregister device {}: {}", device.device_path, e)
-                })
-                .ok();
-        }
-
-        // Clear all devices (Drop will ungrab each one)
-        devices.clear();
-        info!("Ungrabbed all devices");
-        Ok(())
+    /// Write an event to a grabbed device's uinput.
+    /// The device_id is the slab key returned by set_grabbed_devices(), enabling O(1) lookup.
+    pub fn write_event(
+        &self,
+        device_id: usize,
+        event_type: u32,
+        code: u32,
+        value: i32,
+    ) -> Result<(), EvdevError> {
+        let devices = self.grabbed_devices.read().unwrap();
+        let device = devices
+            .get(device_id) // O(1) slab lookup
+            .ok_or_else(|| EvdevError::new(-libc::ENODEV))?;
+        device.write_event(event_type, code, value)
     }
 
     pub fn register_observer(&self, observer: EvdevObserver) {
@@ -244,7 +296,6 @@ impl EventLoopManager {
 
                     // Do not return paths to uinput devices that were created.
                     if uinput_paths.contains(&path.to_str().unwrap()) {
-                        debug!("Skipping uinput device: {:?}", path);
                         continue;
                     }
 
@@ -345,7 +396,7 @@ impl EventLoopThread {
                     flags = ReadFlag::NORMAL;
                     // Keep this logging line. Debug/verbose events will be disabled in production.
                     debug!("Evdev event: {:?}", input_event);
-                    self.process_observers(&input_event, grabbed_device);
+                    self.process_observers(slab_key, &input_event, grabbed_device);
                 }
                 Ok((ReadStatus::Sync, _event)) => {
                     // Continue reading sync events
@@ -360,15 +411,16 @@ impl EventLoopThread {
         }
     }
 
-    fn process_observers(&self, event: &InputEvent, grabbed_device: &GrabbedDevice) {
+    fn process_observers(
+        &self,
+        device_id: usize,
+        event: &InputEvent,
+        grabbed_device: &GrabbedDevice,
+    ) {
         let mut consume = false;
 
         for (_, observer) in self.observers.read().unwrap().iter() {
-            if observer(
-                &grabbed_device.device_path,
-                &grabbed_device.device_id,
-                event,
-            ) {
+            if observer(device_id, &grabbed_device.device_id, event) {
                 consume = true;
             }
         }
@@ -386,4 +438,45 @@ impl EventLoopThread {
                 .ok();
         }
     }
+}
+
+/// Compare DeviceIdentifiers by JNI-exposed fields only (name, bus, vendor, product).
+/// Version is excluded as it's not exposed through the Java API.
+fn device_id_matches_jni_fields(a: &DeviceIdentifier, b: &DeviceIdentifier) -> bool {
+    a.name == b.name && a.bus == b.bus && a.vendor == b.vendor && a.product == b.product
+}
+
+/// Build a map of DeviceIdentifierKey -> device path.
+/// Scans /dev/input once for O(m) instead of O(n*m) when grabbing multiple devices.
+fn build_device_path_map(uinput_paths: &[String]) -> HashMap<DeviceIdentifierKey, String> {
+    let mut map = HashMap::new();
+
+    let Ok(dir) = read_dir("/dev/input") else {
+        return map;
+    };
+
+    for entry in dir.flatten() {
+        let path = entry.path();
+
+        // Skip uinput devices we created
+        if let Some(path_str) = path.to_str() {
+            if uinput_paths.iter().any(|p| p == path_str) {
+                continue;
+            }
+        }
+
+        if let Ok(device) = evdev::Device::new_from_path(&path) {
+            let key = DeviceIdentifierKey {
+                name: device.name().unwrap_or("").to_string(),
+                bus: device.bustype(),
+                vendor: device.vendor_id(),
+                product: device.product_id(),
+            };
+            if let Some(path_str) = path.to_str() {
+                map.insert(key, path_str.to_string());
+            }
+        }
+    }
+
+    map
 }

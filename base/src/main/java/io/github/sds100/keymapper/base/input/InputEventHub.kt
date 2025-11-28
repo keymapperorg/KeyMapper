@@ -75,9 +75,12 @@ class InputEventHubImpl @Inject constructor(
                 systemBridgeConnManager.connectionState
                     .filterIsInstance<SystemBridgeConnectionState.Connected>()
                     .collect {
+                        // Whenever the system bridge is connected
                         systemBridgeConnManager.run { bridge ->
                             bridge.registerEvdevCallback(this@InputEventHubImpl)
                         }
+
+                        invalidateGrabbedDevices()
                     }
             }
         }
