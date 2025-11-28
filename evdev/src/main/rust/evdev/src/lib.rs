@@ -3,6 +3,8 @@
 //! a libevdev submodule isn't required. Also so more complex build steps can be removed.
 //! Rust bindings to libevdev, a wrapper for evdev devices.
 
+#![allow(unused_imports, dead_code, unused_assignments)]
+
 #[macro_use]
 mod macros;
 

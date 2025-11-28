@@ -16,7 +16,7 @@ fn get_test_data_path() -> String {
 }
 
 fn load_key_layout_map(file_name: &str) -> KeyLayoutMap {
-    let file_path = format!("{}/Generic.kl", get_test_data_path());
+    let file_path = format!("{}/{}", get_test_data_path(), file_name);
     KeyLayoutMap::load_from_file(&file_path).unwrap()
 }
 
@@ -253,8 +253,8 @@ fn test_load_all_files_in_test_data() {
                 result.err()
             );
 
-            let map = result.unwrap();
             // At least verify it's not empty
+            result.unwrap();
             // We can't check exact counts as files may vary
             println!("  Loaded successfully");
         }

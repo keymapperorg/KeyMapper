@@ -1,6 +1,8 @@
 //! Integration tests for key layout map parsing.
 
-use evdev_manager_core::android::android_codes::{AKEYCODE_A, AKEYCODE_FUNCTION, AMOTION_EVENT_AXIS_X, POLICY_FLAG_VIRTUAL};
+use evdev_manager_core::android::android_codes::{
+    AKEYCODE_A, AKEYCODE_FUNCTION, AMOTION_EVENT_AXIS_X, POLICY_FLAG_VIRTUAL,
+};
 use evdev_manager_core::android::keylayout::input_event_lookup;
 
 #[test]

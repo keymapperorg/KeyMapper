@@ -145,13 +145,11 @@ impl<'a> Parser<'a> {
                     "led" | "sensor" => {
                         // Skip LEDs and sensors, we don't need them
                         self.tokenizer.next_line();
-                        skipped_line = true;
                         continue;
                     }
                     "usage" => {
                         // Skip usage code entries - evdev only provides scan codes
                         self.tokenizer.next_line();
-                        skipped_line = true;
                         continue;
                     }
                     _ => {
@@ -181,7 +179,7 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_key(&mut self, code_token: &str) -> Result<(), String> {
-        let scan_code = parse_int(&code_token).ok_or_else(|| {
+        let scan_code = parse_int(code_token).ok_or_else(|| {
             format!(
                 "{}: Expected key scan code number, got '{}'.",
                 self.tokenizer.get_location(),

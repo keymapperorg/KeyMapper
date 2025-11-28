@@ -1,5 +1,4 @@
-#[derive(Hash, Eq, PartialEq, Clone)]
-#[derive(Debug)]
+#[derive(Hash, Eq, PartialEq, Clone, Debug)]
 pub struct DeviceIdentifier {
     pub name: String,
     pub bus: u16,

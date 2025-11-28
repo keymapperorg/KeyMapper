@@ -44,13 +44,7 @@ impl EvdevJniObserver {
     }
 
     /// Handle power button emergency kill.
-    fn handle_power_button(
-        &self,
-        ev_code: u32,
-        android_code: u32,
-        value: i32,
-        time_sec: i64,
-    ) {
+    fn handle_power_button(&self, ev_code: u32, android_code: u32, value: i32, time_sec: i64) {
         // KEY_POWER scan code = 116
         if ev_code == 116 || android_code == android_codes::AKEYCODE_POWER {
             if value == 1 {
@@ -140,4 +134,3 @@ impl EvdevJniObserver {
         }
     }
 }
-
