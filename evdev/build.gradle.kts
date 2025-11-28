@@ -13,7 +13,9 @@ android {
     ndkVersion = "27.3.13750724"
 
     defaultConfig {
-        // Must be API 29 so that the binder-ndk library can be found.
+        // System bridge originally only supported Android 10+ because that was the min sdk
+        // for binder-ndk library. Even though that is no longer used, it is extra effort to support
+        // the changes to the internal Android APIs on Android 8 and 9.
         minSdk = 29
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
