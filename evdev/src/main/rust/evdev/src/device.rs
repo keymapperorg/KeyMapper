@@ -639,13 +639,14 @@ impl Device {
     pub fn new_from_path<P: AsRef<Path>>(path: P) -> io::Result<Device> {
         let mut file = OpenOptions::new()
             .read(true)
-            .write(true)
+            .write(false) // Writing is only allowed when rooted so must be false
             .custom_flags(libc::O_NONBLOCK)
             .open(path)?;
         let mut buffer = [0u8; 20 * std::mem::size_of::<libevdev::input_event>()];
+
         let last_result = loop {
             let result = file.read(&mut buffer);
-            if !result.is_ok() {
+            if result.is_err() {
                 break result;
             }
         };
