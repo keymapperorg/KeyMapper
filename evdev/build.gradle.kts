@@ -48,20 +48,24 @@ android {
 }
 
 cargo {
+    val isDebug = gradle.startParameter.taskNames.any { it.lowercase().contains("debug") }
+
     module = "src/main/rust/evdev_manager"
     libname = "evdev_manager"
-    targets = listOf("arm", "arm64", "x86", "x86_64")
+    targets = if (isDebug) {
+        // Only building for one target saves some time when developing
+        listOf("arm64")
+    } else {
+        listOf("arm", "arm64", "x86", "x86_64")
+    }
 
     // Can not do this with buildType configurations.
     // See https://github.com/mozilla/rust-android-gradle/issues/38
-    profile =
-        if (gradle.startParameter.taskNames
-                .any { it.lowercase().contains("debug") }
-        ) {
-            "debug"
-        } else {
-            "release"
-        }
+    profile = if (isDebug) {
+        "debug"
+    } else {
+        "release"
+    }
 }
 
 dependencies {
