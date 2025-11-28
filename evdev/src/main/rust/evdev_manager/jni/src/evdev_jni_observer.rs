@@ -54,7 +54,7 @@ impl EvdevJniObserver {
         // KEY_POWER scan code = 116
         if ev_code == 116 || android_code == android_codes::AKEYCODE_POWER {
             if value == 1 {
-                *self.power_button_down_time.lock().unwrap() = time_sec;
+                *time_guard = time_sec;
             } else if value == 0 {
                 // Button up - check if held for 10+ seconds
                 let down_time = *time_guard;
