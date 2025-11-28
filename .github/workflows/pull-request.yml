@@ -19,6 +19,8 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
+        with:
+          ndk-version: "27.2.12479018"
 
       - name: Unit tests
         run: bash ./gradlew testDebugUnitTest
@@ -48,6 +50,8 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
+        with:
+          ndk-version: "27.2.12479018"
 
       - name: Ktlint check
         run: ./gradlew ktlintCheck
@@ -109,6 +113,8 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
+        with:
+          ndk-version: "27.2.12479018"
 
       - name: set up Ruby for fastlane
         uses: ruby/setup-ruby@v1
