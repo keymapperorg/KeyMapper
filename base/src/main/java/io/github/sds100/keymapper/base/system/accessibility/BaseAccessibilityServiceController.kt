@@ -82,7 +82,6 @@ abstract class BaseAccessibilityServiceController(
 
     private val detectKeyMapsUseCase = detectKeyMapsUseCaseFactory.create(
         accessibilityService = service,
-        coroutineScope = service.lifecycleScope,
     )
 
     val detectConstraintsUseCase = detectConstraintsUseCaseFactory.create(service)
