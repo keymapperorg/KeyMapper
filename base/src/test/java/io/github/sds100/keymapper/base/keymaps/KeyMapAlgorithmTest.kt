@@ -4749,8 +4749,8 @@ class KeyMapAlgorithmTest {
         controller.onInputEvent(
             KMEvdevEvent(
                 type = KMEvdevEvent.TYPE_KEY_EVENT,
-                device = EvdevDeviceHandle(
-                    path = "/dev/input${device.name}",
+                deviceId = 0,
+                deviceInfo = EvdevDeviceInfo(
                     name = device.name,
                     bus = device.bus,
                     vendor = device.vendor,
@@ -4768,8 +4768,8 @@ class KeyMapAlgorithmTest {
         controller.onInputEvent(
             KMEvdevEvent(
                 type = KMEvdevEvent.TYPE_KEY_EVENT,
-                device = EvdevDeviceHandle(
-                    path = "/dev/input${device.name}",
+                deviceId = 0,
+                deviceInfo = EvdevDeviceInfo(
                     name = device.name,
                     bus = device.bus,
                     vendor = device.vendor,
