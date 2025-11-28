@@ -58,6 +58,38 @@ jobs:
       - name: Ktlint check
         run: ./gradlew ktlintCheck
 
+  rust:
+    name: Rust code style and tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            evdev/src/main/rust/evdev_manager/target/
+          key: ${{ runner.os }}-rust-${{ hashFiles('**/Cargo.toml', '**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-
+
+      - name: Check Rust formatting
+        working-directory: evdev/src/main/rust/evdev_manager
+        run: cargo fmt --check
+
+      - name: Run Rust tests
+        working-directory: evdev/src/main/rust/evdev_manager
+        run: cargo test --package evdev_manager_core
+
   apk:
     name: Generate and upload APK to Discord
     runs-on: ubuntu-latest

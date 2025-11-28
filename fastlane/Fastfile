@@ -32,6 +32,12 @@ lane :production do
 #   Don't create changelog for f-droid because not committing it
 #   File.write("metadata/android/en-US/changelogs/" + version_code + ".txt", whats_new)
 
+    # Check Rust formatting and run tests
+    Dir.chdir("../evdev/src/main/rust/evdev_manager") do
+      sh("cargo fmt --check")
+      sh("cargo test --package evdev_manager_core")
+    end
+
     Dir.chdir("..") do
       gradle(task: "testDebugUnitTest")
     end
@@ -104,6 +110,11 @@ lane :internal do
 #   Do not release a debug build for pro version.
 #   gradle(task: "assembleDebug")
 
+    # Check Rust formatting and run tests
+    Dir.chdir("../evdev/src/main/rust/evdev_manager") do
+      sh("cargo fmt --check")
+      sh("cargo test --package evdev_manager_core")
+    end
 
     Dir.chdir("..") do
   #   Release the free build to GitHub because billing only works if signed by Google Play
