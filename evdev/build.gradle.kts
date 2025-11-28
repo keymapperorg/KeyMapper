@@ -1,5 +1,3 @@
-import kotlin.io.path.absolutePathString
-
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.mozilla.rust.android)
