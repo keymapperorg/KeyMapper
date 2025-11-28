@@ -7,13 +7,13 @@ use evdev_manager_core::device_identifier::DeviceIdentifier;
 use jni::objects::{GlobalRef, JValue};
 use jni::JavaVM;
 use std::process;
-use std::sync::atomic::{AtomicI64, Ordering};
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 pub struct EvdevJniObserver {
     jvm: Arc<JavaVM>,
     system_bridge: GlobalRef,
     key_layout_map_manager: Arc<KeyLayoutMapManager>,
+    power_button_down_time: Mutex<libc::time_t>,
 }
 
 impl std::fmt::Debug for EvdevJniObserver {
@@ -25,8 +25,6 @@ impl std::fmt::Debug for EvdevJniObserver {
             .finish()
     }
 }
-
-static POWER_BUTTON_DOWN_TIME: AtomicI64 = AtomicI64::new(0);
 
 /// Observer that forwards events to BaseSystemBridge via JNI
 /// Performs KeyLayoutMap conversion from raw evdev codes to Android keycodes
@@ -40,18 +38,26 @@ impl EvdevJniObserver {
             jvm,
             system_bridge,
             key_layout_map_manager,
+            power_button_down_time: Mutex::new(0),
         }
     }
 
     /// Handle power button emergency kill.
-    fn handle_power_button(&self, ev_code: u32, android_code: u32, value: i32, time_sec: i64) {
+    fn handle_power_button(
+        &self,
+        ev_code: u32,
+        android_code: u32,
+        value: i32,
+        time_sec: libc::time_t,
+    ) {
+        let mut time_guard = self.power_button_down_time.lock().unwrap();
         // KEY_POWER scan code = 116
         if ev_code == 116 || android_code == android_codes::AKEYCODE_POWER {
             if value == 1 {
-                POWER_BUTTON_DOWN_TIME.store(time_sec, Ordering::Relaxed);
+                *self.power_button_down_time.lock().unwrap() = time_sec;
             } else if value == 0 {
                 // Button up - check if held for 10+ seconds
-                let down_time = POWER_BUTTON_DOWN_TIME.load(Ordering::Relaxed);
+                let down_time = *time_guard;
                 if down_time > 0 && time_sec - down_time >= 10 {
                     // Call BaseSystemBridge.onEmergencyKillSystemBridge() via JNI
                     if let Ok(mut env) = self.jvm.attach_current_thread() {
@@ -64,7 +70,7 @@ impl EvdevJniObserver {
                     }
                     process::exit(0);
                 }
-                POWER_BUTTON_DOWN_TIME.store(0, Ordering::Relaxed);
+                *time_guard = 0
             }
         }
     }
@@ -109,7 +115,9 @@ impl EvdevJniObserver {
             "(IJJIIII)Z",
             &[
                 JValue::Int(device_id as i32),
-                JValue::Long(event.time.tv_sec),
+                #[allow(clippy::unnecessary_cast)]
+                // When building for 32 bit the tv_sec type may be i32
+                JValue::Long(event.time.tv_sec as i64),
                 JValue::Long(event.time.tv_usec.into()),
                 JValue::Int(ev_type as i32),
                 JValue::Int(ev_code as i32),

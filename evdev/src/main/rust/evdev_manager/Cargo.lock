@@ -83,6 +83,7 @@ dependencies = [
  "evdev",
  "evdev_manager_core",
  "jni",
+ "libc 0.2.177",
  "log 0.4.28",
 ]
 
