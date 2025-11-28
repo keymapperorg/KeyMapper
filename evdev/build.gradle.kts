@@ -49,6 +49,9 @@ android {
     }
 }
 
+// IMPORTANT! Specify path to rustc and cargo in local.properties with the following lines:
+// rust.cargoCommand=/Users/username/.cargo/bin/cargo
+// rust.rustcCommand=/Users/username/.cargo/bin/rustc
 cargo {
     val isDebug = gradle.startParameter.taskNames.any { it.lowercase().contains("debug") }
 
