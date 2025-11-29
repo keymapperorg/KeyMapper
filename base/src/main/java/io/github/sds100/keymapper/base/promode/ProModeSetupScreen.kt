@@ -97,105 +97,120 @@ fun ProModeSetupScreen(
             )
         },
     ) { paddingValues ->
-        when (state) {
-            State.Loading -> {
-                Box(
-                    Modifier
-                        .padding(paddingValues)
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator()
-                }
+        ProModeSetupScreenContent(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize(),
+            state,
+            onAssistantClick,
+            onWatchTutorialClick,
+            onStepButtonClick,
+        )
+    }
+}
+
+@Composable
+fun ProModeSetupScreenContent(
+    modifier: Modifier = Modifier,
+    state: State<ProModeSetupState>,
+    onAssistantClick: () -> Unit,
+    onWatchTutorialClick: () -> Unit,
+    onStepButtonClick: () -> Unit,
+) {
+    when (state) {
+        State.Loading -> {
+            Box(
+                modifier,
+                contentAlignment = Alignment.Center,
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        is State.Data -> {
+            val stepContent = getStepContent(state.data.step)
+
+            // Create animated progress for entrance and updates
+            val progressAnimatable = remember { Animatable(0f) }
+            val targetProgress = state.data.stepNumber.toFloat() / (state.data.stepCount)
+
+            // Animate progress when it changes
+            LaunchedEffect(targetProgress) {
+                progressAnimatable.animateTo(
+                    targetValue = targetProgress,
+                    animationSpec = tween(
+                        durationMillis = 800,
+                        easing = EaseInOut,
+                    ),
+                )
             }
 
-            is State.Data -> {
-                val stepContent = getStepContent(state.data.step)
+            // Animate entrance when screen opens
+            LaunchedEffect(Unit) {
+                progressAnimatable.animateTo(
+                    targetValue = targetProgress,
+                    animationSpec = tween(
+                        durationMillis = 1000,
+                        easing = EaseInOut,
+                    ),
+                )
+            }
 
-                // Create animated progress for entrance and updates
-                val progressAnimatable = remember { Animatable(0f) }
-                val targetProgress = state.data.stepNumber.toFloat() / (state.data.stepCount)
+            Column(
+                modifier = modifier
+                    .padding(vertical = 16.dp, horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                LinearProgressIndicator(
+                    modifier = Modifier.fillMaxWidth(),
+                    progress = { progressAnimatable.value },
+                )
 
-                // Animate progress when it changes
-                LaunchedEffect(targetProgress) {
-                    progressAnimatable.animateTo(
-                        targetValue = targetProgress,
-                        animationSpec = tween(
-                            durationMillis = 800,
-                            easing = EaseInOut,
-                        ),
-                    )
-                }
+                Spacer(modifier = Modifier.height(16.dp))
 
-                // Animate entrance when screen opens
-                LaunchedEffect(Unit) {
-                    progressAnimatable.animateTo(
-                        targetValue = targetProgress,
-                        animationSpec = tween(
-                            durationMillis = 1000,
-                            easing = EaseInOut,
-                        ),
-                    )
-                }
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                        .padding(vertical = 16.dp, horizontal = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    LinearProgressIndicator(
-                        modifier = Modifier.fillMaxWidth(),
-                        progress = { progressAnimatable.value },
+                    Text(
+                        text = stringResource(
+                            R.string.pro_mode_setup_wizard_step_n,
+                            state.data.stepNumber,
+                            state.data.stepCount,
+                        ),
+                        style = MaterialTheme.typography.titleLarge,
                     )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = stringResource(
-                                R.string.pro_mode_setup_wizard_step_n,
-                                state.data.stepNumber,
-                                state.data.stepCount,
-                            ),
-                            style = MaterialTheme.typography.titleLarge,
-                        )
-                        Text(
-                            text = stringResource(R.string.pro_mode_app_bar_title),
-                            style = MaterialTheme.typography.titleLarge,
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    AssistantCheckBoxRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        isEnabled = state.data.isSetupAssistantButtonEnabled,
-                        isChecked = state.data.isSetupAssistantChecked,
-                        onAssistantClick = onAssistantClick,
-                    )
-
-                    val iconTint = if (state.data.step == SystemBridgeSetupStep.STARTED) {
-                        LocalCustomColorsPalette.current.green
-                    } else {
-                        MaterialTheme.colorScheme.onSurface
-                    }
-
-                    StepContent(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .padding(horizontal = 16.dp),
-                        stepContent,
-                        onWatchTutorialClick,
-                        onStepButtonClick,
-                        iconTint = iconTint,
+                    Text(
+                        text = stringResource(R.string.pro_mode_setup_title),
+                        style = MaterialTheme.typography.titleLarge,
                     )
                 }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                AssistantCheckBoxRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    isEnabled = state.data.isSetupAssistantButtonEnabled,
+                    isChecked = state.data.isSetupAssistantChecked,
+                    onAssistantClick = onAssistantClick,
+                )
+
+                val iconTint = if (state.data.step == SystemBridgeSetupStep.STARTED) {
+                    LocalCustomColorsPalette.current.green
+                } else {
+                    MaterialTheme.colorScheme.onSurface
+                }
+
+                StepContent(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(horizontal = 16.dp),
+                    stepContent,
+                    onWatchTutorialClick,
+                    onStepButtonClick,
+                    iconTint = iconTint,
+                )
             }
         }
     }
