@@ -6,6 +6,7 @@ data class ProModeSetupState(
     val stepNumber: Int,
     val stepCount: Int,
     val step: SystemBridgeSetupStep,
+    val stepContent: StepContent,
     val isSetupAssistantChecked: Boolean,
     val isSetupAssistantButtonEnabled: Boolean,
 )

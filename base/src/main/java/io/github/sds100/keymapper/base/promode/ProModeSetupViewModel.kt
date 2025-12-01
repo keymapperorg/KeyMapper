@@ -10,11 +10,11 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class ProModeSetupViewModel @Inject constructor(
-    delegate: ProModeSetupDelegate,
+    delegate: SystemBridgeSetupDelegate,
     navigationProvider: NavigationProvider,
     resourceProvider: ResourceProvider,
 ) : ViewModel(),
-    ProModeSetupDelegate by delegate,
+    SystemBridgeSetupDelegate by delegate,
     NavigationProvider by navigationProvider,
     ResourceProvider by resourceProvider {
 

@@ -1692,10 +1692,10 @@
     <string name="pro_mode_setup_wizard_start_service_button">Start service</string>
 
     <string name="pro_mode_setup_wizard_enable_accessibility_service_title">Enable accessibility service</string>
-    <string name="pro_mode_setup_wizard_enable_accessibility_service_description">Key Mapper uses a service to help you set up PRO mode. It\'s also useful for ordinary key maps.</string>
+    <string name="pro_mode_setup_wizard_enable_accessibility_service_description">Key Mapper uses this service to help with setup. It\'s also needed for ordinary key maps.</string>
 
     <string name="pro_mode_setup_wizard_enable_developer_options_title">Enable developer options</string>
-    <string name="pro_mode_setup_wizard_enable_developer_options_description">Key Mapper needs to use Android Debug Bridge to start PRO mode, and you need to enable developer options for that.</string>
+    <string name="pro_mode_setup_wizard_enable_developer_options_description">Key Mapper needs to use Android Debug Bridge (ADB) so you need to enable developer options.</string>
 
     <string name="pro_mode_setup_wizard_connect_wifi_title">Connect to a WiFi network</string>
     <string name="pro_mode_setup_wizard_connect_wifi_description">Key Mapper needs a WiFi network to enable ADB. You do not need an internet connection.\n\nNo WiFi network? Use a hotspot from someone else\'s phone.</string>
@@ -1707,7 +1707,7 @@
     <string name="pro_mode_setup_wizard_pair_wireless_debugging_description">Key Mapper needs to pair with wireless debugging before it can launch its remapping and input service.</string>
 
     <string name="pro_mode_setup_wizard_start_service_title">Start service</string>
-    <string name="pro_mode_setup_wizard_start_service_description">Key Mapper needs to connect to the Android Debug Bridge to start the PRO mode service.</string>
+    <string name="pro_mode_setup_wizard_start_service_description">Key Mapper needs to connect to ADB to start the service.</string>
 
     <string name="pro_mode_setup_wizard_enable_notification_permission_title">Allow notifications</string>
     <string name="pro_mode_setup_wizard_enable_notification_permission_description">Key Mapper needs permission to notify you if there are any issues with the set up process.</string>
