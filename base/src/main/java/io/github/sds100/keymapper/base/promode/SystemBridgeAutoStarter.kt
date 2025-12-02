@@ -155,7 +155,7 @@ class SystemBridgeAutoStarter @Inject constructor(
             // The Key Mapper process may not necessarily be started on boot due to the
             // on boot receiver so assume if it is started within a minute of boot that
             // it should be auto started.
-            val isBoot = clock.elapsedRealtime() < 60000
+            val isBoot = clock.elapsedRealtime() <= 300_000
 
             Timber.i(
                 "SystemBridgeAutoStarter init: isBoot=$isBoot",

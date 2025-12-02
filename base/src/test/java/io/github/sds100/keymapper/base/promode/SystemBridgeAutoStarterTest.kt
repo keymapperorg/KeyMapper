@@ -145,6 +145,21 @@ class SystemBridgeAutoStarterTest {
     }
 
     @Test
+    fun `auto start 5 minutes after booting`() = runTest(testDispatcher) {
+        whenever(mockClock.elapsedRealtime()).thenReturn(300_000L)
+        fakePreferences.set(Keys.isProModeAutoStartBootEnabled, true)
+        fakePreferences.set(Keys.isCleanShutdown, true)
+        whenever(mockSetupController.isAdbPaired()).thenReturn(true)
+        isWifiConnectedFlow.value = true
+        writeSecureSettingsGrantedFlow.value = true
+
+        systemBridgeAutoStarter.init()
+        advanceUntilIdle()
+
+        verify(mockSetupController).autoStartWithAdb()
+    }
+
+    @Test
     fun `do not auto start with ADB if WRITE_SECURE_SETTINGS is denied`() =
         runTest(testDispatcher) {
             setAutoStartBootState()
@@ -237,7 +252,7 @@ class SystemBridgeAutoStarterTest {
 
     @Test
     fun `auto start with root when type is ROOT`() = runTest(testDispatcher) {
-        whenever(mockClock.elapsedRealtime()).thenReturn(70000L)
+        whenever(mockClock.elapsedRealtime()).thenReturn(1_000_000L)
         isRootGrantedFlow.value = true
         fakePreferences.set(Keys.isSystemBridgeEmergencyKilled, false)
 
@@ -249,7 +264,7 @@ class SystemBridgeAutoStarterTest {
 
     @Test
     fun `do not auto start when already connected`() = runTest(testDispatcher) {
-        whenever(mockClock.elapsedRealtime()).thenReturn(70000L)
+        whenever(mockClock.elapsedRealtime()).thenReturn(1_000_000L)
         isRootGrantedFlow.value = true
         connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 1000)
 
@@ -263,7 +278,7 @@ class SystemBridgeAutoStarterTest {
 
     @Test
     fun `do not auto start when emergency killed`() = runTest(testDispatcher) {
-        whenever(mockClock.elapsedRealtime()).thenReturn(70000L)
+        whenever(mockClock.elapsedRealtime()).thenReturn(1_000_000L)
         isRootGrantedFlow.value = true
         fakePreferences.set(Keys.isSystemBridgeEmergencyKilled, true)
 
@@ -277,7 +292,7 @@ class SystemBridgeAutoStarterTest {
 
     @Test
     fun `auto start when disconnected unexpectedly`() = runTest(testDispatcher) {
-        whenever(mockClock.elapsedRealtime()).thenReturn(70000L)
+        whenever(mockClock.elapsedRealtime()).thenReturn(1_000_000L)
         val disconnectedState = SystemBridgeConnectionState.Disconnected(
             time = 1000,
             isExpected = false,
@@ -294,7 +309,7 @@ class SystemBridgeAutoStarterTest {
 
     @Test
     fun `auto start with root when rooted`() = runTest(testDispatcher) {
-        whenever(mockClock.elapsedRealtime()).thenReturn(70000L)
+        whenever(mockClock.elapsedRealtime()).thenReturn(1_000_000L)
         isRootGrantedFlow.value = true
 
         systemBridgeAutoStarter.init()
