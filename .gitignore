@@ -94,3 +94,7 @@ app/.env
 /.idea/AndroidProjectSystem.xml
 /.idea/runConfigurations.xml
 /.idea/studiobot.xml
+
+evdev/build
+evdev/.cxx
+evdev/src/main/rust/*/target
