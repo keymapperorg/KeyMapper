@@ -1,7 +1,7 @@
 package io.github.sds100.keymapper.base.promode
 
+import android.annotation.SuppressLint
 import android.os.Build
-import android.os.SystemClock
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import io.github.sds100.keymapper.base.BaseMainActivity
@@ -9,7 +9,9 @@ import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.system.notifications.NotificationController.Companion.CHANNEL_SETUP_ASSISTANT
 import io.github.sds100.keymapper.base.system.notifications.NotificationController.Companion.ID_SYSTEM_BRIDGE_STATUS
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
+import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.notifications.KMNotificationAction
+import io.github.sds100.keymapper.common.utils.Clock
 import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
@@ -54,6 +56,8 @@ import timber.log.Timber
 @Singleton
 class SystemBridgeAutoStarter @Inject constructor(
     private val coroutineScope: CoroutineScope,
+    private val buildConfig: BuildConfigProvider,
+    private val clock: Clock,
     private val suAdapter: SuAdapter,
     private val shizukuAdapter: ShizukuAdapter,
     private val connectionManager: SystemBridgeConnectionManager,
@@ -71,6 +75,7 @@ class SystemBridgeAutoStarter @Inject constructor(
     }
 
     // Use flatMapLatest so that any calls to ADB are only done if strictly necessary.
+    @SuppressLint("NewApi")
     @OptIn(ExperimentalCoroutinesApi::class)
     private val autoStartTypeFlow: Flow<AutoStartType?> =
         suAdapter.isRootGranted.flatMapLatest { isRooted ->
@@ -88,7 +93,7 @@ class SystemBridgeAutoStarter @Inject constructor(
                 useShizukuFlow.flatMapLatest { useShizuku ->
                     if (useShizuku) {
                         flowOf(AutoStartType.SHIZUKU)
-                    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    } else if (buildConfig.sdkInt >= Build.VERSION_CODES.R) {
                         val isAdbAutoStartAllowed = combine(
                             permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS),
                             networkAdapter.isWifiConnected,
@@ -150,7 +155,11 @@ class SystemBridgeAutoStarter @Inject constructor(
             // The Key Mapper process may not necessarily be started on boot due to the
             // on boot receiver so assume if it is started within a minute of boot that
             // it should be auto started.
-            val isBoot = SystemClock.uptimeMillis() < 60000
+            val isBoot = clock.elapsedRealtime() < 60000
+
+            Timber.i(
+                "SystemBridgeAutoStarter init: isBoot=$isBoot",
+            )
 
             if (isBoot) {
                 handleAutoStartOnBoot()
@@ -180,7 +189,7 @@ class SystemBridgeAutoStarter @Inject constructor(
         val isCleanShutdown = preferences.get(Keys.isCleanShutdown).map { it ?: false }.first()
 
         Timber.i(
-            "SystemBridgeAutoStarter init: isBoot=true, isCleanShutdown=$isCleanShutdown",
+            "SystemBridgeAutoStarter init: isCleanShutdown=$isCleanShutdown",
         )
 
         // Reset the value after reading it.
@@ -234,7 +243,7 @@ class SystemBridgeAutoStarter @Inject constructor(
             return
         }
 
-        lastAutoStartTime = SystemClock.elapsedRealtime()
+        lastAutoStartTime = clock.elapsedRealtime()
 
         when (type) {
             AutoStartType.ADB -> {
