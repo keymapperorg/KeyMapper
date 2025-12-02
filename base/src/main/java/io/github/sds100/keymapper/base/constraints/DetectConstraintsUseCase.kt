@@ -71,6 +71,8 @@ class DetectConstraintsUseCaseImpl @AssistedInject constructor(
             ConstraintDependency.SCREEN_STATE -> displayAdapter.isScreenOn.map { dependency }
             ConstraintDependency.DISPLAY_ORIENTATION ->
                 displayAdapter.orientation.map { dependency }
+            ConstraintDependency.PHYSICAL_ORIENTATION ->
+                displayAdapter.physicalOrientation.map { dependency }
             ConstraintDependency.FLASHLIGHT_STATE -> merge(
                 cameraAdapter.isFlashlightOnFlow(CameraLens.FRONT),
                 cameraAdapter.isFlashlightOnFlow(CameraLens.BACK),

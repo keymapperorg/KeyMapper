@@ -4,6 +4,7 @@ import io.github.sds100.keymapper.base.constraints.Constraint
 import io.github.sds100.keymapper.base.constraints.ConstraintData
 import io.github.sds100.keymapper.base.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.common.utils.Orientation
+import io.github.sds100.keymapper.common.utils.PhysicalOrientation
 import io.github.sds100.keymapper.system.bluetooth.BluetoothDeviceInfo
 import io.github.sds100.keymapper.system.camera.CameraLens
 import io.github.sds100.keymapper.system.foldable.HingeState
@@ -17,6 +18,7 @@ class TestConstraintSnapshot(
     val appInForeground: String? = null,
     val connectedBluetoothDevices: Set<BluetoothDeviceInfo> = emptySet(),
     val orientation: Orientation = Orientation.ORIENTATION_0,
+    val physicalOrientation: PhysicalOrientation = PhysicalOrientation.PORTRAIT,
     val isScreenOn: Boolean = false,
     val appsPlayingMedia: List<String> = emptyList(),
     val isWifiEnabled: Boolean = false,
@@ -61,6 +63,9 @@ class TestConstraintSnapshot(
             is ConstraintData.OrientationPortrait ->
                 orientation == Orientation.ORIENTATION_0 ||
                     orientation == Orientation.ORIENTATION_180
+
+            is ConstraintData.PhysicalOrientation ->
+                physicalOrientation == data.physicalOrientation
 
             is ConstraintData.ScreenOff -> !isScreenOn
             is ConstraintData.ScreenOn -> isScreenOn
