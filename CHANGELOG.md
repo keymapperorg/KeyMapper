@@ -3,7 +3,12 @@
 #### TO BE RELEASED
 
 ## Added
+
 - #1915 ask user to remove "adb shell" from Shell command
+
+## Bug fixes
+
+- #1913 actually save the option to detect with scan code
 
 ## [4.0.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.03)
 
