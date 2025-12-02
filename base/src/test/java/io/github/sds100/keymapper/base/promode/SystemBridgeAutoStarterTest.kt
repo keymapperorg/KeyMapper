@@ -251,7 +251,7 @@ class SystemBridgeAutoStarterTest {
         }
 
     @Test
-    fun `auto start with root when type is ROOT`() = runTest(testDispatcher) {
+    fun `auto start with root`() = runTest(testDispatcher) {
         whenever(mockClock.elapsedRealtime()).thenReturn(1_000_000L)
         isRootGrantedFlow.value = true
         fakePreferences.set(Keys.isSystemBridgeEmergencyKilled, false)
@@ -333,6 +333,49 @@ class SystemBridgeAutoStarterTest {
     }
 
     @Test
+    fun `wait a minute when auto starting on boot with shizuku`() = runTest(testDispatcher) {
+        setAutoStartBootState()
+        // Shizuku is initially disconnected on boot but shizuku permission is granted
+        shizukuIsStartedFlow.value = false
+        shizukuPermissionGrantedFlow.value = true
+
+        inOrder(mockConnectionManager) {
+            systemBridgeAutoStarter.init()
+            advanceTimeBy(50000)
+            verify(mockConnectionManager, never()).startWithShizuku()
+
+            // Shizuku then connects
+            shizukuIsStartedFlow.value = true
+
+            advanceTimeBy(20000)
+            verify(mockConnectionManager).startWithShizuku()
+        }
+    }
+
+    @Test
+    fun `wait a minute when auto starting on boot with ADB`() = runTest(testDispatcher) {
+        setAutoStartBootState()
+
+        whenever(mockSetupController.isAdbPaired()).thenReturn(true)
+        writeSecureSettingsGrantedFlow.value = true
+
+        // Initially the wifi is disconnected, and is connected 50 seconds after booting
+        isWifiConnectedFlow.value = false
+
+        inOrder(mockSetupController) {
+            systemBridgeAutoStarter.init()
+            advanceTimeBy(50000)
+            verify(mockSetupController, never()).autoStartWithAdb()
+
+            // Connect to Wi-Fi network
+            isWifiConnectedFlow.value = true
+
+            advanceTimeBy(20000)
+            verify(mockSetupController).autoStartWithAdb()
+        }
+    }
+
+    @Test
     fun `do not auto start on boot when clean shutdown is false`() = runTest(testDispatcher) {
         whenever(mockClock.elapsedRealtime()).thenReturn(5000L)
         fakePreferences.set(Keys.isProModeAutoStartBootEnabled, true)
@@ -385,13 +428,13 @@ class SystemBridgeAutoStarterTest {
 
         inOrder(mockNotificationAdapter) {
             systemBridgeAutoStarter.init()
-            advanceTimeBy(6000)
+            advanceTimeBy(70000)
 
             // Show the first notification that it is auto starting
             verify(mockNotificationAdapter).showNotification(any())
 
             // Set the state as connected within the timeout
-            connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 10000)
+            connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 70000)
 
             advanceUntilIdle()
             // Do not show another notification after the timeout
@@ -462,7 +505,7 @@ class SystemBridgeAutoStarterTest {
 
         inOrder(mockConnectionManager, mockSetupController) {
             systemBridgeAutoStarter.init()
-            advanceTimeBy(60000)
+            advanceTimeBy(100_000)
             verify(mockConnectionManager).startWithRoot()
 
             // Disconnect the system bridge. Expected is true

@@ -209,6 +209,9 @@ class SystemBridgeAutoStarter @Inject constructor(
             isBootAutoStartEnabled &&
             connectionState !is SystemBridgeConnectionState.Connected
         ) {
+            // Wait a minute so the device can connect to a WiFi network, or a Shizuku
+            // client can automatically connect on boot.
+            delay(60000)
             val autoStartType = autoStartTypeFlow.first()
 
             if (autoStartType != null) {
