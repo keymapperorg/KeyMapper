@@ -432,7 +432,7 @@
     <string name="dialog_title_write_secure_settings">Grant WRITE_SECURE_SETTINGS permission</string>
     <string name="dialog_message_write_secure_settings">You will need to use PRO mode to grant this permission.</string>
 
-    <string name="dialog_message_cant_find_accessibility_settings_page">Your device doesn\'t seem to have an accessibility services settings page. Tap \"guide\" to read the online guide that explains how to fix this.</string>
+    <string name="dialog_message_cant_find_accessibility_settings_page">Your device doesn\'t seem to have an accessibility services settings page. You can set up PRO mode or run the ADB command \"adb shell pm grant io.github.sds100.keymapper android.permission.WRITE_SECURE_SETTINGS\".</string>
     <string name="dialog_message_parallel_trigger_order">You must hold down the keys in the order that they are listed.</string>
     <string name="dialog_message_sequence_trigger_explanation">There is a timeout to input this trigger. You can change this timeout in the "Options" tab.</string>
     <string name="tip_parallel_trigger_title">How to use this trigger</string>
@@ -490,7 +490,7 @@
 
     <string name="pos_done">Done</string>
     <string name="pos_kill">Kill</string>
-    <string name="pos_start_service_with_adb_guide">Guide</string>
+    <string name="pos_start_service_with_pro_mode">Use PRO mode</string>
     <string name="pos_change_location">Change</string>
     <string name="pos_turn_off_stock_battery_optimisation">Fix partially</string>
     <string name="pos_ok">Ok</string>

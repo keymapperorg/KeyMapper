@@ -4,7 +4,8 @@
 
 ## Added
 
-- #1915 ask user to remove "adb shell" from Shell command
+- #1915 ask user to remove "adb shell" from Shell command.
+- #1904 inform the user how to enable the accessibility service with PRO mode or ADB.
 
 ## Bug fixes
 
