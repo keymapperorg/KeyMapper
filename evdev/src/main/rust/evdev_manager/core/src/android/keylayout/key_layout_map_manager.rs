@@ -41,7 +41,6 @@ impl KeyLayoutMapManager {
             .map(|map| map.map_key(scan_code))
     }
 
-    // TODO use when they call grab devices
     pub fn preload_key_layout_map(
         &self,
         device_identifier: &DeviceIdentifier,
@@ -49,8 +48,9 @@ impl KeyLayoutMapManager {
         self.get_key_layout_map_lazy(device_identifier).map(|_| ())
     }
 
-    // TODO test
-    fn get_key_layout_map_lazy(
+    /// Get or load a key layout map for the given device identifier.
+    /// This method is public for testing purposes.
+    pub fn get_key_layout_map_lazy(
         &self,
         device_identifier: &DeviceIdentifier,
     ) -> Result<Arc<KeyLayoutMap>, Box<dyn Error>> {

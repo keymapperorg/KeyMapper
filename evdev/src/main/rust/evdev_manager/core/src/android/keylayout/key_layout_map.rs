@@ -71,7 +71,9 @@ impl KeyLayoutMap {
         };
 
         let mut parser = Parser::new(&mut map, &mut tokenizer);
-        parser.parse()?;
+        parser
+            .parse()
+            .inspect_err(|err| error!("Failed to parse key layout map: {:?}", err))?;
 
         Ok(map)
     }
@@ -214,22 +216,29 @@ impl<'a> Parser<'a> {
             }
 
             let flag_token = self.tokenizer.next_token(WHITESPACE);
-            let flag = get_key_flag_by_label(&flag_token).ok_or_else(|| {
+            let flag_result = get_key_flag_by_label(&flag_token).ok_or_else(|| {
                 format!(
                     "{}: Expected key flag label, got '{}'.",
                     self.tokenizer.get_location(),
                     flag_token
                 )
-            })?;
+            });
 
-            if (flags & flag) != 0 {
-                return Err(format!(
-                    "{}: Duplicate key flag '{}'.",
-                    self.tokenizer.get_location(),
-                    flag_token
-                ));
+            match flag_result {
+                Ok(flag) => {
+                    if (flags & flag) != 0 {
+                        return Err(format!(
+                            "{}: Duplicate key flag '{}'.",
+                            self.tokenizer.get_location(),
+                            flag_token
+                        ));
+                    }
+                    flags |= flag;
+                }
+                Err(_) => {
+                    // Do nothing, just skip this unknown flag.
+                }
             }
-            flags |= flag;
         }
 
         // Only insert if the key code is known

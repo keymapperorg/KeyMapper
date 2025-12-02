@@ -1,3 +1,4 @@
+use crate::android::keylayout::key_layout_map_manager::KeyLayoutMapManager;
 use crate::device_identifier::DeviceIdentifier;
 use crate::evdev_error::EvdevError;
 use crate::grabbed_device::GrabbedDevice;
@@ -213,11 +214,15 @@ impl EventLoopManager {
             for device_id in devices_to_grab {
                 let key = DeviceIdentifierKey::from(device_id);
                 match device_path_map.get(&key) {
-                    Some(path) => {
-                        if let Err(e) = self.grab_device_internal(&mut devices, path) {
-                            error!("Failed to grab device {}: {:?}", path, e);
+                    Some(path) => match self.grab_device_internal(&mut devices, path) {
+                        Ok(_) => {
+                            KeyLayoutMapManager::get()
+                                .preload_key_layout_map(device_id)
+                                .ok();
                         }
-                    }
+
+                        Err(e) => error!("Failed to grab device {}: {:?}", path, e),
+                    },
                     None => {
                         warn!("Device not found: {:?}", device_id);
                     }
