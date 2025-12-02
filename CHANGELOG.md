@@ -1,3 +1,10 @@
+## [4.0.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.04)
+
+#### TO BE RELEASED
+
+## Added
+- #1915 ask user to remove "adb shell" from Shell command
+
 ## [4.0.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.03)
 
 #### 25 November 2025

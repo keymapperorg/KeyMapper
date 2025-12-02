@@ -1137,6 +1137,7 @@
     <string name="action_shell_command_title">Shell command action</string>
     <string name="action_shell_command_command_label">Script</string>
     <string name="action_shell_command_command_empty_error">Script cannot be empty!</string>
+    <string name="action_shell_command_adb_shell_error">Do not put \'adb shell\'!</string>
     <string name="action_shell_command_use_root_label">Run as root</string>
     <string name="action_shell_command_execution_mode_standard">Standard</string>
     <string name="action_shell_command_execution_mode_root">Root</string>
