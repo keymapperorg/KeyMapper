@@ -92,7 +92,7 @@ class ImeInputEventInjectorImpl @Inject constructor(
         // Otherwise, revert to the special key event containing
         // the actual characters.
         val event = KeyEvent(
-            SystemClock.uptimeMillis(),
+            SystemClock.elapsedRealtime(),
             text,
             KeyCharacterMap.VIRTUAL_KEYBOARD,
             0,
