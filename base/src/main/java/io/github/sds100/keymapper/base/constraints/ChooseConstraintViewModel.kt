@@ -305,10 +305,14 @@ class ChooseConstraintViewModel @Inject constructor(
                 getString(R.string.constraint_choose_orientation_portrait),
             ConstraintId.DISPLAY_ORIENTATION_LANDSCAPE to
                 getString(R.string.constraint_choose_orientation_landscape),
-            ConstraintId.DISPLAY_ORIENTATION_0 to getString(R.string.constraint_choose_orientation_0),
-            ConstraintId.DISPLAY_ORIENTATION_90 to getString(R.string.constraint_choose_orientation_90),
-            ConstraintId.DISPLAY_ORIENTATION_180 to getString(R.string.constraint_choose_orientation_180),
-            ConstraintId.DISPLAY_ORIENTATION_270 to getString(R.string.constraint_choose_orientation_270),
+            ConstraintId.DISPLAY_ORIENTATION_0 to
+                getString(R.string.constraint_choose_orientation_0),
+            ConstraintId.DISPLAY_ORIENTATION_90 to
+                getString(R.string.constraint_choose_orientation_90),
+            ConstraintId.DISPLAY_ORIENTATION_180 to
+                getString(R.string.constraint_choose_orientation_180),
+            ConstraintId.DISPLAY_ORIENTATION_270 to
+                getString(R.string.constraint_choose_orientation_270),
         )
 
         val dialog = DialogModel.SingleChoice(items)
@@ -389,11 +393,12 @@ class ChooseConstraintViewModel @Inject constructor(
             val header = getString(ConstraintUtils.getCategoryLabel(category))
 
             val categoryItems = listItems.filter { item ->
-                item.isEnabled && try {
-                    ConstraintUtils.getCategory(ConstraintId.valueOf(item.id)) == category
-                } catch (e: IllegalArgumentException) {
-                    false
-                }
+                item.isEnabled &&
+                    try {
+                        ConstraintUtils.getCategory(ConstraintId.valueOf(item.id)) == category
+                    } catch (e: IllegalArgumentException) {
+                        false
+                    }
             }.toMutableList()
 
             // Add synthetic orientation items to DISPLAY category

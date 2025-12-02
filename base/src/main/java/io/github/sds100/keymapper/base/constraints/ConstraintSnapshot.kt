@@ -44,7 +44,9 @@ class LazyConstraintSnapshot(
         devicesAdapter.connectedBluetoothDevices.value
     }
     private val orientation: Orientation by lazy { displayAdapter.cachedOrientation }
-    private val physicalOrientation: PhysicalOrientation by lazy { displayAdapter.cachedPhysicalOrientation }
+    private val physicalOrientation: PhysicalOrientation by lazy {
+        displayAdapter.cachedPhysicalOrientation
+    }
     private val isScreenOn: Boolean by lazy { displayAdapter.isScreenOn.firstBlocking() }
     private val appsPlayingMedia: List<String> by lazy {
         mediaAdapter.getActiveMediaSessionPackages()
