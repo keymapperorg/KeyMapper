@@ -407,7 +407,6 @@
     <!-- Button titles -->
     <string name="button_add_action">Add action</string>
     <string name="button_record_trigger">Tap to record trigger</string>
-    <string name="button_advanced_triggers">Advanced triggers</string>
     <string name="button_advanced_triggers_badge">NEW!</string>
     <string name="button_done">Done</string>
     <string name="button_fix">Fix</string>
@@ -439,7 +438,7 @@
     <string name="dialog_title_write_secure_settings">Grant WRITE_SECURE_SETTINGS permission</string>
     <string name="dialog_message_write_secure_settings">You will need to use PRO mode to grant this permission.</string>
 
-    <string name="dialog_message_cant_find_accessibility_settings_page">Your device doesn\'t seem to have an accessibility services settings page. Tap \"guide\" to read the online guide that explains how to fix this.</string>
+    <string name="dialog_message_cant_find_accessibility_settings_page">Your device doesn\'t seem to have an accessibility services settings page. You can set up PRO mode or run the ADB command \"adb shell pm grant io.github.sds100.keymapper android.permission.WRITE_SECURE_SETTINGS\".</string>
     <string name="dialog_message_parallel_trigger_order">You must hold down the keys in the order that they are listed.</string>
     <string name="dialog_message_sequence_trigger_explanation">There is a timeout to input this trigger. You can change this timeout in the "Options" tab.</string>
     <string name="tip_parallel_trigger_title">How to use this trigger</string>
@@ -497,7 +496,7 @@
 
     <string name="pos_done">Done</string>
     <string name="pos_kill">Kill</string>
-    <string name="pos_start_service_with_adb_guide">Guide</string>
+    <string name="pos_start_service_with_pro_mode">Use PRO mode</string>
     <string name="pos_change_location">Change</string>
     <string name="pos_turn_off_stock_battery_optimisation">Fix partially</string>
     <string name="pos_ok">Ok</string>
@@ -1144,6 +1143,7 @@
     <string name="action_shell_command_title">Shell command action</string>
     <string name="action_shell_command_command_label">Script</string>
     <string name="action_shell_command_command_empty_error">Script cannot be empty!</string>
+    <string name="action_shell_command_adb_shell_error">Do not put \'adb shell\'!</string>
     <string name="action_shell_command_use_root_label">Run as root</string>
     <string name="action_shell_command_execution_mode_standard">Standard</string>
     <string name="action_shell_command_execution_mode_root">Root</string>
@@ -1387,8 +1387,9 @@
     <string name="purchasing_error_dialog_title">Something went wrong 😕</string>
     <string name="purchasing_error_dialog_button_retry">Retry</string>
     <string name="purchasing_contact_developer_button">Contact developer</string>
-    <string name="purchasing_error_assistant_not_purchased_home_screen">You must purchase the side key trigger feature! Tap on the key map and then purchase it by clicking on \'Advanced triggers\'.</string>
-    <string name="purchasing_error_floating_buttons_not_purchased_home_screen">You must purchase the floating buttons feature! Tap on the key map and then purchase it by clicking on \'Advanced triggers\'.</string>
+    <string name="purchasing_error_assistant_not_purchased_home_screen">You must purchase the side key trigger feature! Tap on the key map and then purchase it by clicking on the shop.</string>
+    <string name="purchasing_error_floating_buttons_not_purchased_home_screen">You must purchase the floating buttons feature! Tap on the key map and then purchase it by clicking on the shop.</string>
+    <string name="purchasing_error_gaming_mode_not_purchased_home_screen">You must purchase the gaming mode feature!</string>
     <string name="purchasing_contact_email" translatable="false">contact@keymapper.club</string>
     <string name="customer_email_subject" translatable="false">Key Mapper Pro query</string>
     <string name="customer_email_body" translatable="false">Please fill the following information so I can help you.\n\n1. Device model:\n2. Android version:\n3. Key maps (make a back up in the home screen menu):\n4. Screenshot of Key Mapper home screen:\n5. Describe the problem you are having:</string>
@@ -1491,7 +1492,7 @@
     <string name="home_floating_layouts_name_delete_yes">Yes, delete</string>
     <string name="home_floating_layouts_name_delete_cancel">Cancel</string>
     <string name="home_floating_layouts_hide_dialog_title">Hide floating layouts</string>
-    <string name="home_floating_layouts_hide_dialog_text">You can find floating buttons in the Advanced Triggers button when creating a trigger.</string>
+    <string name="home_floating_layouts_hide_dialog_text">You can find floating buttons in the Shop button when creating a trigger.</string>
     <string name="home_floating_layouts_app_bar_title">Floating buttons</string>
     <string name="home_app_bar_menu">Menu</string>
     <string name="home_app_bar_sort">Sort</string>
@@ -1576,7 +1577,6 @@
     <string name="trigger_key_fingerprint_gesture_down">Swipe down fingerprint reader</string>
     <string name="trigger_key_fingerprint_gesture_left">Swipe left fingerprint reader</string>
     <string name="trigger_key_fingerprint_gesture_right">Swipe right fingerprint reader</string>
-    <string name="trigger_shortcuts_header">Advanced triggers</string>
     <string name="trigger_key_unknown_key_code">Key code %d</string>
     <string name="trigger_key_unknown_scan_code">Scan code %d</string>
     <string name="trigger_key_scan_code_detection_flag">Scan code</string>
@@ -1654,6 +1654,7 @@
 
     <!--  Pro mode  -->
     <string name="pro_mode_app_bar_title">PRO mode</string>
+    <string name="pro_mode_setup_title">Setup</string>
     <string name="pro_mode_warning_title">Important!</string>
     <string name="pro_mode_warning_text">Remapping buttons with PRO mode is dangerous and can cause them to stop working if you remap them incorrectly.\n\nIf you make a mistake, you may need to force restart your device by holding down the power and volume buttons for 30 seconds — consult your device\'s manual or the internet for how to do this.</string>
     <string name="pro_mode_warning_understand_button_countdown">%d…</string>
@@ -1698,10 +1699,10 @@
     <string name="pro_mode_setup_wizard_start_service_button">Start service</string>
 
     <string name="pro_mode_setup_wizard_enable_accessibility_service_title">Enable accessibility service</string>
-    <string name="pro_mode_setup_wizard_enable_accessibility_service_description">Key Mapper uses a service to help you set up PRO mode. It\'s also useful for ordinary key maps.</string>
+    <string name="pro_mode_setup_wizard_enable_accessibility_service_description">Key Mapper uses this service to help with setup. It\'s also needed for ordinary key maps.</string>
 
     <string name="pro_mode_setup_wizard_enable_developer_options_title">Enable developer options</string>
-    <string name="pro_mode_setup_wizard_enable_developer_options_description">Key Mapper needs to use Android Debug Bridge to start PRO mode, and you need to enable developer options for that.</string>
+    <string name="pro_mode_setup_wizard_enable_developer_options_description">Key Mapper needs to use Android Debug Bridge (ADB) so you need to enable developer options.</string>
 
     <string name="pro_mode_setup_wizard_connect_wifi_title">Connect to a WiFi network</string>
     <string name="pro_mode_setup_wizard_connect_wifi_description">Key Mapper needs a WiFi network to enable ADB. You do not need an internet connection.\n\nNo WiFi network? Use a hotspot from someone else\'s phone.</string>
@@ -1713,7 +1714,7 @@
     <string name="pro_mode_setup_wizard_pair_wireless_debugging_description">Key Mapper needs to pair with wireless debugging before it can launch its remapping and input service.</string>
 
     <string name="pro_mode_setup_wizard_start_service_title">Start service</string>
-    <string name="pro_mode_setup_wizard_start_service_description">Key Mapper needs to connect to the Android Debug Bridge to start the PRO mode service.</string>
+    <string name="pro_mode_setup_wizard_start_service_description">Key Mapper needs to connect to ADB to start the service.</string>
 
     <string name="pro_mode_setup_wizard_enable_notification_permission_title">Allow notifications</string>
     <string name="pro_mode_setup_wizard_enable_notification_permission_description">Key Mapper needs permission to notify you if there are any issues with the set up process.</string>

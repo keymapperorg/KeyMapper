@@ -1,0 +1,22 @@
+[package]
+name = "evdev"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "evdev"
+# "cdylib" is necessary to produce a C-style dynamic library that can be loaded by Android's JNI.
+# "rlib" is necessary to allow this crate to be used as a dependency by other Rust crates.
+crate-type = ["cdylib", "rlib"]
+
+[profile.dev]
+debug = true
+strip = false  # Don't strip symbols, keeps them in the .so file
+
+[dependencies]
+libc = "1.0.0-alpha.1"
+log = "0.4.28"
+bitflags = "2.10.0"
+
+[build-dependencies]
+cc = "1.2.46"

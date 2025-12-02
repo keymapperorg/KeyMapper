@@ -23,9 +23,6 @@ jobs:
           java-version: 17
           cache: 'gradle'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
-
       - name: Unit tests
         run: bash ./gradlew testDebugUnitTest
 
@@ -52,11 +49,47 @@ jobs:
           java-version: 17
           cache: 'gradle'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
-
       - name: Ktlint check
         run: ./gradlew ktlintCheck
+
+  rust:
+    name: Rust code style and tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Install Android Rust targets
+        run: |
+          rustup target add armv7-linux-androideabi
+          rustup target add aarch64-linux-android
+          rustup target add i686-linux-android
+          rustup target add x86_64-linux-android
+
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            evdev/src/main/rust/evdev_manager/target/
+          key: ${{ runner.os }}-rust-${{ hashFiles('**/Cargo.toml', '**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-
+
+      - name: Check Rust formatting
+        working-directory: evdev/src/main/rust/evdev_manager
+        run: cargo fmt --check
+
+      - name: Run Rust tests
+        working-directory: evdev/src/main/rust/evdev_manager
+        run: cargo test --package evdev_manager_core
 
   apk:
     name: Generate and upload APK to Discord
@@ -89,6 +122,18 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
+        with:
+          ndk-version: "27.2.12479018"
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Android Rust targets
+        run: |
+          rustup target add armv7-linux-androideabi
+          rustup target add aarch64-linux-android
+          rustup target add i686-linux-android
+          rustup target add x86_64-linux-android
 
       - name: set up Ruby for fastlane
         uses: ruby/setup-ruby@v1

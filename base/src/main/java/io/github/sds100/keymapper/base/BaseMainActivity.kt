@@ -48,7 +48,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 abstract class BaseMainActivity : AppCompatActivity() {
 
@@ -191,10 +190,6 @@ abstract class BaseMainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
-        Timber.i(
-            "MainActivity: onResume. Version: ${buildConfigProvider.version} ${buildConfigProvider.versionCode}",
-        )
 
         // This must be after onResume to ensure all the fragment lifecycles' have also
         // resumed which are observing these events.

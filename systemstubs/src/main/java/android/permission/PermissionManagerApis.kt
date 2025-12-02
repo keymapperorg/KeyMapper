@@ -1,8 +1,11 @@
 package android.permission
 
+import android.content.pm.IPackageManager
 import android.os.Build
+import androidx.annotation.RequiresApi
 
 object PermissionManagerApis {
+    @RequiresApi(Build.VERSION_CODES.R)
     fun grantPermission(
         permissionManager: IPermissionManager,
         packageName: String,
@@ -37,12 +40,6 @@ object PermissionManagerApis {
                 }
             }
             // In Android 11 this method was moved from IPackageManager to IPermissionManager.
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            permissionManager.grantRuntimePermission(
-                packageName,
-                permission,
-                userId,
-            )
         } else {
             permissionManager.grantRuntimePermission(
                 packageName,
@@ -50,5 +47,15 @@ object PermissionManagerApis {
                 userId,
             )
         }
+    }
+
+    // Used on Android 10 and older.
+    fun grantPermission(
+        packageManager: IPackageManager,
+        packageName: String,
+        permission: String,
+        userId: Int,
+    ) {
+        packageManager.grantRuntimePermission(packageName, permission, userId)
     }
 }

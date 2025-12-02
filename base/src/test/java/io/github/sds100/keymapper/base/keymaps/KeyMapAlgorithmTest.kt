@@ -30,7 +30,6 @@ import io.github.sds100.keymapper.base.utils.parallelTrigger
 import io.github.sds100.keymapper.base.utils.sequenceTrigger
 import io.github.sds100.keymapper.base.utils.singleKeyTrigger
 import io.github.sds100.keymapper.base.utils.triggerKey
-import io.github.sds100.keymapper.common.models.EvdevDeviceHandle
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.common.utils.InputEventAction
@@ -4750,8 +4749,8 @@ class KeyMapAlgorithmTest {
         controller.onInputEvent(
             KMEvdevEvent(
                 type = KMEvdevEvent.TYPE_KEY_EVENT,
-                device = EvdevDeviceHandle(
-                    path = "/dev/input${device.name}",
+                deviceId = 0,
+                deviceInfo = EvdevDeviceInfo(
                     name = device.name,
                     bus = device.bus,
                     vendor = device.vendor,
@@ -4769,8 +4768,8 @@ class KeyMapAlgorithmTest {
         controller.onInputEvent(
             KMEvdevEvent(
                 type = KMEvdevEvent.TYPE_KEY_EVENT,
-                device = EvdevDeviceHandle(
-                    path = "/dev/input${device.name}",
+                deviceId = 0,
+                deviceInfo = EvdevDeviceInfo(
                     name = device.name,
                     bus = device.bus,
                     vendor = device.vendor,

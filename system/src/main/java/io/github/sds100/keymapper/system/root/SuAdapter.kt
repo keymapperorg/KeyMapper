@@ -47,12 +47,6 @@ class SuAdapterImpl @Inject constructor(private val coroutineScope: CoroutineSco
             // Close the shell so a new one is started without root permission.
             val isRooted = getIsRooted()
             isRootGranted.update { isRooted }
-
-            if (isRooted) {
-                Timber.i("Root access granted")
-            } else {
-                Timber.i("Root access denied")
-            }
         } catch (e: Exception) {
             Timber.e("Exception invalidating root detection: $e")
         }

@@ -38,11 +38,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -71,7 +67,9 @@ import kotlinx.coroutines.launch
 
 data class ShellCommandActionState(
     val description: String = "",
+    val descriptionError: String? = null,
     val command: String = "",
+    val commandError: String? = null,
     val executionMode: ShellExecutionMode = ShellExecutionMode.STANDARD,
     /**
      * UI works with seconds for user-friendliness
@@ -111,19 +109,20 @@ private fun ShellCommandActionScreen(
     onCommandChanged: (String) -> Unit = {},
     onExecutionModeChanged: (ShellExecutionMode) -> Unit = {},
     onTimeoutChanged: (Int) -> Unit = {},
-    onTestClick: () -> Unit = {},
+    /**
+     * Returns whether validation passed
+     */
+    onTestClick: () -> Boolean = { true },
     onKillClick: () -> Unit = {},
-    onDoneClick: () -> Unit = {},
+    /**
+     * Returns whether validation passed
+     */
+    onDoneClick: () -> Boolean = { true },
     onCancelClick: () -> Unit = {},
     onSetupProModeClick: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
-
-    var descriptionError: String? by rememberSaveable { mutableStateOf(null) }
-    var commandError: String? by rememberSaveable { mutableStateOf(null) }
-    val descriptionEmptyErrorString = stringResource(R.string.error_cant_be_empty)
-    val commandEmptyErrorString = stringResource(R.string.action_shell_command_command_empty_error)
 
     Scaffold(
         modifier = modifier,
@@ -137,24 +136,11 @@ private fun ShellCommandActionScreen(
                 floatingActionButton = {
                     ExtendedFloatingActionButton(
                         onClick = {
-                            var hasError = false
-
-                            if (state.description.isBlank()) {
-                                descriptionError = descriptionEmptyErrorString
-                                hasError = true
-                            }
-
-                            if (state.command.isBlank()) {
-                                commandError = commandEmptyErrorString
-                                hasError = true
-                            }
-
-                            if (hasError) {
+                            // Go to the configuration tab if validation failed
+                            if (!onDoneClick()) {
                                 scope.launch {
                                     scrollState.animateScrollTo(0)
                                 }
-                            } else {
-                                onDoneClick()
                             }
                         },
                         text = { Text(stringResource(R.string.pos_done)) },
@@ -226,23 +212,14 @@ private fun ShellCommandActionScreen(
                     0 -> ShellCommandConfigurationContent(
                         modifier = Modifier.fillMaxSize(),
                         state = state,
-                        descriptionError = descriptionError,
-                        commandError = commandError,
-                        onDescriptionChanged = {
-                            descriptionError = null
-                            onDescriptionChanged(it)
-                        },
-                        onCommandChanged = {
-                            commandError = null
-                            onCommandChanged(it)
-                        },
+                        descriptionError = state.descriptionError,
+                        commandError = state.commandError,
+                        onDescriptionChanged = onDescriptionChanged,
+                        onCommandChanged = onCommandChanged,
                         onExecutionModeChanged = onExecutionModeChanged,
                         onTimeoutChanged = onTimeoutChanged,
                         onTestClick = {
-                            if (state.command.isBlank()) {
-                                commandError = commandEmptyErrorString
-                            } else {
-                                onTestClick()
+                            if (onTestClick()) {
                                 scope.launch {
                                     pagerState.animateScrollToPage(1) // Switch to output tab
                                 }

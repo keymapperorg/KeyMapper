@@ -223,7 +223,7 @@ class RecordTriggerControllerImpl @Inject constructor(
         return RecordedKey.EvdevEvent(
             keyCode = evdevEvent.androidCode,
             scanCode = evdevEvent.code,
-            device = evdevEvent.device,
+            device = evdevEvent.deviceInfo,
         )
     }
 

@@ -103,6 +103,12 @@ fun KeyMapperTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composa
     val customColorsPalette =
         if (darkTheme) ComposeCustomColors.DarkPalette else ComposeCustomColors.LightPalette
 
+    SetSystemChrome(
+        statusBarColor = colorScheme.surfaceContainer,
+        navigationBarColor = colorScheme.surfaceContainer,
+        isDarkTheme = darkTheme,
+    )
+
     CompositionLocalProvider(
         LocalCustomColorsPalette provides customColorsPalette,
     ) {

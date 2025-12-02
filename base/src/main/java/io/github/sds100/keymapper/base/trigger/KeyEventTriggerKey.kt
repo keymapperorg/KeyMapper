@@ -4,7 +4,6 @@ import io.github.sds100.keymapper.base.keymaps.ClickType
 import io.github.sds100.keymapper.common.utils.hasFlag
 import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.entities.KeyEventTriggerKeyEntity
-import io.github.sds100.keymapper.data.entities.TriggerEntity
 import io.github.sds100.keymapper.data.entities.TriggerKeyEntity
 import java.util.UUID
 import kotlinx.serialization.Serializable
@@ -75,7 +74,7 @@ data class KeyEventTriggerKey(
                 entity.flags.hasFlag(KeyEventTriggerKeyEntity.FLAG_DETECTION_SOURCE_INPUT_METHOD)
 
             val detectWithScancode =
-                entity.flags.hasFlag(TriggerEntity.TRIGGER_FLAG_VIBRATE)
+                entity.flags.hasFlag(KeyEventTriggerKeyEntity.FLAG_DETECT_WITH_SCAN_CODE)
 
             return KeyEventTriggerKey(
                 uid = entity.uid,

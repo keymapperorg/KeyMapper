@@ -17,6 +17,7 @@ import io.github.sds100.keymapper.sysbridge.adb.AdbProtocol.A_WRTE
 import java.io.Closeable
 import java.io.DataInputStream
 import java.io.DataOutputStream
+import java.io.EOFException
 import java.net.ConnectException
 import java.net.Socket
 import java.net.SocketException
@@ -105,6 +106,9 @@ internal class AdbClient(private val host: String, private val port: Int, privat
             return AdbError.SslHandshakeError
         } catch (e: SocketException) {
             return AdbError.ConnectionError
+        } catch (_: EOFException) {
+            Timber.e("AdbClient.connect(): Caught EOF Exception when reading ADB message")
+            return AdbError.ConnectionError
         }
 
         return Success(Unit)
@@ -114,35 +118,39 @@ internal class AdbClient(private val host: String, private val port: Int, privat
         val localId = 1
         write(A_OPEN, localId, 0, "shell:$command")
 
-        var message = read()
-        when (message.command) {
-            A_OKAY -> {
-                while (true) {
-                    message = read()
+        try {
+            var message = read()
+            when (message.command) {
+                A_OKAY -> {
+                    while (true) {
+                        message = read()
 
-                    val remoteId = message.arg0
-                    if (message.command == A_WRTE) {
-                        if (message.data_length > 0) {
-                            listener(message.data!!)
+                        val remoteId = message.arg0
+                        if (message.command == A_WRTE) {
+                            if (message.data_length > 0) {
+                                listener(message.data!!)
+                            }
+                            write(A_OKAY, localId, remoteId)
+                        } else if (message.command == A_CLSE) {
+                            write(A_CLSE, localId, remoteId)
+                            break
+                        } else {
+                            error("not A_WRTE or A_CLSE")
                         }
-                        write(A_OKAY, localId, remoteId)
-                    } else if (message.command == A_CLSE) {
-                        write(A_CLSE, localId, remoteId)
-                        break
-                    } else {
-                        error("not A_WRTE or A_CLSE")
                     }
                 }
-            }
 
-            A_CLSE -> {
-                val remoteId = message.arg0
-                write(A_CLSE, localId, remoteId)
-            }
+                A_CLSE -> {
+                    val remoteId = message.arg0
+                    write(A_CLSE, localId, remoteId)
+                }
 
-            else -> {
-                error("not A_OKAY or A_CLSE")
+                else -> {
+                    error("not A_OKAY or A_CLSE")
+                }
             }
+        } catch (_: EOFException) {
+            Timber.e("AdbClient.shellCommand(): Caught EOF Exception when reading ADB message")
         }
     }
 

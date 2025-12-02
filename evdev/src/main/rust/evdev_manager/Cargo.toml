@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "main",
+    "core",
+    "jni",
+]
+resolver = "3"

@@ -648,13 +648,8 @@ class KeyMapAlgorithm(
                 val event = EvdevEventAlgo(
                     keyCode = inputEvent.androidCode,
                     clickType = null,
-                    devicePath = inputEvent.device.path,
-                    device = EvdevDeviceInfo(
-                        name = inputEvent.device.name,
-                        bus = inputEvent.device.bus,
-                        vendor = inputEvent.device.vendor,
-                        product = inputEvent.device.product,
-                    ),
+                    deviceId = inputEvent.deviceId,
+                    device = inputEvent.deviceInfo,
                     scanCode = inputEvent.code,
                 )
 
@@ -1490,14 +1485,14 @@ class KeyMapAlgorithm(
                         )
                     } else if (event is EvdevEventAlgo) {
                         useCase.imitateEvdevEvent(
-                            devicePath = event.devicePath,
+                            deviceId = event.deviceId,
                             KMEvdevEvent.TYPE_KEY_EVENT,
                             event.scanCode,
                             KMEvdevEvent.VALUE_DOWN,
                         )
 
                         useCase.imitateEvdevEvent(
-                            devicePath = event.devicePath,
+                            deviceId = event.deviceId,
                             KMEvdevEvent.TYPE_KEY_EVENT,
                             event.scanCode,
                             KMEvdevEvent.VALUE_UP,
@@ -1544,20 +1539,20 @@ class KeyMapAlgorithm(
             } else if (event is EvdevEventAlgo) {
                 if (imitateUpKeyEvent) {
                     useCase.imitateEvdevEvent(
-                        devicePath = event.devicePath,
+                        deviceId = event.deviceId,
                         type = KMEvdevEvent.TYPE_KEY_EVENT,
                         code = event.scanCode,
                         value = KMEvdevEvent.VALUE_UP,
                     )
                 } else {
                     useCase.imitateEvdevEvent(
-                        devicePath = event.devicePath,
+                        deviceId = event.deviceId,
                         type = KMEvdevEvent.TYPE_KEY_EVENT,
                         code = event.scanCode,
                         value = KMEvdevEvent.VALUE_DOWN,
                     )
                     useCase.imitateEvdevEvent(
-                        devicePath = event.devicePath,
+                        deviceId = event.deviceId,
                         type = KMEvdevEvent.TYPE_KEY_EVENT,
                         code = event.scanCode,
                         value = KMEvdevEvent.VALUE_UP,
@@ -1944,7 +1939,7 @@ class KeyMapAlgorithm(
     }
 
     private data class EvdevEventAlgo(
-        val devicePath: String,
+        val deviceId: Int,
         val device: EvdevDeviceInfo,
         val scanCode: Int,
         val keyCode: Int,

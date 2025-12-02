@@ -1,3 +1,16 @@
+## [4.0.0 Beta 4](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.04)
+
+#### TO BE RELEASED
+
+## Added
+
+- #1915 ask user to remove "adb shell" from Shell command.
+- #1904 inform the user how to enable the accessibility service with PRO mode or ADB.
+
+## Bug fixes
+
+- #1913 actually save the option to detect with scan code
+
 ## [4.0.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.03)
 
 #### 25 November 2025

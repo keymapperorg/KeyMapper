@@ -54,6 +54,8 @@ import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.DialogProviderImpl
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProviderImpl
+import io.github.sds100.keymapper.common.utils.Clock
+import io.github.sds100.keymapper.common.utils.ClockImpl
 import io.github.sds100.keymapper.common.utils.DefaultUuidGenerator
 import io.github.sds100.keymapper.common.utils.UuidGenerator
 import io.github.sds100.keymapper.system.accessibility.AccessibilityServiceAdapter
@@ -202,4 +204,8 @@ abstract class BaseSingletonHiltModule {
     abstract fun bindSetupAccessibilityServiceDelegate(
         impl: SetupAccessibilityServiceDelegateImpl,
     ): SetupAccessibilityServiceDelegate
+
+    @Binds
+    @Singleton
+    abstract fun bindClock(impl: ClockImpl): Clock
 }

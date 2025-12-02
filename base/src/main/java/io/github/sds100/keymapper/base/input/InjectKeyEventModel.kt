@@ -13,7 +13,7 @@ data class InjectKeyEventModel(
     val repeatCount: Int = 0,
 ) {
     fun toAndroidKeyEvent(flags: Int = 0): KeyEvent {
-        val eventTime = SystemClock.uptimeMillis()
+        val eventTime = SystemClock.elapsedRealtime()
         return KeyEvent(
             eventTime,
             eventTime,

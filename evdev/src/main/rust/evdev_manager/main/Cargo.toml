@@ -1,0 +1,11 @@
+[package]
+name = "main"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "evdev_manager"
+crate-type = ["cdylib"]
+
+[dependencies]
+evdev_manager_jni = { path = "../jni" }

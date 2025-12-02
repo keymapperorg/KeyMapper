@@ -13,7 +13,7 @@
     <!--  This is required because sysbridge has a min sdk of 29 since it depends
       on the binder-ndk library. Building will fail without this because the min sdk
       of the app is 26.-->
-    <uses-sdk tools:overrideLibrary="io.github.sds100.keymapper.sysbridge" />
+    <uses-sdk tools:overrideLibrary="io.github.sds100.keymapper.sysbridge, io.github.sds100.keymapper.evdev" />
 
     <application
         android:name="io.github.sds100.keymapper.KeyMapperApp"
