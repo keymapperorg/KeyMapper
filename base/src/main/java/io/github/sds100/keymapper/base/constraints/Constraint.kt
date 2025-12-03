@@ -93,10 +93,14 @@ sealed class ConstraintData {
         val physicalOrientation: io.github.sds100.keymapper.common.utils.PhysicalOrientation,
     ) : ConstraintData() {
         override val id: ConstraintId = when (physicalOrientation) {
-            io.github.sds100.keymapper.common.utils.PhysicalOrientation.PORTRAIT -> ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT
-            io.github.sds100.keymapper.common.utils.PhysicalOrientation.LANDSCAPE -> ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE
-            io.github.sds100.keymapper.common.utils.PhysicalOrientation.PORTRAIT_INVERTED -> ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT_INVERTED
-            io.github.sds100.keymapper.common.utils.PhysicalOrientation.LANDSCAPE_INVERTED -> ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED
+            io.github.sds100.keymapper.common.utils.PhysicalOrientation.PORTRAIT ->
+                ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT
+            io.github.sds100.keymapper.common.utils.PhysicalOrientation.LANDSCAPE ->
+                ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE
+            io.github.sds100.keymapper.common.utils.PhysicalOrientation.PORTRAIT_INVERTED ->
+                ConstraintId.PHYSICAL_ORIENTATION_PORTRAIT_INVERTED
+            io.github.sds100.keymapper.common.utils.PhysicalOrientation.LANDSCAPE_INVERTED ->
+                ConstraintId.PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED
         }
     }
 

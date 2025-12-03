@@ -207,7 +207,8 @@ object ConstraintUtils {
         ConstraintId.SCREEN_ON -> R.string.constraint_choose_screen_on_description
         ConstraintId.SCREEN_OFF -> R.string.constraint_choose_screen_off_description
         ConstraintId.DISPLAY_ORIENTATION_PORTRAIT -> R.string.constraint_choose_orientation_portrait
-        ConstraintId.DISPLAY_ORIENTATION_LANDSCAPE -> R.string.constraint_choose_orientation_landscape
+        ConstraintId.DISPLAY_ORIENTATION_LANDSCAPE ->
+            R.string.constraint_choose_orientation_landscape
         ConstraintId.DISPLAY_ORIENTATION_0 -> R.string.constraint_choose_orientation_0
         ConstraintId.DISPLAY_ORIENTATION_90 -> R.string.constraint_choose_orientation_90
         ConstraintId.DISPLAY_ORIENTATION_180 -> R.string.constraint_choose_orientation_180
