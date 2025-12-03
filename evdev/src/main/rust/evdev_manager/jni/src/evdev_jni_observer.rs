@@ -6,6 +6,7 @@ use evdev_manager_core::android::keylayout::key_layout_map_manager::KeyLayoutMap
 use evdev_manager_core::device_identifier::DeviceIdentifier;
 use jni::objects::{GlobalRef, JValue};
 use jni::JavaVM;
+use std::error::Error;
 use std::process;
 use std::sync::{Arc, Mutex};
 
@@ -75,11 +76,6 @@ impl EvdevJniObserver {
         }
     }
 
-    const UNKNOWN_KEY: KeyLayoutKey = KeyLayoutKey {
-        key_code: AKEYCODE_UNKNOWN,
-        flags: 0,
-    };
-
     pub fn on_event(
         &self,
         device_id: usize,
@@ -94,13 +90,18 @@ impl EvdevJniObserver {
         // Extract event type and code from EventCode
         let (ev_type, ev_code) = event_code_to_int(&event.event_code);
 
-        // Convert raw evdev code to Android keycode
-        let android_code = self
+        let key_result = self
             .key_layout_map_manager
-            .map_key(device_identifier, ev_code)
-            .unwrap_or(Some(Self::UNKNOWN_KEY))
-            .map(|key| key.key_code)
-            .unwrap_or(AKEYCODE_UNKNOWN);
+            .map_key(device_identifier, ev_code);
+
+        // Convert raw evdev code to Android keycode
+        let android_code = match key_result {
+            Ok(key_option) => match key_option {
+                None => AKEYCODE_UNKNOWN,
+                Some(key) => key.key_code,
+            },
+            Err(_) => AKEYCODE_UNKNOWN,
+        };
 
         // Handle power button emergency kill
         self.handle_power_button(ev_code, android_code, event.value, event.time.tv_sec);

@@ -1,6 +1,6 @@
 use crate::android::keylayout::key_layout_map::{KeyLayoutKey, KeyLayoutMap};
 use crate::device_identifier::DeviceIdentifier;
-use log::{debug, error, info, warn};
+use log::{debug, error, info};
 use std::collections::HashMap;
 use std::env;
 use std::error::Error;
@@ -20,7 +20,7 @@ pub struct KeyLayoutMapManager {
     /// Maps device path to KeyLayoutMap handle. If the value is None then
     /// the key layout map could not be found or there was an error parsing,
     /// and it shouldn't be attempted again.
-    key_layout_maps: Mutex<HashMap<DeviceIdentifier, Option<Arc<KeyLayoutMap>>>>,
+    pub key_layout_maps: Mutex<HashMap<DeviceIdentifier, Option<Arc<KeyLayoutMap>>>>,
     /// File finder for locating key layout files
     file_finder: Arc<dyn KeyLayoutFileFinder>,
 }
@@ -52,7 +52,7 @@ impl KeyLayoutMapManager {
         &self,
         device_identifier: &DeviceIdentifier,
         scan_code: u32,
-    ) -> Result<Option<KeyLayoutKey>, Box<dyn Error>> {
+    ) -> Result<Option<Arc<KeyLayoutKey>>, Box<dyn Error>> {
         self.get_key_layout_map_lazy(device_identifier)
             .map(|map| map?.map_key(scan_code))
     }
@@ -60,9 +60,8 @@ impl KeyLayoutMapManager {
     pub fn preload_key_layout_map(
         &self,
         device_identifier: &DeviceIdentifier,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<Option<Arc<KeyLayoutMap>>, Box<dyn Error>> {
         self.get_key_layout_map_lazy(device_identifier)
-            .map(|_| ())
             .inspect_err(|err| {
                 error!(
                     "Error preloading key layout map for device {}: {}",
@@ -72,6 +71,7 @@ impl KeyLayoutMapManager {
     }
 
     /// Get or load a key layout map for the given device identifier.
+    /// This method is public for testing purposes.
     fn get_key_layout_map_lazy(
         &self,
         device_identifier: &DeviceIdentifier,
@@ -83,6 +83,10 @@ impl KeyLayoutMapManager {
         }
 
         let key_layout_map_paths = self.find_key_layout_files(device_identifier);
+        info!(
+            "Found key layout map files for device {}: {:?}",
+            device_identifier.name, key_layout_map_paths
+        );
 
         for path in key_layout_map_paths {
             return match KeyLayoutMap::load_from_file(path) {
@@ -133,10 +137,6 @@ impl KeyLayoutMapManager {
                     .file_finder
                     .find_system_key_layout_file_by_name(&version_name)
                 {
-                    info!(
-                        "Found key layout map by version path for {}: {:?}",
-                        name, path
-                    );
                     paths.push(path);
                 }
             }
@@ -147,10 +147,6 @@ impl KeyLayoutMapManager {
                 .file_finder
                 .find_system_key_layout_file_by_name(&product_name)
             {
-                info!(
-                    "Found key layout map by product path for {}: {:?}",
-                    name, path
-                );
                 paths.push(path);
             }
         }
@@ -161,7 +157,6 @@ impl KeyLayoutMapManager {
             .file_finder
             .find_system_key_layout_file_by_name(&canonical_name)
         {
-            info!("Found key layout map by name path for {}: {:?}", name, path);
             paths.push(path);
         }
 
@@ -170,8 +165,6 @@ impl KeyLayoutMapManager {
             .file_finder
             .find_system_key_layout_file_by_name("Generic")
         {
-            info!("Using generic key layout map for {}: {:?}", name, path);
-
             paths.push(path);
         }
 

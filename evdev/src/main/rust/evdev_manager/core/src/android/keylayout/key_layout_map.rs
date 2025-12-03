@@ -12,13 +12,15 @@ use crate::android::keylayout::input_event_lookup::{
 };
 use crate::android::keylayout::tokenizer::Tokenizer;
 use std::collections::HashMap;
+use std::fmt;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 /// Describes a mapping from keyboard scan codes to Android key codes.
 ///
 /// This object is immutable after it has been loaded.
 pub struct KeyLayoutMap {
-    keys_by_scan_code: HashMap<u32, KeyLayoutKey>,
+    keys_by_scan_code: HashMap<u32, Arc<KeyLayoutKey>>,
     axes: HashMap<u32, KeyLayoutAxisInfo>,
 }
 
@@ -82,7 +84,7 @@ impl KeyLayoutMap {
     /// Map a scan code to an Android key code.
     ///
     /// Returns `Ok((key_code, flags))` on success, or `None` if not found.
-    pub fn map_key(&self, scan_code: u32) -> Option<KeyLayoutKey> {
+    pub fn map_key(&self, scan_code: u32) -> Option<Arc<KeyLayoutKey>> {
         self.keys_by_scan_code.get(&scan_code).cloned()
     }
 
@@ -107,6 +109,38 @@ impl KeyLayoutMap {
                 }
             })
             .collect()
+    }
+}
+
+impl fmt::Debug for KeyLayoutMap {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut debug_struct = f.debug_struct("KeyLayoutMap");
+        debug_struct.field("keys_count", &self.keys_by_scan_code.len());
+        debug_struct.field("axes_count", &self.axes.len());
+
+        // Show a sample of keys (first 5) if there are any
+        if !self.keys_by_scan_code.is_empty() {
+            let sample_keys: Vec<_> = self
+                .keys_by_scan_code
+                .iter()
+                .take(5)
+                .map(|(scan_code, key)| (scan_code, key))
+                .collect();
+            debug_struct.field("sample_keys", &sample_keys);
+        }
+
+        // Show a sample of axes (first 5) if there are any
+        if !self.axes.is_empty() {
+            let sample_axes: Vec<_> = self
+                .axes
+                .iter()
+                .take(5)
+                .map(|(scan_code, axis_info)| (scan_code, axis_info))
+                .collect();
+            debug_struct.field("sample_axes", &sample_axes);
+        }
+
+        debug_struct.finish()
     }
 }
 
@@ -245,7 +279,9 @@ impl<'a> Parser<'a> {
         // Only insert if the key code is known
         if let Some(key_code) = key_code {
             let key = KeyLayoutKey { key_code, flags };
-            self.map.keys_by_scan_code.insert(scan_code as u32, key);
+            self.map
+                .keys_by_scan_code
+                .insert(scan_code as u32, Arc::new(key));
         }
 
         Ok(())
