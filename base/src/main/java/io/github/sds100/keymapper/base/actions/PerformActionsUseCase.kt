@@ -52,6 +52,7 @@ import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
+import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
 import io.github.sds100.keymapper.system.inputevents.Scancode
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
@@ -198,20 +199,26 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
                 )
 
                 if (inputEventAction == InputEventAction.DOWN_UP) {
-                    result = inputEventHub.injectKeyEvent(
-                        model,
-                        useSystemBridgeIfAvailable = injectKeyEventsWithSystemBridge.value,
+                    result = inputEventHub.injectEvdevEvent(
+                        deviceId = 0,
+                        type = KMEvdevEvent.TYPE_KEY_EVENT,
+                        code = Scancode.KEY_VOLUMEUP,
+                        value = 1,
                     )
                         .then {
-                            inputEventHub.injectKeyEvent(
-                                model.copy(action = KeyEvent.ACTION_UP),
-                                useSystemBridgeIfAvailable = injectKeyEventsWithSystemBridge.value,
+                            inputEventHub.injectEvdevEvent(
+                                deviceId = 0,
+                                type = KMEvdevEvent.TYPE_KEY_EVENT,
+                                code = Scancode.KEY_VOLUMEUP,
+                                value = 0,
                             )
                         }
                 } else {
-                    result = inputEventHub.injectKeyEvent(
-                        model,
-                        useSystemBridgeIfAvailable = injectKeyEventsWithSystemBridge.value,
+                    result = inputEventHub.injectEvdevEvent(
+                        deviceId = 0,
+                        type = KMEvdevEvent.TYPE_KEY_EVENT,
+                        code = Scancode.KEY_VOLUMEUP,
+                        value = if (inputEventAction == InputEventAction.DOWN) 1 else 0,
                     )
                 }
             }

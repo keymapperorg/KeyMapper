@@ -1,6 +1,8 @@
 //! Tests for KeyLayoutMapManager file finding logic.
 use assertables::{assert_iter_eq, assert_none, assert_ok, assert_result_ok, assert_some};
-use evdev_manager_core::android::android_codes::AKEYCODE_MINUS;
+use evdev_manager_core::android::android_codes::{
+    AKEYCODE_HOME, AKEYCODE_MINUS, AKEYCODE_MOVE_HOME,
+};
 use evdev_manager_core::android::keylayout::key_layout_map_manager::{
     KeyLayoutFileFinder, KeyLayoutMapManager,
 };
@@ -237,6 +239,7 @@ fn test_map_key_reads_from_cache() {
     );
 }
 
+#[test]
 fn test_map_key_saves_to_cache() {
     // Create a mock file finder that returns no files
     let test_kl_path = get_test_data_path().join("Generic.kl");
@@ -284,4 +287,51 @@ fn test_map_key_finds_file_if_cache_miss() {
     let map_key_result = manager.map_key(&device, 12).unwrap().unwrap();
 
     assert_eq!(map_key_result.key_code, AKEYCODE_MINUS);
+}
+
+#[test]
+fn test_map_key_reads_first_found_path() {
+    // Create a mock file finder that returns no files
+    let mock_finder = MockFileFinder::new()
+        .add_system_file("Generic", get_test_data_path().join("Generic.kl"))
+        .add_system_file("gpio-keys", get_test_data_path().join("6t/gpio-keys.kl"));
+
+    let manager = KeyLayoutMapManager::with_file_finder(Arc::new(mock_finder));
+
+    let device = DeviceIdentifier {
+        name: "gpio-keys".to_string(),
+        bus: 0x0003,
+        vendor: 0x9999,
+        product: 0x8888,
+        version: 0x0001,
+    };
+
+    // Verify the cached value is returned by comparing the pointers
+    let map_key_result = manager.map_key(&device, 102).unwrap().unwrap();
+
+    // In gpio-keys.kl this is HOME and in Generic.kl this is MOVE_HOME
+    assert_eq!(map_key_result.key_code, AKEYCODE_HOME);
+}
+
+#[test]
+fn test_map_key_reads_generic_if_device_specific_not_found() {
+    // Create a mock file finder that returns no files
+    let mock_finder =
+        MockFileFinder::new().add_system_file("Generic", get_test_data_path().join("Generic.kl"));
+
+    let manager = KeyLayoutMapManager::with_file_finder(Arc::new(mock_finder));
+
+    let device = DeviceIdentifier {
+        name: "gpio-keys".to_string(),
+        bus: 0x0003,
+        vendor: 0x9999,
+        product: 0x8888,
+        version: 0x0001,
+    };
+
+    // Verify the cached value is returned by comparing the pointers
+    let map_key_result = manager.map_key(&device, 102).unwrap().unwrap();
+
+    // In gpio-keys.kl this is HOME and in Generic.kl this is MOVE_HOME
+    assert_eq!(map_key_result.key_code, AKEYCODE_MOVE_HOME);
 }
