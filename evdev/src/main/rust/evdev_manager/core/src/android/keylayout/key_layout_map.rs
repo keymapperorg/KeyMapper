@@ -184,6 +184,10 @@ impl<'a> Parser<'a> {
                         self.tokenizer.next_line();
                         continue;
                     }
+                    "requires_kernel_config" => {
+                        self.tokenizer.next_line();
+                        continue;
+                    }
                     "usage" => {
                         // Skip usage code entries - evdev only provides scan codes
                         self.tokenizer.next_line();

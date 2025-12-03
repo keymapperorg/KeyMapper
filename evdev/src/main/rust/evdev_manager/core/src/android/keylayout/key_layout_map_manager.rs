@@ -168,8 +168,6 @@ impl KeyLayoutMapManager {
             paths.push(path);
         }
 
-        // TODO use Key Mapper key layout files
-
         paths
     }
 }
