@@ -79,7 +79,7 @@ fn test_skip_delimiters() {
 
 #[test]
 fn test_get_location() {
-    let mut tokenizer = Tokenizer::from_contents(PathBuf::new(), "line1\nline2");
+    let mut tokenizer = Tokenizer::from_contents(PathBuf::new().join("test.txt"), "line1\nline2");
     assert_eq!(tokenizer.get_location(), "test.txt:1");
     tokenizer.next_line();
     assert_eq!(tokenizer.get_location(), "test.txt:2");
