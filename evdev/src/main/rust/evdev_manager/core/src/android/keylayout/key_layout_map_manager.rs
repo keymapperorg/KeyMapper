@@ -197,21 +197,14 @@ pub struct AndroidKeyLayoutFileFinder;
 
 impl KeyLayoutFileFinder for AndroidKeyLayoutFileFinder {
     fn find_system_key_layout_file_by_name(&self, name: &str) -> Option<PathBuf> {
-        // Search system repository
-        let mut path_prefixes = vec![
-            "/product/usr/".to_string(),
-            "/system_ext/usr/".to_string(),
+        // See https://source.android.com/docs/core/interaction/input/key-layout-files#location
+        let path_prefixes = vec![
             "/odm/usr/".to_string(),
             "/vendor/usr/".to_string(),
             "/system/usr/".to_string(),
+            "/data/system/devices/".to_string(),
         ];
 
-        // ANDROID_ROOT may not be set on host
-        if let Ok(android_root) = env::var("ANDROID_ROOT") {
-            path_prefixes.push(format!("{}/usr/", android_root));
-        }
-
-        // Try each system path prefix
         for prefix in &path_prefixes {
             let path = PathBuf::new()
                 .join(prefix)
@@ -226,28 +219,6 @@ impl KeyLayoutFileFinder for AndroidKeyLayoutFileFinder {
                 }
                 Err(e) if e.kind() != ErrorKind::NotFound => {
                     debug!("Error accessing {:?}: {}", path, e);
-                }
-                _ => {}
-            }
-        }
-
-        // Search user repository
-        if let Ok(android_data) = env::var("ANDROID_DATA") {
-            let path = PathBuf::new()
-                .join(android_data)
-                .join("system")
-                .join("devices")
-                .join("keylayout")
-                .join(format!("{}.kl", name));
-
-            match fs::metadata(&path) {
-                Ok(metadata) if metadata.is_file() => {
-                    if let Ok(_) = File::open(&path) {
-                        return Some(path);
-                    }
-                }
-                Err(e) if e.kind() != ErrorKind::NotFound => {
-                    warn!("Error accessing user config file {:?}: {}", path, e);
                 }
                 _ => {}
             }

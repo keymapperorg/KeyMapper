@@ -1,5 +1,5 @@
 //! Tests for KeyLayoutMapManager file finding logic.
-use assertables::assert_iter_eq;
+use assertables::{assert_iter_eq, assert_len_eq};
 use evdev_manager_core::android::keylayout::key_layout_map_manager::{
     KeyLayoutFileFinder, KeyLayoutMapManager,
 };
@@ -41,8 +41,46 @@ impl KeyLayoutFileFinder for MockFileFinder {
 }
 
 #[test]
+fn test_find_no_files() {
+    let mock_finder = Arc::new(MockFileFinder::new());
+
+    let device = DeviceIdentifier {
+        name: "gpio-keys".to_string(),
+        bus: 0x0003,
+        vendor: 0x1234,
+        product: 0x5678,
+        version: 0x0001,
+    };
+
+    let files: Vec<String> = find_key_layout_files_str(mock_finder, &device);
+
+    assert_eq!(files.len(), 0)
+}
+
+#[test]
+fn test_only_find_generic_file() {
+    let mock_finder = Arc::new(
+        MockFileFinder::new()
+            .add_system_file("Generic", PathBuf::from("/system/usr/keylayout/Generic.kl")),
+    );
+
+    let device = DeviceIdentifier {
+        name: "gpio-keys".to_string(),
+        bus: 0x0003,
+        vendor: 0x1234,
+        product: 0x5678,
+        version: 0x0001,
+    };
+
+    let files: Vec<String> = find_key_layout_files_str(mock_finder, &device);
+
+    let expected = ["/system/usr/keylayout/Generic.kl"];
+
+    assert_iter_eq!(files, expected);
+}
+
+#[test]
 fn test_find_key_layout_files_priority_order() {
-    // Create a mock file finder that has files at different priority levels
     let mock_finder = Arc::new(
         MockFileFinder::new()
             .add_system_file(
@@ -60,7 +98,6 @@ fn test_find_key_layout_files_priority_order() {
             .add_system_file("Generic", PathBuf::from("/system/usr/keylayout/Generic.kl")),
     );
 
-    // Create a device identifier with vendor, product, and version
     let device = DeviceIdentifier {
         name: "gpio-keys".to_string(),
         bus: 0x0003,
@@ -69,7 +106,6 @@ fn test_find_key_layout_files_priority_order() {
         version: 0x0001,
     };
 
-    // Get the list of key layout files in priority order
     let files: Vec<String> = find_key_layout_files_str(mock_finder, &device);
 
     let expected = [
