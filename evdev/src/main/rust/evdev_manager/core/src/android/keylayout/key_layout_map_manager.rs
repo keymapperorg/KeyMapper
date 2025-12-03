@@ -2,13 +2,13 @@ use crate::android::keylayout::key_layout_map::{KeyLayoutKey, KeyLayoutMap};
 use crate::device_identifier::DeviceIdentifier;
 use log::{debug, error, info, warn};
 use std::collections::HashMap;
+use std::env;
 use std::error::Error;
 use std::fs;
 use std::fs::File;
 use std::io::ErrorKind;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex, OnceLock};
-use std::{env, io};
 
 static KEY_LAYOUT_MANAGER: OnceLock<Arc<KeyLayoutMapManager>> = OnceLock::new();
 
@@ -39,7 +39,6 @@ impl KeyLayoutMapManager {
 
     /// Create a new instance with a custom file finder.
     /// This is primarily useful for testing.
-    #[cfg(test)]
     pub fn with_file_finder(file_finder: Arc<dyn KeyLayoutFileFinder>) -> Self {
         Self {
             key_layout_maps: Mutex::new(HashMap::with_capacity(32)),
@@ -113,7 +112,9 @@ impl KeyLayoutMapManager {
     /// Tries multiple naming schemes based on vendor/product/version, then device name, then Generic.
     /// It first tries searching the system for the file, and then does the search again
     /// in the files shipped with Key Mapper.
-    fn find_key_layout_files(&self, device_identifier: &DeviceIdentifier) -> Vec<PathBuf> {
+    ///
+    /// See https://source.android.com/docs/core/interaction/input/key-layout-files#location
+    pub fn find_key_layout_files(&self, device_identifier: &DeviceIdentifier) -> Vec<PathBuf> {
         let name = device_identifier.name.as_str();
         let vendor = device_identifier.vendor;
         let product = device_identifier.product;
@@ -255,7 +256,7 @@ impl KeyLayoutFileFinder for AndroidKeyLayoutFileFinder {
         None
     }
 
-    fn find_key_mapper_key_layout_file_by_name(&self, name: &str) -> Option<PathBuf> {
+    fn find_key_mapper_key_layout_file_by_name(&self, _name: &str) -> Option<PathBuf> {
         None
     }
 }

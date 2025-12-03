@@ -1,20 +1,23 @@
 use evdev_manager_core::android::keylayout::tokenizer::Tokenizer;
+#[cfg(test)]
+use pretty_assertions::assert_eq;
+use std::path::PathBuf;
 
 #[test]
 fn test_is_eof() {
-    let tokenizer = Tokenizer::from_contents("test.txt", "");
+    let tokenizer = Tokenizer::from_contents(PathBuf::new(), "");
     assert!(tokenizer.is_eof());
 
-    let tokenizer = Tokenizer::from_contents("test.txt", "a");
+    let tokenizer = Tokenizer::from_contents(PathBuf::new(), "a");
     assert!(!tokenizer.is_eof());
 }
 
 #[test]
 fn test_is_eol() {
-    let tokenizer = Tokenizer::from_contents("test.txt", "");
+    let tokenizer = Tokenizer::from_contents(PathBuf::new(), "");
     assert!(tokenizer.is_eol());
 
-    let mut tokenizer = Tokenizer::from_contents("test.txt", "a\nb");
+    let mut tokenizer = Tokenizer::from_contents(PathBuf::new(), "a\nb");
     assert!(!tokenizer.is_eol());
     tokenizer.next_char();
     assert!(tokenizer.is_eol());
@@ -22,7 +25,7 @@ fn test_is_eol() {
 
 #[test]
 fn test_peek_char() {
-    let mut tokenizer = Tokenizer::from_contents("test.txt", "abc");
+    let mut tokenizer = Tokenizer::from_contents(PathBuf::new(), "abc");
     assert_eq!(tokenizer.peek_char(), 'a');
     assert_eq!(tokenizer.peek_char(), 'a'); // Should not advance
 
@@ -32,7 +35,7 @@ fn test_peek_char() {
 
 #[test]
 fn test_next_char() {
-    let mut tokenizer = Tokenizer::from_contents("test.txt", "abc");
+    let mut tokenizer = Tokenizer::from_contents(PathBuf::new(), "abc");
     assert_eq!(tokenizer.next_char(), 'a');
     assert_eq!(tokenizer.next_char(), 'b');
     assert_eq!(tokenizer.next_char(), 'c');
@@ -41,7 +44,7 @@ fn test_next_char() {
 
 #[test]
 fn test_next_token() {
-    let mut tokenizer = Tokenizer::from_contents("test.txt", "key 1 ESCAPE");
+    let mut tokenizer = Tokenizer::from_contents(PathBuf::new(), "key 1 ESCAPE");
     assert_eq!(tokenizer.next_token(" \t"), "key");
     assert_eq!(tokenizer.next_token(" \t"), "1");
     assert_eq!(tokenizer.next_token(" \t"), "ESCAPE");
@@ -50,7 +53,7 @@ fn test_next_token() {
 
 #[test]
 fn test_next_token_with_multiple_delimiters() {
-    let mut tokenizer = Tokenizer::from_contents("test.txt", "key\t1\nESCAPE");
+    let mut tokenizer = Tokenizer::from_contents(PathBuf::new(), "key\t1\nESCAPE");
     assert_eq!(tokenizer.next_token(" \t"), "key");
     assert_eq!(tokenizer.next_token(" \t"), "1");
     tokenizer.next_line();
@@ -59,7 +62,7 @@ fn test_next_token_with_multiple_delimiters() {
 
 #[test]
 fn test_next_line() {
-    let mut tokenizer = Tokenizer::from_contents("test.txt", "line1\nline2\nline3");
+    let mut tokenizer = Tokenizer::from_contents(PathBuf::new(), "line1\nline2\nline3");
     assert_eq!(tokenizer.peek_remainder_of_line(), "line1");
     tokenizer.next_line();
     assert_eq!(tokenizer.peek_remainder_of_line(), "line2");
@@ -69,14 +72,14 @@ fn test_next_line() {
 
 #[test]
 fn test_skip_delimiters() {
-    let mut tokenizer = Tokenizer::from_contents("test.txt", "   key");
+    let mut tokenizer = Tokenizer::from_contents(PathBuf::new(), "   key");
     tokenizer.skip_delimiters(" \t");
     assert_eq!(tokenizer.peek_char(), 'k');
 }
 
 #[test]
 fn test_get_location() {
-    let mut tokenizer = Tokenizer::from_contents("test.txt", "line1\nline2");
+    let mut tokenizer = Tokenizer::from_contents(PathBuf::new(), "line1\nline2");
     assert_eq!(tokenizer.get_location(), "test.txt:1");
     tokenizer.next_line();
     assert_eq!(tokenizer.get_location(), "test.txt:2");
@@ -84,17 +87,17 @@ fn test_get_location() {
 
 #[test]
 fn test_peek_remainder_of_line() {
-    let tokenizer = Tokenizer::from_contents("test.txt", "key 1 ESCAPE\nnext line");
+    let tokenizer = Tokenizer::from_contents(PathBuf::new(), "key 1 ESCAPE\nnext line");
     assert_eq!(tokenizer.peek_remainder_of_line(), "key 1 ESCAPE");
 
-    let mut tokenizer = Tokenizer::from_contents("test.txt", "key 1 ESCAPE\nnext line");
+    let mut tokenizer = Tokenizer::from_contents(PathBuf::new(), "key 1 ESCAPE\nnext line");
     tokenizer.next_line();
     assert_eq!(tokenizer.peek_remainder_of_line(), "next line");
 }
 
 #[test]
 fn test_handles_comments() {
-    let mut tokenizer = Tokenizer::from_contents("test.txt", "key 1 ESCAPE # comment");
+    let mut tokenizer = Tokenizer::from_contents(PathBuf::new(), "key 1 ESCAPE # comment");
     assert_eq!(tokenizer.next_token(" \t"), "key");
     assert_eq!(tokenizer.next_token(" \t"), "1");
     assert_eq!(tokenizer.next_token(" \t"), "ESCAPE");
@@ -105,7 +108,7 @@ fn test_handles_comments() {
 
 #[test]
 fn test_handles_empty_lines() {
-    let mut tokenizer = Tokenizer::from_contents("test.txt", "line1\n\nline3");
+    let mut tokenizer = Tokenizer::from_contents(PathBuf::new(), "line1\n\nline3");
     assert_eq!(tokenizer.peek_remainder_of_line(), "line1");
     tokenizer.next_line();
     assert_eq!(tokenizer.peek_remainder_of_line(), "");
@@ -115,7 +118,7 @@ fn test_handles_empty_lines() {
 
 #[test]
 fn test_handles_whitespace_only_lines() {
-    let mut tokenizer = Tokenizer::from_contents("test.txt", "line1\n   \nline3");
+    let mut tokenizer = Tokenizer::from_contents(PathBuf::new(), "line1\n   \nline3");
     assert_eq!(tokenizer.peek_remainder_of_line(), "line1");
     tokenizer.next_line();
     assert_eq!(tokenizer.peek_remainder_of_line(), "   ");
@@ -125,7 +128,7 @@ fn test_handles_whitespace_only_lines() {
 
 #[test]
 fn test_multiple_lines_sequential() {
-    let mut tokenizer = Tokenizer::from_contents("test.txt", "key 1 A\nkey 2 B\nkey 3 C");
+    let mut tokenizer = Tokenizer::from_contents(PathBuf::new(), "key 1 A\nkey 2 B\nkey 3 C");
     assert_eq!(tokenizer.next_token(" \t"), "key");
     assert_eq!(tokenizer.next_token(" \t"), "1");
     assert_eq!(tokenizer.next_token(" \t"), "A");

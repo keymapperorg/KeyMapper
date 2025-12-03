@@ -5,6 +5,8 @@ use evdev_manager_core::android::android_codes::{
 use evdev_manager_core::android::keylayout::key_layout_map;
 use evdev_manager_core::android::keylayout::key_layout_map::{KeyLayoutAxisMode, KeyLayoutMap};
 use glob::glob;
+#[cfg(test)]
+use pretty_assertions::assert_eq;
 use std::path::{Path, PathBuf};
 
 fn get_test_data_dir() -> &'static str {

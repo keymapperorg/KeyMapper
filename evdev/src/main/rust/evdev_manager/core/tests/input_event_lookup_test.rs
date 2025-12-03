@@ -4,6 +4,8 @@ use evdev_manager_core::android::android_codes::{
     AKEYCODE_A, AKEYCODE_FUNCTION, AMOTION_EVENT_AXIS_X, POLICY_FLAG_VIRTUAL,
 };
 use evdev_manager_core::android::keylayout::input_event_lookup;
+#[cfg(test)]
+use pretty_assertions::assert_eq;
 
 #[test]
 fn test_function_key_lookup() {
