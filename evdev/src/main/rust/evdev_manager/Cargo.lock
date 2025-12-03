@@ -80,6 +80,7 @@ name = "evdev_manager_core"
 version = "0.1.0"
 dependencies = [
  "evdev",
+ "glob",
  "libc 0.2.177",
  "log 0.4.28",
  "mio",
@@ -104,6 +105,12 @@ name = "find-msvc-tools"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3a3076410a55c90011c298b04d0cfa770b00fa04e1e3c97d3f6c9de105a03844"
+
+[[package]]
+name = "glob"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0cc23270f6e1808e30a928bdc84dea0b9b4136a8bc82338574f23baf47bbd280"
 
 [[package]]
 name = "jni"

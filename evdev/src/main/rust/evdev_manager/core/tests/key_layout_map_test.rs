@@ -4,8 +4,8 @@ use evdev_manager_core::android::android_codes::{
 };
 use evdev_manager_core::android::keylayout::key_layout_map;
 use evdev_manager_core::android::keylayout::key_layout_map::{KeyLayoutAxisMode, KeyLayoutMap};
-use std::fs;
-use std::path::Path;
+use glob::glob;
+use std::path::{Path, PathBuf};
 
 fn get_test_data_dir() -> &'static str {
     env!("CARGO_MANIFEST_DIR")
@@ -16,8 +16,8 @@ fn get_test_data_path() -> String {
 }
 
 fn load_key_layout_map(file_name: &str) -> KeyLayoutMap {
-    let file_path = format!("{}/{}", get_test_data_path(), file_name);
-    KeyLayoutMap::load_from_file(&file_path).unwrap()
+    let file_path = PathBuf::new().join(get_test_data_path()).join(file_name);
+    KeyLayoutMap::load_from_file(file_path).unwrap()
 }
 
 #[test]
@@ -235,28 +235,25 @@ fn test_load_all_files_in_test_data() {
         panic!("Test data directory does not exist: {}", test_data_path);
     }
 
-    let entries = fs::read_dir(test_data_dir).expect("Failed to read test data directory");
+    // Use glob pattern to recursively find all .kl files
+    let pattern = format!("{}/**/*.kl", test_data_path);
+    let entries = glob(&pattern).expect("Failed to read glob pattern");
 
     for entry in entries {
-        let entry = entry.expect("Failed to read directory entry");
-        let path = entry.path();
+        let path = entry.expect("Failed to read glob entry");
+        println!("Testing file: {:?}", path.clone());
 
-        if path.extension().and_then(|s| s.to_str()) == Some("kl") {
-            let file_path = path.to_str().expect("Invalid file path");
-            println!("Testing file: {}", file_path);
+        let result = KeyLayoutMap::load_from_file(path.clone());
+        assert!(
+            result.is_ok(),
+            "Failed to load key layout file: {:?} - {:?}",
+            path.clone(),
+            result.err()
+        );
 
-            let result = KeyLayoutMap::load_from_file(file_path);
-            assert!(
-                result.is_ok(),
-                "Failed to load key layout file: {} - {:?}",
-                file_path,
-                result.err()
-            );
-
-            // At least verify it's not empty
-            result.unwrap();
-            // We can't check exact counts as files may vary
-            println!("  Loaded successfully");
-        }
+        // At least verify it's not empty
+        result.unwrap();
+        // We can't check exact counts as files may vary
+        println!("  Loaded successfully");
     }
 }

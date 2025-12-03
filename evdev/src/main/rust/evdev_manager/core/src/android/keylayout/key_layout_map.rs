@@ -12,6 +12,7 @@ use crate::android::keylayout::input_event_lookup::{
 };
 use crate::android::keylayout::tokenizer::Tokenizer;
 use std::collections::HashMap;
+use std::path::PathBuf;
 
 /// Describes a mapping from keyboard scan codes to Android key codes.
 ///
@@ -53,14 +54,14 @@ const WHITESPACE: &str = " \t\r";
 
 impl KeyLayoutMap {
     /// Load a key layout map from a file path.
-    pub fn load_from_file(file_path: &str) -> Result<Self, String> {
+    pub fn load_from_file(file_path: PathBuf) -> Result<Self, String> {
         let tokenizer = Tokenizer::from_file(file_path)?;
         Self::load(tokenizer)
     }
 
     /// Load a key layout map from file contents (useful for testing).
     pub fn load_from_contents(contents: &str) -> Result<Self, String> {
-        let tokenizer = Tokenizer::from_contents("", contents);
+        let tokenizer = Tokenizer::from_contents(PathBuf::new(), contents);
         Self::load(tokenizer)
     }
 

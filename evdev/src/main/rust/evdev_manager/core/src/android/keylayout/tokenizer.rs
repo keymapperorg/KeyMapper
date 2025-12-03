@@ -3,11 +3,12 @@
 //! This tokenizer tracks position in a buffer and provides methods for
 //! reading tokens, characters, and navigating through lines.
 
+use std::path::PathBuf;
 use std::str;
 
 /// Simple tokenizer for parsing ASCII text files line by line.
 pub struct Tokenizer {
-    filename: String,
+    file_path: PathBuf,
     buffer: String,
     current: usize,
     line_number: usize,
@@ -15,9 +16,9 @@ pub struct Tokenizer {
 
 impl Tokenizer {
     /// Create a tokenizer from file contents.
-    pub fn from_contents(filename: &str, contents: &str) -> Self {
+    pub fn from_contents(file_path: PathBuf, contents: &str) -> Self {
         Self {
-            filename: filename.to_string(),
+            file_path,
             buffer: contents.to_string(),
             current: 0,
             line_number: 1,
@@ -25,10 +26,10 @@ impl Tokenizer {
     }
 
     /// Create a tokenizer from a file path.
-    pub fn from_file(file_path: &str) -> Result<Self, String> {
-        let contents = std::fs::read_to_string(file_path)
-            .map_err(|e| format!("Error opening file '{}': {}", file_path, e))?;
-        Ok(Self::from_contents(file_path, &contents))
+    pub fn from_file(file_path: PathBuf) -> Result<Self, String> {
+        let contents = std::fs::read_to_string(file_path.clone())
+            .map_err(|e| format!("Error opening file '{:?}': {}", file_path.clone(), e))?;
+        Ok(Self::from_contents(file_path.clone(), &contents))
     }
 
     /// Returns true if at the end of the file.
@@ -44,7 +45,11 @@ impl Tokenizer {
     /// Formats a location string consisting of the filename and current line number.
     /// Returns a string like "MyFile.txt:33".
     pub fn get_location(&self) -> String {
-        format!("{}:{}", self.filename, self.line_number)
+        format!(
+            "{}:{}",
+            self.file_path.to_str().unwrap_or(""),
+            self.line_number
+        )
     }
 
     /// Gets the character at the current position.

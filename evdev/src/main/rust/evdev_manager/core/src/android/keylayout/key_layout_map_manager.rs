@@ -1,10 +1,12 @@
 use crate::android::keylayout::key_layout_map::{KeyLayoutKey, KeyLayoutMap};
 use crate::device_identifier::DeviceIdentifier;
+use log::{debug, error, info, warn};
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
 use std::fs::File;
 use std::io::ErrorKind;
+use std::path::PathBuf;
 use std::sync::{Arc, Mutex, OnceLock};
 use std::{env, io};
 
@@ -15,8 +17,12 @@ static KEY_LAYOUT_MANAGER: OnceLock<Arc<KeyLayoutMapManager>> = OnceLock::new();
 /// and the only file that finds key layout file paths
 pub struct KeyLayoutMapManager {
     /// KeyLayoutMap cache
-    /// Maps device path to KeyLayoutMap handle
-    key_layout_maps: Mutex<HashMap<DeviceIdentifier, Arc<KeyLayoutMap>>>,
+    /// Maps device path to KeyLayoutMap handle. If the value is None then
+    /// the key layout map could not be found or there was an error parsing,
+    /// and it shouldn't be attempted again.
+    key_layout_maps: Mutex<HashMap<DeviceIdentifier, Option<Arc<KeyLayoutMap>>>>,
+    /// File finder for locating key layout files
+    file_finder: Arc<dyn KeyLayoutFileFinder>,
 }
 
 impl KeyLayoutMapManager {
@@ -27,6 +33,17 @@ impl KeyLayoutMapManager {
     fn new() -> Self {
         Self {
             key_layout_maps: Mutex::new(HashMap::with_capacity(32)),
+            file_finder: Arc::new(AndroidKeyLayoutFileFinder),
+        }
+    }
+
+    /// Create a new instance with a custom file finder.
+    /// This is primarily useful for testing.
+    #[cfg(test)]
+    pub fn with_file_finder(file_finder: Arc<dyn KeyLayoutFileFinder>) -> Self {
+        Self {
+            key_layout_maps: Mutex::new(HashMap::with_capacity(32)),
+            file_finder,
         }
     }
 
@@ -38,56 +55,147 @@ impl KeyLayoutMapManager {
         scan_code: u32,
     ) -> Result<Option<KeyLayoutKey>, Box<dyn Error>> {
         self.get_key_layout_map_lazy(device_identifier)
-            .map(|map| map.map_key(scan_code))
+            .map(|map| map?.map_key(scan_code))
     }
 
     pub fn preload_key_layout_map(
         &self,
         device_identifier: &DeviceIdentifier,
     ) -> Result<(), Box<dyn Error>> {
-        self.get_key_layout_map_lazy(device_identifier).map(|_| ())
+        self.get_key_layout_map_lazy(device_identifier)
+            .map(|_| ())
+            .inspect_err(|err| {
+                error!(
+                    "Error preloading key layout map for device {}: {}",
+                    device_identifier.name, err
+                )
+            })
     }
 
     /// Get or load a key layout map for the given device identifier.
-    /// This method is public for testing purposes.
-    pub fn get_key_layout_map_lazy(
+    fn get_key_layout_map_lazy(
         &self,
         device_identifier: &DeviceIdentifier,
-    ) -> Result<Arc<KeyLayoutMap>, Box<dyn Error>> {
+    ) -> Result<Option<Arc<KeyLayoutMap>>, Box<dyn Error>> {
         let mut key_layout_maps = self.key_layout_maps.lock().unwrap();
 
         if let Some(key_layout_map) = key_layout_maps.get(device_identifier) {
             return Ok(key_layout_map.clone());
         }
 
-        let file_path = match self.find_key_layout_file_by_device_identifier(device_identifier) {
-            None => {
-                let error = io::Error::new(
-                    ErrorKind::NotFound,
-                    format!(
-                        "Key layout map file not found for device {:?}",
-                        device_identifier
-                    ),
-                );
+        let key_layout_map_paths = self.find_key_layout_files(device_identifier);
 
-                return Err(error.into());
-            }
-            Some(path) => path,
-        };
+        for path in key_layout_map_paths {
+            return match KeyLayoutMap::load_from_file(path) {
+                Ok(key_layout_map) => {
+                    let option = Some(Arc::new(key_layout_map));
 
-        let key_layout_map = Arc::new(KeyLayoutMap::load_from_file(file_path.as_str())?);
+                    key_layout_maps.insert(device_identifier.clone(), option.clone());
 
-        key_layout_maps.insert(device_identifier.clone(), key_layout_map.clone());
+                    Ok(option)
+                }
 
-        Ok(key_layout_map)
+                Err(e) => {
+                    error!("Error parsing key layout map: {}", e);
+                    Err(Box::from(e))
+                }
+            };
+        }
+
+        // No key layout map files were found or parsed successfully if this point is reached.
+        key_layout_maps.insert(device_identifier.clone(), None);
+        Ok(None)
     }
 
-    /// Find key layout file path by name
-    /// Searches system repository and user repository
-    /// Returns None if not found
-    ///
-    /// This code is translated from AOSP frameworks/native/libs/input/InputDevice.cpp
-    fn find_key_layout_file_by_name(&self, name: &str) -> Option<String> {
+    /// Find all the possible key layout files to use for a device ordered by their priority.
+    /// A list is returned so there are fallback key layout files if one can't be parsed
+    /// for whatever reason.
+    /// Tries multiple naming schemes based on vendor/product/version, then device name, then Generic.
+    /// It first tries searching the system for the file, and then does the search again
+    /// in the files shipped with Key Mapper.
+    fn find_key_layout_files(&self, device_identifier: &DeviceIdentifier) -> Vec<PathBuf> {
+        let name = device_identifier.name.as_str();
+        let vendor = device_identifier.vendor;
+        let product = device_identifier.product;
+        let version = device_identifier.version;
+
+        let mut paths: Vec<PathBuf> = Vec::new();
+
+        // Try vendor/product/version path first
+        if vendor != 0 && product != 0 {
+            if version != 0 {
+                let version_name = format!(
+                    "Vendor_{:04x}_Product_{:04x}_Version_{:04x}",
+                    vendor, product, version
+                );
+                if let Some(path) = self
+                    .file_finder
+                    .find_system_key_layout_file_by_name(&version_name)
+                {
+                    info!(
+                        "Found key layout map by version path for {}: {:?}",
+                        name, path
+                    );
+                    paths.push(path);
+                }
+            }
+
+            // Try vendor/product
+            let product_name = format!("Vendor_{:04x}_Product_{:04x}", vendor, product);
+            if let Some(path) = self
+                .file_finder
+                .find_system_key_layout_file_by_name(&product_name)
+            {
+                info!(
+                    "Found key layout map by product path for {}: {:?}",
+                    name, path
+                );
+                paths.push(path);
+            }
+        }
+
+        // Try device name (canonical)
+        let canonical_name = get_canonical_name(name);
+        if let Some(path) = self
+            .file_finder
+            .find_system_key_layout_file_by_name(&canonical_name)
+        {
+            info!("Found key layout map by name path for {}: {:?}", name, path);
+            paths.push(path);
+        }
+
+        // Try system generic
+        if let Some(path) = self
+            .file_finder
+            .find_system_key_layout_file_by_name("Generic")
+        {
+            info!("Using generic key layout map for {}: {:?}", name, path);
+
+            paths.push(path);
+        }
+
+        // TODO use Key Mapper key layout files
+
+        paths
+    }
+}
+
+/// Trait for finding key layout files.
+/// This allows dependency injection for testing purposes.
+pub trait KeyLayoutFileFinder: Send + Sync {
+    /// Find a key layout file in the system by its name.
+    fn find_system_key_layout_file_by_name(&self, name: &str) -> Option<PathBuf>;
+
+    /// Find a key layout file shipped with Key Mapper by its name.
+    fn find_key_mapper_key_layout_file_by_name(&self, name: &str) -> Option<PathBuf>;
+}
+
+/// Default implementation that uses the real file system.
+/// This searches the standard Android key layout file locations.
+pub struct AndroidKeyLayoutFileFinder;
+
+impl KeyLayoutFileFinder for AndroidKeyLayoutFileFinder {
+    fn find_system_key_layout_file_by_name(&self, name: &str) -> Option<PathBuf> {
         // Search system repository
         let mut path_prefixes = vec![
             "/product/usr/".to_string(),
@@ -104,7 +212,10 @@ impl KeyLayoutMapManager {
 
         // Try each system path prefix
         for prefix in &path_prefixes {
-            let path = format!("{}keylayout/{}.kl", prefix, name);
+            let path = PathBuf::new()
+                .join(prefix)
+                .join("keylayout")
+                .join(format!("{}.kl", name));
 
             match fs::metadata(&path) {
                 Ok(metadata) if metadata.is_file() => {
@@ -113,7 +224,7 @@ impl KeyLayoutMapManager {
                     }
                 }
                 Err(e) if e.kind() != ErrorKind::NotFound => {
-                    debug!("Error accessing {}: {}", path, e);
+                    debug!("Error accessing {:?}: {}", path, e);
                 }
                 _ => {}
             }
@@ -121,7 +232,12 @@ impl KeyLayoutMapManager {
 
         // Search user repository
         if let Ok(android_data) = env::var("ANDROID_DATA") {
-            let path = format!("{}/system/devices/keylayout/{}.kl", android_data, name);
+            let path = PathBuf::new()
+                .join(android_data)
+                .join("system")
+                .join("devices")
+                .join("keylayout")
+                .join(format!("{}.kl", name));
 
             match fs::metadata(&path) {
                 Ok(metadata) if metadata.is_file() => {
@@ -130,7 +246,7 @@ impl KeyLayoutMapManager {
                     }
                 }
                 Err(e) if e.kind() != ErrorKind::NotFound => {
-                    warn!("Error accessing user config file {}: {}", path, e);
+                    warn!("Error accessing user config file {:?}: {}", path, e);
                 }
                 _ => {}
             }
@@ -139,50 +255,8 @@ impl KeyLayoutMapManager {
         None
     }
 
-    /// Find key layout file path by device identifier
-    /// Tries multiple naming schemes based on vendor/product/version, then device name, then Generic
-    /// Returns None if not found
-    ///
-    /// This code is translated from AOSP frameworks/native/libs/input/InputDevice.cpp
-    fn find_key_layout_file_by_device_identifier(
-        &self,
-        device_identifier: &DeviceIdentifier,
-    ) -> Option<String> {
-        let name = device_identifier.name.as_str();
-        let vendor = device_identifier.vendor;
-        let product = device_identifier.product;
-        let version = device_identifier.version;
-
-        // Try vendor/product/version path first
-        if vendor != 0 && product != 0 {
-            if version != 0 {
-                let version_name = format!(
-                    "Vendor_{:04x}_Product_{:04x}_Version_{:04x}",
-                    vendor, product, version
-                );
-                if let Some(path) = self.find_key_layout_file_by_name(&version_name) {
-                    info!("Found key layout map by version path {}", path);
-                    return Some(path);
-                }
-            }
-
-            // Try vendor/product
-            let product_name = format!("Vendor_{:04x}_Product_{:04x}", vendor, product);
-            if let Some(path) = self.find_key_layout_file_by_name(&product_name) {
-                info!("Found key layout map by product path {}", path);
-                return Some(path);
-            }
-        }
-
-        // Try device name (canonical)
-        let canonical_name = get_canonical_name(name);
-        if let Some(path) = self.find_key_layout_file_by_name(&canonical_name) {
-            info!("Found key layout map by name path {}", path);
-            return Some(path);
-        }
-
-        // As a last resort, try Generic
-        self.find_key_layout_file_by_name("Generic")
+    fn find_key_mapper_key_layout_file_by_name(&self, name: &str) -> Option<PathBuf> {
+        None
     }
 }
 
