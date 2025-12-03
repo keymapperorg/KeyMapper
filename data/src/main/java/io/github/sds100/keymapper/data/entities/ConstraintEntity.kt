@@ -60,8 +60,10 @@ data class ConstraintEntity(
 
         const val PHYSICAL_ORIENTATION_PORTRAIT = "constraint_physical_orientation_portrait"
         const val PHYSICAL_ORIENTATION_LANDSCAPE = "constraint_physical_orientation_landscape"
-        const val PHYSICAL_ORIENTATION_PORTRAIT_INVERTED = "constraint_physical_orientation_portrait_inverted"
-        const val PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED = "constraint_physical_orientation_landscape_inverted"
+        const val PHYSICAL_ORIENTATION_PORTRAIT_INVERTED =
+            "constraint_physical_orientation_portrait_inverted"
+        const val PHYSICAL_ORIENTATION_LANDSCAPE_INVERTED =
+            "constraint_physical_orientation_landscape_inverted"
 
         const val FLASHLIGHT_ON = "flashlight_on"
         const val FLASHLIGHT_OFF = "flashlight_off"
