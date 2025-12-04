@@ -85,6 +85,7 @@ android {
 dependencies {
     compileOnly(project(":systemstubs"))
     implementation(project(":common"))
+    implementation(project(":data"))
 
     implementation(libs.jakewharton.timber)
 
@@ -97,6 +98,7 @@ dependencies {
     implementation(libs.rikka.shizuku.api)
     implementation(libs.rikka.shizuku.provider)
     implementation(libs.rikka.hidden.compat)
+    implementation(libs.androidx.datastore.preferences)
     compileOnly(libs.rikka.hidden.stub)
 
     // From Shizuku :manager module build.gradle file.

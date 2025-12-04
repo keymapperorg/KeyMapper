@@ -132,6 +132,9 @@ object Keys {
     val isSystemBridgeEmergencyKilled =
         booleanPreferencesKey("key_is_system_bridge_emergency_killed")
 
+    val isSystemBridgeStoppedByUser =
+        booleanPreferencesKey("key_is_system_bridge_stopped_by_user")
+
     /**
      * Whether the user has started the system bridge before.
      */

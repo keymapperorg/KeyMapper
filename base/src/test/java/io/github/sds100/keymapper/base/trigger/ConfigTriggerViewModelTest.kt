@@ -25,7 +25,7 @@ class ConfigTriggerViewModelTest {
             isProModeRecordingEnabled = false,
             systemBridgeState = SystemBridgeConnectionState.Disconnected(
                 time = 0L,
-                isExpected = true,
+                isStoppedByUser = true,
             ),
         )
 
@@ -39,7 +39,7 @@ class ConfigTriggerViewModelTest {
             isProModeRecordingEnabled = false,
             systemBridgeState = SystemBridgeConnectionState.Disconnected(
                 time = 0L,
-                isExpected = false,
+                isStoppedByUser = false,
             ),
         )
 
@@ -133,7 +133,7 @@ class ConfigTriggerViewModelTest {
             isProModeRecordingEnabled = true,
             systemBridgeState = SystemBridgeConnectionState.Disconnected(
                 time = 0L,
-                isExpected = true,
+                isStoppedByUser = true,
             ),
         )
 
@@ -162,7 +162,7 @@ class ConfigTriggerViewModelTest {
             isProModeRecordingEnabled = false,
             systemBridgeState = SystemBridgeConnectionState.Disconnected(
                 time = 0L,
-                isExpected = false,
+                isStoppedByUser = false,
             ),
         )
 

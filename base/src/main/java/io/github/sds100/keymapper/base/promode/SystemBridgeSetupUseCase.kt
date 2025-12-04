@@ -148,6 +148,10 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     }
 
     override fun stopSystemBridge() {
+        // Save that they've stopped the system bridge so when the app process launches again
+        // it will set the isStoppedByUser to true.
+        preferences.set(Keys.isSystemBridgeStoppedByUser, true)
+
         systemBridgeConnectionManager.stopSystemBridge()
     }
 
@@ -174,16 +178,19 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
 
     override fun startSystemBridgeWithRoot() {
         preferences.set(Keys.isSystemBridgeEmergencyKilled, false)
+        preferences.set(Keys.isSystemBridgeStoppedByUser, false)
         systemBridgeSetupController.startWithRoot()
     }
 
     override fun startSystemBridgeWithShizuku() {
         preferences.set(Keys.isSystemBridgeEmergencyKilled, false)
+        preferences.set(Keys.isSystemBridgeStoppedByUser, false)
         systemBridgeSetupController.startWithShizuku()
     }
 
     override suspend fun startSystemBridgeWithAdb() {
         preferences.set(Keys.isSystemBridgeEmergencyKilled, false)
+        preferences.set(Keys.isSystemBridgeStoppedByUser, false)
         if (isAdbAutoStartAllowed.first()) {
             systemBridgeSetupController.autoStartWithAdb()
         } else {

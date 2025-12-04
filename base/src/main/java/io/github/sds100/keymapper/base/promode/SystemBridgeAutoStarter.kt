@@ -122,7 +122,7 @@ class SystemBridgeAutoStarter @Inject constructor(
         connectionManager.connectionState.flatMapLatest { connectionState ->
             // Do not autostart if it is connected or it was killed from the user
             if (connectionState !is SystemBridgeConnectionState.Disconnected ||
-                connectionState.isExpected
+                connectionState.isStoppedByUser
             ) {
                 flowOf(null)
             } else {
@@ -178,7 +178,9 @@ class SystemBridgeAutoStarter @Inject constructor(
                 .distinctUntilChanged() // Must come before the filterNotNull
                 .filterNotNull()
                 .collectLatest { type ->
-                    autoStart(type)
+                    if (!isBoot) {
+                        autoStart(type)
+                    }
                 }
         }
     }

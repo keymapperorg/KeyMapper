@@ -1680,7 +1680,7 @@
     <string name="pro_mode_stop_service_button">Stop</string>
 
     <string name="title_pref_pro_mode_auto_start_at_boot">Automatically start at boot</string>
-    <string name="summary_pref_pro_mode_auto_start_at_boot">PRO Mode will start itself whenever you turn on or restart your device</string>
+    <string name="summary_pref_pro_mode_auto_start_at_boot">PRO Mode will start itself whenever you start your device. It may need to wait for a WiFi connection or Shizuku depending on how you set it up. If you\'re rooted it will always start regardless.</string>
 
     <string name="title_pref_key_event_actions_use_system_bridge">Key event actions</string>
     <string name="summary_pref_key_event_actions_use_system_bridge">Select how key event actions are performed</string>

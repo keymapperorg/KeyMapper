@@ -11,9 +11,9 @@ sealed class SystemBridgeConnectionState {
     data class Disconnected(
         override val time: Long,
         /**
-         * Whether the disconnection was expected. E.g the user stopped it or the app is
-         * opening for the first time
+         * Whether the user previously stopped the service and that is why it is disconnected.
+         * Once the user manually starts it again, this is set to false.
          */
-        val isExpected: Boolean,
+        val isStoppedByUser: Boolean,
     ) : SystemBridgeConnectionState()
 }
