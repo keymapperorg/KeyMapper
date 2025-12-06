@@ -24,11 +24,11 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     this: JObject,
 ) {
     android_log::init("KeyMapperSystemBridge").unwrap();
-    // Set log level: Warn for production builds, Debug for debug builds
+    // Set log level: Info for production builds, Debug for debug builds
     let log_level = if cfg!(debug_assertions) {
         LevelFilter::Debug
     } else {
-        LevelFilter::Warn
+        LevelFilter::Info
     };
     log::set_max_level(log_level);
     set_log_panic_hook();
