@@ -460,11 +460,6 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
                     resourceProvider.getString(
                         R.string.purchasing_error_floating_buttons_not_purchased_home_screen,
                     )
-
-                ProductId.GAMING_MODE ->
-                    resourceProvider.getString(
-                        R.string.purchasing_error_gaming_mode_not_purchased_home_screen,
-                    )
             }
 
         PurchasingError.PurchasingNotImplemented ->
