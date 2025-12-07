@@ -1679,8 +1679,8 @@
     <string name="pro_mode_service_started">PRO mode service is running</string>
     <string name="pro_mode_stop_service_button">Stop</string>
 
-    <string name="title_pref_pro_mode_auto_start_at_boot">Automatically start at boot</string>
-    <string name="summary_pref_pro_mode_auto_start_at_boot">PRO Mode will start itself whenever you start your device. It may need to wait for a WiFi connection or Shizuku depending on how you set it up. If you\'re rooted it will always start regardless.</string>
+    <string name="title_pref_pro_mode_auto_start">Auto start and keep alive</string>
+    <string name="summary_pref_pro_mode_auto_start">PRO Mode will start itself whenever you boot your device, open Key Mapper, or it dies unexpectedly. It may need to wait for a WiFi connection or Shizuku depending on how you set it up. If you\'re rooted it will always start regardless.</string>
 
     <string name="title_pref_key_event_actions_use_system_bridge">Key event actions</string>
     <string name="summary_pref_key_event_actions_use_system_bridge">Select how key event actions are performed</string>
@@ -1761,7 +1761,7 @@
 
     <string name="system_bridge_died_notification_title">PRO mode stopped unexpectedly</string>
     <string name="system_bridge_died_notification_restarting_text">Automatically restarting…</string>
-    <string name="system_bridge_died_notification_not_restarting_text">Not auto restarting. If you\'re not killing the service report the issue to the developer.</string>
+    <string name="system_bridge_died_notification_not_restarting_text">Not auto restarting because last auto started less than 5 minutes ago. If you\'re not killing the service report the issue to the developer.</string>
 
     <!-- Trigger Discover Screen -->
     <string name="trigger_discover_screen_title">Discover</string>

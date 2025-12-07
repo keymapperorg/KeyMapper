@@ -235,9 +235,7 @@ class SystemBridgeSetupControllerImpl @Inject constructor(
             isAdbPairedResult.value = null
 
             isAdbPairedJob = coroutineScope.launch {
-                if (!getWirelessDebuggingEnabled()) {
-                    SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 1)
-                }
+                SettingsUtils.putGlobalSetting(ctx, ADB_WIRELESS_SETTING, 1)
 
                 // Try running a command to see if the pairing is working correctly.
                 // This will execute the "exit" command in the shell so it immediately closes

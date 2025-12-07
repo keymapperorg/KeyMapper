@@ -2,14 +2,19 @@ package io.github.sds100.keymapper.data
 
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 
 object Keys {
     val darkTheme = stringPreferencesKey("pref_dark_theme_mode")
 
+    /**
+     * libsu was not used in version 3.2.1 and older. The user had to manually enable a setting
+     * for root features to be enabled.
+     */
     @Deprecated("Now use the libsu library to detect whether the device is rooted.")
-    val hasRootPermission = booleanPreferencesKey("pref_allow_root_features")
+    val hasRootPermissionLegacy = booleanPreferencesKey("pref_allow_root_features")
 
     val shownAppIntro = booleanPreferencesKey("pref_first_time")
 
@@ -126,7 +131,7 @@ object Keys {
     val isProModeInfoDismissed =
         booleanPreferencesKey("key_is_pro_mode_info_dismissed")
 
-    val isProModeAutoStartBootEnabled =
+    val isSystemBridgeKeepAliveEnabled =
         booleanPreferencesKey("key_is_pro_mode_auto_start_boot_enabled")
 
     val isSystemBridgeEmergencyKilled =
@@ -140,7 +145,11 @@ object Keys {
      */
     val isSystemBridgeUsed = booleanPreferencesKey("key_is_system_bridge_used")
 
-    val isCleanShutdown = booleanPreferencesKey("key_is_clean_shutdown")
+    /**
+     * The last time the system bridge was auto started in time since boot.
+     * Uses SystemClock.elapsedRealtime().
+     */
+    val systemBridgeLastAutoStartTime = longPreferencesKey("key_system_bridge_last_auto_start_time")
 
     val keyEventActionsUseSystemBridge =
         booleanPreferencesKey("key_key_event_actions_use_system_bridge")

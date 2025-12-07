@@ -8,8 +8,9 @@ import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -19,7 +20,15 @@ import timber.log.Timber
 class SuAdapterImpl @Inject constructor(private val coroutineScope: CoroutineScope) :
     BaseShellAdapter(),
     SuAdapter {
-    override val isRootGranted: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    /**
+     * This is initially null while it waits for the invalidateJob to complete asynchronously.
+     */
+    private val _isRootGranted: MutableStateFlow<Boolean?> = MutableStateFlow(null)
+
+    /**
+     * This flow will block until the invalidateJob is finished.
+     */
+    override val isRootGranted: Flow<Boolean> = _isRootGranted.filterNotNull()
 
     private var invalidateJob: Job? = null
 
@@ -46,7 +55,7 @@ class SuAdapterImpl @Inject constructor(private val coroutineScope: CoroutineSco
         try {
             // Close the shell so a new one is started without root permission.
             val isRooted = getIsRooted()
-            isRootGranted.update { isRooted }
+            _isRootGranted.update { isRooted }
         } catch (e: Exception) {
             Timber.e("Exception invalidating root detection: $e")
         }
@@ -62,7 +71,7 @@ class SuAdapterImpl @Inject constructor(private val coroutineScope: CoroutineSco
 }
 
 interface SuAdapter : ShellAdapter {
-    val isRootGranted: StateFlow<Boolean>
+    val isRootGranted: Flow<Boolean>
 
     fun requestPermission()
 }

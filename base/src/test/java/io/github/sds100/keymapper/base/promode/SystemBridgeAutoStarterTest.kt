@@ -1,15 +1,17 @@
 package io.github.sds100.keymapper.base.promode
 
+import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.repositories.FakePreferenceRepository
 import io.github.sds100.keymapper.base.utils.TestBuildConfigProvider
+import io.github.sds100.keymapper.base.utils.TestScopeClock
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
-import io.github.sds100.keymapper.common.utils.Clock
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.system.network.NetworkAdapter
 import io.github.sds100.keymapper.system.notifications.NotificationAdapter
+import io.github.sds100.keymapper.system.notifications.NotificationModel
 import io.github.sds100.keymapper.system.permissions.Permission
 import io.github.sds100.keymapper.system.permissions.PermissionAdapter
 import io.github.sds100.keymapper.system.root.SuAdapter
@@ -23,12 +25,14 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertTrue
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.inOrder
@@ -46,7 +50,7 @@ class SystemBridgeAutoStarterTest {
 
     private lateinit var systemBridgeAutoStarter: SystemBridgeAutoStarter
 
-    private lateinit var mockClock: Clock
+    private lateinit var testScopeClock: TestScopeClock
     private lateinit var mockSuAdapter: SuAdapter
     private lateinit var mockShizukuAdapter: ShizukuAdapter
     private lateinit var mockConnectionManager: SystemBridgeConnectionManager
@@ -104,13 +108,13 @@ class SystemBridgeAutoStarterTest {
             on { getString(any()) } doReturn "test_string"
         }
 
-        mockClock = mock()
+        testScopeClock = TestScopeClock(testCoroutineScope)
 
         testBuildConfig = TestBuildConfigProvider(sdkInt = 30)
 
         systemBridgeAutoStarter = SystemBridgeAutoStarter(
             coroutineScope = testCoroutineScope,
-            clock = mockClock,
+            clock = testScopeClock,
             suAdapter = mockSuAdapter,
             shizukuAdapter = mockShizukuAdapter,
             connectionManager = mockConnectionManager,
@@ -124,15 +128,10 @@ class SystemBridgeAutoStarterTest {
         )
     }
 
-    private fun setAutoStartBootState() {
-        whenever(mockClock.elapsedRealtime()).thenReturn(5000L)
-        fakePreferences.set(Keys.isProModeAutoStartBootEnabled, true)
-        fakePreferences.set(Keys.isCleanShutdown, true)
-    }
-
     @Test
     fun `auto start within 60 seconds of booting`() = runTest(testDispatcher) {
-        setAutoStartBootState()
+        fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+        fakePreferences.set(Keys.isSystemBridgeUsed, true)
 
         whenever(mockSetupController.isAdbPaired()).thenReturn(true)
         isWifiConnectedFlow.value = true
@@ -146,13 +145,14 @@ class SystemBridgeAutoStarterTest {
 
     @Test
     fun `auto start 5 minutes after booting`() = runTest(testDispatcher) {
-        whenever(mockClock.elapsedRealtime()).thenReturn(300_000L)
-        fakePreferences.set(Keys.isProModeAutoStartBootEnabled, true)
-        fakePreferences.set(Keys.isCleanShutdown, true)
+        fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+        fakePreferences.set(Keys.isSystemBridgeUsed, true)
+
         whenever(mockSetupController.isAdbPaired()).thenReturn(true)
         isWifiConnectedFlow.value = true
         writeSecureSettingsGrantedFlow.value = true
 
+        advanceTimeBy(310_000)
         systemBridgeAutoStarter.init()
         advanceUntilIdle()
 
@@ -162,7 +162,9 @@ class SystemBridgeAutoStarterTest {
     @Test
     fun `do not auto start with ADB if WRITE_SECURE_SETTINGS is denied`() =
         runTest(testDispatcher) {
-            setAutoStartBootState()
+            advanceTimeBy(5000L)
+            fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+
             writeSecureSettingsGrantedFlow.value = false
             isWifiConnectedFlow.value = false
 
@@ -174,7 +176,7 @@ class SystemBridgeAutoStarterTest {
 
     @Test
     fun `do not auto start with ADB if wifi is disconnected`() = runTest(testDispatcher) {
-        setAutoStartBootState()
+        fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
         writeSecureSettingsGrantedFlow.value = true
         isWifiConnectedFlow.value = false
 
@@ -185,8 +187,9 @@ class SystemBridgeAutoStarterTest {
     }
 
     @Test
-    fun `auto start on boot with shizuku on Android 10`() = runTest(testDispatcher) {
-        setAutoStartBootState()
+    fun `auto start with shizuku on Android 10`() = runTest(testDispatcher) {
+        fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+        fakePreferences.set(Keys.isSystemBridgeUsed, true)
 
         testBuildConfig.sdkInt = 29
         isRootGrantedFlow.value = false
@@ -200,10 +203,11 @@ class SystemBridgeAutoStarterTest {
     }
 
     @Test
-    fun `auto start on boot with root on Android 10`() = runTest(testDispatcher) {
-        setAutoStartBootState()
+    fun `auto start with root on Android 9`() = runTest(testDispatcher) {
+        fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+        fakePreferences.set(Keys.isSystemBridgeUsed, true)
 
-        testBuildConfig.sdkInt = 29
+        testBuildConfig.sdkInt = 28
         isRootGrantedFlow.value = true
 
         systemBridgeAutoStarter.init()
@@ -215,23 +219,24 @@ class SystemBridgeAutoStarterTest {
     @Test
     fun `auto start from pre version 4 when rooted and it was never used before`() =
         runTest(testDispatcher) {
-            whenever(mockClock.elapsedRealtime()).thenReturn(1_000_000L)
             isRootGrantedFlow.value = true
             fakePreferences.set(Keys.isSystemBridgeUsed, null)
+            fakePreferences.set(Keys.hasRootPermissionLegacy, true)
 
             systemBridgeAutoStarter.init()
             advanceUntilIdle()
 
             verify(mockConnectionManager).startWithRoot()
-            assertTrue(fakePreferences.get(Keys.handledRootToProModeUpgrade).first() == true)
+            assertThat(fakePreferences.get(Keys.handledRootToProModeUpgrade).first(), `is`(true))
         }
 
     @Test
     fun `prioritize auto starting with root if shizuku also started`() = runTest(testDispatcher) {
-        whenever(mockClock.elapsedRealtime()).thenReturn(1_000_000L)
+        advanceTimeBy(1_000_000L)
         isRootGrantedFlow.value = true
         shizukuIsStartedFlow.value = true
         shizukuPermissionGrantedFlow.value = true
+        fakePreferences.set(Keys.isSystemBridgeUsed, true)
 
         systemBridgeAutoStarter.init()
         advanceUntilIdle()
@@ -240,9 +245,9 @@ class SystemBridgeAutoStarterTest {
     }
 
     @Test
-    fun `do not auto start from pre version 4 when shizuku permission but not started`() =
+    fun `do not auto start from pre version 4 when shizuku permission granted but not started`() =
         runTest(testDispatcher) {
-            whenever(mockClock.elapsedRealtime()).thenReturn(1_000_000L)
+            advanceTimeBy(1_000_000L)
             shizukuIsStartedFlow.value = false
             shizukuPermissionGrantedFlow.value = true
 
@@ -254,9 +259,10 @@ class SystemBridgeAutoStarterTest {
 
     @Test
     fun `auto start with root`() = runTest(testDispatcher) {
-        whenever(mockClock.elapsedRealtime()).thenReturn(1_000_000L)
+        advanceTimeBy(1_000_000L)
         isRootGrantedFlow.value = true
         fakePreferences.set(Keys.isSystemBridgeEmergencyKilled, false)
+        fakePreferences.set(Keys.isSystemBridgeUsed, true)
 
         systemBridgeAutoStarter.init()
         advanceUntilIdle()
@@ -265,22 +271,7 @@ class SystemBridgeAutoStarterTest {
     }
 
     @Test
-    fun `do not auto start when already connected`() = runTest(testDispatcher) {
-        whenever(mockClock.elapsedRealtime()).thenReturn(1_000_000L)
-        isRootGrantedFlow.value = true
-        connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 1000)
-
-        systemBridgeAutoStarter.init()
-        advanceUntilIdle()
-
-        verify(mockConnectionManager, never()).startWithRoot()
-        verify(mockConnectionManager, never()).startWithShizuku()
-        verify(mockSetupController, never()).autoStartWithAdb()
-    }
-
-    @Test
     fun `do not auto start when emergency killed`() = runTest(testDispatcher) {
-        whenever(mockClock.elapsedRealtime()).thenReturn(1_000_000L)
         isRootGrantedFlow.value = true
         fakePreferences.set(Keys.isSystemBridgeEmergencyKilled, true)
 
@@ -293,38 +284,9 @@ class SystemBridgeAutoStarterTest {
     }
 
     @Test
-    fun `auto start when disconnected unexpectedly`() = runTest(testDispatcher) {
-        whenever(mockClock.elapsedRealtime()).thenReturn(1_000_000L)
-        val disconnectedState = SystemBridgeConnectionState.Disconnected(
-            time = 1000,
-            isStoppedByUser = false,
-        )
-        connectionStateFlow.value = disconnectedState
-        isRootGrantedFlow.value = true
-        fakePreferences.set(Keys.isSystemBridgeEmergencyKilled, false)
-
-        systemBridgeAutoStarter.init()
-        advanceUntilIdle()
-
-        verify(mockConnectionManager).startWithRoot()
-    }
-
-    @Test
-    fun `auto start with root when rooted`() = runTest(testDispatcher) {
-        whenever(mockClock.elapsedRealtime()).thenReturn(1_000_000L)
-        isRootGrantedFlow.value = true
-
-        systemBridgeAutoStarter.init()
-        advanceUntilIdle()
-
-        verify(mockConnectionManager).startWithRoot()
-    }
-
-    @Test
-    fun `auto start on boot with shizuku when shizuku is available`() = runTest(testDispatcher) {
-        whenever(mockClock.elapsedRealtime()).thenReturn(50000L)
-        fakePreferences.set(Keys.isProModeAutoStartBootEnabled, true)
-        fakePreferences.set(Keys.isCleanShutdown, true)
+    fun `auto start with shizuku when shizuku is available`() = runTest(testDispatcher) {
+        fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+        fakePreferences.set(Keys.isSystemBridgeUsed, true)
         shizukuIsStartedFlow.value = true
         shizukuPermissionGrantedFlow.value = true
 
@@ -335,9 +297,11 @@ class SystemBridgeAutoStarterTest {
     }
 
     @Test
-    fun `wait a minute when auto starting on boot with shizuku`() = runTest(testDispatcher) {
-        setAutoStartBootState()
-        // Shizuku is initially disconnected on boot but shizuku permission is granted
+    fun `auto start with Shizuku if Shizuku takes a minute to connect`() = runTest(testDispatcher) {
+        fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+        fakePreferences.set(Keys.isSystemBridgeUsed, true)
+
+        // Initially Shizuku is disconnected, and is connected 50 seconds after booting
         shizukuIsStartedFlow.value = false
         shizukuPermissionGrantedFlow.value = true
 
@@ -346,7 +310,7 @@ class SystemBridgeAutoStarterTest {
             advanceTimeBy(50000)
             verify(mockConnectionManager, never()).startWithShizuku()
 
-            // Shizuku then connects
+            // Shizuku starts
             shizukuIsStartedFlow.value = true
 
             advanceTimeBy(20000)
@@ -355,8 +319,9 @@ class SystemBridgeAutoStarterTest {
     }
 
     @Test
-    fun `wait a minute when auto starting on boot with ADB`() = runTest(testDispatcher) {
-        setAutoStartBootState()
+    fun `auto start with ADB if WiFi takes a minute to connect`() = runTest(testDispatcher) {
+        fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+        fakePreferences.set(Keys.isSystemBridgeUsed, true)
 
         whenever(mockSetupController.isAdbPaired()).thenReturn(true)
         writeSecureSettingsGrantedFlow.value = true
@@ -378,10 +343,8 @@ class SystemBridgeAutoStarterTest {
     }
 
     @Test
-    fun `do not auto start on boot when clean shutdown is false`() = runTest(testDispatcher) {
-        whenever(mockClock.elapsedRealtime()).thenReturn(5000L)
-        fakePreferences.set(Keys.isProModeAutoStartBootEnabled, true)
-        fakePreferences.set(Keys.isCleanShutdown, false)
+    fun `do not auto start when auto start is disabled`() = runTest(testDispatcher) {
+        fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, false)
         isRootGrantedFlow.value = true
 
         systemBridgeAutoStarter.init()
@@ -393,13 +356,14 @@ class SystemBridgeAutoStarterTest {
     }
 
     @Test
-    fun `do not auto start on boot when boot auto start is disabled`() = runTest(testDispatcher) {
-        whenever(mockClock.elapsedRealtime()).thenReturn(5000L)
-        fakePreferences.set(Keys.isProModeAutoStartBootEnabled, false)
-        fakePreferences.set(Keys.isCleanShutdown, true)
-        isRootGrantedFlow.value = true
-
+    fun `do not auto start when already connected`() = runTest(testDispatcher) {
+        fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
         systemBridgeAutoStarter.init()
+        advanceTimeBy(5000)
+
+        // The system bridge connects during init()
+        connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 1000)
+
         advanceUntilIdle()
 
         verify(mockConnectionManager, never()).startWithRoot()
@@ -408,61 +372,23 @@ class SystemBridgeAutoStarterTest {
     }
 
     @Test
-    fun `do not auto start on boot when already connected`() = runTest(testDispatcher) {
-        setAutoStartBootState()
-        val connectedState = SystemBridgeConnectionState.Connected(time = 1000)
-        connectionStateFlow.value = connectedState
+    fun `show notification when auto starting`() = runTest(testDispatcher) {
+        fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+        fakePreferences.set(Keys.isSystemBridgeUsed, true)
 
-        systemBridgeAutoStarter.init()
-        advanceUntilIdle()
-
-        verify(mockConnectionManager, never()).startWithRoot()
-        verify(mockConnectionManager, never()).startWithShizuku()
-        verify(mockSetupController, never()).autoStartWithAdb()
-    }
-
-    @Test
-    fun `show notification when auto starting on boot`() = runTest(testDispatcher) {
-        setAutoStartBootState()
         whenever(mockSetupController.isAdbPaired()).thenReturn(true)
         isWifiConnectedFlow.value = true
         writeSecureSettingsGrantedFlow.value = true
 
         inOrder(mockNotificationAdapter) {
             systemBridgeAutoStarter.init()
-            advanceTimeBy(70000)
+            advanceTimeBy(10000)
 
-            // Show the first notification that it is auto starting
+            // Show the notification that it is auto starting
             verify(mockNotificationAdapter).showNotification(any())
 
             // Set the state as connected within the timeout
-            connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 70000)
-
-            advanceUntilIdle()
-            // Do not show another notification after the timeout
-            verify(mockNotificationAdapter, never()).showNotification(any())
-        }
-    }
-
-    @Test
-    fun `show notifications when auto restarting after killed`() = runTest(testDispatcher) {
-        whenever(mockClock.elapsedRealtime()).thenReturn(1_000_000L)
-        isRootGrantedFlow.value = true
-        fakePreferences.set(Keys.isSystemBridgeEmergencyKilled, false)
-        fakePreferences.set(Keys.handledRootToProModeUpgrade, true)
-        connectionStateFlow.value =
-            SystemBridgeConnectionState.Disconnected(time = 800_000L, isStoppedByUser = false)
-
-        inOrder(mockNotificationAdapter) {
-            systemBridgeAutoStarter.init()
-            advanceTimeBy(1000)
-
-            // Show the first notification that it is auto starting
-            verify(mockNotificationAdapter).showNotification(any())
-
-            // Set the state as connected within the timeout
-            connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 1_001_000L)
-
+            connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 10000)
             advanceUntilIdle()
             // Do not show another notification after the timeout
             verify(mockNotificationAdapter, never()).showNotification(any())
@@ -471,13 +397,14 @@ class SystemBridgeAutoStarterTest {
 
     @Test
     fun `show failed notification when connection times out`() = runTest(testDispatcher) {
-        whenever(mockClock.elapsedRealtime()).thenReturn(70000L)
         isRootGrantedFlow.value = true
         fakePreferences.set(Keys.isSystemBridgeEmergencyKilled, false)
+        fakePreferences.set(Keys.isSystemBridgeUsed, true)
         connectionStateFlow.value =
-            SystemBridgeConnectionState.Disconnected(time = 1000, isStoppedByUser = false)
+            SystemBridgeConnectionState.Disconnected(time = 0, isStoppedByUser = false)
 
         systemBridgeAutoStarter.init()
+        // The system bridge remains disconnected
         advanceUntilIdle()
 
         verify(mockConnectionManager).startWithRoot()
@@ -486,7 +413,7 @@ class SystemBridgeAutoStarterTest {
 
     @Test
     fun `do not auto start when connected`() = runTest(testDispatcher) {
-        whenever(mockClock.elapsedRealtime()).thenReturn(1_000_000L)
+        advanceTimeBy(1_000_000L)
         val connectedState = SystemBridgeConnectionState.Connected(time = 1000)
         connectionStateFlow.value = connectedState
         isRootGrantedFlow.value = true
@@ -501,8 +428,9 @@ class SystemBridgeAutoStarterTest {
 
     @Test
     fun `do not auto restart when disconnected by the user`() = runTest(testDispatcher) {
-        setAutoStartBootState()
-        whenever(mockClock.elapsedRealtime()).thenReturn(1000L)
+        advanceTimeBy(5000L)
+        fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+        fakePreferences.set(Keys.isSystemBridgeUsed, true)
         isRootGrantedFlow.value = true
 
         inOrder(mockConnectionManager, mockSetupController) {
@@ -525,91 +453,199 @@ class SystemBridgeAutoStarterTest {
     }
 
     @Test
-    fun `do not auto restart system bridge within 30 seconds of the last auto start`() =
-        runTest(testDispatcher) {
-            setAutoStartBootState()
-            isRootGrantedFlow.value = true
+    fun `do not auto restart within 5 minutes of the last auto start`() = runTest(testDispatcher) {
+        fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+        fakePreferences.set(Keys.isSystemBridgeUsed, true)
+        isRootGrantedFlow.value = true
 
-            inOrder(mockConnectionManager) {
-                systemBridgeAutoStarter.init()
-                advanceUntilIdle()
-                // Try auto starting on boot
-                verify(mockConnectionManager).startWithRoot()
+        inOrder(mockConnectionManager) {
+            systemBridgeAutoStarter.init()
+            advanceTimeBy(6000)
+            // Try auto starting when the process launches
+            verify(mockConnectionManager).startWithRoot()
+            connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 6000)
 
-                connectionStateFlow.value = SystemBridgeConnectionState.Disconnected(
-                    time = 1000,
-                    isStoppedByUser = true, // It is killed unexpectedly
-                )
-                advanceUntilIdle()
-                // Auto starting fails and so it tries to start again
-                verify(mockConnectionManager, never()).startWithRoot()
-            }
+            advanceUntilIdle()
+            // It is killed unexpectedly straight after auto starting
+            connectionStateFlow.value = SystemBridgeConnectionState.Disconnected(
+                time = 7000,
+                isStoppedByUser = true,
+            )
+
+            advanceUntilIdle()
+            // Auto starting fails and so it does not try starting again
+            verify(mockConnectionManager, never()).startWithRoot()
         }
-
-    @Test
-    fun `auto restart system bridge 30 seconds after the last auto start`() =
-        runTest(testDispatcher) {
-            setAutoStartBootState()
-            isRootGrantedFlow.value = true
-
-            inOrder(mockConnectionManager) {
-                systemBridgeAutoStarter.init()
-                advanceUntilIdle()
-                // Try auto starting on boot
-                verify(mockConnectionManager).startWithRoot()
-
-                advanceTimeBy(30000)
-                connectionStateFlow.value = SystemBridgeConnectionState.Disconnected(
-                    time = 61000,
-                    isStoppedByUser = false, // It is killed unexpectedly
-                )
-                advanceUntilIdle()
-                // Auto starting fails and so it tries to start again
-                verify(mockConnectionManager).startWithRoot()
-            }
-        }
-
-    @Test
-    fun `auto restart when shizuku connects`() = runTest(testDispatcher) {
-        shizukuIsStartedFlow.value = true
-        shizukuPermissionGrantedFlow.value = true
-
-        // If it dies, then it will wait for shizuku to connect
-        systemBridgeAutoStarter.init()
-        advanceTimeBy(1_000_000)
     }
 
     @Test
-    fun `auto start when shizuku is connected more than 5 mins after booting`() =
+    fun `show killed and not restarting notification if system bridge dies less than 30 seconds after auto starting`() =
         runTest(testDispatcher) {
-            TODO()
+            fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+            fakePreferences.set(Keys.isSystemBridgeUsed, true)
+
+            whenever(
+                mockResourceProvider.getString(R.string.system_bridge_died_notification_title),
+            ).thenReturn("died")
+
+            whenever(mockSetupController.isAdbPaired()).thenReturn(true)
+            isWifiConnectedFlow.value = true
+            writeSecureSettingsGrantedFlow.value = true
+
+            inOrder(mockNotificationAdapter) {
+                systemBridgeAutoStarter.init()
+                advanceTimeBy(10000)
+
+                // Show the notification that it is auto starting
+                verify(mockNotificationAdapter).showNotification(any())
+                connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 10000)
+
+                // Set the state as connected within the timeout
+                connectionStateFlow.value =
+                    SystemBridgeConnectionState.Disconnected(time = 11000, isStoppedByUser = false)
+                advanceUntilIdle()
+                // Show notification
+                val argument = argumentCaptor<NotificationModel>()
+                verify(mockNotificationAdapter).showNotification(argument.capture())
+
+                assertThat(argument.firstValue.title, `is`("died"))
+            }
+        }
+
+    @Test
+    fun `auto restart when shizuku connects after the system bridge dies`() =
+        runTest(testDispatcher) {
+            fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+            fakePreferences.set(Keys.isSystemBridgeUsed, true)
+
+            // Shizuku is not started initially
+            shizukuIsStartedFlow.value = false
+            shizukuPermissionGrantedFlow.value = true
+
+            // System bridge was already running when Key Mapper process launched
+            connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 0)
+
+            inOrder(mockConnectionManager) {
+                systemBridgeAutoStarter.init()
+                advanceUntilIdle()
+
+                // If it dies, then it will wait for shizuku to connect
+                connectionStateFlow.value =
+                    SystemBridgeConnectionState.Disconnected(time = 3000, isStoppedByUser = false)
+
+                advanceTimeBy(2000)
+                verify(mockConnectionManager, never()).startWithShizuku()
+
+                shizukuIsStartedFlow.value = true
+                advanceUntilIdle()
+
+                verify(mockConnectionManager).startWithShizuku()
+            }
         }
 
     @Test
     fun `do not auto start when shizuku is connected if system bridge was stopped by the user`() =
         runTest(testDispatcher) {
-            TODO()
+            fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+            fakePreferences.set(Keys.isSystemBridgeUsed, true)
+
+            // Shizuku is not started initially
+            shizukuIsStartedFlow.value = false
+            shizukuPermissionGrantedFlow.value = true
+
+            // System bridge was already running when Key Mapper process launched
+            connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 0)
+
+            inOrder(mockConnectionManager) {
+                systemBridgeAutoStarter.init()
+                advanceUntilIdle()
+
+                // The user stopped the system bridge
+                connectionStateFlow.value =
+                    SystemBridgeConnectionState.Disconnected(time = 3000, isStoppedByUser = true)
+
+                advanceTimeBy(2000)
+                verify(mockConnectionManager, never()).startWithShizuku()
+
+                shizukuIsStartedFlow.value = true
+                advanceUntilIdle()
+
+                // Do not start it when shizuku connects
+                verify(mockConnectionManager, never()).startWithShizuku()
+            }
         }
 
     @Test
-    fun `auto restart when wifi is connected`() = runTest(testDispatcher) {
-        // If it dies, then it will wait for a wifi connection
-        TODO()
-    }
-
-    @Test
-    fun `auto start when wifi is connected more than 5 mins after booting`() =
+    fun `auto restart when wifi is connected after the system bridge dies`() =
         runTest(testDispatcher) {
-            TODO()
+            fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+            fakePreferences.set(Keys.isSystemBridgeUsed, true)
+
+            // WiFi is not connected initially
+            isWifiConnectedFlow.value = false
+            writeSecureSettingsGrantedFlow.value = true
+            whenever(mockSetupController.isAdbPaired()).thenReturn(true)
+
+            // System bridge was already running when Key Mapper process launched
+            connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 0)
+
+            inOrder(mockSetupController) {
+                systemBridgeAutoStarter.init()
+                advanceUntilIdle()
+
+                // If it dies, then it will wait for wifi to connect
+                connectionStateFlow.value =
+                    SystemBridgeConnectionState.Disconnected(time = 2000, isStoppedByUser = false)
+
+                advanceTimeBy(2000)
+                verify(mockSetupController, never()).autoStartWithAdb()
+
+                isWifiConnectedFlow.value = true
+                advanceUntilIdle()
+
+                verify(mockSetupController).autoStartWithAdb()
+            }
         }
 
     @Test
-    fun `do not auto start on launch if it was never used before`() = runTest(testDispatcher) {
-        fakePreferences.set(Keys.isSystemBridgeUsed, null)
-    }
+    fun `do not auto start with Shizuku on launch if it was never used before`() =
+        runTest(testDispatcher) {
+            fakePreferences.set(Keys.isSystemBridgeUsed, null)
+            shizukuIsStartedFlow.value = true
+            shizukuPermissionGrantedFlow.value = true
+
+            systemBridgeAutoStarter.init()
+            advanceUntilIdle()
+
+            verify(mockConnectionManager, never()).startWithRoot()
+            verify(mockConnectionManager, never()).startWithShizuku()
+            verify(mockSetupController, never()).autoStartWithAdb()
+        }
 
     @Test
-    fun `do not auto restart if it was never used before`() = runTest(testDispatcher) {
-        fakePreferences.set(Keys.isSystemBridgeUsed, null)
-    }
+    fun `do not auto restart if keep alive is disabled while it is connected`() =
+        runTest(testDispatcher) {
+            fakePreferences.set(Keys.isSystemBridgeUsed, true)
+            fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
+            isRootGrantedFlow.value = true
+
+            inOrder(mockConnectionManager) {
+                systemBridgeAutoStarter.init()
+                advanceTimeBy(6000)
+
+                connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 6000)
+                verify(mockConnectionManager).startWithRoot()
+
+                // The user disabled keep alive while system bridge is running
+                fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, false)
+                // The system bridge dies
+                connectionStateFlow.value =
+                    SystemBridgeConnectionState.Disconnected(time = 7000, isStoppedByUser = false)
+
+                advanceTimeBy(2000)
+
+                // The system bridge should not be auto restarted.
+                verify(mockConnectionManager, never()).startWithRoot()
+            }
+        }
 }

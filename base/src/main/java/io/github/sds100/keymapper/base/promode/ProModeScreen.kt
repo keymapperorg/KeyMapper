@@ -432,8 +432,8 @@ private fun LoadedContent(
 
         SwitchPreferenceCompose(
             modifier = Modifier.padding(horizontal = 8.dp),
-            title = stringResource(R.string.title_pref_pro_mode_auto_start_at_boot),
-            text = stringResource(R.string.summary_pref_pro_mode_auto_start_at_boot),
+            title = stringResource(R.string.title_pref_pro_mode_auto_start),
+            text = stringResource(R.string.summary_pref_pro_mode_auto_start),
             icon = Icons.Rounded.RestartAlt,
             isChecked = autoStartAtBoot,
             onCheckedChange = onAutoStartAtBootToggled,

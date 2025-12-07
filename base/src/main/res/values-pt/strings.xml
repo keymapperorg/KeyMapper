@@ -1300,8 +1300,8 @@ Deixe em branco se alguma rede Wi-Fi precisar ser correspondida.</string>
     <string name="pro_mode_settings_unavailable_text">Essas configurações ficarão indisponíveis até que você confirme o aviso.</string>
     <string name="pro_mode_service_started">O serviço do modo PRO está em execução</string>
     <string name="pro_mode_stop_service_button">Parar</string>
-    <string name="title_pref_pro_mode_auto_start_at_boot">Iniciar automaticamente na inicialização</string>
-    <string name="summary_pref_pro_mode_auto_start_at_boot">O Modo PRO será iniciado sempre que você ligar ou reiniciar seu dispositivo</string>
+    <string name="title_pref_pro_mode_auto_start">Iniciar automaticamente na inicialização</string>
+    <string name="summary_pref_pro_mode_auto_start">O Modo PRO será iniciado sempre que você ligar ou reiniciar seu dispositivo</string>
     <string name="pro_mode_emergency_tip_title">Dica de emergência</string>
     <string name="pro_mode_emergency_tip_text">Se o botão liga/desliga parar de funcionar, mantenha-o pressionado por 10 segundos e solte para desativar o Modo PRO.</string>
     <string name="pro_mode_setup_wizard_title">Assistente de configuração</string>

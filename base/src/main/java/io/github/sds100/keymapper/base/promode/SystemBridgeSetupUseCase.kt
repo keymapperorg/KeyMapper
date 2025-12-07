@@ -207,12 +207,12 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     }
 
     override val isAutoStartBootEnabled: Flow<Boolean> =
-        preferences.get(Keys.isProModeAutoStartBootEnabled)
-            .map { it ?: PreferenceDefaults.PRO_MODE_AUTOSTART_BOOT }
+        preferences.get(Keys.isSystemBridgeKeepAliveEnabled)
+            .map { it ?: PreferenceDefaults.PRO_MODE_KEEP_ALIVE }
 
     override fun toggleAutoStartBoot() {
-        preferences.update(Keys.isProModeAutoStartBootEnabled) {
-            !(it ?: PreferenceDefaults.PRO_MODE_AUTOSTART_BOOT)
+        preferences.update(Keys.isSystemBridgeKeepAliveEnabled) {
+            !(it ?: PreferenceDefaults.PRO_MODE_KEEP_ALIVE)
         }
     }
 
