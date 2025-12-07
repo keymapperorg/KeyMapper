@@ -181,6 +181,9 @@ fn test_map_key_with_scan_codes() {
     // Test a key with FUNCTION flag (flags are now ignored)
     let key_code = map.map_key(465).unwrap();
     assert_eq!(key_code, 111); // ESCAPE
+
+    // Test that non-existent scan code returns None
+    assert!(map.map_key(9999).is_none());
 }
 
 #[test]
