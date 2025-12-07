@@ -11,6 +11,7 @@ use mio::{Events, Interest, Poll, Registry, Token, Waker};
 use slab::Slab;
 use std::collections::HashMap;
 use std::error::Error;
+use std::fmt;
 use std::fs::read_dir;
 use std::io;
 use std::io::ErrorKind;
@@ -20,6 +21,11 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{mpsc, Arc, OnceLock, RwLock};
 use std::time::{Duration, Instant};
 use tokio::task::JoinHandle;
+
+/// This callback returns true if the observer consumed the input event.
+/// Parameters: device_id (slab key), device_identifier, event
+pub type EvdevObserver =
+    fn(device_id: usize, device_identifier: &DeviceIdentifier, event: &InputEvent) -> bool;
 
 /// Key for device path map - only JNI-exposed fields (excludes version).
 /// Used for O(1) HashMap lookup when matching devices.
@@ -46,27 +52,49 @@ static EVENT_LOOP_MANAGER: OnceLock<EventLoopManager> = OnceLock::new();
 
 const WAKER_TOKEN: Token = Token(0);
 
-/// This callback returns true if the observer consumed the input event.
-/// Parameters: device_id (slab key), device_identifier, event
-pub type EvdevObserver =
-    fn(device_id: usize, device_identifier: &DeviceIdentifier, event: &InputEvent) -> bool;
-
 pub struct EventLoopManager {
     stop_flag: Arc<AtomicBool>,
     poll: Arc<RwLock<Poll>>,
     registry: Arc<Registry>,
     join_handle: RwLock<Option<JoinHandle<()>>>,
     waker: Waker,
-    observers: Arc<RwLock<Slab<EvdevObserver>>>,
+    observer: EvdevObserver,
     grabbed_devices: Arc<RwLock<Slab<GrabbedDevice>>>,
 }
 
+impl fmt::Debug for EventLoopManager {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let is_running = self.join_handle.read().map(|h| h.is_some()).unwrap_or(false);
+        let device_count = self
+            .grabbed_devices
+            .read()
+            .map(|d| d.len())
+            .unwrap_or(0);
+
+        f.debug_struct("EventLoopManager")
+            .field("is_running", &is_running)
+            .field("grabbed_device_count", &device_count)
+            .finish_non_exhaustive()
+    }
+}
+
 impl EventLoopManager {
-    pub fn get() -> &'static EventLoopManager {
-        EVENT_LOOP_MANAGER.get_or_init(Self::new)
+    /// Initialize the EventLoopManager with an observer. Must be called once before `get()`.
+    /// Panics if called more than once.
+    pub fn init(observer: EvdevObserver) {
+        EVENT_LOOP_MANAGER
+            .set(Self::new(observer))
+            .expect("EventLoopManager already initialized");
     }
 
-    fn new() -> Self {
+    /// Get the EventLoopManager instance. Panics if `init()` was not called.
+    pub fn get() -> &'static EventLoopManager {
+        EVENT_LOOP_MANAGER
+            .get()
+            .expect("EventLoopManager not initialized. Call init() first.")
+    }
+
+    fn new(observer: EvdevObserver) -> Self {
         let poll = Poll::new().unwrap();
         let registry = poll.registry().try_clone().unwrap();
         let waker = Waker::new(&registry, WAKER_TOKEN).unwrap();
@@ -78,7 +106,7 @@ impl EventLoopManager {
             registry: Arc::new(registry),
             join_handle: RwLock::new(None),
             waker,
-            observers: Arc::new(RwLock::new(Slab::with_capacity(16))),
+            observer,
             grabbed_devices: Arc::new(RwLock::new(Slab::with_capacity(32))),
         }
     }
@@ -93,7 +121,7 @@ impl EventLoopManager {
         } else {
             self.stop_flag.store(false, Ordering::Relaxed);
 
-            let observers = self.observers.clone();
+            let observer = self.observer;
             let grabbed_devices = self.grabbed_devices.clone();
 
             let (tx, rx) = mpsc::channel();
@@ -103,7 +131,7 @@ impl EventLoopManager {
 
             let join_handle = get_runtime().spawn(async move {
                 tx.send(()).unwrap();
-                EventLoopThread::new(stop_flag_clone, poll_lock_clone, observers, grabbed_devices)
+                EventLoopThread::new(stop_flag_clone, poll_lock_clone, observer, grabbed_devices)
                     .start();
             });
 
@@ -279,10 +307,6 @@ impl EventLoopManager {
         device.write_event(event_type, code, value)
     }
 
-    pub fn register_observer(&self, observer: EvdevObserver) {
-        self.observers.write().unwrap().insert(observer);
-    }
-
     /// Get the paths to all the real (non uinput) connected devices.
     pub fn get_all_real_devices(&self) -> Result<Vec<PathBuf>, EvdevError> {
         let mut paths: Vec<PathBuf> = Vec::new();
@@ -323,7 +347,7 @@ impl EventLoopManager {
 struct EventLoopThread {
     stop_flag: Arc<AtomicBool>,
     poll: Arc<RwLock<Poll>>,
-    observers: Arc<RwLock<Slab<EvdevObserver>>>,
+    observer: EvdevObserver,
     grabbed_devices: Arc<RwLock<Slab<GrabbedDevice>>>,
 }
 
@@ -331,13 +355,13 @@ impl EventLoopThread {
     pub fn new(
         stop_flag: Arc<AtomicBool>,
         poll: Arc<RwLock<Poll>>,
-        observers: Arc<RwLock<Slab<EvdevObserver>>>,
+        observer: EvdevObserver,
         grabbed_devices: Arc<RwLock<Slab<GrabbedDevice>>>,
     ) -> Self {
         EventLoopThread {
             stop_flag,
             poll,
-            observers,
+            observer,
             grabbed_devices,
         }
     }
@@ -401,7 +425,7 @@ impl EventLoopThread {
                     flags = ReadFlag::NORMAL;
                     // Keep this logging line. Debug/verbose events will be disabled in production.
                     debug!("Evdev event: {:?}", input_event);
-                    self.process_observers(slab_key, &input_event, grabbed_device);
+                    self.process_event(slab_key, &input_event, grabbed_device);
                 }
                 Ok((ReadStatus::Sync, _event)) => {
                     // Continue reading sync events
@@ -416,21 +440,15 @@ impl EventLoopThread {
         }
     }
 
-    fn process_observers(
+    fn process_event(
         &self,
         device_id: usize,
         event: &InputEvent,
         grabbed_device: &GrabbedDevice,
     ) {
-        let mut consume = false;
+        let consumed = (self.observer)(device_id, &grabbed_device.device_id, event);
 
-        for (_, observer) in self.observers.read().unwrap().iter() {
-            if observer(device_id, &grabbed_device.device_id, event) {
-                consume = true;
-            }
-        }
-
-        if !consume {
+        if !consumed {
             let (event_type, event_code) = event_code_to_int(&event.event_code);
             grabbed_device
                 .write_event(event_type, event_code, event.value)

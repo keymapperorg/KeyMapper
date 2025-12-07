@@ -51,12 +51,11 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
         panic!("JNI observer already initialized");
     }
 
-    // Register the observer with the event loop
-    EventLoopManager::get().register_observer(|device_id, device_identifier, event| {
+    // Initialize and start the event loop with the observer
+    EventLoopManager::init(|device_id, device_identifier, event| {
         get_jni_observer().on_event(device_id, device_identifier, event)
     });
 
-    // Start the event loop
     EventLoopManager::get()
         .start()
         .inspect_err(|e| error!("Failed to start event loop: {:?}", e))
