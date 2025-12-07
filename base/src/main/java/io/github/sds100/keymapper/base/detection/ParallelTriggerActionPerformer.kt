@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.base.detection
 
 import io.github.sds100.keymapper.base.actions.Action
 import io.github.sds100.keymapper.base.actions.ActionData
+import io.github.sds100.keymapper.base.actions.PerformActionTriggerDevice
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.base.actions.RepeatMode
 import io.github.sds100.keymapper.common.utils.InputEventAction
@@ -47,7 +48,11 @@ class ParallelTriggerActionPerformer(
             PreferenceDefaults.REPEAT_RATE.toLong(),
         )
 
-    fun onTriggered(calledOnTriggerRelease: Boolean, metaState: Int) {
+    fun onTriggered(
+        calledOnTriggerRelease: Boolean,
+        metaState: Int,
+        device: PerformActionTriggerDevice,
+    ) {
         performActionsJob?.cancel()
         /*
         this job shouldn't be cancelled when the trigger is released. all actions should be performed
@@ -84,7 +89,7 @@ class ParallelTriggerActionPerformer(
                     else -> InputEventAction.DOWN_UP
                 }
 
-                performAction(action, actionInputEventAction, metaState)
+                performAction(action, actionInputEventAction, metaState, device)
 
                 if (action.repeat && action.holdDown) {
                     delay(action.holdDownDuration?.toLong() ?: defaultHoldDownDuration.value)
@@ -131,13 +136,13 @@ class ParallelTriggerActionPerformer(
 
                 while (isActive && continueRepeating) {
                     if (action.holdDown) {
-                        performAction(action, InputEventAction.DOWN, metaState)
+                        performAction(action, InputEventAction.DOWN, metaState, device)
                         delay(
                             action.holdDownDuration?.toLong() ?: defaultHoldDownDuration.value,
                         )
-                        performAction(action, InputEventAction.UP, metaState)
+                        performAction(action, InputEventAction.UP, metaState, device)
                     } else {
-                        performAction(action, InputEventAction.DOWN_UP, metaState)
+                        performAction(action, InputEventAction.DOWN_UP, metaState, device)
                     }
 
                     repeatCount++
@@ -152,7 +157,7 @@ class ParallelTriggerActionPerformer(
         }
     }
 
-    fun onReleased(metaState: Int) {
+    fun onReleased(metaState: Int, device: PerformActionTriggerDevice) {
         repeatJobs.forEachIndexed { actionIndex, job ->
             if (actionList[actionIndex].repeatMode == RepeatMode.TRIGGER_RELEASED) {
                 job?.cancel()
@@ -166,7 +171,7 @@ class ParallelTriggerActionPerformer(
                     if (actionIsHeldDown[actionIndex]) {
                         actionIsHeldDown[actionIndex] = false
 
-                        performAction(action, InputEventAction.UP, metaState)
+                        performAction(action, InputEventAction.UP, metaState, device)
                     }
                 }
             }
@@ -180,7 +185,12 @@ class ParallelTriggerActionPerformer(
         coroutineScope.launch {
             for ((index, isHeldDown) in actionIsHeldDown.withIndex()) {
                 if (isHeldDown) {
-                    performAction(actionList[index], inputEventAction = InputEventAction.UP, 0)
+                    performAction(
+                        actionList[index],
+                        inputEventAction = InputEventAction.UP,
+                        0,
+                        PerformActionTriggerDevice.Default,
+                    )
                 }
             }
         }
@@ -199,9 +209,10 @@ class ParallelTriggerActionPerformer(
         action: Action,
         inputEventAction: InputEventAction,
         metaState: Int,
+        device: PerformActionTriggerDevice,
     ) {
         repeat(action.multiplier ?: 1) {
-            useCase.perform(action.data, inputEventAction, metaState)
+            useCase.perform(action.data, inputEventAction, metaState, device)
         }
     }
 }

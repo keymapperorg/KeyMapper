@@ -448,6 +448,10 @@ class SystemBridge : ISystemBridge.Stub() {
         return writeEvdevEventNative(deviceId, type, code, value)
     }
 
+    override fun writeEvdevEventKeyCode(deviceId: Int, keyCode: Int, value: Int): Boolean {
+        TODO("Not yet implemented")
+    }
+
     override fun getProcessUid(): Int {
         return Process.myUid()
     }

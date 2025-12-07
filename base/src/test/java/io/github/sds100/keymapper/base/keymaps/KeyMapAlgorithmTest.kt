@@ -6,6 +6,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.github.sds100.keymapper.base.actions.Action
 import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.ActionErrorSnapshot
+import io.github.sds100.keymapper.base.actions.PerformActionTriggerDevice
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.base.actions.RepeatMode
 import io.github.sds100.keymapper.base.constraints.Constraint
@@ -252,7 +253,10 @@ class KeyMapAlgorithmTest {
         )
         inputUpEvdevEvent(KeyEvent.KEYCODE_UNKNOWN, Scancode.BTN_LEFT, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        verify(performActionsUseCase, times(1)).perform(
+            TEST_ACTION.data,
+            device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+        )
     }
 
     @Test
@@ -270,7 +274,13 @@ class KeyMapAlgorithmTest {
             inputDownEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
             inputUpEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+            verify(
+                performActionsUseCase,
+                times(1),
+            ).perform(
+                TEST_ACTION.data,
+                device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+            )
         }
 
     @Test
@@ -288,7 +298,10 @@ class KeyMapAlgorithmTest {
         inputDownEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
         inputUpEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        verify(performActionsUseCase, times(1)).perform(
+            TEST_ACTION.data,
+            device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+        )
     }
 
     @Test
@@ -308,7 +321,10 @@ class KeyMapAlgorithmTest {
             inputDownEvdevEvent(KeyEvent.KEYCODE_C, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
             inputUpEvdevEvent(KeyEvent.KEYCODE_C, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+            verify(performActionsUseCase, times(1)).perform(
+                TEST_ACTION.data,
+                device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+            )
         }
 
     @Test
@@ -359,7 +375,10 @@ class KeyMapAlgorithmTest {
             inputDownEvdevEvent(KeyEvent.KEYCODE_Y, Scancode.KEY_D, FAKE_CONTROLLER_EVDEV_DEVICE)
             inputUpEvdevEvent(KeyEvent.KEYCODE_Y, Scancode.KEY_D, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+            verify(performActionsUseCase, times(1)).perform(
+                TEST_ACTION.data,
+                device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+            )
         }
 
     @Test
@@ -391,7 +410,10 @@ class KeyMapAlgorithmTest {
             inputUpEvdevEvent(KeyEvent.KEYCODE_X, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
             inputUpEvdevEvent(KeyEvent.KEYCODE_Y, Scancode.KEY_D, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-            verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+            verify(performActionsUseCase, times(1)).perform(
+                TEST_ACTION.data,
+                device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+            )
         }
 
     @Test
@@ -412,7 +434,10 @@ class KeyMapAlgorithmTest {
         delay(LONG_PRESS_DELAY + 100L)
         inputUpEvdevEvent(KeyEvent.KEYCODE_X, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        verify(performActionsUseCase, times(1)).perform(
+            TEST_ACTION.data,
+            device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+        )
     }
 
     @Test
@@ -439,7 +464,10 @@ class KeyMapAlgorithmTest {
         delay(50L)
         inputUpEvdevEvent(KeyEvent.KEYCODE_X, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        verify(performActionsUseCase, times(1)).perform(
+            TEST_ACTION.data,
+            device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+        )
     }
 
     @Test
@@ -545,7 +573,10 @@ class KeyMapAlgorithmTest {
         inputDownEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
         inputUpEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        verify(performActionsUseCase, times(1)).perform(
+            TEST_ACTION.data,
+            device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+        )
     }
 
     @Test
@@ -571,7 +602,10 @@ class KeyMapAlgorithmTest {
         inputUpEvdevEvent(KeyEvent.KEYCODE_A, Scancode.KEY_A, FAKE_CONTROLLER_EVDEV_DEVICE)
         inputUpEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        verify(performActionsUseCase, times(1)).perform(
+            TEST_ACTION.data,
+            device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+        )
     }
 
     @Test
@@ -606,7 +640,10 @@ class KeyMapAlgorithmTest {
 
         mockEvdevKeyInput(trigger.keys[0], FAKE_CONTROLLER_EVDEV_DEVICE)
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        verify(performActionsUseCase, times(1)).perform(
+            TEST_ACTION.data,
+            device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+        )
     }
 
     @Test
@@ -623,7 +660,10 @@ class KeyMapAlgorithmTest {
 
         mockEvdevKeyInput(trigger.keys[0], FAKE_VOLUME_EVDEV_DEVICE)
 
-        verify(performActionsUseCase, times(1)).perform(TEST_ACTION.data)
+        verify(performActionsUseCase, times(1)).perform(
+            TEST_ACTION.data,
+            device = PerformActionTriggerDevice.Evdev(FAKE_VOLUME_EVDEV_DEVICE),
+        )
     }
 
     @Test
@@ -1690,23 +1730,23 @@ class KeyMapAlgorithmTest {
                 }
             }
 
-            whenever(performActionsUseCase.perform(any(), any(), any())).doAnswer {
+            whenever(performActionsUseCase.perform(any(), any(), any(), any())).doAnswer {
                 isFlashlightEnabled = !isFlashlightEnabled
             }
 
             inOrder(performActionsUseCase) {
                 // flashlight is initially disabled so don't trigger.
                 mockTriggerKeyInput(keyMap.trigger.keys[0])
-                verify(performActionsUseCase, never()).perform(any(), any(), any())
+                verify(performActionsUseCase, never()).perform(any(), any(), any(), any())
 
                 isFlashlightEnabled = true
                 // trigger because flashlight is enabled. Triggering the action will disable the flashlight.
                 mockTriggerKeyInput(keyMap.trigger.keys[0])
-                verify(performActionsUseCase, times(1)).perform(any(), any(), any())
+                verify(performActionsUseCase, times(1)).perform(any(), any(), any(), any())
 
                 // Don't trigger because the flashlight is now disabled
                 mockTriggerKeyInput(keyMap.trigger.keys[0])
-                verify(performActionsUseCase, never()).perform(any(), any(), any())
+                verify(performActionsUseCase, never()).perform(any(), any(), any(), any())
             }
         }
 
@@ -2838,7 +2878,7 @@ class KeyMapAlgorithmTest {
 
             mockTriggerKeyInput(triggerKey(KeyEvent.KEYCODE_A, clickType = ClickType.DOUBLE_PRESS))
 
-            verify(performActionsUseCase, never()).perform(any(), any(), any())
+            verify(performActionsUseCase, never()).perform(any(), any(), any(), any())
 
             mockTriggerKeyInput(triggerKey(KeyEvent.KEYCODE_A))
             mockTriggerKeyInput(triggerKey(KeyEvent.KEYCODE_A, clickType = ClickType.DOUBLE_PRESS))
@@ -3095,7 +3135,7 @@ class KeyMapAlgorithmTest {
             mockTriggerKeyInput(triggerKey(KeyEvent.KEYCODE_A, FAKE_KEYBOARD_TRIGGER_KEY_DEVICE))
 
             // THEN
-            verify(performActionsUseCase, never()).perform(any(), any(), any())
+            verify(performActionsUseCase, never()).perform(any(), any(), any(), any())
         }
 
     @Test

@@ -6,6 +6,7 @@ import androidx.collection.keyIterator
 import androidx.collection.valueIterator
 import io.github.sds100.keymapper.base.actions.Action
 import io.github.sds100.keymapper.base.actions.ActionData
+import io.github.sds100.keymapper.base.actions.PerformActionTriggerDevice
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.base.constraints.ConstraintSnapshot
 import io.github.sds100.keymapper.base.constraints.ConstraintState
@@ -100,6 +101,8 @@ class KeyMapAlgorithm(
     private var actionMap: SparseArrayCompat<Action> = SparseArrayCompat()
     var triggers: Array<Trigger> = emptyArray()
         private set
+
+    private var triggerPerformActionDevices: Array<PerformActionTriggerDevice> = emptyArray()
 
     /**
      * The events to detect for each sequence trigger.
@@ -284,6 +287,7 @@ class KeyMapAlgorithm(
 
             val triggerActions = mutableListOf<IntArray>()
             val triggerConstraints = mutableListOf<Array<ConstraintState>>()
+            val triggerPerformActionDevices = mutableListOf<PerformActionTriggerDevice>()
 
             val sequenceTriggerActionPerformers =
                 mutableMapOf<Int, SequenceTriggerActionPerformer>()
@@ -369,6 +373,7 @@ class KeyMapAlgorithm(
 
                 triggers.add(keyMap.trigger)
                 triggerActions.add(encodedActionList)
+                triggerPerformActionDevices.add(keyMap.trigger.getPerformActionDevice())
 
                 val constraintStates =
                     model.groupConstraintStates.plus(keyMap.constraintState).toTypedArray()
@@ -572,6 +577,7 @@ class KeyMapAlgorithm(
             this.sequenceTriggerActionPerformers = sequenceTriggerActionPerformers
 
             this.triggerKeysThatSendRepeatedKeyEvents = triggerKeysThatSendRepeatedKeyEvents
+            this.triggerPerformActionDevices = triggerPerformActionDevices.toTypedArray()
 
             reset()
         }
@@ -1015,6 +1021,7 @@ class KeyMapAlgorithm(
                         val trigger = triggers[triggerIndex]
 
                         parallelTriggerActionPerformers[triggerIndex]?.onTriggered(
+                            device = triggerPerformActionDevices[triggerIndex],
                             calledOnTriggerRelease = false,
                             metaState = metaStateFromKeyEvent.withFlag(metaStateFromActions),
                         )
@@ -1389,6 +1396,7 @@ class KeyMapAlgorithm(
             if (lastHeldDownEventIndex != triggers[triggerIndex].keys.lastIndex) {
                 parallelTriggerActionPerformers[triggerIndex]?.onReleased(
                     metaStateFromKeyEvent + metaStateFromActions,
+                    device = triggerPerformActionDevices[triggerIndex],
                 )
             }
         }
@@ -1420,6 +1428,7 @@ class KeyMapAlgorithm(
 
         detectedSequenceTriggerIndexes.forEach { triggerIndex ->
             sequenceTriggerActionPerformers[triggerIndex]?.onTriggered(
+                device = triggerPerformActionDevices[triggerIndex],
                 metaState = metaStateFromActions.withFlag(
                     metaStateFromKeyEvent,
                 ),
@@ -1428,6 +1437,7 @@ class KeyMapAlgorithm(
 
         detectedParallelTriggerIndexes.forEach { triggerIndex ->
             parallelTriggerActionPerformers[triggerIndex]?.onTriggered(
+                device = triggerPerformActionDevices[triggerIndex],
                 calledOnTriggerRelease = true,
                 metaState = metaStateFromActions.withFlag(metaStateFromKeyEvent),
             )
@@ -1646,6 +1656,7 @@ class KeyMapAlgorithm(
 
         detectedTriggerIndexes.forEach { triggerIndex ->
             parallelTriggerActionPerformers[triggerIndex]?.onTriggered(
+                device = triggerPerformActionDevices[triggerIndex],
                 calledOnTriggerRelease = true,
                 metaState = metaStateFromActions.withFlag(metaStateFromKeyEvent),
             )
@@ -1714,6 +1725,7 @@ class KeyMapAlgorithm(
         delay(longPressDelay(triggers[triggerIndex]))
 
         parallelTriggerActionPerformers[triggerIndex]?.onTriggered(
+            device = triggerPerformActionDevices[triggerIndex],
             calledOnTriggerRelease = false,
             metaState = metaStateFromActions.withFlag(metaStateFromKeyEvent),
         )
@@ -1748,6 +1760,7 @@ class KeyMapAlgorithm(
         }
 
         parallelTriggerActionPerformers[triggerIndex]?.onTriggered(
+            device = triggerPerformActionDevices[triggerIndex],
             calledOnTriggerRelease = true,
             metaState = metaStateFromActions.withFlag(metaStateFromKeyEvent),
         )
@@ -1973,4 +1986,15 @@ class KeyMapAlgorithm(
     ) : AlgoEvent()
 
     private data class TriggerKeyLocation(val triggerIndex: Int, val keyIndex: Int)
+
+    private fun Trigger.getPerformActionDevice(): PerformActionTriggerDevice {
+        // Use the last key in case the trigger contains keys from multiple devices.
+        val evdevTriggerKey = keys.filterIsInstance<EvdevTriggerKey>().lastOrNull()
+
+        if (evdevTriggerKey != null) {
+            return PerformActionTriggerDevice.Evdev(evdevTriggerKey.device)
+        }
+
+        return PerformActionTriggerDevice.Default
+    }
 }
