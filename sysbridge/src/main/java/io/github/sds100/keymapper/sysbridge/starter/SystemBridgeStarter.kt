@@ -23,7 +23,6 @@ import io.github.sds100.keymapper.sysbridge.BuildConfig
 import io.github.sds100.keymapper.sysbridge.IShizukuStarterService
 import io.github.sds100.keymapper.sysbridge.R
 import io.github.sds100.keymapper.sysbridge.adb.AdbManager
-import io.github.sds100.keymapper.sysbridge.ktx.loge
 import io.github.sds100.keymapper.sysbridge.shizuku.ShizukuStarterService
 import java.io.BufferedReader
 import java.io.DataInputStream
@@ -261,7 +260,7 @@ class SystemBridgeStarter @Inject constructor(
 
             return executeCommand(startCommand)
         } catch (e: IOException) {
-            loge("write files", e)
+            Timber.e(e)
             return KMError.UnknownIOError
         }
     }

@@ -27,7 +27,6 @@ import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
-import io.github.sds100.keymapper.sysbridge.ktx.TAG
 import io.github.sds100.keymapper.sysbridge.starter.SystemBridgeStarter
 import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import javax.inject.Inject
@@ -52,6 +51,10 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
     private val starter: SystemBridgeStarter,
     private val buildConfigProvider: BuildConfigProvider,
 ) : SystemBridgeConnectionManager {
+
+    companion object {
+        private const val TAG = "SystemBridgeConnectionManagerImpl"
+    }
 
     private val systemBridgeLock: Any = Any()
     private var systemBridgeFlow: MutableStateFlow<ISystemBridge?> = MutableStateFlow(null)
