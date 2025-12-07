@@ -169,6 +169,7 @@ class SystemBridgeAutoStarter @Inject constructor(
                 Timber.w("Restarting system bridge on debug build.")
 
                 connectionManager.restartSystemBridge()
+                delay(5000)
             }
 
             handleAutoStartFromPreVersion4()
