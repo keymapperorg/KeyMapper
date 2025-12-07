@@ -1680,7 +1680,7 @@
     <string name="pro_mode_stop_service_button">Stop</string>
 
     <string name="title_pref_pro_mode_auto_start">Auto start and keep alive</string>
-    <string name="summary_pref_pro_mode_auto_start">PRO Mode will start itself whenever you boot your device, open Key Mapper, or it dies unexpectedly. It may need to wait for a WiFi connection or Shizuku depending on how you set it up. If you\'re rooted it will always start regardless.</string>
+    <string name="summary_pref_pro_mode_auto_start">PRO Mode will start itself whenever you boot your device, open Key Mapper, or it dies unexpectedly.</string>
 
     <string name="title_pref_key_event_actions_use_system_bridge">Key event actions</string>
     <string name="summary_pref_key_event_actions_use_system_bridge">Select how key event actions are performed</string>
@@ -1755,7 +1755,7 @@
     <string name="pro_mode_setup_notification_action_input_pairing_code">Input pairing code</string>
 
     <string name="pro_mode_info_card_title">What can I do with PRO mode?</string>
-    <string name="pro_mode_info_card_description">📲 You can remap more buttons, such as your power button.\n⌨️ Use any keyboard with key code actions.\n⭐️ The following actions are unlocked: WiFi, Bluetooth, mobile data, NFC, and airplane mode, collapse status bar, and sleep/wake device.</string>
+    <string name="pro_mode_info_card_description">📲 You can remap more buttons, such as your power button.\n⌨️ Use any on-screen keyboard with key code actions.\n⭐️ And use many more actions.</string>
     <string name="pro_mode_info_card_show_content_description">Show PRO mode info</string>
     <string name="pro_mode_info_card_dismiss_content_description">Dismiss</string>
 
