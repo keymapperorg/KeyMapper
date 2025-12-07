@@ -64,7 +64,7 @@ import rikka.hidden.compat.UserManagerApis
 import rikka.hidden.compat.adapter.ProcessObserverAdapter
 
 @SuppressLint("LogNotTimber")
-abstract class BaseSystemBridge : ISystemBridge.Stub() {
+class SystemBridge : ISystemBridge.Stub() {
 
     @Suppress("KotlinJniMissingFunction")
     external fun setGrabbedDevicesNative(
@@ -132,6 +132,14 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
         private const val KEYMAPPER_CHECK_INTERVAL_MS = 60 * 1000L // 1 minute
         private const val DATA_ENABLED_REASON_USER: Int = 0
         private const val TETHERING_WIFI: Int = 0
+
+        @JvmStatic
+        fun main(args: Array<String>) {
+            @Suppress("DEPRECATION")
+            Looper.prepareMainLooper()
+            SystemBridge()
+            Looper.loop()
+        }
 
         private fun waitSystemService(name: String?) {
             var count = 0
@@ -444,6 +452,7 @@ abstract class BaseSystemBridge : ISystemBridge.Stub() {
         return Process.myUid()
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun grantPermission(permission: String?, deviceId: Int) {
         val userId = UserHandleUtils.getCallingUserId()
 

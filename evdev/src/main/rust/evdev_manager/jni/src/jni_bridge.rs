@@ -19,7 +19,7 @@ fn get_jni_observer() -> &'static EvdevJniObserver {
 
 /// MUST only be called once in the lifetime of the process.
 #[no_mangle]
-pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_initEvdevManager(
+pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_initEvdevManager(
     env: JNIEnv,
     this: JObject,
 ) {
@@ -38,10 +38,10 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
     // Get the JavaVM
     let jvm = env.get_java_vm().expect("Failed to get JavaVM");
 
-    // Create a global reference to the BaseSystemBridge instance
+    // Create a global reference to the SystemBridge instance
     let system_bridge = env
         .new_global_ref(this)
-        .expect("Failed to create global reference to BaseSystemBridge");
+        .expect("Failed to create global reference to SystemBridge");
 
     // Initialize the JNI observer
     let key_layout_manager = KeyLayoutMapManager::get();
@@ -63,7 +63,7 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
 }
 
 #[no_mangle]
-pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_destroyEvdevManager(
+pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_destroyEvdevManager(
     _env: JNIEnv,
     _class: JClass,
 ) {
@@ -77,7 +77,7 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
 
 /// Set the list of grabbed devices. Takes an array of EvdevDeviceInfo and returns an array of GrabbedDeviceHandle.
 #[no_mangle]
-pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_setGrabbedDevicesNative(
+pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_setGrabbedDevicesNative(
     mut env: JNIEnv,
     _class: JClass,
     j_devices: jobjectArray,
@@ -119,7 +119,7 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
 
 /// Write an event to a grabbed device using its device ID
 #[no_mangle]
-pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_writeEvdevEventNative(
+pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_writeEvdevEventNative(
     _env: JNIEnv,
     _class: JClass,
     j_device_id: jint,
@@ -134,7 +134,7 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSys
 
 /// Get all available evdev devices (returns EvdevDeviceInfo array)
 #[no_mangle]
-pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_BaseSystemBridge_getEvdevDevicesNative(
+pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_getEvdevDevicesNative(
     mut env: JNIEnv,
     _class: JClass,
 ) -> jobjectArray {
