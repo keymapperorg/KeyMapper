@@ -120,7 +120,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
             }
         }
 
-    override val isRootGranted: Flow<Boolean> = suAdapter.isRootGranted
+    override val isRootGranted: Flow<Boolean> = suAdapter.isRootGranted.map { it ?: false }
 
     override val shizukuSetupState: Flow<ShizukuSetupState> = combine(
         shizukuAdapter.isInstalled,

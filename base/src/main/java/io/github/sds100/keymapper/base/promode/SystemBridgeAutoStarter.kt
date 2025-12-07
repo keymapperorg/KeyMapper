@@ -46,6 +46,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
 /**
@@ -78,45 +79,47 @@ class SystemBridgeAutoStarter @Inject constructor(
     @SuppressLint("NewApi")
     @OptIn(ExperimentalCoroutinesApi::class)
     private val autoStartTypeFlow: Flow<AutoStartType?> =
-        suAdapter.isRootGranted.flatMapLatest { isRooted ->
-            if (isRooted) {
-                flowOf(AutoStartType.ROOT)
-            } else {
-                val useShizukuFlow =
-                    combine(
-                        shizukuAdapter.isStarted,
-                        permissionAdapter.isGrantedFlow(Permission.SHIZUKU),
-                    ) { isStarted, isGranted ->
-                        isStarted && isGranted
-                    }
-
-                useShizukuFlow.flatMapLatest { useShizuku ->
-                    if (useShizuku) {
-                        flowOf(AutoStartType.SHIZUKU)
-                    } else if (buildConfig.sdkInt >= Build.VERSION_CODES.R) {
-                        val isAdbAutoStartAllowed = combine(
-                            permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS),
-                            networkAdapter.isWifiConnected,
-                        ) { isWriteSecureSettingsGranted, isWifiConnected ->
-                            isWriteSecureSettingsGranted &&
-                                isWifiConnected &&
-                                setupController.isAdbPaired()
+        suAdapter.isRootGranted
+            .filterNotNull()
+            .flatMapLatest { isRooted ->
+                if (isRooted) {
+                    flowOf(AutoStartType.ROOT)
+                } else {
+                    val useShizukuFlow =
+                        combine(
+                            shizukuAdapter.isStarted,
+                            permissionAdapter.isGrantedFlow(Permission.SHIZUKU),
+                        ) { isStarted, isGranted ->
+                            isStarted && isGranted
                         }
 
-                        isAdbAutoStartAllowed.distinctUntilChanged()
-                            .map { isAdbAutoStartAllowed ->
-                                if (isAdbAutoStartAllowed) {
-                                    AutoStartType.ADB
-                                } else {
-                                    null
-                                }
-                            }.filterNotNull()
-                    } else {
-                        flowOf(null)
+                    useShizukuFlow.flatMapLatest { useShizuku ->
+                        if (useShizuku) {
+                            flowOf(AutoStartType.SHIZUKU)
+                        } else if (buildConfig.sdkInt >= Build.VERSION_CODES.R) {
+                            val isAdbAutoStartAllowed = combine(
+                                permissionAdapter.isGrantedFlow(Permission.WRITE_SECURE_SETTINGS),
+                                networkAdapter.isWifiConnected,
+                            ) { isWriteSecureSettingsGranted, isWifiConnected ->
+                                isWriteSecureSettingsGranted &&
+                                    isWifiConnected &&
+                                    setupController.isAdbPaired()
+                            }
+
+                            isAdbAutoStartAllowed.distinctUntilChanged()
+                                .map { isAdbAutoStartAllowed ->
+                                    if (isAdbAutoStartAllowed) {
+                                        AutoStartType.ADB
+                                    } else {
+                                        null
+                                    }
+                                }.filterNotNull()
+                        } else {
+                            flowOf(null)
+                        }
                     }
                 }
             }
-        }
 
     /**
      * This emits values when the system bridge needs restarting after it being killed.
@@ -187,7 +190,11 @@ class SystemBridgeAutoStarter @Inject constructor(
         @Suppress("DEPRECATION")
         val upgradedFromPreVersion4 = preferences.get(Keys.hasRootPermissionLegacy).first() != null
 
-        if (upgradedFromPreVersion4 && suAdapter.isRootGranted.first()) {
+        val isRooted: Boolean = withTimeoutOrNull(1000) {
+            suAdapter.isRootGranted.filterNotNull().first()
+        } ?: false
+
+        if (upgradedFromPreVersion4 && isRooted) {
             Timber.i(
                 "Auto starting system bridge because upgraded from pre version 4.0 and was rooted",
             )

@@ -278,7 +278,7 @@ class AndroidPermissionAdapter @Inject constructor(
                 Manifest.permission.SEND_SMS,
             ) == PERMISSION_GRANTED
 
-        Permission.ROOT -> suAdapter.isRootGranted.firstBlocking()
+        Permission.ROOT -> suAdapter.isRootGranted.firstBlocking() ?: false
 
         Permission.IGNORE_BATTERY_OPTIMISATION ->
             powerManager?.isIgnoringBatteryOptimizations(buildConfigProvider.packageName) ?: false
