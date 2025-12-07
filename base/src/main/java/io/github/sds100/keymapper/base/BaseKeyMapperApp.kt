@@ -105,12 +105,6 @@ abstract class BaseKeyMapperApp : MultiDexApplication() {
             when (intent.action) {
                 Intent.ACTION_SHUTDOWN -> {
                     Timber.i("Clean shutdown")
-                    settingsRepository.set(Keys.isCleanShutdown, true)
-
-                    // Block until the value is persisted.
-                    runBlocking {
-                        settingsRepository.get(Keys.isCleanShutdown).first { it == true }
-                    }
                 }
             }
         }

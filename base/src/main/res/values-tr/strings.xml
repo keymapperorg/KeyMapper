@@ -1302,8 +1302,8 @@ Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="pro_mode_settings_unavailable_text">Bu ayarlar, uyarıyı kabul edene kadar kullanılamaz.</string>
     <string name="pro_mode_service_started">PRO modu hizmeti çalışıyor</string>
     <string name="pro_mode_stop_service_button">Durdur</string>
-    <string name="title_pref_pro_mode_auto_start_at_boot">Açılışta otomatik olarak başlat</string>
-    <string name="summary_pref_pro_mode_auto_start_at_boot">Cihazınızı her açtığınızda veya yeniden başlattığınızda PRO Modu kendini başlatacaktır</string>
+    <string name="title_pref_pro_mode_auto_start">Açılışta otomatik olarak başlat</string>
+    <string name="summary_pref_pro_mode_auto_start">Cihazınızı her açtığınızda veya yeniden başlattığınızda PRO Modu kendini başlatacaktır</string>
     <string name="pro_mode_emergency_tip_title">Acil durum ipucu</string>
     <string name="pro_mode_emergency_tip_text">Güç düğmeniz çalışmazsa, PRO Modu\'nu devre dışı bırakmak için güç düğmesini 10 saniye basılı tutun ve bırakın.</string>
     <string name="pro_mode_setup_wizard_title">Kurulum sihirbazı</string>

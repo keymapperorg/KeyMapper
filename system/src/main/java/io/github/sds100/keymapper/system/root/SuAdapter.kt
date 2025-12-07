@@ -8,8 +8,8 @@ import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -19,7 +19,7 @@ import timber.log.Timber
 class SuAdapterImpl @Inject constructor(private val coroutineScope: CoroutineScope) :
     BaseShellAdapter(),
     SuAdapter {
-    override val isRootGranted: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val isRootGranted: MutableStateFlow<Boolean?> = MutableStateFlow(null)
 
     private var invalidateJob: Job? = null
 
@@ -62,7 +62,7 @@ class SuAdapterImpl @Inject constructor(private val coroutineScope: CoroutineSco
 }
 
 interface SuAdapter : ShellAdapter {
-    val isRootGranted: StateFlow<Boolean>
+    val isRootGranted: Flow<Boolean?>
 
     fun requestPermission()
 }

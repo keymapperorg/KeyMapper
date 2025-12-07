@@ -120,7 +120,7 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
             }
         }
 
-    override val isRootGranted: Flow<Boolean> = suAdapter.isRootGranted
+    override val isRootGranted: Flow<Boolean> = suAdapter.isRootGranted.map { it ?: false }
 
     override val shizukuSetupState: Flow<ShizukuSetupState> = combine(
         shizukuAdapter.isInstalled,
@@ -148,6 +148,10 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     }
 
     override fun stopSystemBridge() {
+        // Save that they've stopped the system bridge so when the app process launches again
+        // it will set the isStoppedByUser to true.
+        preferences.set(Keys.isSystemBridgeStoppedByUser, true)
+
         systemBridgeConnectionManager.stopSystemBridge()
     }
 
@@ -174,16 +178,19 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
 
     override fun startSystemBridgeWithRoot() {
         preferences.set(Keys.isSystemBridgeEmergencyKilled, false)
+        preferences.set(Keys.isSystemBridgeStoppedByUser, false)
         systemBridgeSetupController.startWithRoot()
     }
 
     override fun startSystemBridgeWithShizuku() {
         preferences.set(Keys.isSystemBridgeEmergencyKilled, false)
+        preferences.set(Keys.isSystemBridgeStoppedByUser, false)
         systemBridgeSetupController.startWithShizuku()
     }
 
     override suspend fun startSystemBridgeWithAdb() {
         preferences.set(Keys.isSystemBridgeEmergencyKilled, false)
+        preferences.set(Keys.isSystemBridgeStoppedByUser, false)
         if (isAdbAutoStartAllowed.first()) {
             systemBridgeSetupController.autoStartWithAdb()
         } else {
@@ -200,12 +207,12 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
     }
 
     override val isAutoStartBootEnabled: Flow<Boolean> =
-        preferences.get(Keys.isProModeAutoStartBootEnabled)
-            .map { it ?: PreferenceDefaults.PRO_MODE_AUTOSTART_BOOT }
+        preferences.get(Keys.isSystemBridgeKeepAliveEnabled)
+            .map { it ?: PreferenceDefaults.PRO_MODE_KEEP_ALIVE }
 
     override fun toggleAutoStartBoot() {
-        preferences.update(Keys.isProModeAutoStartBootEnabled) {
-            !(it ?: PreferenceDefaults.PRO_MODE_AUTOSTART_BOOT)
+        preferences.update(Keys.isSystemBridgeKeepAliveEnabled) {
+            !(it ?: PreferenceDefaults.PRO_MODE_KEEP_ALIVE)
         }
     }
 

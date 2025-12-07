@@ -96,7 +96,7 @@ class GetActionErrorUseCaseTest {
         val connectionState = if (isSystemBridgeConnected) {
             SystemBridgeConnectionState.Connected(time = 0L)
         } else {
-            SystemBridgeConnectionState.Disconnected(time = 0L, isExpected = true)
+            SystemBridgeConnectionState.Disconnected(time = 0L, isStoppedByUser = true)
         }
 
         whenever(mockSystemBridgeConnectionManager.connectionState).then {

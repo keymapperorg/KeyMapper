@@ -17,9 +17,7 @@ object PreferenceDefaults {
 
     const val PRO_MODE_INTERACTIVE_SETUP_ASSISTANT = true
 
-    // Enable this by default so that key maps will still work for root users
-    // who upgrade to version 4.0.
-    const val PRO_MODE_AUTOSTART_BOOT = true
+    const val PRO_MODE_KEEP_ALIVE = true
 
     // It is false by default and the first time they turn on the system bridge,
     // the preference will be set to true.

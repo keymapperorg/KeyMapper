@@ -21,6 +21,7 @@ import io.github.sds100.keymapper.common.BuildConfigProvider
 import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
+import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.getIdentifier
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
@@ -277,7 +278,7 @@ class AndroidPermissionAdapter @Inject constructor(
                 Manifest.permission.SEND_SMS,
             ) == PERMISSION_GRANTED
 
-        Permission.ROOT -> suAdapter.isRootGranted.value
+        Permission.ROOT -> suAdapter.isRootGranted.firstBlocking() ?: false
 
         Permission.IGNORE_BATTERY_OPTIMISATION ->
             powerManager?.isIgnoringBatteryOptimizations(buildConfigProvider.packageName) ?: false

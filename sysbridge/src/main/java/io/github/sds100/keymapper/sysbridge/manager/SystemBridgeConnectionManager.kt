@@ -22,7 +22,10 @@ import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.SettingsUtils
 import io.github.sds100.keymapper.common.utils.Success
+import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.onFailure
+import io.github.sds100.keymapper.data.Keys
+import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
 import io.github.sds100.keymapper.sysbridge.ktx.TAG
 import io.github.sds100.keymapper.sysbridge.starter.SystemBridgeStarter
@@ -45,6 +48,7 @@ import timber.log.Timber
 class SystemBridgeConnectionManagerImpl @Inject constructor(
     @ApplicationContext private val ctx: Context,
     private val coroutineScope: CoroutineScope,
+    private val preferences: PreferenceRepository,
     private val starter: SystemBridgeStarter,
     private val buildConfigProvider: BuildConfigProvider,
 ) : SystemBridgeConnectionManager {
@@ -56,7 +60,9 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
         MutableStateFlow<SystemBridgeConnectionState>(
             SystemBridgeConnectionState.Disconnected(
                 time = SystemClock.elapsedRealtime(),
-                isExpected = true,
+                // Get whether the user previously stopped the system bridge.
+                isStoppedByUser =
+                preferences.get(Keys.isSystemBridgeStoppedByUser).firstBlocking() ?: false,
             ),
         )
     private var isExpectedDeath: Boolean = false
@@ -70,7 +76,7 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
             connectionState.update {
                 SystemBridgeConnectionState.Disconnected(
                     time = SystemClock.elapsedRealtime(),
-                    isExpected = isExpectedDeath,
+                    isStoppedByUser = isExpectedDeath,
                 )
             }
 
