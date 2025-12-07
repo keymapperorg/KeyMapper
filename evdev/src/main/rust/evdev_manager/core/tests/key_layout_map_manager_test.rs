@@ -230,13 +230,10 @@ fn test_map_key_reads_from_cache() {
     let cached_key_layout_map = manager.preload_key_layout_map(&device).unwrap().unwrap();
     let cached_key = cached_key_layout_map.map_key(12).unwrap();
 
-    // Verify the cached value is returned by comparing the pointers
+    // Verify the cached value is returned
     let map_key_result = manager.map_key(&device, 12).unwrap().unwrap();
 
-    assert!(
-        Arc::ptr_eq(&cached_key, &map_key_result),
-        "Key pointers should be equal"
-    );
+    assert_eq!(cached_key, map_key_result, "Key codes should be equal");
 }
 
 #[test]
@@ -256,14 +253,11 @@ fn test_map_key_saves_to_cache() {
         version: 0x0001,
     };
 
-    // Verify the cached value is returned by comparing the pointers
+    // Verify the cached value is returned
     let cached_key = manager.map_key(&device, 12).unwrap().unwrap();
     let map_key = manager.map_key(&device, 12).unwrap().unwrap();
 
-    assert!(
-        Arc::ptr_eq(&cached_key, &map_key),
-        "Key pointers should be equal"
-    );
+    assert_eq!(cached_key, map_key, "Key codes should be equal");
 }
 
 #[test]
@@ -283,10 +277,10 @@ fn test_map_key_finds_file_if_cache_miss() {
         version: 0x0001,
     };
 
-    // Verify the cached value is returned by comparing the pointers
+    // Verify the key is found and has the correct key code
     let map_key_result = manager.map_key(&device, 12).unwrap().unwrap();
 
-    assert_eq!(map_key_result.key_code, AKEYCODE_MINUS);
+    assert_eq!(map_key_result, AKEYCODE_MINUS);
 }
 
 #[test]
@@ -306,11 +300,11 @@ fn test_map_key_reads_first_found_path() {
         version: 0x0001,
     };
 
-    // Verify the cached value is returned by comparing the pointers
+    // Verify the correct key code is returned (device-specific file takes priority)
     let map_key_result = manager.map_key(&device, 102).unwrap().unwrap();
 
     // In gpio-keys.kl this is HOME and in Generic.kl this is MOVE_HOME
-    assert_eq!(map_key_result.key_code, AKEYCODE_HOME);
+    assert_eq!(map_key_result, AKEYCODE_HOME);
 }
 
 #[test]
@@ -329,9 +323,9 @@ fn test_map_key_reads_generic_if_device_specific_not_found() {
         version: 0x0001,
     };
 
-    // Verify the cached value is returned by comparing the pointers
+    // Verify the fallback to Generic.kl works
     let map_key_result = manager.map_key(&device, 102).unwrap().unwrap();
 
     // In gpio-keys.kl this is HOME and in Generic.kl this is MOVE_HOME
-    assert_eq!(map_key_result.key_code, AKEYCODE_MOVE_HOME);
+    assert_eq!(map_key_result, AKEYCODE_MOVE_HOME);
 }

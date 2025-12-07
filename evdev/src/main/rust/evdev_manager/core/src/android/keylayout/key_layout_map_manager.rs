@@ -1,8 +1,7 @@
-use crate::android::keylayout::key_layout_map::{KeyLayoutKey, KeyLayoutMap};
+use crate::android::keylayout::key_layout_map::KeyLayoutMap;
 use crate::device_identifier::DeviceIdentifier;
 use log::{debug, error, info};
 use std::collections::HashMap;
-use std::env;
 use std::error::Error;
 use std::fs;
 use std::fs::File;
@@ -46,13 +45,13 @@ impl KeyLayoutMapManager {
         }
     }
 
-    /// Map a raw evdev key code to Android key code
-    /// Returns the android keycode and flags if the key is found in the map, otherwise, `None`.
+    /// Map a raw evdev key code to Android key code.
+    /// Returns the android keycode if the key is found in the map, otherwise, `None`.
     pub fn map_key(
         &self,
         device_identifier: &DeviceIdentifier,
         scan_code: u32,
-    ) -> Result<Option<Arc<KeyLayoutKey>>, Box<dyn Error>> {
+    ) -> Result<Option<u32>, Box<dyn Error>> {
         self.get_key_layout_map_lazy(device_identifier)
             .map(|map| map?.map_key(scan_code))
     }

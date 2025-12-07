@@ -1,12 +1,10 @@
 use evdev::{util::event_code_to_int, InputEvent};
 use evdev_manager_core::android::android_codes;
 use evdev_manager_core::android::android_codes::AKEYCODE_UNKNOWN;
-use evdev_manager_core::android::keylayout::key_layout_map::KeyLayoutKey;
 use evdev_manager_core::android::keylayout::key_layout_map_manager::KeyLayoutMapManager;
 use evdev_manager_core::device_identifier::DeviceIdentifier;
 use jni::objects::{GlobalRef, JValue};
 use jni::JavaVM;
-use std::error::Error;
 use std::process;
 use std::sync::{Arc, Mutex};
 
@@ -96,11 +94,8 @@ impl EvdevJniObserver {
 
         // Convert raw evdev code to Android keycode
         let android_code = match key_result {
-            Ok(key_option) => match key_option {
-                None => AKEYCODE_UNKNOWN,
-                Some(key) => key.key_code,
-            },
-            Err(_) => AKEYCODE_UNKNOWN,
+            Ok(Some(key_code)) => key_code,
+            Ok(None) | Err(_) => AKEYCODE_UNKNOWN,
         };
 
         // Handle power button emergency kill

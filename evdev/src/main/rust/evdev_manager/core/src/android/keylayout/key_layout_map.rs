@@ -6,29 +6,21 @@
 //! AOSP keylayout files can be found at:
 //! https://cs.android.com/android/platform/superproject/+/android-latest-release:frameworks/base/data/keyboards/
 
-use crate::android::android_codes::POLICY_FLAG_FUNCTION;
-use crate::android::keylayout::input_event_lookup::{
-    get_axis_by_label, get_key_code_by_label, get_key_flag_by_label,
-};
+use crate::android::keylayout::input_event_lookup::{get_axis_by_label, get_key_code_by_label};
 use crate::android::keylayout::tokenizer::Tokenizer;
 use std::collections::HashMap;
 use std::fmt;
 use std::path::PathBuf;
-use std::sync::Arc;
 
 /// Describes a mapping from keyboard scan codes to Android key codes.
 ///
 /// This object is immutable after it has been loaded.
 pub struct KeyLayoutMap {
-    keys_by_scan_code: HashMap<u32, Arc<KeyLayoutKey>>,
+    /// Maps scan codes to key codes.
+    keys_by_scan_code: HashMap<u32, u32>,
+    /// Maps key codes to their corresponding scan codes (reverse lookup).
+    scan_codes_by_key_code: HashMap<u32, Vec<u32>>,
     axes: HashMap<u32, KeyLayoutAxisInfo>,
-}
-
-/// Represents a key mapping entry.
-#[derive(Debug, Clone)]
-pub struct KeyLayoutKey {
-    pub key_code: u32,
-    pub flags: u32,
 }
 
 /// Represents axis information for joystick/gamepad axes.
@@ -70,6 +62,7 @@ impl KeyLayoutMap {
     fn load(mut tokenizer: Tokenizer) -> Result<Self, String> {
         let mut map = KeyLayoutMap {
             keys_by_scan_code: HashMap::new(),
+            scan_codes_by_key_code: HashMap::new(),
             axes: HashMap::new(),
         };
 
@@ -83,9 +76,9 @@ impl KeyLayoutMap {
 
     /// Map a scan code to an Android key code.
     ///
-    /// Returns `Ok((key_code, flags))` on success, or `None` if not found.
-    pub fn map_key(&self, scan_code: u32) -> Option<Arc<KeyLayoutKey>> {
-        self.keys_by_scan_code.get(&scan_code).cloned()
+    /// Returns `Some(key_code)` on success, or `None` if not found.
+    pub fn map_key(&self, scan_code: u32) -> Option<u32> {
+        self.keys_by_scan_code.get(&scan_code).copied()
     }
 
     /// Map a scan code to axis information.
@@ -96,19 +89,11 @@ impl KeyLayoutMap {
     }
 
     /// Find all scan codes that map to the given key code.
-    ///
-    /// Only considers keys without the FUNCTION flag.
     pub fn find_scan_codes_for_key(&self, key_code: u32) -> Vec<u32> {
-        self.keys_by_scan_code
-            .iter()
-            .filter_map(|(scan_code, key)| {
-                if key.key_code == key_code && (key.flags & POLICY_FLAG_FUNCTION) == 0 {
-                    Some(*scan_code)
-                } else {
-                    None
-                }
-            })
-            .collect()
+        self.scan_codes_by_key_code
+            .get(&key_code)
+            .cloned()
+            .unwrap_or_default()
     }
 }
 
@@ -124,7 +109,7 @@ impl fmt::Debug for KeyLayoutMap {
                 .keys_by_scan_code
                 .iter()
                 .take(5)
-                .map(|(scan_code, key)| (scan_code, key))
+                .map(|(scan_code, key_code)| (*scan_code, *key_code))
                 .collect();
             debug_struct.field("sample_keys", &sample_keys);
         }
@@ -247,45 +232,26 @@ impl<'a> Parser<'a> {
         let key_code_token = self.tokenizer.next_token(WHITESPACE);
         let key_code = get_key_code_by_label(&key_code_token);
 
-        let mut flags = 0u32;
+        // Skip any remaining tokens on the line (flags, etc.)
         loop {
             self.tokenizer.skip_delimiters(WHITESPACE);
             if self.tokenizer.is_eol() || self.tokenizer.peek_char() == '#' {
                 break;
             }
-
-            let flag_token = self.tokenizer.next_token(WHITESPACE);
-            let flag_result = get_key_flag_by_label(&flag_token).ok_or_else(|| {
-                format!(
-                    "{}: Expected key flag label, got '{}'.",
-                    self.tokenizer.get_location(),
-                    flag_token
-                )
-            });
-
-            match flag_result {
-                Ok(flag) => {
-                    if (flags & flag) != 0 {
-                        return Err(format!(
-                            "{}: Duplicate key flag '{}'.",
-                            self.tokenizer.get_location(),
-                            flag_token
-                        ));
-                    }
-                    flags |= flag;
-                }
-                Err(_) => {
-                    // Do nothing, just skip this unknown flag.
-                }
-            }
+            // Consume and skip the token (flags are ignored)
+            self.tokenizer.next_token(WHITESPACE);
         }
 
         // Only insert if the key code is known
         if let Some(key_code) = key_code {
-            let key = KeyLayoutKey { key_code, flags };
             self.map
                 .keys_by_scan_code
-                .insert(scan_code as u32, Arc::new(key));
+                .insert(scan_code as u32, key_code);
+            self.map
+                .scan_codes_by_key_code
+                .entry(key_code)
+                .or_default()
+                .push(scan_code as u32);
         }
 
         Ok(())
