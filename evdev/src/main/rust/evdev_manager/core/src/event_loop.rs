@@ -1,10 +1,15 @@
-use crate::android::keylayout::key_layout_map_manager::KeyLayoutMapManager;
+use crate::android::keylayout::key_layout_map_manager::{
+    get_generic_key_layout_map, KeyLayoutMapManager,
+};
 use crate::device_identifier::DeviceIdentifier;
 use crate::evdev_error::EvdevError;
 use crate::grabbed_device::GrabbedDevice;
 use crate::runtime::get_runtime;
-use evdev::util::event_code_to_int;
+use evdev::enums::EventCode::EV_KEY;
+use evdev::enums::{int_to_ev_key, int_to_event_type, EventCode, EventType};
+use evdev::util::{event_code_to_int, int_to_event_code};
 use evdev::{DeviceWrapper, InputEvent, ReadFlag, ReadStatus};
+use libc::c_uint;
 use mio::event::Event;
 use mio::unix::SourceFd;
 use mio::{Events, Interest, Poll, Registry, Token, Waker};
@@ -60,16 +65,18 @@ pub struct EventLoopManager {
     waker: Waker,
     observer: EvdevObserver,
     grabbed_devices: Arc<RwLock<Slab<GrabbedDevice>>>,
+    /// These are the scan codes that have equivalent key codes in Android.
+    android_scan_codes: Vec<EventCode>,
 }
 
 impl fmt::Debug for EventLoopManager {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let is_running = self.join_handle.read().map(|h| h.is_some()).unwrap_or(false);
-        let device_count = self
-            .grabbed_devices
+        let is_running = self
+            .join_handle
             .read()
-            .map(|d| d.len())
-            .unwrap_or(0);
+            .map(|h| h.is_some())
+            .unwrap_or(false);
+        let device_count = self.grabbed_devices.read().map(|d| d.len()).unwrap_or(0);
 
         f.debug_struct("EventLoopManager")
             .field("is_running", &is_running)
@@ -100,6 +107,12 @@ impl EventLoopManager {
         let waker = Waker::new(&registry, WAKER_TOKEN).unwrap();
         let poll_lock = Arc::new(RwLock::new(poll));
 
+        let android_scan_codes: Vec<EventCode> = get_generic_key_layout_map()
+            .scan_codes
+            .iter()
+            .map(|scan_code| int_to_event_code(EventType::EV_KEY as c_uint, *scan_code))
+            .collect();
+
         EventLoopManager {
             stop_flag: Arc::new(AtomicBool::new(false)),
             poll: poll_lock,
@@ -108,6 +121,7 @@ impl EventLoopManager {
             waker,
             observer,
             grabbed_devices: Arc::new(RwLock::new(Slab::with_capacity(32))),
+            android_scan_codes,
         }
     }
 
@@ -272,7 +286,10 @@ impl EventLoopManager {
         devices: &mut Slab<GrabbedDevice>,
         path: &str,
     ) -> Result<usize, Box<dyn Error>> {
-        let device = GrabbedDevice::new(path)?;
+        // Also enable all the scan codes supported by Android so that Key Event actions with
+        // Key Mapper can input any key code through this device, regardless of what is supported
+        // by the real physical evdev device.
+        let device = GrabbedDevice::new_with_extra_events(path, &self.android_scan_codes)?;
         let fd = device.evdev.lock().unwrap().as_raw_fd();
         let key = devices.insert(device);
 
@@ -440,12 +457,7 @@ impl EventLoopThread {
         }
     }
 
-    fn process_event(
-        &self,
-        device_id: usize,
-        event: &InputEvent,
-        grabbed_device: &GrabbedDevice,
-    ) {
+    fn process_event(&self, device_id: usize, event: &InputEvent, grabbed_device: &GrabbedDevice) {
         let consumed = (self.observer)(device_id, &grabbed_device.device_id, event);
 
         if !consumed {

@@ -16,6 +16,7 @@ use std::path::PathBuf;
 ///
 /// This object is immutable after it has been loaded.
 pub struct KeyLayoutMap {
+    pub scan_codes: Vec<u32>,
     /// Maps scan codes to key codes.
     keys_by_scan_code: HashMap<u32, u32>,
     /// Maps key codes to their corresponding scan codes (reverse lookup).
@@ -61,6 +62,7 @@ impl KeyLayoutMap {
 
     fn load(mut tokenizer: Tokenizer) -> Result<Self, String> {
         let mut map = KeyLayoutMap {
+            scan_codes: Vec::with_capacity(16),
             keys_by_scan_code: HashMap::new(),
             scan_codes_by_key_code: HashMap::new(),
             axes: HashMap::new(),
@@ -244,6 +246,7 @@ impl<'a> Parser<'a> {
 
         // Only insert if the key code is known
         if let Some(key_code) = key_code {
+            self.map.scan_codes.push(scan_code as u32);
             self.map
                 .keys_by_scan_code
                 .insert(scan_code as u32, key_code);
