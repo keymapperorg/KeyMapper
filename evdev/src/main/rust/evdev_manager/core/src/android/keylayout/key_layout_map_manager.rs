@@ -59,14 +59,43 @@ impl KeyLayoutMapManager {
     }
 
     /// Map a raw evdev key code to Android key code.
-    /// Returns the android keycode if the key is found in the map, otherwise, `None`.
+    /// Returns the android keycode if the key is found in the device's map,
+    /// falling back to the generic key layout if not found.
     pub fn map_key(
         &self,
         device_identifier: &DeviceIdentifier,
         scan_code: u32,
     ) -> Result<Option<u32>, Box<dyn Error>> {
-        self.get_key_layout_map_lazy(device_identifier)
-            .map(|map| map?.map_key(scan_code))
+        let device_map = self.get_key_layout_map_lazy(device_identifier)?;
+
+        if let Some(map) = device_map {
+            if let Some(key_code) = map.map_key(scan_code) {
+                return Ok(Some(key_code));
+            }
+        }
+
+        // Fall back to generic key layout
+        Ok(get_generic_key_layout_map().map_key(scan_code))
+    }
+
+    /// Find the scan code for a given Android key code.
+    /// Returns the scan code if found in the device's map,
+    /// falling back to the generic key layout if not found.
+    pub fn find_scan_code_for_key(
+        &self,
+        device_identifier: &DeviceIdentifier,
+        key_code: u32,
+    ) -> Result<Option<u32>, Box<dyn Error>> {
+        let device_map = self.get_key_layout_map_lazy(device_identifier)?;
+
+        if let Some(map) = device_map {
+            if let Some(scan_code) = map.find_scan_code_for_key(key_code) {
+                return Ok(Some(scan_code));
+            }
+        }
+
+        // Fall back to generic key layout
+        Ok(get_generic_key_layout_map().find_scan_code_for_key(key_code))
     }
 
     pub fn preload_key_layout_map(

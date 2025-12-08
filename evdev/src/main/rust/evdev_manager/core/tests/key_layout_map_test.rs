@@ -203,26 +203,19 @@ fn test_map_axis_functionality() {
 }
 
 #[test]
-fn test_find_scan_codes_for_key() {
+fn test_find_scan_code_for_key() {
     let map = load_key_layout_map("Generic.kl");
 
-    // Find scan codes for ESCAPE (should find both scan code 1 and 465)
-    let scan_codes = map.find_scan_codes_for_key(111); // ESCAPE
-    assert!(
-        scan_codes.contains(&1),
-        "Should find scan code 1 for ESCAPE"
-    );
-    assert!(
-        scan_codes.contains(&465),
-        "Should find scan code 465 for ESCAPE"
-    );
+    // Find scan code for ESCAPE - returns first scan code (1, not 465 with FUNCTION flag)
+    let scan_code = map.find_scan_code_for_key(111); // ESCAPE
+    assert_eq!(scan_code, Some(1), "Should find scan code 1 for ESCAPE");
 
-    // Find scan codes for a common key
-    let scan_codes = map.find_scan_codes_for_key(8); // KEYCODE_1
-    assert!(
-        scan_codes.contains(&2),
-        "Should find scan code 2 for KEYCODE_1"
-    );
+    // Find scan code for a common key
+    let scan_code = map.find_scan_code_for_key(8); // KEYCODE_1
+    assert_eq!(scan_code, Some(2), "Should find scan code 2 for KEYCODE_1");
+
+    // Non-existent key code should return None
+    assert!(map.find_scan_code_for_key(9999).is_none());
 }
 
 #[test]
@@ -230,36 +223,42 @@ fn test_reverse_mapping_basic() {
     let contents = "key 1 ESCAPE\nkey 2 1\nkey 100 ESCAPE\n";
     let map = KeyLayoutMap::load_from_contents(contents).unwrap();
 
-    // ESCAPE (111) should have two scan codes: 1 and 100
-    let scan_codes = map.find_scan_codes_for_key(111);
-    assert_eq!(scan_codes.len(), 2, "ESCAPE should have 2 scan codes");
-    assert!(scan_codes.contains(&1), "Should contain scan code 1");
-    assert!(scan_codes.contains(&100), "Should contain scan code 100");
+    // ESCAPE (111) returns the first scan code (1)
+    let scan_code = map.find_scan_code_for_key(111);
+    assert_eq!(
+        scan_code,
+        Some(1),
+        "Should return first scan code for ESCAPE"
+    );
 
-    // KEYCODE_1 (8) should have one scan code: 2
-    let scan_codes = map.find_scan_codes_for_key(8);
-    assert_eq!(scan_codes.len(), 1, "KEYCODE_1 should have 1 scan code");
-    assert!(scan_codes.contains(&2), "Should contain scan code 2");
+    // KEYCODE_1 (8) should have scan code 2
+    let scan_code = map.find_scan_code_for_key(8);
+    assert_eq!(
+        scan_code,
+        Some(2),
+        "Should return scan code 2 for KEYCODE_1"
+    );
 
-    // Non-existent key code should return empty
-    let scan_codes = map.find_scan_codes_for_key(9999);
+    // Non-existent key code should return None
     assert!(
-        scan_codes.is_empty(),
-        "Non-existent key code should return empty"
+        map.find_scan_code_for_key(9999).is_none(),
+        "Non-existent key code should return None"
     );
 }
 
 #[test]
-fn test_reverse_mapping_with_flags() {
-    // Flags should be ignored in the reverse mapping
+fn test_reverse_mapping_keeps_first_scan_code() {
+    // When multiple scan codes map to the same key code, we keep the first one
     let contents = "key 1 ESCAPE\nkey 465 ESCAPE FUNCTION\n";
     let map = KeyLayoutMap::load_from_contents(contents).unwrap();
 
-    // Both scan codes should be included regardless of flags
-    let scan_codes = map.find_scan_codes_for_key(111);
-    assert_eq!(scan_codes.len(), 2, "ESCAPE should have 2 scan codes");
-    assert!(scan_codes.contains(&1), "Should contain scan code 1");
-    assert!(scan_codes.contains(&465), "Should contain scan code 465");
+    // Should return the first scan code (1), not 465
+    let scan_code = map.find_scan_code_for_key(111);
+    assert_eq!(
+        scan_code,
+        Some(1),
+        "Should return first scan code for ESCAPE"
+    );
 }
 
 #[test]
@@ -273,9 +272,9 @@ fn test_bidirectional_mapping() {
     assert_eq!(map.map_key(28), Some(66)); // ENTER
 
     // Reverse mapping
-    assert!(map.find_scan_codes_for_key(111).contains(&1));
-    assert!(map.find_scan_codes_for_key(8).contains(&2));
-    assert!(map.find_scan_codes_for_key(66).contains(&28));
+    assert_eq!(map.find_scan_code_for_key(111), Some(1)); // ESCAPE -> 1
+    assert_eq!(map.find_scan_code_for_key(8), Some(2)); // KEYCODE_1 -> 2
+    assert_eq!(map.find_scan_code_for_key(66), Some(28)); // ENTER -> 28
 }
 
 #[test]

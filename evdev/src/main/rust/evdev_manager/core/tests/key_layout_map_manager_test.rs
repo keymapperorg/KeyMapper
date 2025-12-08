@@ -1,5 +1,5 @@
 //! Tests for KeyLayoutMapManager file finding logic.
-use assertables::{assert_iter_eq, assert_none, assert_ok, assert_result_ok, assert_some};
+use assertables::{assert_iter_eq, assert_some, assert_some_eq};
 use evdev_manager_core::android::android_codes::{
     AKEYCODE_ESCAPE, AKEYCODE_HOME, AKEYCODE_MINUS, AKEYCODE_MOVE_HOME, AKEYCODE_SPACE,
 };
@@ -355,10 +355,8 @@ fn test_get_generic_key_layout_map_is_static() {
 fn test_get_generic_key_layout_map_reverse_lookup() {
     let generic_map = get_generic_key_layout_map();
 
-    // Test reverse lookup - ESCAPE should map to scan code 1 (and 465 with FUNCTION flag)
-    let escape_scan_codes = generic_map.find_scan_codes_for_key(AKEYCODE_ESCAPE);
-    assert!(escape_scan_codes.contains(&1));
-    assert!(escape_scan_codes.contains(&465));
+    let escape_scan_code = generic_map.find_scan_code_for_key(AKEYCODE_ESCAPE);
+    assert_some_eq!(escape_scan_code, Some(1));
 }
 
 #[test]
@@ -467,4 +465,233 @@ fn test_fallback_uses_static_generic_map() {
         Arc::ptr_eq(&manager_map, &static_map),
         "Manager fallback should use the static generic map"
     );
+}
+
+#[test]
+fn test_map_key_falls_back_to_generic_for_missing_scan_code() {
+    // gpio-keys.kl only has a few keys (like HOME on scan code 102)
+    // It doesn't have ESCAPE (scan code 1), so it should fall back to Generic
+    let mock_finder = Arc::new(
+        MockFileFinder::new()
+            .add_system_file("gpio-keys", get_test_data_path().join("6t/gpio-keys.kl")),
+    );
+
+    let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
+
+    let device = DeviceIdentifier {
+        name: "gpio-keys".to_string(),
+        bus: 0x0003,
+        vendor: 0x0000,
+        product: 0x0000,
+        version: 0x0000,
+    };
+
+    // Scan code 102 is in gpio-keys.kl and maps to HOME
+    let key_code = manager.map_key(&device, 102).unwrap();
+    assert_eq!(key_code, Some(AKEYCODE_HOME));
+
+    // Scan code 1 (ESCAPE) is NOT in gpio-keys.kl, so it should fall back to Generic
+    let key_code = manager.map_key(&device, 1).unwrap();
+    assert_eq!(key_code, Some(AKEYCODE_ESCAPE));
+
+    // Scan code 57 (SPACE) is NOT in gpio-keys.kl, so it should fall back to Generic
+    let key_code = manager.map_key(&device, 57).unwrap();
+    assert_eq!(key_code, Some(AKEYCODE_SPACE));
+}
+
+#[test]
+fn test_find_scan_code_for_key_falls_back_to_generic_for_missing_key_code() {
+    // gpio-keys.kl only has a few keys
+    // It doesn't have ESCAPE, so reverse lookup should fall back to Generic
+    let mock_finder = Arc::new(
+        MockFileFinder::new()
+            .add_system_file("gpio-keys", get_test_data_path().join("6t/gpio-keys.kl")),
+    );
+
+    let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
+
+    let device = DeviceIdentifier {
+        name: "gpio-keys".to_string(),
+        bus: 0x0003,
+        vendor: 0x0000,
+        product: 0x0000,
+        version: 0x0000,
+    };
+
+    // HOME is in gpio-keys.kl, should return scan code 102
+    let scan_code = manager
+        .find_scan_code_for_key(&device, AKEYCODE_HOME)
+        .unwrap();
+    assert_eq!(scan_code, Some(102));
+
+    // ESCAPE is NOT in gpio-keys.kl, should fall back to Generic (scan code 1)
+    let scan_code = manager
+        .find_scan_code_for_key(&device, AKEYCODE_ESCAPE)
+        .unwrap();
+    assert_eq!(scan_code, Some(1));
+
+    // SPACE is NOT in gpio-keys.kl, should fall back to Generic (scan code 57)
+    let scan_code = manager
+        .find_scan_code_for_key(&device, AKEYCODE_SPACE)
+        .unwrap();
+    assert_eq!(scan_code, Some(57));
+}
+
+#[test]
+fn test_find_scan_code_for_key_reads_from_cache() {
+    let test_kl_path = get_test_data_path().join("Generic.kl");
+    let mock_finder =
+        Arc::new(MockFileFinder::new().add_system_file("Generic", test_kl_path.clone()));
+
+    let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
+
+    let device = DeviceIdentifier {
+        name: "Test Device".to_string(),
+        bus: 0x0003,
+        vendor: 0x9999,
+        product: 0x8888,
+        version: 0x0001,
+    };
+
+    let cached_key_layout_map = manager.preload_key_layout_map(&device).unwrap().unwrap();
+    let cached_scan_code = cached_key_layout_map
+        .find_scan_code_for_key(AKEYCODE_MINUS)
+        .unwrap();
+
+    // Verify the cached value is returned
+    let scan_code_result = manager
+        .find_scan_code_for_key(&device, AKEYCODE_MINUS)
+        .unwrap()
+        .unwrap();
+
+    assert_eq!(
+        cached_scan_code, scan_code_result,
+        "Scan codes should be equal"
+    );
+}
+
+#[test]
+fn test_find_scan_code_for_key_saves_to_cache() {
+    let test_kl_path = get_test_data_path().join("Generic.kl");
+    let mock_finder =
+        Arc::new(MockFileFinder::new().add_system_file("Generic", test_kl_path.clone()));
+
+    let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
+
+    let device = DeviceIdentifier {
+        name: "Test Device".to_string(),
+        bus: 0x0003,
+        vendor: 0x9999,
+        product: 0x8888,
+        version: 0x0001,
+    };
+
+    // First call loads and caches the map
+    let first_result = manager
+        .find_scan_code_for_key(&device, AKEYCODE_MINUS)
+        .unwrap()
+        .unwrap();
+    // Second call should use the cache
+    let second_result = manager
+        .find_scan_code_for_key(&device, AKEYCODE_MINUS)
+        .unwrap()
+        .unwrap();
+
+    assert_eq!(first_result, second_result, "Scan codes should be equal");
+}
+
+#[test]
+fn test_find_scan_code_for_key_finds_file_if_cache_miss() {
+    let test_kl_path = get_test_data_path().join("Generic.kl");
+    let mock_finder =
+        Arc::new(MockFileFinder::new().add_system_file("Generic", test_kl_path.clone()));
+
+    let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
+
+    let device = DeviceIdentifier {
+        name: "Test Device".to_string(),
+        bus: 0x0003,
+        vendor: 0x9999,
+        product: 0x8888,
+        version: 0x0001,
+    };
+
+    // MINUS key code should map to scan code 12 in Generic.kl
+    let scan_code_result = manager
+        .find_scan_code_for_key(&device, AKEYCODE_MINUS)
+        .unwrap()
+        .unwrap();
+
+    assert_eq!(scan_code_result, 12);
+}
+
+#[test]
+fn test_find_scan_code_for_key_reads_first_found_path() {
+    // gpio-keys.kl has HOME -> 102, Generic.kl has HOME -> 172
+    let mock_finder = MockFileFinder::new()
+        .add_system_file("Generic", get_test_data_path().join("Generic.kl"))
+        .add_system_file("gpio-keys", get_test_data_path().join("6t/gpio-keys.kl"));
+
+    let manager = KeyLayoutMapManager::with_file_finder(Arc::new(mock_finder));
+
+    let device = DeviceIdentifier {
+        name: "gpio-keys".to_string(),
+        bus: 0x0003,
+        vendor: 0x9999,
+        product: 0x8888,
+        version: 0x0001,
+    };
+
+    // Device-specific file (gpio-keys.kl) should take priority
+    // In gpio-keys.kl, HOME maps to scan code 102
+    let scan_code_result = manager
+        .find_scan_code_for_key(&device, AKEYCODE_HOME)
+        .unwrap()
+        .unwrap();
+
+    assert_eq!(scan_code_result, 102);
+}
+
+#[test]
+fn test_find_scan_code_for_key_reads_generic_if_device_not_found() {
+    let mock_finder =
+        MockFileFinder::new().add_system_file("Generic", get_test_data_path().join("Generic.kl"));
+
+    let manager = KeyLayoutMapManager::with_file_finder(Arc::new(mock_finder));
+
+    let device = DeviceIdentifier {
+        name: "gpio-keys".to_string(),
+        bus: 0x0003,
+        vendor: 0x9999,
+        product: 0x8888,
+        version: 0x0001,
+    };
+
+    // No device-specific file found, fallback to Generic.kl
+    // In Generic.kl, MOVE_HOME maps to scan code 102
+    let scan_code_result = manager
+        .find_scan_code_for_key(&device, AKEYCODE_MOVE_HOME)
+        .unwrap()
+        .unwrap();
+
+    assert_eq!(scan_code_result, 102);
+}
+
+#[test]
+fn test_find_scan_code_for_key_returns_none_for_unknown_key() {
+    let mock_finder = Arc::new(MockFileFinder::new());
+
+    let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
+
+    let device = DeviceIdentifier {
+        name: "Unknown Device".to_string(),
+        bus: 0x0003,
+        vendor: 0x9999,
+        product: 0x8888,
+        version: 0x0001,
+    };
+
+    // Unknown key code should return None
+    let scan_code = manager.find_scan_code_for_key(&device, 99999).unwrap();
+    assert_eq!(scan_code, None);
 }

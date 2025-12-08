@@ -20,7 +20,7 @@ pub struct KeyLayoutMap {
     /// Maps scan codes to key codes.
     keys_by_scan_code: HashMap<u32, u32>,
     /// Maps key codes to their corresponding scan codes (reverse lookup).
-    scan_codes_by_key_code: HashMap<u32, Vec<u32>>,
+    scan_codes_by_key_code: HashMap<u32, u32>,
     axes: HashMap<u32, KeyLayoutAxisInfo>,
 }
 
@@ -91,11 +91,8 @@ impl KeyLayoutMap {
     }
 
     /// Find all scan codes that map to the given key code.
-    pub fn find_scan_codes_for_key(&self, key_code: u32) -> Vec<u32> {
-        self.scan_codes_by_key_code
-            .get(&key_code)
-            .cloned()
-            .unwrap_or_default()
+    pub fn find_scan_code_for_key(&self, key_code: u32) -> Option<u32> {
+        self.scan_codes_by_key_code.get(&key_code).cloned()
     }
 }
 
@@ -250,11 +247,13 @@ impl<'a> Parser<'a> {
             self.map
                 .keys_by_scan_code
                 .insert(scan_code as u32, key_code);
+
+            // Only insert if this key_code doesn't already have a scan code.
+            // This ensures we keep the first (typically non-FUNCTION) scan code.
             self.map
                 .scan_codes_by_key_code
                 .entry(key_code)
-                .or_default()
-                .push(scan_code as u32);
+                .or_insert(scan_code as u32);
         }
 
         Ok(())

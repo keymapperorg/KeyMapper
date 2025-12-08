@@ -5,8 +5,7 @@ use crate::device_identifier::DeviceIdentifier;
 use crate::evdev_error::EvdevError;
 use crate::grabbed_device::GrabbedDevice;
 use crate::runtime::get_runtime;
-use evdev::enums::EventCode::EV_KEY;
-use evdev::enums::{int_to_ev_key, int_to_event_type, EventCode, EventType};
+use evdev::enums::{EventCode, EventType};
 use evdev::util::{event_code_to_int, int_to_event_code};
 use evdev::{DeviceWrapper, InputEvent, ReadFlag, ReadStatus};
 use libc::c_uint;
@@ -318,10 +317,37 @@ impl EventLoopManager {
         value: i32,
     ) -> Result<(), EvdevError> {
         let devices = self.grabbed_devices.read().unwrap();
+
         let device = devices
             .get(device_id) // O(1) slab lookup
             .ok_or_else(|| EvdevError::new(-libc::ENODEV))?;
         device.write_event(event_type, code, value)
+    }
+
+    pub fn write_key_code_event(
+        &self,
+        device_id: usize,
+        key_code: u32,
+        value: i32,
+    ) -> Result<(), Box<dyn Error>> {
+        let devices = self.grabbed_devices.read().unwrap();
+
+        let device = devices
+            .get(device_id)
+            .ok_or_else(|| EvdevError::new(-libc::ENODEV))?;
+
+        let scan_code_result =
+            KeyLayoutMapManager::get().find_scan_code_for_key(&device.device_id, key_code)?;
+
+        match scan_code_result {
+            None => {
+                error!("Failed to find scan code for key: {}", key_code);
+                Err(Box::new(EvdevError::new(-libc::ENODATA)))
+            }
+            Some(code) => device
+                .write_event(EventType::EV_KEY as c_uint, code, value)
+                .map_err(|err| err.into()),
+        }
     }
 
     /// Get the paths to all the real (non uinput) connected devices.

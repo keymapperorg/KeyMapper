@@ -75,6 +75,9 @@ class SystemBridge : ISystemBridge.Stub() {
     external fun writeEvdevEventNative(deviceId: Int, type: Int, code: Int, value: Int): Boolean
 
     @Suppress("KotlinJniMissingFunction")
+    external fun writeEvdevEventKeyCodeNative(deviceId: Int, keyCode: Int, value: Int): Boolean
+
+    @Suppress("KotlinJniMissingFunction")
     external fun getEvdevDevicesNative(): Array<EvdevDeviceInfo>
 
     @Suppress("KotlinJniMissingFunction")
@@ -449,7 +452,7 @@ class SystemBridge : ISystemBridge.Stub() {
     }
 
     override fun writeEvdevEventKeyCode(deviceId: Int, keyCode: Int, value: Int): Boolean {
-        TODO("Not yet implemented")
+        return writeEvdevEventKeyCodeNative(deviceId, keyCode, value)
     }
 
     override fun getProcessUid(): Int {
