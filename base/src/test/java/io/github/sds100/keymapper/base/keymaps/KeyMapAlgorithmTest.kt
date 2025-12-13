@@ -255,7 +255,7 @@ class KeyMapAlgorithmTest {
 
         verify(performActionsUseCase, times(1)).perform(
             TEST_ACTION.data,
-            device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+            device = PerformActionTriggerDevice.Evdev(deviceId = 0),
         )
     }
 
@@ -279,7 +279,7 @@ class KeyMapAlgorithmTest {
                 times(1),
             ).perform(
                 TEST_ACTION.data,
-                device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+                device = PerformActionTriggerDevice.Evdev(deviceId = 0),
             )
         }
 
@@ -295,12 +295,22 @@ class KeyMapAlgorithmTest {
         )
         loadKeyMaps(KeyMap(trigger = trigger, actionList = listOf(TEST_ACTION)))
 
-        inputDownEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
-        inputUpEvdevEvent(KeyEvent.KEYCODE_B, Scancode.KEY_B, FAKE_CONTROLLER_EVDEV_DEVICE)
+        inputDownEvdevEvent(
+            KeyEvent.KEYCODE_B,
+            Scancode.KEY_B,
+            FAKE_CONTROLLER_EVDEV_DEVICE,
+            deviceId = 1,
+        )
+        inputUpEvdevEvent(
+            KeyEvent.KEYCODE_B,
+            Scancode.KEY_B,
+            FAKE_CONTROLLER_EVDEV_DEVICE,
+            deviceId = 1,
+        )
 
         verify(performActionsUseCase, times(1)).perform(
             TEST_ACTION.data,
-            device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+            device = PerformActionTriggerDevice.Evdev(deviceId = 1),
         )
     }
 
@@ -323,7 +333,7 @@ class KeyMapAlgorithmTest {
 
             verify(performActionsUseCase, times(1)).perform(
                 TEST_ACTION.data,
-                device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+                device = PerformActionTriggerDevice.Evdev(deviceId = 0),
             )
         }
 
@@ -377,7 +387,7 @@ class KeyMapAlgorithmTest {
 
             verify(performActionsUseCase, times(1)).perform(
                 TEST_ACTION.data,
-                device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+                device = PerformActionTriggerDevice.Evdev(deviceId = 0),
             )
         }
 
@@ -412,7 +422,7 @@ class KeyMapAlgorithmTest {
 
             verify(performActionsUseCase, times(1)).perform(
                 TEST_ACTION.data,
-                device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+                device = PerformActionTriggerDevice.Evdev(deviceId = 0),
             )
         }
 
@@ -436,7 +446,7 @@ class KeyMapAlgorithmTest {
 
         verify(performActionsUseCase, times(1)).perform(
             TEST_ACTION.data,
-            device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+            device = PerformActionTriggerDevice.Evdev(deviceId = 0),
         )
     }
 
@@ -466,7 +476,7 @@ class KeyMapAlgorithmTest {
 
         verify(performActionsUseCase, times(1)).perform(
             TEST_ACTION.data,
-            device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+            device = PerformActionTriggerDevice.Evdev(deviceId = 0),
         )
     }
 
@@ -575,7 +585,7 @@ class KeyMapAlgorithmTest {
 
         verify(performActionsUseCase, times(1)).perform(
             TEST_ACTION.data,
-            device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+            device = PerformActionTriggerDevice.Evdev(deviceId = 0),
         )
     }
 
@@ -604,7 +614,7 @@ class KeyMapAlgorithmTest {
 
         verify(performActionsUseCase, times(1)).perform(
             TEST_ACTION.data,
-            device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+            device = PerformActionTriggerDevice.Evdev(deviceId = 0),
         )
     }
 
@@ -642,7 +652,7 @@ class KeyMapAlgorithmTest {
 
         verify(performActionsUseCase, times(1)).perform(
             TEST_ACTION.data,
-            device = PerformActionTriggerDevice.Evdev(FAKE_CONTROLLER_EVDEV_DEVICE),
+            device = PerformActionTriggerDevice.Evdev(deviceId = 0),
         )
     }
 
@@ -662,7 +672,7 @@ class KeyMapAlgorithmTest {
 
         verify(performActionsUseCase, times(1)).perform(
             TEST_ACTION.data,
-            device = PerformActionTriggerDevice.Evdev(FAKE_VOLUME_EVDEV_DEVICE),
+            device = PerformActionTriggerDevice.Evdev(deviceId = 0),
         )
     }
 
@@ -4785,43 +4795,51 @@ class KeyMapAlgorithmTest {
         ),
     )
 
-    private fun inputDownEvdevEvent(keyCode: Int, scanCode: Int, device: EvdevDeviceInfo): Boolean =
-        controller.onInputEvent(
-            KMEvdevEvent(
-                type = KMEvdevEvent.TYPE_KEY_EVENT,
-                deviceId = 0,
-                deviceInfo = EvdevDeviceInfo(
-                    name = device.name,
-                    bus = device.bus,
-                    vendor = device.vendor,
-                    product = device.product,
-                ),
-                code = scanCode,
-                androidCode = keyCode,
-                value = KMEvdevEvent.VALUE_DOWN,
-                timeSec = testScope.currentTime,
-                timeUsec = 0,
+    private fun inputDownEvdevEvent(
+        keyCode: Int,
+        scanCode: Int,
+        device: EvdevDeviceInfo,
+        deviceId: Int = 0,
+    ): Boolean = controller.onInputEvent(
+        KMEvdevEvent(
+            type = KMEvdevEvent.TYPE_KEY_EVENT,
+            deviceId = deviceId,
+            deviceInfo = EvdevDeviceInfo(
+                name = device.name,
+                bus = device.bus,
+                vendor = device.vendor,
+                product = device.product,
             ),
-        )
+            code = scanCode,
+            androidCode = keyCode,
+            value = KMEvdevEvent.VALUE_DOWN,
+            timeSec = testScope.currentTime,
+            timeUsec = 0,
+        ),
+    )
 
-    private fun inputUpEvdevEvent(keyCode: Int, scanCode: Int, device: EvdevDeviceInfo): Boolean =
-        controller.onInputEvent(
-            KMEvdevEvent(
-                type = KMEvdevEvent.TYPE_KEY_EVENT,
-                deviceId = 0,
-                deviceInfo = EvdevDeviceInfo(
-                    name = device.name,
-                    bus = device.bus,
-                    vendor = device.vendor,
-                    product = device.product,
-                ),
-                code = scanCode,
-                androidCode = keyCode,
-                value = KMEvdevEvent.VALUE_UP,
-                timeSec = testScope.currentTime,
-                timeUsec = 0,
+    private fun inputUpEvdevEvent(
+        keyCode: Int,
+        scanCode: Int,
+        device: EvdevDeviceInfo,
+        deviceId: Int = 0,
+    ): Boolean = controller.onInputEvent(
+        KMEvdevEvent(
+            type = KMEvdevEvent.TYPE_KEY_EVENT,
+            deviceId = deviceId,
+            deviceInfo = EvdevDeviceInfo(
+                name = device.name,
+                bus = device.bus,
+                vendor = device.vendor,
+                product = device.product,
             ),
-        )
+            code = scanCode,
+            androidCode = keyCode,
+            value = KMEvdevEvent.VALUE_UP,
+            timeSec = testScope.currentTime,
+            timeUsec = 0,
+        ),
+    )
 
     private suspend fun mockParallelTrigger(trigger: Trigger, delay: Long? = null) {
         require(trigger.mode is TriggerMode.Parallel)

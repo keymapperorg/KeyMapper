@@ -27,19 +27,34 @@ class PerformKeyEventActionDelegate(
     private val inputEventHub: InputEventHub,
     private val devicesAdapter: DevicesAdapter,
 ) {
-
     private val injectKeyEventsWithSystemBridge: StateFlow<Boolean> =
         settingsRepository.get(Keys.keyEventActionsUseSystemBridge)
             .map { it ?: PreferenceDefaults.KEY_EVENT_ACTIONS_USE_SYSTEM_BRIDGE }
             .stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
-    suspend fun inputKeyEvent(
+    suspend fun perform(
         action: ActionData.InputKeyEvent,
-        device: PerformActionTriggerDevice,
         inputEventAction: InputEventAction,
         keyMetaState: Int,
+        triggerDevice: PerformActionTriggerDevice,
     ): KMResult<Unit> {
+        if (injectKeyEventsWithSystemBridge.value &&
+            triggerDevice is PerformActionTriggerDevice.Evdev &&
+            (action.device == null || isActionDeviceGrabbed(action.device))
+        ) {
+            return injectEvdevEvent(inputEventAction, triggerDevice.deviceId, action)
+        }
+
         val deviceId: Int = getDeviceIdForKeyEventAction(action)
+
+        // If the device that the user specified in the action can not be found
+        // then fallback to evdev injection.
+        if (injectKeyEventsWithSystemBridge.value &&
+            deviceId == -1 &&
+            triggerDevice is PerformActionTriggerDevice.Evdev
+        ) {
+            return injectEvdevEvent(inputEventAction, triggerDevice.deviceId, action)
+        }
 
         // See issue #1683. Some apps ignore key events which do not have a source.
         val source = when {
@@ -64,17 +79,74 @@ class PerformKeyEventActionDelegate(
             scanCode = 0,
         )
 
+        return injectAndroidKeyEvent(inputEventAction, model)
+    }
+
+    private fun isActionDeviceGrabbed(device: ActionData.InputKeyEvent.Device): Boolean {
+        return inputEventHub.getGrabbedDevices().any { it.name == device.name }
+    }
+
+    private fun injectEvdevEvent(
+        inputEventAction: InputEventAction,
+        deviceId: Int,
+        action: ActionData.InputKeyEvent,
+    ): KMResult<Unit> {
+        when (inputEventAction) {
+            InputEventAction.DOWN_UP -> {
+                return injectDownEvdevEvent(
+                    deviceId,
+                    action,
+                ).then { injectUpEvdevEvent(deviceId, action) }
+            }
+
+            InputEventAction.DOWN -> return injectDownEvdevEvent(
+                deviceId,
+                action,
+            )
+
+            InputEventAction.UP -> return injectUpEvdevEvent(
+                deviceId,
+                action,
+            )
+        }
+    }
+
+    private fun injectDownEvdevEvent(
+        deviceId: Int,
+        action: ActionData.InputKeyEvent,
+    ): KMResult<Unit> {
+        return inputEventHub.injectEvdevEventKeyCode(
+            deviceId = deviceId,
+            keyCode = action.keyCode,
+            value = 1,
+        )
+    }
+
+    private fun injectUpEvdevEvent(
+        deviceId: Int,
+        action: ActionData.InputKeyEvent,
+    ): KMResult<Unit> {
+        return inputEventHub.injectEvdevEventKeyCode(
+            deviceId = deviceId,
+            action.keyCode,
+            value = 0,
+        )
+    }
+
+    private suspend fun injectAndroidKeyEvent(
+        inputEventAction: InputEventAction,
+        model: InjectKeyEventModel,
+    ): KMResult<Unit> {
         if (inputEventAction == InputEventAction.DOWN_UP) {
             return inputEventHub.injectKeyEvent(
                 model,
                 useSystemBridgeIfAvailable = injectKeyEventsWithSystemBridge.value,
-            )
-                .then {
-                    inputEventHub.injectKeyEvent(
-                        model.copy(action = KeyEvent.ACTION_UP),
-                        useSystemBridgeIfAvailable = injectKeyEventsWithSystemBridge.value,
-                    )
-                }
+            ).then {
+                inputEventHub.injectKeyEvent(
+                    model.copy(action = KeyEvent.ACTION_UP),
+                    useSystemBridgeIfAvailable = injectKeyEventsWithSystemBridge.value,
+                )
+            }
         } else {
             return inputEventHub.injectKeyEvent(
                 model,

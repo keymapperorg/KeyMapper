@@ -76,6 +76,11 @@ impl GrabbedDevice {
 
     /// Write an event to the uinput device
     pub fn write_event(&self, event_type: u32, code: u32, value: i32) -> Result<(), EvdevError> {
+        debug!(
+            "Write evdev event: type={} code={} value={} code={}",
+            event_type, code, value, code
+        );
+
         self.uinput
             .write_event(event_type, code, value)
             .map_err(EvdevError::from)?;

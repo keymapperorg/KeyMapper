@@ -28,16 +28,13 @@ import io.github.sds100.keymapper.common.utils.KMError.SdkVersionTooLow
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Orientation
 import io.github.sds100.keymapper.common.utils.Success
-import io.github.sds100.keymapper.common.utils.dataOrNull
 import io.github.sds100.keymapper.common.utils.firstBlocking
 import io.github.sds100.keymapper.common.utils.getWordBoundaries
-import io.github.sds100.keymapper.common.utils.ifIsData
 import io.github.sds100.keymapper.common.utils.onFailure
 import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.otherwise
 import io.github.sds100.keymapper.common.utils.success
 import io.github.sds100.keymapper.common.utils.then
-import io.github.sds100.keymapper.common.utils.withFlag
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -52,8 +49,6 @@ import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import io.github.sds100.keymapper.system.display.DisplayAdapter
 import io.github.sds100.keymapper.system.files.FileAdapter
 import io.github.sds100.keymapper.system.files.FileUtils
-import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
-import io.github.sds100.keymapper.system.inputevents.KeyEventUtils
 import io.github.sds100.keymapper.system.inputevents.Scancode
 import io.github.sds100.keymapper.system.inputmethod.InputMethodAdapter
 import io.github.sds100.keymapper.system.intents.IntentAdapter
@@ -79,12 +74,9 @@ import kotlin.math.absoluteValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
@@ -177,11 +169,11 @@ class PerformActionsUseCaseImpl @AssistedInject constructor(
             }
 
             is ActionData.InputKeyEvent -> {
-                result = performKeyEventActionDelegate.inputKeyEvent(
+                result = performKeyEventActionDelegate.perform(
                     action,
-                    device,
                     inputEventAction,
                     keyMetaState,
+                    device,
                 )
             }
 
