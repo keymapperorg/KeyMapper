@@ -132,6 +132,20 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemB
         .is_ok() as jboolean
 }
 
+/// Write an event to a grabbed device using its device ID
+#[no_mangle]
+pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_writeEvdevEventKeyCodeNative(
+    _env: JNIEnv,
+    _class: JClass,
+    j_device_id: jint,
+    j_key_code: jint,
+    j_value: jint,
+) -> jboolean {
+    EventLoopManager::get()
+        .write_key_code_event(j_device_id as usize, j_key_code as u32, j_value)
+        .is_ok() as jboolean
+}
+
 /// Get all available evdev devices (returns EvdevDeviceInfo array)
 #[no_mangle]
 pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_getEvdevDevicesNative(

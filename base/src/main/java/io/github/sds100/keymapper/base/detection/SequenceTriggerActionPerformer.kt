@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.base.detection
 
 import io.github.sds100.keymapper.base.actions.Action
+import io.github.sds100.keymapper.base.actions.PerformActionTriggerDevice
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.common.utils.InputEventAction
 import kotlinx.coroutines.CoroutineScope
@@ -15,7 +16,7 @@ class SequenceTriggerActionPerformer(
 ) {
     private var job: Job? = null
 
-    fun onTriggered(metaState: Int) {
+    fun onTriggered(device: PerformActionTriggerDevice, metaState: Int) {
         /*
         this job shouldn't be cancelled when the trigger is released. all actions should be performed
         once before repeating (if configured).
@@ -23,7 +24,7 @@ class SequenceTriggerActionPerformer(
         job?.cancel()
         job = coroutineScope.launch {
             for (action in actionList) {
-                performAction(action, metaState)
+                performAction(action, metaState, device)
 
                 delay(action.delayBeforeNextAction?.toLong() ?: 0L)
             }
@@ -35,9 +36,13 @@ class SequenceTriggerActionPerformer(
         job = null
     }
 
-    private suspend fun performAction(action: Action, metaState: Int) {
+    private suspend fun performAction(
+        action: Action,
+        metaState: Int,
+        device: PerformActionTriggerDevice,
+    ) {
         repeat(action.multiplier ?: 1) {
-            useCase.perform(action.data, InputEventAction.DOWN_UP, metaState)
+            useCase.perform(action.data, InputEventAction.DOWN_UP, metaState, device)
         }
     }
 }

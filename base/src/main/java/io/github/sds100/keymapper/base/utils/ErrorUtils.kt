@@ -476,6 +476,9 @@ fun KMError.getFullMessage(resourceProvider: ResourceProvider): String {
                 R.string.error_sms_rate_limit,
             )
 
+        is SystemBridgeError.WriteEvdevEventFailed ->
+            resourceProvider.getString(R.string.error_write_evdev_event_failed)
+
         else ->
             this.toString()
     }

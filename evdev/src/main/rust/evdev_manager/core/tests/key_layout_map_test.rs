@@ -1,7 +1,5 @@
 //! Integration tests for key layout map parsing.
-use evdev_manager_core::android::android_codes::{
-    AKEYCODE_F4, AKEYCODE_FUNCTION, POLICY_FLAG_FUNCTION,
-};
+use evdev_manager_core::android::android_codes::{AKEYCODE_F4, AKEYCODE_FUNCTION};
 use evdev_manager_core::android::keylayout::key_layout_map;
 use evdev_manager_core::android::keylayout::key_layout_map::{KeyLayoutAxisMode, KeyLayoutMap};
 use glob::glob;
@@ -38,23 +36,21 @@ fn test_load_from_contents_simple() {
     let contents = "key 1 ESCAPE\nkey 2 1\n";
     let map = KeyLayoutMap::load_from_contents(contents).unwrap();
 
-    let key = map.map_key(1).unwrap();
-    assert_eq!(key.key_code, 111); // ESCAPE
-    assert_eq!(key.flags, 0);
+    let key_code = map.map_key(1).unwrap();
+    assert_eq!(key_code, 111); // ESCAPE
 
-    let key = map.map_key(2).unwrap();
-    assert_eq!(key.key_code, 8); // KEYCODE_1
-    assert_eq!(key.flags, 0);
+    let key_code = map.map_key(2).unwrap();
+    assert_eq!(key_code, 8); // KEYCODE_1
 }
 
 #[test]
 fn test_load_from_contents_with_flags() {
+    // Flags are parsed but ignored - we just verify the key code is correct
     let contents = "key 465 ESCAPE FUNCTION\n";
     let map = KeyLayoutMap::load_from_contents(contents).unwrap();
 
-    let key = map.map_key(465).unwrap();
-    assert_eq!(key.key_code, 111); // ESCAPE
-    assert_eq!(key.flags, 0x00000004); // FUNCTION flag
+    let key_code = map.map_key(465).unwrap();
+    assert_eq!(key_code, 111); // ESCAPE
 }
 
 #[test]
@@ -75,17 +71,16 @@ fn test_load_from_contents_axis() {
 fn test_function_key_line() {
     let content = "key 464   FUNCTION";
     let map = KeyLayoutMap::load_from_contents(content).unwrap();
-    let key = map.map_key(464).unwrap();
-    assert_eq!(key.key_code, AKEYCODE_FUNCTION);
+    let key_code = map.map_key(464).unwrap();
+    assert_eq!(key_code, AKEYCODE_FUNCTION);
 }
 
 #[test]
 fn test_f4_key_line() {
     let content = "key 469   F4                FUNCTION";
     let map = KeyLayoutMap::load_from_contents(content).unwrap();
-    let key = map.map_key(469).unwrap();
-    assert_eq!(key.key_code, AKEYCODE_F4);
-    assert_eq!(key.flags, POLICY_FLAG_FUNCTION);
+    let key_code = map.map_key(469).unwrap();
+    assert_eq!(key_code, AKEYCODE_F4);
 }
 
 #[test]
@@ -104,14 +99,14 @@ fn test_load_generic_kl() {
     let map = load_key_layout_map("Generic.kl");
 
     // Test some basic key mappings
-    let key = map.map_key(1).expect("Scan code 1 should map to ESCAPE");
-    assert_eq!(key.key_code, 111); // ESCAPE
+    let key_code = map.map_key(1).expect("Scan code 1 should map to ESCAPE");
+    assert_eq!(key_code, 111); // ESCAPE
 
-    let key = map.map_key(2).expect("Scan code 2 should map to 1");
-    assert_eq!(key.key_code, 8); // KEYCODE_1
+    let key_code = map.map_key(2).expect("Scan code 2 should map to 1");
+    assert_eq!(key_code, 8); // KEYCODE_1
 
-    let key = map.map_key(15).expect("Scan code 15 should map to TAB");
-    assert_eq!(key.key_code, 61); // TAB
+    let key_code = map.map_key(15).expect("Scan code 15 should map to TAB");
+    assert_eq!(key_code, 61); // TAB
 }
 
 #[test]
@@ -129,11 +124,11 @@ fn test_parse_all_key_entries() {
     ];
 
     for (scan_code, expected_key_code) in test_cases {
-        let key = map
+        let key_code = map
             .map_key(scan_code)
             .unwrap_or_else(|| panic!("Scan code {} should be mapped", scan_code));
         assert_eq!(
-            key.key_code, expected_key_code,
+            key_code, expected_key_code,
             "Scan code {} should map to key code {}",
             scan_code, expected_key_code
         );
@@ -180,14 +175,15 @@ fn test_map_key_with_scan_codes() {
     let map = load_key_layout_map("Generic.kl");
 
     // Test mapping various scan codes
-    let key = map.map_key(1).unwrap();
-    assert_eq!(key.key_code, 111); // ESCAPE
-    assert_eq!(key.flags, 0);
+    let key_code = map.map_key(1).unwrap();
+    assert_eq!(key_code, 111); // ESCAPE
 
-    // Test a key with FUNCTION flag
-    let key = map.map_key(465).unwrap();
-    assert_eq!(key.key_code, 111); // ESCAPE
-    assert_eq!(key.flags, 0x00000004); // FUNCTION flag
+    // Test a key with FUNCTION flag (flags are now ignored)
+    let key_code = map.map_key(465).unwrap();
+    assert_eq!(key_code, 111); // ESCAPE
+
+    // Test that non-existent scan code returns None
+    assert!(map.map_key(9999).is_none());
 }
 
 #[test]
@@ -207,26 +203,78 @@ fn test_map_axis_functionality() {
 }
 
 #[test]
-fn test_find_scan_codes_for_key() {
+fn test_find_scan_code_for_key() {
     let map = load_key_layout_map("Generic.kl");
 
-    // Find scan codes for ESCAPE (should find scan code 1, but not 465 which has FUNCTION flag)
-    let scan_codes = map.find_scan_codes_for_key(111); // ESCAPE
-    assert!(
-        scan_codes.contains(&1),
-        "Should find scan code 1 for ESCAPE"
-    );
-    assert!(
-        !scan_codes.contains(&465),
-        "Should not find scan code 465 (has FUNCTION flag)"
+    // Find scan code for ESCAPE - returns first scan code (1, not 465 with FUNCTION flag)
+    let scan_code = map.find_scan_code_for_key(111); // ESCAPE
+    assert_eq!(scan_code, Some(1), "Should find scan code 1 for ESCAPE");
+
+    // Find scan code for a common key
+    let scan_code = map.find_scan_code_for_key(8); // KEYCODE_1
+    assert_eq!(scan_code, Some(2), "Should find scan code 2 for KEYCODE_1");
+
+    // Non-existent key code should return None
+    assert!(map.find_scan_code_for_key(9999).is_none());
+}
+
+#[test]
+fn test_reverse_mapping_basic() {
+    let contents = "key 1 ESCAPE\nkey 2 1\nkey 100 ESCAPE\n";
+    let map = KeyLayoutMap::load_from_contents(contents).unwrap();
+
+    // ESCAPE (111) returns the first scan code (1)
+    let scan_code = map.find_scan_code_for_key(111);
+    assert_eq!(
+        scan_code,
+        Some(1),
+        "Should return first scan code for ESCAPE"
     );
 
-    // Find scan codes for a common key
-    let scan_codes = map.find_scan_codes_for_key(8); // KEYCODE_1
-    assert!(
-        scan_codes.contains(&2),
-        "Should find scan code 2 for KEYCODE_1"
+    // KEYCODE_1 (8) should have scan code 2
+    let scan_code = map.find_scan_code_for_key(8);
+    assert_eq!(
+        scan_code,
+        Some(2),
+        "Should return scan code 2 for KEYCODE_1"
     );
+
+    // Non-existent key code should return None
+    assert!(
+        map.find_scan_code_for_key(9999).is_none(),
+        "Non-existent key code should return None"
+    );
+}
+
+#[test]
+fn test_reverse_mapping_keeps_first_scan_code() {
+    // When multiple scan codes map to the same key code, we keep the first one
+    let contents = "key 1 ESCAPE\nkey 465 ESCAPE FUNCTION\n";
+    let map = KeyLayoutMap::load_from_contents(contents).unwrap();
+
+    // Should return the first scan code (1), not 465
+    let scan_code = map.find_scan_code_for_key(111);
+    assert_eq!(
+        scan_code,
+        Some(1),
+        "Should return first scan code for ESCAPE"
+    );
+}
+
+#[test]
+fn test_bidirectional_mapping() {
+    let contents = "key 1 ESCAPE\nkey 2 1\nkey 28 ENTER\n";
+    let map = KeyLayoutMap::load_from_contents(contents).unwrap();
+
+    // Forward mapping
+    assert_eq!(map.map_key(1), Some(111)); // ESCAPE
+    assert_eq!(map.map_key(2), Some(8)); // KEYCODE_1
+    assert_eq!(map.map_key(28), Some(66)); // ENTER
+
+    // Reverse mapping
+    assert_eq!(map.find_scan_code_for_key(111), Some(1)); // ESCAPE -> 1
+    assert_eq!(map.find_scan_code_for_key(8), Some(2)); // KEYCODE_1 -> 2
+    assert_eq!(map.find_scan_code_for_key(66), Some(28)); // ENTER -> 28
 }
 
 #[test]

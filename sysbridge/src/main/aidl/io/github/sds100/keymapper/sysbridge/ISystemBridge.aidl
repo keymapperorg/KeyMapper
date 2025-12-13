@@ -45,4 +45,6 @@ interface ISystemBridge {
    void setTetheringEnabled(boolean enable) = 20;
 
    long getUsbScreenUnlockedFunctions() = 21;
+
+   boolean writeEvdevEventKeyCode(int deviceId, int keyCode, int value) = 22;
 }

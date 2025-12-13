@@ -46,6 +46,7 @@ class EvdevDevicesDelegate @Inject constructor(
     // grab operations finish in the correct order to completion.
     private val grabDevicesChannel: Channel<List<EvdevDeviceInfo>> = Channel(capacity = 16)
 
+    // All the evdev devices on the device, regardless of whether they are grabbed.
     val allDevices: MutableStateFlow<List<EvdevDeviceInfo>> = MutableStateFlow(emptyList())
 
     init {
@@ -92,6 +93,10 @@ class EvdevDevicesDelegate @Inject constructor(
 
     fun getGrabbedDeviceInfo(id: Int): EvdevDeviceInfo? {
         return grabbedDevicesById.value[id]
+    }
+
+    fun getGrabbedDevices(): List<EvdevDeviceInfo> {
+        return grabbedDevicesById.value.values.toList()
     }
 
     private fun onGrabbedDevicesChanged(devices: List<GrabbedDeviceHandle>) {

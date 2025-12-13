@@ -1,6 +1,6 @@
 use crate::device_identifier::DeviceIdentifier;
 use crate::evdev_error::EvdevError;
-use evdev::enums::EV_SYN;
+use evdev::enums::{EventCode, EV_SYN};
 use evdev::{Device, DeviceWrapper, GrabMode, UInputDevice};
 use std::fs::OpenOptions;
 use std::os::unix::fs::OpenOptionsExt;
@@ -18,22 +18,30 @@ pub struct GrabbedDevice {
 impl GrabbedDevice {
     /// Create a new device context by grabbing a device
     pub fn new(device_path: &str) -> Result<Self, EvdevError> {
-        // Open device with O_NONBLOCK so that the loop reading events eventually returns
-        // due to an EAGAIN error
-
-        let file = OpenOptions::new()
-            .read(true)
-            .custom_flags(libc::O_NONBLOCK)
-            .open(device_path)
-            .map_err(EvdevError::from)?;
-
-        // Create device from file
-        let mut evdev = Device::new_from_file(file).map_err(EvdevError::from)?;
-
-        // Grab the device
+        let mut evdev = Self::open_evdev_device(device_path)?;
         evdev.grab(GrabMode::Grab).map_err(EvdevError::from)?;
+        Self::new_internal(device_path, evdev)?
+    }
 
-        // Create uinput device for forwarding unconsumed events
+    /// Create a grabbed device that also enables the given EventCodes in the uinput device.
+    pub fn new_with_extra_events(
+        device_path: &str,
+        extra_events: &[EventCode],
+    ) -> Result<Self, EvdevError> {
+        let mut evdev = Self::open_evdev_device(device_path)?;
+
+        for event in extra_events {
+            evdev.enable(*event)?;
+        }
+
+        evdev.grab(GrabMode::Grab).map_err(EvdevError::from)?;
+        Self::new_internal(device_path, evdev)?
+    }
+
+    fn new_internal(
+        device_path: &str,
+        evdev: Device,
+    ) -> Result<Result<GrabbedDevice, EvdevError>, EvdevError> {
         let uinput = UInputDevice::create_from_device(&evdev).map_err(EvdevError::from)?;
 
         let device_id: DeviceIdentifier = DeviceIdentifier {
@@ -44,16 +52,35 @@ impl GrabbedDevice {
             version: evdev.version(),
         };
 
-        Ok(Self {
+        Ok(Ok(Self {
             evdev: Mutex::new(evdev),
             device_id,
             uinput,
             device_path: device_path.to_string(),
-        })
+        }))
+    }
+
+    fn open_evdev_device(device_path: &str) -> Result<Device, EvdevError> {
+        // Open device with O_NONBLOCK so that the loop reading events eventually returns
+        // due to an EAGAIN error
+
+        let file = OpenOptions::new()
+            .read(true)
+            .custom_flags(libc::O_NONBLOCK)
+            .open(device_path)
+            .map_err(EvdevError::from)?;
+
+        let evdev = Device::new_from_file(file).map_err(EvdevError::from)?;
+        Ok(evdev)
     }
 
     /// Write an event to the uinput device
     pub fn write_event(&self, event_type: u32, code: u32, value: i32) -> Result<(), EvdevError> {
+        debug!(
+            "Write evdev event: type={} code={} value={} code={}",
+            event_type, code, value, code
+        );
+
         self.uinput
             .write_event(event_type, code, value)
             .map_err(EvdevError::from)?;

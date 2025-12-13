@@ -1,8 +1,8 @@
-use crate::android::keylayout::key_layout_map::{KeyLayoutKey, KeyLayoutMap};
+use crate::android::keylayout::generic_key_layout::GENERIC_KEY_LAYOUT_CONTENTS;
+use crate::android::keylayout::key_layout_map::KeyLayoutMap;
 use crate::device_identifier::DeviceIdentifier;
 use log::{debug, error, info};
 use std::collections::HashMap;
-use std::env;
 use std::error::Error;
 use std::fs;
 use std::fs::File;
@@ -11,6 +11,18 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex, OnceLock};
 
 static KEY_LAYOUT_MANAGER: OnceLock<Arc<KeyLayoutMapManager>> = OnceLock::new();
+static GENERIC_KEY_LAYOUT_MAP: OnceLock<Arc<KeyLayoutMap>> = OnceLock::new();
+
+/// Get the static generic KeyLayoutMap instance.
+/// This is lazily initialized from hardcoded key mappings based on AOSP Generic.kl.
+pub fn get_generic_key_layout_map() -> Arc<KeyLayoutMap> {
+    Arc::clone(GENERIC_KEY_LAYOUT_MAP.get_or_init(|| {
+        Arc::new(
+            KeyLayoutMap::load_from_contents(GENERIC_KEY_LAYOUT_CONTENTS)
+                .expect("Failed to parse hardcoded Generic key layout"),
+        )
+    }))
+}
 
 /// Manages KeyLayoutMap caching and key code mapping
 /// This is the only file that directly interacts with KeyLayoutMap C bindings
@@ -46,15 +58,44 @@ impl KeyLayoutMapManager {
         }
     }
 
-    /// Map a raw evdev key code to Android key code
-    /// Returns the android keycode and flags if the key is found in the map, otherwise, `None`.
+    /// Map a raw evdev key code to Android key code.
+    /// Returns the android keycode if the key is found in the device's map,
+    /// falling back to the generic key layout if not found.
     pub fn map_key(
         &self,
         device_identifier: &DeviceIdentifier,
         scan_code: u32,
-    ) -> Result<Option<Arc<KeyLayoutKey>>, Box<dyn Error>> {
-        self.get_key_layout_map_lazy(device_identifier)
-            .map(|map| map?.map_key(scan_code))
+    ) -> Result<Option<u32>, Box<dyn Error>> {
+        let device_map = self.get_key_layout_map_lazy(device_identifier)?;
+
+        if let Some(map) = device_map {
+            if let Some(key_code) = map.map_key(scan_code) {
+                return Ok(Some(key_code));
+            }
+        }
+
+        // Fall back to generic key layout
+        Ok(get_generic_key_layout_map().map_key(scan_code))
+    }
+
+    /// Find the scan code for a given Android key code.
+    /// Returns the scan code if found in the device's map,
+    /// falling back to the generic key layout if not found.
+    pub fn find_scan_code_for_key(
+        &self,
+        device_identifier: &DeviceIdentifier,
+        key_code: u32,
+    ) -> Result<Option<u32>, Box<dyn Error>> {
+        let device_map = self.get_key_layout_map_lazy(device_identifier)?;
+
+        if let Some(map) = device_map {
+            if let Some(scan_code) = map.find_scan_code_for_key(key_code) {
+                return Ok(Some(scan_code));
+            }
+        }
+
+        // Fall back to generic key layout
+        Ok(get_generic_key_layout_map().find_scan_code_for_key(key_code))
     }
 
     pub fn preload_key_layout_map(
@@ -89,25 +130,28 @@ impl KeyLayoutMapManager {
         );
 
         for path in key_layout_map_paths {
-            return match KeyLayoutMap::load_from_file(path) {
+            match KeyLayoutMap::load_from_file(path) {
                 Ok(key_layout_map) => {
                     let option = Some(Arc::new(key_layout_map));
-
                     key_layout_maps.insert(device_identifier.clone(), option.clone());
-
-                    Ok(option)
+                    return Ok(option);
                 }
-
                 Err(e) => {
                     error!("Error parsing key layout map: {}", e);
-                    Err(Box::from(e))
+                    // Continue to try the next file instead of failing immediately
                 }
-            };
+            }
         }
 
-        // No key layout map files were found or parsed successfully if this point is reached.
-        key_layout_maps.insert(device_identifier.clone(), None);
-        Ok(None)
+        // No key layout map files were found or parsed successfully.
+        // Fall back to the hardcoded generic key layout map.
+        info!(
+            "No key layout files found for device {}, using hardcoded Generic fallback",
+            device_identifier.name
+        );
+        let fallback = Some(get_generic_key_layout_map());
+        key_layout_maps.insert(device_identifier.clone(), fallback.clone());
+        Ok(fallback)
     }
 
     /// Find all the possible key layout files to use for a device ordered by their priority.

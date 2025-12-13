@@ -11,7 +11,6 @@ import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
 import io.github.sds100.keymapper.common.utils.Success
 import io.github.sds100.keymapper.common.utils.firstBlocking
-import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.then
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
@@ -19,6 +18,7 @@ import io.github.sds100.keymapper.evdev.IEvdevCallback
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.sysbridge.manager.isConnected
+import io.github.sds100.keymapper.sysbridge.utils.SystemBridgeError
 import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
@@ -240,6 +240,11 @@ class InputEventHubImpl @Inject constructor(
     }
 
     @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
+    override fun getGrabbedDevices(): List<EvdevDeviceInfo> {
+        return evdevDevicesDelegate.getGrabbedDevices()
+    }
+
+    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     override fun grabAllEvdevDevices(clientId: String) {
         if (!clients.containsKey(clientId)) {
             throw IllegalArgumentException(
@@ -258,7 +263,7 @@ class InputEventHubImpl @Inject constructor(
         type: Int,
         code: Int,
         value: Int,
-    ): KMResult<Boolean> {
+    ): KMResult<Unit> {
         return systemBridgeConnManager.run { bridge ->
             bridge.writeEvdevEvent(
                 deviceId,
@@ -266,8 +271,35 @@ class InputEventHubImpl @Inject constructor(
                 code,
                 value,
             )
-        }.onSuccess {
-            Timber.d("Injected evdev event: $it")
+        }.then { upstreamSuccess ->
+            if (upstreamSuccess) {
+                Success(Unit)
+            } else {
+                Timber.e(
+                    "Failed to write evdev event: deviceId=$deviceId, type=$type, code=$code, value=$value",
+                )
+                SystemBridgeError.WriteEvdevEventFailed
+            }
+        }
+    }
+
+    @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
+    override fun injectEvdevEventKeyCode(deviceId: Int, keyCode: Int, value: Int): KMResult<Unit> {
+        return systemBridgeConnManager.run { bridge ->
+            bridge.writeEvdevEventKeyCode(
+                deviceId,
+                keyCode,
+                value,
+            )
+        }.then { upstreamSuccess ->
+            if (upstreamSuccess) {
+                Success(Unit)
+            } else {
+                Timber.e(
+                    "Failed to write evdev event with key code: deviceId=$deviceId, keycode=$keyCode, value=$value",
+                )
+                SystemBridgeError.WriteEvdevEventFailed
+            }
         }
     }
 
@@ -353,6 +385,7 @@ interface InputEventHub {
 
     fun unregisterClient(clientId: String)
 
+    fun getGrabbedDevices(): List<EvdevDeviceInfo>
     fun setGrabbedEvdevDevices(clientId: String, devices: List<EvdevDeviceInfo>)
     fun grabAllEvdevDevices(clientId: String)
 
@@ -374,7 +407,13 @@ interface InputEventHub {
      */
     fun injectKeyEventAsync(event: InjectKeyEventModel): KMResult<Unit>
 
-    fun injectEvdevEvent(deviceId: Int, type: Int, code: Int, value: Int): KMResult<Boolean>
+    fun injectEvdevEvent(deviceId: Int, type: Int, code: Int, value: Int): KMResult<Unit>
+
+    /**
+     * This injects an Android key code and the system bridge will handle the mapping to
+     * the linux scan code.
+     */
+    fun injectEvdevEventKeyCode(deviceId: Int, keyCode: Int, value: Int): KMResult<Unit>
 
     /**
      * Send an input event to the connected clients.

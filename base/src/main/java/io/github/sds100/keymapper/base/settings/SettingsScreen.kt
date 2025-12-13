@@ -359,7 +359,7 @@ private fun Content(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
-            isProModeSelected = state.keyEventActionsUseSystemBridege,
+            isProModeSelected = state.keyEventActionsUseSystemBridge,
             onSelected = onKeyEventActionMethodSelected,
         )
 
