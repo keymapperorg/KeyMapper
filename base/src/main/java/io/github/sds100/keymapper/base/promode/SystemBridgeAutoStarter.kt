@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import io.github.sds100.keymapper.base.BaseMainActivity
+import io.github.sds100.keymapper.base.BuildConfig
 import io.github.sds100.keymapper.base.R
 import io.github.sds100.keymapper.base.system.notifications.NotificationController.Companion.CHANNEL_SETUP_ASSISTANT
 import io.github.sds100.keymapper.base.system.notifications.NotificationController.Companion.ID_SYSTEM_BRIDGE_STATUS
@@ -16,7 +17,6 @@ import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
-import io.github.sds100.keymapper.sysbridge.BuildConfig
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
 import io.github.sds100.keymapper.sysbridge.manager.isConnected
@@ -188,19 +188,39 @@ class SystemBridgeAutoStarter @Inject constructor(
 
     private suspend fun handleAutoStartFromPreVersion4() {
         @Suppress("DEPRECATION")
-        val upgradedFromPreVersion4 = preferences.get(Keys.hasRootPermissionLegacy).first() != null
+        val upgradedFromPreVersion4 = preferences.get(Keys.handledUpgradeToProMode).first() == null
+
+        if (!upgradedFromPreVersion4) {
+            return
+        }
 
         val isRooted: Boolean = withTimeoutOrNull(1000) {
             suAdapter.isRootGranted.filterNotNull().first()
         } ?: false
 
-        if (upgradedFromPreVersion4 && isRooted) {
+        if (isRooted) {
             Timber.i(
                 "Auto starting system bridge because upgraded from pre version 4.0 and was rooted",
             )
 
             autoStart(AutoStartType.ROOT)
-            preferences.set(Keys.handledRootToProModeUpgrade, true)
+            preferences.set(Keys.handledUpgradeToProMode, true)
+            preferences.set(Keys.keyEventActionsUseSystemBridge, true)
+            return
+        }
+
+        // Try Shizuku after the root check because root is more reliable.
+        val isShizukuStarted: Boolean = shizukuAdapter.isStarted.value
+
+        if (isShizukuStarted) {
+            Timber.i(
+                "Auto starting system bridge because upgraded from pre version 4.0 and Shizuku was started",
+            )
+
+            autoStart(AutoStartType.SHIZUKU)
+            preferences.set(Keys.handledUpgradeToProMode, true)
+            preferences.set(Keys.keyEventActionsUseSystemBridge, true)
+            return
         }
     }
 

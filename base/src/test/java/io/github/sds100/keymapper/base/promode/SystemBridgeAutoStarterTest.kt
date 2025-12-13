@@ -221,13 +221,53 @@ class SystemBridgeAutoStarterTest {
         runTest(testDispatcher) {
             isRootGrantedFlow.value = true
             fakePreferences.set(Keys.isSystemBridgeUsed, null)
-            fakePreferences.set(Keys.hasRootPermissionLegacy, true)
+            fakePreferences.set(Keys.handledUpgradeToProMode, null)
 
             systemBridgeAutoStarter.init()
             advanceUntilIdle()
 
             verify(mockConnectionManager).startWithRoot()
-            assertThat(fakePreferences.get(Keys.handledRootToProModeUpgrade).first(), `is`(true))
+        }
+
+    @Test
+    fun `auto start from pre version 4 when shizuku is started and it was never used before`() =
+        runTest(testDispatcher) {
+            shizukuIsStartedFlow.value = true
+            shizukuPermissionGrantedFlow.value = true
+            fakePreferences.set(Keys.isSystemBridgeUsed, null)
+            fakePreferences.set(Keys.handledUpgradeToProMode, null)
+
+            systemBridgeAutoStarter.init()
+            advanceUntilIdle()
+
+            verify(mockConnectionManager).startWithShizuku()
+        }
+
+    @Test
+    fun `set key event actions to use system bridge when upgrading to version 4 and rooted`() =
+        runTest(testDispatcher) {
+            isRootGrantedFlow.value = true
+            fakePreferences.set(Keys.isSystemBridgeUsed, null)
+            fakePreferences.set(Keys.handledUpgradeToProMode, null)
+
+            systemBridgeAutoStarter.init()
+            advanceUntilIdle()
+
+            assertThat(fakePreferences.get(Keys.keyEventActionsUseSystemBridge).first(), `is`(true))
+        }
+
+    @Test
+    fun `set key event actions to use system bridge when upgrading to version 4 and shizuku is started`() =
+        runTest(testDispatcher) {
+            shizukuIsStartedFlow.value = true
+            shizukuPermissionGrantedFlow.value = true
+            fakePreferences.set(Keys.isSystemBridgeUsed, null)
+            fakePreferences.set(Keys.handledUpgradeToProMode, null)
+
+            systemBridgeAutoStarter.init()
+            advanceUntilIdle()
+
+            assertThat(fakePreferences.get(Keys.keyEventActionsUseSystemBridge).first(), `is`(true))
         }
 
     @Test
@@ -274,6 +314,7 @@ class SystemBridgeAutoStarterTest {
     fun `do not auto start when emergency killed`() = runTest(testDispatcher) {
         isRootGrantedFlow.value = true
         fakePreferences.set(Keys.isSystemBridgeEmergencyKilled, true)
+        fakePreferences.set(Keys.handledUpgradeToProMode, true)
 
         systemBridgeAutoStarter.init()
         advanceUntilIdle()
@@ -345,6 +386,7 @@ class SystemBridgeAutoStarterTest {
     @Test
     fun `do not auto start when auto start is disabled`() = runTest(testDispatcher) {
         fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, false)
+        fakePreferences.set(Keys.handledUpgradeToProMode, true)
         isRootGrantedFlow.value = true
 
         systemBridgeAutoStarter.init()
@@ -611,6 +653,7 @@ class SystemBridgeAutoStarterTest {
     fun `do not auto start with Shizuku on launch if it was never used before`() =
         runTest(testDispatcher) {
             fakePreferences.set(Keys.isSystemBridgeUsed, null)
+            fakePreferences.set(Keys.handledUpgradeToProMode, true)
             shizukuIsStartedFlow.value = true
             shizukuPermissionGrantedFlow.value = true
 

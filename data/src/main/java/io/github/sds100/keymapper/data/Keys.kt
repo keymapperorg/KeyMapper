@@ -157,10 +157,10 @@ object Keys {
     val shellCommandScriptText = stringPreferencesKey("key_shell_command_script_text")
 
     /**
-     * This is stored as true when PRO Mode has been auto started after upgrading
-     * to 4.0 on a rooted device.
+     * This is stored as true when PRO Mode has been auto started after updating
+     * to 4.0 and Key Mapper previously had root or shizuku permission.
      */
-    val handledRootToProModeUpgrade = booleanPreferencesKey("key_handled_root_to_pro_mode_upgrade")
+    val handledUpgradeToProMode = booleanPreferencesKey("key_handled_upgrade_to_pro_mode")
 
     val handledMigrateScreenOffKeyMapsNotification =
         booleanPreferencesKey("key_handled_migrate_screen_off_key_maps_notification")
