@@ -16,7 +16,7 @@ use mio::{Events, Interest, Poll, Registry, Token, Waker};
 use slab::Slab;
 use std::collections::HashMap;
 use std::error::Error;
-use std::fmt;
+use std::{fmt, usize};
 use std::fs::read_dir;
 use std::io;
 use std::io::ErrorKind;
@@ -55,7 +55,7 @@ impl From<&DeviceIdentifier> for DeviceIdentifierKey {
 
 static EVENT_LOOP_MANAGER: OnceLock<EventLoopManager> = OnceLock::new();
 
-const WAKER_TOKEN: Token = Token(0);
+const WAKER_TOKEN: Token = Token(usize::MAX - 1);
 
 pub struct EventLoopManager {
     stop_flag: Arc<AtomicBool>,
@@ -495,8 +495,7 @@ impl EventLoopThread {
 
     fn on_poll_event(&self, event: &Event) {
         let Token(key) = event.token();
-        // Subtract 1 because Token(0) is reserved
-        let slab_key = key - 1;
+        let slab_key = key;
 
         let devices = self.grabbed_devices.read().unwrap();
 
