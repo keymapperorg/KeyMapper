@@ -41,6 +41,7 @@ import android.view.InputEvent
 import androidx.annotation.RequiresApi
 import com.android.internal.telephony.ITelephony
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
+import io.github.sds100.keymapper.common.models.GrabDeviceRequest
 import io.github.sds100.keymapper.common.models.GrabbedDeviceHandle
 import io.github.sds100.keymapper.common.models.ShellResult
 import io.github.sds100.keymapper.common.utils.UserHandleUtils
@@ -68,7 +69,7 @@ class SystemBridge : ISystemBridge.Stub() {
 
     @Suppress("KotlinJniMissingFunction")
     external fun setGrabbedDevicesNative(
-        devices: Array<EvdevDeviceInfo>,
+        devices: Array<GrabDeviceRequest>,
     ): Array<GrabbedDeviceHandle>
 
     @Suppress("KotlinJniMissingFunction")
@@ -426,7 +427,7 @@ class SystemBridge : ISystemBridge.Stub() {
     }
 
     override fun setGrabbedDevices(
-        devices: Array<out EvdevDeviceInfo?>?,
+        devices: Array<out GrabDeviceRequest?>?,
     ): Array<out GrabbedDeviceHandle?>? {
         return setGrabbedDevicesNative(devices?.filterNotNull()?.toTypedArray() ?: emptyArray())
     }

@@ -11,7 +11,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
 import org.junit.Test
 
-class ProcessKeyMapGroupsForDetectionTest {
+class DetectKeyMapsUseCaseTest {
 
     @Test
     fun `Key map in grandchild group, all have constraints, and parent does not exist then ignore key map`() {

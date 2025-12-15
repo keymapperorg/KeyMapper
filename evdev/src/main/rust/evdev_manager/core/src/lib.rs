@@ -6,3 +6,4 @@ pub mod evdev_error;
 pub mod event_loop;
 pub mod grabbed_device;
 pub mod runtime;
+pub mod grab_device_request;

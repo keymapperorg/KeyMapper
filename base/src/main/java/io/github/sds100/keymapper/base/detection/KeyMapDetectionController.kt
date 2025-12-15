@@ -1,5 +1,6 @@
 package io.github.sds100.keymapper.base.detection
 
+import io.github.sds100.keymapper.base.actions.ActionData
 import io.github.sds100.keymapper.base.actions.PerformActionsUseCase
 import io.github.sds100.keymapper.base.constraints.DetectConstraintsUseCase
 import io.github.sds100.keymapper.base.input.InputEventDetectionSource
@@ -11,7 +12,7 @@ import io.github.sds100.keymapper.base.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.base.trigger.EvdevTriggerKey
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.base.trigger.RecordTriggerState
-import io.github.sds100.keymapper.base.trigger.Trigger
+import io.github.sds100.keymapper.common.models.GrabDeviceRequest
 import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
 import kotlinx.coroutines.CoroutineScope
@@ -34,6 +35,37 @@ class KeyMapDetectionController(
 ) : InputEventHubCallback {
     companion object {
         private const val INPUT_EVENT_HUB_ID = "key_map_controller"
+
+        fun getEvdevGrabRequests(algorithm: KeyMapAlgorithm): List<GrabDeviceRequest> {
+            val requests = mutableListOf<GrabDeviceRequest>()
+
+            for ((index, trigger) in algorithm.triggers.withIndex()) {
+                val evdevDevices = trigger.keys.filterIsInstance<EvdevTriggerKey>()
+                    .map { it.device }
+                    .distinct()
+                    .toList()
+
+                if (evdevDevices.isEmpty()) {
+                    continue
+                }
+
+                val actions: List<ActionData> = algorithm.triggerActions[index]
+                    .map { actionIndex -> algorithm.actionMap[actionIndex]?.data }
+                    .filterNotNull()
+
+                val extraKeyCodes = actions
+                    .filterIsInstance<ActionData.InputKeyEvent>()
+                    .map { it.keyCode }
+                    .distinct()
+                    .toIntArray()
+
+                for (device in evdevDevices) {
+                    requests.add(GrabDeviceRequest(device, extraKeyCodes))
+                }
+            }
+
+            return requests
+        }
     }
 
     private val algorithm: KeyMapAlgorithm =
@@ -43,22 +75,37 @@ class KeyMapDetectionController(
         pauseKeyMapsUseCase.isPaused.stateIn(coroutineScope, SharingStarted.Eagerly, false)
 
     init {
-        // Must first register before collecting anything that may call reset()
+        // Must first register before collecting anything that may change the grabbed
+        // evdev devices.
         inputEventHub.registerClient(INPUT_EVENT_HUB_ID, this, listOf(KMEvdevEvent.TYPE_KEY_EVENT))
 
         coroutineScope.launch {
             combine(detectUseCase.allKeyMapList, isPaused) { keyMapList, isPaused ->
-                algorithm.reset()
-
-                if (isPaused) {
-                    algorithm.loadKeyMaps(emptyList())
-                    inputEventHub.setGrabbedEvdevDevices(INPUT_EVENT_HUB_ID, emptyList())
-                } else {
-                    algorithm.loadKeyMaps(keyMapList)
-                    // Only grab the triggers that are actually being listened to by the algorithm
-                    grabEvdevDevicesForTriggers(algorithm.triggers)
-                }
+                invalidateState(keyMapList, isPaused)
             }.launchIn(coroutineScope)
+        }
+    }
+
+    private fun invalidateState(keyMapList: List<DetectKeyMapModel>, isPaused: Boolean) {
+        algorithm.reset()
+
+        if (isPaused) {
+            algorithm.loadKeyMaps(emptyList())
+            inputEventHub.setGrabbedEvdevDevices(INPUT_EVENT_HUB_ID, emptyList())
+        } else {
+            algorithm.loadKeyMaps(keyMapList)
+            // Determine which evdev devices need to be grabbed depending on the state
+            // of the algorithm.
+            val grabRequests = getEvdevGrabRequests(algorithm)
+
+            Timber.i(
+                "Grab evdev devices for key map detection: ${grabRequests.joinToString()}",
+            )
+
+            inputEventHub.setGrabbedEvdevDevices(
+                INPUT_EVENT_HUB_ID,
+                grabRequests,
+            )
         }
     }
 
@@ -94,26 +141,8 @@ class KeyMapDetectionController(
     }
 
     fun teardown() {
-        reset()
-        inputEventHub.unregisterClient(INPUT_EVENT_HUB_ID)
-    }
-
-    private fun grabEvdevDevicesForTriggers(triggers: Array<Trigger>) {
-        val evdevDevices = triggers
-            .flatMap { trigger -> trigger.keys.filterIsInstance<EvdevTriggerKey>() }
-            .map { it.device }
-            .distinct()
-            .toList()
-
-        Timber.i("Grab evdev devices for key map detection: ${evdevDevices.joinToString()}")
-        inputEventHub.setGrabbedEvdevDevices(
-            INPUT_EVENT_HUB_ID,
-            evdevDevices,
-        )
-    }
-
-    private fun reset() {
         algorithm.reset()
         inputEventHub.setGrabbedEvdevDevices(INPUT_EVENT_HUB_ID, emptyList())
+        inputEventHub.unregisterClient(INPUT_EVENT_HUB_ID)
     }
 }

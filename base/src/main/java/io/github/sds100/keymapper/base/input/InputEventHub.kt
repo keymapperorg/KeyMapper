@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.base.BuildConfig
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
+import io.github.sds100.keymapper.common.models.GrabDeviceRequest
 import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -136,13 +137,13 @@ class InputEventHubImpl @Inject constructor(
         for (clientContext in clients.values) {
             if (event is KMEvdevEvent) {
                 if (!clientContext.evdevEventTypes.contains(event.type) ||
-                    clientContext.devicesToGrab.isEmpty()
+                    clientContext.grabRequests.isEmpty()
                 ) {
                     continue
                 }
 
                 // Only send events from evdev devices to the client if they grabbed it
-                if (!clientContext.devicesToGrab.contains(event.deviceInfo)) {
+                if (!clientContext.grabbedDevice(event.deviceInfo)) {
                     continue
                 }
 
@@ -228,14 +229,14 @@ class InputEventHubImpl @Inject constructor(
     }
 
     @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
-    override fun setGrabbedEvdevDevices(clientId: String, devices: List<EvdevDeviceInfo>) {
+    override fun setGrabbedEvdevDevices(clientId: String, devices: List<GrabDeviceRequest>) {
         if (!clients.containsKey(clientId)) {
             throw IllegalArgumentException(
                 "This client $clientId is not registered when trying to grab devices!",
             )
         }
 
-        clients[clientId] = clients[clientId]!!.copy(devicesToGrab = devices.toSet())
+        clients[clientId] = clients[clientId]!!.copy(grabRequests = devices.toSet())
         invalidateGrabbedDevices()
     }
 
@@ -252,8 +253,12 @@ class InputEventHubImpl @Inject constructor(
             )
         }
 
-        val devices = evdevDevicesDelegate.allDevices.value.toSet()
-        clients[clientId] = clients[clientId]!!.copy(devicesToGrab = devices)
+        val devices = evdevDevicesDelegate.allDevices.value
+        val grabRequests = devices.map {
+            GrabDeviceRequest(device = it, extraKeyCodes = intArrayOf())
+        }.toSet()
+        clients[clientId] = clients[clientId]!!.copy(grabRequests = grabRequests)
+
         invalidateGrabbedDevices()
     }
 
@@ -356,7 +361,7 @@ class InputEventHubImpl @Inject constructor(
 
     @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     private fun invalidateGrabbedDevices() {
-        val devicesToGrab = clients.values.flatMap { it.devicesToGrab }.toSet()
+        val devicesToGrab = clients.values.flatMap { it.grabRequests }.toSet()
         evdevDevicesDelegate.setGrabbedDevices(devicesToGrab.toList())
     }
 
@@ -365,9 +370,15 @@ class InputEventHubImpl @Inject constructor(
         /**
          * The evdev devices that this client wants to grab.
          */
-        val devicesToGrab: Set<EvdevDeviceInfo>,
+        val grabRequests: Set<GrabDeviceRequest>,
         val evdevEventTypes: Set<Int>,
-    )
+    ) {
+        private val devicesSet: Set<EvdevDeviceInfo> = grabRequests.map { it.device }.toSet()
+
+        fun grabbedDevice(device: EvdevDeviceInfo): Boolean {
+            return devicesSet.contains(device)
+        }
+    }
 }
 
 interface InputEventHub {
@@ -386,7 +397,7 @@ interface InputEventHub {
     fun unregisterClient(clientId: String)
 
     fun getGrabbedDevices(): List<EvdevDeviceInfo>
-    fun setGrabbedEvdevDevices(clientId: String, devices: List<EvdevDeviceInfo>)
+    fun setGrabbedEvdevDevices(clientId: String, devices: List<GrabDeviceRequest>)
     fun grabAllEvdevDevices(clientId: String)
 
     /**

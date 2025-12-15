@@ -3,6 +3,7 @@ use crate::android::keylayout::key_layout_map_manager::{
 };
 use crate::device_identifier::DeviceIdentifier;
 use crate::evdev_error::EvdevError;
+use crate::grab_device_request::GrabDeviceRequest;
 use crate::grabbed_device::GrabbedDevice;
 use crate::runtime::get_runtime;
 use evdev::enums::{EventCode, EventType};
@@ -22,7 +23,7 @@ use std::io::ErrorKind;
 use std::os::fd::AsRawFd;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{mpsc, Arc, OnceLock, RwLock};
+use std::sync::{mpsc, Arc, OnceLock, RwLock, RwLockWriteGuard};
 use std::time::{Duration, Instant};
 use tokio::task::JoinHandle;
 
@@ -64,8 +65,6 @@ pub struct EventLoopManager {
     waker: Waker,
     observer: EvdevObserver,
     grabbed_devices: Arc<RwLock<Slab<GrabbedDevice>>>,
-    /// These are the scan codes that have equivalent key codes in Android.
-    android_scan_codes: Vec<EventCode>,
 }
 
 impl fmt::Debug for EventLoopManager {
@@ -106,12 +105,6 @@ impl EventLoopManager {
         let waker = Waker::new(&registry, WAKER_TOKEN).unwrap();
         let poll_lock = Arc::new(RwLock::new(poll));
 
-        let android_scan_codes: Vec<EventCode> = get_generic_key_layout_map()
-            .scan_codes
-            .iter()
-            .map(|scan_code| int_to_event_code(EventType::EV_KEY as c_uint, *scan_code))
-            .collect();
-
         EventLoopManager {
             stop_flag: Arc::new(AtomicBool::new(false)),
             poll: poll_lock,
@@ -120,7 +113,6 @@ impl EventLoopManager {
             waker,
             observer,
             grabbed_devices: Arc::new(RwLock::new(Slab::with_capacity(32))),
-            android_scan_codes,
         }
     }
 
@@ -199,25 +191,82 @@ impl EventLoopManager {
     /// Returns: A list of (device_id, DeviceIdentifier) for all successfully grabbed devices.
     pub fn set_grabbed_devices(
         &self,
-        requested_devices: Vec<DeviceIdentifier>,
+        requested_devices: Vec<GrabDeviceRequest>,
     ) -> Vec<(usize, DeviceIdentifier)> {
-        let mut devices = self.grabbed_devices.write().unwrap();
+        let mut devices_slab = self.grabbed_devices.write().unwrap();
 
+        self.ungrab_unused_devices(&mut devices_slab, &requested_devices);
+
+        self.grab_new_devices(&mut devices_slab, requested_devices);
+        // Return all currently grabbed devices as (slab_key, DeviceIdentifier) tuples
+        // The slab_key is used as device_id for O(1) lookup when writing events
+        devices_slab
+            .iter()
+            .map(|(slab_key, device)| (slab_key, device.device_id.clone()))
+            .collect()
+    }
+
+    fn grab_new_devices(
+        &self,
+        devices_slab: &mut Slab<GrabbedDevice>,
+        requested_devices: Vec<GrabDeviceRequest>,
+    ) {
+        let uinput_paths: Vec<String> = devices_slab
+            .iter()
+            .map(|(_, device)| device.uinput.devnode().unwrap().to_string())
+            .collect();
+
+        let device_path_map = build_device_path_map(&uinput_paths);
+
+        for grab_request in requested_devices {
+            let already_grabbed = devices_slab.iter().any(|(_, device)| {
+                device_id_matches_jni_fields(&device.device_id, &grab_request.device_identifier)
+            });
+
+            if already_grabbed {
+                continue;
+            }
+
+            let key = DeviceIdentifierKey::from(&grab_request.device_identifier);
+            match device_path_map.get(&key) {
+                Some(path) => {
+                    match self.grab_device(devices_slab, path, &grab_request.extra_key_codes) {
+                        Ok(_) => {
+                            KeyLayoutMapManager::get()
+                                .preload_key_layout_map(&grab_request.device_identifier)
+                                .ok();
+                        }
+
+                        Err(e) => error!("Failed to grab device {}: {:?}", path, e),
+                    }
+                }
+                None => {
+                    warn!("Device not found: {:?}", grab_request);
+                }
+            }
+        }
+    }
+
+    fn ungrab_unused_devices(
+        &self,
+        devices_slab: &mut Slab<GrabbedDevice>,
+        requested_devices: &[GrabDeviceRequest],
+    ) {
         // Find devices to ungrab (currently grabbed but not in requested list)
         // Compare by JNI-exposed fields only (name, bus, vendor, product), not version
-        let keys_to_remove: Vec<usize> = devices
+        let keys_to_remove: Vec<usize> = devices_slab
             .iter()
             .filter(|(_, device)| {
-                !requested_devices
-                    .iter()
-                    .any(|req| device_id_matches_jni_fields(&device.device_id, req))
+                !requested_devices.iter().any(|req| {
+                    device_id_matches_jni_fields(&device.device_id, &req.device_identifier)
+                })
             })
             .map(|(key, _)| key)
             .collect();
 
         // Ungrab devices that are no longer requested
         for key in keys_to_remove {
-            if let Some(device) = devices.get(key) {
+            if let Some(device) = devices_slab.get(key) {
                 let fd = device.evdev.lock().unwrap().as_raw_fd();
                 let mut source_fd = SourceFd(&fd);
                 self.registry
@@ -228,69 +277,24 @@ impl EventLoopManager {
                     .ok();
                 info!("Ungrabbed device: {}", device.device_path);
             }
-            devices.remove(key);
+            devices_slab.remove(key);
         }
-
-        // Find devices to grab (requested but not currently grabbed)
-        // Compare by JNI-exposed fields only (name, bus, vendor, product), not version
-        let devices_to_grab: Vec<&DeviceIdentifier> = requested_devices
-            .iter()
-            .filter(|req| {
-                !devices
-                    .iter()
-                    .any(|(_, device)| device_id_matches_jni_fields(&device.device_id, req))
-            })
-            .collect();
-
-        // Build device path map once for all devices to grab - O(m) instead of O(n*m)
-        if !devices_to_grab.is_empty() {
-            // Collect uinput paths while we still hold the lock
-            let uinput_paths: Vec<String> = devices
-                .iter()
-                .map(|(_, device)| device.uinput.devnode().unwrap().to_string())
-                .collect();
-
-            let device_path_map = build_device_path_map(&uinput_paths);
-
-            for device_id in devices_to_grab {
-                let key = DeviceIdentifierKey::from(device_id);
-                match device_path_map.get(&key) {
-                    Some(path) => match self.grab_device_internal(&mut devices, path) {
-                        Ok(_) => {
-                            KeyLayoutMapManager::get()
-                                .preload_key_layout_map(device_id)
-                                .ok();
-                        }
-
-                        Err(e) => error!("Failed to grab device {}: {:?}", path, e),
-                    },
-                    None => {
-                        warn!("Device not found: {:?}", device_id);
-                    }
-                }
-            }
-        }
-
-        // Return all currently grabbed devices as (slab_key, DeviceIdentifier) tuples
-        // The slab_key is used as device_id for O(1) lookup when writing events
-        devices
-            .iter()
-            .map(|(slab_key, device)| (slab_key, device.device_id.clone()))
-            .collect()
     }
 
     /// Internal method to grab a device and register it with the poll
-    fn grab_device_internal(
+    fn grab_device(
         &self,
-        devices: &mut Slab<GrabbedDevice>,
+        devices_slab: &mut Slab<GrabbedDevice>,
         path: &str,
+        extra_key_codes: &[u32],
     ) -> Result<usize, Box<dyn Error>> {
         // Also enable all the scan codes supported by Android so that Key Event actions with
         // Key Mapper can input any key code through this device, regardless of what is supported
         // by the real physical evdev device.
-        let device = GrabbedDevice::new_with_extra_events(path, &self.android_scan_codes)?;
+        let extra_events = Self::map_key_codes_to_event_codes(extra_key_codes);
+        let device = GrabbedDevice::new_with_extra_events(path, &extra_events)?;
         let fd = device.evdev.lock().unwrap().as_raw_fd();
-        let key = devices.insert(device);
+        let key = devices_slab.insert(device);
 
         let mut source_fd = SourceFd(&fd);
 
@@ -299,12 +303,22 @@ impl EventLoopManager {
             .register(&mut source_fd, Token(key + 1), Interest::READABLE)
             .inspect_err(|e| {
                 // Remove device on registration failure
-                devices.remove(key);
+                devices_slab.remove(key);
                 error!("Failed to register device {}: {}", path, e);
             })?;
 
         info!("Grabbed device: {}", path);
         Ok(key)
+    }
+
+    fn map_key_codes_to_event_codes(key_codes: &[u32]) -> Vec<EventCode> {
+        let generic_key_layout = get_generic_key_layout_map();
+
+        key_codes
+            .iter()
+            .filter_map(|key_code| generic_key_layout.find_scan_code_for_key(*key_code))
+            .map(|scan_code| int_to_event_code(EventType::EV_KEY as c_uint, scan_code))
+            .collect()
     }
 
     /// Write an event to a grabbed device's uinput.
