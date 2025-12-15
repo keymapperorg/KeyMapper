@@ -248,7 +248,7 @@ impl KeyLayoutFileFinder for AndroidKeyLayoutFileFinder {
 
             match fs::metadata(&path) {
                 Ok(metadata) if metadata.is_file() => {
-                    if let Ok(_) = File::open(&path) {
+                    if File::open(&path).is_ok() {
                         return Some(path);
                     }
                 }

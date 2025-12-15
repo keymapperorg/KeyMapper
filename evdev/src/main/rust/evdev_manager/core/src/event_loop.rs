@@ -350,7 +350,7 @@ impl EventLoopManager {
         device
             .uinput
             .write_event(EventType::EV_KEY as c_uint, code, value)
-            .map_err(|err| EvdevError::from(err))?;
+            .map_err(EvdevError::from)?;
 
         // Send SYN_REPORT
         device
@@ -388,7 +388,7 @@ impl EventLoopManager {
                 device
                     .uinput
                     .write_event(EventType::EV_KEY as c_uint, code, value)
-                    .map_err(|err| EvdevError::from(err))?;
+                    .map_err(EvdevError::from)?;
 
                 // Send SYN_REPORT
                 device

@@ -115,12 +115,7 @@ impl fmt::Debug for KeyLayoutMap {
 
         // Show a sample of axes (first 5) if there are any
         if !self.axes.is_empty() {
-            let sample_axes: Vec<_> = self
-                .axes
-                .iter()
-                .take(5)
-                .map(|(scan_code, axis_info)| (scan_code, axis_info))
-                .collect();
+            let sample_axes: Vec<_> = self.axes.iter().take(5).collect();
             debug_struct.field("sample_axes", &sample_axes);
         }
 
