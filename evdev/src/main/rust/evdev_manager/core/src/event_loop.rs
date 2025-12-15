@@ -6,7 +6,7 @@ use crate::evdev_error::EvdevError;
 use crate::grab_device_request::GrabDeviceRequest;
 use crate::grabbed_device::GrabbedDevice;
 use crate::runtime::get_runtime;
-use evdev::enums::{EventCode, EventType};
+use evdev::enums::{EventCode, EventType, EV_SYN};
 use evdev::util::{event_code_to_int, int_to_event_code};
 use evdev::{DeviceWrapper, InputEvent, ReadFlag, ReadStatus};
 use libc::c_uint;
@@ -23,7 +23,7 @@ use std::io::ErrorKind;
 use std::os::fd::AsRawFd;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{mpsc, Arc, OnceLock, RwLock, RwLockWriteGuard};
+use std::sync::{mpsc, Arc, OnceLock, RwLock};
 use std::time::{Duration, Instant};
 use tokio::task::JoinHandle;
 
@@ -335,7 +335,22 @@ impl EventLoopManager {
         let device = devices
             .get(device_id) // O(1) slab lookup
             .ok_or_else(|| EvdevError::new(-libc::ENODEV))?;
-        device.write_event(event_type, code, value)
+
+        debug!(
+            "Write evdev event: device_id={} event_type={} code={} value={}",
+            device_id, event_type, code, value
+        );
+
+        device
+            .uinput
+            .write_event(EventType::EV_KEY as c_uint, code, value)
+            .map_err(|err| EvdevError::from(err))?;
+
+        // Send SYN_REPORT
+        device
+            .uinput
+            .write_syn_event(EV_SYN::SYN_REPORT)
+            .map_err(|err| err.into())
     }
 
     pub fn write_key_code_event(
@@ -358,9 +373,23 @@ impl EventLoopManager {
                 error!("Failed to find scan code for key: {}", key_code);
                 Err(Box::new(EvdevError::new(-libc::ENODATA)))
             }
-            Some(code) => device
-                .write_event(EventType::EV_KEY as c_uint, code, value)
-                .map_err(|err| err.into()),
+            Some(code) => {
+                debug!(
+                    "Write key code evdev event: key_code={} value={}",
+                    key_code, value
+                );
+
+                device
+                    .uinput
+                    .write_event(EventType::EV_KEY as c_uint, code, value)
+                    .map_err(|err| EvdevError::from(err))?;
+
+                // Send SYN_REPORT
+                device
+                    .uinput
+                    .write_syn_event(EV_SYN::SYN_REPORT)
+                    .map_err(|err| err.into())
+            }
         }
     }
 
@@ -503,6 +532,7 @@ impl EventLoopThread {
         if !consumed {
             let (event_type, event_code) = event_code_to_int(&event.event_code);
             grabbed_device
+                .uinput
                 .write_event(event_type, event_code, event.value)
                 .inspect_err(|e| {
                     error!(
