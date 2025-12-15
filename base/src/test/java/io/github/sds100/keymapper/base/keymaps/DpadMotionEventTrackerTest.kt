@@ -6,7 +6,6 @@ import io.github.sds100.keymapper.base.detection.DpadMotionEventTracker
 import io.github.sds100.keymapper.common.utils.InputDeviceInfo
 import io.github.sds100.keymapper.system.inputevents.KMGamePadEvent
 import io.github.sds100.keymapper.system.inputevents.KMKeyEvent
-import junitparams.JUnitParamsRunner
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.hasItem
@@ -14,10 +13,8 @@ import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.`is`
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 
 @ExperimentalCoroutinesApi
-@RunWith(JUnitParamsRunner::class)
 class DpadMotionEventTrackerTest {
 
     companion object {

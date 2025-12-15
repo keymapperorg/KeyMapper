@@ -38,6 +38,8 @@ class PerformKeyEventActionDelegate(
         keyMetaState: Int,
         triggerDevice: PerformActionTriggerDevice,
     ): KMResult<Unit> {
+        // Only input evdev event if the device is grabbed. It may not be grabbed
+        // if the device is disconnected.
         if (injectKeyEventsWithSystemBridge.value &&
             triggerDevice is PerformActionTriggerDevice.Evdev &&
             (action.device == null || isActionDeviceGrabbed(action.device))

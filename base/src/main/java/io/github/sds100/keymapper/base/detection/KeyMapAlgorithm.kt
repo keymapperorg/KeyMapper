@@ -98,7 +98,8 @@ class KeyMapAlgorithm(
      */
     private var doublePressTimeoutTimes = longArrayOf()
 
-    private var actionMap: SparseArrayCompat<Action> = SparseArrayCompat()
+    var actionMap: SparseArrayCompat<Action> = SparseArrayCompat()
+        private set
     var triggers: Array<Trigger> = emptyArray()
         private set
 
@@ -141,7 +142,8 @@ class KeyMapAlgorithm(
      * The actions to perform when each trigger is detected. The order matches with
      * [triggers].
      */
-    private var triggerActions: Array<IntArray> = arrayOf()
+    var triggerActions: Array<IntArray> = arrayOf()
+        private set
 
     /**
      * Stores whether each event in each parallel trigger need to be released after being held down.

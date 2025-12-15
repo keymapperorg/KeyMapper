@@ -3,7 +3,8 @@ use evdev::{Device, DeviceWrapper};
 use evdev_manager_core::android::keylayout::key_layout_map_manager::KeyLayoutMapManager;
 use evdev_manager_core::device_identifier::DeviceIdentifier;
 use evdev_manager_core::event_loop::EventLoopManager;
-use jni::objects::{JClass, JObject, JObjectArray, JString, JValue};
+use evdev_manager_core::grab_device_request::GrabDeviceRequest;
+use jni::objects::{JClass, JIntArray, JObject, JObjectArray, JString, JValue};
 use jni::sys::{jboolean, jint, jobject, jobjectArray};
 use jni::JNIEnv;
 use log::LevelFilter;
@@ -75,15 +76,15 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemB
         .unwrap();
 }
 
-/// Set the list of grabbed devices. Takes an array of EvdevDeviceInfo and returns an array of GrabbedDeviceHandle.
+/// Set the list of grabbed devices. Takes an array of GrabDeviceRequest and returns an array of GrabbedDeviceHandle.
 #[no_mangle]
 pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_setGrabbedDevicesNative(
     mut env: JNIEnv,
     _class: JClass,
     j_devices: jobjectArray,
 ) -> jobjectArray {
-    // Parse the input array of EvdevDeviceInfo
-    let mut requested_devices: Vec<DeviceIdentifier> = Vec::new();
+    // Parse the input array of GrabDeviceRequest
+    let mut requested_devices: Vec<GrabDeviceRequest> = Vec::new();
 
     // Convert raw jobjectArray to JObjectArray
     let devices_array: JObjectArray = unsafe { JObjectArray::from_raw(j_devices) };
@@ -105,10 +106,10 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemB
             }
         };
 
-        match parse_evdev_device_info(&mut env, &obj) {
-            Ok(device_identifier) => requested_devices.push(device_identifier),
+        match parse_grab_device_request(&mut env, &obj) {
+            Ok(grab_request) => requested_devices.push(grab_request),
             Err(e) => {
-                error!("Failed to parse EvdevDeviceInfo at index {}: {:?}", i, e);
+                error!("Failed to parse GrabDeviceRequest at index {}: {:?}", i, e);
             }
         }
     }
@@ -247,6 +248,35 @@ fn parse_evdev_device_info(
         vendor,
         product,
         version: 0, // Version is not exposed in Java API, set to 0
+    })
+}
+
+/// Parse a Java GrabDeviceRequest object into a Rust GrabDeviceRequest
+fn parse_grab_device_request(
+    env: &mut JNIEnv,
+    obj: &JObject,
+) -> Result<GrabDeviceRequest, jni::errors::Error> {
+    // Get the device field (EvdevDeviceInfo)
+    let device_field = env.get_field(
+        obj,
+        "device",
+        "Lio/github/sds100/keymapper/common/models/EvdevDeviceInfo;",
+    )?;
+    let device_obj = device_field.l()?;
+    let device_identifier = parse_evdev_device_info(env, &device_obj)?;
+
+    // Get the extraEventCodes field (int[])
+    let extra_codes_field = env.get_field(obj, "extraKeyCodes", "[I")?;
+    let extra_codes_obj = extra_codes_field.l()?;
+    let extra_codes_array = JIntArray::from(extra_codes_obj);
+
+    // Convert Java int[] to Vec<EventCode>
+    let array_length = env.get_array_length(&extra_codes_array)? as usize;
+    let extra_key_codes: Vec<u32> = Vec::with_capacity(array_length);
+
+    Ok(GrabDeviceRequest {
+        device_identifier,
+        extra_key_codes: extra_key_codes,
     })
 }
 

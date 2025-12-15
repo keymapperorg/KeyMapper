@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.base.input
 
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
+import io.github.sds100.keymapper.common.models.GrabDeviceRequest
 import io.github.sds100.keymapper.common.models.GrabbedDeviceHandle
 import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.onFailure
@@ -18,6 +19,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onEach
@@ -44,7 +46,7 @@ class EvdevDevicesDelegate @Inject constructor(
 
     // Use a channel so there are no race conditions when grabbing and that all
     // grab operations finish in the correct order to completion.
-    private val grabDevicesChannel: Channel<List<EvdevDeviceInfo>> = Channel(capacity = 16)
+    private val grabDevicesChannel: Channel<List<GrabDeviceRequest>> = Channel(capacity = 16)
 
     // All the evdev devices on the device, regardless of whether they are grabbed.
     val allDevices: MutableStateFlow<List<EvdevDeviceInfo>> = MutableStateFlow(emptyList())
@@ -69,23 +71,32 @@ class EvdevDevicesDelegate @Inject constructor(
             }.collect()
         }
 
-        // Process on another thread because system bridge grabbing calls are blocking
-        coroutineScope.launch(Dispatchers.IO) {
-            grabDevicesChannel.receiveAsFlow().collect { devices ->
-                systemBridgeConnectionManager
-                    .run { bridge -> bridge.setGrabbedDevices(devices.toTypedArray()) }
-                    .onSuccess { grabbedDevices ->
-                        onGrabbedDevicesChanged(grabbedDevices?.filterNotNull() ?: emptyList())
-                    }.onFailure { error ->
-                        Timber.w(
-                            "Grabbing devices failed in system bridge: $error",
-                        )
+        coroutineScope.launch {
+            combine(
+                grabDevicesChannel.receiveAsFlow(),
+                devicesAdapter.connectedInputDevices,
+            ) { devicesToGrab, _ -> devicesToGrab }
+                .collect { devices ->
+                    withContext(Dispatchers.IO) {
+                        invalidateGrabbedDevices(devices)
                     }
-            }
+                }
         }
     }
 
-    fun setGrabbedDevices(devices: List<EvdevDeviceInfo>) {
+    private fun invalidateGrabbedDevices(devices: List<GrabDeviceRequest>) {
+        systemBridgeConnectionManager
+            .run { bridge -> bridge.setGrabbedDevices(devices.toTypedArray()) }
+            .onSuccess { grabbedDevices ->
+                onGrabbedDevicesChanged(grabbedDevices?.filterNotNull() ?: emptyList())
+            }.onFailure { error ->
+                Timber.w(
+                    "Grabbing devices failed in system bridge: $error",
+                )
+            }
+    }
+
+    fun setGrabbedDevices(devices: List<GrabDeviceRequest>) {
         grabDevicesChannel.trySend(devices)
     }
 

@@ -2,6 +2,7 @@ package io.github.sds100.keymapper.sysbridge;
 
 import io.github.sds100.keymapper.evdev.IEvdevCallback;
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo;
+import io.github.sds100.keymapper.common.models.GrabDeviceRequest;
 import io.github.sds100.keymapper.common.models.GrabbedDeviceHandle;
 import io.github.sds100.keymapper.common.models.ShellResult;
 import android.view.InputEvent;
@@ -12,7 +13,7 @@ interface ISystemBridge {
    int getVersionCode() = 16777112;
    ShellResult executeCommand(String command, long timeoutMillis) = 16777111;
 
-   GrabbedDeviceHandle[] setGrabbedDevices(in EvdevDeviceInfo[] devices) = 1;
+   GrabbedDeviceHandle[] setGrabbedDevices(in GrabDeviceRequest[] devices) = 1;
 
    void registerEvdevCallback(IEvdevCallback callback) = 5;
    void unregisterEvdevCallback() = 6;

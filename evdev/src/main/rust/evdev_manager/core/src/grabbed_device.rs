@@ -1,6 +1,6 @@
 use crate::device_identifier::DeviceIdentifier;
 use crate::evdev_error::EvdevError;
-use evdev::enums::{EventCode, EV_SYN};
+use evdev::enums::EventCode;
 use evdev::{Device, DeviceWrapper, GrabMode, UInputDevice};
 use std::fs::OpenOptions;
 use std::os::unix::fs::OpenOptionsExt;
@@ -72,25 +72,6 @@ impl GrabbedDevice {
 
         let evdev = Device::new_from_file(file).map_err(EvdevError::from)?;
         Ok(evdev)
-    }
-
-    /// Write an event to the uinput device
-    pub fn write_event(&self, event_type: u32, code: u32, value: i32) -> Result<(), EvdevError> {
-        debug!(
-            "Write evdev event: type={} code={} value={} code={}",
-            event_type, code, value, code
-        );
-
-        self.uinput
-            .write_event(event_type, code, value)
-            .map_err(EvdevError::from)?;
-
-        // Send SYN_REPORT
-        self.uinput
-            .write_syn_event(EV_SYN::SYN_REPORT)
-            .map_err(EvdevError::from)?;
-
-        Ok(())
     }
 }
 
