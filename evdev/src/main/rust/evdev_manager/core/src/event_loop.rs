@@ -198,6 +198,7 @@ impl EventLoopManager {
         self.ungrab_unused_devices(&mut devices_slab, &requested_devices);
 
         self.grab_new_devices(&mut devices_slab, requested_devices);
+
         // Return all currently grabbed devices as (slab_key, DeviceIdentifier) tuples
         // The slab_key is used as device_id for O(1) lookup when writing events
         devices_slab
@@ -219,27 +220,35 @@ impl EventLoopManager {
         let device_path_map = build_device_path_map(&uinput_paths);
 
         for grab_request in requested_devices {
+            let extra_events = Self::map_key_codes_to_event_codes(&grab_request.extra_key_codes);
+
+            // Check whether the device is already grabbed with the same extra events.
+            // Otherwise it should be regrabbed with the updated information.
             let already_grabbed = devices_slab.iter().any(|(_, device)| {
                 device_id_matches_jni_fields(&device.device_id, &grab_request.device_identifier)
+                    && device.extra_events == extra_events
             });
 
             if already_grabbed {
+                info!(
+                    "Device {} is already grabbed with the same extra events",
+                    grab_request.device_identifier.name
+                );
                 continue;
             }
 
             let key = DeviceIdentifierKey::from(&grab_request.device_identifier);
-            match device_path_map.get(&key) {
-                Some(path) => {
-                    match self.grab_device(devices_slab, path, &grab_request.extra_key_codes) {
-                        Ok(_) => {
-                            KeyLayoutMapManager::get()
-                                .preload_key_layout_map(&grab_request.device_identifier)
-                                .ok();
-                        }
 
-                        Err(e) => error!("Failed to grab device {}: {:?}", path, e),
+            match device_path_map.get(&key) {
+                Some(path) => match self.grab_device(devices_slab, path, &extra_events) {
+                    Ok(_) => {
+                        KeyLayoutMapManager::get()
+                            .preload_key_layout_map(&grab_request.device_identifier)
+                            .ok();
                     }
-                }
+
+                    Err(e) => error!("Failed to grab device {}: {:?}", path, e),
+                },
                 None => {
                     warn!("Device not found: {:?}", grab_request);
                 }
@@ -268,6 +277,7 @@ impl EventLoopManager {
         for key in keys_to_remove {
             if let Some(device) = devices_slab.get(key) {
                 let fd = device.evdev.lock().unwrap().as_raw_fd();
+
                 let mut source_fd = SourceFd(&fd);
                 self.registry
                     .deregister(&mut source_fd)
@@ -286,13 +296,9 @@ impl EventLoopManager {
         &self,
         devices_slab: &mut Slab<GrabbedDevice>,
         path: &str,
-        extra_key_codes: &[u32],
+        extra_events: &[EventCode],
     ) -> Result<usize, Box<dyn Error>> {
-        // Also enable all the scan codes supported by Android so that Key Event actions with
-        // Key Mapper can input any key code through this device, regardless of what is supported
-        // by the real physical evdev device.
-        let extra_events = Self::map_key_codes_to_event_codes(extra_key_codes);
-        let device = GrabbedDevice::new_with_extra_events(path, &extra_events)?;
+        let device = GrabbedDevice::new_with_extra_events(path, extra_events)?;
         let fd = device.evdev.lock().unwrap().as_raw_fd();
         let key = devices_slab.insert(device);
 

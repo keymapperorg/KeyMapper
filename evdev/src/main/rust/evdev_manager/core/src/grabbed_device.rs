@@ -10,19 +10,14 @@ use std::sync::Mutex;
 pub struct GrabbedDevice {
     pub device_path: String,
     pub device_id: DeviceIdentifier,
+    /// The extra events that should be supported by the uinput device.
+    pub extra_events: Vec<EventCode>,
     /// The libevdev Device can not be shared safely across threads so wrap it in a mutex.
     pub evdev: Mutex<Device>,
     pub uinput: UInputDevice,
 }
 
 impl GrabbedDevice {
-    /// Create a new device context by grabbing a device
-    pub fn new(device_path: &str) -> Result<Self, EvdevError> {
-        let mut evdev = Self::open_evdev_device(device_path)?;
-        evdev.grab(GrabMode::Grab).map_err(EvdevError::from)?;
-        Self::new_internal(device_path, evdev)?
-    }
-
     /// Create a grabbed device that also enables the given EventCodes in the uinput device.
     pub fn new_with_extra_events(
         device_path: &str,
@@ -35,13 +30,6 @@ impl GrabbedDevice {
         }
 
         evdev.grab(GrabMode::Grab).map_err(EvdevError::from)?;
-        Self::new_internal(device_path, evdev)?
-    }
-
-    fn new_internal(
-        device_path: &str,
-        evdev: Device,
-    ) -> Result<Result<GrabbedDevice, EvdevError>, EvdevError> {
         let uinput = UInputDevice::create_from_device(&evdev).map_err(EvdevError::from)?;
 
         let device_id: DeviceIdentifier = DeviceIdentifier {
@@ -52,12 +40,13 @@ impl GrabbedDevice {
             version: evdev.version(),
         };
 
-        Ok(Ok(Self {
+        Ok(Self {
             evdev: Mutex::new(evdev),
             device_id,
             uinput,
             device_path: device_path.to_string(),
-        }))
+            extra_events: extra_events.into(),
+        })
     }
 
     fn open_evdev_device(device_path: &str) -> Result<Device, EvdevError> {

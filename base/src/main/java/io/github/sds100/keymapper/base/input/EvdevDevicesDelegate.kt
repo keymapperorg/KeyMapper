@@ -19,7 +19,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onEach
@@ -72,15 +71,11 @@ class EvdevDevicesDelegate @Inject constructor(
         }
 
         coroutineScope.launch {
-            combine(
-                grabDevicesChannel.receiveAsFlow(),
-                devicesAdapter.connectedInputDevices,
-            ) { devicesToGrab, _ -> devicesToGrab }
-                .collect { devices ->
-                    withContext(Dispatchers.IO) {
-                        invalidateGrabbedDevices(devices)
-                    }
+            grabDevicesChannel.receiveAsFlow().collect { devices ->
+                withContext(Dispatchers.IO) {
+                    invalidateGrabbedDevices(devices)
                 }
+            }
         }
     }
 

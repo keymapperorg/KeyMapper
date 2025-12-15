@@ -12,6 +12,7 @@ import io.github.sds100.keymapper.base.trigger.AssistantTriggerType
 import io.github.sds100.keymapper.base.trigger.EvdevTriggerKey
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.base.trigger.RecordTriggerState
+import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
 import io.github.sds100.keymapper.common.models.GrabDeviceRequest
 import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
@@ -37,7 +38,7 @@ class KeyMapDetectionController(
         private const val INPUT_EVENT_HUB_ID = "key_map_controller"
 
         fun getEvdevGrabRequests(algorithm: KeyMapAlgorithm): List<GrabDeviceRequest> {
-            val requests = mutableListOf<GrabDeviceRequest>()
+            val deviceKeyEventMap = mutableMapOf<EvdevDeviceInfo, MutableSet<Int>>()
 
             for ((index, trigger) in algorithm.triggers.withIndex()) {
                 val evdevDevices = trigger.keys.filterIsInstance<EvdevTriggerKey>()
@@ -56,15 +57,15 @@ class KeyMapDetectionController(
                 val extraKeyCodes = actions
                     .filterIsInstance<ActionData.InputKeyEvent>()
                     .map { it.keyCode }
-                    .distinct()
-                    .toIntArray()
 
                 for (device in evdevDevices) {
-                    requests.add(GrabDeviceRequest(device, extraKeyCodes))
+                    deviceKeyEventMap.getOrPut(device, { mutableSetOf() }).addAll(extraKeyCodes)
                 }
             }
 
-            return requests
+            return deviceKeyEventMap.map { (device, keyEvents) ->
+                GrabDeviceRequest(device, keyEvents.toIntArray())
+            }
         }
     }
 
