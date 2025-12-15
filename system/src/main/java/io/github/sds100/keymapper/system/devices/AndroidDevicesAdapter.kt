@@ -4,8 +4,6 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.hardware.input.InputManager
-import android.os.Handler
-import android.os.Looper
 import android.view.InputDevice
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -37,7 +35,8 @@ class AndroidDevicesAdapter @Inject constructor(
     private val bluetoothAdapter: io.github.sds100.keymapper.system.bluetooth.BluetoothAdapter,
     private val permissionAdapter: PermissionAdapter,
     private val coroutineScope: CoroutineScope,
-) : DevicesAdapter {
+) : DevicesAdapter,
+    InputManager.InputDeviceListener {
 
     private val ctx = context.applicationContext
     private val inputManager = ctx.getSystemService<InputManager>()
@@ -69,40 +68,7 @@ class AndroidDevicesAdapter @Inject constructor(
             }
         }
 
-        inputManager?.apply {
-            registerInputDeviceListener(
-                object : InputManager.InputDeviceListener {
-                    override fun onInputDeviceAdded(deviceId: Int) {
-                        coroutineScope.launch {
-                            val device = InputDevice.getDevice(deviceId) ?: return@launch
-                            onInputDeviceConnect.emit(
-                                InputDeviceUtils.createInputDeviceInfo(device),
-                            )
-
-                            updateInputDevices()
-                        }
-                    }
-
-                    override fun onInputDeviceRemoved(deviceId: Int) {
-                        coroutineScope.launch {
-                            connectedInputDevices.value.ifIsData { connectedInputDevices ->
-                                val device = connectedInputDevices.find { it.id == deviceId }
-                                    ?: return@ifIsData
-
-                                onInputDeviceDisconnect.emit(device)
-                            }
-
-                            updateInputDevices()
-                        }
-                    }
-
-                    override fun onInputDeviceChanged(deviceId: Int) {
-                        updateInputDevices()
-                    }
-                },
-                Handler(Looper.getMainLooper()),
-            )
-        }
+        inputManager?.registerInputDeviceListener(this, null)
 
         bluetoothAdapter.onDeviceConnect.onEach { device ->
             val currentValue = connectedBluetoothDevices.value
@@ -144,6 +110,34 @@ class AndroidDevicesAdapter @Inject constructor(
 
     override fun getInputDevice(deviceId: Int): InputDeviceInfo? {
         return InputDevice.getDevice(deviceId)?.let { InputDeviceUtils.createInputDeviceInfo(it) }
+    }
+
+    override fun onInputDeviceAdded(deviceId: Int) {
+        coroutineScope.launch {
+            val device = InputDevice.getDevice(deviceId) ?: return@launch
+            onInputDeviceConnect.emit(
+                InputDeviceUtils.createInputDeviceInfo(device),
+            )
+
+            updateInputDevices()
+        }
+    }
+
+    override fun onInputDeviceRemoved(deviceId: Int) {
+        coroutineScope.launch {
+            connectedInputDevices.value.ifIsData { connectedInputDevices ->
+                val device = connectedInputDevices.find { it.id == deviceId }
+                    ?: return@ifIsData
+
+                onInputDeviceDisconnect.emit(device)
+            }
+
+            updateInputDevices()
+        }
+    }
+
+    override fun onInputDeviceChanged(deviceId: Int) {
+        updateInputDevices()
     }
 
     private fun updateInputDevices() {

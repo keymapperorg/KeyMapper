@@ -51,24 +51,22 @@ class EvdevDevicesDelegate @Inject constructor(
 
     init {
         coroutineScope.launch {
-            coroutineScope.launch {
-                // Only listen to changes in the connected input devices if the system bridge
-                // is connected.
-                systemBridgeConnectionManager.connectionState.flatMapLatest { connectionState ->
-                    when (connectionState) {
-                        is SystemBridgeConnectionState.Connected -> {
-                            devicesAdapter.connectedInputDevices.onEach {
-                                allDevices.value = fetchAllDevices()
-                            }
-                        }
-                        is SystemBridgeConnectionState.Disconnected -> {
-                            allDevices.value = emptyList()
-                            grabbedDevicesById.value = emptyMap()
-                            emptyFlow()
+            // Only listen to changes in the connected input devices if the system bridge
+            // is connected.
+            systemBridgeConnectionManager.connectionState.flatMapLatest { connectionState ->
+                when (connectionState) {
+                    is SystemBridgeConnectionState.Connected -> {
+                        devicesAdapter.connectedInputDevices.onEach {
+                            allDevices.value = fetchAllDevices()
                         }
                     }
-                }.collect()
-            }
+                    is SystemBridgeConnectionState.Disconnected -> {
+                        allDevices.value = emptyList()
+                        grabbedDevicesById.value = emptyMap()
+                        emptyFlow()
+                    }
+                }
+            }.collect()
         }
 
         // Process on another thread because system bridge grabbing calls are blocking
