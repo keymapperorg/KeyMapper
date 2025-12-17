@@ -1,7 +1,7 @@
 use crate::evdev_jni_observer::EvdevJniObserver;
 use evdev::{Device, DeviceWrapper};
 use evdev_manager_core::android::keylayout::key_layout_map_manager::KeyLayoutMapManager;
-use evdev_manager_core::device_identifier::DeviceIdentifier;
+use evdev_manager_core::evdev_device_info::EvdevDeviceInfo;
 use evdev_manager_core::event_loop::EventLoopManager;
 use evdev_manager_core::grab_device_request::GrabDeviceRequest;
 use jni::objects::{JClass, JIntArray, JObject, JObjectArray, JString, JValue};
@@ -223,7 +223,7 @@ fn get_evdev_from_path(path: PathBuf) -> Option<Device> {
 fn parse_evdev_device_info(
     env: &mut JNIEnv,
     obj: &JObject,
-) -> Result<DeviceIdentifier, jni::errors::Error> {
+) -> Result<EvdevDeviceInfo, jni::errors::Error> {
     // Get name field
     let name_field = env.get_field(obj, "name", "Ljava/lang/String;")?;
     let name_obj = name_field.l()?;
@@ -242,7 +242,7 @@ fn parse_evdev_device_info(
     // Get product field
     let product = env.get_field(obj, "product", "I")?.i()? as u16;
 
-    Ok(DeviceIdentifier {
+    Ok(EvdevDeviceInfo {
         name,
         bus,
         vendor,
@@ -282,7 +282,7 @@ fn parse_grab_device_request(
 
 fn create_java_grabbed_device_handle_array(
     mut env: &mut JNIEnv,
-    grabbed_devices: Vec<(usize, DeviceIdentifier)>,
+    grabbed_devices: Vec<(usize, EvdevDeviceInfo)>,
 ) -> jobjectArray {
     let handle_class =
         match env.find_class("io/github/sds100/keymapper/common/models/GrabbedDeviceHandle") {

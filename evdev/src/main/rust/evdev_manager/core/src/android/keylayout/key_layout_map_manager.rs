@@ -1,6 +1,12 @@
 use crate::android::keylayout::generic_key_layout::GENERIC_KEY_LAYOUT_CONTENTS;
+use crate::android::keylayout::key_layout_file_finder::{
+    AndroidKeyLayoutFileFinder, KeyLayoutFileFinder,
+};
 use crate::android::keylayout::key_layout_map::KeyLayoutMap;
-use crate::device_identifier::DeviceIdentifier;
+use crate::evdev_device_info::EvdevDeviceInfo;
+use evdev::enums::{EventCode, EventType};
+use evdev::util::int_to_event_code;
+use libc::c_uint;
 use log::{debug, error, info};
 use std::collections::HashMap;
 use std::error::Error;
@@ -32,7 +38,7 @@ pub struct KeyLayoutMapManager {
     /// Maps device path to KeyLayoutMap handle. If the value is None then
     /// the key layout map could not be found or there was an error parsing,
     /// and it shouldn't be attempted again.
-    pub key_layout_maps: Mutex<HashMap<DeviceIdentifier, Option<Arc<KeyLayoutMap>>>>,
+    pub key_layout_maps: Mutex<HashMap<EvdevDeviceInfo, Option<Arc<KeyLayoutMap>>>>,
     /// File finder for locating key layout files
     file_finder: Arc<dyn KeyLayoutFileFinder>,
 }
@@ -63,10 +69,10 @@ impl KeyLayoutMapManager {
     /// falling back to the generic key layout if not found.
     pub fn map_key(
         &self,
-        device_identifier: &DeviceIdentifier,
+        device_info: &EvdevDeviceInfo,
         scan_code: u32,
     ) -> Result<Option<u32>, Box<dyn Error>> {
-        let device_map = self.get_key_layout_map_lazy(device_identifier)?;
+        let device_map = self.get_key_layout_map_lazy(device_info)?;
 
         if let Some(map) = device_map {
             if let Some(key_code) = map.map_key(scan_code) {
@@ -83,10 +89,10 @@ impl KeyLayoutMapManager {
     /// falling back to the generic key layout if not found.
     pub fn find_scan_code_for_key(
         &self,
-        device_identifier: &DeviceIdentifier,
+        device_info: &EvdevDeviceInfo,
         key_code: u32,
     ) -> Result<Option<u32>, Box<dyn Error>> {
-        let device_map = self.get_key_layout_map_lazy(device_identifier)?;
+        let device_map = self.get_key_layout_map_lazy(device_info)?;
 
         if let Some(map) = device_map {
             if let Some(scan_code) = map.find_scan_code_for_key(key_code) {
@@ -100,13 +106,13 @@ impl KeyLayoutMapManager {
 
     pub fn preload_key_layout_map(
         &self,
-        device_identifier: &DeviceIdentifier,
+        device_info: &EvdevDeviceInfo,
     ) -> Result<Option<Arc<KeyLayoutMap>>, Box<dyn Error>> {
-        self.get_key_layout_map_lazy(device_identifier)
+        self.get_key_layout_map_lazy(device_info)
             .inspect_err(|err| {
                 error!(
                     "Error preloading key layout map for device {}: {}",
-                    device_identifier.name, err
+                    device_info.name, err
                 )
             })
     }
@@ -115,25 +121,25 @@ impl KeyLayoutMapManager {
     /// This method is public for testing purposes.
     fn get_key_layout_map_lazy(
         &self,
-        device_identifier: &DeviceIdentifier,
+        device_info: &EvdevDeviceInfo,
     ) -> Result<Option<Arc<KeyLayoutMap>>, Box<dyn Error>> {
         let mut key_layout_maps = self.key_layout_maps.lock().unwrap();
 
-        if let Some(key_layout_map) = key_layout_maps.get(device_identifier) {
+        if let Some(key_layout_map) = key_layout_maps.get(device_info) {
             return Ok(key_layout_map.clone());
         }
 
-        let key_layout_map_paths = self.find_key_layout_files(device_identifier);
+        let key_layout_map_paths = self.find_key_layout_files(device_info);
         info!(
             "Found key layout map files for device {}: {:?}",
-            device_identifier.name, key_layout_map_paths
+            device_info.name, key_layout_map_paths
         );
 
         for path in key_layout_map_paths {
             match KeyLayoutMap::load_from_file(path) {
                 Ok(key_layout_map) => {
                     let option = Some(Arc::new(key_layout_map));
-                    key_layout_maps.insert(device_identifier.clone(), option.clone());
+                    key_layout_maps.insert(device_info.clone(), option.clone());
                     return Ok(option);
                 }
                 Err(e) => {
@@ -147,10 +153,10 @@ impl KeyLayoutMapManager {
         // Fall back to the hardcoded generic key layout map.
         info!(
             "No key layout files found for device {}, using hardcoded Generic fallback",
-            device_identifier.name
+            device_info.name
         );
         let fallback = Some(get_generic_key_layout_map());
-        key_layout_maps.insert(device_identifier.clone(), fallback.clone());
+        key_layout_maps.insert(device_info.clone(), fallback.clone());
         Ok(fallback)
     }
 
@@ -162,11 +168,11 @@ impl KeyLayoutMapManager {
     /// in the files shipped with Key Mapper.
     ///
     /// See https://source.android.com/docs/core/interaction/input/key-layout-files#location
-    pub fn find_key_layout_files(&self, device_identifier: &DeviceIdentifier) -> Vec<PathBuf> {
-        let name = device_identifier.name.as_str();
-        let vendor = device_identifier.vendor;
-        let product = device_identifier.product;
-        let version = device_identifier.version;
+    pub fn find_key_layout_files(&self, device_info: &EvdevDeviceInfo) -> Vec<PathBuf> {
+        let name = device_info.name.as_str();
+        let vendor = device_info.vendor;
+        let product = device_info.product;
+        let version = device_info.version;
 
         let mut paths: Vec<PathBuf> = Vec::new();
 
@@ -214,56 +220,15 @@ impl KeyLayoutMapManager {
 
         paths
     }
-}
 
-/// Trait for finding key layout files.
-/// This allows dependency injection for testing purposes.
-pub trait KeyLayoutFileFinder: Send + Sync {
-    /// Find a key layout file in the system by its name.
-    fn find_system_key_layout_file_by_name(&self, name: &str) -> Option<PathBuf>;
+    fn map_key_codes_to_event_codes(key_codes: &[u32]) -> Vec<EventCode> {
+        let generic_key_layout = get_generic_key_layout_map();
 
-    /// Find a key layout file shipped with Key Mapper by its name.
-    fn find_key_mapper_key_layout_file_by_name(&self, name: &str) -> Option<PathBuf>;
-}
-
-/// Default implementation that uses the real file system.
-/// This searches the standard Android key layout file locations.
-pub struct AndroidKeyLayoutFileFinder;
-
-impl KeyLayoutFileFinder for AndroidKeyLayoutFileFinder {
-    fn find_system_key_layout_file_by_name(&self, name: &str) -> Option<PathBuf> {
-        // See https://source.android.com/docs/core/interaction/input/key-layout-files#location
-        let path_prefixes = vec![
-            "/odm/usr/".to_string(),
-            "/vendor/usr/".to_string(),
-            "/system/usr/".to_string(),
-            "/data/system/devices/".to_string(),
-        ];
-
-        for prefix in &path_prefixes {
-            let path = PathBuf::new()
-                .join(prefix)
-                .join("keylayout")
-                .join(format!("{}.kl", name));
-
-            match fs::metadata(&path) {
-                Ok(metadata) if metadata.is_file() => {
-                    if File::open(&path).is_ok() {
-                        return Some(path);
-                    }
-                }
-                Err(e) if e.kind() != ErrorKind::NotFound => {
-                    debug!("Error accessing {:?}: {}", path, e);
-                }
-                _ => {}
-            }
-        }
-
-        None
-    }
-
-    fn find_key_mapper_key_layout_file_by_name(&self, _name: &str) -> Option<PathBuf> {
-        None
+        key_codes
+            .iter()
+            .filter_map(|key_code| generic_key_layout.find_scan_code_for_key(*key_code))
+            .map(|scan_code| int_to_event_code(EventType::EV_KEY as c_uint, scan_code))
+            .collect()
     }
 }
 

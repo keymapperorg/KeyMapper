@@ -1,10 +1,12 @@
 use crate::{AbsInfo, GrabMode, InputEvent, LedState, ReadFlag, ReadStatus, TimeVal};
 use libc::{c_int, c_uint, c_void};
+use libc::{fcntl, F_GETFD};
 use std::ffi::CString;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read;
 use std::mem::ManuallyDrop;
+use std::os::fd::AsFd;
 use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::io::{AsRawFd, FromRawFd, RawFd};
 use std::path::Path;

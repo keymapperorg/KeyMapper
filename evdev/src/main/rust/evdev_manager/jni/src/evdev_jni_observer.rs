@@ -2,7 +2,7 @@ use evdev::{util::event_code_to_int, InputEvent};
 use evdev_manager_core::android::android_codes;
 use evdev_manager_core::android::android_codes::AKEYCODE_UNKNOWN;
 use evdev_manager_core::android::keylayout::key_layout_map_manager::KeyLayoutMapManager;
-use evdev_manager_core::device_identifier::DeviceIdentifier;
+use evdev_manager_core::evdev_device_info::EvdevDeviceInfo;
 use jni::objects::{GlobalRef, JValue};
 use jni::JavaVM;
 use std::process;
@@ -77,7 +77,7 @@ impl EvdevJniObserver {
     pub fn on_event(
         &self,
         device_id: usize,
-        device_identifier: &DeviceIdentifier,
+        device_identifier: &EvdevDeviceInfo,
         event: &InputEvent,
     ) -> bool {
         let mut env = self
