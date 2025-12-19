@@ -16,7 +16,6 @@ use mio::{Events, Interest, Poll, Registry, Token, Waker};
 use slab::Slab;
 use std::collections::HashMap;
 use std::error::Error;
-use std::{fmt, usize};
 use std::fs::read_dir;
 use std::io;
 use std::io::ErrorKind;
@@ -25,6 +24,7 @@ use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{mpsc, Arc, OnceLock, RwLock};
 use std::time::{Duration, Instant};
+use std::{fmt, usize};
 use tokio::task::JoinHandle;
 
 /// This callback returns true if the observer consumed the input event.
