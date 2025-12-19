@@ -56,9 +56,12 @@ class ConfigTriggerViewModel @Inject constructor(
 
     override fun showTriggerSetup(shortcut: TriggerSetupShortcut, forceProMode: Boolean) {
         when (shortcut) {
-            TriggerSetupShortcut.ASSISTANT -> viewModelScope.launch {
-                navigateToAdvancedTriggers("purchase_assistant_trigger")
-            }
+            TriggerSetupShortcut.ASSISTANT,
+            TriggerSetupShortcut.FLOATING_BUTTON_CUSTOM,
+            TriggerSetupShortcut.FLOATING_BUTTON_LOCK_SCREEN,
+                -> viewModelScope.launch {
+                    navigateToAdvancedTriggers("purchase_assistant_trigger")
+                }
 
             else -> super.showTriggerSetup(shortcut, forceProMode)
         }
