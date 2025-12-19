@@ -140,6 +140,8 @@
 # Keep parcelable classes used in AIDL
 -keep class io.github.sds100.keymapper.common.models.GrabbedDeviceHandle { *; }
 -keep class io.github.sds100.keymapper.common.models.EvdevDeviceInfo { *; }
+-keep class io.github.sds100.keymapper.common.models.GrabDeviceRequest { *; }
+-keep class io.github.sds100.keymapper.common.models.ShellResult { *; }
 
 # Keep all rikka.hidden classes and interfaces as they contain AIDL files
 -keep class rikka.hidden.** { *; }
