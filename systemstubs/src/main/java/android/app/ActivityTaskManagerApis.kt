@@ -18,6 +18,22 @@ object ActivityTaskManagerApis {
                 keepIntentExtra,
                 displayId,
             )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            try {
+                return activityTaskManager.getTasks(
+                    maxNum,
+                    filterOnlyVisibleRecents,
+                    keepIntentExtra,
+                )
+            } catch (_: NoSuchMethodError) {
+                // In later revisions of Android 13 this method was added.
+                return activityTaskManager.getTasks(
+                    maxNum,
+                    filterOnlyVisibleRecents,
+                    keepIntentExtra,
+                    displayId,
+                )
+            }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             return activityTaskManager.getTasks(maxNum, filterOnlyVisibleRecents, keepIntentExtra)
         } else {
