@@ -135,7 +135,7 @@ impl EvdevJniObserver {
             }
         }
 
-        // Call BaseSystemBridge.onGrabbedDevicesChanged() via JNI
+        // Call SystemBridge.onGrabbedDevicesChanged() via JNI
         if let Err(e) = env.call_method(
             &self.system_bridge,
             "onGrabbedDevicesChanged",

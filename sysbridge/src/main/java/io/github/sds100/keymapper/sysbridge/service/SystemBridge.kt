@@ -112,6 +112,18 @@ class SystemBridge : ISystemBridge.Stub() {
         }
     }
 
+    @Suppress("unused")
+    fun onGrabbedDevicesChanged(devices: Array<GrabbedDeviceHandle>) {
+        synchronized(evdevCallbackLock) {
+            val callback = evdevCallback ?: return
+            try {
+                callback.onGrabbedDevicesChanged(devices)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error calling evdev callback", e)
+            }
+        }
+    }
+
     /**
      * Called from Rust via JNI when the power button is held for 10+ seconds.
      * Forwards the call to the registered IEvdevCallback for emergency system bridge kill.
