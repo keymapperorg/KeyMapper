@@ -12,6 +12,7 @@
 ## Bug fixes
 
 - #1913 actually save the option to detect with scan code
+- #1931 fix Close and Remove From Recents action on some Android 13 revisions
 
 ## [4.0.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.03)
 

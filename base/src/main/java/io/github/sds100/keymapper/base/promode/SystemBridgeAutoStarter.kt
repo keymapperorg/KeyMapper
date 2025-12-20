@@ -128,6 +128,8 @@ class SystemBridgeAutoStarter @Inject constructor(
     private val autoStartFlow: Flow<AutoStartType?> =
         connectionManager.connectionState.flatMapLatest { connectionState ->
 
+            Timber.i("LATEST CONNECTION STATE: $connectionState")
+
             // Do not autostart if it is connected or it was killed from the user
             if (connectionState !is SystemBridgeConnectionState.Disconnected ||
                 connectionState.isStoppedByUser ||
@@ -137,7 +139,7 @@ class SystemBridgeAutoStarter @Inject constructor(
                 !isAutoStartEnabled()
             ) {
                 flowOf(null)
-            } else if (diedAfterAutostart(connectionState.time)) {
+            } else if (isWithinAutoStartCooldown()) {
                 // Do not autostart if the system bridge was killed shortly after.
                 // This prevents infinite loops happening.
                 Timber.w(
@@ -293,9 +295,10 @@ class SystemBridgeAutoStarter @Inject constructor(
      * Whether the system bridge died less than 5 minutes after the previous time it was
      * auto started.
      */
-    private suspend fun diedAfterAutostart(disconnectionTime: Long): Boolean {
+    private suspend fun isWithinAutoStartCooldown(): Boolean {
         val lastAutoStartTime = preferences.get(Keys.systemBridgeLastAutoStartTime).first()
-        return lastAutoStartTime != null && disconnectionTime - lastAutoStartTime < (5 * 60_000)
+        return lastAutoStartTime != null &&
+            clock.elapsedRealtime() - lastAutoStartTime < (5 * 60_000)
     }
 
     private suspend fun isAutoStartEnabled(): Boolean {

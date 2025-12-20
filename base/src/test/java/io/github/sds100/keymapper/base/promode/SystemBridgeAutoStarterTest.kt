@@ -62,17 +62,27 @@ class SystemBridgeAutoStarterTest {
     private lateinit var mockResourceProvider: ResourceProvider
     private lateinit var testBuildConfig: TestBuildConfigProvider
 
-    private val isRootGrantedFlow = MutableStateFlow(false)
-    private val shizukuIsStartedFlow = MutableStateFlow(false)
-    private val connectionStateFlow = MutableStateFlow<SystemBridgeConnectionState>(
-        SystemBridgeConnectionState.Disconnected(time = 0, isStoppedByUser = false),
-    )
-    private val isWifiConnectedFlow = MutableStateFlow(false)
-    private val writeSecureSettingsGrantedFlow = MutableStateFlow(false)
-    private val shizukuPermissionGrantedFlow = MutableStateFlow(false)
+    private lateinit var isRootGrantedFlow: MutableStateFlow<Boolean>
+    private lateinit var shizukuIsStartedFlow: MutableStateFlow<Boolean>
+    private lateinit var connectionStateFlow: MutableStateFlow<SystemBridgeConnectionState>
+    private lateinit var isWifiConnectedFlow: MutableStateFlow<Boolean>
+    private lateinit var writeSecureSettingsGrantedFlow: MutableStateFlow<Boolean>
+    private lateinit var shizukuPermissionGrantedFlow: MutableStateFlow<Boolean>
 
     @Before
     fun init() {
+        isRootGrantedFlow = MutableStateFlow(false)
+        shizukuIsStartedFlow = MutableStateFlow(false)
+        connectionStateFlow = MutableStateFlow(
+            SystemBridgeConnectionState.Disconnected(
+                time = testCoroutineScope.testScheduler.currentTime,
+                isStoppedByUser = false,
+            ),
+        )
+        isWifiConnectedFlow = MutableStateFlow(false)
+        writeSecureSettingsGrantedFlow = MutableStateFlow(false)
+        shizukuPermissionGrantedFlow = MutableStateFlow(false)
+
         mockSuAdapter = mock {
             on { isRootGranted } doReturn isRootGrantedFlow
         }
@@ -521,7 +531,7 @@ class SystemBridgeAutoStarterTest {
     }
 
     @Test
-    fun `show killed and not restarting notification if system bridge dies less than 30 seconds after auto starting`() =
+    fun `show killed and not restarting notification if want to autostart again within the cooldown`() =
         runTest(testDispatcher) {
             fakePreferences.set(Keys.isSystemBridgeKeepAliveEnabled, true)
             fakePreferences.set(Keys.isSystemBridgeUsed, true)
@@ -529,7 +539,6 @@ class SystemBridgeAutoStarterTest {
             whenever(
                 mockResourceProvider.getString(R.string.system_bridge_died_notification_title),
             ).thenReturn("died")
-
             whenever(mockSetupController.isAdbPaired()).thenReturn(true)
             isWifiConnectedFlow.value = true
             writeSecureSettingsGrantedFlow.value = true
@@ -542,10 +551,11 @@ class SystemBridgeAutoStarterTest {
                 verify(mockNotificationAdapter).showNotification(any())
                 connectionStateFlow.value = SystemBridgeConnectionState.Connected(time = 10000)
 
-                // Set the state as connected within the timeout
+                // Set the state as disconnected within the timeout
                 connectionStateFlow.value =
                     SystemBridgeConnectionState.Disconnected(time = 11000, isStoppedByUser = false)
                 advanceUntilIdle()
+
                 // Show notification
                 val argument = argumentCaptor<NotificationModel>()
                 verify(mockNotificationAdapter).showNotification(argument.capture())

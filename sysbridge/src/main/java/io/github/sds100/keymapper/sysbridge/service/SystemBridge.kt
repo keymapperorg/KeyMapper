@@ -436,7 +436,7 @@ class SystemBridge : ISystemBridge.Stub() {
         return inputManager.injectInputEvent(event, mode)
     }
 
-    override fun getEvdevInputDevices(): Array<out EvdevDeviceInfo?>? {
+    override fun getEvdevInputDevices(): Array<out EvdevDeviceInfo?> {
         return getEvdevDevicesNative()
     }
 
@@ -757,11 +757,14 @@ class SystemBridge : ISystemBridge.Stub() {
             tetheringConnector.registerTetheringEventCallback(callback, processPackageName)
 
             // Wait for callback with timeout using Handler
-            mainHandler.postDelayed({
-                synchronized(lock) {
-                    lock.notify()
-                }
-            }, timeoutMillis)
+            mainHandler.postDelayed(
+                {
+                    synchronized(lock) {
+                        lock.notify()
+                    }
+                },
+                timeoutMillis,
+            )
 
             synchronized(lock) {
                 lock.wait(timeoutMillis)

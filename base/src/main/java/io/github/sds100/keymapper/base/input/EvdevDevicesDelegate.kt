@@ -61,6 +61,7 @@ class EvdevDevicesDelegate @Inject constructor(
                             allDevices.value = fetchAllDevices()
                         }
                     }
+
                     is SystemBridgeConnectionState.Disconnected -> {
                         allDevices.value = emptyList()
                         grabbedDevicesById.value = emptyMap()
