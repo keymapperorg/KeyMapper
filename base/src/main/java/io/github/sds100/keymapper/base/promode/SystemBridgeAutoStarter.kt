@@ -127,9 +127,6 @@ class SystemBridgeAutoStarter @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private val autoStartFlow: Flow<AutoStartType?> =
         connectionManager.connectionState.flatMapLatest { connectionState ->
-
-            Timber.i("LATEST CONNECTION STATE: $connectionState")
-
             // Do not autostart if it is connected or it was killed from the user
             if (connectionState !is SystemBridgeConnectionState.Disconnected ||
                 connectionState.isStoppedByUser ||

@@ -46,7 +46,6 @@ impl EvdevGrabController {
         self.invalidate(grab_targets.as_ref())
     }
 
-    // TODO call this function. Isnt this going to be called many times when grabbing/ungrabbing?
     pub fn on_inotify_dev_input(&self) {
         let grab_targets = self.grab_targets.lock().unwrap();
         self.invalidate(grab_targets.as_ref());

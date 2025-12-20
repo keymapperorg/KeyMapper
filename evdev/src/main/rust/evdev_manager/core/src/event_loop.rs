@@ -13,10 +13,12 @@ use evdev::{InputEvent, ReadFlag, ReadStatus};
 use libc::c_uint;
 use mio::event::Event;
 use mio::{Events, Poll, Token, Waker};
+use notify::{EventKind, Watcher};
 use slab::Slab;
 use std::error::Error;
 use std::io;
 use std::io::ErrorKind;
+use std::path::Path;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{mpsc, Arc, OnceLock, RwLock};
 use std::time::{Duration, Instant};
@@ -47,10 +49,11 @@ const WAKER_TOKEN: Token = Token(usize::MAX - 1);
 pub struct EventLoopManager {
     stop_flag: Arc<AtomicBool>,
     poll: Arc<RwLock<Poll>>,
-    join_handle: RwLock<Option<JoinHandle<()>>>,
+    event_loop_handle: RwLock<Option<JoinHandle<()>>>,
+    inotify_handle: RwLock<Option<JoinHandle<()>>>,
     waker: Waker,
     callback: Arc<dyn EvdevCallback>,
-    grab_controller: EvdevGrabController,
+    grab_controller: Arc<EvdevGrabController>,
 }
 
 impl fmt::Debug for EventLoopManager {
@@ -90,22 +93,23 @@ impl EventLoopManager {
         let poll_lock = Arc::new(RwLock::new(poll));
 
         let registry_arc = Arc::new(registry);
+        let grab_controller = EvdevGrabController::new(registry_arc.clone(), callback.clone());
 
         Self {
             stop_flag: Arc::new(AtomicBool::new(false)),
             poll: poll_lock,
-            join_handle: RwLock::new(None),
+            event_loop_handle: RwLock::new(None),
+            inotify_handle: RwLock::new(None),
             waker,
-            callback: callback.clone(),
-            grab_controller: EvdevGrabController::new(registry_arc.clone(), callback),
+            callback,
+            grab_controller: Arc::new(grab_controller),
         }
     }
 
     pub fn start(&self) -> Result<(), EvdevError> {
-        let is_running = { self.join_handle.read().unwrap().is_some() };
+        let is_running = { self.event_loop_handle.read().unwrap().is_some() };
 
         if is_running {
-            // Do nothing. The event loop is already started.
             info!("EvdevManager event loop is already running");
             return Ok(());
         }
@@ -114,32 +118,33 @@ impl EventLoopManager {
 
         let callback = self.callback.clone();
 
-        let (tx, rx) = mpsc::channel();
-
         let poll_lock_clone = self.poll.clone();
         let stop_flag_clone = self.stop_flag.clone();
 
-        let join_handle = get_runtime().spawn(async move {
-            tx.send(()).unwrap();
+        let event_loop_handle = get_runtime().spawn(async move {
             EventLoopThread::new(stop_flag_clone, poll_lock_clone, callback).start();
         });
 
-        match rx.recv_timeout(Duration::from_secs(2)) {
-            Ok(_) => {
-                self.join_handle.write().unwrap().replace(join_handle);
+        self.event_loop_handle
+            .write()
+            .unwrap()
+            .replace(event_loop_handle);
 
-                Ok(())
-            }
-            Err(e) => {
-                error!("Failed to wait for event loop start: {}", e);
-                join_handle.abort();
-                Err(EvdevError::new(-libc::ETIMEDOUT))
-            }
-        }
+        let grab_controller = self.grab_controller.clone();
+
+        let inotify_handle = get_runtime().spawn(async move {
+            Self::watch_dev_input(&grab_controller)
+                .inspect_err(|err| error!("Failed to watch device input: {}", err))
+                .unwrap_err();
+        });
+
+        self.inotify_handle.write().unwrap().replace(inotify_handle);
+
+        Ok(())
     }
 
     pub fn stop(&self) -> Result<(), io::Error> {
-        let handle_option = self.join_handle.write().unwrap().take();
+        let handle_option = self.event_loop_handle.write().unwrap().take();
 
         match handle_option {
             None => {
@@ -281,6 +286,32 @@ impl EventLoopManager {
             product: target.product,
             extra_event_codes: event_codes,
         }
+    }
+
+    fn watch_dev_input(grab_controller: &EvdevGrabController) -> notify::Result<()> {
+        let (tx, rx) = mpsc::channel::<notify::Result<notify::Event>>();
+
+        let mut watcher = notify::recommended_watcher(tx)
+            .inspect_err(|err| error!("Failed to create inotify watcher: {}", err))?;
+
+        watcher.watch(Path::new("/dev/input"), notify::RecursiveMode::Recursive)?;
+
+        for event_result in rx {
+            match event_result {
+                Ok(event) => {
+                    if event.kind == EventKind::Create(notify::event::CreateKind::File)
+                        || event.kind == EventKind::Remove(notify::event::RemoveKind::File)
+                    {
+                        grab_controller.on_inotify_dev_input();
+                    }
+                }
+                Err(err) => {
+                    error!("Failed to receive inotify event: {}", err);
+                }
+            }
+        }
+
+        Ok(())
     }
 }
 
