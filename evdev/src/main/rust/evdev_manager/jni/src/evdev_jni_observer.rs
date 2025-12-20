@@ -3,6 +3,7 @@ use evdev_manager_core::android::android_codes;
 use evdev_manager_core::android::android_codes::AKEYCODE_UNKNOWN;
 use evdev_manager_core::android::keylayout::key_layout_map_manager::KeyLayoutMapManager;
 use evdev_manager_core::evdev_device_info::EvdevDeviceInfo;
+use evdev_manager_core::grabbed_device_handle::GrabbedDeviceHandle;
 use jni::objects::{GlobalRef, JValue};
 use jni::JavaVM;
 use std::process;
@@ -71,6 +72,77 @@ impl EvdevJniObserver {
                 }
                 *time_guard = 0
             }
+        }
+    }
+
+    pub fn on_grabbed_devices_changed(&self, grabbed_devices: Vec<GrabbedDeviceHandle>) {
+        let mut env = self
+            .jvm
+            .attach_current_thread_permanently()
+            .expect("Failed to attach to JVM thread");
+
+        // Convert Vec<EvdevDeviceInfo> to Java array of GrabbedDeviceHandle
+        let handle_class =
+            match env.find_class("io/github/sds100/keymapper/common/models/GrabbedDeviceHandle") {
+                Ok(c) => c,
+                Err(e) => {
+                    error!("Failed to find GrabbedDeviceHandle class: {:?}", e);
+                    return;
+                }
+            };
+
+        let array = match env.new_object_array(
+            grabbed_devices.len() as i32,
+            &handle_class,
+            jni::objects::JObject::null(),
+        ) {
+            Ok(a) => a,
+            Err(e) => {
+                error!("Failed to create GrabbedDeviceHandle array: {:?}", e);
+                return;
+            }
+        };
+
+        for (i, device_handle) in grabbed_devices.iter().enumerate() {
+            let name_str = match env.new_string(&device_handle.device_info.name) {
+                Ok(s) => s,
+                Err(e) => {
+                    error!("Failed to create device name string: {:?}", e);
+                    continue;
+                }
+            };
+
+            let handle = match env.new_object(
+                &handle_class,
+                "(ILjava/lang/String;III)V",
+                &[
+                    JValue::Int(device_handle.id as i32),
+                    JValue::Object(&name_str.into()),
+                    JValue::Int(device_handle.device_info.bus as i32),
+                    JValue::Int(device_handle.device_info.vendor as i32),
+                    JValue::Int(device_handle.device_info.product as i32),
+                ],
+            ) {
+                Ok(h) => h,
+                Err(e) => {
+                    error!("Failed to create GrabbedDeviceHandle: {:?}", e);
+                    continue;
+                }
+            };
+
+            if let Err(e) = env.set_object_array_element(&array, i as i32, &handle) {
+                error!("Failed to set array element: {:?}", e);
+            }
+        }
+
+        // Call BaseSystemBridge.onGrabbedDevicesChanged() via JNI
+        if let Err(e) = env.call_method(
+            &self.system_bridge,
+            "onGrabbedDevicesChanged",
+            "([Lio/github/sds100/keymapper/common/models/GrabbedDeviceHandle;)V",
+            &[JValue::Object(&array.into())],
+        ) {
+            error!("Failed to call onGrabbedDevicesChanged: {:?}", e);
         }
     }
 

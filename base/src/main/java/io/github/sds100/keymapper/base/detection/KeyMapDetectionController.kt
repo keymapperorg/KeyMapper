@@ -13,7 +13,7 @@ import io.github.sds100.keymapper.base.trigger.EvdevTriggerKey
 import io.github.sds100.keymapper.base.trigger.RecordTriggerController
 import io.github.sds100.keymapper.base.trigger.RecordTriggerState
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
-import io.github.sds100.keymapper.common.models.GrabDeviceRequest
+import io.github.sds100.keymapper.common.models.GrabTargetKeyCode
 import io.github.sds100.keymapper.system.inputevents.KMEvdevEvent
 import io.github.sds100.keymapper.system.inputevents.KMInputEvent
 import kotlinx.coroutines.CoroutineScope
@@ -37,7 +37,7 @@ class KeyMapDetectionController(
     companion object {
         private const val INPUT_EVENT_HUB_ID = "key_map_controller"
 
-        fun getEvdevGrabRequests(algorithm: KeyMapAlgorithm): List<GrabDeviceRequest> {
+        fun getEvdevGrabRequests(algorithm: KeyMapAlgorithm): List<GrabTargetKeyCode> {
             val deviceKeyEventMap = mutableMapOf<EvdevDeviceInfo, MutableSet<Int>>()
 
             for ((index, trigger) in algorithm.triggers.withIndex()) {
@@ -64,7 +64,13 @@ class KeyMapDetectionController(
             }
 
             return deviceKeyEventMap.map { (device, keyEvents) ->
-                GrabDeviceRequest(device, keyEvents.toIntArray())
+                GrabTargetKeyCode(
+                    name = device.name,
+                    bus = device.bus,
+                    vendor = device.vendor,
+                    product = device.product,
+                    extraKeyCodes = keyEvents.toIntArray(),
+                )
             }
         }
     }
@@ -92,7 +98,7 @@ class KeyMapDetectionController(
 
         if (isPaused) {
             algorithm.loadKeyMaps(emptyList())
-            inputEventHub.setGrabbedEvdevDevices(INPUT_EVENT_HUB_ID, emptyList())
+            inputEventHub.setGrabTargets(INPUT_EVENT_HUB_ID, emptyList())
         } else {
             algorithm.loadKeyMaps(keyMapList)
             // Determine which evdev devices need to be grabbed depending on the state
@@ -103,7 +109,7 @@ class KeyMapDetectionController(
                 "Grab evdev devices for key map detection: ${grabRequests.joinToString()}",
             )
 
-            inputEventHub.setGrabbedEvdevDevices(
+            inputEventHub.setGrabTargets(
                 INPUT_EVENT_HUB_ID,
                 grabRequests,
             )
@@ -143,7 +149,7 @@ class KeyMapDetectionController(
 
     fun teardown() {
         algorithm.reset()
-        inputEventHub.setGrabbedEvdevDevices(INPUT_EVENT_HUB_ID, emptyList())
+        inputEventHub.setGrabTargets(INPUT_EVENT_HUB_ID, emptyList())
         inputEventHub.unregisterClient(INPUT_EVENT_HUB_ID)
     }
 }

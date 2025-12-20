@@ -6,7 +6,8 @@ import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.base.BuildConfig
 import io.github.sds100.keymapper.base.system.inputmethod.ImeInputEventInjector
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
-import io.github.sds100.keymapper.common.models.GrabDeviceRequest
+import io.github.sds100.keymapper.common.models.GrabTargetKeyCode
+import io.github.sds100.keymapper.common.models.GrabbedDeviceHandle
 import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.KMError
 import io.github.sds100.keymapper.common.utils.KMResult
@@ -182,17 +183,21 @@ class InputEventHubImpl @Inject constructor(
                 when (event.action) {
                     KeyEvent.ACTION_DOWN -> {
                         Timber.d(
-                            "Key down ${KeyEvent.keyCodeToString(
-                                event.keyCode,
-                            )}: keyCode=${event.keyCode}, scanCode=${event.scanCode}, deviceId=${event.deviceId}, metaState=${event.metaState}, source=${event.source}",
+                            "Key down ${
+                                KeyEvent.keyCodeToString(
+                                    event.keyCode,
+                                )
+                            }: keyCode=${event.keyCode}, scanCode=${event.scanCode}, deviceId=${event.deviceId}, metaState=${event.metaState}, source=${event.source}",
                         )
                     }
 
                     KeyEvent.ACTION_UP -> {
                         Timber.d(
-                            "Key up ${KeyEvent.keyCodeToString(
-                                event.keyCode,
-                            )}: keyCode=${event.keyCode}, scanCode=${event.scanCode}, deviceId=${event.deviceId}, metaState=${event.metaState}, source=${event.source}",
+                            "Key up ${
+                                KeyEvent.keyCodeToString(
+                                    event.keyCode,
+                                )
+                            }: keyCode=${event.keyCode}, scanCode=${event.scanCode}, deviceId=${event.deviceId}, metaState=${event.metaState}, source=${event.source}",
                         )
                     }
 
@@ -229,7 +234,7 @@ class InputEventHubImpl @Inject constructor(
     }
 
     @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
-    override fun setGrabbedEvdevDevices(clientId: String, devices: List<GrabDeviceRequest>) {
+    override fun setGrabTargets(clientId: String, devices: List<GrabTargetKeyCode>) {
         if (!clients.containsKey(clientId)) {
             throw IllegalArgumentException(
                 "This client $clientId is not registered when trying to grab devices!",
@@ -255,7 +260,13 @@ class InputEventHubImpl @Inject constructor(
 
         val devices = evdevDevicesDelegate.allDevices.value
         val grabRequests = devices.map {
-            GrabDeviceRequest(device = it, extraKeyCodes = intArrayOf())
+            GrabTargetKeyCode(
+                name = it.name,
+                bus = it.bus,
+                vendor = it.vendor,
+                product = it.product,
+                extraKeyCodes = intArrayOf(),
+            )
         }.toSet()
         clients[clientId] = clients[clientId]!!.copy(grabRequests = grabRequests)
 
@@ -359,10 +370,16 @@ class InputEventHubImpl @Inject constructor(
             .firstBlocking()
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
+    override fun onGrabbedDevicesChanged(devices: Array<out GrabbedDeviceHandle?>?) {
+        val devicesList = devices?.filterNotNull()?.toList() ?: emptyList()
+        evdevDevicesDelegate.onGrabbedDevicesChanged(devicesList)
+    }
+
     @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     private fun invalidateGrabbedDevices() {
         val devicesToGrab = clients.values.flatMap { it.grabRequests }.toSet()
-        evdevDevicesDelegate.setGrabbedDevices(devicesToGrab.toList())
+        evdevDevicesDelegate.setGrabTargets(devicesToGrab.toList())
     }
 
     private data class ClientContext(
@@ -370,10 +387,12 @@ class InputEventHubImpl @Inject constructor(
         /**
          * The evdev devices that this client wants to grab.
          */
-        val grabRequests: Set<GrabDeviceRequest>,
+        val grabRequests: Set<GrabTargetKeyCode>,
         val evdevEventTypes: Set<Int>,
     ) {
-        private val devicesSet: Set<EvdevDeviceInfo> = grabRequests.map { it.device }.toSet()
+        private val devicesSet: Set<EvdevDeviceInfo> = grabRequests.map {
+            EvdevDeviceInfo(name = it.name, bus = it.bus, vendor = it.vendor, product = it.product)
+        }.toSet()
 
         fun grabbedDevice(device: EvdevDeviceInfo): Boolean {
             return devicesSet.contains(device)
@@ -397,7 +416,7 @@ interface InputEventHub {
     fun unregisterClient(clientId: String)
 
     fun getGrabbedDevices(): List<EvdevDeviceInfo>
-    fun setGrabbedEvdevDevices(clientId: String, devices: List<GrabDeviceRequest>)
+    fun setGrabTargets(clientId: String, devices: List<GrabTargetKeyCode>)
     fun grabAllEvdevDevices(clientId: String)
 
     /**

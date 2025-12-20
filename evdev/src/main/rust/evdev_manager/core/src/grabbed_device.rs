@@ -21,7 +21,7 @@ pub struct GrabbedDevice {
 
 impl GrabbedDevice {
     /// Create a grabbed device that also enables the given EventCodes in the uinput device.
-    pub fn new(device_path: PathBuf, extra_events: &[EventCode]) -> Result<Self, EvdevError> {
+    pub fn new(device_path: &PathBuf, extra_events: &[EventCode]) -> Result<Self, EvdevError> {
         let mut evdev = Self::open_evdev_device(&device_path)?;
 
         for event in extra_events {
@@ -40,7 +40,7 @@ impl GrabbedDevice {
         };
 
         Ok(Self {
-            device_path,
+            device_path: device_path.clone(),
             device_info,
             evdev: Mutex::new(evdev),
             uinput,
@@ -67,6 +67,9 @@ impl Drop for GrabbedDevice {
     fn drop(&mut self) {
         let mut evdev = self.evdev.lock().unwrap();
         // Ungrab the device
-        evdev.grab(GrabMode::Ungrab);
+        evdev
+            .grab(GrabMode::Ungrab)
+            .inspect_err(|err| error!("Failed to ungrab device {:?}; {}", self.device_info, err))
+            .ok();
     }
 }

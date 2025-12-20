@@ -2,7 +2,7 @@ package io.github.sds100.keymapper.base.input
 
 import androidx.annotation.RequiresApi
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
-import io.github.sds100.keymapper.common.models.GrabDeviceRequest
+import io.github.sds100.keymapper.common.models.GrabTargetKeyCode
 import io.github.sds100.keymapper.common.models.GrabbedDeviceHandle
 import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.onFailure
@@ -45,7 +45,7 @@ class EvdevDevicesDelegate @Inject constructor(
 
     // Use a channel so there are no race conditions when grabbing and that all
     // grab operations finish in the correct order to completion.
-    private val grabDevicesChannel: Channel<List<GrabDeviceRequest>> = Channel(capacity = 16)
+    private val grabDevicesChannel: Channel<List<GrabTargetKeyCode>> = Channel(capacity = 16)
 
     // All the evdev devices on the device, regardless of whether they are grabbed.
     val allDevices: MutableStateFlow<List<EvdevDeviceInfo>> = MutableStateFlow(emptyList())
@@ -80,9 +80,9 @@ class EvdevDevicesDelegate @Inject constructor(
         }
     }
 
-    private fun invalidateGrabbedDevices(devices: List<GrabDeviceRequest>) {
+    private fun invalidateGrabbedDevices(devices: List<GrabTargetKeyCode>) {
         systemBridgeConnectionManager
-            .run { bridge -> bridge.setGrabbedDevices(devices.toTypedArray()) }
+            .run { bridge -> bridge.setGrabTargets(devices.toTypedArray()) }
             .onSuccess { grabbedDevices ->
                 onGrabbedDevicesChanged(grabbedDevices?.filterNotNull() ?: emptyList())
             }.onFailure { error ->
@@ -92,7 +92,7 @@ class EvdevDevicesDelegate @Inject constructor(
             }
     }
 
-    fun setGrabbedDevices(devices: List<GrabDeviceRequest>) {
+    fun setGrabTargets(devices: List<GrabTargetKeyCode>) {
         grabDevicesChannel.trySend(devices)
     }
 
@@ -104,7 +104,7 @@ class EvdevDevicesDelegate @Inject constructor(
         return grabbedDevicesById.value.values.toList()
     }
 
-    private fun onGrabbedDevicesChanged(devices: List<GrabbedDeviceHandle>) {
+    fun onGrabbedDevicesChanged(devices: List<GrabbedDeviceHandle>) {
         Timber.i("Grabbed devices changed: [${devices.joinToString { it.name }}]")
 
         grabbedDevicesById.value =

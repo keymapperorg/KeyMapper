@@ -7,12 +7,9 @@ use crate::evdev_device_info::EvdevDeviceInfo;
 use evdev::enums::{EventCode, EventType};
 use evdev::util::int_to_event_code;
 use libc::c_uint;
-use log::{debug, error, info};
+use log::{error, info};
 use std::collections::HashMap;
 use std::error::Error;
-use std::fs;
-use std::fs::File;
-use std::io::ErrorKind;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex, OnceLock};
 
@@ -221,7 +218,7 @@ impl KeyLayoutMapManager {
         paths
     }
 
-    fn map_key_codes_to_event_codes(key_codes: &[u32]) -> Vec<EventCode> {
+    pub fn map_key_codes_to_event_codes(key_codes: &[u32]) -> Vec<EventCode> {
         let generic_key_layout = get_generic_key_layout_map();
 
         key_codes

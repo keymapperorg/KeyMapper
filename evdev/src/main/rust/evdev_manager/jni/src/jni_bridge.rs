@@ -1,14 +1,14 @@
 use crate::evdev_jni_observer::EvdevJniObserver;
-use evdev::{Device, DeviceWrapper};
+use evdev::InputEvent;
 use evdev_manager_core::android::keylayout::key_layout_map_manager::KeyLayoutMapManager;
 use evdev_manager_core::evdev_device_info::EvdevDeviceInfo;
-use evdev_manager_core::event_loop::EventLoopManager;
-use evdev_manager_core::grab_device_request::GrabDeviceRequest;
+use evdev_manager_core::event_loop::{EvdevCallback, EventLoopManager};
+use evdev_manager_core::grab_target_key_code::GrabTargetKeyCode;
+use evdev_manager_core::grabbed_device_handle::GrabbedDeviceHandle;
 use jni::objects::{JClass, JIntArray, JObject, JObjectArray, JString, JValue};
 use jni::sys::{jboolean, jint, jobject, jobjectArray};
 use jni::JNIEnv;
 use log::LevelFilter;
-use std::path::PathBuf;
 use std::ptr;
 use std::sync::{Arc, OnceLock};
 
@@ -16,6 +16,24 @@ static JNI_OBSERVER: OnceLock<EvdevJniObserver> = OnceLock::new();
 
 fn get_jni_observer() -> &'static EvdevJniObserver {
     JNI_OBSERVER.get().expect("JNI observer not initialized")
+}
+
+/// Wrapper struct that implements EvdevCallback trait
+struct JniEvdevCallback;
+
+impl EvdevCallback for JniEvdevCallback {
+    fn on_evdev_event(
+        &self,
+        device_id: usize,
+        device_identifier: &EvdevDeviceInfo,
+        event: &InputEvent,
+    ) -> bool {
+        get_jni_observer().on_event(device_id, device_identifier, event)
+    }
+
+    fn on_grabbed_devices_changed(&self, grabbed_devices: Vec<GrabbedDeviceHandle>) {
+        get_jni_observer().on_grabbed_devices_changed(grabbed_devices)
+    }
 }
 
 /// MUST only be called once in the lifetime of the process.
@@ -52,10 +70,8 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemB
         panic!("JNI observer already initialized");
     }
 
-    // Initialize and start the event loop with the observer
-    EventLoopManager::init(|device_id, device_identifier, event| {
-        get_jni_observer().on_event(device_id, device_identifier, event)
-    });
+    // Initialize and start the event loop with the callback
+    EventLoopManager::init(Arc::new(JniEvdevCallback));
 
     EventLoopManager::get()
         .start()
@@ -76,15 +92,15 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemB
         .unwrap();
 }
 
-/// Set the list of grabbed devices. Takes an array of GrabDeviceRequest and returns an array of GrabbedDeviceHandle.
+/// Set the list of grabbed devices. Takes an array of GrabTargetKeyCode and returns an array of GrabbedDeviceHandle.
 #[no_mangle]
-pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_setGrabbedDevicesNative(
+pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_setGrabTargetsNative(
     mut env: JNIEnv,
     _class: JClass,
     j_devices: jobjectArray,
 ) -> jobjectArray {
-    // Parse the input array of GrabDeviceRequest
-    let mut requested_devices: Vec<GrabDeviceRequest> = Vec::new();
+    // Parse the input array of GrabTargetKeyCode
+    let mut requested_devices: Vec<GrabTargetKeyCode> = Vec::new();
 
     // Convert raw jobjectArray to JObjectArray
     let devices_array: JObjectArray = unsafe { JObjectArray::from_raw(j_devices) };
@@ -106,15 +122,15 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemB
             }
         };
 
-        match parse_grab_device_request(&mut env, &obj) {
+        match parse_grab_target_key_code(&mut env, &obj) {
             Ok(grab_request) => requested_devices.push(grab_request),
             Err(e) => {
-                error!("Failed to parse GrabDeviceRequest at index {}: {:?}", i, e);
+                error!("Failed to parse GrabTargetKeyCode at index {}: {:?}", i, e);
             }
         }
     }
 
-    let grabbed_devices = EventLoopManager::get().set_grabbed_devices(requested_devices);
+    let grabbed_devices = EventLoopManager::get().set_grab_targets(requested_devices);
     create_java_grabbed_device_handle_array(&mut env, grabbed_devices)
 }
 
@@ -154,32 +170,28 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemB
     _class: JClass,
 ) -> jobjectArray {
     let mut device_infos = Vec::new();
-    let device_paths_result = EventLoopManager::get().get_all_real_devices();
+    let devices_result = EventLoopManager::get().get_real_devices();
 
-    match device_paths_result {
-        Ok(paths) => {
-            for path in paths {
-                match get_evdev_from_path(path.clone()) {
-                    Some(device) => {
-                        let name = device.name().unwrap_or("");
-                        let bus = device.bustype() as i32;
-                        let vendor = device.vendor_id() as i32;
-                        let product = device.product_id() as i32;
-
-                        // Create EvdevDeviceInfo
-                        match create_java_evdev_device_info(&mut env, name, bus, vendor, product) {
-                            Ok(info) => device_infos.push(info),
-                            Err(e) => {
-                                error!("Failed to create EvdevDeviceInfo: {:?}", e);
-                            }
-                        }
+    match devices_result {
+        Ok(devices) => {
+            for device in devices {
+                // Create EvdevDeviceInfo
+                match create_java_evdev_device_info(
+                    &mut env,
+                    &device.name,
+                    device.bus as i32,
+                    device.vendor as i32,
+                    device.product as i32,
+                ) {
+                    Ok(info) => device_infos.push(info),
+                    Err(e) => {
+                        error!("Failed to create EvdevDeviceInfo: {:?}", e);
                     }
-                    None => continue,
                 }
             }
         }
         Err(e) => {
-            error!("Failed to get input device paths: {:?}", e);
+            error!("Failed to get input devices: {:?}", e);
         }
     }
 
@@ -212,18 +224,11 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemB
     array.into_raw()
 }
 
-fn get_evdev_from_path(path: PathBuf) -> Option<Device> {
-    Device::new_from_path(path.clone())
-        .inspect_err(|e| warn!("Failed to open evdev device {:?}: {:?}", path, e))
-        .ok()
-}
-
-/// Parse a Java EvdevDeviceInfo object into a Rust DeviceIdentifier
-/// Note: version is set to 0 as it's not exposed in the Java API
-fn parse_evdev_device_info(
+/// Parse a Java GrabTargetKeyCode object into a Rust GrabTargetKeyCode
+fn parse_grab_target_key_code(
     env: &mut JNIEnv,
     obj: &JObject,
-) -> Result<EvdevDeviceInfo, jni::errors::Error> {
+) -> Result<GrabTargetKeyCode, jni::errors::Error> {
     // Get name field
     let name_field = env.get_field(obj, "name", "Ljava/lang/String;")?;
     let name_obj = name_field.l()?;
@@ -234,55 +239,38 @@ fn parse_evdev_device_info(
         .into_owned();
 
     // Get bus field
-    let bus = env.get_field(obj, "bus", "I")?.i()? as u16;
+    let bus = env.get_field(obj, "bus", "I")?.i()?;
 
     // Get vendor field
-    let vendor = env.get_field(obj, "vendor", "I")?.i()? as u16;
+    let vendor = env.get_field(obj, "vendor", "I")?.i()?;
 
     // Get product field
-    let product = env.get_field(obj, "product", "I")?.i()? as u16;
+    let product = env.get_field(obj, "product", "I")?.i()?;
 
-    Ok(EvdevDeviceInfo {
-        name,
-        bus,
-        vendor,
-        product,
-        version: 0, // Version is not exposed in Java API, set to 0
-    })
-}
-
-/// Parse a Java GrabDeviceRequest object into a Rust GrabDeviceRequest
-fn parse_grab_device_request(
-    env: &mut JNIEnv,
-    obj: &JObject,
-) -> Result<GrabDeviceRequest, jni::errors::Error> {
-    // Get the device field (EvdevDeviceInfo)
-    let device_field = env.get_field(
-        obj,
-        "device",
-        "Lio/github/sds100/keymapper/common/models/EvdevDeviceInfo;",
-    )?;
-    let device_obj = device_field.l()?;
-    let device_identifier = parse_evdev_device_info(env, &device_obj)?;
-
-    // Get the extraEventCodes field (int[])
+    // Get the extraKeyCodes field (int[])
     let extra_codes_field = env.get_field(obj, "extraKeyCodes", "[I")?;
     let extra_codes_obj = extra_codes_field.l()?;
     let extra_codes_array = JIntArray::from(extra_codes_obj);
 
-    // Convert Java int[] to Vec<EventCode>
+    // Convert Java int[] to Vec<u32>
     let array_length = env.get_array_length(&extra_codes_array)? as usize;
-    let extra_key_codes: Vec<u32> = Vec::with_capacity(array_length);
+    let mut extra_key_codes: Vec<u32> = Vec::with_capacity(array_length);
+    let mut buffer = vec![0i32; array_length];
+    env.get_int_array_region(&extra_codes_array, 0, &mut buffer)?;
+    extra_key_codes.extend(buffer.iter().map(|&v| v as u32));
 
-    Ok(GrabDeviceRequest {
-        device_identifier,
-        extra_key_codes: extra_key_codes,
+    Ok(GrabTargetKeyCode {
+        name,
+        bus: bus as u16,
+        vendor: vendor as u16,
+        product: product as u16,
+        extra_key_codes,
     })
 }
 
 fn create_java_grabbed_device_handle_array(
-    mut env: &mut JNIEnv,
-    grabbed_devices: Vec<(usize, EvdevDeviceInfo)>,
+    env: &mut JNIEnv,
+    grabbed_devices: Vec<GrabbedDeviceHandle>,
 ) -> jobjectArray {
     let handle_class =
         match env.find_class("io/github/sds100/keymapper/common/models/GrabbedDeviceHandle") {
@@ -302,14 +290,14 @@ fn create_java_grabbed_device_handle_array(
 
     // grabbed_devices contains (slab_key, DeviceIdentifier) tuples
     // The slab_key is used as the device_id for O(1) lookup when writing events
-    for (i, (slab_key, device_identifier)) in grabbed_devices.iter().enumerate() {
+    for (i, handle) in grabbed_devices.iter().enumerate() {
         match create_java_grabbed_device_handle(
-            &mut env,
-            *slab_key as i32, // slab key = device_id for O(1) lookup
-            &device_identifier.name,
-            device_identifier.bus as i32,
-            device_identifier.vendor as i32,
-            device_identifier.product as i32,
+            env,
+            handle.id as i32, // slab key = device_id for O(1) lookup
+            &handle.device_info.name,
+            handle.device_info.bus as i32,
+            handle.device_info.vendor as i32,
+            handle.device_info.product as i32,
         ) {
             Ok(handle) => {
                 if let Err(e) = env.set_object_array_element(&array, i as i32, unsafe {

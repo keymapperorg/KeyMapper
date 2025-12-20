@@ -1,7 +1,7 @@
 use std::{
-    collections::HashMap,
     error::Error,
     fs::read_dir,
+    io,
     os::fd::AsRawFd,
     path::PathBuf,
     sync::{Arc, Mutex, RwLock},
@@ -9,26 +9,24 @@ use std::{
 
 use bimap::BiHashMap;
 use evdev::{enums::EventCode, DeviceWrapper};
-use mio::{unix::SourceFd, Registry};
+use mio::{unix::SourceFd, Interest, Registry, Token};
 use slab::Slab;
 
 use crate::{
-    evdev_device_info::EvdevDeviceInfo, evdev_error::EvdevError, grab_target::GrabTarget,
-    grabbed_device::GrabbedDevice,
+    evdev_device_info::EvdevDeviceInfo, evdev_error::EvdevError, event_loop::EvdevCallback,
+    grab_target::GrabTarget, grabbed_device::GrabbedDevice,
+    grabbed_device_handle::GrabbedDeviceHandle,
 };
 
 pub struct EvdevGrabController {
     poll_registry: Arc<Registry>,
-    callback: fn(grabbed_devices: Vec<EvdevDeviceInfo>),
+    callback: Arc<dyn EvdevCallback>,
     grab_targets: Mutex<Vec<GrabTarget>>,
     grabbed_devices: RwLock<Slab<GrabbedDevice>>,
 }
 
 impl EvdevGrabController {
-    fn new(
-        poll_registry: Arc<Registry>,
-        callback: fn(grabbed_devices: Vec<EvdevDeviceInfo>),
-    ) -> Self {
+    pub fn new(poll_registry: Arc<Registry>, callback: Arc<dyn EvdevCallback>) -> Self {
         Self {
             poll_registry,
             callback,
@@ -37,7 +35,7 @@ impl EvdevGrabController {
         }
     }
 
-    pub fn set_grab_targets(&self, targets: Vec<GrabTarget>) {
+    pub fn set_grab_targets(&self, targets: Vec<GrabTarget>) -> Vec<GrabbedDeviceHandle> {
         let mut grab_targets = self.grab_targets.lock().unwrap();
         grab_targets.clear();
 
@@ -45,7 +43,7 @@ impl EvdevGrabController {
             grab_targets.push(target);
         }
 
-        self.invalidate(grab_targets.as_ref());
+        self.invalidate(grab_targets.as_ref())
     }
 
     // TODO call this function. Isnt this going to be called many times when grabbing/ungrabbing?
@@ -54,28 +52,59 @@ impl EvdevGrabController {
         self.invalidate(grab_targets.as_ref());
     }
 
-    fn invalidate(&self, grab_targets: &[GrabTarget]) {
+    fn invalidate(&self, grab_targets: &[GrabTarget]) -> Vec<GrabbedDeviceHandle> {
         let mut grabbed_devices = self.grabbed_devices.write().unwrap();
+
         let real_device_paths =
             Self::get_real_device_paths(&grabbed_devices).expect("Unable to evdev device paths");
         let device_info_path_map = Self::build_device_info_path_map(&real_device_paths);
 
-        let keys_to_remove =
-            Self::get_devices_to_ungrab(grab_targets, &grabbed_devices, device_info_path_map);
+        let device_keys_to_ungrab = Self::get_devices_to_ungrab(
+            grab_targets,
+            &grabbed_devices,
+            device_info_path_map.clone(),
+        );
 
         // Ungrab devices that are no longer requested
-        for key in keys_to_remove {
+        for key in device_keys_to_ungrab {
             let grabbed_device = grabbed_devices.remove(key);
             self.ungrab_device(grabbed_device);
         }
 
-        for grab_target in grab_targets {}
+        let devices_to_grab =
+            Self::get_targets_to_grab(grab_targets, &grabbed_devices, device_info_path_map);
 
-        // TODO grab devices
-        // 5. Try grabbing devices that are not already grabbed
-        // 6. Call the callback with the new list of grabbed devices.
+        for (path, extra_event_codes) in devices_to_grab {
+            self.try_grab_target(&path, &extra_event_codes, &mut grabbed_devices)
+                .inspect_err(|err| error!("Failed to grab device {:?}: {:?}", path, err))
+                .ok();
+        }
+
+        let grabbed_device_handles: Vec<GrabbedDeviceHandle> = grabbed_devices
+            .iter()
+            .map(|(key, device)| GrabbedDeviceHandle::new(key, device.device_info.clone()))
+            .collect();
+
+        // Release the lock before calling the callback
+        drop(grabbed_devices);
+
+        self.callback
+            .on_grabbed_devices_changed(grabbed_device_handles.clone());
+
+        grabbed_device_handles
     }
 
+    /// Access a grabbed device by ID through a closure.
+    /// Returns None if the device is not found, otherwise returns the result of the closure.
+    pub fn with_grabbed_device<F, R>(&self, device_id: usize, f: F) -> Option<R>
+    where
+        F: FnOnce(&GrabbedDevice) -> R,
+    {
+        let grabbed_devices = self.grabbed_devices.read().unwrap();
+        grabbed_devices.get(device_id).map(f)
+    }
+
+    // TODO test
     fn get_devices_to_ungrab(
         grab_targets: &[GrabTarget],
         grabbed_devices: &Slab<GrabbedDevice>,
@@ -152,78 +181,80 @@ impl EvdevGrabController {
 
         info!("Ungrabbed device: {:?}", device.device_path);
     }
-    
-    fn is_target_grabbable() {}
 
-    fn grab_new_devices(&self, requested_devices: Vec<GrabDeviceRequest>) {
-        let uinput_paths: Vec<String> = devices_slab
-            .iter()
-            .map(|(_, device)| device.uinput.devnode().unwrap().to_string())
-            .collect();
+    // TODO test
+    fn get_targets_to_grab(
+        grab_targets: &[GrabTarget],
+        grabbed_devices: &Slab<GrabbedDevice>,
+        device_info_path_map: BiHashMap<EvdevDeviceInfo, PathBuf>,
+    ) -> Vec<(PathBuf, Vec<EventCode>)> {
+        let mut targets_to_grab: Vec<(PathBuf, Vec<EventCode>)> = Vec::new();
 
-        let device_path_map = build_device_path_map(&uinput_paths);
-
-        for grab_request in requested_devices {
-            let extra_events = Self::map_key_codes_to_event_codes(&grab_request.extra_key_codes);
-
-            // Check whether the device is already grabbed with the same extra events.
-            // Otherwise it should be regrabbed with the updated information.
-            let already_grabbed = devices_slab.iter().any(|(_, device)| {
-                device_id_matches_jni_fields(&device.device_info, &grab_request.device_identifier)
-                    && device.extra_events == extra_events
-            });
+        for target in grab_targets {
+            let already_grabbed = grabbed_devices
+                .iter()
+                .any(|(_, device)| target.matches_device_info(&device.device_info));
 
             if already_grabbed {
-                info!(
-                    "Device {} is already grabbed with the same extra events",
-                    grab_request.device_identifier.name
-                );
                 continue;
             }
 
-            let key = DeviceIdentifierKey::from(&grab_request.device_identifier);
+            let device_info = device_info_path_map
+                .left_values()
+                .find(|device_info| target.matches_device_info(device_info));
 
-            match device_path_map.get(&key) {
-                Some(path) => match self.grab_device(devices_slab, path, &extra_events) {
-                    Ok(_) => {
-                        KeyLayoutMapManager::get()
-                            .preload_key_layout_map(&grab_request.device_identifier)
-                            .ok();
-                    }
+            match device_info {
+                // Target device not connected
+                None => continue,
+                // Device is connected
+                Some(device_info) => {
+                    let path = device_info_path_map.get_by_left(&device_info).unwrap();
 
-                    Err(e) => error!("Failed to grab device {}: {:?}", path, e),
-                },
-                None => {
-                    warn!("Device not found: {:?}", grab_request);
+                    targets_to_grab.push((path.clone(), target.extra_event_codes.clone()));
                 }
             }
         }
+
+        targets_to_grab
     }
 
-    /// Internal method to grab a device and register it with the poll
-    fn grab_device(
+    fn try_grab_target(
         &self,
-        devices_slab: &mut Slab<GrabbedDevice>,
-        path: &str,
-        extra_events: &[EventCode],
+        device_path: &PathBuf,
+        extra_event_codes: &[EventCode],
+        grabbed_devices: &mut Slab<GrabbedDevice>,
     ) -> Result<usize, Box<dyn Error>> {
-        let device = GrabbedDevice::new(path, extra_events)?;
+        let device = GrabbedDevice::new(device_path, extra_event_codes)?;
         let fd = device.evdev.lock().unwrap().as_raw_fd();
-        let key = devices_slab.insert(device);
+        let key = self.grabbed_devices.write().unwrap().insert(device);
 
         let mut source_fd = SourceFd(&fd);
 
         // Register with key + 1 because 0 is reserved for the waker
-        self.registry
+        self.poll_registry
             .register(&mut source_fd, Token(key + 1), Interest::READABLE)
             .inspect_err(|e| {
                 // Remove device on registration failure
-                devices_slab.remove(key);
-                error!("Failed to register device {}: {}", path, e);
+                grabbed_devices.remove(key);
+                error!("Failed to register device {:?}: {}", device_path, e);
             })?;
 
-        info!("Grabbed device: {}", path);
+        info!("Grabbed device: {:?}", device_path);
         Ok(key)
+    }
+
+    pub fn get_real_devices(&self) -> Result<Vec<EvdevDeviceInfo>, EvdevError> {
+        let grabbed_devices = self.grabbed_devices.read().unwrap();
+
+        let mut list: Vec<EvdevDeviceInfo> = Vec::new();
+
+        for path in Self::get_real_device_paths(&grabbed_devices)? {
+            if let Ok(info) = Self::get_device_info(&path) {
+                list.push(info);
+            }
+        }
+
+        Ok(list)
     }
 
     /// Get the paths to all the real (non uinput) connected devices.
@@ -267,19 +298,21 @@ impl EvdevGrabController {
         let mut map: BiHashMap<EvdevDeviceInfo, PathBuf> = BiHashMap::new();
 
         for path in paths {
-            if let Ok(device) = evdev::Device::new_from_path(&path) {
-                let key = EvdevDeviceInfo {
-                    name: device.name().unwrap_or("").to_string(),
-                    bus: device.bustype(),
-                    vendor: device.vendor_id(),
-                    product: device.product_id(),
-                    version: device.version(),
-                };
-
-                map.insert(key, path)
+            if let Ok(info) = Self::get_device_info(path) {
+                map.insert(info, path.clone());
             }
         }
 
         map
+    }
+
+    fn get_device_info(path: &PathBuf) -> Result<EvdevDeviceInfo, io::Error> {
+        evdev::Device::new_from_path(path).map(|device| EvdevDeviceInfo {
+            name: device.name().unwrap_or("").to_string(),
+            bus: device.bustype(),
+            vendor: device.vendor_id(),
+            product: device.product_id(),
+            version: device.version(),
+        })
     }
 }

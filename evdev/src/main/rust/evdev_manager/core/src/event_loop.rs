@@ -1,37 +1,44 @@
-use crate::android::keylayout::key_layout_map_manager::{
-    get_generic_key_layout_map, KeyLayoutMapManager,
-};
+use crate::android::keylayout::key_layout_map_manager::KeyLayoutMapManager;
 use crate::evdev_device_info::EvdevDeviceInfo;
-use crate::evdev_error::EvdevError;
+use crate::evdev_error::{EvdevError, EvdevErrorCode};
 use crate::evdev_grab_controller::EvdevGrabController;
-use crate::grab_device_request::GrabDeviceRequest;
+use crate::grab_target::GrabTarget;
+use crate::grab_target_key_code::GrabTargetKeyCode;
 use crate::grabbed_device::GrabbedDevice;
+use crate::grabbed_device_handle::GrabbedDeviceHandle;
 use crate::runtime::get_runtime;
-use evdev::enums::{EventCode, EventType, EV_SYN};
-use evdev::util::{event_code_to_int, int_to_event_code};
-use evdev::{DeviceWrapper, InputEvent, ReadFlag, ReadStatus};
+use evdev::enums::{EventType, EV_SYN};
+use evdev::util::event_code_to_int;
+use evdev::{InputEvent, ReadFlag, ReadStatus};
 use libc::c_uint;
 use mio::event::Event;
-use mio::unix::SourceFd;
-use mio::{Events, Interest, Poll, Registry, Token, Waker};
+use mio::{Events, Poll, Token, Waker};
 use slab::Slab;
-use std::collections::HashMap;
 use std::error::Error;
-use std::fs::read_dir;
 use std::io;
 use std::io::ErrorKind;
-use std::os::fd::AsRawFd;
-use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{mpsc, Arc, OnceLock, RwLock};
 use std::time::{Duration, Instant};
 use std::{fmt, usize};
 use tokio::task::JoinHandle;
 
-/// This callback returns true if the observer consumed the input event.
-/// Parameters: device_id (slab key), device_identifier, event
-pub type EvdevObserver =
-    fn(device_id: usize, device_identifier: &EvdevDeviceInfo, event: &InputEvent) -> bool;
+/// Callback interface for evdev events and device changes
+pub trait EvdevCallback: Send + Sync {
+    /// Called when an input event is received from a grabbed device.
+    /// Returns true if the callback consumed the event, false to pass through.
+    /// Parameters: device_id (slab key), device_identifier, event
+    fn on_evdev_event(
+        &self,
+        device_id: usize,
+        device_identifier: &EvdevDeviceInfo,
+        event: &InputEvent,
+    ) -> bool;
+
+    /// Called when the list of grabbed devices changes.
+    /// Parameters: grabbed_devices list with their assigned IDs
+    fn on_grabbed_devices_changed(&self, grabbed_devices: Vec<GrabbedDeviceHandle>);
+}
 
 static EVENT_LOOP_MANAGER: OnceLock<EventLoopManager> = OnceLock::new();
 
@@ -40,19 +47,32 @@ const WAKER_TOKEN: Token = Token(usize::MAX - 1);
 pub struct EventLoopManager {
     stop_flag: Arc<AtomicBool>,
     poll: Arc<RwLock<Poll>>,
-    registry: Arc<Registry>,
     join_handle: RwLock<Option<JoinHandle<()>>>,
     waker: Waker,
-    observer: EvdevObserver,
-    poll_controller: EvdevGrabController
+    callback: Arc<dyn EvdevCallback>,
+    grab_controller: EvdevGrabController,
+}
+
+impl fmt::Debug for EventLoopManager {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("EventLoopManager")
+            .field("stop_flag", &self.stop_flag.load(Ordering::SeqCst))
+            .field("poll", &"<Poll>")
+            .field("registry", &"<Registry>")
+            .field("join_handle", &"<JoinHandle>")
+            .field("waker", &"<Waker>")
+            .field("callback", &"<EvdevCallback>")
+            .field("grab_controller", &"<EvdevGrabController>")
+            .finish()
+    }
 }
 
 impl EventLoopManager {
-    /// Initialize the EventLoopManager with an observer. Must be called once before `get()`.
+    /// Initialize the EventLoopManager with a callback. Must be called once before `get()`.
     /// Panics if called more than once.
-    pub fn init(observer: EvdevObserver) {
+    pub fn init(callback: Arc<dyn EvdevCallback>) {
         EVENT_LOOP_MANAGER
-            .set(Self::new(observer))
+            .set(Self::new(callback))
             .expect("EventLoopManager already initialized");
     }
 
@@ -63,20 +83,21 @@ impl EventLoopManager {
             .expect("EventLoopManager not initialized. Call init() first.")
     }
 
-    fn new(observer: EvdevObserver) -> Self {
+    fn new(callback: Arc<dyn EvdevCallback>) -> Self {
         let poll = Poll::new().unwrap();
         let registry = poll.registry().try_clone().unwrap();
         let waker = Waker::new(&registry, WAKER_TOKEN).unwrap();
         let poll_lock = Arc::new(RwLock::new(poll));
 
-        EventLoopManager {
+        let registry_arc = Arc::new(registry);
+
+        Self {
             stop_flag: Arc::new(AtomicBool::new(false)),
             poll: poll_lock,
-            registry: Arc::new(registry),
             join_handle: RwLock::new(None),
             waker,
-            observer,
-            grabbed_devices: Arc::new(RwLock::new(Slab::with_capacity(32))),
+            callback: callback.clone(),
+            grab_controller: EvdevGrabController::new(registry_arc.clone(), callback),
         }
     }
 
@@ -86,35 +107,33 @@ impl EventLoopManager {
         if is_running {
             // Do nothing. The event loop is already started.
             info!("EvdevManager event loop is already running");
-            Ok(())
-        } else {
-            self.stop_flag.store(false, Ordering::Relaxed);
+            return Ok(());
+        }
 
-            let observer = self.observer;
-            let grabbed_devices = self.grabbed_devices.clone();
+        self.stop_flag.store(false, Ordering::Relaxed);
 
-            let (tx, rx) = mpsc::channel();
+        let callback = self.callback.clone();
 
-            let poll_lock_clone = self.poll.clone();
-            let stop_flag_clone = self.stop_flag.clone();
+        let (tx, rx) = mpsc::channel();
 
-            let join_handle = get_runtime().spawn(async move {
-                tx.send(()).unwrap();
-                EventLoopThread::new(stop_flag_clone, poll_lock_clone, observer, grabbed_devices)
-                    .start();
-            });
+        let poll_lock_clone = self.poll.clone();
+        let stop_flag_clone = self.stop_flag.clone();
 
-            match rx.recv_timeout(Duration::from_secs(2)) {
-                Ok(_) => {
-                    self.join_handle.write().unwrap().replace(join_handle);
+        let join_handle = get_runtime().spawn(async move {
+            tx.send(()).unwrap();
+            EventLoopThread::new(stop_flag_clone, poll_lock_clone, callback).start();
+        });
 
-                    Ok(())
-                }
-                Err(e) => {
-                    error!("Failed to wait for event loop start: {}", e);
-                    join_handle.abort();
-                    Err(EvdevError::new(-libc::ETIMEDOUT))
-                }
+        match rx.recv_timeout(Duration::from_secs(2)) {
+            Ok(_) => {
+                self.join_handle.write().unwrap().replace(join_handle);
+
+                Ok(())
+            }
+            Err(e) => {
+                error!("Failed to wait for event loop start: {}", e);
+                join_handle.abort();
+                Err(EvdevError::new(-libc::ETIMEDOUT))
             }
         }
     }
@@ -153,22 +172,28 @@ impl EventLoopManager {
     /// Set the list of grabbed devices. This will ungrab any devices that are no longer in the list
     /// and grab any new devices. Devices are matched by DeviceIdentifier (name, bus, vendor, product).
     /// Returns: A list of (device_id, DeviceIdentifier) for all successfully grabbed devices.
-    pub fn set_grabbed_devices(
-        &self,
-        requested_devices: Vec<GrabDeviceRequest>,
-    ) -> Vec<(usize, EvdevDeviceInfo)> {
-        let mut devices_slab = self.grabbed_devices.write().unwrap();
+    pub fn set_grab_targets(&self, targets: Vec<GrabTargetKeyCode>) -> Vec<GrabbedDeviceHandle> {
+        let internal_grab_targets = targets.iter().map(Self::convert_grab_target).collect();
 
-        self.ungrab_unused_devices(&mut devices_slab, &requested_devices);
+        let handles = self.grab_controller.set_grab_targets(internal_grab_targets);
 
-        self.grab_new_devices(&mut devices_slab, requested_devices);
+        for handle in handles.clone() {
+            KeyLayoutMapManager::get()
+                .preload_key_layout_map(&handle.device_info)
+                .inspect_err(|err| {
+                    error!(
+                        "Failed to preload key layout map for device {:?}: {}",
+                        handle.device_info, err
+                    );
+                })
+                .ok();
+        }
 
-        // Return all currently grabbed devices as (slab_key, DeviceIdentifier) tuples
-        // The slab_key is used as device_id for O(1) lookup when writing events
-        devices_slab
-            .iter()
-            .map(|(slab_key, device)| (slab_key, device.device_info.clone()))
-            .collect()
+        handles
+    }
+
+    pub fn get_real_devices(&self) -> Result<Vec<EvdevDeviceInfo>, EvdevError> {
+        self.grab_controller.get_real_devices()
     }
 
     /// Write an event to a grabbed device's uinput.
@@ -180,27 +205,19 @@ impl EventLoopManager {
         code: u32,
         value: i32,
     ) -> Result<(), EvdevError> {
-        let devices = self.grabbed_devices.read().unwrap();
-
-        let device = devices
-            .get(device_id) // O(1) slab lookup
-            .ok_or_else(|| EvdevError::new(-libc::ENODEV))?;
-
         debug!(
             "Write evdev event: device_id={} event_type={} code={} value={}",
             device_id, event_type, code, value
         );
 
-        device
-            .uinput
-            .write_event(EventType::EV_KEY as c_uint, code, value)
-            .map_err(EvdevError::from)?;
-
-        // Send SYN_REPORT
-        device
-            .uinput
-            .write_syn_event(EV_SYN::SYN_REPORT)
-            .map_err(|err| err.into())
+        self.grab_controller
+            .with_grabbed_device(device_id, |device| {
+                device
+                    .uinput
+                    .write_event(event_type, code, value)
+                    .map_err(EvdevError::from)
+            })
+            .ok_or(EvdevError::from_enum(EvdevErrorCode::NoSuchDevice))?
     }
 
     pub fn write_key_code_event(
@@ -209,37 +226,60 @@ impl EventLoopManager {
         key_code: u32,
         value: i32,
     ) -> Result<(), Box<dyn Error>> {
-        let devices = self.grabbed_devices.read().unwrap();
+        let result = self
+            .grab_controller
+            .with_grabbed_device(device_id, |device| {
+                let scan_code_result = KeyLayoutMapManager::get()
+                    .find_scan_code_for_key(&device.device_info, key_code);
 
-        let device = devices
-            .get(device_id)
-            .ok_or_else(|| EvdevError::new(-libc::ENODEV))?;
+                match scan_code_result {
+                    Err(e) => Err(e.into()),
+                    Ok(None) => {
+                        error!("Failed to find scan code for key: {}", key_code);
+                        Err(Box::new(EvdevError::new(-libc::ENODATA)) as Box<dyn Error>)
+                    }
+                    Ok(Some(code)) => {
+                        debug!(
+                            "Write key code evdev event: key_code={} value={}",
+                            key_code, value
+                        );
 
-        let scan_code_result =
-            KeyLayoutMapManager::get().find_scan_code_for_key(&device.device_info, key_code)?;
+                        device
+                            .uinput
+                            .write_event(EventType::EV_KEY as c_uint, code, value)
+                            .map_err(|err| Box::new(err) as Box<dyn Error>)?;
 
-        match scan_code_result {
-            None => {
-                error!("Failed to find scan code for key: {}", key_code);
-                Err(Box::new(EvdevError::new(-libc::ENODATA)))
-            }
-            Some(code) => {
-                debug!(
-                    "Write key code evdev event: key_code={} value={}",
-                    key_code, value
-                );
+                        // Send SYN_REPORT
+                        device
+                            .uinput
+                            .write_event(
+                                EventType::EV_SYN as c_uint,
+                                EV_SYN::SYN_REPORT as c_uint,
+                                0,
+                            )
+                            .map_err(|err| Box::new(err) as Box<dyn Error>)
+                    }
+                }
+            });
 
-                device
-                    .uinput
-                    .write_event(EventType::EV_KEY as c_uint, code, value)
-                    .map_err(EvdevError::from)?;
+        match result {
+            Some(inner_result) => inner_result,
+            None => Err(Box::new(EvdevError::from_enum(
+                EvdevErrorCode::NoSuchDevice,
+            ))),
+        }
+    }
 
-                // Send SYN_REPORT
-                device
-                    .uinput
-                    .write_syn_event(EV_SYN::SYN_REPORT)
-                    .map_err(|err| err.into())
-            }
+    fn convert_grab_target(target: &GrabTargetKeyCode) -> GrabTarget {
+        let event_codes =
+            KeyLayoutMapManager::map_key_codes_to_event_codes(&target.extra_key_codes);
+
+        GrabTarget {
+            name: target.name.clone(),
+            bus: target.bus,
+            vendor: target.vendor,
+            product: target.product,
+            extra_event_codes: event_codes,
         }
     }
 }
@@ -247,7 +287,7 @@ impl EventLoopManager {
 struct EventLoopThread {
     stop_flag: Arc<AtomicBool>,
     poll: Arc<RwLock<Poll>>,
-    observer: EvdevObserver,
+    callback: Arc<dyn EvdevCallback>,
     grabbed_devices: Arc<RwLock<Slab<GrabbedDevice>>>,
 }
 
@@ -255,14 +295,13 @@ impl EventLoopThread {
     pub fn new(
         stop_flag: Arc<AtomicBool>,
         poll: Arc<RwLock<Poll>>,
-        observer: EvdevObserver,
-        grabbed_devices: Arc<RwLock<Slab<GrabbedDevice>>>,
+        callback: Arc<dyn EvdevCallback>,
     ) -> Self {
         EventLoopThread {
             stop_flag,
             poll,
-            observer,
-            grabbed_devices,
+            callback,
+            grabbed_devices: Arc::new(RwLock::new(Slab::with_capacity(64))),
         }
     }
 
@@ -340,7 +379,9 @@ impl EventLoopThread {
     }
 
     fn process_event(&self, device_id: usize, event: &InputEvent, grabbed_device: &GrabbedDevice) {
-        let consumed = (self.observer)(device_id, &grabbed_device.device_info, event);
+        let consumed = self
+            .callback
+            .on_evdev_event(device_id, &grabbed_device.device_info, event);
 
         if !consumed {
             let (event_type, event_code) = event_code_to_int(&event.event_code);
@@ -349,7 +390,7 @@ impl EventLoopThread {
                 .write_event(event_type, event_code, event.value)
                 .inspect_err(|e| {
                     error!(
-                        "Failed to passthrough event to {}. Event: {:?}. Error: {:?}",
+                        "Failed to passthrough event to {:?}. Event: {:?}. Error: {:?}",
                         grabbed_device.device_path, event, e
                     )
                 })
