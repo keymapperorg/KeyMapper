@@ -4,7 +4,10 @@ use std::{
     io,
     os::fd::AsRawFd,
     path::PathBuf,
-    sync::{Arc, Mutex, RwLock},
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc, Mutex, RwLock,
+    },
 };
 
 use bimap::BiHashMap;
@@ -23,6 +26,7 @@ pub struct EvdevGrabController {
     callback: Arc<dyn EvdevCallback>,
     grab_targets: Mutex<Vec<GrabTarget>>,
     grabbed_devices: RwLock<Slab<GrabbedDevice>>,
+    setting_grab_targets: AtomicBool,
 }
 
 impl EvdevGrabController {
@@ -32,10 +36,15 @@ impl EvdevGrabController {
             callback,
             grab_targets: Mutex::new(Vec::with_capacity(64)),
             grabbed_devices: RwLock::new(Slab::with_capacity(64)),
+            // This stores whether new devices are being grabbed due to new targets.
+            setting_grab_targets: AtomicBool::new(false),
         }
     }
 
     pub fn set_grab_targets(&self, targets: Vec<GrabTarget>) -> Vec<GrabbedDeviceHandle> {
+        info!("Setting grab targets: {:?}", targets);
+        self.setting_grab_targets.store(true, Ordering::Relaxed);
+
         let mut grab_targets = self.grab_targets.lock().unwrap();
         grab_targets.clear();
 
@@ -43,10 +52,21 @@ impl EvdevGrabController {
             grab_targets.push(target);
         }
 
-        self.invalidate(grab_targets.as_ref())
+        let handles = self.invalidate(grab_targets.as_ref());
+
+        self.setting_grab_targets.store(false, Ordering::Relaxed);
+
+        handles
     }
 
     pub fn on_inotify_dev_input(&self) {
+        // When setting the grabbed devices, the files in /dev/input
+        // so debounce the inotify calls while grabbing new devices.
+        if self.setting_grab_targets.load(Ordering::Relaxed) {
+            return;
+        }
+
+        info!("inotify /dev/input event received");
         let grab_targets = self.grab_targets.lock().unwrap();
         self.invalidate(grab_targets.as_ref());
     }
@@ -83,6 +103,8 @@ impl EvdevGrabController {
             .iter()
             .map(|(key, device)| GrabbedDeviceHandle::new(key, device.device_info.clone()))
             .collect();
+
+        info!("Grabbed devices: {:?}", grabbed_device_handles);
 
         // Release the lock before calling the callback
         drop(grabbed_devices);
@@ -177,8 +199,6 @@ impl EvdevGrabController {
                 )
             })
             .ok();
-
-        info!("Ungrabbed device: {:?}", device.device_path);
     }
 
     // TODO test
@@ -207,7 +227,7 @@ impl EvdevGrabController {
                 None => continue,
                 // Device is connected
                 Some(device_info) => {
-                    let path = device_info_path_map.get_by_left(&device_info).unwrap();
+                    let path = device_info_path_map.get_by_left(device_info).unwrap();
 
                     targets_to_grab.push((path.clone(), target.extra_event_codes.clone()));
                 }
@@ -225,7 +245,7 @@ impl EvdevGrabController {
     ) -> Result<usize, Box<dyn Error>> {
         let device = GrabbedDevice::new(device_path, extra_event_codes)?;
         let fd = device.evdev.lock().unwrap().as_raw_fd();
-        let key = self.grabbed_devices.write().unwrap().insert(device);
+        let key = grabbed_devices.insert(device);
 
         let mut source_fd = SourceFd(&fd);
 
@@ -238,7 +258,6 @@ impl EvdevGrabController {
                 error!("Failed to register device {:?}: {}", device_path, e);
             })?;
 
-        info!("Grabbed device: {:?}", device_path);
         Ok(key)
     }
 
