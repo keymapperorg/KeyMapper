@@ -26,7 +26,6 @@ pub struct EvdevGrabController {
     callback: Arc<dyn EvdevCallback>,
     grab_targets: Mutex<Vec<GrabTarget>>,
     grabbed_devices: RwLock<Slab<GrabbedDevice>>,
-    setting_grab_targets: AtomicBool,
 }
 
 impl EvdevGrabController {
@@ -36,51 +35,53 @@ impl EvdevGrabController {
             callback,
             grab_targets: Mutex::new(Vec::with_capacity(64)),
             grabbed_devices: RwLock::new(Slab::with_capacity(64)),
-            // This stores whether new devices are being grabbed due to new targets.
-            setting_grab_targets: AtomicBool::new(false),
         }
     }
 
     pub fn set_grab_targets(&self, targets: Vec<GrabTarget>) -> Vec<GrabbedDeviceHandle> {
         info!("Setting grab targets: {:?}", targets);
-        self.setting_grab_targets.store(true, Ordering::Relaxed);
 
         let mut grab_targets = self.grab_targets.lock().unwrap();
+
         grab_targets.clear();
 
         for target in targets {
             grab_targets.push(target);
         }
 
-        let handles = self.invalidate(grab_targets.as_ref());
-
-        self.setting_grab_targets.store(false, Ordering::Relaxed);
+        let mut grabbed_devices = self.grabbed_devices.write().unwrap();
+        let handles = self.invalidate(grab_targets.as_ref(), &mut grabbed_devices);
 
         handles
     }
 
-    pub fn on_inotify_dev_input(&self) {
-        // When setting the grabbed devices, the files in /dev/input
-        // so debounce the inotify calls while grabbing new devices.
-        if self.setting_grab_targets.load(Ordering::Relaxed) {
+    pub fn on_inotify_dev_input(&self, paths: &[PathBuf]) {
+        let mut grabbed_devices = self.grabbed_devices.write().unwrap();
+        let is_uinput_device = grabbed_devices
+            .iter()
+            .any(|(_, device)| paths.contains(&device.uinput.devnode().unwrap().into()));
+
+        if is_uinput_device {
             return;
         }
 
         info!("inotify /dev/input event received");
         let grab_targets = self.grab_targets.lock().unwrap();
-        self.invalidate(grab_targets.as_ref());
+        self.invalidate(grab_targets.as_ref(), &mut grabbed_devices);
     }
 
-    fn invalidate(&self, grab_targets: &[GrabTarget]) -> Vec<GrabbedDeviceHandle> {
-        let mut grabbed_devices = self.grabbed_devices.write().unwrap();
-
+    fn invalidate(
+        &self,
+        grab_targets: &[GrabTarget],
+        grabbed_devices: &mut Slab<GrabbedDevice>,
+    ) -> Vec<GrabbedDeviceHandle> {
         let real_device_paths =
-            Self::get_real_device_paths(&grabbed_devices).expect("Unable to evdev device paths");
+            Self::get_real_device_paths(grabbed_devices).expect("Unable to evdev device paths");
         let device_info_path_map = Self::build_device_info_path_map(&real_device_paths);
 
         let device_keys_to_ungrab = Self::get_devices_to_ungrab(
             grab_targets,
-            &grabbed_devices,
+            grabbed_devices,
             device_info_path_map.clone(),
         );
 
@@ -91,10 +92,10 @@ impl EvdevGrabController {
         }
 
         let devices_to_grab =
-            Self::get_targets_to_grab(grab_targets, &grabbed_devices, device_info_path_map);
+            Self::get_targets_to_grab(grab_targets, grabbed_devices, device_info_path_map);
 
         for (path, extra_event_codes) in devices_to_grab {
-            self.try_grab_target(&path, &extra_event_codes, &mut grabbed_devices)
+            self.try_grab_target(&path, &extra_event_codes, grabbed_devices)
                 .inspect_err(|err| error!("Failed to grab device {:?}: {:?}", path, err))
                 .ok();
         }
@@ -105,9 +106,6 @@ impl EvdevGrabController {
             .collect();
 
         info!("Grabbed devices: {:?}", grabbed_device_handles);
-
-        // Release the lock before calling the callback
-        drop(grabbed_devices);
 
         self.callback
             .on_grabbed_devices_changed(grabbed_device_handles.clone());
@@ -249,9 +247,8 @@ impl EvdevGrabController {
 
         let mut source_fd = SourceFd(&fd);
 
-        // Register with key + 1 because 0 is reserved for the waker
         self.poll_registry
-            .register(&mut source_fd, Token(key + 1), Interest::READABLE)
+            .register(&mut source_fd, Token(key), Interest::READABLE)
             .inspect_err(|e| {
                 // Remove device on registration failure
                 grabbed_devices.remove(key);

@@ -57,6 +57,7 @@ class EvdevDevicesDelegate @Inject constructor(
             systemBridgeConnectionManager.connectionState.flatMapLatest { connectionState ->
                 when (connectionState) {
                     is SystemBridgeConnectionState.Connected -> {
+                        // TODO replace with callback from system bridge
                         devicesAdapter.connectedInputDevices.onEach {
                             allDevices.value = fetchAllDevices()
                         }

@@ -120,9 +120,16 @@ impl EventLoopManager {
 
         let poll_lock_clone = self.poll.clone();
         let stop_flag_clone = self.stop_flag.clone();
+        let grab_controller_event_loop = self.grab_controller.clone();
 
         let event_loop_handle = get_runtime().spawn(async move {
-            EventLoopThread::new(stop_flag_clone, poll_lock_clone, callback).start();
+            EventLoopThread::new(
+                stop_flag_clone,
+                poll_lock_clone,
+                callback,
+                grab_controller_event_loop,
+            )
+            .start();
         });
 
         self.event_loop_handle
@@ -130,10 +137,10 @@ impl EventLoopManager {
             .unwrap()
             .replace(event_loop_handle);
 
-        let grab_controller = self.grab_controller.clone();
+        let grab_controller_inotify = self.grab_controller.clone();
 
         let inotify_handle = get_runtime().spawn(async move {
-            Self::watch_dev_input(&grab_controller)
+            Self::watch_dev_input(&grab_controller_inotify)
                 .inspect_err(|err| error!("Failed to watch device input: {}", err))
                 .unwrap_err();
         });
@@ -302,7 +309,7 @@ impl EventLoopManager {
                     if event.kind == EventKind::Create(notify::event::CreateKind::File)
                         || event.kind == EventKind::Remove(notify::event::RemoveKind::File)
                     {
-                        grab_controller.on_inotify_dev_input();
+                        grab_controller.on_inotify_dev_input(&event.paths);
                     }
                 }
                 Err(err) => {
@@ -319,7 +326,7 @@ struct EventLoopThread {
     stop_flag: Arc<AtomicBool>,
     poll: Arc<RwLock<Poll>>,
     callback: Arc<dyn EvdevCallback>,
-    grabbed_devices: Arc<RwLock<Slab<GrabbedDevice>>>,
+    grab_controller: Arc<EvdevGrabController>,
 }
 
 impl EventLoopThread {
@@ -327,12 +334,13 @@ impl EventLoopThread {
         stop_flag: Arc<AtomicBool>,
         poll: Arc<RwLock<Poll>>,
         callback: Arc<dyn EvdevCallback>,
+        grab_controller: Arc<EvdevGrabController>,
     ) -> Self {
         EventLoopThread {
             stop_flag,
             poll,
             callback,
-            grabbed_devices: Arc::new(RwLock::new(Slab::with_capacity(64))),
+            grab_controller,
         }
     }
 
@@ -375,38 +383,31 @@ impl EventLoopThread {
         let Token(key) = event.token();
         let slab_key = key;
 
-        let devices = self.grabbed_devices.read().unwrap();
+        self.grab_controller
+            .with_grabbed_device(slab_key, |device| {
+                let evdev = device.evdev.lock().unwrap();
+                let mut flags: ReadFlag = ReadFlag::NORMAL;
 
-        let grabbed_device = match devices.get(slab_key) {
-            Some(device) => device,
-            None => {
-                debug!("Device with key {} no longer exists", slab_key);
-                return;
-            }
-        };
-
-        let evdev = grabbed_device.evdev.lock().unwrap();
-        let mut flags: ReadFlag = ReadFlag::NORMAL;
-
-        loop {
-            match evdev.next_event(flags) {
-                Ok((ReadStatus::Success, input_event)) => {
-                    flags = ReadFlag::NORMAL;
-                    // Keep this logging line. Debug/verbose events will be disabled in production.
-                    debug!("Evdev event: {:?}", input_event);
-                    self.process_event(slab_key, &input_event, grabbed_device);
+                loop {
+                    match evdev.next_event(flags) {
+                        Ok((ReadStatus::Success, input_event)) => {
+                            flags = ReadFlag::NORMAL;
+                            // Keep this logging line. Debug/verbose events will be disabled in production.
+                            debug!("Evdev event: {:?}", input_event);
+                            self.process_event(slab_key, &input_event, device);
+                        }
+                        Ok((ReadStatus::Sync, _event)) => {
+                            // Continue reading sync events
+                            flags = ReadFlag::NORMAL | ReadFlag::SYNC;
+                        }
+                        Err(_error) => {
+                            // Break if it's EAGAIN (no more events) or any other error.
+                            // Do not log these errors because it is expected
+                            break;
+                        }
+                    }
                 }
-                Ok((ReadStatus::Sync, _event)) => {
-                    // Continue reading sync events
-                    flags = ReadFlag::NORMAL | ReadFlag::SYNC;
-                }
-                Err(_error) => {
-                    // Break if it's EAGAIN (no more events) or any other error.
-                    // Do not log these errors because it is expected
-                    break;
-                }
-            }
-        }
+            });
     }
 
     fn process_event(&self, device_id: usize, event: &InputEvent, grabbed_device: &GrabbedDevice) {
