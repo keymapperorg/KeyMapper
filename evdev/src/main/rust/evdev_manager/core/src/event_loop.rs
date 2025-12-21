@@ -14,7 +14,6 @@ use libc::c_uint;
 use mio::event::Event;
 use mio::{Events, Poll, Token, Waker};
 use notify::{EventKind, Watcher};
-use slab::Slab;
 use std::error::Error;
 use std::io;
 use std::io::ErrorKind;

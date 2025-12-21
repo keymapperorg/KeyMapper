@@ -5,7 +5,6 @@ use std::{
     os::fd::AsRawFd,
     path::PathBuf,
     sync::{
-        atomic::{AtomicBool, Ordering},
         Arc, Mutex, RwLock,
     },
 };
@@ -123,8 +122,9 @@ impl EvdevGrabController {
         grabbed_devices.get(device_id).map(f)
     }
 
-    // TODO test
-    fn get_devices_to_ungrab(
+    /// Get devices that should be ungrabed based on current grab targets and device state.
+    /// This function is public for testing purposes.
+    pub fn get_devices_to_ungrab(
         grab_targets: &[GrabTarget],
         grabbed_devices: &Slab<GrabbedDevice>,
         device_info_path_map: BiHashMap<EvdevDeviceInfo, PathBuf>,
@@ -199,8 +199,9 @@ impl EvdevGrabController {
             .ok();
     }
 
-    // TODO test
-    fn get_targets_to_grab(
+    /// Get targets that should be grabbed based on current grab targets and device state.
+    /// This function is public for testing purposes.
+    pub fn get_targets_to_grab(
         grab_targets: &[GrabTarget],
         grabbed_devices: &Slab<GrabbedDevice>,
         device_info_path_map: BiHashMap<EvdevDeviceInfo, PathBuf>,
