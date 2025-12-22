@@ -3,8 +3,9 @@ use assertables::{assert_iter_eq, assert_some, assert_some_eq};
 use evdev_manager_core::android::android_codes::{
     AKEYCODE_ESCAPE, AKEYCODE_HOME, AKEYCODE_MINUS, AKEYCODE_MOVE_HOME, AKEYCODE_SPACE,
 };
+use evdev_manager_core::android::keylayout::key_layout_file_finder::KeyLayoutFileFinder;
 use evdev_manager_core::android::keylayout::key_layout_map_manager::{
-    get_generic_key_layout_map, KeyLayoutFileFinder, KeyLayoutMapManager,
+    get_generic_key_layout_map, KeyLayoutMapManager,
 };
 use evdev_manager_core::evdev_device_info::EvdevDeviceInfo;
 #[cfg(test)]
