@@ -22,7 +22,7 @@ pub struct GrabbedDevice {
 impl GrabbedDevice {
     /// Create a grabbed device that also enables the given EventCodes in the uinput device.
     pub fn new(device_path: &PathBuf, extra_events: &[EventCode]) -> Result<Self, EvdevError> {
-        let mut evdev = Self::open_evdev_device(&device_path)?;
+        let mut evdev = Self::open_evdev_device(device_path)?;
 
         for event in extra_events {
             evdev.enable(*event)?;
