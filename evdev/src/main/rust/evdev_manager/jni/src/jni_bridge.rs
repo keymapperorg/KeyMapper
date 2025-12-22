@@ -1,4 +1,5 @@
 use crate::evdev_jni_observer::EvdevJniObserver;
+use crate::logging::{AndroidLogLevel, KeyMapperLogger};
 use evdev::InputEvent;
 use evdev_manager_core::android::keylayout::key_layout_map_manager::KeyLayoutMapManager;
 use evdev_manager_core::evdev_device_info::EvdevDeviceInfo;
@@ -8,7 +9,7 @@ use evdev_manager_core::grabbed_device_handle::GrabbedDeviceHandle;
 use jni::objects::{JClass, JIntArray, JObject, JObjectArray, JString, JValue};
 use jni::sys::{jboolean, jint, jobject, jobjectArray};
 use jni::JNIEnv;
-use log::LevelFilter;
+use std::ffi::CString;
 use std::ptr;
 use std::sync::{Arc, OnceLock};
 
@@ -46,29 +47,34 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemB
     env: JNIEnv,
     this: JObject,
 ) {
-    android_log::init("KeyMapperSystemBridge").unwrap();
-    // Set log level: Info for production builds, Debug for debug builds
-    let log_level = if cfg!(debug_assertions) {
-        LevelFilter::Debug
-    } else {
-        LevelFilter::Info
-    };
-    log::set_max_level(log_level);
-    set_log_panic_hook();
+    // Get the JavaVM
+    let jvm = env.get_java_vm().expect("Failed to get JavaVM");
+    let jvm_arc = Arc::new(jvm);
+
+    // Create a global reference to the SystemBridge instance for logging
+    let system_bridge_for_log = env
+        .new_global_ref(&this)
+        .expect("Failed to create global reference to SystemBridge for logging");
+
+    // Initialize logging to Key Mapper and Android logcat.
+    KeyMapperLogger::init(
+        jvm_arc.clone(),
+        system_bridge_for_log,
+        CString::new("KeyMapperSystemBridge").unwrap(),
+    );
+
+    KeyMapperLogger::set_log_panic_hook();
 
     info!("Initializing evdev manager");
 
-    // Get the JavaVM
-    let jvm = env.get_java_vm().expect("Failed to get JavaVM");
-
-    // Create a global reference to the SystemBridge instance
+    // Create a global reference to the SystemBridge instance for evdev observer
     let system_bridge = env
         .new_global_ref(this)
         .expect("Failed to create global reference to SystemBridge");
 
     // Initialize the JNI observer
     let key_layout_manager = KeyLayoutMapManager::get();
-    let observer = EvdevJniObserver::new(Arc::new(jvm), system_bridge, key_layout_manager);
+    let observer = EvdevJniObserver::new(jvm_arc, system_bridge, key_layout_manager);
 
     if JNI_OBSERVER.set(observer).is_err() {
         panic!("JNI observer already initialized");
@@ -94,6 +100,16 @@ pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemB
         .stop()
         .inspect_err(|e| error!("Failed to stop event loop: {:?}", e))
         .unwrap();
+}
+
+/// Set the log level from Kotlin.
+#[no_mangle]
+pub extern "system" fn Java_io_github_sds100_keymapper_sysbridge_service_SystemBridge_setLogLevelNative(
+    _env: JNIEnv,
+    _class: JClass,
+    level: jint,
+) {
+    KeyMapperLogger::set_level(AndroidLogLevel::from(level as i32));
 }
 
 /// Set the list of grabbed devices. Takes an array of GrabTargetKeyCode and returns an array of GrabbedDeviceHandle.
@@ -369,29 +385,4 @@ fn create_java_grabbed_device_handle(
     )?;
 
     Ok(obj.into_raw())
-}
-
-fn set_log_panic_hook() {
-    std::panic::set_hook(Box::new(|panic_info| {
-        error!("PANIC in Rust code!");
-
-        if let Some(location) = panic_info.location() {
-            error!(
-                "Panic at {}:{}:{}",
-                location.file(),
-                location.line(),
-                location.column()
-            );
-        } else {
-            error!("Panic at unknown location");
-        }
-
-        if let Some(payload) = panic_info.payload().downcast_ref::<&str>() {
-            error!("Panic message: {}", payload);
-        } else if let Some(payload) = panic_info.payload().downcast_ref::<String>() {
-            error!("Panic message: {}", payload);
-        } else {
-            error!("Panic with unknown payload");
-        }
-    }));
 }

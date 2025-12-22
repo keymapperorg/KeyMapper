@@ -1,6 +1,7 @@
 package io.github.sds100.keymapper.sysbridge;
 
 import io.github.sds100.keymapper.evdev.IEvdevCallback;
+import io.github.sds100.keymapper.sysbridge.ILogCallback;
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo;
 import io.github.sds100.keymapper.common.models.GrabTargetKeyCode;
 import io.github.sds100.keymapper.common.models.GrabbedDeviceHandle;
@@ -48,4 +49,8 @@ interface ISystemBridge {
    long getUsbScreenUnlockedFunctions() = 21;
 
    boolean writeEvdevEventKeyCode(int deviceId, int keyCode, int value) = 22;
+
+   void registerLogCallback(ILogCallback callback) = 23;
+   void unregisterLogCallback() = 24;
+   void setLogLevel(int level) = 25;
 }

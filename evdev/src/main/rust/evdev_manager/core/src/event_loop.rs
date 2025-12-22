@@ -11,6 +11,7 @@ use evdev::enums::{EventType, EV_SYN};
 use evdev::util::event_code_to_int;
 use evdev::{InputEvent, ReadFlag, ReadStatus};
 use libc::c_uint;
+use log::Level;
 use mio::event::Event;
 use mio::{Events, Poll, Token, Waker};
 use std::error::Error;
@@ -216,10 +217,12 @@ impl EventLoopManager {
         code: u32,
         value: i32,
     ) -> Result<(), EvdevError> {
-        debug!(
-            "Write evdev event: device_id={} event_type={} code={} value={}",
-            device_id, event_type, code, value
-        );
+        if log_enabled!(Level::Debug) {
+            debug!(
+                "Write evdev event: device_id={} event_type={} code={} value={}",
+                device_id, event_type, code, value
+            );
+        }
 
         self.grab_controller
             .with_grabbed_device(device_id, |device| {
@@ -250,10 +253,12 @@ impl EventLoopManager {
                         Err(Box::new(EvdevError::new(-libc::ENODATA)) as Box<dyn Error>)
                     }
                     Ok(Some(code)) => {
-                        debug!(
-                            "Write key code evdev event: key_code={} value={}",
-                            key_code, value
-                        );
+                        if log_enabled!(Level::Debug) {
+                            debug!(
+                                "Write key code evdev event: key_code={} value={}",
+                                key_code, value
+                            );
+                        }
 
                         device
                             .uinput
@@ -365,8 +370,9 @@ impl EventLoopThread {
                     match evdev.next_event(flags) {
                         Ok((ReadStatus::Success, input_event)) => {
                             flags = ReadFlag::NORMAL;
-                            // Keep this logging line. Debug/verbose events will be disabled in production.
-                            debug!("Evdev event: {:?}", input_event);
+                            if log_enabled!(Level::Debug) {
+                                debug!("Evdev event: {:?}", input_event);
+                            }
                             self.process_event(slab_key, &input_event, device);
                         }
                         Ok((ReadStatus::Sync, _event)) => {

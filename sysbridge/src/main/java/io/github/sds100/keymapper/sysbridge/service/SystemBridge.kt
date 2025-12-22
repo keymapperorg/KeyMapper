@@ -46,6 +46,7 @@ import io.github.sds100.keymapper.common.models.GrabbedDeviceHandle
 import io.github.sds100.keymapper.common.models.ShellResult
 import io.github.sds100.keymapper.common.utils.UserHandleUtils
 import io.github.sds100.keymapper.evdev.IEvdevCallback
+import io.github.sds100.keymapper.sysbridge.ILogCallback
 import io.github.sds100.keymapper.sysbridge.ISystemBridge
 import io.github.sds100.keymapper.sysbridge.provider.BinderContainer
 import io.github.sds100.keymapper.sysbridge.provider.SystemBridgeBinderProvider
@@ -86,6 +87,9 @@ class SystemBridge : ISystemBridge.Stub() {
 
     @Suppress("KotlinJniMissingFunction")
     external fun destroyEvdevManager()
+
+    @Suppress("KotlinJniMissingFunction")
+    external fun setLogLevelNative(level: Int)
 
     /**
      * Called from Rust via JNI when an evdev event occurs.
@@ -144,6 +148,22 @@ class SystemBridge : ISystemBridge.Stub() {
     fun onEmergencyKillSystemBridge() {
         synchronized(evdevCallbackLock) {
             evdevCallback?.onEmergencyKillSystemBridge()
+        }
+    }
+
+    /**
+     * Called from Rust via JNI when a log message is emitted.
+     * Forwards the call to the registered ILogCallback.
+     */
+    @Suppress("unused")
+    fun onLogMessage(level: Int, message: String) {
+        synchronized(logCallbackLock) {
+            val callback = logCallback ?: return
+            try {
+                callback.onLog(level, message)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error calling log callback", e)
+            }
         }
     }
 
@@ -241,6 +261,14 @@ class SystemBridge : ISystemBridge.Stub() {
 
         // Start periodic check for Key Mapper installation
         startKeyMapperPeriodicCheck()
+    }
+
+    private val logCallbackLock: Any = Any()
+    private var logCallback: ILogCallback? = null
+    private val logCallbackDeathRecipient: IBinder.DeathRecipient = IBinder.DeathRecipient {
+        synchronized(logCallbackLock) {
+            logCallback = null
+        }
     }
 
     private val inputManager: IInputManager
@@ -832,5 +860,33 @@ class SystemBridge : ISystemBridge.Stub() {
         } catch (_: RemoteException) {
             -1
         }
+    }
+
+    override fun registerLogCallback(callback: ILogCallback?) {
+        callback ?: return
+
+        Log.i(TAG, "Register log callback")
+
+        val binder = callback.asBinder()
+
+        if (this.logCallback != null) {
+            unregisterLogCallback()
+        }
+
+        synchronized(logCallbackLock) {
+            this.logCallback = callback
+            binder.linkToDeath(logCallbackDeathRecipient, 0)
+        }
+    }
+
+    override fun unregisterLogCallback() {
+        synchronized(logCallbackLock) {
+            logCallback?.asBinder()?.unlinkToDeath(logCallbackDeathRecipient, 0)
+            logCallback = null
+        }
+    }
+
+    override fun setLogLevel(level: Int) {
+        setLogLevelNative(level)
     }
 }
