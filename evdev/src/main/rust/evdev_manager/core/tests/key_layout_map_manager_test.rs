@@ -6,7 +6,7 @@ use evdev_manager_core::android::android_codes::{
 use evdev_manager_core::android::keylayout::key_layout_map_manager::{
     get_generic_key_layout_map, KeyLayoutFileFinder, KeyLayoutMapManager,
 };
-use evdev_manager_core::device_identifier::DeviceIdentifier;
+use evdev_manager_core::evdev_device_info::EvdevDeviceInfo;
 #[cfg(test)]
 use pretty_assertions::assert_eq;
 use std::collections::HashMap;
@@ -45,7 +45,7 @@ impl KeyLayoutFileFinder for MockFileFinder {
 
 fn find_key_layout_files_str(
     mock_file_finder: Arc<MockFileFinder>,
-    device: &DeviceIdentifier,
+    device: &EvdevDeviceInfo,
 ) -> Vec<String> {
     let manager = KeyLayoutMapManager::with_file_finder(mock_file_finder);
 
@@ -65,7 +65,7 @@ fn get_test_data_path() -> PathBuf {
 fn test_find_no_files() {
     let mock_finder = Arc::new(MockFileFinder::new());
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "gpio-keys".to_string(),
         bus: 0x0003,
         vendor: 0x1234,
@@ -85,7 +85,7 @@ fn test_only_find_generic_file() {
             .add_system_file("Generic", PathBuf::from("/system/usr/keylayout/Generic.kl")),
     );
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "gpio-keys".to_string(),
         bus: 0x0003,
         vendor: 0x1234,
@@ -119,7 +119,7 @@ fn test_find_key_layout_files_priority_order() {
             .add_system_file("Generic", PathBuf::from("/system/usr/keylayout/Generic.kl")),
     );
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "gpio-keys".to_string(),
         bus: 0x0003,
         vendor: 0x1234,
@@ -148,7 +148,7 @@ fn test_preload_key_layout_map_returns_cached_result() {
 
     let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "Test Device".to_string(),
         bus: 0x0003,
         vendor: 0x0000,
@@ -175,7 +175,7 @@ fn test_preload_key_layout_map_saves_some_when_found() {
 
     let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "Test Device".to_string(),
         bus: 0x0003,
         vendor: 0x9999,
@@ -196,7 +196,7 @@ fn test_preload_key_layout_map_uses_fallback_when_not_found() {
 
     let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "Unknown Device".to_string(),
         bus: 0x0003,
         vendor: 0x9999,
@@ -220,7 +220,7 @@ fn test_map_key_reads_from_cache() {
 
     let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "Test Device".to_string(),
         bus: 0x0003,
         vendor: 0x9999,
@@ -246,7 +246,7 @@ fn test_map_key_saves_to_cache() {
 
     let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "Test Device".to_string(),
         bus: 0x0003,
         vendor: 0x9999,
@@ -270,7 +270,7 @@ fn test_map_key_finds_file_if_cache_miss() {
 
     let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "Test Device".to_string(),
         bus: 0x0003,
         vendor: 0x9999,
@@ -293,7 +293,7 @@ fn test_map_key_reads_first_found_path() {
 
     let manager = KeyLayoutMapManager::with_file_finder(Arc::new(mock_finder));
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "gpio-keys".to_string(),
         bus: 0x0003,
         vendor: 0x9999,
@@ -316,7 +316,7 @@ fn test_map_key_reads_generic_if_device_specific_not_found() {
 
     let manager = KeyLayoutMapManager::with_file_finder(Arc::new(mock_finder));
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "gpio-keys".to_string(),
         bus: 0x0003,
         vendor: 0x9999,
@@ -366,7 +366,7 @@ fn test_fallback_to_hardcoded_generic_when_no_files_found() {
 
     let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "Unknown Device".to_string(),
         bus: 0x0003,
         vendor: 0x9999,
@@ -392,7 +392,7 @@ fn test_fallback_map_key_works_when_no_files_found() {
 
     let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "Unknown Device".to_string(),
         bus: 0x0003,
         vendor: 0x9999,
@@ -419,7 +419,7 @@ fn test_fallback_is_cached() {
 
     let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "Unknown Device".to_string(),
         bus: 0x0003,
         vendor: 0x9999,
@@ -446,7 +446,7 @@ fn test_fallback_uses_static_generic_map() {
 
     let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "Unknown Device".to_string(),
         bus: 0x0003,
         vendor: 0x9999,
@@ -478,7 +478,7 @@ fn test_map_key_falls_back_to_generic_for_missing_scan_code() {
 
     let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "gpio-keys".to_string(),
         bus: 0x0003,
         vendor: 0x0000,
@@ -510,7 +510,7 @@ fn test_find_scan_code_for_key_falls_back_to_generic_for_missing_key_code() {
 
     let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "gpio-keys".to_string(),
         bus: 0x0003,
         vendor: 0x0000,
@@ -545,7 +545,7 @@ fn test_find_scan_code_for_key_reads_from_cache() {
 
     let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "Test Device".to_string(),
         bus: 0x0003,
         vendor: 0x9999,
@@ -578,7 +578,7 @@ fn test_find_scan_code_for_key_saves_to_cache() {
 
     let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "Test Device".to_string(),
         bus: 0x0003,
         vendor: 0x9999,
@@ -608,7 +608,7 @@ fn test_find_scan_code_for_key_finds_file_if_cache_miss() {
 
     let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "Test Device".to_string(),
         bus: 0x0003,
         vendor: 0x9999,
@@ -634,7 +634,7 @@ fn test_find_scan_code_for_key_reads_first_found_path() {
 
     let manager = KeyLayoutMapManager::with_file_finder(Arc::new(mock_finder));
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "gpio-keys".to_string(),
         bus: 0x0003,
         vendor: 0x9999,
@@ -659,7 +659,7 @@ fn test_find_scan_code_for_key_reads_generic_if_device_not_found() {
 
     let manager = KeyLayoutMapManager::with_file_finder(Arc::new(mock_finder));
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "gpio-keys".to_string(),
         bus: 0x0003,
         vendor: 0x9999,
@@ -683,7 +683,7 @@ fn test_find_scan_code_for_key_returns_none_for_unknown_key() {
 
     let manager = KeyLayoutMapManager::with_file_finder(mock_finder);
 
-    let device = DeviceIdentifier {
+    let device = EvdevDeviceInfo {
         name: "Unknown Device".to_string(),
         bus: 0x0003,
         vendor: 0x9999,

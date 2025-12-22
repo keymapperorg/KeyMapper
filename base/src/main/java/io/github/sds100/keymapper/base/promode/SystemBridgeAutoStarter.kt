@@ -127,9 +127,6 @@ class SystemBridgeAutoStarter @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private val autoStartFlow: Flow<AutoStartType?> =
         connectionManager.connectionState.flatMapLatest { connectionState ->
-
-            Timber.i("LATEST CONNECTION STATE: $connectionState")
-
             // Do not autostart if it is connected or it was killed from the user
             if (connectionState !is SystemBridgeConnectionState.Disconnected ||
                 connectionState.isStoppedByUser ||
@@ -164,18 +161,18 @@ class SystemBridgeAutoStarter @Inject constructor(
                 "SystemBridgeAutoStarter init: time since boot=${clock.elapsedRealtime() / 1000} seconds",
             )
 
-            // Wait 5 seconds for the system bridge to potentially connect itself to Key Mapper
-            // before deciding whether to start it.
-            delay(5000)
-
             if (BuildConfig.DEBUG && connectionManager.isConnected()) {
+                delay(1000)
                 // This is useful when developing and need to restart the system bridge
                 // after making changes to it.
                 Timber.w("Restarting system bridge on debug build.")
 
                 connectionManager.restartSystemBridge()
-                delay(5000)
             }
+
+            // Wait 5 seconds for the system bridge to potentially connect itself to Key Mapper
+            // before deciding whether to start it.
+            delay(5000)
 
             handleAutoStartFromPreVersion4()
 

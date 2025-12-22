@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @Parcelize
-data class GrabDeviceRequest(
+data class GrabTargetKeyCode(
     val name: String,
     val bus: Int,
     val vendor: Int,
@@ -24,7 +24,7 @@ data class GrabDeviceRequest(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as GrabDeviceRequest
+        other as GrabTargetKeyCode
 
         if (name != other.name) return false
         if (bus != other.bus) return false

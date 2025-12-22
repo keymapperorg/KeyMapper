@@ -41,7 +41,7 @@ import android.view.InputEvent
 import androidx.annotation.RequiresApi
 import com.android.internal.telephony.ITelephony
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
-import io.github.sds100.keymapper.common.models.GrabDeviceRequest
+import io.github.sds100.keymapper.common.models.GrabTargetKeyCode
 import io.github.sds100.keymapper.common.models.GrabbedDeviceHandle
 import io.github.sds100.keymapper.common.models.ShellResult
 import io.github.sds100.keymapper.common.utils.UserHandleUtils
@@ -68,8 +68,8 @@ import rikka.hidden.compat.adapter.ProcessObserverAdapter
 class SystemBridge : ISystemBridge.Stub() {
 
     @Suppress("KotlinJniMissingFunction")
-    external fun setGrabbedDevicesNative(
-        devices: Array<GrabDeviceRequest>,
+    external fun setGrabTargetsNative(
+        devices: Array<GrabTargetKeyCode>,
     ): Array<GrabbedDeviceHandle>
 
     @Suppress("KotlinJniMissingFunction")
@@ -108,6 +108,30 @@ class SystemBridge : ISystemBridge.Stub() {
             } catch (e: Exception) {
                 Log.e(TAG, "Error calling evdev callback", e)
                 false
+            }
+        }
+    }
+
+    @Suppress("unused")
+    fun onGrabbedDevicesChanged(devices: Array<GrabbedDeviceHandle>) {
+        synchronized(evdevCallbackLock) {
+            val callback = evdevCallback ?: return
+            try {
+                callback.onGrabbedDevicesChanged(devices)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error calling evdev callback", e)
+            }
+        }
+    }
+
+    @Suppress("unused")
+    fun onEvdevDevicesChanged(devices: Array<EvdevDeviceInfo>) {
+        synchronized(evdevCallbackLock) {
+            val callback = evdevCallback ?: return
+            try {
+                callback.onEvdevDevicesChanged(devices)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error calling evdev callback", e)
             }
         }
     }
@@ -426,10 +450,10 @@ class SystemBridge : ISystemBridge.Stub() {
         }
     }
 
-    override fun setGrabbedDevices(
-        devices: Array<out GrabDeviceRequest?>?,
+    override fun setGrabTargets(
+        devices: Array<out GrabTargetKeyCode?>?,
     ): Array<out GrabbedDeviceHandle?>? {
-        return setGrabbedDevicesNative(devices?.filterNotNull()?.toTypedArray() ?: emptyArray())
+        return setGrabTargetsNative(devices?.filterNotNull()?.toTypedArray() ?: emptyArray())
     }
 
     override fun injectInputEvent(event: InputEvent?, mode: Int): Boolean {

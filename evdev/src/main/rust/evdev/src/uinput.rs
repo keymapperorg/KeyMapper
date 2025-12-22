@@ -97,12 +97,6 @@ impl UInputDevice {
             error => Err(io::Error::from_raw_os_error(-error)),
         }
     }
-
-    pub fn write_syn_event(&self, code: EV_SYN) -> io::Result<()> {
-        let (event_type, event_code) = event_code_to_int(&EventCode::EV_SYN(code));
-
-        self.write_event(event_type, event_code, 0)
-    }
 }
 
 impl Drop for UInputDevice {

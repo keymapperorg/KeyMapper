@@ -12,7 +12,7 @@ import io.github.sds100.keymapper.base.trigger.Trigger
 import io.github.sds100.keymapper.base.utils.parallelTrigger
 import io.github.sds100.keymapper.base.utils.singleKeyTrigger
 import io.github.sds100.keymapper.common.models.EvdevDeviceInfo
-import io.github.sds100.keymapper.common.models.GrabDeviceRequest
+import io.github.sds100.keymapper.common.models.GrabTargetKeyCode
 import io.github.sds100.keymapper.system.inputevents.Scancode
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
@@ -106,8 +106,11 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                GrabTargetKeyCode(
+                    name = FAKE_CONTROLLER_EVDEV_DEVICE.name,
+                    bus = FAKE_CONTROLLER_EVDEV_DEVICE.bus,
+                    vendor = FAKE_CONTROLLER_EVDEV_DEVICE.vendor,
+                    product = FAKE_CONTROLLER_EVDEV_DEVICE.product,
                     extraKeyCodes = intArrayOf(
                         KeyEvent.KEYCODE_BUTTON_X,
                         KeyEvent.KEYCODE_BUTTON_Y,
@@ -154,11 +157,11 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
+                GrabTargetKeyCode(
                     device = FAKE_CONTROLLER_EVDEV_DEVICE,
                     extraKeyCodes = intArrayOf(KeyEvent.KEYCODE_BUTTON_X),
                 ),
-                GrabDeviceRequest(
+                GrabTargetKeyCode(
                     device = FAKE_CONTROLLER_EVDEV_DEVICE_2,
                     extraKeyCodes = intArrayOf(KeyEvent.KEYCODE_BUTTON_Y),
                 ),
@@ -198,11 +201,14 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                GrabTargetKeyCode(
+                    name = FAKE_CONTROLLER_EVDEV_DEVICE.name,
+                    bus = FAKE_CONTROLLER_EVDEV_DEVICE.bus,
+                    vendor = FAKE_CONTROLLER_EVDEV_DEVICE.vendor,
+                    product = FAKE_CONTROLLER_EVDEV_DEVICE.product,
                     extraKeyCodes = intArrayOf(),
                 ),
-                GrabDeviceRequest(
+                GrabTargetKeyCode(
                     device = FAKE_CONTROLLER_EVDEV_DEVICE_2,
                     extraKeyCodes = intArrayOf(),
                 ),
@@ -237,11 +243,14 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                GrabTargetKeyCode(
+                    name = FAKE_CONTROLLER_EVDEV_DEVICE.name,
+                    bus = FAKE_CONTROLLER_EVDEV_DEVICE.bus,
+                    vendor = FAKE_CONTROLLER_EVDEV_DEVICE.vendor,
+                    product = FAKE_CONTROLLER_EVDEV_DEVICE.product,
                     extraKeyCodes = intArrayOf(),
                 ),
-                GrabDeviceRequest(
+                GrabTargetKeyCode(
                     device = FAKE_CONTROLLER_EVDEV_DEVICE_2,
                     extraKeyCodes = intArrayOf(),
                 ),
@@ -269,8 +278,11 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                GrabTargetKeyCode(
+                    name = FAKE_CONTROLLER_EVDEV_DEVICE.name,
+                    bus = FAKE_CONTROLLER_EVDEV_DEVICE.bus,
+                    vendor = FAKE_CONTROLLER_EVDEV_DEVICE.vendor,
+                    product = FAKE_CONTROLLER_EVDEV_DEVICE.product,
                     extraKeyCodes = intArrayOf(),
                 ),
             ),
@@ -318,7 +330,7 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
+                GrabTargetKeyCode(
                     device = FAKE_CONTROLLER_EVDEV_DEVICE,
                     extraKeyCodes = intArrayOf(KeyEvent.KEYCODE_BUTTON_B),
                 ),
@@ -379,11 +391,14 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                GrabTargetKeyCode(
+                    name = FAKE_CONTROLLER_EVDEV_DEVICE.name,
+                    bus = FAKE_CONTROLLER_EVDEV_DEVICE.bus,
+                    vendor = FAKE_CONTROLLER_EVDEV_DEVICE.vendor,
+                    product = FAKE_CONTROLLER_EVDEV_DEVICE.product,
                     extraKeyCodes = intArrayOf(),
                 ),
-                GrabDeviceRequest(
+                GrabTargetKeyCode(
                     device = FAKE_CONTROLLER_EVDEV_DEVICE_2,
                     extraKeyCodes = intArrayOf(),
                 ),
@@ -412,8 +427,11 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                GrabTargetKeyCode(
+                    name = FAKE_CONTROLLER_EVDEV_DEVICE.name,
+                    bus = FAKE_CONTROLLER_EVDEV_DEVICE.bus,
+                    vendor = FAKE_CONTROLLER_EVDEV_DEVICE.vendor,
+                    product = FAKE_CONTROLLER_EVDEV_DEVICE.product,
                     extraKeyCodes = intArrayOf(),
                 ),
             ),
@@ -441,8 +459,11 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                GrabTargetKeyCode(
+                    name = FAKE_CONTROLLER_EVDEV_DEVICE.name,
+                    bus = FAKE_CONTROLLER_EVDEV_DEVICE.bus,
+                    vendor = FAKE_CONTROLLER_EVDEV_DEVICE.vendor,
+                    product = FAKE_CONTROLLER_EVDEV_DEVICE.product,
                     extraKeyCodes = intArrayOf(),
                 ),
             ),
@@ -492,8 +513,11 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                GrabTargetKeyCode(
+                    name = FAKE_CONTROLLER_EVDEV_DEVICE.name,
+                    bus = FAKE_CONTROLLER_EVDEV_DEVICE.bus,
+                    vendor = FAKE_CONTROLLER_EVDEV_DEVICE.vendor,
+                    product = FAKE_CONTROLLER_EVDEV_DEVICE.product,
                     extraKeyCodes = intArrayOf(),
                 ),
             ),
@@ -526,8 +550,11 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                GrabTargetKeyCode(
+                    name = FAKE_CONTROLLER_EVDEV_DEVICE.name,
+                    bus = FAKE_CONTROLLER_EVDEV_DEVICE.bus,
+                    vendor = FAKE_CONTROLLER_EVDEV_DEVICE.vendor,
+                    product = FAKE_CONTROLLER_EVDEV_DEVICE.product,
                     extraKeyCodes = intArrayOf(),
                 ),
             ),
@@ -561,7 +588,7 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
+                GrabTargetKeyCode(
                     device = FAKE_CONTROLLER_EVDEV_DEVICE,
                     extraKeyCodes = intArrayOf(
                         KeyEvent.KEYCODE_BUTTON_X,
@@ -598,7 +625,7 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
+                GrabTargetKeyCode(
                     device = FAKE_CONTROLLER_EVDEV_DEVICE,
                     extraKeyCodes = intArrayOf(KeyEvent.KEYCODE_BUTTON_X),
                 ),
@@ -629,7 +656,7 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
+                GrabTargetKeyCode(
                     device = FAKE_CONTROLLER_EVDEV_DEVICE,
                     extraKeyCodes = intArrayOf(KeyEvent.KEYCODE_BUTTON_A),
                 ),
@@ -662,8 +689,11 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                GrabTargetKeyCode(
+                    name = FAKE_CONTROLLER_EVDEV_DEVICE.name,
+                    bus = FAKE_CONTROLLER_EVDEV_DEVICE.bus,
+                    vendor = FAKE_CONTROLLER_EVDEV_DEVICE.vendor,
+                    product = FAKE_CONTROLLER_EVDEV_DEVICE.product,
                     extraKeyCodes = intArrayOf(),
                 ),
             ),
@@ -698,7 +728,7 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
+                GrabTargetKeyCode(
                     device = FAKE_CONTROLLER_EVDEV_DEVICE,
                     extraKeyCodes = intArrayOf(KeyEvent.KEYCODE_C),
                 ),
@@ -733,7 +763,7 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
+                GrabTargetKeyCode(
                     device = FAKE_CONTROLLER_EVDEV_DEVICE,
                     extraKeyCodes = intArrayOf(
                         KeyEvent.KEYCODE_BUTTON_X,
@@ -802,8 +832,11 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                GrabTargetKeyCode(
+                    name = FAKE_CONTROLLER_EVDEV_DEVICE.name,
+                    bus = FAKE_CONTROLLER_EVDEV_DEVICE.bus,
+                    vendor = FAKE_CONTROLLER_EVDEV_DEVICE.vendor,
+                    product = FAKE_CONTROLLER_EVDEV_DEVICE.product,
                     extraKeyCodes = intArrayOf(),
                 ),
             ),
@@ -844,7 +877,7 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
+                GrabTargetKeyCode(
                     device = FAKE_CONTROLLER_EVDEV_DEVICE,
                     extraKeyCodes = intArrayOf(KeyEvent.KEYCODE_BUTTON_X),
                 ),
@@ -900,7 +933,7 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
+                GrabTargetKeyCode(
                     device = FAKE_CONTROLLER_EVDEV_DEVICE,
                     extraKeyCodes = intArrayOf(KeyEvent.KEYCODE_BUTTON_X),
                 ),
@@ -966,7 +999,7 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
+                GrabTargetKeyCode(
                     device = FAKE_CONTROLLER_EVDEV_DEVICE,
                     extraKeyCodes = expectedExtraKeyCodes,
                 ),
@@ -1007,8 +1040,11 @@ class KeyMapDetectionControllerTest {
         assertThat(
             grabRequests,
             contains(
-                GrabDeviceRequest(
-                    device = FAKE_CONTROLLER_EVDEV_DEVICE,
+                GrabTargetKeyCode(
+                    name = FAKE_CONTROLLER_EVDEV_DEVICE.name,
+                    bus = FAKE_CONTROLLER_EVDEV_DEVICE.bus,
+                    vendor = FAKE_CONTROLLER_EVDEV_DEVICE.vendor,
+                    product = FAKE_CONTROLLER_EVDEV_DEVICE.product,
                     extraKeyCodes = intArrayOf(),
                 ),
             ),
