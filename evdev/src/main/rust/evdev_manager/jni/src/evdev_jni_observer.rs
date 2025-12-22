@@ -207,4 +207,74 @@ impl EvdevJniObserver {
             }
         }
     }
+
+    pub fn on_evdev_devices_changed(&self, devices: Vec<EvdevDeviceInfo>) {
+        let mut env = self
+            .jvm
+            .attach_current_thread_permanently()
+            .expect("Failed to attach to JVM thread");
+
+        // Convert Vec<EvdevDeviceInfo> to Java array of EvdevDeviceInfo
+        let info_class =
+            match env.find_class("io/github/sds100/keymapper/common/models/EvdevDeviceInfo") {
+                Ok(c) => c,
+                Err(e) => {
+                    error!("Failed to find EvdevDeviceInfo class: {:?}", e);
+                    return;
+                }
+            };
+
+        let array = match env.new_object_array(
+            devices.len() as i32,
+            &info_class,
+            jni::objects::JObject::null(),
+        ) {
+            Ok(a) => a,
+            Err(e) => {
+                error!("Failed to create EvdevDeviceInfo array: {:?}", e);
+                return;
+            }
+        };
+
+        for (i, device_info) in devices.iter().enumerate() {
+            let name_str = match env.new_string(&device_info.name) {
+                Ok(s) => s,
+                Err(e) => {
+                    error!("Failed to create device name string: {:?}", e);
+                    continue;
+                }
+            };
+
+            let info = match env.new_object(
+                &info_class,
+                "(Ljava/lang/String;III)V",
+                &[
+                    JValue::Object(&name_str.into()),
+                    JValue::Int(device_info.bus as i32),
+                    JValue::Int(device_info.vendor as i32),
+                    JValue::Int(device_info.product as i32),
+                ],
+            ) {
+                Ok(i) => i,
+                Err(e) => {
+                    error!("Failed to create EvdevDeviceInfo: {:?}", e);
+                    continue;
+                }
+            };
+
+            if let Err(e) = env.set_object_array_element(&array, i as i32, &info) {
+                error!("Failed to set array element: {:?}", e);
+            }
+        }
+
+        // Call SystemBridge.onEvdevDevicesChanged() via JNI
+        if let Err(e) = env.call_method(
+            &self.system_bridge,
+            "onEvdevDevicesChanged",
+            "([Lio/github/sds100/keymapper/common/models/EvdevDeviceInfo;)V",
+            &[JValue::Object(&array.into())],
+        ) {
+            error!("Failed to call onEvdevDevicesChanged: {:?}", e);
+        }
+    }
 }

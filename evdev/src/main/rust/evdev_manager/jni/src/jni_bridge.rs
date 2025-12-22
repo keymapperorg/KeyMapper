@@ -34,6 +34,10 @@ impl EvdevCallback for JniEvdevCallback {
     fn on_grabbed_devices_changed(&self, grabbed_devices: Vec<GrabbedDeviceHandle>) {
         get_jni_observer().on_grabbed_devices_changed(grabbed_devices)
     }
+
+    fn on_evdev_devices_changed(&self, devices: Vec<EvdevDeviceInfo>) {
+        get_jni_observer().on_evdev_devices_changed(devices)
+    }
 }
 
 /// MUST only be called once in the lifetime of the process.

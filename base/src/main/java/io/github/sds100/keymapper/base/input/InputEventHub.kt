@@ -376,6 +376,12 @@ class InputEventHubImpl @Inject constructor(
         evdevDevicesDelegate.onGrabbedDevicesChanged(devicesList)
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
+    override fun onEvdevDevicesChanged(devices: Array<out EvdevDeviceInfo?>?) {
+        val devicesList = devices?.filterNotNull()?.toList() ?: emptyList()
+        evdevDevicesDelegate.onEvdevDevicesChanged(devicesList)
+    }
+
     @RequiresApi(Constants.SYSTEM_BRIDGE_MIN_API)
     private fun invalidateGrabbedDevices() {
         val devicesToGrab = clients.values.flatMap { it.grabRequests }.toSet()

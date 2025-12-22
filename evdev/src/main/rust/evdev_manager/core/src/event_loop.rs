@@ -13,13 +13,11 @@ use evdev::{InputEvent, ReadFlag, ReadStatus};
 use libc::c_uint;
 use mio::event::Event;
 use mio::{Events, Poll, Token, Waker};
-use notify::{EventKind, Watcher};
 use std::error::Error;
 use std::io;
 use std::io::ErrorKind;
-use std::path::Path;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{mpsc, Arc, OnceLock, RwLock};
+use std::sync::{Arc, OnceLock, RwLock};
 use std::time::{Duration, Instant};
 use std::{fmt, usize};
 use tokio::task::JoinHandle;
@@ -39,6 +37,10 @@ pub trait EvdevCallback: Send + Sync {
     /// Called when the list of grabbed devices changes.
     /// Parameters: grabbed_devices list with their assigned IDs
     fn on_grabbed_devices_changed(&self, grabbed_devices: Vec<GrabbedDeviceHandle>);
+
+    /// Called when the list of available evdev devices changes.
+    /// Parameters: devices list of all available evdev devices
+    fn on_evdev_devices_changed(&self, devices: Vec<EvdevDeviceInfo>);
 }
 
 static EVENT_LOOP_MANAGER: OnceLock<EventLoopManager> = OnceLock::new();
@@ -49,7 +51,6 @@ pub struct EventLoopManager {
     stop_flag: Arc<AtomicBool>,
     poll: Arc<RwLock<Poll>>,
     event_loop_handle: RwLock<Option<JoinHandle<()>>>,
-    inotify_handle: RwLock<Option<JoinHandle<()>>>,
     waker: Waker,
     callback: Arc<dyn EvdevCallback>,
     grab_controller: Arc<EvdevGrabController>,
@@ -98,7 +99,6 @@ impl EventLoopManager {
             stop_flag: Arc::new(AtomicBool::new(false)),
             poll: poll_lock,
             event_loop_handle: RwLock::new(None),
-            inotify_handle: RwLock::new(None),
             waker,
             callback,
             grab_controller: Arc::new(grab_controller),
@@ -136,20 +136,20 @@ impl EventLoopManager {
             .unwrap()
             .replace(event_loop_handle);
 
-        let grab_controller_inotify = self.grab_controller.clone();
-
-        let inotify_handle = get_runtime().spawn(async move {
-            Self::watch_dev_input(&grab_controller_inotify)
-                .inspect_err(|err| error!("Failed to watch device input: {}", err))
-                .unwrap_err();
-        });
-
-        self.inotify_handle.write().unwrap().replace(inotify_handle);
+        self.grab_controller
+            .start_watching()
+            .inspect_err(|err| error!("Failed to start inotify watching: {:?}", err))?;
 
         Ok(())
     }
 
     pub fn stop(&self) -> Result<(), io::Error> {
+        // Stop inotify watching
+        self.grab_controller
+            .stop_watching()
+            .inspect_err(|err| error!("Failed to stop inotify watching: {:?}", err))
+            .ok();
+
         let handle_option = self.event_loop_handle.write().unwrap().take();
 
         match handle_option {
@@ -292,32 +292,6 @@ impl EventLoopManager {
             product: target.product,
             extra_event_codes: event_codes,
         }
-    }
-
-    fn watch_dev_input(grab_controller: &EvdevGrabController) -> notify::Result<()> {
-        let (tx, rx) = mpsc::channel::<notify::Result<notify::Event>>();
-
-        let mut watcher = notify::recommended_watcher(tx)
-            .inspect_err(|err| error!("Failed to create inotify watcher: {}", err))?;
-
-        watcher.watch(Path::new("/dev/input"), notify::RecursiveMode::Recursive)?;
-
-        for event_result in rx {
-            match event_result {
-                Ok(event) => {
-                    if event.kind == EventKind::Create(notify::event::CreateKind::File)
-                        || event.kind == EventKind::Remove(notify::event::RemoveKind::File)
-                    {
-                        grab_controller.on_inotify_dev_input(&event.paths);
-                    }
-                }
-                Err(err) => {
-                    error!("Failed to receive inotify event: {}", err);
-                }
-            }
-        }
-
-        Ok(())
     }
 }
 

@@ -2,6 +2,7 @@
 extern crate log;
 pub mod android;
 pub mod evdev_device_info;
+pub mod evdev_devices_watcher;
 pub mod evdev_error;
 pub mod evdev_grab_controller;
 pub mod event_loop;

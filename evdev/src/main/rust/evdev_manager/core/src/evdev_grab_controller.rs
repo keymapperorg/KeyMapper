@@ -4,9 +4,7 @@ use std::{
     io,
     os::fd::AsRawFd,
     path::PathBuf,
-    sync::{
-        Arc, Mutex, RwLock,
-    },
+    sync::{Arc, Mutex, RwLock},
 };
 
 use bimap::BiHashMap;
@@ -15,8 +13,12 @@ use mio::{unix::SourceFd, Interest, Registry, Token};
 use slab::Slab;
 
 use crate::{
-    evdev_device_info::EvdevDeviceInfo, evdev_error::EvdevError, event_loop::EvdevCallback,
-    grab_target::GrabTarget, grabbed_device::GrabbedDevice,
+    evdev_device_info::EvdevDeviceInfo,
+    evdev_devices_watcher::{EvdevDevicesWatcher, InotifyCallback},
+    evdev_error::EvdevError,
+    event_loop::EvdevCallback,
+    grab_target::GrabTarget,
+    grabbed_device::GrabbedDevice,
     grabbed_device_handle::GrabbedDeviceHandle,
 };
 
@@ -25,6 +27,7 @@ pub struct EvdevGrabController {
     callback: Arc<dyn EvdevCallback>,
     grab_targets: Mutex<Vec<GrabTarget>>,
     grabbed_devices: RwLock<Slab<GrabbedDevice>>,
+    devices_watcher: EvdevDevicesWatcher,
 }
 
 impl EvdevGrabController {
@@ -34,6 +37,7 @@ impl EvdevGrabController {
             callback,
             grab_targets: Mutex::new(Vec::with_capacity(64)),
             grabbed_devices: RwLock::new(Slab::with_capacity(64)),
+            devices_watcher: EvdevDevicesWatcher::new(),
         }
     }
 
@@ -54,26 +58,14 @@ impl EvdevGrabController {
         handles
     }
 
-    pub fn on_inotify_dev_input(&self, paths: &[PathBuf]) {
-        let mut grabbed_devices = self.grabbed_devices.write().unwrap();
-        let is_uinput_device = grabbed_devices
-            .iter()
-            .any(|(_, device)| paths.contains(&device.uinput.devnode().unwrap().into()));
-
-        if is_uinput_device {
-            return;
-        }
-
-        info!("inotify /dev/input event received");
-        let grab_targets = self.grab_targets.lock().unwrap();
-        self.invalidate(grab_targets.as_ref(), &mut grabbed_devices);
-    }
-
     fn invalidate(
         &self,
         grab_targets: &[GrabTarget],
         grabbed_devices: &mut Slab<GrabbedDevice>,
     ) -> Vec<GrabbedDeviceHandle> {
+        // Disable inotify event processing during invalidate to avoid race conditions
+        self.devices_watcher.disable();
+
         let real_device_paths =
             Self::get_real_device_paths(grabbed_devices).expect("Unable to evdev device paths");
         let device_info_path_map = Self::build_device_info_path_map(&real_device_paths);
@@ -108,6 +100,9 @@ impl EvdevGrabController {
 
         self.callback
             .on_grabbed_devices_changed(grabbed_device_handles.clone());
+
+        // Re-enable inotify event processing after invalidate is complete
+        self.devices_watcher.enable();
 
         grabbed_device_handles
     }
@@ -306,7 +301,6 @@ impl EvdevGrabController {
             }
         }
 
-        debug!("EvdevManager: get real devices: {:?}", paths);
         Ok(paths)
     }
 
@@ -330,5 +324,43 @@ impl EvdevGrabController {
             product: device.product_id(),
             version: device.version(),
         })
+    }
+
+    /// Start watching /dev/input for device changes
+    pub fn start_watching(self: &Arc<Self>) -> Result<(), EvdevError> {
+        self.devices_watcher.start(self.clone())
+    }
+
+    /// Stop watching /dev/input for device changes
+    pub fn stop_watching(&self) -> Result<(), EvdevError> {
+        self.devices_watcher.stop()
+    }
+}
+
+impl InotifyCallback for EvdevGrabController {
+    fn on_inotify_dev_input(&self, paths: &[PathBuf]) {
+        let mut grabbed_devices = self.grabbed_devices.write().unwrap();
+        let is_uinput_device = grabbed_devices
+            .iter()
+            .any(|(_, device)| paths.contains(&device.uinput.devnode().unwrap().into()));
+
+        if is_uinput_device {
+            return;
+        }
+
+        info!("inotify /dev/input event received");
+        let grab_targets = self.grab_targets.lock().unwrap();
+        self.invalidate(grab_targets.as_ref(), &mut grabbed_devices);
+
+        // Notify callback about device list changes
+        drop(grabbed_devices); // Release the write lock before calling get_real_devices
+        match self.get_real_devices() {
+            Ok(devices) => {
+                self.callback.on_evdev_devices_changed(devices);
+            }
+            Err(e) => {
+                error!("Failed to get real devices for callback: {:?}", e);
+            }
+        }
     }
 }

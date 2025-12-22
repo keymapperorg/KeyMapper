@@ -6,11 +6,9 @@ import io.github.sds100.keymapper.common.models.GrabTargetKeyCode
 import io.github.sds100.keymapper.common.models.GrabbedDeviceHandle
 import io.github.sds100.keymapper.common.utils.Constants
 import io.github.sds100.keymapper.common.utils.onFailure
-import io.github.sds100.keymapper.common.utils.onSuccess
 import io.github.sds100.keymapper.common.utils.valueIfFailure
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
-import io.github.sds100.keymapper.system.devices.DevicesAdapter
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
@@ -18,10 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -37,7 +31,6 @@ import timber.log.Timber
 @Singleton
 class EvdevDevicesDelegate @Inject constructor(
     private val coroutineScope: CoroutineScope,
-    private val devicesAdapter: DevicesAdapter,
     private val systemBridgeConnectionManager: SystemBridgeConnectionManager,
 ) {
     private val grabbedDevicesById: MutableStateFlow<Map<Int, EvdevDeviceInfo>> =
@@ -52,24 +45,18 @@ class EvdevDevicesDelegate @Inject constructor(
 
     init {
         coroutineScope.launch {
-            // Only listen to changes in the connected input devices if the system bridge
-            // is connected.
-            systemBridgeConnectionManager.connectionState.flatMapLatest { connectionState ->
+            systemBridgeConnectionManager.connectionState.collect { connectionState ->
                 when (connectionState) {
                     is SystemBridgeConnectionState.Connected -> {
-                        // TODO replace with callback from system bridge
-                        devicesAdapter.connectedInputDevices.onEach {
-                            allDevices.value = fetchAllDevices()
-                        }
+                        allDevices.value = fetchAllDevices()
                     }
 
                     is SystemBridgeConnectionState.Disconnected -> {
                         allDevices.value = emptyList()
                         grabbedDevicesById.value = emptyMap()
-                        emptyFlow()
                     }
                 }
-            }.collect()
+            }
         }
 
         coroutineScope.launch {
@@ -84,9 +71,8 @@ class EvdevDevicesDelegate @Inject constructor(
     private fun invalidateGrabbedDevices(devices: List<GrabTargetKeyCode>) {
         systemBridgeConnectionManager
             .run { bridge -> bridge.setGrabTargets(devices.toTypedArray()) }
-            .onSuccess { grabbedDevices ->
-                onGrabbedDevicesChanged(grabbedDevices?.filterNotNull() ?: emptyList())
-            }.onFailure { error ->
+            // The callback will respond with the new grabbed devices.
+            .onFailure { error ->
                 Timber.w(
                     "Grabbing devices failed in system bridge: $error",
                 )
@@ -113,6 +99,12 @@ class EvdevDevicesDelegate @Inject constructor(
                 handle.id to
                     EvdevDeviceInfo(handle.name, handle.bus, handle.vendor, handle.product)
             }
+    }
+
+    fun onEvdevDevicesChanged(devices: List<EvdevDeviceInfo>) {
+        Timber.i("Evdev devices changed: [${devices.joinToString { it.name }}]")
+
+        allDevices.value = devices
     }
 
     private suspend fun fetchAllDevices(): List<EvdevDeviceInfo> {
