@@ -121,7 +121,6 @@ object ActionUtils {
         ActionId.SWIPE_SCREEN -> ActionCategory.INPUT
         ActionId.PINCH_SCREEN -> ActionCategory.INPUT
         ActionId.TEXT -> ActionCategory.INPUT
-
         ActionId.OPEN_VOICE_ASSISTANT -> ActionCategory.APPS
         ActionId.OPEN_DEVICE_ASSISTANT -> ActionCategory.APPS
         ActionId.OPEN_CAMERA -> ActionCategory.APPS
@@ -132,30 +131,24 @@ object ActionUtils {
         ActionId.URL -> ActionCategory.APPS
         ActionId.HTTP_REQUEST -> ActionCategory.APPS
         ActionId.SHELL_COMMAND -> ActionCategory.APPS
-
         ActionId.TOGGLE_WIFI -> ActionCategory.CONNECTIVITY
         ActionId.ENABLE_WIFI -> ActionCategory.CONNECTIVITY
         ActionId.DISABLE_WIFI -> ActionCategory.CONNECTIVITY
-
         ActionId.TOGGLE_BLUETOOTH -> ActionCategory.CONNECTIVITY
         ActionId.ENABLE_BLUETOOTH -> ActionCategory.CONNECTIVITY
         ActionId.DISABLE_BLUETOOTH -> ActionCategory.CONNECTIVITY
-
         ActionId.TOGGLE_MOBILE_DATA -> ActionCategory.CONNECTIVITY
         ActionId.ENABLE_MOBILE_DATA -> ActionCategory.CONNECTIVITY
         ActionId.DISABLE_MOBILE_DATA -> ActionCategory.CONNECTIVITY
-
         ActionId.TOGGLE_HOTSPOT -> ActionCategory.CONNECTIVITY
         ActionId.ENABLE_HOTSPOT -> ActionCategory.CONNECTIVITY
         ActionId.DISABLE_HOTSPOT -> ActionCategory.CONNECTIVITY
-
         ActionId.TOGGLE_AUTO_BRIGHTNESS -> ActionCategory.DISPLAY
         ActionId.DISABLE_AUTO_BRIGHTNESS -> ActionCategory.DISPLAY
         ActionId.ENABLE_AUTO_BRIGHTNESS -> ActionCategory.DISPLAY
         ActionId.INCREASE_BRIGHTNESS -> ActionCategory.DISPLAY
         ActionId.DECREASE_BRIGHTNESS -> ActionCategory.DISPLAY
         ActionId.SCREENSHOT -> ActionCategory.DISPLAY
-
         ActionId.TOGGLE_AUTO_ROTATE -> ActionCategory.INTERFACE
         ActionId.ENABLE_AUTO_ROTATE -> ActionCategory.INTERFACE
         ActionId.DISABLE_AUTO_ROTATE -> ActionCategory.INTERFACE
@@ -163,7 +156,6 @@ object ActionUtils {
         ActionId.LANDSCAPE_MODE -> ActionCategory.INTERFACE
         ActionId.SWITCH_ORIENTATION -> ActionCategory.INTERFACE
         ActionId.CYCLE_ROTATIONS -> ActionCategory.INTERFACE
-
         ActionId.VOLUME_UP -> ActionCategory.VOLUME
         ActionId.VOLUME_DOWN -> ActionCategory.VOLUME
         ActionId.VOLUME_SHOW_DIALOG -> ActionCategory.VOLUME
@@ -181,13 +173,11 @@ object ActionUtils {
         ActionId.MUTE_MICROPHONE -> ActionCategory.VOLUME
         ActionId.UNMUTE_MICROPHONE -> ActionCategory.VOLUME
         ActionId.TOGGLE_MUTE_MICROPHONE -> ActionCategory.VOLUME
-
         ActionId.EXPAND_NOTIFICATION_DRAWER -> ActionCategory.NAVIGATION
         ActionId.TOGGLE_NOTIFICATION_DRAWER -> ActionCategory.NAVIGATION
         ActionId.EXPAND_QUICK_SETTINGS -> ActionCategory.NAVIGATION
         ActionId.TOGGLE_QUICK_SETTINGS -> ActionCategory.NAVIGATION
         ActionId.COLLAPSE_STATUS_BAR -> ActionCategory.NAVIGATION
-
         ActionId.SOUND -> ActionCategory.MEDIA
         ActionId.PAUSE_MEDIA -> ActionCategory.MEDIA
         ActionId.PAUSE_MEDIA_PACKAGE -> ActionCategory.MEDIA
@@ -209,27 +199,22 @@ object ActionUtils {
         ActionId.STEP_FORWARD_PACKAGE -> ActionCategory.MEDIA
         ActionId.STEP_BACKWARD -> ActionCategory.MEDIA
         ActionId.STEP_BACKWARD_PACKAGE -> ActionCategory.MEDIA
-
         ActionId.GO_BACK -> ActionCategory.NAVIGATION
         ActionId.GO_HOME -> ActionCategory.NAVIGATION
         ActionId.OPEN_RECENTS -> ActionCategory.NAVIGATION
         ActionId.TOGGLE_SPLIT_SCREEN -> ActionCategory.NAVIGATION
         ActionId.GO_LAST_APP -> ActionCategory.NAVIGATION
         ActionId.OPEN_MENU -> ActionCategory.NAVIGATION
-
         ActionId.TOGGLE_FLASHLIGHT -> ActionCategory.FLASHLIGHT
         ActionId.ENABLE_FLASHLIGHT -> ActionCategory.FLASHLIGHT
         ActionId.DISABLE_FLASHLIGHT -> ActionCategory.FLASHLIGHT
         ActionId.CHANGE_FLASHLIGHT_STRENGTH -> ActionCategory.FLASHLIGHT
-
         ActionId.ENABLE_NFC -> ActionCategory.CONNECTIVITY
         ActionId.DISABLE_NFC -> ActionCategory.CONNECTIVITY
         ActionId.TOGGLE_NFC -> ActionCategory.CONNECTIVITY
-
         ActionId.TOGGLE_AIRPLANE_MODE -> ActionCategory.CONNECTIVITY
         ActionId.ENABLE_AIRPLANE_MODE -> ActionCategory.CONNECTIVITY
         ActionId.DISABLE_AIRPLANE_MODE -> ActionCategory.CONNECTIVITY
-
         ActionId.TEXT_CUT -> ActionCategory.KEYBOARD
         ActionId.TEXT_COPY -> ActionCategory.KEYBOARD
         ActionId.TEXT_PASTE -> ActionCategory.KEYBOARD
@@ -240,162 +225,283 @@ object ActionUtils {
         ActionId.SHOW_KEYBOARD_PICKER -> ActionCategory.KEYBOARD
         ActionId.SELECT_WORD_AT_CURSOR -> ActionCategory.KEYBOARD
         ActionId.SWITCH_KEYBOARD -> ActionCategory.KEYBOARD
-
         ActionId.LOCK_DEVICE -> ActionCategory.INTERFACE
         ActionId.POWER_ON_OFF_DEVICE -> ActionCategory.INTERFACE
         ActionId.SECURE_LOCK_DEVICE -> ActionCategory.INTERFACE
         ActionId.SHOW_POWER_MENU -> ActionCategory.INTERFACE
-
         ActionId.PHONE_CALL -> ActionCategory.TELEPHONY
         ActionId.ANSWER_PHONE_CALL -> ActionCategory.TELEPHONY
         ActionId.END_PHONE_CALL -> ActionCategory.TELEPHONY
         ActionId.SEND_SMS -> ActionCategory.TELEPHONY
         ActionId.COMPOSE_SMS -> ActionCategory.TELEPHONY
-
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION -> ActionCategory.NOTIFICATIONS
         ActionId.DISMISS_ALL_NOTIFICATIONS -> ActionCategory.NOTIFICATIONS
         ActionId.CREATE_NOTIFICATION -> ActionCategory.NOTIFICATIONS
         ActionId.DEVICE_CONTROLS -> ActionCategory.APPS
-
         ActionId.INTERACT_UI_ELEMENT -> ActionCategory.APPS
         ActionId.FORCE_STOP_APP -> ActionCategory.APPS
         ActionId.CLEAR_RECENT_APP -> ActionCategory.APPS
         ActionId.MODIFY_SETTING -> ActionCategory.APPS
-
         ActionId.CONSUME_KEY_EVENT -> ActionCategory.SPECIAL
     }
 
     @StringRes
     fun getTitle(id: ActionId): Int = when (id) {
         ActionId.TOGGLE_WIFI -> R.string.action_toggle_wifi
+
         ActionId.ENABLE_WIFI -> R.string.action_enable_wifi
+
         ActionId.DISABLE_WIFI -> R.string.action_disable_wifi
+
         ActionId.TOGGLE_BLUETOOTH -> R.string.action_toggle_bluetooth
+
         ActionId.ENABLE_BLUETOOTH -> R.string.action_enable_bluetooth
+
         ActionId.DISABLE_BLUETOOTH -> R.string.action_disable_bluetooth
+
         ActionId.TOGGLE_MOBILE_DATA -> R.string.action_toggle_mobile_data
+
         ActionId.ENABLE_MOBILE_DATA -> R.string.action_enable_mobile_data
+
         ActionId.DISABLE_MOBILE_DATA -> R.string.action_disable_mobile_data
+
         ActionId.TOGGLE_AUTO_BRIGHTNESS -> R.string.action_toggle_auto_brightness
+
         ActionId.DISABLE_AUTO_BRIGHTNESS -> R.string.action_disable_auto_brightness
+
         ActionId.ENABLE_AUTO_BRIGHTNESS -> R.string.action_enable_auto_brightness
+
         ActionId.INCREASE_BRIGHTNESS -> R.string.action_increase_brightness
+
         ActionId.DECREASE_BRIGHTNESS -> R.string.action_decrease_brightness
+
         ActionId.TOGGLE_AUTO_ROTATE -> R.string.action_toggle_auto_rotate
+
         ActionId.ENABLE_AUTO_ROTATE -> R.string.action_enable_auto_rotate
+
         ActionId.DISABLE_AUTO_ROTATE -> R.string.action_disable_auto_rotate
+
         ActionId.PORTRAIT_MODE -> R.string.action_portrait_mode
+
         ActionId.LANDSCAPE_MODE -> R.string.action_landscape_mode
+
         ActionId.SWITCH_ORIENTATION -> R.string.action_switch_orientation
+
         ActionId.CYCLE_ROTATIONS -> R.string.action_cycle_rotations
+
         ActionId.VOLUME_UP -> R.string.action_volume_up
+
         ActionId.VOLUME_DOWN -> R.string.action_volume_down
+
         ActionId.VOLUME_SHOW_DIALOG -> R.string.action_volume_show_dialog
+
         ActionId.VOLUME_DECREASE_STREAM -> R.string.action_decrease_stream
+
         ActionId.VOLUME_INCREASE_STREAM -> R.string.action_increase_stream
+
         ActionId.CYCLE_RINGER_MODE -> R.string.action_cycle_ringer_mode
+
         ActionId.CHANGE_RINGER_MODE -> R.string.action_change_ringer_mode
+
         ActionId.CYCLE_VIBRATE_RING -> R.string.action_cycle_vibrate_ring
+
         ActionId.TOGGLE_DND_MODE -> R.string.action_toggle_dnd_mode
+
         ActionId.ENABLE_DND_MODE -> R.string.action_enable_dnd_mode
+
         ActionId.DISABLE_DND_MODE -> R.string.action_disable_dnd_mode
+
         ActionId.VOLUME_UNMUTE -> R.string.action_volume_unmute
+
         ActionId.VOLUME_MUTE -> R.string.action_volume_mute
+
         ActionId.VOLUME_TOGGLE_MUTE -> R.string.action_toggle_mute
+
         ActionId.MUTE_MICROPHONE -> R.string.action_mute_microphone
+
         ActionId.UNMUTE_MICROPHONE -> R.string.action_unmute_microphone
+
         ActionId.TOGGLE_MUTE_MICROPHONE -> R.string.action_toggle_mute_microphone
+
         ActionId.EXPAND_NOTIFICATION_DRAWER -> R.string.action_expand_notification_drawer
+
         ActionId.TOGGLE_NOTIFICATION_DRAWER -> R.string.action_toggle_notification_drawer
+
         ActionId.EXPAND_QUICK_SETTINGS -> R.string.action_expand_quick_settings
+
         ActionId.TOGGLE_QUICK_SETTINGS -> R.string.action_toggle_quick_settings
+
         ActionId.COLLAPSE_STATUS_BAR -> R.string.action_collapse_status_bar
+
         ActionId.PAUSE_MEDIA -> R.string.action_pause_media
+
         ActionId.PAUSE_MEDIA_PACKAGE -> R.string.action_pause_media_package
+
         ActionId.PLAY_MEDIA -> R.string.action_play_media
+
         ActionId.PLAY_MEDIA_PACKAGE -> R.string.action_play_media_package
+
         ActionId.PLAY_PAUSE_MEDIA -> R.string.action_play_pause_media
+
         ActionId.PLAY_PAUSE_MEDIA_PACKAGE -> R.string.action_play_pause_media_package
+
         ActionId.NEXT_TRACK -> R.string.action_next_track
+
         ActionId.NEXT_TRACK_PACKAGE -> R.string.action_next_track_package
+
         ActionId.PREVIOUS_TRACK -> R.string.action_previous_track
+
         ActionId.PREVIOUS_TRACK_PACKAGE -> R.string.action_previous_track_package
+
         ActionId.FAST_FORWARD -> R.string.action_fast_forward
+
         ActionId.FAST_FORWARD_PACKAGE -> R.string.action_fast_forward_package
+
         ActionId.REWIND -> R.string.action_rewind
+
         ActionId.REWIND_PACKAGE -> R.string.action_rewind_package
+
         ActionId.STOP_MEDIA -> R.string.action_stop_media
+
         ActionId.STOP_MEDIA_PACKAGE -> R.string.action_stop_media_package
+
         ActionId.STEP_FORWARD -> R.string.action_step_forward_media
+
         ActionId.STEP_FORWARD_PACKAGE -> R.string.action_step_forward_media_package
+
         ActionId.STEP_BACKWARD -> R.string.action_step_backward_media
+
         ActionId.STEP_BACKWARD_PACKAGE -> R.string.action_step_backward_media_package
+
         ActionId.GO_BACK -> R.string.action_go_back
+
         ActionId.GO_HOME -> R.string.action_go_home
+
         ActionId.OPEN_RECENTS -> R.string.action_open_recents
+
         ActionId.TOGGLE_SPLIT_SCREEN -> R.string.action_toggle_split_screen
+
         ActionId.GO_LAST_APP -> R.string.action_go_last_app
+
         ActionId.OPEN_MENU -> R.string.action_open_menu
+
         ActionId.TOGGLE_FLASHLIGHT -> R.string.action_toggle_flashlight
+
         ActionId.ENABLE_FLASHLIGHT -> R.string.action_enable_flashlight
+
         ActionId.DISABLE_FLASHLIGHT -> R.string.action_disable_flashlight
+
         ActionId.CHANGE_FLASHLIGHT_STRENGTH -> R.string.action_flashlight_change_strength
+
         ActionId.ENABLE_NFC -> R.string.action_nfc_enable
+
         ActionId.DISABLE_NFC -> R.string.action_nfc_disable
+
         ActionId.TOGGLE_NFC -> R.string.action_nfc_toggle
+
         ActionId.MOVE_CURSOR -> R.string.action_move_cursor
+
         ActionId.TOGGLE_KEYBOARD -> R.string.action_toggle_keyboard
+
         ActionId.SHOW_KEYBOARD -> R.string.action_show_keyboard
+
         ActionId.HIDE_KEYBOARD -> R.string.action_hide_keyboard
+
         ActionId.SHOW_KEYBOARD_PICKER -> R.string.action_show_keyboard_picker
+
         ActionId.TEXT_CUT -> R.string.action_text_cut
+
         ActionId.TEXT_COPY -> R.string.action_text_copy
+
         ActionId.TEXT_PASTE -> R.string.action_text_paste
+
         ActionId.SELECT_WORD_AT_CURSOR -> R.string.action_select_word_at_cursor
+
         ActionId.SWITCH_KEYBOARD -> R.string.action_switch_keyboard
+
         ActionId.TOGGLE_AIRPLANE_MODE -> R.string.action_toggle_airplane_mode
+
         ActionId.ENABLE_AIRPLANE_MODE -> R.string.action_enable_airplane_mode
+
         ActionId.DISABLE_AIRPLANE_MODE -> R.string.action_disable_airplane_mode
+
         ActionId.SCREENSHOT -> R.string.action_screenshot
+
         ActionId.OPEN_VOICE_ASSISTANT -> R.string.action_open_assistant
+
         ActionId.OPEN_DEVICE_ASSISTANT -> R.string.action_open_device_assistant
+
         ActionId.OPEN_CAMERA -> R.string.action_open_camera
+
         ActionId.LOCK_DEVICE -> R.string.action_lock_device
+
         ActionId.POWER_ON_OFF_DEVICE -> R.string.action_power_on_off_device
+
         ActionId.SECURE_LOCK_DEVICE -> R.string.action_secure_lock_device
+
         ActionId.CONSUME_KEY_EVENT -> R.string.action_consume_keyevent
+
         ActionId.OPEN_SETTINGS -> R.string.action_open_settings
+
         ActionId.SHOW_POWER_MENU -> R.string.action_show_power_menu
+
         ActionId.APP -> R.string.action_open_app
+
         ActionId.APP_SHORTCUT -> R.string.action_open_app_shortcut
+
         ActionId.KEY_CODE -> R.string.action_input_key_code
+
         ActionId.KEY_EVENT -> R.string.action_input_key_event
+
         ActionId.TAP_SCREEN -> R.string.action_tap_screen
+
         ActionId.SWIPE_SCREEN -> R.string.action_swipe_screen
+
         ActionId.PINCH_SCREEN -> R.string.action_pinch_screen
+
         ActionId.TEXT -> R.string.action_input_text
+
         ActionId.URL -> R.string.action_open_url
+
         ActionId.INTENT -> R.string.action_send_intent
+
         ActionId.PHONE_CALL -> R.string.action_phone_call
+
         ActionId.SOUND -> R.string.action_play_sound
+
         ActionId.DISMISS_MOST_RECENT_NOTIFICATION ->
             R.string.action_dismiss_most_recent_notification
+
         ActionId.DISMISS_ALL_NOTIFICATIONS -> R.string.action_dismiss_all_notifications
+
         ActionId.CREATE_NOTIFICATION -> R.string.action_create_notification
+
         ActionId.ANSWER_PHONE_CALL -> R.string.action_answer_call
+
         ActionId.END_PHONE_CALL -> R.string.action_end_call
+
         ActionId.SEND_SMS -> R.string.action_send_sms
+
         ActionId.COMPOSE_SMS -> R.string.action_compose_sms
+
         ActionId.DEVICE_CONTROLS -> R.string.action_device_controls
+
         ActionId.HTTP_REQUEST -> R.string.action_http_request
+
         ActionId.SHELL_COMMAND -> R.string.action_shell_command
+
         ActionId.INTERACT_UI_ELEMENT -> R.string.action_interact_ui_element_title
+
         ActionId.FORCE_STOP_APP -> R.string.action_force_stop_app
+
         ActionId.CLEAR_RECENT_APP -> R.string.action_clear_recent_app
 
         ActionId.MODIFY_SETTING -> R.string.action_modify_setting
+
         ActionId.TOGGLE_HOTSPOT -> R.string.action_toggle_hotspot
+
         ActionId.ENABLE_HOTSPOT -> R.string.action_enable_hotspot
+
         ActionId.DISABLE_HOTSPOT -> R.string.action_disable_hotspot
     }
 
@@ -525,10 +631,13 @@ object ActionUtils {
 
     fun getMinApi(id: ActionId): Int = when (id) {
         ActionId.ANSWER_PHONE_CALL -> Build.VERSION_CODES.O
+
         ActionId.END_PHONE_CALL -> Build.VERSION_CODES.P
 
         ActionId.TOGGLE_SPLIT_SCREEN -> Build.VERSION_CODES.N
+
         ActionId.GO_LAST_APP -> Build.VERSION_CODES.N
+
         ActionId.TAP_SCREEN -> Build.VERSION_CODES.N
 
         ActionId.VOLUME_MUTE,
@@ -562,6 +671,7 @@ object ActionUtils {
             -> Build.VERSION_CODES.JELLY_BEAN_MR2
 
         ActionId.SHOW_POWER_MENU -> Build.VERSION_CODES.LOLLIPOP
+
         ActionId.DEVICE_CONTROLS -> Build.VERSION_CODES.S
 
         // It could be supported on older versions but system bridge min API is Q and its extra
@@ -761,6 +871,7 @@ object ActionUtils {
             }
 
             ActionId.SECURE_LOCK_DEVICE -> return listOf(Permission.DEVICE_ADMIN)
+
             ActionId.POWER_ON_OFF_DEVICE -> return if (isSystemBridgeSupported) {
                 emptyList()
             } else {
@@ -923,7 +1034,6 @@ object ActionUtils {
         ActionId.INTERACT_UI_ELEMENT -> KeyMapperIcons.JumpToElement
         ActionId.FORCE_STOP_APP -> Icons.Outlined.Dangerous
         ActionId.CLEAR_RECENT_APP -> Icons.Outlined.VerticalSplit
-
         ActionId.MODIFY_SETTING -> Icons.Outlined.Settings
         ActionId.TOGGLE_HOTSPOT -> Icons.Outlined.WifiTethering
         ActionId.ENABLE_HOTSPOT -> Icons.Outlined.WifiTethering
@@ -933,6 +1043,7 @@ object ActionUtils {
 
 fun ActionData.canBeHeldDown(): Boolean = when (this) {
     is ActionData.InputKeyEvent -> true
+    is ActionData.TapScreen -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
     else -> false
 }
 
