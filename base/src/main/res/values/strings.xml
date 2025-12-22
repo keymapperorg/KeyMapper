@@ -1670,7 +1670,7 @@
     <string name="pro_mode_shizuku_detected_button_start_service">Start PRO mode</string>
     <string name="pro_mode_set_up_with_key_mapper_title">Set up with Key Mapper</string>
     <string name="pro_mode_set_up_with_key_mapper_button">Continue</string>
-    <string name="pro_mode_set_up_with_key_mapper_button_incompatible">Continue (Android 11+)</string>
+    <string name="pro_mode_set_up_with_key_mapper_button_incompatible">(Requires Android 11+)</string>
     <string name="pro_mode_options_title">Options</string>
     <string name="pro_mode_enable_for_all_key_maps_title">Enable PRO mode for all key maps</string>
     <string name="pro_mode_enable_for_all_key_maps_text">Key Mapper will use the ADB Shell for remapping</string>
