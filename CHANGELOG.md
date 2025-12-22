@@ -7,15 +7,18 @@
 - #1915 ask user to remove "adb shell" from Shell command.
 - #1904 inform the user how to enable the accessibility service with PRO mode or ADB.
 - #1911 constraint for physical device orientation that ignores auto rotate setting.
-- #1918 improve how key event actions are performed with system bridge
+- #1918 improve how key event actions are performed with system bridge.
+- #1905 system bridge log is now visible in Key Mapper log.
 
 ## Bug fixes
 
 - #1913 actually save the option to detect with scan code
 - #1931 fix Close and Remove From Recents action on some Android 13 revisions
 - #1926 PRO mode triggers for external devices work when the device reconnects.
-- #1918 PRO mode key maps can input key codes that aren't originally supported by the trigger device.
+- #1918 PRO mode key maps can input key codes that aren't originally supported by the trigger
+  device.
 - #1934 hold down option for Tap Screen action is added back.
+- Log less verbose.
 
 ## [4.0.0 Beta 3](https://github.com/sds100/KeyMapper/releases/tag/v4.0.0-beta.03)
 
