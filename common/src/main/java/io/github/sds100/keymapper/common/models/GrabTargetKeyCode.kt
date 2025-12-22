@@ -20,6 +20,18 @@ data class GrabTargetKeyCode(
      */
     val extraKeyCodes: IntArray,
 ) : Parcelable {
+
+    constructor(
+        device: EvdevDeviceInfo,
+        extraKeyCodes: IntArray,
+    ) : this(
+        device.name,
+        device.bus,
+        device.vendor,
+        device.product,
+        extraKeyCodes,
+    )
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
