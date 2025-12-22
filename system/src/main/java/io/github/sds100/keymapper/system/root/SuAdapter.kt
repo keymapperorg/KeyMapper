@@ -5,6 +5,7 @@ import io.github.sds100.keymapper.system.shell.BaseShellAdapter
 import io.github.sds100.keymapper.system.shell.ShellAdapter
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -48,7 +49,9 @@ class SuAdapterImpl @Inject constructor(private val coroutineScope: CoroutineSco
             val isRooted = getIsRooted()
             isRootGranted.update { isRooted }
         } catch (e: Exception) {
-            Timber.e("Exception invalidating root detection: $e")
+            if (e !is CancellationException) {
+                Timber.e("Exception invalidating root detection: $e")
+            }
         }
     }
 
