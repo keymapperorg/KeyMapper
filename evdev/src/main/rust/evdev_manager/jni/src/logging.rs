@@ -121,13 +121,7 @@ impl log::Log for KeyMapperLogger {
             log::Level::Trace => AndroidLogLevel::Verbose,
         };
 
-        let message = format!(
-            "({}:{}): {}",
-            record.module_path().unwrap_or("unknown"),
-            record.line().unwrap_or(0),
-            record.args()
-        );
-
+        let message = format!("{}", record.args());
         let c_message = CString::from_str(&message).unwrap();
 
         // This is taken from the android_log crate. https://crates.io/crates/android_log
@@ -141,7 +135,7 @@ impl log::Log for KeyMapperLogger {
     fn flush(&self) {}
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum AndroidLogLevel {
     Unknown = 0,
     Default,
