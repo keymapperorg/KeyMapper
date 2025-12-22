@@ -8,5 +8,3 @@ data class StepContent(
     val icon: ImageVector,
     val buttonText: String,
 )
-
-
