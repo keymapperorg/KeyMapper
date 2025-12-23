@@ -73,7 +73,11 @@ class SystemBridgeConnectionManagerImpl @Inject constructor(
 
     private val deathRecipient: DeathRecipient = DeathRecipient {
         synchronized(systemBridgeLock) {
-            Timber.e("System Bridge has died")
+            if (isExpectedDeath) {
+                Timber.w("System bridge killed by user.")
+            } else {
+                Timber.e("System Bridge has died")
+            }
 
             systemBridgeFlow.update { null }
 
