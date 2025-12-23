@@ -1691,7 +1691,7 @@
     <string name="expert_mode_setup_wizard_step_n">Step %d of %d</string>
     <string name="expert_mode_setup_wizard_use_assistant">Use interactive setup assistant</string>
     <string name="expert_mode_setup_wizard_use_assistant_description">Automatically interact with settings</string>
-    <string name="expert_mode_setup_wizard_use_assistant_enable_accessibility_service">Enable accessibility service first</string>
+    <string name="expert_mode_setup_wizard_use_assistant_enable_service">Enable accessibility service first</string>
     <string name="expert_mode_setup_wizard_watch_tutorial_button">Watch tutorial</string>
     <string name="expert_mode_setup_wizard_enable_accessibility_service_button">Start service</string>
     <string name="expert_mode_setup_wizard_go_to_settings_button">Go to settings</string>
@@ -1743,7 +1743,7 @@
 
     <string name="expert_mode_setup_notification_auto_start_system_bridge_title">Auto starting Expert mode</string>
     <string name="expert_mode_setup_notification_auto_start_system_bridge_root_text">Using root</string>
-    <string name="expert_mode_setup_notification_auto_start_system_bridge_shizuku_text">Using shizuku</string>
+    <string name="expert_mode_setup_notification_auto_start_system_bridge_shizuku">Using shizuku</string>
     <string name="expert_mode_setup_notification_auto_start_system_bridge_adb_text">Using ADB over WiFi</string>
 
     <string name="expert_mode_setup_notification_system_bridge_started_title">Expert mode started</string>

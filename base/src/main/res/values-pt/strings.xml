@@ -1308,7 +1308,7 @@ Deixe em branco se alguma rede Wi-Fi precisar ser correspondida.</string>
     <string name="expert_mode_setup_wizard_step_n">Etapa %d de %d</string>
     <string name="expert_mode_setup_wizard_use_assistant">Use o assistente de configuração interativo</string>
     <string name="expert_mode_setup_wizard_use_assistant_description">Interagir automaticamente com as configurações</string>
-    <string name="expert_mode_setup_wizard_use_assistant_enable_accessibility_service">Habilitar primeiro o serviço de acessibilidade</string>
+    <string name="expert_mode_setup_wizard_use_assistant_enable_service">Habilitar primeiro o serviço de acessibilidade</string>
     <string name="expert_mode_setup_wizard_watch_tutorial_button">Assista ao tutorial</string>
     <string name="expert_mode_setup_wizard_enable_accessibility_service_button">Iniciar serviço</string>
     <string name="expert_mode_setup_wizard_go_to_settings_button">Vá para as configurações</string>
@@ -1342,7 +1342,7 @@ Deixe em branco se alguma rede Wi-Fi precisar ser correspondida.</string>
     <string name="expert_mode_setup_notification_start_system_bridge_failed_text">Toque para configurar novamente. Tente o pareamento ADB e reinicie o telefone se o problema persistir.</string>
     <string name="expert_mode_setup_notification_auto_start_system_bridge_title">Modo PRO de inicialização automática</string>
     <string name="expert_mode_setup_notification_auto_start_system_bridge_root_text">Usando root</string>
-    <string name="expert_mode_setup_notification_auto_start_system_bridge_shizuku_text">Usando shizuku</string>
+    <string name="expert_mode_setup_notification_auto_start_system_bridge_shizuku">Usando shizuku</string>
     <string name="expert_mode_setup_notification_auto_start_system_bridge_adb_text">Usando ADB via WiFi</string>
     <string name="expert_mode_setup_notification_system_bridge_started_title">Modo PRO iniciado</string>
     <string name="expert_mode_setup_notification_system_bridge_started_text">Divirta-se remapeando! ❤️</string>

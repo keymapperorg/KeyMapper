@@ -324,7 +324,7 @@ private fun AssistantCheckBoxRow(
                     stringResource(R.string.expert_mode_setup_wizard_use_assistant_description)
                 } else {
                     stringResource(
-                        R.string.expert_mode_setup_wizard_use_assistant_enable_accessibility_service,
+                        R.string.expert_mode_setup_wizard_use_assistant_enable_service,
                     )
                 }
 

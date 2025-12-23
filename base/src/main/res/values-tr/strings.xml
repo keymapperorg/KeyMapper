@@ -1416,7 +1416,7 @@ Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="expert_mode_setup_wizard_step_n">Adım %d / %d</string>
     <string name="expert_mode_setup_wizard_use_assistant">Etkileşimli kurulum asistanını kullan</string>
     <string name="expert_mode_setup_wizard_use_assistant_description">Ayarlarla otomatik olarak etkileşime gir</string>
-    <string name="expert_mode_setup_wizard_use_assistant_enable_accessibility_service">Önce erişilebilirlik servisini etkinleştir</string>
+    <string name="expert_mode_setup_wizard_use_assistant_enable_service">Önce erişilebilirlik servisini etkinleştir</string>
     <string name="expert_mode_setup_wizard_watch_tutorial_button">Eğitimi izle</string>
     <string name="expert_mode_setup_wizard_enable_accessibility_service_button">Servisi başlat</string>
     <string name="expert_mode_setup_wizard_go_to_settings_button">Ayarlara git</string>
@@ -1452,7 +1452,7 @@ Kaydedilmiş ses dosyalarını ayarlardan silebilirsiniz.</string>
     <string name="expert_mode_setup_notification_start_system_bridge_failed_text">Tekrar kurmak için dokunun. Tekrar tekrar başarısız olursa ADB eşleştirmeyi ve telefonunuzu yeniden başlatmayı deneyin.</string>
     <string name="expert_mode_setup_notification_auto_start_system_bridge_title">PRO modu otomatik başlatılıyor</string>
     <string name="expert_mode_setup_notification_auto_start_system_bridge_root_text">Root kullanılıyor</string>
-    <string name="expert_mode_setup_notification_auto_start_system_bridge_shizuku_text">Shizuku kullanılıyor</string>
+    <string name="expert_mode_setup_notification_auto_start_system_bridge_shizuku">Shizuku kullanılıyor</string>
     <string name="expert_mode_setup_notification_auto_start_system_bridge_adb_text">WiFi üzerinden ADB kullanılıyor</string>
     <string name="expert_mode_setup_notification_system_bridge_started_title">PRO modu başlatıldı</string>
     <string name="expert_mode_setup_notification_system_bridge_started_text">Yeniden eşlemede iyi eğlenceler! ❤️</string>

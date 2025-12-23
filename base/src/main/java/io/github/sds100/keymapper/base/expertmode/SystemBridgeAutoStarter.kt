@@ -248,7 +248,7 @@ class SystemBridgeAutoStarter @Inject constructor(
                 Timber.i("Auto starting system bridge with Shizuku")
                 showAutoStartNotification(
                     getString(
-                        R.string.expert_mode_setup_notification_auto_start_system_bridge_shizuku_text,
+                        R.string.expert_mode_setup_notification_auto_start_system_bridge_shizuku,
                     ),
                 )
                 connectionManager.startWithShizuku()

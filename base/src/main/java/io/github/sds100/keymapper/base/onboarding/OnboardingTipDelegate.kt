@@ -49,7 +49,8 @@ class OnboardingTipDelegateImpl @Inject constructor(
         private const val PARALLEL_TRIGGER_TIP_ID = "parallel_trigger_tip"
         private const val SEQUENCE_TRIGGER_TIP_ID = "sequence_trigger_tip"
         private const val TRIGGER_CONSTRAINTS_TIP_ID = "trigger_constraints_tip"
-        const val CAPS_LOCK_PRO_MODE_COMPATIBILITY_TIP_ID = "caps_lock_expert_mode_compatibility_tip"
+        const val CAPS_LOCK_PRO_MODE_COMPATIBILITY_TIP_ID =
+            "caps_lock_expert_mode_compatibility_tip"
         const val VOLUME_BUTTONS_PRO_MODE_TIP_ID = "volume_buttons_expert_mode_tip"
         const val SCREEN_PINNING_TIP_ID = "screen_pinning_tip"
         const val IME_DETECTION_TIP_ID = "ime_detection_tip"
