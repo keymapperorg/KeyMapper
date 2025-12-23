@@ -9,4 +9,5 @@ data class ProModeSetupState(
     val stepContent: StepContent,
     val isSetupAssistantChecked: Boolean,
     val isSetupAssistantButtonEnabled: Boolean,
+    val isStarting: Boolean,
 )

@@ -93,6 +93,9 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         systemBridgeConnectionManager.connectionState
             .map { it is SystemBridgeConnectionState.Connected }
 
+    override val isSystemBridgeStarting: Flow<Boolean> =
+        systemBridgeSetupController.isStarting
+
     override val isNotificationPermissionGranted: Flow<Boolean> =
         permissionAdapter.isGrantedFlow(Permission.POST_NOTIFICATIONS)
 
@@ -188,14 +191,16 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         systemBridgeSetupController.startWithShizuku()
     }
 
-    override suspend fun startSystemBridgeWithAdb() {
+    override fun startSystemBridgeWithAdb() {
         preferences.set(Keys.isSystemBridgeEmergencyKilled, false)
         preferences.set(Keys.isSystemBridgeStoppedByUser, false)
-        if (isAdbAutoStartAllowed.first()) {
-            systemBridgeSetupController.autoStartWithAdb()
-        } else {
-            systemBridgeSetupController.startWithAdb()
-        }
+        systemBridgeSetupController.startWithAdb()
+    }
+
+    override fun autoStartSystemBridgeWithAdb() {
+        preferences.set(Keys.isSystemBridgeEmergencyKilled, false)
+        preferences.set(Keys.isSystemBridgeStoppedByUser, false)
+        systemBridgeSetupController.autoStartWithAdb()
     }
 
     override fun isInfoDismissed(): Boolean {
@@ -245,11 +250,17 @@ class SystemBridgeSetupUseCaseImpl @Inject constructor(
         return when {
             accessibilityServiceState != AccessibilityServiceState.ENABLED ->
                 SystemBridgeSetupStep.ACCESSIBILITY_SERVICE
+
             !isNotificationPermissionGranted -> SystemBridgeSetupStep.NOTIFICATION_PERMISSION
+
             !isDeveloperOptionsEnabled -> SystemBridgeSetupStep.DEVELOPER_OPTIONS
+
             !isWifiConnected -> SystemBridgeSetupStep.WIFI_NETWORK
+
             !isWirelessDebuggingEnabled -> SystemBridgeSetupStep.WIRELESS_DEBUGGING
+
             isWirelessDebuggingEnabled -> SystemBridgeSetupStep.ADB_PAIRING
+
             else -> SystemBridgeSetupStep.START_SERVICE
         }
     }
@@ -269,6 +280,7 @@ interface SystemBridgeSetupUseCase {
     fun toggleSetupAssistant()
 
     val isSystemBridgeConnected: Flow<Boolean>
+    val isSystemBridgeStarting: Flow<Boolean>
     val nextSetupStep: Flow<SystemBridgeSetupStep>
 
     val isRootGranted: Flow<Boolean>
@@ -288,7 +300,8 @@ interface SystemBridgeSetupUseCase {
     fun pairWirelessAdb()
     fun startSystemBridgeWithRoot()
     fun startSystemBridgeWithShizuku()
-    suspend fun startSystemBridgeWithAdb()
+    fun startSystemBridgeWithAdb()
+    fun autoStartSystemBridgeWithAdb()
 
     fun isCompatibleUsbModeSelected(): KMResult<Boolean>
 }

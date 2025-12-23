@@ -25,23 +25,20 @@ import io.github.sds100.keymapper.data.Keys
 import io.github.sds100.keymapper.data.PreferenceDefaults
 import io.github.sds100.keymapper.data.repositories.PreferenceRepository
 import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionManager
-import io.github.sds100.keymapper.sysbridge.manager.SystemBridgeConnectionState
+import io.github.sds100.keymapper.sysbridge.manager.awaitConnected
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupController
 import io.github.sds100.keymapper.sysbridge.service.SystemBridgeSetupStep
 import io.github.sds100.keymapper.system.notifications.NotificationModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
 @Suppress("KotlinConstantConditions")
@@ -219,17 +216,9 @@ class SystemBridgeSetupAssistantController @AssistedInject constructor(
     private suspend fun onPairingSuccess() {
         setupController.startWithAdb()
 
-        val isStarted = try {
-            withTimeout(10000L) {
-                systemBridgeConnectionManager.connectionState
-                    .filterIsInstance<SystemBridgeConnectionState.Connected>()
-                    .first()
-            }
-
-            true
-        } catch (_: TimeoutCancellationException) {
-            false
-        }
+        val isStarted = withTimeoutOrNull(10000L) {
+            systemBridgeConnectionManager.awaitConnected()
+        } != null
 
         if (isStarted) {
             Timber.i("System bridge started after pairing. Going back to Key Mapper.")

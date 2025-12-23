@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -38,6 +39,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -206,10 +208,11 @@ fun ProModeSetupScreenContent(
                         .fillMaxWidth()
                         .weight(1f)
                         .padding(horizontal = 16.dp),
-                    stepContent,
-                    onWatchTutorialClick,
-                    onStepButtonClick,
+                    stepContent = stepContent,
+                    onWatchTutorialClick = onWatchTutorialClick,
+                    onButtonClick = onStepButtonClick,
                     iconTint = iconTint,
+                    isLoading = state.data.isStarting,
                 )
             }
         }
@@ -223,6 +226,7 @@ private fun StepContent(
     onWatchTutorialClick: () -> Unit,
     onButtonClick: () -> Unit,
     iconTint: Color = Color.Unspecified,
+    isLoading: Boolean = false,
 ) {
     Column(
         modifier,
@@ -269,7 +273,18 @@ private fun StepContent(
 //            TextButton(onClick = onWatchTutorialClick) {
 //                Text(text = stringResource(R.string.pro_mode_setup_wizard_watch_tutorial_button))
 //            }
-            Button(onClick = onButtonClick) {
+            Button(
+                onClick = onButtonClick,
+                enabled = !isLoading,
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(18.dp),
+                        strokeWidth = 2.dp,
+                        color = LocalContentColor.current,
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
                 Text(text = stepContent.buttonText)
             }
         }
@@ -438,6 +453,7 @@ private fun ProModeSetupScreenAccessibilityServicePreview() {
                     stepContent = createPreviewStepContent(step),
                     isSetupAssistantChecked = false,
                     isSetupAssistantButtonEnabled = false,
+                    isStarting = false,
                 ),
             ),
         )
@@ -458,6 +474,7 @@ private fun ProModeSetupScreenNotificationPermissionPreview() {
                     stepContent = createPreviewStepContent(step),
                     isSetupAssistantChecked = false,
                     isSetupAssistantButtonEnabled = true,
+                    isStarting = false,
                 ),
             ),
         )
@@ -478,6 +495,7 @@ private fun ProModeSetupScreenDeveloperOptionsPreview() {
                     stepContent = createPreviewStepContent(step),
                     isSetupAssistantChecked = false,
                     isSetupAssistantButtonEnabled = true,
+                    isStarting = false,
                 ),
             ),
         )
@@ -498,6 +516,7 @@ private fun ProModeSetupScreenWifiNetworkPreview() {
                     stepContent = createPreviewStepContent(step),
                     isSetupAssistantChecked = false,
                     isSetupAssistantButtonEnabled = true,
+                    isStarting = false,
                 ),
             ),
         )
@@ -518,6 +537,7 @@ private fun ProModeSetupScreenWirelessDebuggingPreview() {
                     stepContent = createPreviewStepContent(step),
                     isSetupAssistantChecked = false,
                     isSetupAssistantButtonEnabled = true,
+                    isStarting = false,
                 ),
             ),
         )
@@ -538,6 +558,7 @@ private fun ProModeSetupScreenAdbPairingPreview() {
                     stepContent = createPreviewStepContent(step),
                     isSetupAssistantChecked = true,
                     isSetupAssistantButtonEnabled = true,
+                    isStarting = false,
                 ),
             ),
         )
@@ -558,6 +579,7 @@ private fun ProModeSetupScreenStartServicePreview() {
                     stepContent = createPreviewStepContent(step),
                     isSetupAssistantChecked = true,
                     isSetupAssistantButtonEnabled = true,
+                    isStarting = false,
                 ),
             ),
         )
@@ -578,6 +600,7 @@ private fun ProModeSetupScreenStartedPreview() {
                     stepContent = createPreviewStepContent(step),
                     isSetupAssistantChecked = true,
                     isSetupAssistantButtonEnabled = true,
+                    isStarting = false,
                 ),
             ),
         )

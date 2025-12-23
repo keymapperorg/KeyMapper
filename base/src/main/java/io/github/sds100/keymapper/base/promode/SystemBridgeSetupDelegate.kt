@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
+
 
 abstract class SystemBridgeSetupDelegateImpl(
     val viewModelScope: CoroutineScope,
@@ -29,7 +29,12 @@ abstract class SystemBridgeSetupDelegateImpl(
 ) : SystemBridgeSetupDelegate,
     ResourceProvider by resourceProvider {
     override val setupState: StateFlow<State<ProModeSetupState>> =
-        combine(useCase.nextSetupStep, useCase.isSetupAssistantEnabled, ::buildState).stateIn(
+        combine(
+            useCase.nextSetupStep,
+            useCase.isSetupAssistantEnabled,
+            useCase.isSystemBridgeStarting,
+            ::buildState,
+        ).stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
             State.Loading,
@@ -47,9 +52,7 @@ abstract class SystemBridgeSetupDelegateImpl(
             SystemBridgeSetupStep.WIFI_NETWORK -> useCase.connectWifiNetwork()
             SystemBridgeSetupStep.WIRELESS_DEBUGGING -> useCase.enableWirelessDebugging()
             SystemBridgeSetupStep.ADB_PAIRING -> useCase.pairWirelessAdb()
-            SystemBridgeSetupStep.START_SERVICE -> viewModelScope.launch {
-                useCase.startSystemBridgeWithAdb()
-            }
+            SystemBridgeSetupStep.START_SERVICE -> useCase.startSystemBridgeWithAdb()
 
             SystemBridgeSetupStep.STARTED -> onFinishClick()
         }
@@ -172,6 +175,7 @@ abstract class SystemBridgeSetupDelegateImpl(
     private fun buildState(
         step: SystemBridgeSetupStep,
         isSetupAssistantUserEnabled: Boolean,
+        isStarting: Boolean,
     ): State.Data<ProModeSetupState> {
         // Uncheck the setup assistant if the accessibility service is disabled since it is
         // required for the setup assistant to work
@@ -193,6 +197,7 @@ abstract class SystemBridgeSetupDelegateImpl(
                 isSetupAssistantButtonEnabled =
                 step != SystemBridgeSetupStep.ACCESSIBILITY_SERVICE &&
                     step != SystemBridgeSetupStep.STARTED,
+                isStarting = isStarting,
             ),
         )
     }

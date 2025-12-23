@@ -9,6 +9,7 @@
 - #1911 constraint for physical device orientation that ignores auto rotate setting.
 - #1918 improve how key event actions are performed with system bridge.
 - #1905 system bridge log is now visible in Key Mapper log.
+- #1941 show loading indicator when starting system bridge.
 
 ## Bug fixes
 

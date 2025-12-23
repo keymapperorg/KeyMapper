@@ -44,6 +44,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
@@ -344,6 +345,7 @@ private fun LoadedContent(
                         ),
                         onButtonClick = onRootButtonClick,
                         enabled = state.isNotificationPermissionGranted,
+                        isLoading = state.isStarting,
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -384,6 +386,7 @@ private fun LoadedContent(
                         buttonText = shizukuButtonText,
                         onButtonClick = onShizukuButtonClick,
                         enabled = state.isNotificationPermissionGranted,
+                        isLoading = state.isStarting,
                     )
                 }
 
@@ -415,6 +418,7 @@ private fun LoadedContent(
                     enabled =
                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
                         state.isNotificationPermissionGranted,
+                    isLoading = state.isStarting,
                 )
             }
         }
@@ -612,6 +616,7 @@ private fun SetupCard(
     buttonText: String,
     onButtonClick: () -> Unit = {},
     enabled: Boolean = true,
+    isLoading: Boolean = false,
 ) {
     OutlinedCard(modifier = modifier) {
         Spacer(modifier = Modifier.height(16.dp))
@@ -645,12 +650,20 @@ private fun SetupCard(
                 .align(Alignment.End)
                 .padding(horizontal = 16.dp),
             onClick = onButtonClick,
-            enabled = enabled,
+            enabled = enabled && !isLoading,
             colors = ButtonDefaults.filledTonalButtonColors(
                 containerColor = color,
                 contentColor = LocalCustomColorsPalette.current.contentColorFor(color),
             ),
         ) {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(18.dp),
+                    strokeWidth = 2.dp,
+                    color = LocalContentColor.current,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+            }
             Text(buttonText)
         }
 
@@ -726,6 +739,7 @@ private fun Preview() {
                         isRootGranted = false,
                         shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
                         isNotificationPermissionGranted = true,
+                        isStarting = false,
                     ),
                 ),
                 showInfoCard = true,
@@ -802,6 +816,7 @@ private fun PreviewNotificationPermissionNotGranted() {
                         isRootGranted = true,
                         shizukuSetupState = ShizukuSetupState.PERMISSION_GRANTED,
                         isNotificationPermissionGranted = false,
+                        isStarting = false,
                     ),
                 ),
                 showInfoCard = false,

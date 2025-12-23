@@ -13,7 +13,6 @@ import io.github.sds100.keymapper.base.utils.ui.DialogProvider
 import io.github.sds100.keymapper.base.utils.ui.ResourceProvider
 import io.github.sds100.keymapper.common.utils.State
 import io.github.sds100.keymapper.common.utils.valueOrNull
-import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -26,6 +25,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class ProModeViewModel @Inject constructor(
@@ -60,6 +60,7 @@ class ProModeViewModel @Inject constructor(
             useCase.isRootGranted,
             useCase.shizukuSetupState,
             useCase.isNotificationPermissionGranted,
+            useCase.isSystemBridgeStarting,
             ::buildSetupState,
         ).stateIn(viewModelScope, SharingStarted.Eagerly, State.Loading)
 
@@ -155,12 +156,13 @@ class ProModeViewModel @Inject constructor(
         isRootGranted: Boolean,
         shizukuSetupState: ShizukuSetupState,
         isNotificationPermissionGranted: Boolean,
+        isSystemBridgeStarting: Boolean,
     ): State<ProModeState> {
         if (isSystemBridgeConnected) {
             return State.Data(
                 ProModeState.Started(
                     isDefaultUsbModeCompatible =
-                    useCase.isCompatibleUsbModeSelected().valueOrNull() ?: false,
+                        useCase.isCompatibleUsbModeSelected().valueOrNull() ?: false,
                 ),
             )
         } else {
@@ -169,6 +171,7 @@ class ProModeViewModel @Inject constructor(
                     isRootGranted = isRootGranted,
                     shizukuSetupState = shizukuSetupState,
                     isNotificationPermissionGranted = isNotificationPermissionGranted,
+                    isStarting = isSystemBridgeStarting,
                 ),
             )
         }
@@ -186,6 +189,7 @@ sealed class ProModeState {
         val isRootGranted: Boolean,
         val shizukuSetupState: ShizukuSetupState,
         val isNotificationPermissionGranted: Boolean,
+        val isStarting: Boolean,
     ) : ProModeState()
 
     data class Started(val isDefaultUsbModeCompatible: Boolean) : ProModeState()
